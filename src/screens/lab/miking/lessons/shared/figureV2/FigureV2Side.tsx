@@ -229,8 +229,9 @@ function CuffNear({ a, P }: { a: ArmPlan; P: ArmPaths }) {
   );
 }
 
-export function Arm({ a, P, t, stick, cloth, skin }: { a: ArmPlan; P: ArmPaths; t: Torso; stick?: ReactNode; cloth?: ReactNode; skin?: ReactNode }) {
+export function Arm({ a, P, t, stick, cloth, skin, off = false }: { a: ArmPlan; P: ArmPaths; t: Torso; stick?: ReactNode; cloth?: ReactNode; skin?: ReactNode; /** (wave 3, the held arm) not drawn: a step draws that arm holding a mic */ off?: boolean }) {
   const { MAT, CLOTH } = useLook();
+  if (off) return null;
   const upper = (
     <Group layer={cloth as never}>
       <UpperSleeve a={a} P={P} t={t} />
@@ -484,10 +485,12 @@ export type FigureV2SideProps = {
   /** (wave 3, the jacket) a garment over the shirt, each piece in its place in the depth order: the far
    *  sleeve after the far arm, the body after the shirt's collar, the near sleeve after the near arm. */
   over?: { far?: ReactNode; body?: ReactNode; near?: ReactNode };
+  /** (wave 3, the held arm) that arm not drawn: a step draws it holding a mic ('both': wave 4, the boom operator) */
+  noArm?: 'near' | 'far' | 'both';
 };
 
 /** The whole person in profile, far to near. */
-export function FigureV2Side({ plan, farStick, nearStick, part = 'all', over }: FigureV2SideProps) {
+export function FigureV2Side({ plan, farStick, nearStick, part = 'all', over, noArm }: FigureV2SideProps) {
   const { MAT } = useLook();
   const P = sidePaths(plan);
   // (wave 3: the head alone, turned by a step; or the body with only its neck)
@@ -502,6 +505,9 @@ export function FigureV2Side({ plan, farStick, nearStick, part = 'all', over }: 
         <Shoe s={P.shoeFar} />
         <Leg path={P.legFar} shin={P.shinFar} knee={P.kneeFar} folds={P.legFoldsFar} l={L.far} shoe={P.shoeFar.upper} />
       </Group>
+      {/* (wave 3, the held arm: noArm 'far' — a step draws that arm holding a mic) */}
+      {noArm === 'far' || noArm === 'both' ? null : (
+        <>
       <Arm a={plan.arms.far} P={P.far} t={torso} stick={farStick} cloth={FAR} skin={FAR_SKIN} />
       {/* the far arm passes BEHIND the body: the torso's soft occlusion shadow on it, along the back's edge */}
       {plan.arms.far.behind
@@ -514,6 +520,8 @@ export function FigureV2Side({ plan, farStick, nearStick, part = 'all', over }: 
           ))
         : null}
       {over?.far ?? null}
+        </>
+      )}
       <Shoe s={P.shoeNear} />
       <Leg path={P.trousersNear} shin={P.shinNear} knee={P.kneeNear} folds={P.legFoldsNear} l={L.near} shoe={P.shoeNear.upper} />
       <Head plan={plan} P={P} show={part === 'headless' ? 'neck' : 'all'} />
@@ -570,8 +578,8 @@ export function FigureV2Side({ plan, farStick, nearStick, part = 'all', over }: 
         </Group>
       </Form>
       {over?.body ?? null}
-      <Arm a={plan.arms.near} P={P.near} t={torso} stick={nearStick} />
-      {over?.near ?? null}
+      <Arm a={plan.arms.near} P={P.near} t={torso} stick={nearStick} off={noArm === 'near' || noArm === 'both'} />
+      {noArm === 'near' || noArm === 'both' ? null : over?.near ?? null}
     </Group>
   );
 }

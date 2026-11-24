@@ -35,7 +35,12 @@ import type { PageProps } from '../../../pages/pageTypes';
 import { PaintItem, playerGroups } from '../bowed/BowedArt';
 import { MainPair, MusicStand, WedgeTop } from '../bowed/BowedSettingPage';
 import { KitTop } from '../kitScene/KitSceneArt';
-import { PROJ, hornGroups } from './BrassArt';
+import { PROJ, hornGroups, sceneGroups } from './BrassArt';
+import { figureV2On } from '../figureV2/figureV2Config.ts';
+import { brassSecond } from './brassFigureV2';
+import { PersonTopV2 } from '../figureV2/personV2';
+import { castFor } from '../figureV2/cast';
+import { SINGER_TOP } from '../voice/voicePose';
 import type { HornPose } from './brassPosture.ts';
 import { brassCue, brassFoots, brassShown, slideReach, type BrassPlanLayout, type BrassPlanObject } from './brassPlanModel.ts';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
@@ -63,8 +68,11 @@ export type BrassSettingConfig = BrassPlanLayout & {
 };
 
 /** A horn player and horn from above (the family's own art). */
-function BrassTop({ P, dim }: { P: HornPose; dim: number }) {
-  const groups = useMemo(() => [...playerGroups({ player: P.player }, 'top', true), ...hornGroups(P, PROJ.top)].sort((a, b) => a.depth - b.depth), [P]);
+function BrassTop({ P, dim, second = false }: { P: HornPose; dim: number; /** a neighbor playing the lesson's own horn: another person */ second?: boolean }) {
+  const groups = useMemo(
+    () => (figureV2On('familyBrass') ? sceneGroups(P, 'top', second ? { who: brassSecond() } : {}) : [...playerGroups({ player: P.player }, 'top', true), ...hornGroups(P, PROJ.top)].sort((a, b) => a.depth - b.depth)),
+    [P, second],
+  );
   return (
     <Group layer={<Paint opacity={dim} />}>
       {groups.map((g) => (
@@ -102,12 +110,22 @@ function SingerTop() {
   }, []);
   return (
     <>
-      <Path path={p.body}>
-        <LinearGradient start={vec(-120, -230)} end={vec(120, 230)} colors={['#4c5466', '#2f3542', '#1b1f28']} />
-      </Path>
-      <Group transform={[{ translateX: 10 }, { rotate: -Math.PI / 2 }]}>
-        <FigureHead fill={p.head} />
-      </Group>
+      {figureV2On('familyBrass') ? (
+        // (figure roll-out wave 5: the band's singer in the approved look — Ana, as in the vocal lessons — her neck
+        // where the old marker's was, facing the mic)
+        <Group transform={[{ translateX: -SINGER_TOP.neck.u }, { translateY: -SINGER_TOP.neck.v }]}>
+          <PersonTopV2 pose={SINGER_TOP} who={castFor('voice.singer')} />
+        </Group>
+      ) : (
+        <>
+          <Path path={p.body}>
+            <LinearGradient start={vec(-120, -230)} end={vec(120, 230)} colors={['#4c5466', '#2f3542', '#1b1f28']} />
+          </Path>
+          <Group transform={[{ translateX: 10 }, { rotate: -Math.PI / 2 }]}>
+            <FigureHead fill={p.head} />
+          </Group>
+        </>
+      )}
       <Path path={p.legs} style="stroke" strokeWidth={14} strokeCap="round" color="#0b0c0f" />
       <Path path={p.legs} style="stroke" strokeWidth={9} strokeCap="round" color="#4d515b" />
       <Path path={p.boom} style="stroke" strokeWidth={12} strokeCap="round" color="#2a2c32" />
@@ -222,7 +240,7 @@ export function BrassPlan({ w, h, cfg, box, scene, wedges, items, highlight, onT
             ) : null}
             {shown.map((o) => (
               <Group key={o.id} transform={[{ translateX: o.at.x }, { translateY: o.at.z }, { rotate: (o.yaw ?? 0) * DEG }]}>
-                {o.kind === 'stand' ? <MusicStand /> : o.kind === 'kit' ? <KitTop keepOuts={false} dim={0.85} /> : o.kind === 'pair' ? <MainPair /> : o.kind === 'singer' ? <SingerTop /> : o.kind === 'brass' && o.pose ? <BrassTop P={o.pose} dim={0.7} /> : null}
+                {o.kind === 'stand' ? <MusicStand /> : o.kind === 'kit' ? <KitTop keepOuts={false} dim={0.85} /> : o.kind === 'pair' ? <MainPair /> : o.kind === 'singer' ? <SingerTop /> : o.kind === 'brass' && o.pose ? <BrassTop P={o.pose} dim={0.7} second={o.pose.spec.id === self.spec.id} /> : null}
               </Group>
             ))}
             {scene === 'stage' ? wedges.filter((x) => x.glyph !== 'none').map((x) => <WedgeTop key={x.id} at={{ x: x.p.x, z: x.p.z }} faces={{ x: x.faces.x, z: x.faces.z }} />) : null}

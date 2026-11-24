@@ -7,6 +7,7 @@
 import type { ReactElement, ReactNode } from 'react';
 import type { SharedValue } from 'react-native-reanimated';
 import type { SourcePageId, SettingItem, VariantId, Vec3, ViewId, Wedge } from '../model/types.ts';
+import type { HeldConfig } from '../../lessons/shared/figureV2/heldLive';
 
 /** `short`: the words to fall back to where the full label would collide.
  *  `alts`: other places it may sit (tried before the short form); `at`: the
@@ -99,7 +100,20 @@ export type LessonArt = {
    *  along +u, facing −u (toward the mic). Side view: v = 0 is the FLOOR
    *  under the hands (the hands at v = −POLE_HANDS_H). The scene moves and
    *  turns it with the pole's end (PlacementScene PoleMount). */
-  PoleOperator?: (props: { view: ViewId }) => ReactElement;
+  PoleOperator?: (props: { view: ViewId; /** (figure V2, Foley3) the pole as drawn: its slope at the hands (deg,
+   *  + rising toward the mic; side the projected one, from above the true one) and the hands' height above the
+   *  floor (mm), rounded; `flip` the side view mirrored (the mic toward −x) — only when `poleOperatorOver` */ pole?: { slopeDeg: number; handsH: number; flip?: boolean }; hk?: number }) => ReactElement;
+  /** (figure V2, Foley3) The pole operator is drawn OVER the engine's pole (its own fists close round it) and
+   *  re-solved for the pole's slope (`pole`). Without it the operator is drawn under the pole, as before. */
+  poleOperatorOver?: boolean;
+  /** (figure V2, the held arm; wave 3 step B round 2) The lesson's people hold their hand-held mics
+   *  themselves: its scene draws each held arm at the holder's depth (figureV2/heldLive HeldBy), the engine
+   *  draws no arm and no fist for a held mic — only, after the mics, the hand's parts in front of the handle.
+   *  A lesson without it is unchanged. */
+  heldV2?: HeldConfig;
+  /** (figure V2, the held arm) A mic type DRAWN longer than its body (B10's flag handheld: its free handle
+   *  below the flag, where the hand closes). Drawing only: its front, its capsule, every distance unchanged. */
+  micDrawLen?: (typeId: string) => number | undefined;
 };
 
 /** What PSetting hands a lesson's own SettingPlan (the KitPlan contract). */

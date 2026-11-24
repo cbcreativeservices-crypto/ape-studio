@@ -45,7 +45,7 @@ import { Aim, Dim, FieldStage, MicAt, Ray, uvOf, type FieldInset } from '../fiel
 import type { StaticLabel } from '../../../engine/scene/StaticLabels';
 import { TURN_LIMITS, turnHead, turnReadout } from './talkerPose.ts';
 import { TurnedHeadSide, TurnedHeadTop } from './BroadcastArt';
-import { castFor } from '../figureV2/cast';
+import { castFor, type RoleKey } from '../figureV2/cast';
 import { deskReflection, type Plate } from './deskReflection.ts';
 import { bleedMatrix, openMics, strongestLeak, threeToOneNote, type PanelMic, type PanelTalker } from './openMicPanel.ts';
 import { CONNECT_WORDS, DESTINATIONS, connect, feeds, problemWords, routeProblems, type DestId, type Level, type RoutingPlan } from './routing.ts';
@@ -152,6 +152,8 @@ export type TurnSpec = {
   oneAtATime?: boolean;
   /** (figure V2) the lesson draws all its figures in the new look: the turned head too. */
   v2?: boolean;
+  /** (figure V2, wave 4) whose head turns (default the host's). */
+  turnWho?: RoleKey;
   phones?: boolean;
   words: { looking: string; prompt: string; done: string; subject: string };
 };
@@ -233,7 +235,7 @@ export function useTurnStep(spec: TurnSpec): MikingStep {
     { k: 'OFF AXIS', v: deg5(r.offAxis), tint: r.offAxis > 45 ? '#ff6b5e' : undefined, flex: 0.9 },
     { k: 'LEVEL', v: Math.abs(r.distDb) < 0.5 ? '0 dB' : `${r.distDb > 0 ? '−' : '+'}${Math.abs(r.distDb).toFixed(0)} dB`, flex: 0.9 },
   ];
-  const head = (view: 'top' | 'side') => (view === 'top' ? <TurnedHeadTop yawDeg={yaw} v2={spec.v2} /> : <TurnedHeadSide pitchDeg={pitch} phones={spec.phones} v2={spec.v2} />);
+  const head = (view: 'top' | 'side') => (view === 'top' ? <TurnedHeadTop yawDeg={yaw} v2={spec.v2} who={spec.turnWho} /> : <TurnedHeadSide pitchDeg={pitch} phones={spec.phones} v2={spec.v2} who={spec.turnWho} />);
   const inset: FieldInset | null = spec.pitch
     ? {
         view: 'side',
@@ -433,6 +435,8 @@ export type OpenMicSpec = {
   /** Ready-made open/muted sets (the dock's OPEN presets). */
   presets: readonly { id: string; label: string; blurb: string; open: readonly string[] }[];
   top: (px: number) => ReactNode;
+  /** (figure V2, the held arm) painted after the mics: a hand's parts in front of a held mic's handle. */
+  over?: (px: number) => ReactNode;
   box: ViewBox;
   words: { looking: string; prompt: string; done: string; subject: string };
 };
@@ -508,6 +512,7 @@ export function useOpenMicStep(spec: OpenMicSpec): MikingStep {
                   </Group>
                 );
               })}
+              {spec.over ? spec.over(px) : null}
             </>
           )}
         </FieldStage>
@@ -674,6 +679,8 @@ export type BroadcastSoundSpec = {
   v2?: boolean;
   /** (with v2) the host wears the jacket in this lesson: so does the cut-away. */
   jacket?: boolean;
+  /** (with v2) the cut-away's person when not the host (the role of the talker at frame V's lips). */
+  who?: RoleKey;
   /** The lesson's own tool steps (hooks: called on every render). */
   useTools: (p: PageProps) => MikingStep[];
   silentNote: string;
@@ -699,7 +706,7 @@ export function makeBroadcastSound(spec: BroadcastSoundSpec): PageFn {
         kind: 'WATCH',
         layout: 'rack',
         rack: {
-          render: (w, h) => <VoiceSequence w={w} h={h} shown={st.shown} who={spec.v2 ? castFor('talker.host') : undefined} jacket={!!spec.jacket} accessibilityLabel={`A talker in profile, the head and neck cut through the middle to show the airway, step ${st.shown} of ${n}: ${stage.title}. ${stage.text}`} />,
+          render: (w, h) => <VoiceSequence w={w} h={h} shown={st.shown} who={spec.v2 ? castFor(spec.who ?? 'talker.host') : undefined} jacket={!!spec.jacket} accessibilityLabel={`A talker in profile, the head and neck cut through the middle to show the airway, step ${st.shown} of ${n}: ${stage.title}. ${stage.text}`} />,
           badge: 'A simplified picture: a cut through the middle of the head · the order of events, not their speed or size · silent',
           bezel: [
             { k: 'EVENT', v: `${st.shown}`, flex: 0.8 },

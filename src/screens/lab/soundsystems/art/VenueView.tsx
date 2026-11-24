@@ -17,7 +17,9 @@
  * elements accept), so a screen reader — and the browser harness — can
  * place gear by name.
  */
-import { FigureAboveSvg } from '../../../../features/lab/figureAboveSvg';
+// (figure V2, wave 7 of D78: the performers are cast members, the approved top view in SVG)
+import { PersonAboveSvg } from '../../../../features/lab/figureV2Svg';
+import { castFor } from '../../miking/lessons/shared/figureV2/cast';
 import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, ClipPath, Defs, G, Line, LinearGradient, Path, Pattern, Polygon, RadialGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
@@ -1231,7 +1233,7 @@ export function VenueView(p: VenueViewProps) {
                 // The house plan figure from above at the wedges' own scale
                 // (art fix 2026-10-16: was a head-and-shoulders UI glyph),
                 // facing the house.
-                <FigureAboveSvg key={s} x={q.x} y={q.y} pxPerMm={PERSON_PX_PER_MM * PEOPLE_ENLARGED} halo="#c3cde2" />
+                <PersonAboveSvg key={s} x={q.x} y={q.y} pxPerMm={PERSON_PX_PER_MM * PEOPLE_ENLARGED} halo="#c3cde2" who={castFor(`venue.${s}` as 'venue.stageC')} />
               );
             })
           : null}

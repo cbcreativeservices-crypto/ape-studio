@@ -68,7 +68,10 @@ import Animated, {
 } from 'react-native-reanimated';
 import { colors, fonts } from '../../../theme/tokens';
 import { useStageTextScale } from '../rack/stageAspect';
-import { FigureStandingAt, STANDING_H_MM } from '../../../features/lab/figureHead';
+import { STANDING_H_MM } from '../../../features/lab/figureHead';
+// (figure V2, wave 7 of D78: the person for scale is a cast member from the front, the same height)
+import { PersonStandingFrontAt } from '../../../features/lab/figureV2Front';
+import { castFor } from '../miking/lessons/shared/figureV2/cast';
 import { levelColor, WAVE_LEVEL_STOPS } from '../../../features/tools/levelColor';
 import { TRACER_COLOR, TRACER_MARK_COLOR } from './tracer';
 
@@ -1904,7 +1907,7 @@ export function WavelengthRulerView({
         <Path path={room} color="#46474f" style="stroke" strokeWidth={1.6} />
         {/* λ bracket — glowing amber measure (still EXACTLY 343/f, to scale). */}
         <GlowStroke path={bracket} color={WAVE} width={2.2} />
-        <FigureStandingAt cx={personX} floorY={floorY} pxPerMm={personPx} />
+        <PersonStandingFrontAt cx={personX} floorY={floorY} pxPerMm={personPx} who={castFor('foundations.person')} heightMm={STANDING_H_MM} />
         <Vignette w={w} h={h} />
         </Group>
       </Canvas>

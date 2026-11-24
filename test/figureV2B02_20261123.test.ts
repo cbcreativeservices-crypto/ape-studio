@@ -95,11 +95,11 @@ describe('figure V2 wave 3 — B02 news desk, whole', () => {
   });
 
   it('the cut-away and the turned heads follow the lesson: the cut-away in the jacket only when asked', () => {
-    assert.match(read(`${L}/shared/broadcast/broadcastPages.tsx`), /who=\{spec\.v2 \? castFor\('talker\.host'\) : undefined\} jacket=\{!!spec\.jacket\}/);
+    assert.match(read(`${L}/shared/broadcast/broadcastPages.tsx`), /who=\{spec\.v2 \? castFor\(spec\.who \?\? 'talker\.host'\) : undefined\} jacket=\{!!spec\.jacket\}/);
     const cut = read(`${L}/shared/voice/VoiceCutaway.tsx`);
     assert.match(cut, /export function VoiceCutaway\(\{ tint, who, jacket = false \}/);
     assert.match(cut, /\{jacket && L\.JACKET \? \(/);
-    assert.match(read(`${L}/shared/broadcast/bodyWornPages.tsx`), /<TurnedHeadSide pitchDeg=\{pitch\} v2=\{spec\.v2\} \/>/);
+    assert.match(read(`${L}/shared/broadcast/bodyWornPages.tsx`), /<TurnedHeadSide pitchDeg=\{pitch\} v2=\{spec\.v2\}( who=\{spec\.who\})? \/>/);
   });
 
   it('the anchor in the jacket covers its own outline for labels; the guest is two people away', () => {

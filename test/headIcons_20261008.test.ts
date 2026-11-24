@@ -128,19 +128,22 @@ const LONE: [string, RegExp][] = [
 /** Bodies → the figure's own head (FigureHead / FigureHeadAt / FigureHeadSvg / PlayerHead). */
 const BODY: [string, RegExp][] = [
   // Fix pass 2026-10-16: the coverage scenes draw WHOLE house figures — the plan's guitarist and bassist (BacklinePlan's plan players with PlayerFigure's head) and the singer at a vocal stand (voicePose) in both views.
-  ['src/screens/lab/micspeaker/viz.tsx', /<PlanPlayerTop pose=\{p\.kind\} \/>[\s\S]*<FigureHead fill=\{g\.head\} \/>[\s\S]*<PlayerBehind pose=\{SINGER_TOP\} \/>[\s\S]*<PlayerBehind pose=\{SINGER_SIDE\} \/>/],
+  // (figure V2, wave 7 of D78: the band and the singer are cast members — the head is part of each body)
+  ['src/screens/lab/micspeaker/viz.tsx', /<PlayerTopV2 player=\{BAND_TOP_PLAYERS\[p\.kind\]\}[\s\S]*<PersonTopV2 pose=\{SINGER_TOP\}[\s\S]*<PersonSideV2 pose=\{SINGER_SIDE\}/],
   ['src/screens/lab/wave/vizWave.tsx', /<FigureHeadAt view="front"/],
   // Art fix 2026-10-16: Sound Systems' performers (venue plan, feedback plan) are the house plan figure from above — shirt and arms one silhouette, PlayerFigure's headAbove skull.
   ['src/features/lab/figureAboveSvg.tsx', /const SKULL: XY\[\] = \[H\(0, -98\), H\(62, -80\)/],
-  ['src/screens/lab/soundsystems/art/VenueView.tsx', /<FigureAboveSvg key=\{s\}/],
-  ['src/screens/lab/soundsystems/art/diagrams.tsx', /<FigureAboveSvg x=\{perf\.x/],
+  // (figure V2, wave 7 of D78: the venue's and the feedback loop's performers, the listener: cast members, heads on bodies)
+  ['src/screens/lab/soundsystems/art/VenueView.tsx', /<PersonAboveSvg key=\{s\}/],
+  ['src/screens/lab/soundsystems/art/diagrams.tsx', /<PersonAboveSvg x=\{perf\.x/],
   // Figure polish 2026-10-10: these three drew a stick body under the head; each is now a WHOLE shared figure (its head is FigureHeadSvg / PlayerFigure's FigureHead).
-  ['src/screens/lab/roomdesign/RoomSideView.tsx', /<FigureSeatedSideSvg /],
+  ['src/screens/lab/roomdesign/RoomSideView.tsx', /<PersonSeatedSideSvg /],
   ['src/features/lab/figureBodySvg.tsx', /<FigureHeadSvg view="front"[\s\S]*<FigureHeadSvg view="side"/],
-  ['src/screens/lab/eq/modules/CameraAnalogy.tsx', /<FigureStandingFrontSvg /],
-  ['src/screens/lab/foundations/viz.tsx', /<FigureStandingAt /],
+  // (figure V2, wave 7 of D78: the cast member from the front — the head part of the body)
+  ['src/screens/lab/eq/modules/CameraAnalogy.tsx', /<PersonFrontSvg /],
+  ['src/screens/lab/foundations/viz.tsx', /<PersonStandingFrontAt /],
   ['src/features/lab/figureHead.tsx', /<PlayerBehind pose=\{STANDING_FRONT\} \/>/],
-  ['src/screens/lab/cableinstall/svgArt.tsx', /<FigureHeadSvg view="front"/],
+  ['src/screens/lab/cableinstall/svgArt.tsx', /<PersonFrontSvg /],
   ['src/screens/lab/miking/lessons/shared/metal/metalArt.tsx', /<FigureHead fill=\{headFill\(view\)\} \/>/],
   // Figure pass 2026-10-15: the mallet player and the reed-piano player are WHOLE shared figures (PlayerFigure's own head).
   ['src/screens/lab/miking/lessons/shared/mallets/MalletArt.tsx', /<PlayerBehind pose=\{b\.player\.pose\} dim=\{0\.42\} \/>[\s\S]*<PlayerBehind pose=\{b\.player\.pose\} \/>/],

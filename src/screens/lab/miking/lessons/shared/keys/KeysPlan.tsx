@@ -40,6 +40,13 @@ import { CueMixPlan } from '../monitoring/CueMixPlan';
 import { cueCables, cueLabels } from '../monitoring/cueMix.ts';
 import { clearOfFoots, planTurn, unionRect } from '../planFoot.ts';
 import { BENCH, CHAIR_ROW, DECK_EDGE_U, inAisle, KEYS_BOX, KEYS_DI_TURN, KEYS_XLR_TO, keysCables, KEYS_KIT_AT, KEYS_POS, OTHER_AMP, PEDAL, SHOULDERS, keyboardDims, keysCue, keysFoots, keysItemFootIds, keysItems, keysKeep, keysPaAt, keysRoomDrawn, keysWedgeAt, type KeysRig, type KeysScene } from './keysPlanModel.ts';
+// (figure V2, wave 6 of D78: the player in the approved look, behind `v2`)
+import { MarkerTopV2, PlayerTopV2 } from '../figureV2/elsewhereTop';
+/** How far ahead of the player's head the keys may lie for the hands to reach them (mm). */
+const KEYS_REACH = 420;
+import { keysPlayer } from '../figureV2/markerPose';
+import { castFor, type CastMember } from '../figureV2/cast';
+import { keyboardRect } from './keysPlanModel.ts';
 
 /** An audience member's head icon, crown→chin, mm (a real head ≈ 230 mm). */
 
@@ -116,7 +123,7 @@ function build(rig: KeysRig) {
   return { amp, ampFront, handle, kb, ovals, shoulders, headTop, bench, keep, pedal, chairs, deck, room };
 }
 
-export function KeysPlan({ w, h, rig, scene, wedges, highlight, onTap, shortOf, accessibilityLabel }: { w: number; h: number; rig: KeysRig; scene: KeysScene; wedges: readonly Wedge[]; highlight: string | null; onTap: (id: string) => void; shortOf: (id: string) => string; accessibilityLabel: string }) {
+export function KeysPlan({ w, h, rig, scene, wedges, highlight, onTap, shortOf, accessibilityLabel, v2 = false, player }: { w: number; h: number; rig: KeysRig; scene: KeysScene; wedges: readonly Wedge[]; highlight: string | null; onTap: (id: string) => void; shortOf: (id: string) => string; accessibilityLabel: string; /** (figure V2, wave 6) the player in the approved look, as `player` — OFF by default: the lesson switches it with its own player */ v2?: boolean; player?: CastMember }) {
   const ts = useStageTextScale();
   const box = KEYS_BOX[rig][scene];
   // DOWNSTAGE = BOTTOM (owner 2026-10-16): the stage is drawn turned, the audience below.
@@ -291,12 +298,27 @@ export function KeysPlan({ w, h, rig, scene, wedges, highlight, onTap, shortOf, 
             {/* the player on the bench */}
             <Group transform={[{ translateX: P.player.u }, { translateY: P.player.v }]}>
               <Path path={g.bench} color="#26272c" />
-              <Path path={g.shoulders}>
-                <RadialGradient c={vec(-40, -80)} r={300} colors={['#5a5d66', '#33363d', '#1c1d22']} />
-              </Path>
-              <Group transform={[{ rotate: -Math.PI / 2 }]}>
-                <FigureHead fill={g.headTop} />
-              </Group>
+              {v2 ? (
+                // (figure V2: seated on the bench, both hands flat on the keys at the keybed's front edge — where the
+                // keys lie within an arm's reach of the drawn bench; the Wurlitzer's keys are 600 mm from the
+                // player's head in this plan, past any reach, so there the arms hang as the old marker had none)
+                keyboardRect(rig).u0 - P.player.u <= KEYS_REACH ? (
+                  <PlayerTopV2 player={keysPlayer(keyboardRect(rig).u0 - P.player.u, keyboardDims(rig).cv - P.player.v)} who={player ?? castFor('plan.keys')} />
+                ) : (
+                  <Group transform={[{ translateX: -18 }]}>
+                    <MarkerTopV2 who={player ?? castFor('plan.keys')} />
+                  </Group>
+                )
+              ) : (
+                <>
+                  <Path path={g.shoulders}>
+                    <RadialGradient c={vec(-40, -80)} r={300} colors={['#5a5d66', '#33363d', '#1c1d22']} />
+                  </Path>
+                  <Group transform={[{ rotate: -Math.PI / 2 }]}>
+                    <FigureHead fill={g.headTop} />
+                  </Group>
+                </>
+              )}
             </Group>
             {scene === 'stage'
               ? wedges.map((wd) => {

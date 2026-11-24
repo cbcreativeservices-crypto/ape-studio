@@ -348,7 +348,7 @@ function bar(a: Pt, b: Pt, r: number): SkPath {
   return p;
 }
 
-function artPaths(h: NonNullable<SidePlan['arms']['near']['placed']>, wrist: { poly: Poly; axis: [Pt, Pt]; bones: Ellipse[] } | null): ArtPaths {
+export function artPaths(h: NonNullable<SidePlan['arms']['near']['placed']>, wrist: { poly: Poly; axis: [Pt, Pt]; bones: Ellipse[] } | null): ArtPaths {
   // The visible wrist is the hand's first part: one skin, one light with the
   // palm it widens into (no seam, no change of value at the join).
   const wristPart = wrist ? [{ path: smoothClosed(wrist.poly, 0.5), axis: wrist.axis, layer: 'back' as const, kind: 'wrist', name: 'wrist' }] : [];

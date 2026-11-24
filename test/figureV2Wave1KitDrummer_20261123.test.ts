@@ -113,7 +113,8 @@ describe('wave 1 — the switch (D78)', () => {
     // (wave 1 switches one family; later waves' families are listed OFF until their go — wave 3a: sideStanding, sideDeskTalker)
     const on = Object.entries(CFG.FIGURE_V2_FAMILY).filter(([, v]) => v).map(([k]) => k);
     // (wave 3a turned the standing figures on: the singer in E01 and E03)
-    assert.deepEqual(on, ['kitDrummer', 'sideStanding', 'sideDeskTalker'], 'the families switched on so far');
+    // (2026-11-24, overnight roll-out: every family below is ON in the working tree; any family the owner has not approved is switched OFF before OTA 16, [MD:D78])
+    assert.deepEqual(on, ['kitDrummer', 'sideStanding', 'sideDeskTalker', 'sidePlayers', 'familyBowed', 'familyBrass', 'familyLowBrass', 'familySax', 'familyWinds', 'familySmallPerc', 'familyLutes', 'familyFreeReeds', 'frontAndBoom', 'familyMetal'], 'the families switched on so far');
   });
 });
 

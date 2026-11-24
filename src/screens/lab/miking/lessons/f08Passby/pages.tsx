@@ -20,24 +20,30 @@ import { Group } from '@shopify/react-native-skia';
 import { PageSteps, type MikingStep } from '../../engine/steps';
 import { Card, Point } from '../../engine/kit';
 import type { PageProps } from '../../pages/pageTypes';
-import { SiteArt, SiteCar, SitePerson } from '../shared/field/SiteArt';
+import { SiteArt, SiteCar, SitePerson, sitePersonWho } from '../shared/field/SiteArt';
 import { usePathStep, useImageStep, type PathMicOption } from '../shared/field/fieldSteps';
 import { fieldCheckStep, makeFieldBefore, readStep } from '../shared/field/fieldPages';
 import { VEHICLE_SPEED_MS, WALK_SPEED_MS } from '../shared/field/path.ts';
 import { F08_SITE, PB_H, VEH_PATH, WALK_PATH } from './geometry.ts';
 import { F08_START, TRACK_P } from './model.ts';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+
+/** The new look (figure V2, builder Foley3; as art.tsx): the site's people are the cast's — the walker is the
+ *  route's one person (Kofi), the same on every page. */
+const V2 = figureV2On('sidePlayers');
+const WALKER_WHO = sitePersonWho(0);
 
 const vehicle = (v: string) => v === 'vehicle';
 function RouteBg() {
-  return <SiteArt site={F08_SITE.walk} view="top" hide={['person']} />;
+  return <SiteArt site={F08_SITE.walk} view="top" hide={['person']} v2={V2} />;
 }
 function VehBg() {
-  return <SiteArt site={F08_SITE.vehicle} view="top" hide={['car']} />;
+  return <SiteArt site={F08_SITE.vehicle} view="top" hide={['car']} v2={V2} />;
 }
 /** The walker, drawn about 2.5 × life size so it reads on a 30 m plan (said once in the note). */
 const Walker = (p: { x: number; z: number; heading: number }) => (
   <Group transform={[{ translateX: p.x }, { translateY: p.z }, { scale: 2.5 }, { translateX: -p.x }, { translateY: -p.z }]}>
-    <SitePerson f={{ kind: 'person', c: [p.x, p.z], heading: p.heading, role: 'walker' }} view="top" />
+    <SitePerson f={{ kind: 'person', c: [p.x, p.z], heading: p.heading, role: 'walker' }} view="top" v2={V2} who={WALKER_WHO} />
   </Group>
 );
 const Car = (p: { x: number; z: number; heading: number }) => <SiteCar c={[p.x, p.z]} heading={p.heading} view="top" />;

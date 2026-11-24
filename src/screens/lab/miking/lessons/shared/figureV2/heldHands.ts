@@ -271,6 +271,8 @@ export type PlacedGrip = {
   view: { toward: L3 };
   frame: GripFrame;
   model: GripModel;
+  /** (step B) the wrist where the forearm meets the heel of the hand (world). */
+  wrist3: V3;
 };
 
 /** A hull with its long straight runs cut into short even steps: smoothed, its corners round off softly and
@@ -346,7 +348,7 @@ function openEdge(outline: Poly, hand: Poly): Poly {
  * The grip as a view sees it: `fist` the handle's centre in the middle of the fist (world), `fr` the arm's
  * frame, `toward` the unit vector to the viewer, `proj` the view's projection onto the page (mm).
  */
-export function placeGrip(fist: V3, fr: { f: V3; h: V3; d: V3 }, toward: V3, proj: (p: V3) => Pt, R = 13): PlacedGrip {
+export function placeGrip(fist: V3, fr: { f: V3; h: V3; d: V3 }, toward: V3, proj: (p: V3) => Pt, R = 13, opts: { /** (step B, the held arm) the forearm's skin from this point (world, under the cuff) into the hand: one skin with the palm */ wristFrom?: V3; /** …or from this point on the page (the cuff's opening) */ wristFrom2?: Pt; /** (step B round 2, the arm's views only — the hand pages stay as approved) the back of the fist turned to the viewer: its four low knuckle swells, the thumb's base where it shows */ back?: boolean } = {}): PlacedGrip {
   const g = gripFrame(fr);
   const m = gripModel(R, g.beta);
   const S = (p: L3) => proj(toWorld(g, fist, p));
@@ -388,6 +390,14 @@ export function placeGrip(fist: V3, fr: { f: V3; h: V3; d: V3 }, toward: V3, pro
     const th0 = m.thumb;
     web.push(evenHull([{ c: ix.pts[0], r: ix.r[0] }, { c: ix.pts[1], r: ix.r[1] }, { c: th0.pts[0], r: th0.r[0] }, { c: th0.pts[1], r: th0.r[1] }].flatMap((q) => ring(S(q.c), q.r))));
   }
+  // (step B) the wrist: the forearm's skin from under the cuff into the heel of the hand, in the palm's one outline
+  const wFrom = opts.wristFrom2 ?? (opts.wristFrom ? proj(opts.wristFrom) : null);
+  // (the wrist is an oval, not a round tube: about 52–60 mm across the hand's width (along the handle), and
+  // seen edge-on, from the thumb's side, no thicker than the heel of the hand it runs into — never a lump
+  // wider than the hand it carries)
+  const vq = Math.hypot(v.n, v.w);
+  const wristR = (across: number, thick: number) => (vq < 0.15 ? across : Math.sqrt((across * v.n) ** 2 + (thick * v.w) ** 2) / vq);
+  const wristSkin = wFrom ? limbOutline([wFrom, S(l3(-78, -1, R + 1 + 13))], [wristR(26, 17), wristR(30, 14)], { capStart: false }) : null;
   const palm: GripPart = {
     name: 'palm',
     layer: layerOf(palmCentre),
@@ -395,8 +405,8 @@ export function placeGrip(fist: V3, fr: { f: V3; h: V3; d: V3 }, toward: V3, pro
     // (round 5: the knuckles are low broad swells on the hand's one edge — about 1.5 mm proud of it — never a
     // row of round lobes; and where the palm lies behind the handle, the web between the index and the thumb
     // closes the gap at the handle's exit: skin, not a notch)
-    body: web.length ? evenHull([...palmPoly, ...web.flat()]) : palmPoly,
-    pieces: [palmPoly, ...(v.n < -0.3 ? [] : swellsOn(palmPoly, m.knuckles.map((k) => ({ c: S(k.c), r: k.r - 1.5 })))), ...web],
+    body: web.length || wristSkin ? evenHull([...palmPoly, ...web.flat(), ...(wristSkin ?? [])]) : palmPoly,
+    pieces: [...(wristSkin ? [wristSkin] : []), palmPoly, ...(v.n < -0.3 ? [] : swellsOn(palmPoly, m.knuckles.map((k) => ({ c: S(k.c), r: k.r - 1.5 })), opts.back ? 0.6 : 1.4, opts.back ? 3.4 : 2.2)), ...web],
     axis: [S(m.wrist), S(l3(18, 0, R + 1 + T / 2))],
     kind: 'palm',
     w: 40,
@@ -409,6 +419,20 @@ export function placeGrip(fist: V3, fr: { f: V3; h: V3; d: V3 }, toward: V3, pro
   // the back of the hand turned to the light; the palm's hollow
   if (v.n > 0.35) palm.lights.push(ellipseAt(l3(-18, 2, R + 1 + T), 22, 15, l3(1, 0, 0)));
   if (v.n < -0.35) palm.darks.push(ellipseAt(l3(-22, 2, R + 1), 18, 11, l3(1, 0, 0)));
+  if (opts.back && v.n > 0.3) {
+    // (step B round 2) the back of the fist: one row of four LOW knuckle swells — a soft light on each knuckle's
+    // head, a soft dark in each valley between, toward the wrist (the tendons' grooves) — never a plain paddle
+    const ks = m.knuckles;
+    ks.forEach((k) => palm.lights.push(ellipseAt(l3(k.c.u - 2, k.c.w, k.c.n + k.r * 0.6), k.r * 0.62, k.r * 0.44, l3(0, 1, 0))));
+    for (let i = 0; i + 1 < ks.length; i++) {
+      const a = ks[i].c;
+      const b = ks[i + 1].c;
+      palm.darks.push(ellipseAt(l3((a.u + b.u) / 2 - 12, (a.w + b.w) / 2, (a.n + b.n) / 2 + 2), 11, 2.6, l3(1, 0, 0)));
+    }
+    // the thumb's base: where the thumb lies behind the handle its mound is inside the palm's outline — its edge a
+    // soft crease along the first bone, on the side it truly shows (its base turned toward the viewer)
+    if (thBehind && depthOf(m.thumb.pts[0]) > -R) palm.darks.push(ellipseAt(mid(m.thumb.pts[0], m.thumb.pts[1]), Math.hypot(m.thumb.pts[1].u - m.thumb.pts[0].u, m.thumb.pts[1].w - m.thumb.pts[0].w, m.thumb.pts[1].n - m.thumb.pts[0].n) / 2 + 4, 2.4, l3(m.thumb.pts[1].u - m.thumb.pts[0].u, m.thumb.pts[1].w - m.thumb.pts[0].w, m.thumb.pts[1].n - m.thumb.pts[0].n)));
+  }
 
   // the fingers: each finger's segments into the layer they lie in, united per layer as ONE group
   const segs = (d: Digit) => d.pts.slice(0, -1).map((a, i) => ({ a, b: d.pts[i + 1], ra: d.r[i], rb: d.r[i + 1], i, layer: layerOf(mid(a, d.pts[i + 1])) }));
@@ -470,7 +494,8 @@ export function placeGrip(fist: V3, fr: { f: V3; h: V3; d: V3 }, toward: V3, pro
       groups[k].pieces.push(eh);
       groups[k].body = eh;
       const jt = m.fingers.flatMap((f) => f.pts.flatMap((p, i) => (at(f, i) ? [{ c: S(p), r: f.r[i] }] : [])));
-      groups[k].pieces.push(...swellsOn(eh, jt));
+      // (the arm views: lower, broader swells — never a row of equal bumps on the fist's top)
+      groups[k].pieces.push(...(opts.back ? swellsOn(eh, jt, 0.6, 3.4) : swellsOn(eh, jt)));
     }
   }
   for (const k of ['behind', 'front'] as const) groups[k].depth = depths[k].length ? depths[k].reduce((a, b) => a + b, 0) / depths[k].length : 0;
@@ -488,11 +513,13 @@ export function placeGrip(fist: V3, fr: { f: V3; h: V3; d: V3 }, toward: V3, pro
       const lay = layerOf(mid(A.pts[k], A.pts[k + 1]));
       const p1 = S(seam[k + 1]);
       const p0 = S(seam[k]);
-      const q0 = add(p0, mul(sub(p1, p0), 0.4));
+      // (the arm views: the crease runs further back from the tip, so a fist seen from its knuckle end reads as four
+      // fingers, never a block)
+      const q0 = add(p0, mul(sub(p1, p0), opts.back ? 0.12 : 0.4));
       if (Math.hypot(p1.u - q0.u, p1.v - q0.v) < (k === 0 ? 8 : 5)) continue; // (seen end-on: no gap to show there)
       const d = unit(sub(p1, q0));
       const nn = perp(d);
-      const wd = 2.0;
+      const wd = opts.back ? 2.6 : 2.0;
       const qm = add(q0, mul(sub(p1, q0), 0.5));
       groups[lay].gaps.push([q0, add(qm, mul(nn, wd * 0.22)), add(p1, mul(nn, wd / 2)), add(p1, mul(d, 0.8)), add(p1, mul(nn, -wd / 2)), add(qm, mul(nn, -wd * 0.22))]);
       break;
@@ -582,6 +609,7 @@ export function placeGrip(fist: V3, fr: { f: V3; h: V3; d: V3 }, toward: V3, pro
     view: { toward: l3(v.u, v.w, v.n) },
     frame: g,
     model: m,
+    wrist3: toWorld(g, fist, l3(-78, -1, R + 1 + 13)),
   };
 }
 
@@ -591,3 +619,134 @@ const unit3l = (a: L3): L3 => {
 };
 const add3l = (a: L3, b: L3): L3 => l3(a.u + b.u, a.w + b.w, a.n + b.n);
 const mul3l = (a: L3, k: number): L3 => l3(a.u * k, a.w * k, a.n * k);
+
+/* ── step B: the arm that carries the hand ── */
+
+export type HeldArm = {
+  shoulder: V3;
+  elbow: V3;
+  fist: V3;
+  /** The forearm meets the handle at this angle (degrees, 90 = square across the palm). */
+  angle: number;
+  /** How far the wrist turns off the forearm (degrees; 0 = straight, the hand along the forearm). */
+  wristTurn: number;
+  /** The hand cannot reach (the fist beyond upper arm + forearm). */
+  far: boolean;
+  /** The elbow's height over the shoulder (mm, + = above). */
+  elbowRise: number;
+};
+
+/**
+ * The elbow of an arm holding a mic (step B): of the elbows the same arm can take (upper arm `a`, forearm `b`,
+ * shoulder and fist fixed — a circle), the one that is anatomically easiest: never above the shoulder, never
+ * through the chest (on the arm's own side, `outward`), the forearm meeting the handle near `want` degrees (the
+ * grip model's comfortable angle: the wrist stays straight), the elbow otherwise hanging low.
+ */
+export function heldArmSolve(shoulder: V3, fist: V3, aim: V3, outward: V3, a = 300, b = 290, want = 75, opts: HeldArmOpts = {}): HeldArm {
+  if (opts.drop) return heldArmDrop(shoulder, fist, aim, outward, a, b, opts.drop, want);
+  const sf = sub3(fist, shoulder);
+  const d = Math.hypot(sf.x, sf.y, sf.z);
+  const u = unit3(sf);
+  const h = unit3(aim);
+  const angleOf = (e: V3) => (Math.acos(Math.min(1, Math.abs(dot3(unit3(sub3(fist, e)), h)))) * 180) / Math.PI;
+  const finish = (e: V3, far: boolean): HeldArm => {
+    const ang = angleOf(e);
+    const g = gripFrame(heldFrame(e, fist, aim, 'R', outward));
+    return { shoulder, elbow: e, fist, angle: ang, wristTurn: g.wristTurn, far, elbowRise: shoulder.y - e.y };
+  };
+  if (d >= a + b - 1) return finish(add3(shoulder, mul3(u, (a / (a + b)) * d)), d > a + b);
+  const t = (a * a - b * b + d * d) / (2 * d);
+  const r = Math.sqrt(Math.max(0, a * a - t * t));
+  const c = add3(shoulder, mul3(u, t));
+  let e1 = cross3(u, v3(0, 1, 0));
+  if (Math.hypot(e1.x, e1.y, e1.z) < 1e-3) e1 = cross3(u, v3(1, 0, 0));
+  e1 = unit3(e1);
+  const e2 = unit3(cross3(u, e1));
+  const ow = unit3(outward);
+  const pick = (strict: number) => {
+    let best: V3 | null = null;
+    let score = Infinity;
+    for (let k = 0; k < 360; k += 1) {
+      const ph = (k * Math.PI) / 180;
+      const e = add3(c, add3(mul3(e1, r * Math.cos(ph)), mul3(e2, r * Math.sin(ph))));
+      const above = shoulder.y - e.y; // (+y is down)
+      const inward = -dot3(sub3(e, shoulder), ow);
+      if (strict >= 1 && above > 20) continue;
+      if (strict >= 2 && inward > 60) continue;
+      const sc = Math.abs(angleOf(e) - want) + 0.06 * Math.max(0, -(e.y - (shoulder.y + a * 0.75)));
+      if (sc < score) {
+        score = sc;
+        best = e;
+      }
+    }
+    return best;
+  };
+  const e = pick(2) ?? pick(1) ?? pick(0)!;
+  return finish(e, false);
+}
+
+/** (step B round 2) How an arm reaching out may hold: `drop` — the elbow as low as the arm allows. */
+export type HeldArmOpts = {
+  drop?: {
+    /** The most the wrist may turn off the forearm (degrees). */
+    wristMax: number;
+    /** A real reach brings the shoulder forward (the shoulder blade slides round the ribs): up to this many mm
+     *  toward the fist when the fist is far out. */
+    reach: number;
+  };
+};
+
+/** The shoulder a reach brings forward: none while the fist is within 460 mm, then half the extra distance, up to `reach` mm. */
+export function reachedShoulder(shoulder: V3, fist: V3, reach: number): V3 {
+  const sf = sub3(fist, shoulder);
+  const d = Math.hypot(sf.x, sf.y, sf.z);
+  const k = Math.max(0, Math.min(reach, (d - 460) * 0.5));
+  return add3(shoulder, mul3(unit3(sf), k));
+}
+
+/**
+ * The elbow dropped (step B round 2, the owner's "chicken wing" at B03's guest): of the elbows the arm can take,
+ * the one nearest the grip's comfortable angle that also hangs at least 60 mm below the shoulder (each mm higher
+ * costs half a degree), its wrist turning no more than `wristMax`, the forearm meeting the handle at 35°–100°,
+ * never through the chest — the shoulder brought forward by a reach. When none qualifies, the usual solve.
+ */
+function heldArmDrop(shoulder0: V3, fist: V3, aim: V3, outward: V3, a: number, b: number, o: NonNullable<HeldArmOpts['drop']>, want = 75): HeldArm {
+  const shoulder = reachedShoulder(shoulder0, fist, o.reach);
+  const sf = sub3(fist, shoulder);
+  const d = Math.hypot(sf.x, sf.y, sf.z);
+  if (d >= a + b - 1) return heldArmSolve(shoulder0, fist, aim, outward, a, b);
+  const u = unit3(sf);
+  const h = unit3(aim);
+  const t = (a * a - b * b + d * d) / (2 * d);
+  const r = Math.sqrt(Math.max(0, a * a - t * t));
+  const c = add3(shoulder, mul3(u, t));
+  let e1 = cross3(u, v3(0, 1, 0));
+  if (Math.hypot(e1.x, e1.y, e1.z) < 1e-3) e1 = cross3(u, v3(1, 0, 0));
+  e1 = unit3(e1);
+  const e2 = unit3(cross3(u, e1));
+  const ow = unit3(outward);
+  let best: { e: V3; ang: number; wt: number; sc: number } | null = null;
+  // (when no elbow keeps the wrist within `wristMax` — a mic pointed along the reach — the elbow that turns it least)
+  let least: { e: V3; ang: number; wt: number } | null = null;
+  for (let k = 0; k < 360; k += 1) {
+    const ph = (k * Math.PI) / 180;
+    const e = add3(c, add3(mul3(e1, r * Math.cos(ph)), mul3(e2, r * Math.sin(ph))));
+    if (shoulder0.y - e.y > 20) continue;
+    if (-dot3(sub3(e, shoulder), ow) > 60) continue;
+    const ang = (Math.acos(Math.min(1, Math.abs(dot3(unit3(sub3(fist, e)), h)))) * 180) / Math.PI;
+    const wt0 = gripFrame(heldFrame(e, fist, aim, 'R', outward)).wristTurn;
+    if (!least || wt0 < least.wt - 0.5 || (Math.abs(wt0 - least.wt) <= 0.5 && e.y > least.e.y)) least = { e, ang, wt: wt0 };
+    if (ang < 35 || ang > 100) continue;
+    const wt = wt0;
+    if (wt > o.wristMax) continue;
+    // (and never winged out: each mm the elbow sits out past the shoulder costs 0.15°)
+    const sc = Math.abs(ang - want) + 0.06 * Math.max(0, shoulder0.y + a * 0.75 - e.y) + 0.5 * Math.max(0, shoulder0.y + 60 - e.y) + 0.15 * Math.max(0, dot3(sub3(e, shoulder), ow));
+    if (!best || sc < best.sc) best = { e, ang, wt, sc };
+  }
+  if (!best) {
+    const base = heldArmSolve(shoulder0, fist, aim, outward, a, b);
+    if (!least || least.wt >= base.wristTurn) return base;
+    return { shoulder, elbow: least.e, fist, angle: least.ang, wristTurn: least.wt, far: false, elbowRise: shoulder0.y - least.e.y };
+  }
+  return { shoulder, elbow: best.e, fist, angle: best.ang, wristTurn: best.wt, far: false, elbowRise: shoulder0.y - best.e.y };
+}

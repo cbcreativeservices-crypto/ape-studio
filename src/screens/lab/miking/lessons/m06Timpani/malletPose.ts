@@ -59,8 +59,35 @@ function mallet(ballAtStroke: P3, handY: number, handZ: number, raisedDeg: numbe
   }
   return { butt: add(hand, u, -TIMP_MALLET.butt), hand, ball: add(hand, u, L) };
 }
-export const TIMP_MALLETS: readonly MalletPose3[] = [
+/**
+ * THE HANDS RAISED (owner 2026-11-24, "Raise the hands": the forearms about level, as the approved kit drummer's, so
+ * the approved mallet hand — a straight wrist, the shaft 15° below the forearm — can hold them). Each ball stays
+ * exactly where it was (the stroke's on the head; the raised one where the raise put it); each hand moves round its
+ * ball on the mallet's own length (the test checks these numbers):
+ *   • the RIGHT (raised) hand: the approved mallet hand; the grip malletPlaced.malletGripFor finds — up 219 mm to
+ *     elbow height, the forearm level (2°); the shaft now runs 17° DOWN from the hand to the ball (the whole forearm
+ *     lifted, not the ball tipped up over the wrist);
+ *   • the LEFT (stroke) hand: its palm to the camera, the drummer's palm-side fist. The drum's head is too low for a
+ *     level forearm on a standing player with a 31 cm mallet; raised 43 mm the elbow had to come up and forward and
+ *     the forearm bent into the fist (owner: "look like a broken arm"). Its grip is where that fist takes a STRAIGHT
+ *     wrist on a relaxed arm (malletPlaced.palmFistArm: the elbow 266 mm below the shoulder, 100 mm forward, the
+ *     forearm 57° down): the shaft 20° to the head, the hand 12 cm over it (the playing standard) — 58 mm LOWER than
+ *     before.
+ */
+export const RAISED_HANDS = { stroke: { x: -534.75, y: -882.19, z: PLAYER_Z - 150 }, raised: { x: -516.6, y: -1169.3, z: PLAYER_Z + 150 } } as const;
+/** The same ball, the hand moved round it on the mallet's length (toward `hand`). */
+function regrip(m: MalletPose3, hand: P3): MalletPose3 {
+  const L = TIMP_MALLET.len - TIMP_MALLET.butt;
+  const d = { x: m.ball.x - hand.x, y: m.ball.y - hand.y, z: m.ball.z - hand.z };
+  const n = Math.hypot(d.x, d.y, d.z);
+  const u = { x: d.x / n, y: d.y / n, z: d.z / n };
+  const h = add(m.ball, u, -L);
+  return { butt: add(h, u, -TIMP_MALLET.butt), hand: h, ball: m.ball };
+}
+/** (before 2026-11-24: the hands as low over the head as the standing figure could hold them) */
+export const TIMP_MALLETS_LOW: readonly MalletPose3[] = [
   mallet(ballOn(-80), -940, PLAYER_Z - 150, null),
   mallet(ballOn(80), -950, PLAYER_Z + 150, TIMP_MALLET.raisedDeg),
 ];
+export const TIMP_MALLETS: readonly MalletPose3[] = [regrip(TIMP_MALLETS_LOW[0], RAISED_HANDS.stroke), regrip(TIMP_MALLETS_LOW[1], RAISED_HANDS.raised)];
 

@@ -14,7 +14,9 @@ import type { ArtLabel, LessonArt } from '../../../engine/scene/sceneTypes.ts';
 import type { BuiltLute, LuteScene } from './luteModel.ts';
 import { OUD, SITAR, VEENA } from './luteSpec.ts';
 import { ep, hitAreas, vp, type Pt } from './luteDraw';
-import { FloorLine, PlayerBack, PlayerHands } from './lutePlayers';
+import { FloorLine, PlayerBack, PlayerHands, PluckTool } from './lutePlayers';
+import { figureV2On } from '../figureV2/figureV2Config.ts';
+import { LuteFigureV2 } from './luteFigureV2';
 import { OudAbove, OudFront, oudHits } from './oudArt';
 import { SitarAbove, SitarFront, sitarHits } from './sitarArt';
 import { VeenaAbove, VeenaFront, veenaHits } from './veenaArt';
@@ -36,6 +38,21 @@ function neckDir(sc: LuteScene, view: ViewId): { dir: Pt; across: number } {
 
 export function LuteSceneArt({ sc, view }: { sc: LuteScene; view: ViewId }) {
   const nd = neckDir(sc, view);
+  if (figureV2On('familyLutes')) {
+    // (figure roll-out wave 5: the player in the approved look — whole behind the instrument, again over it where
+    // the arms and the hands' front parts lie; the plectrum as before)
+    const opts = { fretDir: nd.dir, across: nd.across, pluckRot: sc.kind === 'sitar' ? -20 : 25 };
+    return (
+      <Group>
+        {view === 'side' ? <FloorLine y={sc.floorY} u0={-1400} u1={1900} rug={sc.fit.seat === 'floor'} /> : null}
+        <LuteFigureV2 sc={sc} view={view} opts={opts} part="back" />
+        <LuteInstrument sc={sc} view={view} />
+        <PluckTool sc={sc} view={view} stroke={false} />
+        <LuteFigureV2 sc={sc} view={view} opts={opts} part="front" />
+        <PluckTool sc={sc} view={view} stroke />
+      </Group>
+    );
+  }
   return (
     <Group>
       {view === 'side' ? <FloorLine y={sc.floorY} u0={-1400} u1={1900} rug={sc.fit.seat === 'floor'} /> : null}

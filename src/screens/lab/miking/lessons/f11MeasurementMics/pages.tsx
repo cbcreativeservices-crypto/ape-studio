@@ -27,6 +27,7 @@ import { FIELD_MATCH, MEAS_CHAIN } from '../shared/measure/chains.ts';
 import { ONE_FREQUENCY_LIMIT } from '../shared/measure/measureSpec.ts';
 import { F11_SPK } from './geometry.ts';
 import { F11_START } from './model.ts';
+import { V2 } from './art';
 
 /** The calibrator line, exact (F11 L40). */
 const CAL_SAFETY = 'A 94 or 114 dB calibrator makes a high level inside its coupler: it goes on a capsule, never to a person’s ear, and it is not a sound effect.';
@@ -133,6 +134,7 @@ function F11Context({ lesson, answers, onAnswered, onInteractive, interactiveDon
       note: 'A simplified picture: one reflection off your chest, sound spreading in straight lines; a body also absorbs and scatters, so the real copy is weaker still. The ring’s radius is drawn at 1 m — the method gives the real one.',
     },
     speaker: F11_SPK,
+    v2: V2,
     mic: F11_START.axis,
     box: { u0: -500, u1: 2900, v0: -900, v1: 2300 },
     onClear: clear,

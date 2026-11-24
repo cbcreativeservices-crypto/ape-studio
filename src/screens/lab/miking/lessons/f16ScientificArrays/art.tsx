@@ -13,6 +13,10 @@ import type { LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { make, Operator, rectP, TestSpeaker } from '../shared/measure/MeasureArt';
 import { hitTestOf, labelsOf, type SceneHits } from '../shared/measure/sceneHits.ts';
 import { CENTRE_PT, F16_OP_SIDE, F16_OP_TOP, FLOOR16, OP16, ROOM16, SIDE_PT, SRC16 } from './geometry.ts';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+
+/** The new look (figure V2, wave 3 set 3b): the operator is the cast's (figureV2/cast 'operator.measure'). */
+export const V2 = figureV2On('sidePlayers');
 import { F16_PAGES, F16_STEP_COUNTS } from './pages';
 
 const TAPE = '#e8c547';
@@ -50,7 +54,7 @@ function buildRoom(view: ViewId) {
   return { floor, walls, tape, ticks, xmark };
 }
 
-function Room({ view }: { view: ViewId }) {
+export function Room({ view, v2 = V2 }: { view: ViewId; /** (the study page compares the old look) */ v2?: boolean }) {
   const p = useMemo(() => buildRoom(view), [view]);
   return (
     <Group>
@@ -75,7 +79,7 @@ function Room({ view }: { view: ViewId }) {
         <Path path={rectP(make(), -90, FLOOR16 - 14, 90, FLOOR16, 4)} color={TAPE} />
       )}
       <TestSpeaker g={SRC16} view={view} />
-      <Operator pose={view === 'side' ? F16_OP_SIDE : F16_OP_TOP} />
+      <Operator pose={view === 'side' ? F16_OP_SIDE : F16_OP_TOP} v2={v2} />
       <Path path={p.walls} style="stroke" strokeWidth={4} color={EDGE} opacity={0.6} />
     </Group>
   );

@@ -54,6 +54,9 @@ function gripPaths(h: PlacedGrip): GripPaths {
   return out;
 }
 
+/** The hand's whole silhouette (for a mic painted again over a sleeve, outside the hand). */
+export const gripSilhouette = (h: PlacedGrip): SkPath => gripPaths(h).all;
+
 /** One part, ArtPart's own numbers. */
 function Part({ p, box, within }: { p: PartPaths; box: { x: number; y: number; width: number; height: number }; within: SkPath }) {
   const { MAT, HAND } = useLook();
@@ -107,7 +110,7 @@ function Part({ p, box, within }: { p: PartPaths; box: { x: number; y: number; w
 }
 
 /** The hand round its mic: the parts behind the handle, the mic, the parts in front. */
-export function HeldHand({ h, mic }: { h: PlacedGrip; mic: ReactNode }) {
+export function HeldHand({ h, mic, only }: { h: PlacedGrip; mic: ReactNode; /** (the held arm, live) only the parts in front of the handle: painted again over a mic the engine draws */ only?: 'front' }) {
   const { MAT, HAND } = useLook();
   const SKIN = MAT.skin;
   const lite = useFigureScale().level === 'lite';
@@ -136,6 +139,19 @@ export function HeldHand({ h, mic }: { h: PlacedGrip; mic: ReactNode }) {
     const l = G.layer[k];
     return l ? <Path path={l} style="stroke" strokeWidth={0.9} strokeJoin="round" color={SKIN.edge} opacity={0.5} /> : null;
   };
+  if (only === 'front') {
+    const at = h.order.indexOf('MIC');
+    const front = h.order.slice(at + 1).filter((k): k is GripPart => k !== 'MIC');
+    if (!front.length) return null;
+    return (
+      <Group>
+        {front.map((k, i) => (
+          <Fragment key={i}>{draw(k)}</Fragment>
+        ))}
+        {line('front')}
+      </Group>
+    );
+  }
   return (
     <Group>
       {h.order.map((k, i) => (

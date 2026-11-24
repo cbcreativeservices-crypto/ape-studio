@@ -26,8 +26,13 @@ export const STAND = { z: SZ, x0: MID_X - SX, x1: MID_X + SX, railY: FLOOR_Y - 6
  *  below the centre and toward the player's side (−z), the grip by the player.
  *  A concert bass-drum mallet is ≈ 380–430 mm overall (head Ø ≈ 85): drawn
  *  400 mm from the head's centre to the grip end (it was 590 and its end met
- *  the suggested mic's stand: clash sweep 2026-10-10). */
-export const MALLET = { head: { x: 44, y: 40, z: -230 }, grip: { x: 393, y: -143, z: -298 }, headR: 42 };
+ *  the suggested mic's stand: clash sweep 2026-10-10).
+ *  (owner 2026-11-24, "Raise the hands": the head stays; the grip moved round it on the same 400 mm — from
+ *  (393, −143, −298) — to where the approved mallet hand's straight wrist sits on the most natural arm from the
+ *  player's shoulder: figureV2/malletPlaced.ts malletGripFor; the test checks it.) */
+export const MALLET = { head: { x: 44, y: 40, z: -230 }, grip: { x: 343.7, y: -216, z: -298 }, headR: 42 };
+/** (before 2026-11-24) */
+export const MALLET_GRIP_LOW = { x: 393, y: -143, z: -298 };
 /** Its swing, about the player's forearm (ILLUSTRATIVE). */
 const PIVOT: Vec3 = { x: 600, y: -170, z: -230 };
 const STRIKE_ANG = Math.atan2(40 - PIVOT.y, 0 - PIVOT.x);

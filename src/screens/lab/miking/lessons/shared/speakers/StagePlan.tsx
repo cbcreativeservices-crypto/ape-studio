@@ -32,6 +32,7 @@ import { CueMixPlan } from '../monitoring/CueMixPlan';
 import { cueCables, cueLabels } from '../monitoring/cueMix.ts';
 import { clearOfFoots, planTurn, unionRect } from '../planFoot.ts';
 import { AMP_INPUT, AMP_TO_PLAYER, ampToPlayerFoot, CAB, CHAIR_ROW, DECK_EDGE_U, DI_CABLE, DI_XLR_TO, diXlr, diXlrEnd, GUITAR_JACK, guitarCordDrawn, inAisle, KIT_AT, LESLIE_TOP, ORGAN, ORGAN_SPACE, PA_AT, PLAN_BOX, PLAYER_SPACE_R, POS, ROOM_DRAWN, planItems, spkCue, spkPathCables, spkFoots, spkItemFootIds, type PlanScene } from './stagePlanModel.ts';
+import type { CastMember } from '../figureV2/cast';
 
 /** An audience member's head icon, crown→chin, mm (a real head ≈ 230 mm). */
 
@@ -134,7 +135,7 @@ function getBuilt(): Built {
   return (built ??= build());
 }
 
-export function StagePlan({ w, h, scene, wedges, highlight, onTap, shortOf, accessibilityLabel }: { w: number; h: number; scene: PlanScene; wedges: readonly Wedge[]; highlight: string | null; onTap: (id: string) => void; shortOf: (id: string) => string; accessibilityLabel: string }) {
+export function StagePlan({ w, h, scene, wedges, highlight, onTap, shortOf, accessibilityLabel, v2 = false, player }: { w: number; h: number; scene: PlanScene; wedges: readonly Wedge[]; highlight: string | null; onTap: (id: string) => void; shortOf: (id: string) => string; accessibilityLabel: string; /** (figure V2, wave 6) the guitarist in the approved look, as `player` — OFF by default */ v2?: boolean; player?: CastMember }) {
   const ts = useStageTextScale();
   const box = PLAN_BOX[scene];
   // DOWNSTAGE = BOTTOM (owner 2026-10-16): the stage is drawn turned, the audience below.
@@ -255,10 +256,12 @@ export function StagePlan({ w, h, scene, wedges, highlight, onTap, shortOf, acce
             {/* the guitarist, from above, the guitar worn edge-on */}
             <Group transform={[{ translateX: POS.player.u }, { translateY: POS.player.v }]}>
               <PlanInstrumentEdge bass={false} />
-              <PlanPlayerTop pose="guitar" />
-              <Group transform={[{ rotate: -Math.PI / 2 }]}>
-                <FigureHead fill={b.head} />
-              </Group>
+              <PlanPlayerTop pose="guitar" v2={v2} who={player} />
+              {v2 ? null : (
+                <Group transform={[{ rotate: -Math.PI / 2 }]}>
+                  <FigureHead fill={b.head} />
+                </Group>
+              )}
             </Group>
             {/* the cord's plug in the guitar's tail jack */}
             <Path path={guitarPlug} color="#15161a" />

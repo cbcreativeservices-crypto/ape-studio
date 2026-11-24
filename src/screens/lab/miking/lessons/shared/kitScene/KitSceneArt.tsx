@@ -27,7 +27,7 @@ import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
 import type { PlayerPose } from '../players/playerPose.ts';
 import { DrumExterior, DrumPlan, FloorTomLegsSide, SnareStandSide, sideTransform, topTransform } from '../drums/DrumArt';
 import { frameOf, KICK_22x18, pointOn } from '../drums/drumSpec.ts';
-import { BoomStandSide, BoomStandTop, CymbalSide, CymbalTop, HiHatPedalTop, HiHatSide, HiHatTop, SwingEnvelope } from '../cymbals/CymbalArt';
+import { BoomStandSide, BoomStandTop, CymbalSide, CymbalTop, HiHatLegsTop, HiHatPedalTop, HiHatSide, HiHatTop, SwingEnvelope } from '../cymbals/CymbalArt';
 import { KIT_PLACED_CYMBALS } from '../cymbals/cymbalSpec.ts';
 import { DRUMMER, S0, TOM_POST } from './kitSceneModel.ts';
 import { drummerPose, viewDrummer, type Stick2 } from './stickPose.ts';
@@ -576,6 +576,9 @@ export function KitTop({ dim = 1, keepOuts = true, reach = true, highlight = nul
         <BoomStandTop key={`st:${id}`} id={id} />
       ))}
       <ThroneTop />
+      {/* the hi-hat stand's tripod stands on the floor: under the drums, never across the
+          snare's head (owner 2026-11-24, "what is this gray line for??") */}
+      <HiHatLegsTop />
       <DrummerTop part="legs" v2={figureV2} />
       <KickTop />
       {highlight === 'kit.kick' ? <Path path={rrect(make(), KICK_GEOM.hoopX.batter[0] - 30, -KICK_GEOM.hoopOut - 30, KICK_GEOM.hoopX.reso[1] + 30, KICK_GEOM.hoopOut + 30, 30)} style="stroke" strokeWidth={9} color={AMBER} /> : null}
@@ -584,7 +587,7 @@ export function KitTop({ dim = 1, keepOuts = true, reach = true, highlight = nul
       <TomHolderTop />
       {drum('tom1')}
       {drum('tom2')}
-      <HiHatTop highlight={highlight === 'cym.hihat'} />
+      <HiHatTop highlight={highlight === 'cym.hihat'} legs={false} />
       <DrummerTop part="upper" v2={figureV2} />
       {cym('ride')}
       {cym('crash1')}

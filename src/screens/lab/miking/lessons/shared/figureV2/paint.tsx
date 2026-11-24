@@ -10,7 +10,7 @@
  *     split at the held stick's plane so the stick passes through the grip.
  * Reusable by every figure (the roll-out after the owner approves).
  */
-import type { ReactNode } from 'react';
+import { createContext, useContext, type ReactNode } from 'react';
 import { Group, LinearGradient, Path, RadialGradient, vec } from '@shopify/react-native-skia';
 import { Blur } from './detail';
 import { partLook, type HandLayers, type HandPart } from '../hand/anatomy/drawAnatomy.ts';
@@ -110,16 +110,23 @@ export function Soft({ path, color = '#000', opacity = 0.4, blur = 8, clip }: { 
 }
 
 /** Folds (lens shapes): a darker crease with a little light on its upper edge. */
+/** (step B round 2, the held-arm lessons) the cloth's folds SOFT: low-contrast, broad, tapered shadows — never a
+ *  dark stroke at 3x. Off by default: the approved pages keep their folds; a lesson opts in by this provider. */
+export const SoftFolds = createContext(false);
+
 export function Folds({ path, mat, clip, opacity = 0.5 }: { path: SkPath; mat: Material; clip?: SkPath; opacity?: number }) {
+  const soft = useContext(SoftFolds);
+  const k = soft ? 0.38 : 1;
+  const b = soft ? 3.2 : 1;
   return (
     <Group clip={clip}>
       <Group transform={[{ translateX: LIGHT.u * 2.2 }, { translateY: LIGHT.v * 2.2 }]}>
-        <Path path={path} color={mat.rim} opacity={opacity * 0.35}>
-          <Blur mm={1.6} />
+        <Path path={path} color={mat.rim} opacity={opacity * 0.35 * k}>
+          <Blur mm={1.6 * b} />
         </Path>
       </Group>
-      <Path path={path} color={mat.deep} opacity={opacity}>
-        <Blur mm={1.4} />
+      <Path path={path} color={mat.deep} opacity={opacity * k}>
+        <Blur mm={1.4 * b} />
       </Path>
     </Group>
   );

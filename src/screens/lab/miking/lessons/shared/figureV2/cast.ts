@@ -142,6 +142,134 @@ export const ROLES = {
   'talker.p4': 'ruth',
   // B06's presenter at the lectern
   'lectern.presenter': 'ana',
+  // (wave 7, outside Miking) Game Audio: YOU, the listener on the map, the 5.1 listener and the HUD's
+  // head; the guide, the other player a page shows beside YOU
+  'ga.you': 'kofi',
+  'ga.guide': 'mei',
+  // (wave 7) Speaker Coverage's band from above: the guitarist and the bassist beside the singer
+  'coverage.guitar': 'ruth',
+  'coverage.bass': 'kofi',
+  // (wave 3, sets 3b–3d: the players) one person per lesson's player
+  'player.timpani': 'kofi', // m06
+  'player.bassDrum': 'ruth', // m07a
+  'player.cajon': 'drummer', // i02 (the approved hand-drum hand, drawn on the plate from above, wears his skin)
+  'foley.performer': 'mei', // f01–f05
+  // (wave 5, the families with their own figure) the bowed strings: c09a, c09b, c09c, c06a/b
+  'bowed.violin': 'ana',
+  'bowed.viola': 'ruth',
+  'bowed.cello': 'kofi',
+  'bowed.bass': 'mei',
+  // a setting plan's neighbor who plays the lesson's own instrument (a second violin, viola, cello)
+  'bowed.second': 'drummer',
+  // the brass: a01 trumpet and flugelhorn, a02 trombones; a plan's second player of the same horn
+  'brass.trumpet': 'ruth',
+  'brass.trombone': 'drummer',
+  'brass.second': 'kofi',
+  // the low brass: a03 horn, a04a tuba, a04b euphonium; a plan's second player of the same instrument
+  'lowbrass.horn': 'ana',
+  'lowbrass.tuba': 'kofi',
+  'lowbrass.euph': 'mei',
+  'lowbrass.second': 'drummer',
+  // the saxophones: a05a soprano, a05b alto, a05c tenor, a05d baritone; a plan's second player of the same horn
+  'sax.soprano': 'ana',
+  'sax.alto': 'ruth',
+  'sax.tenor': 'drummer',
+  'sax.baritone': 'kofi',
+  'sax.second': 'mei',
+  // the woodwinds, each lesson's own player (its section seat's person: windFigureV2 WIND_SEATS)
+  'wind.flute': 'ana',
+  'wind.piccolo': 'drummer',
+  'wind.clarinet': 'ruth',
+  'wind.bassClarinet': 'kofi',
+  'wind.oboe': 'mei',
+  'wind.bassoon': 'drummer',
+  // the small percussion (i03a–c, i04, i05a–d)
+  'smallperc.player': 'ruth',
+  // the lutes: c13 oud, c14 sitar, c15 veena
+  'lute.oud': 'kofi',
+  'lute.sitar': 'ana',
+  'lute.veena': 'mei',
+  // the free reeds: a10 harmonica, a11 accordion
+  'freereed.harmonica': 'kofi',
+  'freereed.accordion': 'ruth',
+  // (wave 3 set 3b, the operators) the person running a measurement (f11, f14, f15, f16: one per lesson)
+  'operator.measure': 'ana',
+  // (wave 3 set 3b) the public in a field site (f06 plaza), by the person's place in the site's list
+  'site.public0': 'kofi',
+  'site.public1': 'mei',
+  'site.public2': 'ruth',
+  'site.public3': 'drummer',
+  'site.public4': 'ana',
+  // (f06) the voice swept round the pair on the plaza (a person not among the five above is impossible
+  // with a cast of five: it is Mei, the plaza's second passer-by, standing elsewhere — see the report)
+  'site.voice': 'mei',
+  // (wave 7, SVG screens) Room Design's seated listener; Sound Systems' performers on the venue's stage
+  // slots (the riser is the drum riser: the drummer) and the singer at the monitor-feedback mic
+  'room.listener': 'mei',
+  'venue.stageC': 'ana',
+  'venue.stageL': 'kofi',
+  'venue.stageR': 'ruth',
+  'venue.riserC': 'drummer',
+  'monitor.performer': 'ana',
+  // (wave 6, plan markers behind `v2`: the default when a lesson switches a marker on without naming its
+  // own player — a lesson passes the person who plays it on its other pages)
+  'plan.handDrums': 'kofi',
+  'plan.keys': 'ruth',
+  'plan.steel': 'mei',
+  'plan.clavinet': 'mei',
+  // (wave 7, the front view for scale) Foundations' wavelength ruler; Wave Physics' standing listener;
+  // the EQ lab's camera analogy; Cable Install's person for scale
+  'foundations.person': 'ruth',
+  'wave.listener': 'kofi',
+  'eq.person': 'ana',
+  'cable.person': 'kofi',
+  'cable.person2': 'ana',
+  // (wave 7) the sports lessons' parabolic-dish operator (B08, B12–B17, F14)
+  'sports.dish': 'kofi',
+  // (wave 7) B14's clapper over the boundary mic (not the dish operator: another person)
+  'sports.clapper': 'mei',
+  // (wave 4, FrontAndBoom) the boom operator (b04, b11, f09: never the lesson's own talker — Ruth, Kofi,
+  // Ana) and B04's interviewer in its Two Talkers step (beside Ruth, the presenter)
+  'operator.boom': 'mei',
+  'talker.interviewer': 'kofi',
+  // (the Players builder) the mallet keyboards' player, one per lesson: i07 vibraphone, i08 marimba, i09 xylophone,
+  // i10 glockenspiel
+  'player.vibe': 'kofi',
+  'player.marimba': 'ana',
+  'player.xylo': 'ruth',
+  'player.glock': 'mei',
+  // (step B round 2, the held arm) B10's post-event boom operator: Mei is B10's guest and Ana its reporter
+  'operator.boomB10': 'ruth',
+  // (the Players builder, set 3c) the guitar family's players, one per lesson: c01 guitar, c03 resonator,
+  // c05a banjo, c05b mandolin, c05c ukulele, c07 acoustic bass
+  'player.guitar': 'kofi',
+  'player.resonator': 'drummer',
+  'player.banjo': 'ana',
+  'player.mandolin': 'mei',
+  'player.ukulele': 'ruth',
+  'player.acousticBass': 'kofi',
+  // (wave 3, set 3d) the players on and near the floor
+  'player.tonbak': 'kofi', // m12, on a chair
+  'player.tabla': 'ana', // m13, cross-legged on the floor
+  'player.piano': 'mei', // c11 (set 3c)
+  'player.wurli': 'kofi', // i11b (set 3c)
+  'player.harp': 'ruth', // c10 (set 3c)
+  // (Foley3) the hand-held boom pole's operator in F02 (the performer is Mei) and F08 (the walker is Kofi, the
+  // vehicle plan's crew Kofi and Mei): Ruth
+  'operator.boomFoley': 'ruth',
+  // (Foley3) F10 Spatial Field: the street singer and the event's performer (the voice family's singer), the
+  // walker crossing the plaza, the listener at the listener's point (and the in-ear wearer, the same person)
+  'spatial.singer': 'ana',
+  'spatial.walker': 'kofi',
+  'spatial.listener': 'mei',
+  // (Ensembles2) the conductor of every seating that has one (E05, E06, E11, E13, E14) and on the wind plans' podium
+  'ensemble.conductor': 'kofi',
+  // (Metal) the suspended-metal players, one per lesson: i06a triangle, i12 gong; i06b finger cymbals and i06c
+  // bar chimes keep the approved hand-drum hand on their face-on pages (it wears his skin and sleeve): the drummer
+  'metal.triangle': 'mei',
+  'metal.fingerCymbals': 'drummer',
+  'metal.barChimes': 'drummer',
+  'metal.gong': 'ana',
 } as const satisfies Record<string, CastId>;
 
 export type RoleKey = keyof typeof ROLES;

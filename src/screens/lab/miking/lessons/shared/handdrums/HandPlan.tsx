@@ -31,6 +31,10 @@ import { CueMixPlan } from '../monitoring/CueMixPlan';
 import { cueCables } from '../monitoring/cueMix.ts';
 import { FigureHead, headAbove } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose';
+// (figure V2, wave 6 of D78: the plan player in the approved look, behind `v2`)
+import { PlayerTopV2 } from '../figureV2/elsewhereTop';
+import { handDrumPlayer } from '../figureV2/markerPose';
+import { castFor, type CastMember } from '../figureV2/cast';
 
 /** The player's head from above (nose +v), built once on first draw. */
 let playerHeadTop: ReturnType<typeof headAbove>['fill'] | null = null;
@@ -123,7 +127,7 @@ function cabinet(cx: number, cy: number, w: number, d: number, face: number, gri
   );
 }
 
-function Thing({ t, Drums, variant, box, turnDrums }: { t: PlanThing; Drums: (p: { view: 'top'; variant: VariantId; planTurn?: boolean }) => ReactElement; variant: VariantId; box: PlanBox; turnDrums?: boolean }) {
+function Thing({ t, Drums, variant, box, turnDrums, v2 = false, who }: { t: PlanThing; Drums: (p: { view: 'top'; variant: VariantId; planTurn?: boolean }) => ReactElement; variant: VariantId; box: PlanBox; turnDrums?: boolean; v2?: boolean; who?: CastMember }) {
   switch (t.kind) {
     case 'drums':
       return (
@@ -134,6 +138,9 @@ function Thing({ t, Drums, variant, box, turnDrums }: { t: PlanThing; Drums: (p:
         </Group>
       );
     case 'player': {
+      // (figure V2: the player in the approved top view, both hands flat on the heads where the old arms reached)
+      if (v2)
+        return <PlayerTopV2 player={handDrumPlayer(t.u, t.v)} who={who ?? castFor('plan.handDrums')} />;
       // A player seen from above: shoulders, arms reaching forward, head.
       const P = PLAYER_TOP;
       const sh = make();
@@ -286,9 +293,13 @@ export type HandPlanProps = {
   highlight: string | null;
   onTap: (id: string) => void;
   accessibilityLabel: string;
+  /** (figure V2, wave 6 of D78) the plan's player in the approved look, as `who` — OFF by default: a lesson
+   *  switches it on together with its own player. */
+  v2?: boolean;
+  who?: CastMember;
 };
 
-export function HandPlan({ w, h, scene, variant, Drums, turnDrums, things, box, art, cue, shortOf, highlight, onTap, accessibilityLabel }: HandPlanProps) {
+export function HandPlan({ w, h, scene, variant, Drums, turnDrums, things, box, art, cue, shortOf, highlight, onTap, accessibilityLabel, v2 = false, who }: HandPlanProps) {
   const textScale = useStageTextScale();
   // DOWNSTAGE = BOTTOM (owner 2026-10-16): the stage is drawn turned, the audience below.
   const T = useMemo(() => planTurn(scene === 'stage'), [scene]);
@@ -331,7 +342,7 @@ export function HandPlan({ w, h, scene, variant, Drums, turnDrums, things, box, 
               </>
             ) : null}
             {shown.map((t) => (
-              <Thing key={t.id} t={t} Drums={Drums} variant={variant} box={box} turnDrums={turnDrums} />
+              <Thing key={t.id} t={t} Drums={Drums} variant={variant} box={box} turnDrums={turnDrums} v2={v2} who={who} />
             ))}
             {/* Studio: each performer's headphone mix (no wedges in a studio). */}
             {rig ? <CueMixPlan rig={rig} /> : null}

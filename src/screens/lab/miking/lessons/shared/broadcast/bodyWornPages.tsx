@@ -28,6 +28,8 @@ import { Body, Card, Landing, Note, Point } from '../../../engine/kit';
 import { Aim, Dim, FieldStage, MicAt, Ray, uvOf, type FieldInset } from '../field/FieldStage';
 import { TURN_LIMITS, TURN_PIVOT, turnHead } from './talkerPose.ts';
 import { TurnedHeadSide, TurnedHeadTop } from './BroadcastArt';
+import type { RoleKey } from '../figureV2/cast';
+import { headsetEarV2 } from '../figureV2/standingV2';
 import { BeltPack, BreathJet, FabricOver, HeadsetFrame, LavCable, LavClip } from './BodyWornArt';
 import { BREATH_JET, LOOPS, MOVES, MOVE_IDS, cablePull, bodyMicReadout, fromCorner, inBreathJet, packAt, turnImbalanceDb, withHead, type BodyMount, type MoveId } from './bodyWorn.ts';
 
@@ -52,6 +54,8 @@ export type WornMic = { id: string; label: string; short: string; p: Vec3; rides
 export type BodyTurnSpec = {
   /** (figure V2) the lesson draws all its figures in the new look: the turned head too. */
   v2?: boolean;
+  /** (figure V2, wave 4) whose head turns (default the host's). */
+  who?: RoleKey;
   mics: readonly WornMic[];
   /** The scene from above and from the side, the wearer drawn WITHOUT a
    *  head (the step draws it turned). */
@@ -162,7 +166,7 @@ export function useBodyTurnStep(spec: BodyTurnSpec): MikingStep {
     const hs = spec.mics.find((q) => q.headset);
     return hs ? (
       <Group transform={view === 'top' ? turnTop : turnSide}>
-        <HeadsetFrame view={view} capsule={hs.p} />
+        <HeadsetFrame view={view} capsule={hs.p} ear={spec.v2 ? headsetEarV2(spec.who ?? 'talker.host') : undefined} />
       </Group>
     ) : null;
   };
@@ -175,7 +179,7 @@ export function useBodyTurnStep(spec: BodyTurnSpec): MikingStep {
         draw: (px) => (
           <>
             {spec.side(px)}
-            <TurnedHeadSide pitchDeg={pitch} v2={spec.v2} />
+            <TurnedHeadSide pitchDeg={pitch} v2={spec.v2} who={spec.who} />
             {headset('side')}
             <Ray a={uvOf('side', t.mouth)} b={uvOf('side', axisEnd)} px={px} color="#e8eaee" width={2} />
             {mics('side')}
@@ -208,7 +212,7 @@ export function useBodyTurnStep(spec: BodyTurnSpec): MikingStep {
           {(px) => (
             <>
               {spec.top(px)}
-              <TurnedHeadTop yawDeg={yaw} v2={spec.v2} />
+              <TurnedHeadTop yawDeg={yaw} v2={spec.v2} who={spec.who} />
               {headset('top')}
               <Ray a={uvOf('top', t.mouth)} b={uvOf('top', axisEnd)} px={px} color="#e8eaee" width={2.2} />
               {mics('top')}
@@ -251,6 +255,9 @@ export type CableSpec = {
   standing: boolean;
   /** The wearer from the side, close on the chest, in the chosen move. */
   side: (px: number, move: MoveId) => ReactNode;
+  /** (figure V2) the clip's grip on the new figure's cloth in each move, and how far the shirt's front lies
+   *  from the old figure's (the cable runs down it): drawing only — the capsule and the readouts stay. */
+  onCloth?: (move: MoveId) => { grip: Vec3; dx: number };
   box: ViewBox;
   words: { subject: string; done: string };
 };
@@ -337,8 +344,8 @@ export function useCableStep(spec: CableSpec): MikingStep {
             <>
               {spec.side(px, move)}
               <BeltPack view="side" at={pack} />
-              <LavCable view="side" from={tail} pack={pack} loops={{ broadcast: showBroadcast, secondary: showSecondary, spent }} taut={pull.atCapsule > 0} tug={pull.atCapsule > 0} standing={standing} />
-              <LavClip view="side" grip={spec.mount.grip} />
+              <LavCable view="side" from={tail} pack={pack} loops={{ broadcast: showBroadcast, secondary: showSecondary, spent }} taut={pull.atCapsule > 0} tug={pull.atCapsule > 0} standing={standing} dx={spec.onCloth?.(move).dx} />
+              <LavClip view="side" grip={spec.onCloth?.(move).grip ?? spec.mount.grip} />
               {spec.mount.covered ? <FabricOver view="side" at={capsule} /> : null}
               <MicAt view="side" p={capsule} aim={unit(sub(LIP, capsule))} art="lavalier" r={3} len={12} />
             </>
@@ -374,6 +381,9 @@ export function useCableStep(spec: CableSpec): MikingStep {
 /* ── OUT OF THE BREATH ── */
 
 export type BreathSpec = {
+  /** (figure V2, wave 4) the new look, and whose head (default the host's). */
+  v2?: boolean;
+  who?: RoleKey;
   /** The face from above (the scene's head, facing ahead). */
   top: (px: number) => ReactNode;
   box: ViewBox;
@@ -427,9 +437,9 @@ export function useBreathStep(spec: BreathSpec): MikingStep {
           {(px) => (
             <>
               {spec.top(px)}
-              <TurnedHeadTop yawDeg={0} />
+              <TurnedHeadTop yawDeg={0} v2={spec.v2} who={spec.who} />
               <BreathJet view="top" hit={hit} />
-              <HeadsetFrame view="top" capsule={p} />
+              <HeadsetFrame view="top" capsule={p} ear={spec.v2 ? headsetEarV2(spec.who ?? 'talker.host') : undefined} />
               <MicAt view="top" p={p} aim={unit(sub(LIP, p))} art="gooseneck" r={3} len={14} />
               <Aim from={uvOf('top', p)} dir={{ u: -p.x / Math.hypot(p.x, p.z), v: -p.z / Math.hypot(p.x, p.z) }} len={24} px={px} />
             </>

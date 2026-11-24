@@ -148,14 +148,26 @@ export function stageLabels(s: Seating, view: StageView, slice = Infinity): ArtL
       v0 = Math.min(...seats.map((q) => uv(view, q.p).v - headTop(q))) - 60;
     }
     const left = view === 'plan' ? c.x < cx - 300 : at.u < 0;
+    // (Ensembles3, reviewer 2026-11-24, E10: the TRUMPET, ALTO SAX, TROMBONE and BASS TBN leaders dropped through the
+    // players' heads and bodies) from above, a label is offered first on the side of its players where the point it
+    // names lies — a horn's bell ahead of the player is named from ahead, so its leader never crosses the player
+    const meanV = vs.reduce((a, v) => a + v, 0) / vs.length;
+    const ahead = view === 'plan' && at.v > meanV + 100;
     const alts: ArtLabel['alts'] =
       view === 'plan'
-        ? [
-            { u: (u0 + u1) / 2, v: v0 - 140, align: 'center' },
-            { u: left ? u0 - 80 : u1 + 80, v: at.v, align: left ? 'right' : 'left' },
-            { u: (u0 + u1) / 2, v: v1 + 200, align: 'center' },
-            { u: left ? u1 + 80 : u0 - 80, v: at.v, align: left ? 'left' : 'right' },
-          ]
+        ? ahead
+          ? [
+              { u: (u0 + u1) / 2, v: v1 + 200, align: 'center' },
+              { u: left ? u0 - 80 : u1 + 80, v: at.v, align: left ? 'right' : 'left' },
+              { u: left ? u1 + 80 : u0 - 80, v: at.v, align: left ? 'left' : 'right' },
+              { u: (u0 + u1) / 2, v: v0 - 140, align: 'center' },
+            ]
+          : [
+              { u: (u0 + u1) / 2, v: v0 - 140, align: 'center' },
+              { u: left ? u0 - 80 : u1 + 80, v: at.v, align: left ? 'right' : 'left' },
+              { u: (u0 + u1) / 2, v: v1 + 200, align: 'center' },
+              { u: left ? u1 + 80 : u0 - 80, v: at.v, align: left ? 'left' : 'right' },
+            ]
         : // Elevations (round 2): straight up or straight down from the
           // section's point first — vertical leaders cannot cross one another —
           // in tiers above the heads and below the floor, then beside it.

@@ -129,7 +129,9 @@ describe('figure V2 wave 3 — the cast', () => {
 describe('figure V2 wave 3 — the role table', () => {
   const EXPECTED = ['kit.drummer', 'voice.singer', 'talker.host', 'talker.hostB', 'talker.guest', 'talker.asker', 'talker.analyst', 'talker.reporter', 'talker.wearer', 'presenter', 'talker.p1', 'talker.p3', 'talker.p4', 'lectern.presenter'];
   it('is one fixed table, every role a cast member, the drummer playing the kit', () => {
-    assert.deepEqual(Object.keys(CAST.ROLES), EXPECTED);
+    // (2026-11-24: later waves appended roles; the first fourteen keep their order, and every role is a cast member)
+    assert.deepEqual(Object.keys(CAST.ROLES).slice(0, EXPECTED.length), EXPECTED);
+    for (const k of Object.keys(CAST.ROLES)) assert.ok(CAST.castFor(k), k);
     for (const k of EXPECTED) assert.ok(CAST.castFor(k), k);
     assert.equal(CAST.castFor('kit.drummer').id, 'drummer');
     // never random, never by render order: the same answer every time
@@ -413,7 +415,10 @@ describe('figure V2 wave 3a — kind A in the lessons (the switches, the lessons
   });
   it('every other lesson keeps ALL its figures old for now (no lesson mixes the two looks)', () => {
     // (B02 converted whole in wave 3 piece 2: test/figureV2B02_20261123)
-    const files = ['b03FieldReporter/scene.tsx', 'b04BoomCamera/scene.tsx', 'b05Lavalier/scene.tsx', 'b09Commentators/scene.tsx', 'b10Sideline/scene.tsx', 'b11Athletes/scene.tsx', 'f09LocationSpeech/scene.tsx', 'f09LocationSpeech/pages.tsx', 'e07SingerInstrument/art.tsx'];
+    // (B04, B05, B11, F09 converted whole in wave 4: test/figureV2FrontAndBoom_20261124)
+    // (B03, B09, B10 converted whole with the held arm, step B round 2: test/figureV2HeldArm_20261124)
+    // (E07 converted with the front view, 2026-11-24: test/figureV2FrontAndBoom_20261124; no lesson is left on this list)
+    const files: string[] = [];
     for (const f of files) assert.doesNotMatch(read(`${L}/${f}`), /\bv2\b|figureV2On/, f);
     // (the shared drawings default to the old look; a lesson opts in at its call sites)
     assert.match(read(`${L}/shared/broadcast/BroadcastArt.tsx`), /leftHandIn = 0, v2 = false, jacket = false \}/);
@@ -462,7 +467,7 @@ describe('figure V2 wave 3a — kind A fixes (the level from each picture, the h
     assert.match(seq, /<VoiceCutaway tint=\{tint\} who=\{who\}( jacket=\{jacket\})? \/>/);
     assert.match(read(`${L}/shared/voice/VoicePages.tsx`), /<VoiceSequence w=\{w\} h=\{h\} shown=\{st\.shown\} who=\{spec\.v2 \? castFor\('voice\.singer'\) : undefined\}/);
     // (the broadcast and location lessons' cut-aways pass nothing: old)
-    assert.match(read(`${L}/shared/broadcast/broadcastPages.tsx`), /<VoiceSequence w=\{w\} h=\{h\} shown=\{st\.shown\} who=\{spec\.v2 \? castFor\('talker\.host'\) : undefined\}/);
+    assert.match(read(`${L}/shared/broadcast/broadcastPages.tsx`), /<VoiceSequence w=\{w\} h=\{h\} shown=\{st\.shown\} who=\{spec\.v2 \? castFor\(spec\.who \?\? 'talker\.host'\) : undefined\}/);
     assert.doesNotMatch(read(`${L}/f09LocationSpeech/pages.tsx`), /<VoiceSequence[^>]*v2/);
   });
 });

@@ -55,6 +55,8 @@ export type StagePlanSpec = {
   near?: ViewBox;
   /** The hearing note (strings words). */
   hearing: string;
+  /** (figure V2, wave 3 set 3c) the player in the new look (the lesson opts in) */
+  v2?: boolean;
 };
 
 const rr = (x0: number, z0: number, x1: number, z1: number, r: number): SkPath => {
@@ -358,7 +360,7 @@ export function makeStagePlanPage(built: BuiltGuitarModel, spec: StagePlanSpec) 
               {stageWedges.map((wd) => (
                 <WedgePlan key={wd.id} at={wd.p} faces={wd.faces} hi={lit.has(wd.id)} />
               ))}
-              <GuitarSceneArt sc={sc} view="top" />
+              <GuitarSceneArt sc={sc} view="top" v2={!!spec.v2} assumePtPerMm={xf.s} />
               {lit.has('player') || lit.has('instrument') ? <Path path={space} style="stroke" strokeWidth={14} color={AMBER} opacity={0.85} /> : null}
               {objs.filter((o) => o.kind === 'vocal').map((o) => <VocalPlan key={o.id} o={o} hi={lit.has(o.id)} />)}
               {objs.filter((o) => o.kind === 'shared').map((o) => <SharedMicPlan key={o.id} o={o} hi={lit.has(o.id)} />)}

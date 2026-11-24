@@ -17,6 +17,7 @@ import { fitXform } from '../../../engine/geometry/frame.ts';
 import type { VariantId, ViewBox, ViewId } from '../../../engine/model/types.ts';
 import type { LessonArt } from '../../../engine/scene/sceneTypes.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
+import { FigureScale } from '../figureV2/detail';
 
 type UV = readonly [number, number];
 /** A head seen edge-on in this view: its centre, its outward normal (unit,
@@ -154,7 +155,10 @@ export function HandStrike({ w, h, art, variant, spec, shown, accessibilityLabel
     <View style={{ width: w, height: h }}>
       <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
         <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
-          <Instrument view={spec.view} variant={variant} />
+          {/* (figure V2: the drawn scale, so a player in the picture takes the right level of detail) */}
+          <FigureScale ptPerMm={xf.s}>
+            <Instrument view={spec.view} variant={variant} />
+          </FigureScale>
           {shown === 1 ? (
             <>
               <Path path={g.strokes} style="stroke" strokeWidth={14} strokeCap="round" color={AMBER} opacity={0.9} />

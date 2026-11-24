@@ -22,6 +22,12 @@ import { PageSteps, type MikingStep } from '../../engine/steps';
 import { Card, Note, Point } from '../../engine/kit';
 import type { PageProps } from '../../pages/pageTypes';
 import { SiteArt, SiteBird, SitePerson } from '../shared/field/SiteArt';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+import { castFor } from '../shared/figureV2/cast';
+
+/** The new look (figure V2, wave 3 set 3b): the plaza's people are the cast's (as art.tsx). */
+const V2 = figureV2On('sidePlayers');
+const VOICE = castFor('site.voice');
 import { useBalanceStep, useImageStep, useWindStep } from '../shared/field/fieldSteps';
 import { fieldCheckStep, makeFieldBefore, readStep } from '../shared/field/fieldPages';
 import { MONITOR_WIND_LINE } from '../shared/field/wind.ts';
@@ -31,10 +37,10 @@ import { AMB_H, F06_SITE } from './geometry.ts';
 const urban = (v: string) => v === 'plaza';
 
 function Woods() {
-  return <SiteArt site={F06_SITE.woodland} view="top" />;
+  return <SiteArt site={F06_SITE.woodland} view="top" v2={V2} />;
 }
 function Plaza() {
-  return <SiteArt site={F06_SITE.plaza} view="top" />;
+  return <SiteArt site={F06_SITE.plaza} view="top" v2={V2} />;
 }
 const BIRD_PTS: Vec3[] = [WOODS_BIRDS.a, WOODS_BIRDS.b].map((b) => ({ x: b.c[0], y: -b.h, z: b.c[1] }));
 const CAFE_PTS: Vec3[] = [PLAZA_SITE.sources[2].p, PLAZA_SITE.sources[3].p];
@@ -167,7 +173,7 @@ function F06TwoMic({ lesson, answers, onAnswered, onInteractive, interactiveDone
     box: { x0: -3500, x1: 10500, z0: -9500, z1: 9500 },
     orient: 'frontUp',
     Background: city ? Plaza : Woods,
-    Token: (p) => (city ? <SitePerson f={{ kind: 'person', c: [p.x, p.z], heading: 180, role: 'public' }} view="top" /> : <SiteBird c={[p.x, p.z]} h={6000} heading={200} view="top" calling />),
+    Token: (p) => (city ? <SitePerson f={{ kind: 'person', c: [p.x, p.z], heading: 180, role: 'public' }} view="top" v2={V2} who={VOICE} /> : <SiteBird c={[p.x, p.z]} h={6000} heading={200} view="top" calling />),
     mono: { label: 'One mic (mono)' },
     prediction: lesson.predictions.twoMic,
     onTried: done,

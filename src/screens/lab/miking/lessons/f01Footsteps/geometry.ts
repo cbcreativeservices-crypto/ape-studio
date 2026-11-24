@@ -38,12 +38,17 @@ export const WALKER = standing({
   stepR: 210,
   stepL: -230,
   liftL: 30,
-  wrR: v3(-200, -840, 205),
-  elR: v3(-140, -1105, 200),
-  // The far arm's swing kept beside the thigh (figure review 2026-10-08: a
-  // hand swung out in front of the pelvis read as at the groin in profile).
-  wrL: v3(-60, -880, -205),
-  elL: v3(-80, -1130, -200),
+  // (review 2026-11-24: "the arms hang almost straight at mid-stride — no swing"; from above they must agree)
+  // The arms swing opposite the legs: the near (right) arm back as its foot strikes forward, the elbow a
+  // little bent; the far (left) arm on its forward swing, the elbow back and bent, the forearm angling forward —
+  // its hand kept beside the hip, never before the pelvis (figure review 2026-10-08, the groin; the anatomy test).
+  wrR: v3(-250, -850, 200),
+  elR: v3(-170, -1110, 196),
+  // (second review 2026-11-24: "from above both arms swing backward like staples") the far arm on its FORWARD
+  // swing: the elbow under the shoulder, the forearm angling forward past the hip line — the hand still beside
+  // the hip, short of the groin box (the anatomy test)
+  wrL: v3(-50, -850, -196),
+  elL: v3(-62, -1120, -196),
 });
 export const WALKER_SIDE = sidePose(WALKER);
 export const WALKER_TOP = topPose(WALKER);

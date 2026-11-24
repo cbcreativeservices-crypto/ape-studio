@@ -25,6 +25,11 @@ import { FrontMarks, mmPerPx, type FrontMark } from '../shared/metal/metalMark';
 import { buildUpWeights, DISC_SHAPES, discAt, discPeak } from '../shared/metal/metalModes.ts';
 import { CY, frameW, GONG, kindOf, MALLET_REACH, playerAt, radiusOf, strikeFrac, strikePoint } from './model.ts';
 import { topBarY } from './geometry.ts';
+import { MetalPlayerV2, MetalSwitch } from '../shared/metal/MetalPlayerV2';
+import { gongFig } from './playerV2.ts';
+
+/** The player in the approved look (figure roll-out, D78; playerV2.ts, Ana), where the family's switch is on (MetalSwitch). */
+const ROLE = 'metal.gong' as const;
 
 const RIM = GONG.rim.mm;
 const DOME = GONG.dome.mm;
@@ -132,9 +137,12 @@ function sideArt(v: VariantId): ReactElement {
       <Circle cx={0} cy={top} r={GONG.post.mm * 0.7} color={STEEL[3]} />
       <Path path={polyPath([[0, top], [-6, CY - R * 0.69]])} style="stroke" strokeWidth={3} color="#c9b48c" />
       {/* the player at their x, facing the gong, the arm reaching to the handle */}
-      <Group transform={[{ translateX: playerAt(v).x - SIDE_BODY_U }, { scaleX: -1 }]}>
-        <PlayerInk path={playerSide([[playerAt(v).x - SIDE_BODY_U - gripAt(v).x, gripAt(v).y]])} faint head="side" />
-      </Group>
+      <MetalSwitch
+        v2={<MetalPlayerV2 fig={gongFig('side', v)} role={ROLE} dim={0.7} />}
+        old={<Group transform={[{ translateX: playerAt(v).x - SIDE_BODY_U }, { scaleX: -1 }]}>
+          <PlayerInk path={playerSide([[playerAt(v).x - SIDE_BODY_U - gripAt(v).x, gripAt(v).y]])} faint head="side" />
+        </Group>}
+      />
       <Path path={prof}>
         <LinearGradient start={vec(-RIM, CY - R)} end={vec(DOME, CY + R)} colors={[BRONZE[1], BRONZE[2], BRONZE[4]]} />
       </Path>
@@ -147,6 +155,8 @@ function sideArt(v: VariantId): ReactElement {
         </Group>
       ) : null}
       <Mallet grip={[gripAt(v).x, gripAt(v).y]} head={head} />
+      {/* the fingers round the handle */}
+      <MetalSwitch v2={<MetalPlayerV2 fig={gongFig('side', v)} role={ROLE} dim={0.7} part="front" />} old={null} />
     </Group>
   );
 }
@@ -171,10 +181,14 @@ function topArt(v: VariantId): ReactElement {
         <LinearGradient start={vec(-RIM, 0)} end={vec(DOME, 0)} colors={[BRONZE[3], BRONZE[1], BRONZE[2]]} />
       </RoundedRect>
       {bossed ? <RoundedRect x={DOME} y={-BOSS_R} width={BOSS_H - DOME} height={2 * BOSS_R} r={10} color={BRONZE[1]} /> : null}
-      <Group transform={[{ translateX: playerAt(v).x }, { translateY: playerAt(v).z }, { scaleX: -1 }, { translateX: 360 }]}>
-        <PlayerInk path={playerTop([[playerAt(v).x - 360 - gripAt(v).x, gripAt(v).z - playerAt(v).z]])} faint head="top" />
-      </Group>
+      <MetalSwitch
+        v2={<MetalPlayerV2 fig={gongFig('top', v)} role={ROLE} dim={0.7} />}
+        old={<Group transform={[{ translateX: playerAt(v).x }, { translateY: playerAt(v).z }, { scaleX: -1 }, { translateX: 360 }]}>
+          <PlayerInk path={playerTop([[playerAt(v).x - 360 - gripAt(v).x, gripAt(v).z - playerAt(v).z]])} faint head="top" />
+        </Group>}
+      />
       <Mallet grip={[gripAt(v).x, gripAt(v).z]} head={head} />
+      <MetalSwitch v2={<MetalPlayerV2 fig={gongFig('top', v)} role={ROLE} dim={0.7} part="front" />} old={null} />
     </Group>
   );
 }
@@ -281,10 +295,14 @@ function frontArt(variant: VariantId, highlight: string | null): ReactElement {
       <GongFace u={0} v={CY} R={R} bossed={bossed} />
       {/* the player beside the frame (screen right), in front of its post (nearer the
           audience), the mallet hand reaching in past it (figure pass 2) */}
-      <Group transform={[{ translateX: FU(playerAt(variant).z) }]}>
-        <PlayerInk path={playerFront([[grip[0] - FU(playerAt(variant).z) + 10, grip[1] + 10]])} faint head="front" />
-      </Group>
+      <MetalSwitch
+        v2={<MetalPlayerV2 fig={gongFig('front', variant)} role={ROLE} dim={0.7} />}
+        old={<Group transform={[{ translateX: FU(playerAt(variant).z) }]}>
+          <PlayerInk path={playerFront([[grip[0] - FU(playerAt(variant).z) + 10, grip[1] + 10]])} faint head="front" />
+        </Group>}
+      />
       <Mallet grip={grip} head={headAt} />
+      <MetalSwitch v2={<MetalPlayerV2 fig={gongFig('front', variant)} role={ROLE} dim={0.7} part="front" />} old={null} />
       <FrontMarks marks={gongMark(variant, highlight)} box={frontBox(variant)} />
     </Group>
   );

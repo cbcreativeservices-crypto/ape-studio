@@ -10,7 +10,9 @@
 import { useContext, useEffect, useMemo, useRef } from 'react';
 import { PanResponder, View } from 'react-native';
 import Svg, { Circle, G, Line, Path, Polyline, Rect, Text as SvgText } from 'react-native-svg';
-import { FigureSeatedSideSvg } from '../../../features/lab/figureBodySvg';
+// (figure V2, wave 7 of D78: the listener is a cast member, the approved drawing in SVG)
+import { PersonSeatedSideSvg } from '../../../features/lab/figureV2Svg';
+import { castFor } from '../miking/lessons/shared/figureV2/cast';
 import { colors, fonts } from '../../../theme/tokens';
 import { levelColorForDb } from '../../../features/tools/levelColor';
 import { StageAspectReport, useStageTextScale } from '../rack/stageAspect';
@@ -321,7 +323,7 @@ function ListenerSide({ p, size, pxPerMm, selected, floorY }: { p: Pt; size: num
     <G>
       {selected ? <Circle cx={p.x} cy={p.y} r={r + 8} fill="none" stroke={colors.green} strokeWidth={1.2} strokeDasharray="3 3" /> : null}
       {/* at the ROOM's scale (px per mm), so the seated height, the chair and the ear agree with the walls */}
-      <FigureSeatedSideSvg earX={p.x} earY={p.y} floorY={floorY} px={pxPerMm} facing={-1} />
+      <PersonSeatedSideSvg earX={p.x} earY={p.y} floorY={floorY} px={pxPerMm} who={castFor('room.listener')} facing={-1} />
     </G>
   );
 }

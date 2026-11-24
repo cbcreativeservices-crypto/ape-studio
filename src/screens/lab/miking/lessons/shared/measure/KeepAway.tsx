@@ -48,7 +48,7 @@ export type KeepAwayWords = { title: string; badge: string; looking: string; pro
 /** The operator's chest at DISTANCE d (mm) from the capsule, behind it and to one side. */
 const opAt = (M: Vec3, d: number): Vec3 => ({ x: M.x + d * Math.cos(Math.PI / 4), y: 0, z: M.z + d * Math.sin(Math.PI / 4) });
 
-export function useKeepAwayStep({ words, speaker, mic, box, onClear }: { words: KeepAwayWords; speaker: TestSpeakerGeom; mic: Vec3; box: ViewBox; onClear: () => void }): MikingStep {
+export function useKeepAwayStep({ words, speaker, mic, box, onClear, v2 = false }: { words: KeepAwayWords; speaker: TestSpeakerGeom; mic: Vec3; box: ViewBox; onClear: () => void; /** the new look (figure V2): the lesson's operator is the cast's */ v2?: boolean }): MikingStep {
   const ring = MEAS_DIMS.keepAway.mm;
   const [d, setD] = useState(500);
   const [wasIn, setWasIn] = useState(true);
@@ -83,7 +83,7 @@ export function useKeepAwayStep({ words, speaker, mic, box, onClear }: { words: 
     kind: 'TRY',
     layout: 'rack',
     rack: {
-      render: (w, h) => <KeepAwayScene w={w} h={h} speaker={speaker} mic={mic} O={O} ring={ring} clear={clear} box={box} label={a11y} reflection={r} />,
+      render: (w, h) => <KeepAwayScene w={w} h={h} speaker={speaker} mic={mic} O={O} ring={ring} clear={clear} box={box} label={a11y} reflection={r} v2={v2} />,
       badge: words.badge,
       bezel,
       params,
@@ -102,7 +102,7 @@ export function useKeepAwayStep({ words, speaker, mic, box, onClear }: { words: 
   };
 }
 
-function KeepAwayScene({ w, h, speaker, mic, O, ring, clear, box, label, reflection }: { w: number; h: number; speaker: TestSpeakerGeom; mic: Vec3; O: Vec3; ring: number; clear: boolean; box: ViewBox; label: string; reflection: ReturnType<typeof bodyReflection> }) {
+function KeepAwayScene({ w, h, speaker, mic, O, ring, clear, box, label, reflection, v2 }: { w: number; h: number; speaker: TestSpeakerGeom; mic: Vec3; O: Vec3; ring: number; clear: boolean; box: ViewBox; label: string; reflection: ReturnType<typeof bodyReflection>; v2: boolean }) {
   const k = useStageTextScale();
   const xf = useMemo(() => fitXform('top', box, w, h, 8), [box, w, h]);
   const px = 1 / xf.s;
@@ -141,7 +141,7 @@ function KeepAwayScene({ w, h, speaker, mic, O, ring, clear, box, label, reflect
           <Group transform={[{ translateX: mic.x }, { translateY: mic.z }, { rotate: -Math.PI / 2 }]}>
             <MeasurementMic r={CAPSULE.half.mm / 2} len={MEAS_DIMS.bodyHalf.mm} tint="#ffc64d" />
           </Group>
-          <Operator pose={pose} />
+          <Operator pose={pose} v2={v2} assumePtPerMm={xf.s} />
         </Group>
       </Canvas>
       <StaticLabels labels={labels} xf={xf} scale={k} w={w} />

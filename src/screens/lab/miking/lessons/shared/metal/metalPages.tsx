@@ -40,6 +40,7 @@ import { makeHandPages, useStepper, type HandSpec } from '../hand/handPages';
 import { BAR_SHAPES, barAt, barStrikeShare, chimePitchRatio, DISC_SHAPES, discAt, discPeak, discStillDiameters, discStillRings, discStrikeShare, octaves } from './metalModes.ts';
 import { CYMBAL_SHAPES, cymbalShapeAt, cymbalShapePeak, cymbalStillDiameters, cymbalStillRings, cymbalStrikeShare } from '../cymbals/cymbalModes.ts';
 import { BarFace, DiscFace, type BarGeom } from './metalFigures';
+import { FigureScale } from '../figureV2/detail';
 
 /* ═══════════════ the face-on drawing ═══════════════ */
 
@@ -67,7 +68,10 @@ function FrontStage({ w, h, front, variant, highlight, onTap, label }: { w: numb
       <Pressable onPress={press} disabled={!onTap} accessibilityRole="image" accessibilityLabel={label} style={{ width: w, height: h }}>
         <Canvas style={{ width: w, height: h }} accessible accessibilityLabel={label}>
           <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
-            <Art variant={variant} highlight={highlight} />
+            {/* (figure V2: the drawn scale, so the player takes the right level of detail) */}
+            <FigureScale ptPerMm={xf.s}>
+              <Art variant={variant} highlight={highlight} />
+            </FigureScale>
           </Group>
         </Canvas>
       </Pressable>

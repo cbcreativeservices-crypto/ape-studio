@@ -41,9 +41,11 @@ import { boomStart, distanceDb, frameForShot, micToMouth, SHOT_IDS, SHOTS, turne
 import { Aim, Dim, FieldStage, MicAt, Ray, uvOf } from '../shared/field/FieldStage';
 import { BOOM, F09_VIEWS, GRIP, LAV_P, LENS } from './geometry.ts';
 import { SHOTGUN_CAPSULE_MM } from '../shared/field/fieldMics.ts';
-import { LAV_PACK, LocationScene } from './scene';
+import { LAV_PACK, LocationScene, V2 } from './scene';
+import { castFor } from '../shared/figureV2/cast';
+import { PersonTopV2 } from '../shared/figureV2/personV2';
 import { LavRun } from './lavRun';
-import { BeltPack } from '../shared/broadcast/BodyWornArt';
+import { BeltPack, packOnTop } from '../shared/broadcast/BodyWornArt';
 import { Group } from '@shopify/react-native-skia';
 
 type PageFn = (p: PageProps) => ReactNode;
@@ -66,6 +68,9 @@ const PIVOT = v3(HEAD_C.x, 0, 0);
 /** The talker from above with the head drawn separately (TurnedHead): the
  *  pose's own head shrunk to nothing under it. */
 const BODY_TOP = { ...SINGER_TOP, head: { ...SINGER_TOP.head, r: 1 } };
+/** (FrontBoom3) the pack on the new figure's belt from above (computed on first use: Skia paths). */
+let packOnTopCache: ReturnType<typeof packOnTop> | null = null;
+const packOnTopNow = () => (packOnTopCache ??= packOnTop(LAV_PACK, SINGER_TOP, castFor('voice.singer')));
 
 /* ── THE FRAME LINE ── */
 
@@ -159,6 +164,13 @@ function TurnedHead({ yawDeg }: { yawDeg: number }) {
   const head = useMemo(() => headAbove(pt(SINGER_TOP.head.c.u, SINGER_TOP.head.c.v), SINGER_TOP.head.r), []);
   const c = { u: HEAD_C.x, v: 0 };
   const a = (yawDeg * Math.PI) / 180;
+  // (figure V2) the APPROVED head from above — Ana's, the lesson's talker — turned about its centre
+  if (V2)
+    return (
+      <Group transform={[{ translateX: c.u }, { translateY: c.v }, { rotate: a }, { translateX: -c.u }, { translateY: -c.v }]}>
+        <PersonTopV2 pose={SINGER_TOP} who={castFor('voice.singer')} head="only" />
+      </Group>
+    );
   // The pose's head is authored nose toward +v, turned −90° to face +x.
   return (
     <Group transform={[{ translateX: c.u }, { translateY: c.v }, { rotate: a - Math.PI / 2 }, { translateX: -SINGER_TOP.head.c.u }, { translateY: -SINGER_TOP.head.c.v }]}>
@@ -232,12 +244,19 @@ function useTurnStep(hidden: boolean): MikingStep {
         >
           {(px) => (
             <>
-              <PlayerBehind pose={BODY_TOP} />
-              <PlayerInFront pose={BODY_TOP} hands={false} />
+              {V2 ? (
+                <PersonTopV2 pose={SINGER_TOP} who={castFor('voice.singer')} head="none" />
+              ) : (
+                <>
+                  <PlayerBehind pose={BODY_TOP} />
+                  <PlayerInFront pose={BODY_TOP} hands={false} />
+                </>
+              )}
               <TurnedHead yawDeg={yaw} />
               <Ray a={uvOf('top', m.mouth)} b={uvOf('top', axisEnd)} px={px} color="#e8eaee" width={2.2} />
-              <BeltPack view="top" at={LAV_PACK} />
-              <LavRun view="top" from={v3(LAV_P.x - 3, 0, 0)} pack={LAV_PACK} />
+              {/* (FrontBoom3) the pack ON the belt at the back of the new figure (drawing only) */}
+              <BeltPack view="top" at={V2 ? packOnTopNow() : LAV_PACK} />
+              <LavRun view="top" from={v3(LAV_P.x - 3, 0, 0)} pack={V2 ? packOnTopNow() : LAV_PACK} />
               <MicAt view="top" p={LAV_P} aim={unit(sub(LIP, LAV_P))} art="lavalier" r={3} len={12} />
               {/* The pole from the mic's mount back toward the operator's hands. */}
               <Ray a={uvOf('top', sub(boomTip, v3(boomAim.x * 250, 0, boomAim.z * 250)))} b={uvOf('top', GRIP)} px={px} color="#3a3d45" width={5} dash={[1000, 0]} />
@@ -285,7 +304,7 @@ function F09Sound(p: PageProps) {
       kind: 'WATCH',
       layout: 'rack',
       rack: {
-        render: (w, h) => <VoiceSequence w={w} h={h} shown={st.shown} accessibilityLabel={`A talker in profile, the head and neck cut through the middle to show the airway, step ${st.shown} of ${n}: ${stage.title}. ${stage.text}`} />,
+        render: (w, h) => <VoiceSequence w={w} h={h} shown={st.shown} who={V2 ? castFor('voice.singer') : undefined} accessibilityLabel={`A talker in profile, the head and neck cut through the middle to show the airway, step ${st.shown} of ${n}: ${stage.title}. ${stage.text}`} />,
         badge: 'A simplified picture: a cut through the middle of the head · the order of events, not their speed or size · silent',
         bezel: [
           { k: 'EVENT', v: `${st.shown}`, flex: 0.8 },

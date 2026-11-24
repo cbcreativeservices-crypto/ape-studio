@@ -17,6 +17,14 @@ import { radiusAt, T_LEN, T_R } from './model.ts';
 import { PlayerBehind, PlayerInFront } from '../shared/players/PlayerFigure';
 import { pt, type PlayerPose } from '../shared/players/playerPose.ts';
 import { T_F, T_H0, T_N, alongAxis } from './geometry.ts';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+import { PlayerArmV2, PlayerBodyV2, PlayerTopV2 } from '../shared/figureV2/playersV2';
+import { sidePaths, smoothClosed, unionOf } from '../shared/figureV2/paths.ts';
+import type { SidePlan } from '../shared/figureV2/sidePlan.ts';
+import { TONBAK_PLAYER, tonbakSidePlan, tonbakTopPlan } from './tonbakV2.ts';
+
+/** The new look (figure V2, wave 3 set 3d): the player is Kofi of the cast. */
+export const V2 = figureV2On('sidePlayers');
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -170,12 +178,26 @@ export function tonbakPose(view: ViewId): PlayerPose {
   return pose;
 }
 
-export function TonbakArt({ view }: { view: ViewId; variant: VariantId }) {
+/** (figure V2) the near leg's drawn outline: thigh, shin and shoe. */
+const nearLegCache = new WeakMap<SidePlan, SkPath>();
+function nearLegOf(sp: SidePlan): SkPath {
+  let p = nearLegCache.get(sp);
+  if (!p) {
+    const L = sp.legs.near;
+    const S = sp.shoes.near;
+    p = unionOf(smoothClosed(L.outline), smoothClosed(L.lower), smoothClosed(S.upper), smoothClosed(S.sole));
+    nearLegCache.set(sp, p);
+  }
+  return p;
+}
+
+export function TonbakArt({ view, v2 = V2 }: { view: ViewId; variant: VariantId; /** (the study page compares the old look) */ v2?: boolean }) {
   const g = getBuilt(view);
   if (g.kind === 'top') {
     return (
       <Group>
-        <PlayerBehind pose={tonbakPose('top')} dim={0.85} />
+        {/* (new look: the legs under the drum; the arms, shoulders and head over it) */}
+        {v2 ? <PlayerTopV2 plan={tonbakTopPlan()} who={TONBAK_PLAYER} dim={0.85} part="legs" legs /> : <PlayerBehind pose={tonbakPose('top')} dim={0.85} />}
         <Path path={g.shadow} color="#000" opacity={0.5}>
           <BlurMask blur={26} style="normal" />
         </Path>
@@ -195,10 +217,11 @@ export function TonbakArt({ view }: { view: ViewId; variant: VariantId }) {
         <Path path={g.head}>
           <LinearGradient start={vec(-T_R, 0)} end={vec(T_R, 0)} colors={SKIN} />
         </Path>
-        <PlayerInFront pose={tonbakPose('top')} dim={0.85} />
+        {v2 ? <PlayerTopV2 plan={tonbakTopPlan()} who={TONBAK_PLAYER} dim={0.85} part="upper" /> : <PlayerInFront pose={tonbakPose('top')} dim={0.85} />}
       </Group>
     );
   }
+  const sp = v2 ? tonbakSidePlan() : null;
   return (
     <Group>
       <Path path={g.floor}>
@@ -206,7 +229,7 @@ export function TonbakArt({ view }: { view: ViewId; variant: VariantId }) {
       </Path>
       <Path path={g.floorEdge} style="stroke" strokeWidth={2.5} color="#4a4c58" />
       <Path path={g.chair} style="stroke" strokeWidth={10} color="#3a3d45" opacity={0.7} />
-      <PlayerBehind pose={tonbakPose('side')} dim={0.85} />
+      {sp ? <PlayerBodyV2 plan={sp} who={TONBAK_PLAYER} dim={0.85} /> : <PlayerBehind pose={tonbakPose('side')} dim={0.85} />}
       <Group transform={[{ translateX: 8 }, { translateY: 12 }]}>
         <Path path={g.silhouette} color="#000" opacity={0.5}>
           <BlurMask blur={18} style="normal" />
@@ -226,7 +249,20 @@ export function TonbakArt({ view }: { view: ViewId; variant: VariantId }) {
       <Circle cx={-T_R * 0.4} cy={T_H0.y - T_R * 0.45} r={T_R * 0.25} color="#ffffff" opacity={0.12}>
         <BlurMask blur={T_R * 0.2} style="normal" />
       </Circle>
-      <PlayerInFront pose={tonbakPose('side')} dim={0.85} />
+      {sp ? (
+        <>
+          {/* the near (right) leg lies NEARER the camera than the drum's head (the head sits at the lap's middle,
+              z = 0; the right thigh at +z): it is painted again over the head's lower edge */}
+          <Group clip={nearLegOf(sp)}>
+            <PlayerBodyV2 plan={sp} who={TONBAK_PLAYER} dim={0.85} />
+          </Group>
+          {/* the left arm over the drum's top (its upper arm stays hidden behind the body), the right hand on the head */}
+          <PlayerArmV2 plan={sp} who={TONBAK_PLAYER} which="far" dim={0.85} hideIn={sidePaths(sp).shirt} />
+          <PlayerArmV2 plan={sp} who={TONBAK_PLAYER} which="near" dim={0.85} />
+        </>
+      ) : (
+        <PlayerInFront pose={tonbakPose('side')} dim={0.85} />
+      )}
     </Group>
   );
 }

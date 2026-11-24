@@ -23,6 +23,14 @@ import { BlurMask, Circle, Group, LinearGradient, Path, RadialGradient, Skia, ve
 import type { CastMember } from '../figureV2/cast';
 import { FigureMass } from '../players/PlayerFigure';
 import { FOLDS } from './VoiceArt';
+// (figure V2, wave 7 of D78: the outline of the head, neck and shoulders is the cast member's approved side view)
+import { PathOp } from '@shopify/react-native-skia';
+import { personPlan } from '../figureV2/personV2';
+import { sidePaths } from '../figureV2/paths';
+import { jacketSidePlan } from '../figureV2/jacketPlan';
+import { JacketSideBody } from '../figureV2/jacketV2';
+import { FigureLook } from '../figureV2/look';
+import { SINGER_SIDE } from './voicePose';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 type P2 = readonly [number, number];
@@ -77,15 +85,6 @@ const SHIRT: readonly P2[] = [
   [-50, 152], [-36, 176], [-22, 210], [-12, 250], [-6, 290], [-4, 340], [-3, 620], [-232, 620], [-231, 320], [-226, 250], [-214, 196], [-194, 158], [-174, 134], [-158, 120], [-108, 134],
 ];
 const COLLAR: readonly P2[] = [[-160, 119], [-112, 133], [-74, 144], [-49, 153]];
-/** (figure V2, the jacket: a dress variant) the jacket in the same section: close over the shirt's back,
- *  its collar close on the neck below the shirt's collar, the front FOLD (the lapel's roll) from the neck
- *  down to the button with the shirt showing in the V in front of it, the lapel's cut edge behind it. */
-const JACKET: readonly P2[] = [
-  [-164, 125], [-120, 140], [-90, 150], [-72, 160], // the collar's crease round the neck, to the gorge
-  [-58, 180], [-42, 214], [-27, 254], [-15, 294], [-6, 325], // the fold, behind the shirt's front, to the button
-  [-1, 345], [0, 620], [-237, 620], [-236, 320], [-231, 250], [-219, 196], [-199, 156], [-180, 132], // the front, the back
-];
-const JACKET_CUT: readonly P2[] = [[-6, 325], [-23, 292], [-43, 252], [-62, 212], [-80, 180], [-93, 166], [-86, 160], [-98, 158], [-130, 150], [-176, 136]];
 /** The cut through the chest: a window in the shirt along the midline. */
 const CHEST_CUT: readonly P2[] = [
   [-50, 158], [-48, 200], [-50, 260], [-52, 330], [-52, 620], [-150, 620], [-152, 300], [-150, 232], [-152, 180], [-153, 132], [-110, 142],
@@ -159,9 +158,6 @@ function cutawayPaths() {
     head,
     shirt,
     collar: open(COLLAR),
-    jacket: closed(JACKET, 0.4),
-    jacketCut: open(JACKET_CUT),
-    jacketFold: open(JACKET.slice(0, 9)),
     chestCut: closed(CHEST_CUT, 0.45),
     hair: open(HAIR),
     brain: closed(BRAIN, 0.5),
@@ -213,28 +209,86 @@ const HAIR_TONE = '#2e2521';
 
 export type CutawayTint = { pipe: string | null; tract: string | null; nasal: string | null; folds: string | null };
 
-/* ── figure V2 (wave 3a): the cut-away dressed as the lesson's cast member ── */
+/* ── figure V2 (wave 7): the OUTLINE is the cast member's approved side view ── */
 
-/** The hair as a layer OUTSIDE the skull's contour (crown, back of the head) and, by style, what is
- *  gathered behind (a ponytail, a bun) or falls past the ear (a bob). Nothing inside the section moves. */
-function castHair(style: CastMember['head']['hair']): SkPath {
-  const p = Skia.Path.Make();
-  // the layer: from the hairline over the crown down the back of the head, ≈ 9 mm thick (a crop ≈ 5)
-  const t = style === 'crop' ? 5 : style === 'bob' ? 14 : 9;
-  const c: P2 = [-100, -80];
-  const out = HAIR.map(([x, y]): P2 => {
-    const d = Math.hypot(x - c[0], y - c[1]) || 1;
-    return [x + ((x - c[0]) / d) * t, y + ((y - c[1]) / d) * t];
-  });
-  const inner = [...HAIR].reverse().map(([x, y]): P2 => {
-    const d = Math.hypot(x - c[0], y - c[1]) || 1;
-    return [x - ((x - c[0]) / d) * 3, y - ((y - c[1]) / d) * 3];
-  });
-  p.addPath(closed([...out, ...inner], 0.45));
-  if (style === 'pony') p.addPath(closed([[-196, -62], [-210, -56], [-220, -20], [-222, 30], [-214, 82], [-204, 98], [-198, 84], [-202, 36], [-202, -12], [-194, -48]], 0.5));
-  if (style === 'bun') p.addPath(closed([[-196, -70], [-214, -76], [-228, -60], [-230, -36], [-218, -20], [-200, -22], [-192, -40]], 0.5));
-  if (style === 'bob') p.addPath(closed([[-189, -40], [-200, -20], [-196, 20], [-184, 44], [-170, 50], [-176, 20], [-182, -10]], 0.5));
-  return p;
+/**
+ * The neck in the section: the approved head's skull (sidePlan.headPlan, on the singer's pose with the
+ * lips on the lip point — the cut-away's own frame) stands on this column, which carries the throat
+ * just in front of the larynx's thyroid cartilage (≈ 4 mm of skin over the Adam's apple) and the nape
+ * just behind the spine, then runs into the approved shirt's collar. The section's parts are where they
+ * were; the column is only as wide as they need. Points (frame V, mm).
+ */
+const NECK_V2: readonly P2[] = [
+  [-8, 46], [-12, 51], [-24, 52], // under the chin: a few mm of soft tissue below the mandible's section
+  [-38, 56], [-44, 66], [-44, 80], [-41, 95], [-43, 108], [-46, 124], [-50, 150], // the throat, over the thyroid
+  [-150, 150], [-151, 90], [-152, 56], [-158, 28], [-170, 2], [-178, -14], // the nape, behind the spine
+  [-150, -10], [-110, 0], [-60, 30], [-20, 38],
+];
+
+/** (tests) the section's parts that must lie inside the person's outline: the larynx and its cartilages, the
+ *  jaw's section, the teeth, the palate and velum, the tongue, the nasal cavity, the brain, and the spine's
+ *  back edge up the neck (the lips' own opening, on the outline by design, is left out). */
+export const CUTAWAY_INSIDE: readonly P2[] = [
+  ...THYROID, ...LARYNX, ...EPIGLOTTIS, ...JAW_BONE, ...TEETH_UP, ...TEETH_LO, ...PALATE, ...VELUM, ...TONGUE, ...NASAL, ...BRAIN,
+  ...TRACHEA.filter(([, y]) => y < 150),
+  ...[-12, 11, 34, 57, 80, 103, 126].map((y): P2 => [spineX(y + 8) - 13, y + 8]),
+];
+export { NECK_V2 };
+
+type V2Paths = {
+  head: SkPath;
+  skull: SkPath;
+  shirt: SkPath;
+  collar: SkPath;
+  window: SkPath;
+  hair: SkPath;
+  ear: SkPath | null;
+  earRim: SkPath | null;
+  jaw: SkPath;
+  brow: SkPath;
+  eye: SkPath;
+  iris: SkPath;
+  lid: SkPath;
+  lips: SkPath;
+  plan: ReturnType<typeof personPlan>;
+};
+
+const v2Cache = new Map<string, V2Paths>();
+
+/** The cast member's outline for the section (built once per person). */
+function cutawayV2(who: CastMember, chestCut: SkPath): V2Paths {
+  const hit = v2Cache.get(who.id);
+  if (hit) return hit;
+  const plan = personPlan(SINGER_SIDE, who, { lip: { u: 0, v: 0 }, rest: 'restSide' });
+  const P = sidePaths(plan);
+  const op = (a: SkPath, b: SkPath, o: PathOp): SkPath => Skia.Path.MakeFromOp(a, b, o) ?? a;
+  const head = op(P.skull, closed(NECK_V2, 0.45), PathOp.Union);
+  // the hair as the section shows it: only what lies OUTSIDE the scalp (the crown, the back, the tail or
+  // knot or the bob's fall) — the cut through the middle shows no hair inside the head
+  const hair = op(P.hair, head, PathOp.Difference);
+  // the chest's window opens from the approved collar down (the windpipe never lies on the cloth)
+  const reach = Skia.Path.Make();
+  reach.addRect(Skia.XYWHRect(-153, -40, 103, 210));
+  const window = op(op(chestCut, reach, PathOp.Union), P.shirt, PathOp.Intersect);
+  const out: V2Paths = {
+    head,
+    skull: P.skull,
+    shirt: P.shirt,
+    collar: P.collar,
+    window,
+    hair,
+    ear: plan.head.earShows ? P.ear : null,
+    earRim: plan.head.earShows ? P.earRim : null,
+    jaw: P.jaw,
+    brow: P.brow,
+    eye: P.eye,
+    iris: P.iris,
+    lid: P.lid,
+    lips: P.lips,
+    plan,
+  };
+  v2Cache.set(who.id, out);
+  return out;
 }
 
 /** The cutaway; `tint` lights the airway in the order the steps name it. `who`: drawn as that cast
@@ -242,30 +296,32 @@ function castHair(style: CastMember['head']['hair']): SkPath {
  *  new; without it, exactly as before. */
 export function VoiceCutaway({ tint, who, jacket = false }: { tint: CutawayTint; who?: CastMember; /** (with `who`) in the person's jacket */ jacket?: boolean }) {
   const A = useMemo(cutawayPaths, []);
-  const hair = useMemo(() => (who ? castHair(who.head.hair) : null), [who]);
   const L = who?.look;
+  const V = useMemo(() => (who ? cutawayV2(who, A.chestCut) : null), [who, A]);
+  const J = useMemo(() => (who && V && jacket && who.look.JACKET ? jacketSidePlan(V.plan, who.body, true) : null), [who, V, jacket]);
   return (
     <Group>
       {/* The head and neck in the figure skin, the torso in the shirt. */}
-      {L ? (
+      {L && V ? (
         <Group>
-          <Path path={A.head}>
+          <Path path={V.head}>
             <RadialGradient c={vec(-60, -110)} r={220} colors={L.HEAD_SKIN.form} positions={L.HEAD_SKIN.pos} />
           </Path>
-          <Path path={A.head} style="stroke" strokeWidth={2.6} color={L.MAT.skin.edge} opacity={0.8} />
-          <Path path={A.shirt}>
+          <Path path={V.head} style="stroke" strokeWidth={2.6} color={L.MAT.skin.edge} opacity={0.8} />
+          <Path path={V.shirt}>
             <LinearGradient start={vec(-232, 0)} end={vec(-3, 0)} colors={[L.MAT.shirt.form[3], L.MAT.shirt.form[2], L.MAT.shirt.form[1]]} />
           </Path>
-          <Path path={A.collar} style="stroke" strokeWidth={9} strokeCap="round" color={L.MAT.shirt.form[3]} />
+          <Path path={V.shirt} style="stroke" strokeWidth={2} color={L.MAT.shirt.edge} opacity={0.6} />
+          <Path path={V.collar}>
+            <LinearGradient start={vec(-150, 0)} end={vec(-40, 0)} colors={[L.MAT.shirt.form[3], L.MAT.shirt.form[2], L.MAT.shirt.form[1]]} />
+          </Path>
+          <Path path={V.collar} style="stroke" strokeWidth={1.6} color={L.MAT.shirt.edge} opacity={0.6} />
           {jacket && L.JACKET ? (
-            <Group>
-              <Path path={A.jacket}>
-                <LinearGradient start={vec(-237, 0)} end={vec(0, 0)} colors={[L.JACKET.form[3], L.JACKET.form[2], L.JACKET.form[1]]} />
-              </Path>
-              <Path path={A.jacket} style="stroke" strokeWidth={2} color={L.JACKET.edge} opacity={0.8} />
-              <Path path={A.jacketCut} style="stroke" strokeWidth={2} strokeCap="round" color={L.JACKET.edge} opacity={0.75} />
-              <Path path={A.jacketFold} style="stroke" strokeWidth={2.4} strokeCap="round" color={L.JACKET.rim} opacity={0.3} />
-            </Group>
+            J ? (
+              <FigureLook look={L}>
+                <JacketSideBody J={J} shirt={V.shirt} />
+              </FigureLook>
+            ) : null
           ) : null}
         </Group>
       ) : (
@@ -276,9 +332,9 @@ export function VoiceCutaway({ tint, who, jacket = false }: { tint: CutawayTint;
         </Group>
       )}
       {/* The chest cut along the midline: tissue, the spine, the gullet. */}
-      <Path path={A.chestCut} color={TISSUE} />
-      <Path path={A.chestCut} style="stroke" strokeWidth={2.4} color="#12151c" opacity={0.9} />
-      <Group clip={A.head}>
+      <Path path={V ? V.window : A.chestCut} color={TISSUE} />
+      <Path path={V ? V.window : A.chestCut} style="stroke" strokeWidth={2.4} color="#12151c" opacity={0.9} />
+      <Group clip={V ? V.skull : A.head}>
         <Path path={A.brain} color="#b59b8a" opacity={0.55} />
         <Path path={A.brain} style="stroke" strokeWidth={5} color={BONE} opacity={0.7} />
       </Group>
@@ -286,19 +342,33 @@ export function VoiceCutaway({ tint, who, jacket = false }: { tint: CutawayTint;
       <Path path={A.oesophagus} style="stroke" strokeWidth={11} strokeCap="round" color={TISSUE_DEEP} />
       <Path path={A.oesophagus} style="stroke" strokeWidth={1.6} color={EDGE} opacity={0.7} />
       {/* The face outside: hair, brow, eye, the ear and jaw implied. */}
-      {L && hair ? (
-        <Path path={hair}>
-          <LinearGradient start={vec(-120, -190)} end={vec(-200, 60)} colors={[L.MAT.hair.form[1], L.MAT.hair.form[2], L.MAT.hair.form[3]]} />
-        </Path>
+      {L && V ? (
+        <Group>
+          {/* (the approved head's own hair, ear, brow, eye, lids and lips, in the section's quiet style) */}
+          <Path path={V.hair}>
+            <LinearGradient start={vec(-120, -200)} end={vec(-210, 60)} colors={[L.MAT.hair.form[1], L.MAT.hair.form[2], L.MAT.hair.form[3]]} />
+          </Path>
+          <Path path={V.hair} style="stroke" strokeWidth={1.4} color={L.MAT.hair.edge} opacity={0.6} />
+          {V.ear ? <Path path={V.ear} style="stroke" strokeWidth={2} color={EDGE} opacity={0.35} /> : null}
+          {V.earRim ? <Path path={V.earRim} style="stroke" strokeWidth={1.6} strokeCap="round" color={EDGE} opacity={0.25} /> : null}
+          <Path path={V.jaw} style="stroke" strokeWidth={2} strokeCap="round" color={EDGE} opacity={0.22} />
+          <Path path={V.brow} color={L.MAT.hair.form[2]} opacity={0.85} />
+          <Path path={V.eye} color="#d6c8bd" opacity={0.7} />
+          <Path path={V.iris} color={EDGE} opacity={0.85} />
+          <Path path={V.lid} color={L.MAT.hair.edge} opacity={0.82} />
+          <Path path={V.lips} color={L.LIP} opacity={0.42} />
+        </Group>
       ) : (
-        <Path path={A.hair} style="stroke" strokeWidth={13} strokeCap="round" strokeJoin="round" color={HAIR_TONE} />
+        <Group>
+          <Path path={A.hair} style="stroke" strokeWidth={13} strokeCap="round" strokeJoin="round" color={HAIR_TONE} />
+          <Path path={A.ear} style="stroke" strokeWidth={2} color={EDGE} opacity={0.35} />
+          <Path path={A.jawline} style="stroke" strokeWidth={2} strokeCap="round" color={EDGE} opacity={0.22} />
+          <Path path={A.brow} style="stroke" strokeWidth={4} strokeCap="round" color={HAIR_TONE} />
+          <Path path={A.lidUp} style="stroke" strokeWidth={2.6} strokeCap="round" color={EDGE} />
+          <Path path={A.lidLo} style="stroke" strokeWidth={1.4} strokeCap="round" color={EDGE} opacity={0.7} />
+          <Circle cx={-14} cy={-61.5} r={2.6} color={EDGE} />
+        </Group>
       )}
-      <Path path={A.ear} style="stroke" strokeWidth={2} color={EDGE} opacity={0.35} />
-      <Path path={A.jawline} style="stroke" strokeWidth={2} strokeCap="round" color={EDGE} opacity={0.22} />
-      <Path path={A.brow} style="stroke" strokeWidth={4} strokeCap="round" color={L ? L.MAT.hair.form[2] : HAIR_TONE} />
-      <Path path={A.lidUp} style="stroke" strokeWidth={2.6} strokeCap="round" color={EDGE} />
-      <Path path={A.lidLo} style="stroke" strokeWidth={1.4} strokeCap="round" color={EDGE} opacity={0.7} />
-      <Circle cx={-14} cy={-61.5} r={2.6} color={EDGE} />
       {/* The airway's lumen: nose, mouth, pharynx, larynx, windpipe. */}
       <Path path={A.nasal} color={LUMEN} />
       <Path path={A.oral} color={LUMEN} />

@@ -27,31 +27,19 @@ import type { FrontArt } from '../shared/metal/metalPages';
 import { BAR_SHAPES, barAt } from '../shared/metal/metalModes.ts';
 import { HELD, MOUNTED, P0, ROD_D, rodPath, SIDE, TRI, type Corners } from './model.ts';
 import { BASE_Y, CLIP, CLIP_Y, STAND, TOP_Y } from './geometry.ts';
+import { HELD_BEATER, MOUNTED_BEATER, mirrorZ, type P3 as Beater3P } from './beaters.ts';
+import { MetalPlayerV2, MetalSwitch } from '../shared/metal/MetalPlayerV2';
+import { triFig } from './playerV2.ts';
 
 const cornersOf = (v: VariantId): Corners => (v === 'mounted' ? MOUNTED : HELD);
 /** Plane (z, y) → front (u = −z, v = y). */
 const fr = ([z, y]: [number, number]): [number, number] => [-z, y];
-const BEATER = TRI.beater.mm;
 const BD = TRI.beaterD.mm;
-/**
- * THE BEATERS in 3D (x toward the audience, y down, z the player's right),
- * so every view draws the same 215 mm rod (owner 2026-11-22: "It should
- * look like normal stick tech. usage"; from above the held beater was drawn
- * 264 mm, longer than the real one). Held: the tip on the base's middle on
- * the player's side, the grip end in the right hand, low and to the right.
- * Mounted: one beater on each lower side, the grip ends out and below. The
- * hand holds the grip end (the dark end cap).
- */
-type P3 = { x: number; y: number; z: number };
-export type Beater3 = { grip: P3; tip: P3 };
-const beaterFrom = (tip: P3, toward: P3): Beater3 => {
-  const n = Math.hypot(toward.x, toward.y, toward.z);
-  return { tip, grip: { x: tip.x + (toward.x / n) * BEATER, y: tip.y + (toward.y / n) * BEATER, z: tip.z + (toward.z / n) * BEATER } };
-};
-/** Where the mounted beater meets its lower side (z = 46 on the near side). */
-const lowSideY = (z: number) => MOUNTED.top[1] + ((MOUNTED.top[0] - Math.abs(z)) / MOUNTED.top[0]) * (MOUNTED.open[1] - MOUNTED.top[1]);
-export const HELD_BEATER: Beater3 = beaterFrom({ x: -ROD_D, y: BASE_Y, z: 8 }, { x: -222, y: 85, z: 142 });
-export const MOUNTED_BEATER: Beater3 = beaterFrom({ x: -ROD_D, y: lowSideY(46), z: 46 }, { x: -197, y: 86, z: 134 });
+// THE BEATERS in 3D: beaters.ts (moved there unchanged for the player's pose module)
+export { HELD_BEATER, MOUNTED_BEATER, type Beater3 } from './beaters.ts';
+type P3 = Beater3P;
+/** The player in the approved look (figure roll-out, D78; playerV2.ts, Mei), where the family's switch is on (MetalSwitch). */
+const ROLE = 'metal.triangle' as const;
 const sideOf = (p: P3): [number, number] => [p.x, p.y];
 const topOf = (p: P3): [number, number] => [p.x, p.z];
 const frontOf = (p: P3): [number, number] => [-p.z, p.y];
@@ -113,7 +101,7 @@ function sideArt(v: VariantId): ReactElement {
   return (
     <Group>
       <Floor u0={-3000} u1={3000} />
-      <PlayerInk path={playerSide(held ? [hand, strikeHand] : [[-200, P0.y + 40], sideOf(MOUNTED_BEATER.grip)])} head="side" />
+      <MetalSwitch v2={<MetalPlayerV2 fig={triFig('side', v)} role={ROLE} dim={0.85} />} old={<PlayerInk path={playerSide(held ? [hand, strikeHand] : [[-200, P0.y + 40], sideOf(MOUNTED_BEATER.grip)])} head="side" />} />
       {held ? null : (
         <Group>
           <Rod path={polyPath([[STAND.x, 0], [STAND.x, STAND.barY]])} d={STAND.r * 2} pal={STEEL} />
@@ -134,6 +122,8 @@ function sideArt(v: VariantId): ReactElement {
       ) : (
         <Beater a={sideOf(MOUNTED_BEATER.grip)} b={sideOf(MOUNTED_BEATER.tip)} />
       )}
+      {/* the hands' near parts over what they hold (the fingers round the beater and the clip) */}
+      <MetalSwitch v2={<MetalPlayerV2 fig={triFig('side', v)} role={ROLE} dim={0.85} part="front" />} old={null} />
     </Group>
   );
 }
@@ -149,7 +139,7 @@ function topArt(v: VariantId): ReactElement {
   shadow.addRRect(Skia.RRectXY(Skia.XYWHRect(-14, z0 - 6, 28, z1 - z0 + 12), 14, 14));
   return (
     <Group>
-      <PlayerInk path={playerTop(held ? [hand, strikeHand] : [[-200, -90], topOf(MOUNTED_BEATER.grip)])} faint head="top" />
+      <MetalSwitch v2={<MetalPlayerV2 fig={triFig('top', v)} role={ROLE} dim={0.7} />} old={<PlayerInk path={playerTop(held ? [hand, strikeHand] : [[-200, -90], topOf(MOUNTED_BEATER.grip)])} faint head="top" />} />
       {held ? null : (
         <Group>
           <Rod path={polyPath([[STAND.x, -STAND.barHalf], [STAND.x, STAND.barHalf]])} d={14} pal={STEEL} />
@@ -168,6 +158,7 @@ function topArt(v: VariantId): ReactElement {
       ) : (
         <Beater a={topOf(MOUNTED_BEATER.grip)} b={topOf(MOUNTED_BEATER.tip)} />
       )}
+      <MetalSwitch v2={<MetalPlayerV2 fig={triFig('top', v)} role={ROLE} dim={0.7} part="front" />} old={null} />
     </Group>
   );
 }
@@ -247,7 +238,6 @@ export const HELD_GRIP: [number, number] = frontOf(HELD_BEATER.grip);
 export const HELD_TIP: [number, number] = frontOf(HELD_BEATER.tip);
 /** The mounted beaters, from the audience: [grip, tip], one on each side
  *  (the left one the right one mirrored). */
-const mirrorZ = (p: P3): P3 => ({ ...p, z: -p.z });
 export const MOUNTED_BEATERS: [[number, number], [number, number]][] = [
   [frontOf(MOUNTED_BEATER.grip), frontOf(MOUNTED_BEATER.tip)],
   [frontOf(mirrorZ(MOUNTED_BEATER.grip)), frontOf(mirrorZ(MOUNTED_BEATER.tip))],
@@ -303,7 +293,7 @@ function FrontTriangleArt({ variant, highlight }: { variant: VariantId; highligh
   return (
     <Group>
       <Floor u0={-2000} u1={2000} />
-      {held ? <PlayerBehindQuiet pose={HELD_FRONT_POSE} /> : <PlayerInk path={playerFront([MOUNTED_BEATERS[0][0], MOUNTED_BEATERS[1][0]])} faint head="front" />}
+      <MetalSwitch v2={<MetalPlayerV2 fig={triFig('front', variant)} role={ROLE} dim={0.85} />} old={held ? <PlayerBehindQuiet pose={HELD_FRONT_POSE} /> : <PlayerInk path={playerFront([MOUNTED_BEATERS[0][0], MOUNTED_BEATERS[1][0]])} faint head="front" />} />
       {held ? null : (
         <Group>
           <Rod path={polyPath([[0, 0], [0, STAND.barY]])} d={STAND.r * 2} pal={STEEL} />
@@ -323,7 +313,7 @@ function FrontTriangleArt({ variant, highlight }: { variant: VariantId; highligh
           <Clip u={0} v={CLIP_Y} />
           {/* the arms and hands over the clip: the left fist closed on it,
               thumb and fingers round its top, the line hanging free below */}
-          <PlayerInFront pose={HELD_FRONT_POSE} dim={0.62} />
+          <MetalSwitch v2={null} old={<PlayerInFront pose={HELD_FRONT_POSE} dim={0.62} />} />
           <Beater a={HELD_GRIP} b={HELD_TIP} />
         </Group>
       ) : (
@@ -333,6 +323,7 @@ function FrontTriangleArt({ variant, highlight }: { variant: VariantId; highligh
           ))}
         </Group>
       )}
+      <MetalSwitch v2={<MetalPlayerV2 fig={triFig('front', variant)} role={ROLE} dim={0.85} part="front" />} old={null} />
       <FrontMarks marks={triangleMark(variant, highlight)} box={frontBox(variant)} />
     </Group>
   );

@@ -27,8 +27,10 @@ import { useMemo, type ReactNode } from 'react';
 import { Circle, DashPathEffect, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
 import { MikingMicArt } from '../../../../../../features/lab/micDrawings';
 import { ShotgunArt } from '../fieldmics/FieldMicArt';
-import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
 import { standing, topPose } from '../foley/performer.ts';
+// (figure V2, wave 7 of D78: the dish operator is a cast member from above: the right hand round the pistol grip)
+import { PlayerTopV2, topPlayerOfPose } from '../figureV2/elsewhereTop';
+import { castFor } from '../figureV2/cast';
 import { v3 } from '../foley/frameF.ts';
 import { shotgunLobe } from '../../../engine/physics/shotgun.ts';
 import { gain } from '../../../engine/physics/polar.ts';
@@ -801,6 +803,7 @@ function PlanMicGlyph({ at, aimDeg, kind, px, sizePx = 30, tint }: { at: P2; aim
 const DISH_OP_TOP = topPose(
   standing({ floorY: 0, x: 0, wrR: v3(300, -1280, 40), wrL: v3(380, -1300, -110), elR: v3(150, -1100, 230), elL: v3(200, -1120, -260), kindR: 'grip', kindL: 'rest', stepR: 60, stepL: -40 }),
 );
+const DISH_OP_PLAYER = topPlayerOfPose(DISH_OP_TOP, { R: 'fist', L: 'rest' });
 function DishOperatorAbove({ at, aimDeg, px, sizePx = 26 }: { at: P2; aimDeg: number; px: number; sizePx?: number }) {
   const o = uv(at);
   const d = dirFromDeg(aimDeg);
@@ -808,8 +811,7 @@ function DishOperatorAbove({ at, aimDeg, px, sizePx = 26 }: { at: P2; aimDeg: nu
   const k = (sizePx * px) / 660;
   return (
     <Group transform={[{ translateX: o.u }, { translateY: o.v }, { rotate: screen }, { scale: k }, { translateX: -430 }]}>
-      <PlayerBehind pose={DISH_OP_TOP} />
-      <PlayerInFront pose={DISH_OP_TOP} />
+      <PlayerTopV2 player={DISH_OP_PLAYER} who={castFor('sports.dish')} />
     </Group>
   );
 }

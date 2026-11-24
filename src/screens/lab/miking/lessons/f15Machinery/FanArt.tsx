@@ -23,6 +23,10 @@ import { make, Operator, rectP } from '../shared/measure/MeasureArt';
 import { ContactSensor } from '../shared/measure/SensorArt';
 import { flowRadius, flowStart, zoneRadius } from '../shared/measure/exclusion.ts';
 import { EXCL, F15_OP_SIDE, F15_OP_TOP, F15_VIEWS, FAN, HUB, TABLE, WALL_X } from './geometry.ts';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+
+/** The new look (figure V2, wave 3 set 3b): the operator is the cast's (figureV2/cast 'operator.measure'). */
+export const V2 = figureV2On('sidePlayers');
 
 const EDGE = '#07080a';
 const F = FAN;
@@ -242,7 +246,7 @@ export function KeepOuts({ view, px = 1 }: { view: ViewId; px?: number }) {
   );
 }
 
-export function FanScene({ view }: { view: ViewId }) {
+export function FanScene({ view, v2 = V2 }: { view: ViewId; /** (the study page compares the old look) */ v2?: boolean }) {
   const p = useMemo(() => buildRoom(view), [view]);
   return (
     <Group>
@@ -259,7 +263,7 @@ export function FanScene({ view }: { view: ViewId }) {
       <Path path={p.table} style="stroke" strokeWidth={5} color={EDGE} />
       <KeepOuts view={view} />
       <FanBody view={view} />
-      <Operator pose={view === 'side' ? F15_OP_SIDE : F15_OP_TOP} />
+      <Operator pose={view === 'side' ? F15_OP_SIDE : F15_OP_TOP} v2={v2} />
     </Group>
   );
 }

@@ -36,7 +36,8 @@ test('2 · Venue plan: people 2.5× with the note; gear at the plan scale', () =
   const src = read('screens/lab/soundsystems/art/VenueView.tsx');
   assert.match(src, /export const PEOPLE_ENLARGED = 2\.5;/);
   assert.match(src, /export const PEOPLE_NOTE = 'people enlarged for clarity';/);
-  assert.match(src, /<FigureAboveSvg key=\{s\} x=\{q\.x\} y=\{q\.y\} pxPerMm=\{PERSON_PX_PER_MM \* PEOPLE_ENLARGED\}/);
+  // (figure V2, wave 7 of D78: the performers are cast members from above, the same place and scale)
+  assert.match(src, /<PersonAboveSvg key=\{s\} x=\{q\.x\} y=\{q\.y\} pxPerMm=\{PERSON_PX_PER_MM \* PEOPLE_ENLARGED\}/);
   // The note at the plot's own word size (13 units ≈ 9.3 pt on a phone).
   assert.match(src, /fontSize=\{PLOT_FS\}[^>]*>\s*\{PEOPLE_NOTE\}/);
   assert.match(src, /export const PLOT_FS = 13;/);

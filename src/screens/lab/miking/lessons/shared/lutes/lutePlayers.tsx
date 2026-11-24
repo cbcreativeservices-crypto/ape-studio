@@ -113,7 +113,7 @@ function boxOf(...ps: SkPath[]): GarmentBox {
 }
 
 /** The hips and the cross-legged ankles (drawing values, engine frame). */
-function lowerBody(sc: LuteScene) {
+export function lowerBody(sc: LuteScene) {
   const f = sc.fit;
   const hz = f.head.c.z + 70;
   const hipR: V3 = { x: f.head.c.x - 112, y: f.hipY, z: hz };
@@ -202,7 +202,7 @@ function footAbove(a: Pt, s: number, bigToe: number): { path: SkPath; lines: SkP
 }
 
 type ArmGeo = { path: SkPath; foreSide: SkPath; cap: SkPath | null; root: Pt; e: Pt; w: Pt };
-type BodyGeo = {
+export type BodyGeo = {
   shirt: SkPath;
   /** The shirt body and both sleeves: one garment, one outline. */
   shirtAll: SkPath;
@@ -228,7 +228,7 @@ type BodyGeo = {
 };
 
 const geoCache = new WeakMap<LuteScene, Map<string, BodyGeo>>();
-function bodyGeo(sc: LuteScene, view: ViewId, o: LuteArmOpts): BodyGeo {
+export function bodyGeo(sc: LuteScene, view: ViewId, o: LuteArmOpts): BodyGeo {
   const key = `${view}|${o.fretDir[0].toFixed(3)},${o.fretDir[1].toFixed(3)}|${o.across}|${o.pluckRot}`;
   let m = geoCache.get(sc);
   if (!m) {
@@ -321,7 +321,7 @@ function arms(sc: LuteScene, view: ViewId, rootR: Pt, rootL: Pt) {
   return { R, L, eR, eL, wR, wL, foreR: Math.atan2(wR[1] - eR[1], wR[0] - eR[0]), foreL: Math.atan2(wL[1] - eL[1], wL[0] - eL[0]), lenR: Math.hypot(wR[0] - eR[0], wR[1] - eR[1]), lenL: Math.hypot(wL[0] - eL[0], wL[1] - eL[1]) };
 }
 /** An engine point's distance along the instrument's strings (its x). */
-function toInstX(sc: LuteScene, e: HV3): number {
+export function toInstX(sc: LuteScene, e: HV3): number {
   const o = sc.posture.P({ x: 0, y: 0, z: 0 });
   const ax = sc.posture.D({ x: 1, y: 0, z: 0 });
   return (e.x - o.x) * ax.x + (e.y - o.y) * ax.y + (e.z - o.z) * ax.z;
@@ -736,7 +736,7 @@ export function PlayerBack({ sc, view, arms: o }: { sc: LuteScene; view: ViewId;
 type HandPaint = { path: SkPath; behind: SkPath | null; lines: SkPath; nails: SkPath; tool: { path: SkPath; stroke: boolean; w: number } | null };
 
 /** The plane through the instrument's neck axis at x, facing the viewer. */
-function neckCut(sc: LuteScene, view: ViewId, x: number): { p: HV3; n: HV3 } {
+export function neckCut(sc: LuteScene, view: ViewId, x: number): { p: HV3; n: HV3 } {
   const depth = sc.kind === 'oud' ? 34 : sc.kind === 'sitar' ? sc.sitar!.neck.depth : sc.veena!.neck.depth;
   return { p: sc.posture.P({ x, y: 0, z: -depth / 2 }), n: view === 'side' ? { x: 0, y: 0, z: 1 } : { x: 0, y: -1, z: 0 } };
 }
@@ -833,6 +833,15 @@ function HandMass({ path, lines, nails }: { path: SkPath | null; lines?: SkPath 
       {nails ? <Nails path={nails} /> : null}
     </Group>
   );
+}
+
+/** (figure roll-out wave 5) the plectrum alone — the risha under the pinch (`stroke` false), the mizrab's wire
+ *  and the picks over the fingers (`stroke` true) — for the player in the approved look. */
+export function PluckTool({ sc, view, stroke }: { sc: LuteScene; view: ViewId; stroke: boolean }) {
+  const pl = luteHands(sc).pluck.plectrum;
+  if (!pl) return null;
+  const t = plectrumPath(pl, viewOf(view));
+  return t.stroke === stroke ? <Tool t={t} /> : null;
 }
 
 /** The plectrum's paint: the risha's dark horn, the mizrab's steel wire. */

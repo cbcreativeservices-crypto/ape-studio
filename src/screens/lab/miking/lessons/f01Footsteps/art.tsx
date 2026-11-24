@@ -26,12 +26,36 @@ import { PERFORMER_DIMS } from '../shared/foley/performer.ts';
 import { voiceLabelObstacles } from '../shared/voice/VoiceArt';
 import { F01_MODEL, F01_SURFACE, HEEL, surfaceOf, WALKER_SIDE, WALKER_TOP } from './geometry.ts';
 import { F01_ZONES } from './model.ts';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+import { PlayerSideV2, PlayerTopV2 } from '../shared/figureV2/playersV2';
+import { personShapes } from '../shared/figureV2/personV2';
+import { inPoly, P as P2 } from '../shared/figureV2/geom.ts';
+import { FOLEY_PERFORMER, foleySidePlan, foleyTopPlan, type FoleySpec } from '../shared/foley/foleyV2.ts';
+import { WALKER } from './geometry.ts';
+
+/** The new look (figure V2, wave 3 set 3b): the walker is Mei of the cast. */
+export const V2 = figureV2On('sidePlayers');
+/** Mid-stride, the arms swinging empty: the near (right) foot forward at the heel strike, its toe a little
+ *  up (the heel on the surface); the far foot behind on its ball, the heel lifting. */
+const WALK: FoleySpec = {
+  R: { kind: 'swing' },
+  L: { kind: 'swing' },
+  soleR: { ball: P2(WALKER.ftR.x, -100 * Math.sin(0.12)), slope: 0.12 },
+  soleL: { ball: P2(WALKER.ftL.x, -168 * Math.sin(0.2)), slope: -0.2 },
+};
+export const walkerSide = () => foleySidePlan(WALKER, WALK);
+export const walkerTop = () => foleyTopPlan(WALKER, WALK);
+const v2Covers = (u: number, v: number, tol: number) => {
+  const shapes = personShapes(walkerSide());
+  const pts = tol > 0 ? [P2(u, v), P2(u - tol, v), P2(u + tol, v), P2(u, v - tol), P2(u, v + tol)] : [P2(u, v)];
+  return pts.some((q) => shapes.some((sh) => inPoly(q, sh)));
+};
 
 const V = F01_MODEL.views;
 const BOOTH = liveBooth(0);
 const TAPE = { u0: -PIT.hx - PIT.rim, u1: PIT.hx + PIT.rim, v0: -PIT.hz - PERFORMER_DIMS.sweep.mm, v1: PIT.hz + PERFORMER_DIMS.sweep.mm };
 
-export function FootstepsArt({ view, variant }: { view: ViewId; variant: VariantId }) {
+export function FootstepsArt({ view, variant, v2 = V2 }: { view: ViewId; variant: VariantId; /** (the study page compares the old look) */ v2?: boolean }) {
   const surface = F01_SURFACE[variant] ?? 'tile';
   const live = variant === 'live';
   if (view === 'top') {
@@ -41,11 +65,19 @@ export function FootstepsArt({ view, variant }: { view: ViewId; variant: Variant
         <StageFloorPlan u0={t.u0 - 200} u1={t.u1 + 200} v0={t.v0 - 200} v1={t.v1 + 200} />
         <PitPlan surface={surface} tapeBox={TAPE} />
         {live ? <BoothArt view="top" rail={BOOTH.rail} pa={{ x: BOOTH.pa.p.x, y: BOOTH.pa.p.y, z: BOOTH.pa.p.z }} /> : null}
-        <PlayerBehind pose={WALKER_TOP} />
-        {/* From above, the swinging hands hang below the cuffs, edge-on: the
-            plan draws the sleeves without them (clash sweep 2026-10-10 — they
-            were open palms facing up, as if raised). */}
-        <PlayerInFront pose={WALKER_TOP} hands={false} />
+        {v2 ? (
+          // (the new look from above: the shoulders and head, the swinging sleeves where they reach past the
+          // shoulders — the hands hang under the cuffs, edge-on, as the old figure; the legs under the body)
+          <PlayerTopV2 plan={walkerTop()} who={FOLEY_PERFORMER} bareArms />
+        ) : (
+          <>
+            <PlayerBehind pose={WALKER_TOP} />
+            {/* From above, the swinging hands hang below the cuffs, edge-on: the
+                plan draws the sleeves without them (clash sweep 2026-10-10 — they
+                were open palms facing up, as if raised). */}
+            <PlayerInFront pose={WALKER_TOP} hands={false} />
+          </>
+        )}
       </Group>
     );
   }
@@ -54,8 +86,14 @@ export function FootstepsArt({ view, variant }: { view: ViewId; variant: Variant
     <Group>
       <PitSection surface={surface} u0={s.u0 - 200} u1={s.u1 + 200} />
       {live ? <BoothArt view="side" rail={BOOTH.rail} pa={{ x: BOOTH.pa.p.x, y: BOOTH.pa.p.y, z: BOOTH.pa.p.z }} /> : null}
-      <PlayerBehind pose={WALKER_SIDE} />
-      <PlayerInFront pose={WALKER_SIDE} />
+      {v2 ? (
+        <PlayerSideV2 plan={walkerSide()} who={FOLEY_PERFORMER} />
+      ) : (
+        <>
+          <PlayerBehind pose={WALKER_SIDE} />
+          <PlayerInFront pose={WALKER_SIDE} />
+        </>
+      )}
     </Group>
   );
 }
@@ -96,7 +134,7 @@ export function footstepsHitTest(view: ViewId, variant: VariantId, u: number, v:
   const s = surfaceOf(variant);
   if (view === 'side') {
     if (Math.hypot(u - HEEL.x, v + 40) <= 90 + tol) return 'f01.shoe';
-    if (poseCovers(WALKER_SIDE, u, v, tol)) return 'f01.walker';
+    if (V2 ? v2Covers(u, v, tol) : poseCovers(WALKER_SIDE, u, v, tol)) return 'f01.walker';
     if (live && Math.abs(u - BOOTH.pa.p.x) <= 220 + tol && v >= BOOTH.pa.p.y - 340 - tol && v <= BOOTH.pa.p.y + 340 + tol) return 'f01.pa';
     if (live && u >= BOOTH.rail.x - tol && u <= BOOTH.rail.x + 60 + tol && v >= -BOOTH.rail.h - tol && v <= tol) return 'f01.booth';
     if (Math.abs(u) <= PIT.hx + tol && v >= -tol && v <= PIT.depth + tol) return v <= s.layers[0].mm + tol ? `f01.surface.${variant}` : `f01.under.${variant}`;
@@ -117,7 +155,7 @@ export const F01_ART: LessonArt = {
   Instrument: FootstepsArt,
   labels: footstepsLabels,
   hitTest: footstepsHitTest,
-  figureAt: (view, _variant, u, v, tol) => poseCovers(view === 'side' ? WALKER_SIDE : WALKER_TOP, u, v, tol),
+  figureAt: (view, _variant, u, v, tol) => (view === 'side' && V2 ? v2Covers(u, v, tol) : poseCovers(view === 'side' ? WALKER_SIDE : WALKER_TOP, u, v, tol)),
   labelObstacles: voiceLabelObstacles(F01_ZONES),
   labelsYieldToMic: true,
   // ORIENT's figure: the walker whole, the pit cut open under the feet (art

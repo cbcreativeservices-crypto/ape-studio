@@ -18,7 +18,9 @@ import { useMemo } from 'react';
 import { Circle, DashPathEffect, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
 import { MikingMicArt } from '../../../../../../features/lab/micDrawings';
 import { ShockMountArt } from '../fieldmics/FieldMicArt';
-import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
+// (figure V2, wave 7 of D78: the clapper is a cast member in the approved side view, the hands as a real clap)
+import { ClapperV2 } from '../figureV2/clapV2';
+import { castFor } from '../figureV2/cast';
 import { sidePose, standing } from '../foley/performer.ts';
 import { v3 } from '../foley/frameF.ts';
 import { bouncePoint, type BoundaryGeom, type PlantMount } from './boundary.ts';
@@ -61,7 +63,7 @@ function Floor({ u0, u1, px }: { u0: number; u1: number; px: number }) {
  * with the neck at the origin and both hands together 300 mm in front at
  * `hs` — drawn mirrored so they face the mic, the hands on the source point.
  */
-function clapPose(hs: number) {
+export function clapPose(hs: number) {
   // Elbows bent and a little ahead of the hips, the forearms forward to the
   // hands meeting palm to palm in front of the body — a low, gentle clap at
   // the lesson's height; the weight on both feet, one a half step ahead.
@@ -70,9 +72,10 @@ function clapPose(hs: number) {
 function Clapper({ x, hs }: { x: number; hs: number }) {
   const pose = useMemo(() => clapPose(hs), [hs]);
   return (
-    <Group transform={[{ translateX: x + 300 }, { scaleX: -1 }]}>
-      <PlayerBehind pose={pose} />
-      <PlayerInFront pose={pose} />
+    // (the same place as before: the old figure was drawn mirrored about this line; the new one is the pose
+    // mirrored point for point, facing the mic, so its light stays the approved upper-left light)
+    <Group transform={[{ translateX: x + 300 }]}>
+      <ClapperV2 pose={pose} who={castFor('sports.clapper')} />
     </Group>
   );
 }

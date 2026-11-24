@@ -37,7 +37,9 @@ import { StandingPresenter } from '../shared/broadcast/BodyWornArt';
 import { PlayerBehind, PlayerInFront } from '../shared/players/PlayerFigure';
 import { SINGER_TOP } from '../shared/voice/voicePose.ts';
 import { Aim, Dim, FieldStage, MicAt, Ray, uvOf } from '../shared/field/FieldStage';
-import { B04Scene } from './scene';
+import { B04Scene, V2 } from './scene';
+import { castFor } from '../shared/figureV2/cast';
+import { PersonTopV2 } from '../shared/figureV2/personV2';
 import { CAM_CAPSULE_MM, SHOTGUN_CAPSULE_MM } from '../shared/field/fieldMics.ts';
 import { BOOM_ABOVE, CAM_CLOSE, CAM_WIDE, FLOOR, HEAD_TOP, LAV } from './geometry.ts';
 
@@ -142,10 +144,20 @@ function useTwoTalkerStep(): MikingStep {
           >
             {(px) => (
               <>
-                <PlayerBehind pose={SINGER_TOP} />
-                <PlayerInFront pose={SINGER_TOP} hands={false} />
-                <PlayerBehind pose={B_POSE} />
-                <PlayerInFront pose={B_POSE} hands={false} />
+                {V2 ? (
+                  <>
+                    {/* (figure V2) the talker is the lesson's presenter, Ruth, in her jacket; the interviewer Kofi */}
+                    <PersonTopV2 pose={SINGER_TOP} who={castFor('presenter')} opts={{ jacket: true }} />
+                    <PersonTopV2 pose={B_POSE} who={castFor('talker.interviewer')} />
+                  </>
+                ) : (
+                  <>
+                    <PlayerBehind pose={SINGER_TOP} />
+                    <PlayerInFront pose={SINGER_TOP} hands={false} />
+                    <PlayerBehind pose={B_POSE} />
+                    <PlayerInFront pose={B_POSE} hands={false} />
+                  </>
+                )}
                 <Ray a={uvOf('top', A_LIP)} b={top} px={px} color={cue === 'B' ? '#8fbcff' : '#ffc64d'} width={cue === 'B' ? 2 : 3} dash={cue === 'B' ? [10, 7] : [1000, 0]} />
                 <Ray a={uvOf('top', B_LIP)} b={top} px={px} color={cue === 'A' ? '#8fbcff' : '#ffc64d'} width={cue === 'A' ? 2 : 3} dash={cue === 'A' ? [10, 7] : [1000, 0]} />
                 <MicAt view="top" p={BOOM_2} aim={aim} art={look.art} r={look.r} len={look.len} />
@@ -203,12 +215,14 @@ function useTools() {
     },
   });
   const turn = useBodyTurnStep({
+    v2: V2,
+    who: 'presenter',
     mics: [
       { id: 'boom', label: 'The boom, held still', short: 'BOOM', p: BOOM_ABOVE.p, rides: 'fixed', art: 'shotgun', r: 9.5, len: 250, fore: SHOTGUN_CAPSULE_MM },
       { id: 'lav', label: 'The safety lav on the chest', short: 'LAV', p: LAV.at, rides: 'chest', art: 'lavalier', r: 3, len: 12 },
     ],
-    top: () => <StandingPresenter view="top" headless />,
-    side: () => <StandingPresenter view="side" headless />,
+    top: () => <StandingPresenter view="top" headless v2={V2} />,
+    side: () => <StandingPresenter view="side" headless v2={V2} />,
     boxTop: { u0: -460, u1: 700, v0: -620, v1: 460 },
     boxSide: { u0: -420, u1: 640, v0: -560, v1: 420 },
     insetAt: { x: 0.6, y: 0.52, w: 0.39, h: 0.46 },
@@ -225,6 +239,9 @@ function useTools() {
 }
 
 const B04Sound = makeBroadcastSound({
+  v2: V2,
+  jacket: true,
+  who: 'presenter',
   useTools: () => useTools(),
   highs: 'The voice’s highest frequencies go out ahead of the mouth: a boom above and in front hears them; a talker who turns away from it, or a mic beside the frame, hears a duller voice. In words only — the shape of that spread is not drawn.',
   silentNote: 'This lab never plays a sound and draws no frequency curve for a voice or a shotgun: how a real talker sounds depends on the voice, the mic, the room and the distance. The pictures show where the sound comes from and where it goes.',

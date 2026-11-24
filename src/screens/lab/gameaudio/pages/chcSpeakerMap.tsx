@@ -22,7 +22,9 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Canvas, Circle, DashPathEffect, Group, Line, LinearGradient, RoundedRect, vec } from '@shopify/react-native-skia';
 import { colors, fonts } from '../../../../theme/tokens';
 import { SceneFontsProvider, SceneText, useLabelMm } from '../../dj/art/sceneText';
-import { PlayerBehind, PlayerInFront } from '../../miking/lessons/shared/players/PlayerFigure';
+// (figure V2, wave 7 of D78: the listener is YOU, a cast member from above)
+import { PersonTopV2 } from '../../miking/lessons/shared/figureV2/personV2';
+import { castFor } from '../../miking/lessons/shared/figureV2/cast';
 import { SINGER_TOP } from '../../miking/lessons/shared/voice/voicePose';
 
 /** The figure's own space, in meters: x → right, y ↓ toward the back. */
@@ -146,8 +148,7 @@ export function ChcSpeakerMap() {
                 <Circle cx={CX + 0.05} cy={CY + 0.08} r={0.36} color="rgba(0,0,0,0.42)" />
                 <Circle cx={CX} cy={CY} r={0.52} style="stroke" strokeWidth={0.035} color={colors.amber} opacity={0.85} />
                 <Group transform={[{ translateX: CX }, { translateY: CY }, { rotate: -Math.PI / 2 }, { scale: 0.0017 }]}>
-                  <PlayerBehind pose={SINGER_TOP} />
-                  <PlayerInFront pose={SINGER_TOP} hands={false} />
+                  <PersonTopV2 pose={SINGER_TOP} who={castFor('ga.you')} />
                 </Group>
                 <Labels />
               </Group>

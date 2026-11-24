@@ -250,7 +250,7 @@ describe('A11 accordion: two sides, one of them moving', () => {
   it('fix pass 2026-10-16: the accordion hangs from two shoulder straps on the treble side (no guitar strap across the chest)', () => {
     const art = read(`${MIKING}/lessons/a11Accordion/art.tsx`);
     assert.match(art, /strapTo: null,/);
-    assert.match(art, /<PlayerBehind pose=\{pose\} \/>\n\s*<AccStraps pose=\{pose\} \/>/);
+    assert.match(art, /<PlayerBehind pose=\{pose\} \/>\}?\n\s*<AccStraps pose=\{pose\} \/>/);
     assert.match(art, /strapBand\(\{ u: -TREBLE\.z1 \+ 60, v: STRAP_TOP \}, over\(pose\.shoulderR, -1\)[\s\S]*strapBand\(\{ u: -TREBLE\.z0 - 26, v: STRAP_TOP \}, over\(pose\.shoulderL, 1\)/);
   });
   it('the bellows keep-out holds the bass side at every stage of the cycle (and the left hand beyond it)', () => {

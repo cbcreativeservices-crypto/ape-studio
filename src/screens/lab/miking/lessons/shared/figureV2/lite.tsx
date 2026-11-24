@@ -143,7 +143,7 @@ function ShoeLite({ s, axis }: { s: ShoePaths; axis: [Pt, Pt] }) {
 }
 
 /** The side view, lite. */
-export function SideLite({ plan, P, farStick, nearStick, part = 'all', fullHead, over }: { plan: SidePlan; P: SidePaths; farStick?: ReactNode; nearStick?: ReactNode; part?: 'all' | 'headless' | 'head'; /** (wave 3) the head drawn in full detail in place of the lite head (a head ≥ 45 pt tall) */ fullHead?: ReactNode; /** (wave 3, the jacket) pieces over the far arm, the shirt's collar and the near arm */ over?: { far?: ReactNode; body?: ReactNode; near?: ReactNode } }) {
+export function SideLite({ plan, P, farStick, nearStick, part = 'all', fullHead, over, noArm }: { /** (the held arm) that arm not drawn ('both': the boom operator) */ noArm?: 'near' | 'far' | 'both'; plan: SidePlan; P: SidePaths; farStick?: ReactNode; nearStick?: ReactNode; part?: 'all' | 'headless' | 'head'; /** (wave 3) the head drawn in full detail in place of the lite head (a head ≥ 45 pt tall) */ fullHead?: ReactNode; /** (wave 3, the jacket) pieces over the far arm, the shirt's collar and the near arm */ over?: { far?: ReactNode; body?: ReactNode; near?: ReactNode } }) {
   const { MAT, HEAD_SKIN, CLOTH, LIP } = useLook();
   const L = plan.legs;
   const h = plan.head;
@@ -175,10 +175,14 @@ export function SideLite({ plan, P, farStick, nearStick, part = 'all', fullHead,
         <ShoeLite s={P.shoeFar} axis={shoeAxis(plan.shoes.far)} />
         <M path={P.legFar} mat={CLOTH} axis={L.far.thighAxis} w={70} />
       </Group>
+      {noArm === 'far' || noArm === 'both' ? null : (
+        <>
       <Group layer={FAR}>
         <ArmLite a={plan.arms.far} P={P.far} stick={farStick} />
       </Group>
       {over?.far ?? null}
+        </>
+      )}
       <ShoeLite s={P.shoeNear} axis={shoeAxis(plan.shoes.near)} />
       <M path={P.trousersNear} mat={CLOTH} axis={L.near.thighAxis} w={70} />
       {/* the head */}
@@ -196,14 +200,18 @@ export function SideLite({ plan, P, farStick, nearStick, part = 'all', fullHead,
       )}
       <M path={P.collar} mat={MAT.shirt} axis={torsoAxis} w={70} />
       {over?.body ?? null}
+      {noArm === 'near' || noArm === 'both' ? null : (
+        <>
       <ArmLite a={plan.arms.near} P={P.near} stick={nearStick} />
       {over?.near ?? null}
+        </>
+      )}
     </Group>
   );
 }
 
 /** The view from above, lite: `legs` under the drums, `upper` over them. */
-export function TopLite({ plan, T, part, farStick, nearStick, arms = true, head = true, over }: { plan: TopPlan; T: TopPaths; part: 'all' | 'legs' | 'upper'; farStick?: ReactNode; nearStick?: ReactNode; /** (wave 3) a standing person's arms hang under the shoulders: not drawn */ arms?: boolean; /** (wave 3) false: the head is drawn turned by a step */ head?: boolean; /** (wave 3, the jacket) pieces over the arms and over the shoulders (before the head) */ over?: { arms?: ReactNode; body?: ReactNode } }) {
+export function TopLite({ plan, T, part, farStick, nearStick, arms = true, head = true, over, noArm }: { /** (the held arm) that arm not drawn */ noArm?: 'near' | 'far'; plan: TopPlan; T: TopPaths; part: 'all' | 'legs' | 'upper'; farStick?: ReactNode; nearStick?: ReactNode; /** (wave 3) a standing person's arms hang under the shoulders: not drawn */ arms?: boolean; /** (wave 3) false: the head is drawn turned by a step */ head?: boolean; /** (wave 3, the jacket) pieces over the arms and over the shoulders (before the head) */ over?: { arms?: ReactNode; body?: ReactNode } }) {
   const { MAT, HEAD_SKIN, CLOTH } = useLook();
   const hc = plan.head.c;
   return (
@@ -226,8 +234,8 @@ export function TopLite({ plan, T, part, farStick, nearStick, arms = true, head 
       ) : null}
       {part !== 'legs' ? (
         <Group>
-          {arms ? <ArmLite a={plan.arms.far} P={T.far} stick={farStick} /> : null}
-          {arms ? <ArmLite a={plan.arms.near} P={T.near} stick={nearStick} /> : null}
+          {arms && noArm !== 'far' ? <ArmLite a={plan.arms.far} P={T.far} stick={farStick} /> : null}
+          {arms && noArm !== 'near' ? <ArmLite a={plan.arms.near} P={T.near} stick={nearStick} /> : null}
           {over?.arms ?? null}
           <M path={T.torso} mat={MAT.shirt} axis={plan.torsoAxis} w={120} />
           <Path path={T.torso} style="stroke" strokeWidth={1} color={MAT.shirt.edge} opacity={0.5} />

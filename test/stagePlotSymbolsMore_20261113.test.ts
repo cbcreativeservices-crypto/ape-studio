@@ -257,7 +257,8 @@ function marksOf(node: unknown, m: Mat = UNIT, out: Mark[] = []): Mark[] {
   }
   const el = node as El;
   const p = el.props ?? {};
-  if (typeof el.type === 'function' && (el.type as { name?: string }).name === 'FigureAboveSvg') {
+  if (typeof el.type === 'function' && ['FigureAboveSvg', 'PersonAboveSvg'].includes(String((el.type as { name?: string }).name))) {
+    // (figure V2, wave 7 of D78: the cast member from above, PersonAboveSvg, has the same footprint or less)
     // the house figure (a choir's singers): 476 mm across, 230 mm deep, halo included
     const half = (476 / 2) * Number(p.pxPerMm) + 0.6;
     const [cx, cy] = at(m, Number(p.x), Number(p.y));
@@ -341,7 +342,7 @@ describe('the on-screen art of every added kind', () => {
       assert.doesNotMatch(code, /\buse[A-Z]\w*\s*\(/, f);
       assert.doesNotMatch(code, /Animated|reanimated|setState|setInterval|setTimeout/, f);
       const from = [...code.matchAll(/from\s+'([^']+)'/g)].map((m) => m[1]).sort();
-      assert.deepEqual(from, f === 'topArtWorld.tsx' ? ['../../../../features/lab/figureAboveSvg', './topArtTypes', 'react-native-svg'] : ['./topArtTypes', 'react-native-svg'], f);
+      assert.deepEqual(from, f === 'topArtWorld.tsx' ? ['../../../../features/lab/figureAboveSvg', './topArtTypes', 'react-native-svg'] /* (owner 2026-11-24: in Stage Plot every performer is the same generic person) */ : ['./topArtTypes', 'react-native-svg'], f);
     }
   });
 

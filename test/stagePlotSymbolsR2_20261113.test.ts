@@ -120,7 +120,8 @@ function marksOf(node: unknown, m: Mat = UNIT, out: Mark[] = []): Mark[] {
   }
   const el = node as El;
   const p = el.props ?? {};
-  if (typeof el.type === 'function' && (el.type as { name?: string }).name === 'FigureAboveSvg') {
+  if (typeof el.type === 'function' && ['FigureAboveSvg', 'PersonAboveSvg'].includes(String((el.type as { name?: string }).name))) {
+    // (figure V2, wave 7 of D78: the cast member from above, PersonAboveSvg, has the same footprint or less)
     const half = (476 / 2) * Number(p.pxPerMm) + 0.6;
     const [cx, cy] = at(m, Number(p.x), Number(p.y));
     out.push({

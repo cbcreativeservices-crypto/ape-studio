@@ -31,7 +31,11 @@ export const floorOf = (v: VariantId) => FLOOR[v] ?? 1000;
 export const TABLE = { x0: -330, x1: 300, z0: -480, z1: 480 } as const;
 
 const KEYS_BODY: Body3 = standing({ floorY: FLOOR.keys, x: -380, wrR: v3(-60, -30, 40), elR: v3(-300, -160, 220), wrL: v3(-390, 160, -230), elL: v3(-410, -100, -220), kindR: 'grip' });
-const PAPER_BODY: Body3 = standing({ floorY: FLOOR.paper, x: -470, lean: 30, wrR: v3(-150, -40, 80), elR: v3(-380, -300, 230), wrL: v3(-150, -30, -90), elL: v3(-380, -300, -230) });
+// (review 2026-11-24: "only one leg visible" — the feet stood together; at a table one foot is a little ahead)
+// (second review 2026-11-24: "from above no arms show; the hands come out from under the face") the hands reach a
+// little further onto the sheet and a little wider, the elbows out: from above both forearms run from the
+// shoulders to hands that lie ahead of the bent head (the body, its lean and the hands' keep-out unchanged)
+const PAPER_BODY: Body3 = standing({ floorY: FLOOR.paper, x: -470, lean: 30, stepR: 110, stepL: -70, wrR: v3(-70, -40, 105), elR: v3(-330, -300, 270), wrL: v3(-70, -30, -110), elL: v3(-330, -300, -270) });
 const DOOR_BODY: Body3 = standing({ floorY: FLOOR.door, x: -430, z: -330, wrR: v3(-90, -10, 20), elR: v3(-340, -150, -130), wrL: v3(-452, 160, -540), elL: v3(-462, -100, -520), kindR: 'grip' });
 const CHAIR_BODY: Body3 = standing({ floorY: FLOOR.chair, x: -760, z: -210, wrR: v3(-470, -880, -80), elR: v3(-650, -1090, -30), wrL: v3(-470, -880, -340), elL: v3(-650, -1090, -390), kindR: 'grip', kindL: 'grip' });
 

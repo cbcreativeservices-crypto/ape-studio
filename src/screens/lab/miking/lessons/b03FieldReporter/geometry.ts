@@ -40,8 +40,17 @@ const DD = ill('a drawing default (field_reporter/GEOMETRY_PROPOSAL.md §1; owne
 /** The ground below the lips (standing). */
 export const FLOOR = VOICE_DIMS.lipStanding.mm;
 
+/**
+ * OWNER DECISION (a), still open (2026-11-24, the held arm): with the omni at the guest's mouth, the reporter as
+ * they stand ('asItStands', the lead's default: nobody moves — the reporter's elbow dropped as far as the arm
+ * allows, b03FieldReporter/held.ts) or about 14 cm nearer the guest ('stepIn': the reporter's place, and every
+ * distance read from their mouth, moves with them — the spacing 61 cm, still inside the proposal's 60–90 cm).
+ * ONE line flips it.
+ */
+export const B03_REPORTER_STANCE = 'asItStands' as 'asItStands' | 'stepIn';
+
 /** Mouth to mouth (mm): a drawing default inside the proposal's 600–900. */
-export const SPACING = 750;
+export const SPACING = B03_REPORTER_STANCE === 'stepIn' ? 750 - 140 : 750;
 /** The guest at the origin facing +x; the reporter facing them. */
 export const GUEST: Stander = { id: 'guest', lip: v3(0, 0, 0), facing: 1 };
 export const REPORTER: Stander = { id: 'reporter', lip: v3(SPACING, 0, 0), facing: -1 };

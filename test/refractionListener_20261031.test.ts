@@ -38,19 +38,17 @@ describe('Refraction listener — a small standing person 150 m out (owner 2026-
   const body = gradientScene();
 
   it('is the house standing figure at the ×20 height scale, never a lone head icon', () => {
-    assert.match(body, /appendStanding\(path, listenerX, groundY, ppmY\)/);
-    assert.match(body, /<StandingHead x=\{listenerX\} gy=\{groundY\} u=\{ppmY\} \/>/);
+    // (figure V2, wave 7 of D78: the standing listener is a cast member from the front, at the same height and scale)
+    assert.match(body, /<PersonStandingFrontAt cx=\{listenerX\} floorY=\{groundY\} pxPerMm=\{ppmY \/ 1000\} who=\{castFor\('wave\.listener'\)\} heightMm=\{STANDING_MM\} \/>/);
     assert.doesNotMatch(body, /<HeadIcon\b/, 'no line-art head icon in the refraction scene');
     assert.doesNotMatch(body, /SIDE_CANON|headIconScale|listenerHead/, 'the old ×20 head-icon sizing is gone');
   });
 
   it('the rays pass BEHIND the person (opaque fill under the line-art body)', () => {
-    const fill = body.indexOf('<Path path={listenerBody} color="#0b0c10" />');
-    const line = body.indexOf('<LineBust path={listenerBody}');
-    const head = body.indexOf('<StandingHead x={listenerX}');
+    // (figure V2: the cast member is opaque itself; drawn after the ray fan, so the rays pass behind)
+    const person = body.indexOf('<PersonStandingFrontAt cx={listenerX}');
     const rays = body.indexOf('<GlowStroke path={rays.hot}');
-    assert.ok(rays >= 0 && fill > rays, 'figure drawn after (over) the ray fan');
-    assert.ok(fill >= 0 && line > fill && head > line, 'opaque fill → line body → head');
+    assert.ok(rays >= 0 && person > rays, 'figure drawn after (over) the ray fan');
   });
 
   it("the head sits at a standing ear's height, so a 1.6 m ray reaches it", () => {

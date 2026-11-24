@@ -24,6 +24,10 @@ import { handOf } from '../family.ts';
 import { HandPlan } from '../HandPlan';
 import { modelArtPlan, turnArtPlan } from '../handPlanModel.ts';
 
+/** (figure V2, wave 6 of D78) the hand-drum lessons whose only drawn person is this plan's player (their hands
+ *  are the approved hand pages): switched on whole. The cajón (I02) is another builder's lesson: off until it switches. */
+const HAND_PLAN_V2: ReadonlySet<string> = new Set(['M04a', 'M04b', 'M04c', 'M05']);
+
 export function HSetting({ lesson, art, answers, onAnswered, variant }: PageProps) {
   const H = handOf(lesson);
   const items = lesson.setting.items;
@@ -46,7 +50,7 @@ export function HSetting({ lesson, art, answers, onAnswered, variant }: PageProp
     if (wideItems.some((i) => i.id === id)) setWideSel(id);
   };
   const render = (scene: 'kit' | 'stage' | 'studio', sel: string | null, onTap: (id: string) => void, label: string) => (w: number, h: number) => (
-    <HandPlan w={w} h={h} scene={scene} variant={variant} Drums={art.Instrument as never} turnDrums={H.plan.turn != null} things={things} box={H.plan.box} art={artPlan} cue={H.plan.cue} shortOf={shortOf} highlight={sel} onTap={onTap} accessibilityLabel={label} />
+    <HandPlan w={w} h={h} scene={scene} variant={variant} Drums={art.Instrument as never} turnDrums={H.plan.turn != null} things={things} box={H.plan.box} art={artPlan} cue={H.plan.cue} shortOf={shortOf} highlight={sel} onTap={onTap} accessibilityLabel={label} v2={HAND_PLAN_V2.has(lesson.id)} />
   );
   const itemFader = (list: readonly SettingItem[], sel: string | null, pick: (id: string) => void): DockParam => {
     const idx = Math.max(0, list.findIndex((i) => i.id === sel));

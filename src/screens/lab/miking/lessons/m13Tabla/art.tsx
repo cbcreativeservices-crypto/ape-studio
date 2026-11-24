@@ -17,6 +17,15 @@ import type { ArtLabel } from '../../engine/scene/sceneTypes.ts';
 import { BAYAN, DAYAN, type TablaDrum } from './geometry.ts';
 import { PlayerBehind, PlayerInFront } from '../shared/players/PlayerFigure';
 import { pt, type PlayerPose } from '../shared/players/playerPose.ts';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+import { PlayerArmV2, PlayerBodyV2, PlayerTopV2, recedeV2 } from '../shared/figureV2/playersV2';
+import { FloorFoldSide, FloorHeelSide, FloorLegsTop, FloorToesSide } from '../shared/figureV2/floorSeatV2';
+import { FigureLook } from '../shared/figureV2/look';
+import { sidePaths } from '../shared/figureV2/paths.ts';
+import { TABLA_PLAYER, tablaSide, tablaTop } from './tablaV2.ts';
+
+/** The new look (figure V2, wave 3 set 3d): the player is Ana of the cast, cross-legged and barefoot. */
+export const V2 = figureV2On('sidePlayers');
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -334,8 +343,52 @@ export function tablaPose(view: ViewId): PlayerPose {
   return pose;
 }
 
-export function TablaArt({ view }: { view: ViewId; variant: VariantId }) {
+export function TablaArt({ view, v2 = V2 }: { view: ViewId; variant: VariantId; /** (the study page compares the old look) */ v2?: boolean }) {
   const b = getBuilt();
+  if (v2) {
+    // THE NEW LOOK. From above: the crossed legs and the feet, the drums, then the arms, shoulders and head.
+    // From the right: the near foot's heel, the body (the crossed legs), the left foot's toe end, the bayan,
+    // the left arm on it (its upper arm hidden behind the body), the dayan, the right arm on it.
+    if (view === 'top') {
+      const ft = tablaTop();
+      return (
+        <Group>
+          <FigureLook look={TABLA_PLAYER.look}>
+            <Group layer={DIM_V2}>
+              <FloorLegsTop ft={ft} />
+            </Group>
+          </FigureLook>
+          <TopDrum d={BAYAN} p={b.top[0]} />
+          <TopDrum d={DAYAN} p={b.top[1]} />
+          <PlayerTopV2 plan={ft.plan} who={TABLA_PLAYER} dim={0.85} part="upper" />
+        </Group>
+      );
+    }
+    const fs = tablaSide();
+    return (
+      <Group>
+        <Path path={b.floor}>
+          <LinearGradient start={vec(0, 0)} end={vec(0, 60)} colors={['#202128', '#141519', '#0b0b0e']} />
+        </Path>
+        <FigureLook look={TABLA_PLAYER.look}>
+          <Group layer={DIM_V2}>
+            <FloorHeelSide fs={fs} />
+          </Group>
+        </FigureLook>
+        <PlayerBodyV2 plan={fs.plan} who={TABLA_PLAYER} dim={0.85} />
+        <FigureLook look={TABLA_PLAYER.look}>
+          <Group layer={DIM_V2}>
+            <FloorFoldSide fs={fs} />
+            <FloorToesSide fs={fs} />
+          </Group>
+        </FigureLook>
+        <SideDrum d={BAYAN} p={b.side[0]} behind />
+        <PlayerArmV2 plan={fs.plan} who={TABLA_PLAYER} which="far" dim={0.85} hideIn={sidePaths(fs.plan).shirt} />
+        <SideDrum d={DAYAN} p={b.side[1]} behind={false} />
+        <PlayerArmV2 plan={fs.plan} who={TABLA_PLAYER} which="near" dim={0.85} />
+      </Group>
+    );
+  }
   if (view === 'top') {
     return (
       <Group>
@@ -358,6 +411,9 @@ export function TablaArt({ view }: { view: ViewId; variant: VariantId }) {
     </Group>
   );
 }
+
+/** (figure V2) the player receded as the body is (dim 0.85: toward the stage's dark, opaque). */
+const DIM_V2 = recedeV2(0.85) as never;
 
 export function tablaLabels(view: ViewId): ArtLabel[] {
   if (view === 'top') {

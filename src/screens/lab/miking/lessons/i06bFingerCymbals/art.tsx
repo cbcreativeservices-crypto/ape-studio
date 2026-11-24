@@ -23,6 +23,12 @@ import type { FrontArt } from '../shared/metal/metalPages';
 import { FRONT_MARK_LINE_PX, FrontMarks, mmPerPx, type FrontMark } from '../shared/metal/metalMark';
 import { FC, FLANGE_RISE, P0, P0D, profile, RA, RB } from './model.ts';
 import { DROP_C, DROP_TILT, HAND_L, HAND_R } from './geometry.ts';
+import { FigureScale, useFigureScale } from '../shared/figureV2/detail';
+import { MetalPlayerV2, MetalSwitch } from '../shared/metal/MetalPlayerV2';
+import { fcFig, GHOST_Z } from './playerV2.ts';
+
+/** The player in the approved look (figure roll-out, D78; playerV2.ts, the drummer), where the family's switch is on (MetalSwitch). */
+const ROLE = 'metal.fingerCymbals' as const;
 
 const H = FC.h.mm;
 const isDance = (v: VariantId) => v === 'dance';
@@ -126,7 +132,7 @@ function sideArt(v: VariantId): ReactElement {
     return (
       <Group>
         <Floor u0={-4000} u1={5000} />
-        <PlayerInk path={playerSide(hands)} head="side" />
+        <MetalSwitch v2={<MetalPlayerV2 fig={fcFig('side', v)} role={ROLE} dim={0.85} />} old={<PlayerInk path={playerSide(hands)} head="side" />} />
         {hands.map(([a, b], i) => (
           <Group key={i}>
             <CymbalEdge u={a + 8} v={b - 16} r={RA} deg={-70} />
@@ -139,9 +145,11 @@ function sideArt(v: VariantId): ReactElement {
   return (
     <Group>
       <Floor u0={-4000} u1={5000} />
-      <PlayerInk path={playerSide([[P0.x - 30, P0.y + 30], [DROP_C.x - 20, DROP_C.y - 25]])} head="side" />
+      <MetalSwitch v2={<MetalPlayerV2 fig={fcFig('side', v)} role={ROLE} dim={0.85} />} old={<PlayerInk path={playerSide([[P0.x - 30, P0.y + 30], [DROP_C.x - 20, DROP_C.y - 25]])} head="side" />} />
       <CymbalEdge u={P0.x} v={P0.y} r={RA} />
       <CymbalEdge u={DROP_C.x} v={DROP_C.y} r={RB} deg={-DROP_TILT} />
+      {/* the pinching fingers' near parts over the straps */}
+      <MetalSwitch v2={<MetalPlayerV2 fig={fcFig('side', v)} role={ROLE} dim={0.85} part="front" />} old={null} />
     </Group>
   );
 }
@@ -162,12 +170,17 @@ function topArt(v: VariantId): ReactElement {
           <DashPathEffect intervals={[60, 40]} />
         </Path>
         <Path path={arrows} style="stroke" strokeWidth={14} strokeCap="round" strokeJoin="round" color="#8a8f9c" opacity={0.6} />
-        {[-R * 0.75, R * 0.75].map((zz) => (
-          <Group key={zz} transform={[{ translateY: zz }]}>
-            <PlayerInk path={playerTop()} faint head="top" />
-          </Group>
-        ))}
-        <PlayerInk path={playerTop([[HAND_L.x, HAND_L.z], [HAND_R.x, HAND_R.z]])} head="top" />
+        <MetalSwitch
+          v2={GHOST_Z.map((zz) => (
+            <MetalPlayerV2 key={zz} fig={fcFig('top', v, zz)} role={ROLE} dim={0.5} />
+          ))}
+          old={[-R * 0.75, R * 0.75].map((zz) => (
+            <Group key={zz} transform={[{ translateY: zz }]}>
+              <PlayerInk path={playerTop()} faint head="top" />
+            </Group>
+          ))}
+        />
+        <MetalSwitch v2={<MetalPlayerV2 fig={fcFig('top', v)} role={ROLE} dim={0.85} />} old={<PlayerInk path={playerTop([[HAND_L.x, HAND_L.z], [HAND_R.x, HAND_R.z]])} head="top" />} />
         <CymbalFace u={HAND_L.x + 20} v={HAND_L.z} r={RA} />
         <CymbalFace u={HAND_R.x + 20} v={HAND_R.z} r={RA} />
       </Group>
@@ -175,12 +188,14 @@ function topArt(v: VariantId): ReactElement {
   }
   return (
     <Group>
-      <PlayerInk path={playerTop([[P0.x - 30, P0.z - 40], [DROP_C.x - 10, DROP_C.z + 40]])} faint head="top" />
+      <MetalSwitch v2={<MetalPlayerV2 fig={fcFig('top', v)} role={ROLE} dim={0.7} />} old={<PlayerInk path={playerTop([[P0.x - 30, P0.z - 40], [DROP_C.x - 10, DROP_C.z + 40]])} faint head="top" />} />
       <Circle cx={10} cy={14} r={RA + 4} color="#000" opacity={0.45}>
         <BlurMask blur={8} style="normal" />
       </Circle>
       <CymbalFace u={P0.x} v={P0.z} r={RA} />
       <CymbalFace u={DROP_C.x} v={DROP_C.z} r={RB} sq={Math.cos((DROP_TILT * Math.PI) / 180)} />
+      {/* the pinching fingers over the straps (from above the hands lie over the cymbals they hold) */}
+      <MetalSwitch v2={<MetalPlayerV2 fig={fcFig('top', v)} role={ROLE} dim={0.7} part="front" />} old={null} />
     </Group>
   );
 }
@@ -333,6 +348,7 @@ export function danceLens(id: string | null): { c: [number, number]; r: number; 
 }
 
 function DanceLens({ id }: { id: string | null }): ReactElement | null {
+  const scale = useFigureScale();
   const l = danceLens(id);
   if (!l) return null;
   const box = frontBox('dance');
@@ -349,7 +365,15 @@ function DanceLens({ id }: { id: string | null }): ReactElement | null {
       <Circle cx={l.c[0]} cy={l.c[1]} r={l.r} color="#101216" />
       <Group clip={disc}>
         <Group transform={[{ translateX: l.c[0] }, { translateY: l.c[1] }, { scale: l.z }, { translateX: -l.focus[0] }, { translateY: -l.focus[1] }]}>
-          <Path path={arm} style="stroke" strokeWidth={(line * 1.2) / l.z} strokeCap="round" color="#8a8f9c" />
+          {/* the dancer's own hand and arm, magnified (figure V2: drawn at the lens's scale) */}
+          <MetalSwitch
+            v2={
+              <FigureScale ptPerMm={scale.ptPerMm != null ? scale.ptPerMm * l.z : null}>
+                <MetalPlayerV2 fig={fcFig('front', 'dance')} role={ROLE} dim={0.85} />
+              </FigureScale>
+            }
+            old={<Path path={arm} style="stroke" strokeWidth={(line * 1.2) / l.z} strokeCap="round" color="#8a8f9c" />}
+          />
           <CymbalEdge u={thumb.u} v={thumb.v} r={thumb.r} deg={thumb.deg} />
           <CymbalEdge u={finger.u} v={finger.v} r={finger.r} deg={finger.deg} />
         </Group>
@@ -375,7 +399,7 @@ function FrontArtImpl({ variant, highlight }: { variant: VariantId; highlight: s
       <Group>
         <Floor u0={-2400} u1={2400} />
         <Path path={arrows} style="stroke" strokeWidth={10} strokeCap="round" strokeJoin="round" color="#8a8f9c" opacity={0.7} />
-        <PlayerInk path={dancerFront(DANCE_HANDS)} head="front" headAt={[30, -1660]} />
+        <MetalSwitch v2={<MetalPlayerV2 fig={fcFig('front', variant)} role={ROLE} dim={0.85} />} old={<PlayerInk path={dancerFront(DANCE_HANDS)} head="front" headAt={[30, -1660]} />} />
         {DANCE_HANDS.map((h, i) => {
           const { thumb, finger } = dancePair(i ? 1 : -1, h);
           return (

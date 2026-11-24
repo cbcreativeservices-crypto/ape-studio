@@ -19,6 +19,10 @@ import { PANEL, type CabKind } from '../shared/speakers/speakerModel.ts';
 import type { Back } from '../shared/speakers/cabGeometry.ts';
 import { FigureHead, headAbove } from '../shared/players/PlayerFigure';
 import { pt } from '../shared/players/playerPose';
+// (figure V2, wave 6 of D78: the player in the approved look, behind `v2`)
+import { PlayerTopV2 } from '../shared/figureV2/elsewhereTop';
+import { keysPlayer } from '../shared/figureV2/markerPose';
+import { castFor, type CastMember } from '../shared/figureV2/cast';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -95,7 +99,7 @@ function planPaths(): Built {
   return o;
 }
 
-export function ClavinetPlan({ dim = 1 }: { dim?: number }) {
+export function ClavinetPlan({ dim = 1, v2 = false, who }: { dim?: number; /** (figure V2) the player in the approved look, as `who` — OFF by default: the lesson switches it with its own player */ v2?: boolean; who?: CastMember }) {
   const o = planPaths();
   const c = LAYOUT.clav;
   return (
@@ -110,11 +114,20 @@ export function ClavinetPlan({ dim = 1 }: { dim?: number }) {
       <Path path={o.pedals}>
         <LinearGradient start={vec(LAYOUT.pedals.x - 60, 0)} end={vec(LAYOUT.pedals.x + 60, 0)} colors={['#d24b3c', '#9c2f25']} />
       </Path>
-      <Path path={o.arms} color="#3c4252" />
-      <Path path={o.body} color="#2f3542" />
-      <Group transform={[{ translateX: LAYOUT.player.x + 10 }, { translateY: LAYOUT.player.z }, { rotate: -Math.PI / 2 }]}>
-        <FigureHead fill={o.head} />
-      </Group>
+      {v2 ? (
+        // (both hands flat on the keys at the keybed's near edge; the head where the old marker's was)
+        <Group transform={[{ translateX: LAYOUT.player.x + 10 }, { translateY: LAYOUT.player.z }]}>
+          <PlayerTopV2 player={keysPlayer(c.x0 - (LAYOUT.player.x + 10), (c.z0 + c.z1) / 2 - LAYOUT.player.z)} who={who ?? castFor('plan.clavinet')} />
+        </Group>
+      ) : (
+        <>
+          <Path path={o.arms} color="#3c4252" />
+          <Path path={o.body} color="#2f3542" />
+          <Group transform={[{ translateX: LAYOUT.player.x + 10 }, { translateY: LAYOUT.player.z }, { rotate: -Math.PI / 2 }]}>
+            <FigureHead fill={o.head} />
+          </Group>
+        </>
+      )}
     </Group>
   );
 }

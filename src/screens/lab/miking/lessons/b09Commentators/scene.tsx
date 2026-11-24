@@ -15,13 +15,29 @@ import { BoothWindow, CrowdStand, SeatedHolding } from '../shared/broadcast/Spor
 import { DESK_TOP_Y, SEATED_FLOOR, SEATED_SOLIDS } from '../shared/broadcast/talkerPose.ts';
 import { HEAD_C, HEAD_R } from '../shared/voice/voiceSpec.ts';
 import { ANALYST, CALLER, DESK, FRONT_X, GRIP_A, NOTES, PA_C, SCREEN } from './geometry.ts';
+import { castFor } from '../shared/figureV2/cast';
+import { SoftFolds } from '../shared/figureV2/paint';
+import { SeatedV2 } from '../shared/broadcast/heldPeopleV2';
+import { CALLER_HOLDER, V2 } from './held';
+
+/** (figure V2) the commentator as their cast member; they hold the lip ribbon when the engine hangs it from their shoulder. */
+const CALLER_WHO = castFor('talker.host');
 
 const two = (v: VariantId) => v === 'booth';
 
 /** Everything at the position. `headless`: the commentator drawn without a
  *  head (a step that draws it turned); `gap`: the analyst's seat moved (the
  *  partner step). */
-export function B09Scene({ view, variant, headless = false, analyst = ANALYST, holding }: { view: ViewId; variant: VariantId; headless?: boolean; analyst?: typeof ANALYST; holding?: boolean }): ReactElement {
+/** (figure V2) the scene with the cloth’s folds soft (paint.SoftFolds) in the new look. */
+export function B09Scene(props: { view: ViewId; variant: VariantId; headless?: boolean; analyst?: typeof ANALYST; holding?: boolean; /** (the study page compares the old look) */ v2?: boolean }): ReactElement {
+  return (
+    <SoftFolds.Provider value={props.v2 ?? V2}>
+      <B09SceneIn {...props} />
+    </SoftFolds.Provider>
+  );
+}
+
+function B09SceneIn({ view, variant, headless = false, analyst = ANALYST, holding, v2 = V2 }: { view: ViewId; variant: VariantId; headless?: boolean; analyst?: typeof ANALYST; holding?: boolean; /** (the study page compares the old look) */ v2?: boolean }): ReactElement {
   const b = two(variant);
   const open = variant === 'open';
   const studio = variant === 'studio';
@@ -39,7 +55,13 @@ export function B09Scene({ view, variant, headless = false, analyst = ANALYST, h
         <Script view="side" at={NOTES} />
         {/* The analyst sits beside the commentator, nearer the viewer: from
             the side they would cover the commentator — shown from above. */}
-        {open || holding ? <SeatedHolding view="side" t={CALLER} phones /> : <SeatedTalker view="side" t={CALLER} phones headless={headless} />}
+        {v2 ? (
+          <SeatedV2 view="side" t={CALLER} who={CALLER_WHO} phones headless={headless} holder={CALLER_HOLDER} />
+        ) : open || holding ? (
+          <SeatedHolding view="side" t={CALLER} phones />
+        ) : (
+          <SeatedTalker view="side" t={CALLER} phones headless={headless} />
+        )}
         <DeskNearLegs box={DESK} floor={SEATED_FLOOR} />
       </Group>
     );
@@ -51,14 +73,26 @@ export function B09Scene({ view, variant, headless = false, analyst = ANALYST, h
       <BoothWindow view="top" x={FRONT_X} y0={-900} y1={SEATED_FLOOR} z0={open ? -3400 : zs.z0} z1={open ? 900 : zs.z1} sillY={DESK_TOP_Y - 60} open={open} />
       <StudioChair view="top" t={CALLER} />
       {b ? <StudioChair view="top" t={analyst} /> : null}
-      {open || holding ? <SeatedHolding view="top" t={CALLER} part="lower" /> : <SeatedTalker view="top" t={CALLER} part="lower" />}
-      {b ? <SeatedTalker view="top" t={analyst} part="lower" /> : null}
+      {v2 ? (
+        <SeatedV2 view="top" t={CALLER} who={CALLER_WHO} part="lower" holder={CALLER_HOLDER} />
+      ) : open || holding ? (
+        <SeatedHolding view="top" t={CALLER} part="lower" />
+      ) : (
+        <SeatedTalker view="top" t={CALLER} part="lower" />
+      )}
+      {b ? <SeatedTalker view="top" t={analyst} part="lower" v2={v2} /> : null}
       <Desk view="top" box={DESK} floor={SEATED_FLOOR} />
       <Script view="top" at={NOTES} turn={-0.08} />
       {!open ? <Laptop view="top" at={SCREEN} toward={-1} /> : null}
       {studio ? <ArmClamp view="top" grip={GRIP_A} deskTop={DESK_TOP_Y} on="side" /> : null}
-      {b ? <SeatedTalker view="top" t={analyst} part="upper" phones /> : null}
-      {open || holding ? <SeatedHolding view="top" t={CALLER} part="upper" phones /> : <SeatedTalker view="top" t={CALLER} part="upper" phones headless={headless} />}
+      {b ? <SeatedTalker view="top" t={analyst} part="upper" phones v2={v2} /> : null}
+      {v2 ? (
+        <SeatedV2 view="top" t={CALLER} who={CALLER_WHO} part="upper" phones headless={headless} holder={CALLER_HOLDER} />
+      ) : open || holding ? (
+        <SeatedHolding view="top" t={CALLER} part="upper" phones />
+      ) : (
+        <SeatedTalker view="top" t={CALLER} part="upper" phones headless={headless} />
+      )}
     </Group>
   );
 }
@@ -131,6 +165,6 @@ export function b09HitTest(view: ViewId, variant: VariantId, u: number, v: numbe
 }
 
 export function b09FigureAt(view: ViewId, variant: VariantId, u: number, v: number, tol: number): boolean {
-  if (talkerCovers(view, CALLER, u, v, tol) || chairCovers(view, CALLER, u, v, tol)) return true;
-  return two(variant) && view === 'top' && (talkerCovers(view, ANALYST, u, v, tol) || chairCovers(view, ANALYST, u, v, tol));
+  if (talkerCovers(view, CALLER, u, v, tol, V2) || chairCovers(view, CALLER, u, v, tol)) return true;
+  return two(variant) && view === 'top' && (talkerCovers(view, ANALYST, u, v, tol, V2) || chairCovers(view, ANALYST, u, v, tol));
 }

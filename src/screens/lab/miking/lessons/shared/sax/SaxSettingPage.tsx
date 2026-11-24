@@ -34,6 +34,7 @@ import type { PageProps } from '../../../pages/pageTypes';
 import { MainPair, MusicStand, WedgeTop } from '../bowed/BowedSettingPage';
 import { KitTop } from '../kitScene/KitSceneArt';
 import { SaxScene } from './SaxArt';
+import { saxSecond } from './saxFigureV2';
 import { swingShape } from './saxModel.ts';
 import type { SaxPosture } from './saxPosture.ts';
 import { saxCue, saxFoots, saxShown, type SaxPlanLayout, type SaxPlanObject } from './saxPlanModel.ts';
@@ -182,7 +183,7 @@ export function SaxPlan({ w, h, cfg, box, scene, wedges, items, highlight, onTap
               <Group key={o.id} transform={[{ translateX: o.at.x }, { translateY: o.at.z }, { rotate: (o.yaw ?? 0) * DEG }]}>
                 {o.kind === 'stand' ? <MusicStand /> : o.kind === 'kit' ? <KitTop keepOuts={false} dim={0.85} /> : o.kind === 'pair' ? <MainPair /> : o.kind === 'sax' && o.posture ? (
                   <Group opacity={0.7}>
-                    <SaxScene P={o.posture} view="top" />
+                    <SaxScene P={o.posture} view="top" who={o.posture.row.id === self.row.id ? saxSecond() : undefined} />
                   </Group>
                 ) : null}
               </Group>

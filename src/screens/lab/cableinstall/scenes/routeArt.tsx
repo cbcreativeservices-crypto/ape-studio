@@ -35,6 +35,7 @@ import {
   WallBoxSide,
   useUid,
 } from '../svgArt';
+import { castFor } from '../../miking/lessons/shared/figureV2/cast';
 
 /** drawing units per metre */
 export const ROUTE_M = 20;
@@ -171,7 +172,7 @@ export function StageRackSection({ xray, tint }: { xray: boolean; tint: string }
 
       {/* people for scale */}
       <PersonScale x={228} floorY={FLOOR} m={M} facing={-1} />
-      <PersonScale x={48} floorY={184} m={M} facing={1} color="#454a53" />
+      <PersonScale x={48} floorY={184} m={M} facing={1} color="#454a53" who={castFor('cable.person2')} />
 
       {/* X-RAY: pathway → what holds it up → the wall sleeve → foreign systems */}
       <X on={xray} delay={80}>

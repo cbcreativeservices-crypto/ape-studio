@@ -23,6 +23,7 @@ import type { RoutingPlan } from '../shared/broadcast/routing.ts';
 import type { MikingStep } from '../../engine/steps';
 import { B03Scene } from './scene';
 import { PAIR, SHOULDER_REP } from './geometry.ts';
+import { B03_HELD, V2, flagDrawLen } from './held';
 
 type PageFn = (p: PageProps) => ReactNode;
 const OMNI = { art: 'flagHandheld' as const, r: 24, len: 230 };
@@ -38,6 +39,7 @@ function useTools(): MikingStep[] {
     sideBox: { u0: -400, u1: 1200, v0: -420, v1: 700 },
     omni: OMNI,
     dir: CARD,
+    ...(V2 ? { held: { cfg: B03_HELD, omni: 'repOmni', dir: 'bcFlagCard', drawLen: flagDrawLen } } : {}),
     words: {
       looking: 'From above · a reporter and a guest, one handheld between them · a side view in the corner',
       prompt: 'Slide MIC AT from the reporter, through the shared place at chest height, to the guest. Change WHO SPEAKS, the MIC, its AIM, and where the LOUD SOURCE is.',
@@ -55,6 +57,9 @@ function useTools(): MikingStep[] {
 }
 
 const B03Sound = makeBroadcastSound({
+  v2: V2,
+  // (the cut-away: the talker at frame V's lips — the guest)
+  who: 'talker.guest',
   useTools: () => useTools(),
   highs: 'The voice’s highest frequencies go out ahead of the mouth: a guest who turns toward the camera or an interpreter drifts off a directional handheld’s front and sounds duller — the reporter re-aims. In words only — the shape of that spread is not drawn.',
   silentNote: 'This lab never plays a sound and draws no frequency curve for a voice: how a real interview sounds depends on the voices, the mic, the wind and the street. The pictures show where the sound comes from and where it goes.',

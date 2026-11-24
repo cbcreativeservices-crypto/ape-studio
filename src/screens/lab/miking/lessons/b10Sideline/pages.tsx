@@ -24,12 +24,18 @@ import type { RoutingPlan } from '../shared/broadcast/routing.ts';
 import { B10Scene } from './scene';
 import { B10_ZONES } from './model.ts';
 import { GUEST, REPORTER, SHOULDER_REP } from './geometry.ts';
+import { HeldFront, HeldStatic, heldMicAt } from '../shared/figureV2/heldLive';
+import { B10_HELD, V2, flagDrawLen } from './held';
 
 type PageFn = (p: PageProps) => ReactNode;
 const zone = (id: string) => B10_ZONES.find((z) => z.id === id)!;
 const FLAG_LOOK = { art: 'flagHandheld' as const, r: 25, len: 162 };
+/** (figure V2) the flag handheld as drawn (longer at the tail: owner decision (b), held.ts). */
+const FLAG_DRAWN = { ...FLAG_LOOK, len: flagDrawLen('bcFlagOmni') ?? FLAG_LOOK.len };
 /** The handheld's start at the guest's mouth (the reporter's hand holds it). */
 const HAND = zone('b10.hand').start;
+/** (figure V2) That handheld in the reporter's hand, for the open-mic step's drawing. */
+const HAND_HELD = [heldMicAt('hand', HAND.p, aimVec(HAND.az, HAND.el), FLAG_LOOK.len, FLAG_LOOK.r, SHOULDER_REP, B10_HELD, 'bcFlagOmni')];
 
 function useTools(): ReturnType<typeof useHandoffStep>[] {
   const handoff = useHandoffStep({
@@ -41,6 +47,7 @@ function useTools(): ReturnType<typeof useHandoffStep>[] {
     shoulder: SHOULDER_REP,
     top: () => <B10Scene view="top" variant="sideline" />,
     box: { u0: -650, u1: 1150, v0: -1150, v1: 520 },
+    ...(V2 ? { held: { cfg: B10_HELD, typeId: 'bcFlagOmni', drawLen: flagDrawLen('bcFlagOmni') } } : {}),
     words: {
       looking: 'From above · the reporter and the guest, one handheld between them',
       prompt: 'Move the mic: AT THE GUEST, LEFT BETWEEN, AT THE REPORTER — and change WHO SPEAKS. Then try the TIMING: moved late, moved early.',
@@ -53,7 +60,7 @@ function useTools(): ReturnType<typeof useHandoffStep>[] {
       { id: 'R', label: 'The reporter', mouth: REPORTER.lip },
     ],
     mics: [
-      { id: 'mG', label: 'The guest’s handheld', short: 'HANDHELD', owner: 'G', pose: zone('b10.hand').start, pattern: 'cardioid', open: true, look: FLAG_LOOK },
+      { id: 'mG', label: 'The guest’s handheld', short: 'HANDHELD', owner: 'G', pose: zone('b10.hand').start, pattern: 'cardioid', open: true, look: FLAG_DRAWN },
       { id: 'mR', label: 'The reporter’s headset', short: 'HEADSET', owner: 'R', pose: zone('b10.headset').start, pattern: 'cardioid', open: true, look: { art: 'headsetBoom', r: 11, len: 30 } },
     ],
     presets: [
@@ -61,12 +68,26 @@ function useTools(): ReturnType<typeof useHandoffStep>[] {
       { id: 'G', label: 'Only the guest’s', blurb: 'The guest answers: the reporter’s headset pulled down.', open: ['mG'] },
       { id: 'R', label: 'Only the reporter’s', blurb: 'The reporter asks: the guest’s mic pulled down.', open: ['mR'] },
     ],
-    top: () => (
-      <>
-        <B10Scene view="top" variant="sideline" />
-        <HeldArmArt view="top" shoulder={SHOULDER_REP} p={HAND.p} aim={aimVec(HAND.az, HAND.el)} len={FLAG_LOOK.len} />
-      </>
-    ),
+    top: () =>
+      V2 ? (
+        <HeldStatic cfg={B10_HELD} mics={HAND_HELD}>
+          <B10Scene view="top" variant="sideline" />
+        </HeldStatic>
+      ) : (
+        <>
+          <B10Scene view="top" variant="sideline" />
+          <HeldArmArt view="top" shoulder={SHOULDER_REP} p={HAND.p} aim={aimVec(HAND.az, HAND.el)} len={FLAG_LOOK.len} />
+        </>
+      ),
+    ...(V2
+      ? {
+          over: () => (
+            <HeldStatic cfg={B10_HELD} mics={HAND_HELD}>
+              <HeldFront view="top" />
+            </HeldStatic>
+          ),
+        }
+      : {}),
     box: { u0: -650, u1: 1150, v0: -1150, v1: 520 },
     words: {
       subject: 'a reporter with a headset and a guest with a handheld',
@@ -79,6 +100,9 @@ function useTools(): ReturnType<typeof useHandoffStep>[] {
 }
 
 const B10Sound = makeBroadcastSound({
+  v2: V2,
+  // (the cut-away: the talker at frame V's lips — the guest)
+  who: 'talker.guest',
   useTools: () => useTools(),
   highs: 'The voice’s highest frequencies go out ahead of the mouth: a guest who turns to the camera or away, out of breath, drifts off the handheld’s axis and sounds duller — the reporter follows the mouth. In words only — the shape of that spread is not drawn.',
   silentNote: 'This lab never plays a sound and draws no frequency curve for a voice: how a real interview sounds depends on the voices, the mic, the wind and the stadium. The pictures show where the sound comes from and where it goes.',

@@ -57,7 +57,9 @@ import { useDecorativeMotion } from '../../../../features/settings/decorativeMot
 import { useSafeSkiaFont } from '../../../../lib/skiaSafeAssets';
 import { levelColorForDb } from '../../../../features/tools/levelColor';
 import { MIN_TEXT_PT, SceneFontsContext, SceneFontsProvider, useLabelMm } from '../../dj/art/sceneText';
-import { PlayerBehind, PlayerInFront } from '../../miking/lessons/shared/players/PlayerFigure';
+// (figure V2, wave 7 of D78: YOU and the guide drawn as cast members from above, the approved top view)
+import { PersonTopV2 } from '../../miking/lessons/shared/figureV2/personV2';
+import { castFor } from '../../miking/lessons/shared/figureV2/cast';
 import { SINGER_TOP } from '../../miking/lessons/shared/voice/voicePose';
 import { useStageTextScale } from '../../rack/stageAspect';
 import { GA_EVENTS } from '../model/gaDefs';
@@ -535,8 +537,7 @@ function Person({ g, ring, second = false, ears = true }: { g: Glided; ring: str
         </Circle>
       ) : null}
       <Group transform={turn}>
-        <PlayerBehind pose={SINGER_TOP} />
-        <PlayerInFront pose={SINGER_TOP} hands={false} />
+        <PersonTopV2 pose={SINGER_TOP} who={castFor(second ? 'ga.guide' : 'ga.you')} />
       </Group>
     </Group>
   );

@@ -17,12 +17,20 @@ import { StandingPresenter } from '../shared/broadcast/BodyWornArt';
 import { BroadcastCameraRig } from '../shared/broadcast/CameraArt';
 import { CHEST_X, NECK_Y } from '../shared/broadcast/bodyWorn.ts';
 import { CAMERA, CAMERA_BOX, FLOOR, LECTERN, PACK, PA_C } from './geometry.ts';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+import { castFor } from '../shared/figureV2/cast';
+import { personCovers, personTopCovers } from '../shared/figureV2/personV2';
+import { SINGER_SIDE, SINGER_TOP } from '../shared/voice/voicePose.ts';
+
+/** (figure V2, wave 4: the whole lesson in the new look — the presenter Ruth in her own jacket, in every
+ *  picture and step of this lesson, or in none) */
+export const V2 = figureV2On('frontAndBoom');
 
 /** The presenter: the shared standing figure in a jacket, the pack on the
  *  belt (BodyWornArt). `headless` leaves the head off (a step draws it
  *  turned). */
 export function Presenter({ view, headless = false }: { view: ViewId; headless?: boolean }): ReactElement {
-  return <StandingPresenter view={view} headless={headless} />;
+  return <StandingPresenter view={view} headless={headless} v2={V2} />;
 }
 
 /** Everything round the presenter, far side first. */
@@ -82,6 +90,9 @@ export function b05HitTest(view: ViewId, variant: VariantId, u: number, v: numbe
   return null;
 }
 
+const PRESENTER_OPTS = { lip: { u: 0, v: 0 }, rest: 'restSide' as const, jacket: true };
 export function b05FigureAt(view: ViewId, variant: VariantId, u: number, v: number, tol: number): boolean {
+  // (drawn new: the new outline and the old envelope — labels keep off both)
+  if (V2 && (view === 'side' ? personCovers(SINGER_SIDE, castFor('presenter'), PRESENTER_OPTS, u, v, tol) : personTopCovers(SINGER_TOP, castFor('presenter'), { jacket: true }, u, v, tol))) return true;
   return voiceFigureAt(view, variant, u, v, tol);
 }

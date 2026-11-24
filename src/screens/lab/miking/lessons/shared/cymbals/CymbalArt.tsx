@@ -596,20 +596,36 @@ export function HiHatPedalTop({ dim = 1 }: { dim?: number }) {
 
 /** The hi-hat from above: the top cymbal with its clutch and the tripod (its
  *  pedal is HiHatPedalTop, drawn under the drummer's legs). */
-export function HiHatTop({ highlight = false, dim = 1 }: { highlight?: boolean; dim?: number }) {
+function hiHatLegsPath(): SkPath {
   const p = KIT_PLACED_CYMBALS.hihat;
-  const g = useMemo(() => {
-    const legs = make();
-    for (let k = 0; k < 3; k++) {
-      const a = Math.PI / 2 + (k * 2 * Math.PI) / 3;
-      seg(legs, p.c.x, p.c.z, p.c.x + Math.cos(a) * HH.legSpread.mm, p.c.z + Math.sin(a) * HH.legSpread.mm);
-    }
-    return { legs };
-  }, [p]);
+  const legs = make();
+  for (let k = 0; k < 3; k++) {
+    const a = Math.PI / 2 + (k * 2 * Math.PI) / 3;
+    seg(legs, p.c.x, p.c.z, p.c.x + Math.cos(a) * HH.legSpread.mm, p.c.z + Math.sin(a) * HH.legSpread.mm);
+  }
+  return legs;
+}
+
+/** The hi-hat stand's tripod alone, from above. The legs stand on the FLOOR, so a scene that has
+ *  drums near the stand draws this BEFORE the drums (owner 2026-11-24: a tripod leg was painted
+ *  across the snare's head as a gray line) and calls HiHatTop with `legs={false}`. */
+export function HiHatLegsTop({ dim = 1 }: { dim?: number }) {
+  const legs = useMemo(() => hiHatLegsPath(), []);
   return (
     <Group opacity={dim}>
-      <Path path={g.legs} style="stroke" strokeWidth={11} strokeCap="round" color="#16171b" />
-      <Path path={g.legs} style="stroke" strokeWidth={7} strokeCap="round" color="#9aa0ab" />
+      <Path path={legs} style="stroke" strokeWidth={11} strokeCap="round" color="#16171b" />
+      <Path path={legs} style="stroke" strokeWidth={7} strokeCap="round" color="#9aa0ab" />
+    </Group>
+  );
+}
+
+export function HiHatTop({ highlight = false, dim = 1, legs = true }: { highlight?: boolean; dim?: number; legs?: boolean }) {
+  const p = KIT_PLACED_CYMBALS.hihat;
+  const g = useMemo(() => ({ legs: hiHatLegsPath() }), [p]);
+  return (
+    <Group opacity={dim}>
+      {legs ? <Path path={g.legs} style="stroke" strokeWidth={11} strokeCap="round" color="#16171b" /> : null}
+      {legs ? <Path path={g.legs} style="stroke" strokeWidth={7} strokeCap="round" color="#9aa0ab" /> : null}
       <CymbalTop spec={p.spec} cx={p.c.x} cz={p.c.z} tiltDeg={0} highlight={highlight} mount={false} />
       <Group transform={[{ translateX: p.c.x }, { translateY: p.c.z }]}>
         <Circle cx={0} cy={0} r={HH.clutchD.mm / 2 + 4} color="#2a2230" />

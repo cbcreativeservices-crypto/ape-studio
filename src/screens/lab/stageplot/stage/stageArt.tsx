@@ -36,6 +36,12 @@
 import { memo } from 'react';
 import { Circle, G, Line, Path, Polygon, Polyline, Rect, Text as SvgText } from 'react-native-svg';
 import { FigureAboveSvg, FIGURE_ABOVE_W_MM } from '../../../../features/lab/figureAboveSvg';
+// (figure V2, wave 7 of D78: each performer a cast member, the same object always the same person)
+import { PersonAboveSvg, castForKey } from '../../../../features/lab/figureV2Svg';
+/** OWNER RULING (D78, 2026-11-24): "for stage plot design lab only make them all the same (generic
+ *  "person"), in the other labs, yes use the cast". In this lab every person is the one generic plot
+ *  symbol (false); the learner types the names. The choir in topArtWorld.tsx follows the same ruling. */
+export const PERFORMERS_AS_CAST = false;
 import { spPlacedShapes, spSymbol, type SpFill, type SpShape } from '../../../../features/stageplot/spSymbols';
 import { spChoirLayout, spChoirOf } from '../../../../features/stageplot/spChoir';
 import type { SpObject, SpProject } from '../../../../features/stageplot/spTypes';
@@ -108,7 +114,7 @@ function Art({ p, o, cx, cy, hw, hh, rot, u, dim }: StageObjectArtProps) {
       // drawing, not a footprint, and the screen says so
       return (
         <G opacity={opacity}>
-          <FigureAboveSvg x={cx} y={cy} pxPerMm={(u * spSymbol('performer').w * PERSON_ENLARGED) / FIGURE_ABOVE_W_MM} facingDeg={rot} halo="#c3cde2" />
+          {PERFORMERS_AS_CAST ? <PersonAboveSvg x={cx} y={cy} pxPerMm={(u * spSymbol('performer').w * PERSON_ENLARGED) / FIGURE_ABOVE_W_MM} facingDeg={rot} halo="#c3cde2" who={castForKey(o.id)} /> : <FigureAboveSvg x={cx} y={cy} pxPerMm={(u * spSymbol('performer').w * PERSON_ENLARGED) / FIGURE_ABOVE_W_MM} facingDeg={rot} halo="#c3cde2" />}
         </G>
       );
     case 'drum-kit':

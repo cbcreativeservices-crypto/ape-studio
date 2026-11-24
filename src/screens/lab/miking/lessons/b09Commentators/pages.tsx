@@ -23,6 +23,14 @@ import { B09Scene } from './scene';
 import { B09_ZONES } from './model.ts';
 import { ANALYST, SHOULDER_A } from './geometry.ts';
 import { HeldArmArt } from '../shared/broadcast/SportSpeechArt';
+import { HeldFront, HeldStatic, heldMicAt } from '../shared/figureV2/heldLive';
+import { B09_HELD, V2 } from './held';
+
+/** (figure V2) the lip ribbon in the commentator's hand where the partner step puts it (aimed at the lips). */
+const lipHeld = (p: Vec3, len: number, r: number) => {
+  const l = Math.hypot(p.x, p.y, p.z) || 1;
+  return [heldMicAt('lip', p, v3(-p.x / l, -p.y / l, -p.z / l), len, r, SHOULDER_A, B09_HELD, 'bcLipRibbon')];
+};
 
 type PageFn = (p: PageProps) => ReactNode;
 const v3 = (x: number, y: number, z: number): Vec3 => ({ x, y, z });
@@ -34,6 +42,7 @@ const LIP_P = zone('b9.lip').start.p;
 
 function useTools(): ReturnType<typeof useTurnStep>[] {
   const turn = useTurnStep({
+    v2: V2,
     mics: [aimedAtLips('arm', 'The desk-arm mic at about 10 cm', 'ARM MIC', ARM_P, DYN_LOOK)],
     top: () => <B09Scene view="top" variant="studio" headless />,
     side: () => <B09Scene view="side" variant="studio" headless />,
@@ -56,13 +65,29 @@ function useTools(): ReturnType<typeof useTurnStep>[] {
     ],
     top: (gap, _px, m) =>
       m.id === 'lip' ? (
-        <>
-          <B09Scene view="top" variant="booth" holding analyst={{ ...ANALYST, lip: v3(0, 0, gap) }} />
-          <HeldArmArt view="top" shoulder={SHOULDER_A} p={m.p} aim={v3(-1, 0, 0)} len={m.len} />
-        </>
+        V2 ? (
+          <HeldStatic cfg={B09_HELD} mics={lipHeld(m.p, m.len, m.r)}>
+            <B09Scene view="top" variant="booth" holding analyst={{ ...ANALYST, lip: v3(0, 0, gap) }} />
+          </HeldStatic>
+        ) : (
+          <>
+            <B09Scene view="top" variant="booth" holding analyst={{ ...ANALYST, lip: v3(0, 0, gap) }} />
+            <HeldArmArt view="top" shoulder={SHOULDER_A} p={m.p} aim={v3(-1, 0, 0)} len={m.len} />
+          </>
+        )
       ) : (
         <B09Scene view="top" variant="booth" analyst={{ ...ANALYST, lip: v3(0, 0, gap) }} />
       ),
+    ...(V2
+      ? {
+          over: (_gap: number, _px: number, m: { id: string; p: Vec3; len: number; r: number }) =>
+            m.id === 'lip' ? (
+              <HeldStatic cfg={B09_HELD} mics={lipHeld(m.p, m.len, m.r)}>
+                <HeldFront view="top" />
+              </HeldStatic>
+            ) : null,
+        }
+      : {}),
     box: (gap) => ({ u0: -650, u1: 1250, v0: -640, v1: gap + 640 }),
     words: {
       looking: 'From above · you and your partner at the desk · the field to the right',
@@ -74,6 +99,7 @@ function useTools(): ReturnType<typeof useTurnStep>[] {
 }
 
 const B09Sound = makeBroadcastSound({
+  v2: V2,
   useTools: () => useTools(),
   highs: 'The voice’s highest frequencies go out ahead of the mouth: a commentator who turns to follow the play, or reads down, drifts off a fixed mic’s axis and sounds duller. A headset boom turns with the head. In words only — the shape of that spread is not drawn.',
   silentNote: 'This lab never plays a sound and draws no frequency curve for a voice: how a real commentator sounds depends on the voice, the mic, the position and the stadium. The pictures show where the sound comes from and where it goes.',

@@ -76,7 +76,8 @@ function marksOf(node: unknown, m: Mat = UNIT, out: Mark[] = []): Mark[] {
   }
   const el = node as El;
   const p = el.props ?? {};
-  if (typeof el.type === 'function' && (el.type as { name?: string }).name === 'FigureAboveSvg') {
+  if (typeof el.type === 'function' && ['FigureAboveSvg', 'PersonAboveSvg'].includes(String((el.type as { name?: string }).name))) {
+    // (figure V2, wave 7 of D78: the cast member from above, PersonAboveSvg, has the same footprint or less)
     // the figure's REAL width: its build's
     const wmm = p.build === 'narrow' ? FIGURE_ABOVE_NARROW_W_MM : FIGURE_ABOVE_W_MM;
     const half = (wmm / 2) * Number(p.pxPerMm);
@@ -335,7 +336,7 @@ describe('round 3: choir singers that do not overlap', () => {
     // the head and the depth are the same
     assert.match(fig, /const SKULL: XY\[\] = \[H\(0, -98\)/);
     // other plans keep the standard build (no caller outside the choir asks for narrow)
-    assert.match(src(`${STAGE}/topArtWorld.tsx`), /halo="#c3cde2" build="narrow" \/>/);
+    assert.match(src(`${STAGE}/topArtWorld.tsx`), /halo="#c3cde2" build="narrow"( who=\{castInTurn\(i\)\})? \/>/);
     assert.doesNotMatch(src(`${STAGE}/stageArt.tsx`), /build="narrow"/);
   });
 

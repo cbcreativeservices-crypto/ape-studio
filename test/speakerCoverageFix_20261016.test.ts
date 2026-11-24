@@ -88,7 +88,8 @@ test('top view: wavefronts and aim cues stay in the house; the band is house pla
   assert.match(s, /<Group clip=\{house\}>\s*<WavefrontRings[\s\S]*?<GlowStroke path=\{aims\}/);
   assert.match(s, /<Group clip=\{room\}>/);
   assert.match(s, /<BandTop cx=\{w \/ 2\}/);
-  assert.match(viz, /function BandTop[\s\S]*<PlanInstrumentEdge[\s\S]*<PlanPlayerTop[\s\S]*<PlayerBehind pose=\{SINGER_TOP\} \/>/);
+  // (figure V2, wave 7 of D78: the band and the singer are cast members in the approved top view)
+  assert.match(viz, /function BandTop[\s\S]*<PlanInstrumentEdge[\s\S]*<PlayerTopV2 player=\{BAND_TOP_PLAYERS\[p\.kind\]\}[\s\S]*<PersonTopV2 pose=\{SINGER_TOP\}/);
   // true sizes from the one shared metre
   assert.match(viz, /const COVER_MPP = 42 \/ M_HUMAN;/);
   assert.match(s, /const mainS = \(380 \* COVER_K\) \/ 23;/);
@@ -97,7 +98,7 @@ test('top view: wavefronts and aim cues stay in the house; the band is house pla
 });
 
 test('side view: the singer is the house PlayerFigure at a vocal stand; nothing floats', () => {
-  assert.match(viz, /function SingerAtStandSide[\s\S]*<PlayerBehind pose=\{SINGER_SIDE\} \/>[\s\S]*<PlayerInFront pose=\{SINGER_SIDE\} \/>[\s\S]*<HandheldMic /);
+  assert.match(viz, /function SingerAtStandSide[\s\S]*<PersonSideV2 pose=\{SINGER_SIDE\}[\s\S]*<HandheldMic /);
   const s = body('SideCoverageView');
   assert.match(s, /<SingerAtStandSide lipX=\{8\} deckY=\{stageTop\} \/>/);
   assert.match(s, /rigPath\(onStand \? 'stand' : 'fly', spkX, spkY/);

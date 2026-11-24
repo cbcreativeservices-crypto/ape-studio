@@ -25,12 +25,12 @@ import { across } from '../screens/lab/miking/lessons/shared/figureV2/paint';
 import { MikingMicArt } from '../features/lab/micDrawings';
 
 export type HeldCaseId = 'b3.shared' | 'b3.handoffOmni' | 'b3.repOwn' | 'b10.hand' | 'b10.reporter' | 'b9.lip';
-type Mic = { art: 'flagHandheld' | 'lipRibbon'; r: number; len: number; /** (step A round 2) drawn longer at the tail: the flag mic's free handle below the flag (≈ 95 mm) */ drawLen?: number };
-const REP_OMNI: Mic = { art: 'flagHandheld', r: 24, len: 230 };
+export type Mic = { art: 'flagHandheld' | 'lipRibbon'; r: number; len: number; /** (step A round 2) drawn longer at the tail: the flag mic's free handle below the flag (≈ 95 mm) */ drawLen?: number };
+export const REP_OMNI: Mic = { art: 'flagHandheld', r: 24, len: 230 };
 // (the flag cube runs 2.25 r → 4.75 r from the front: 56–119 mm; ≈ 95 mm of free handle below it)
-const FLAG_BOTTOM = 4.75 * 25;
-const FLAG: Mic = { art: 'flagHandheld', r: 25, len: 162, drawLen: FLAG_BOTTOM + 95 };
-const LIP: Mic = { art: 'lipRibbon', r: 20, len: 220 };
+export const FLAG_BOTTOM = 4.75 * 25;
+export const FLAG: Mic = { art: 'flagHandheld', r: 25, len: 162, drawLen: FLAG_BOTTOM + 95 };
+export const LIP: Mic = { art: 'lipRibbon', r: 20, len: 220 };
 
 const DEF: Record<HeldCaseId, { title: string; zones: readonly { id: string; start: { p: V3; az: number; el: number } }[]; shoulder: V3; lip: V3; mic: Mic }> = {
   'b3.shared': { title: 'B03 · the shared omni, between reporter and guest', zones: B03_ZONES as never, shoulder: S03, lip: R03.lip, mic: REP_OMNI },
@@ -106,8 +106,8 @@ export function heldGeo(id: HeldCaseId, corrected = true): HeldGeo {
   return { title: c.title, mic: corrected ? c.mic : { ...c.mic, drawLen: undefined }, front, aim, tail, fist, elbow, shoulder: c.shoulder, wrist, fr, engineElbow, corrected: corrected && (along || !!c.mic.drawLen) };
 }
 
-const TOWARD: Record<'side' | 'top', V3> = { side: { x: 0, y: 0, z: 1 }, top: { x: 0, y: -1, z: 0 } };
-const proj = (view: 'side' | 'top', p: V3): Pt => (view === 'side' ? P(p.x, p.y) : P(p.x, p.z));
+export const TOWARD: Record<'side' | 'top', V3> = { side: { x: 0, y: 0, z: 1 }, top: { x: 0, y: -1, z: 0 } };
+export const proj = (view: 'side' | 'top', p: V3): Pt => (view === 'side' ? P(p.x, p.y) : P(p.x, p.z));
 const neg = (a: V3): V3 => ({ x: -a.x, y: -a.y, z: -a.z });
 /** A view vector at least `m` long (a part turned toward the viewer is drawn for reading, not shrunk away). */
 const atLeast = (a: Pt, m: number, fallback: Pt): Pt => {
@@ -148,7 +148,7 @@ export function heldViewOf(id: HeldCaseId, view: 'side' | 'top', corrected = fal
 }
 
 /** The mic, the lesson's own drawing: its front at `front`, laid along the handle as the view sees it. */
-function MicAt({ g, view, endOn }: { g: HeldGeo; view: 'side' | 'top'; endOn: boolean }) {
+export function MicAt({ g, view, endOn }: { g: Pick<HeldGeo, 'front' | 'aim' | 'mic'>; view: 'side' | 'top'; endOn: boolean }) {
   const f = proj(view, g.front);
   const a = proj(view, g.aim);
   const la = Math.hypot(a.u, a.v);

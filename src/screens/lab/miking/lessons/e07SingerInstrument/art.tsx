@@ -15,10 +15,29 @@ import { makeGuitarArt } from '../shared/guitars/GuitarArt';
 import { PianoArt, pianoHitTest, pianoLabels } from '../c11Piano/art';
 import { VOICE_HEARING, makeVoiceSetting, makeVoiceSound } from '../shared/voice/VoicePages';
 import { voiceLabelObstacles } from '../shared/voice/VoiceArt';
-import { IDS_G, IDS_P, V_GUITAR, V_PIANO } from './geometry.ts';
+import { GUITAR_SC, IDS_G, IDS_P, V_GUITAR, V_PIANO } from './geometry.ts';
 import { E07_GUITAR, E07_GUITAR_ZONES, E07_ZONES } from './model.ts';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+import { castFor } from '../shared/figureV2/cast';
+import { castGuitarScene } from '../shared/guitars/guitarSceneV2';
 
-const G = makeGuitarArt(E07_GUITAR, { zones: E07_GUITAR_ZONES });
+/** The new look (figure V2, wave 3): the singer is Ana of the cast — at the guitar, at the piano and in the
+ *  voice pages, ONE person in the whole lesson; each new head's mouth drawn at the lesson's measured lips
+ *  (V_GUITAR.lip, V_PIANO.lip: they do not move). */
+export const V2 = figureV2On('sidePlayers');
+const SINGER = castFor('voice.singer');
+castGuitarScene(GUITAR_SC, { role: 'voice.singer', lip: true });
+
+const G = makeGuitarArt(E07_GUITAR, { zones: E07_GUITAR_ZONES, v2: V2 });
+/** (the study page compares the old look) */
+const G_OLD = makeGuitarArt(E07_GUITAR, { zones: E07_GUITAR_ZONES });
+
+/** The lesson's picture: the singer at the piano or with the guitar. */
+export function E07Instrument({ view, variant, v2 = V2 }: { view: ViewId; variant: VariantId; v2?: boolean }) {
+  if (piano(variant)) return <PianoArt view={view} variant="grand" v2={v2} who={SINGER} lip={V_PIANO.lip} />;
+  const Gx = v2 ? G : G_OLD;
+  return <Gx.Instrument view={view} variant="guitar" />;
+}
 const piano = (v: VariantId) => v === 'piano';
 const vOf = (view: ViewId, p: { y: number; z: number }) => (view === 'side' ? p.y : p.z);
 
@@ -73,7 +92,7 @@ function useInstrumentStep(p: { variant: VariantId }): MikingStep {
 }
 
 export const E07_ART: LessonArt = {
-  Instrument: ({ view, variant }) => (piano(variant) ? <PianoArt view={view} variant="grand" /> : <G.Instrument view={view} variant="guitar" />),
+  Instrument: ({ view, variant }) => <E07Instrument view={view} variant={variant} />,
   labels: (view, variant) => (piano(variant) ? [...pianoLabels(view, 'grand'), mouthLabel(view, variant)] : [...G.labels(view, 'guitar'), mouthLabel(view, variant)]),
   hitTest: (view, variant, u, v, tol) => mouthHit(view, variant, u, v, tol) ?? (piano(variant) ? pianoHitTest(view, 'grand', u, v, tol) : G.hitTest(view, 'guitar', u, v, tol)),
   figureAt: (view, variant, u, v, tol) => (piano(variant) ? false : G.figureAt!(view, 'guitar', u, v, tol)),
@@ -81,6 +100,7 @@ export const E07_ART: LessonArt = {
   labelsYieldToMic: true,
   pages: {
     sound: makeVoiceSound({
+      v2: V2,
       where: ['THE LUNGS', 'THE THROAT', 'THROAT · MOUTH', 'THE MOUTH'],
       air: {
         vowel: { title: 'A vowel: sound only', text: 'An open vowel sends sound out of the mouth and around the front of the singer — toward the vocal mic, and down toward the instrument too.' },

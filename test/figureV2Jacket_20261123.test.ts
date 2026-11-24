@@ -295,7 +295,10 @@ describe('figure V2 wave 3 — the jacket (a dress variant)', () => {
   });
 
   it('only the lessons converted with it ask for a jacket (step B: B02); the frozen renderers only gained the optional slots', () => {
-    const dirs = readdirSync(new URL(`../${LS}`, import.meta.url)).filter((d) => /^[a-z]\d/.test(d) && d !== 'b02NewsAnchor');
+    // (B04 and B05's presenter wears the jacket too: converted whole in wave 4, test/figureV2FrontAndBoom_20261124)
+    const dirs = readdirSync(new URL(`../${LS}`, import.meta.url)).filter((d) => /^[a-z]\d/.test(d) && !['b02NewsAnchor', 'b04BoomCamera', 'b05Lavalier', 'f02Clothing'].includes(d));
+    // (F02's WORN variant: the Foley artist walks in the leather jacket — the cast jacket in the lesson's leather;
+    // builder Foley3, test/figureV2Foley3_20261124)
     for (const d of dirs)
       for (const f of readdirSync(new URL(`../${LS}/${d}`, import.meta.url)).filter((x) => /\.tsx?$/.test(x)))
         assert.doesNotMatch(read(`${LS}/${d}/${f}`), /jacket:\s*true/, `${d}/${f}`);

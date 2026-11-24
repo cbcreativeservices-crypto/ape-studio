@@ -58,6 +58,9 @@ import {
 import { fonts } from '../../../theme/tokens';
 import { HeadIcon, aboveRotation } from '../../../features/lab/headIcons';
 import { FigureHeadAt } from '../../../features/lab/figureHead';
+// (figure V2, wave 7 of D78: the standing listener is a cast member from the front, 1.745 m as before)
+import { PersonStandingFrontAt } from '../../../features/lab/figureV2Front';
+import { castFor } from '../miking/lessons/shared/figureV2/cast';
 import { heatColor, levelColor } from '../../../features/tools/levelColor';
 import { useScrollLock } from '../LabShell';
 import { HEAT_SETTLE_MS, heatGridDims } from './heatGrid';
@@ -231,6 +234,10 @@ function appendStanding(p: SkPathT, x: number, gy: number, u: number) {
   pts.forEach(([px, py], i) => (i === 0 ? p.moveTo(px, py) : p.lineTo(px, py)));
   p.close();
 }
+
+/** The standing listener's height, crown to floor (appendStanding + StandingHead: the head centred 1.63 m
+ *  up, 0.23 m crown to chin), mm — the cast member drawn in its place is drawn this tall. */
+const STANDING_MM = 1745;
 
 /** The head of appendStanding's figure: centred 1.63 m up, a true 0.23 m
  *  crown→chin, its neck down into the 1.5 m shoulder line. */
@@ -2327,8 +2334,7 @@ export function RoomSceneView(p: RoomSceneProps) {
             appendStanding(fig, ex, feetY, geo.pxPerM);
             return (
               <>
-                <LineBust path={fig} stroke={LINE} sw={Math.max(1, 0.05 * geo.pxPerM)} />
-                <StandingHead x={ex} gy={feetY} u={geo.pxPerM} />
+                <PersonStandingFrontAt cx={ex} floorY={feetY} pxPerMm={geo.pxPerM / 1000} who={castFor('wave.listener')} heightMm={STANDING_MM} />
               </>
             );
           })()
@@ -2969,8 +2975,7 @@ export function BarrierSceneView(p: {
         <Circle cx={lx} cy={headY} r={0.55 * ppm} color={levelColor(listenerLevel)} opacity={0.28 + 0.5 * listenerLevel}>
           <BlurMask blur={0.25 * ppm} style="normal" />
         </Circle>
-        <LineBust path={bust} stroke={LINE} sw={Math.max(1, 0.06 * ppm)} />
-        <StandingHead x={lx} gy={groundY} u={ppm} />
+        <PersonStandingFrontAt cx={lx} floorY={groundY} pxPerMm={ppm / 1000} who={castFor('wave.listener')} heightMm={STANDING_MM} />
       </Canvas>
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
         {/* Ring floor disclosed: above ~420 Hz the true λ is finer than the
@@ -3208,9 +3213,7 @@ export function GradientSceneView(p: {
         {/* The distant listener. An OPAQUE body fill first (clash sweep
             2026-10-10): the LineBust plate is translucent, and the ray fan
             must pass BEHIND the person, not show through it. */}
-        <Path path={listenerBody} color="#0b0c10" />
-        <LineBust path={listenerBody} stroke={LINE} sw={Math.max(1, 0.06 * ppmY)} />
-        <StandingHead x={listenerX} gy={groundY} u={ppmY} />
+        <PersonStandingFrontAt cx={listenerX} floorY={groundY} pxPerMm={ppmY / 1000} who={castFor('wave.listener')} heightMm={STANDING_MM} />
       </Canvas>
       <View pointerEvents="none" style={StyleSheet.absoluteFill}>
         {topLabel ? <RNText style={[styles.sceneLabel, { fontSize: 9 * ts, left: 12 * ts, top: 10 * ts }]}>{topLabel}</RNText> : null}

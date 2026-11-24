@@ -20,9 +20,18 @@ import { TONBAK_ZONES, T_F, T_H0, T_N } from './geometry.ts';
 import { radiusAt, T_LEN, T_R } from './model.ts';
 import { TonbakArt, tonbakHitTest, tonbakLabels, tonbakPose } from './art';
 import { figureCovers } from '../shared/players/PlayerFigure';
+import { personShapes } from '../shared/figureV2/personV2';
+import { inPoly } from '../shared/figureV2/geom.ts';
+import { V2 } from './art';
+import { tonbakSidePlan } from './tonbakV2.ts';
 
 // figureAt: the part labels keep off the drawn player (artLabels.ts).
-export const TONBAK_ART = { Instrument: TonbakArt, labels: (v: 'side' | 'top') => tonbakLabels(v), hitTest: tonbakHitTest, figureAt: (view: 'side' | 'top', _v: string, u: number, v: number, tol: number) => figureCovers(tonbakPose(view), u, v, tol) };
+export const TONBAK_ART = { Instrument: TonbakArt, labels: (v: 'side' | 'top') => tonbakLabels(v), hitTest: tonbakHitTest, figureAt: (view: 'side' | 'top', _v: string, u: number, v: number, tol: number) => (view === 'side' && V2 ? coversV2(personShapes(tonbakSidePlan()), u, v, tol) : figureCovers(tonbakPose(view), u, v, tol)) };
+/** (figure V2) the very outlines the new player paints (side view). */
+function coversV2(shapes: { u: number; v: number }[][], u: number, v: number, tol: number): boolean {
+  const pts = tol > 0 ? [{ u, v }, { u: u - tol, v }, { u: u + tol, v }, { u, v: v - tol }, { u, v: v + tol }] : [{ u, v }];
+  return pts.some((q) => shapes.some((sh) => inPoly(q, sh)));
+}
 
 /* ═══════════════ 2 · HOW IT SOUNDS ═══════════════ */
 const nz = Math.hypot(T_N.x, T_N.z);

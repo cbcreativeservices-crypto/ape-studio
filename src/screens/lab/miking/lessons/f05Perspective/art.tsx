@@ -18,6 +18,10 @@ import { KeyRing } from '../shared/foley/props';
 import { voiceLabelObstacles } from '../shared/voice/VoiceArt';
 import { ARTIST_SIDE, ARTIST_TOP, F05_FLOOR, F05_MODEL, HALF_PATH, LANE } from './geometry.ts';
 import { F05_ZONES } from './model.ts';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+import { PlayerSideV2, PlayerTopV2 } from '../shared/figureV2/playersV2';
+import { FOLEY_PERFORMER, KEYS_HOLD, foleySideGrips, foleySidePlan, foleyTopGrips, foleyTopPlan } from '../shared/foley/foleyV2.ts';
+import { ARTIST } from './geometry.ts';
 
 const TOP = F05_MODEL.views.top!;
 const SIDE = F05_MODEL.views.side!;
@@ -64,8 +68,27 @@ export function F05StagePlan({ live = false }: { live?: boolean }) {
   );
 }
 
-export function PerspectiveArt({ view, variant }: { view: ViewId; variant: VariantId }) {
+export function PerspectiveArt({ view, variant, v2 = V2 }: { view: ViewId; variant: VariantId; /** (the study page compares the old look) */ v2?: boolean }) {
   const live = variant === 'live';
+  if (v2) {
+    // THE NEW LOOK: the artist (Mei) holding the key ring in a loose fist, the keys hanging below it
+    if (view === 'top')
+      return (
+        <Group>
+          <StageFloorPlan u0={TOP.u0 - 200} u1={TOP.u1 + 200} v0={TOP.v0 - 200} v1={TOP.v1 + 200} />
+          {live ? <BoothArt view="top" rail={BOOTH.rail} pa={{ x: BOOTH.pa.p.x, y: BOOTH.pa.p.y, z: BOOTH.pa.p.z }} /> : null}
+          <PathMarks />
+          <PlayerTopV2 plan={foleyTopPlan(ARTIST, KEYS_HOLD)} grips={foleyTopGrips(ARTIST, KEYS_HOLD)} who={FOLEY_PERFORMER} nearStick={<KeyRing view="top" />} />
+        </Group>
+      );
+    return (
+      <Group>
+        <PitSection surface="concrete" floorY={F05_FLOOR} u0={SIDE.u0 - 200} u1={SIDE.u1 + 200} pit={false} />
+        {live ? <BoothArt view="side" floorY={F05_FLOOR} rail={BOOTH.rail} pa={{ x: BOOTH.pa.p.x, y: BOOTH.pa.p.y, z: BOOTH.pa.p.z }} /> : null}
+        <PlayerSideV2 plan={foleySidePlan(ARTIST, KEYS_HOLD)} grips={foleySideGrips(ARTIST, KEYS_HOLD)} who={FOLEY_PERFORMER} nearStick={<KeyRing view="side" />} />
+      </Group>
+    );
+  }
   if (view === 'top') {
     return (
       <Group>
@@ -88,6 +111,9 @@ export function PerspectiveArt({ view, variant }: { view: ViewId; variant: Varia
     </Group>
   );
 }
+
+/** The new look (figure V2, wave 3 set 3b): the Foley artist is Mei of the cast. */
+export const V2 = figureV2On('sidePlayers');
 
 export function perspectiveLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   const live = variant === 'live';

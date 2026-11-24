@@ -27,6 +27,7 @@ import type { StaticLabel } from '../../../engine/scene/StaticLabels';
 import { gain } from '../../../engine/physics/polar.ts';
 import { FieldStage, MicAt, Ray, uvOf } from '../field/FieldStage';
 import { HeldArmArt } from './SportSpeechArt';
+import { HeldFront, HeldStatic, heldMicAt, type HeldConfig } from '../figureV2/heldLive';
 import { LoudSource, ReporterWindScene } from './ReporterArt';
 import { aimFrom, interviewReading, noiseAt, pathPoint, type FieldPair } from './fieldInterview.ts';
 import { NOT_WATERPROOF, REPORTER_COVERS, REPORTER_FILTER_LINE, REPORTER_SITES, coverVerdict, type ReporterCover, type ReporterSite } from './reporterWind.ts';
@@ -80,6 +81,9 @@ export type InterviewSpec = {
   omni: { art: 'flagHandheld'; r: number; len: number };
   dir: { art: 'flagHandheld'; r: number; len: number };
   words: { looking: string; prompt: string; done: string };
+  /** (figure V2, the held arm) the lesson draws its people new: the scene holds the mic itself (the holder's arm
+   *  at its depth), the hand closes round the handle over the mic; each mic's type, and its drawn length. */
+  held?: { cfg: HeldConfig; omni: string; dir: string; drawLen?: (typeId: string) => number | undefined };
 };
 
 type Bearing = 'guest' | 'side' | 'reporter';
@@ -102,6 +106,10 @@ export function useInterviewStep(spec: InterviewSpec): MikingStep {
   const noise = noiseAt(spec.pair, BEARINGS[bearing].deg);
   const R = interviewReading(spec.pair, p, aim, pattern, who, noise);
   const look = pattern === 'omni' ? spec.omni : spec.dir;
+  const H = spec.held;
+  const typeId = H ? (pattern === 'omni' ? H.omni : H.dir) : '';
+  const drawnLen = (H?.drawLen?.(typeId) ?? look.len);
+  const heldNow = H ? [heldMicAt('interview', p, aim, look.len, look.r, spec.shoulder, H.cfg, typeId)] : [];
   const speaker = spec.pair[who];
   const other = who === 'a' ? spec.pair.b : spec.pair.a;
   const where = s < 0.15 ? 'at the reporter’s mouth' : s > 0.85 ? 'at the guest’s mouth' : Math.abs(s - 0.5) < 0.08 ? 'shared, at chest height between them' : s < 0.5 ? 'toward the reporter' : 'toward the guest';
@@ -219,29 +227,50 @@ export function useInterviewStep(spec: InterviewSpec): MikingStep {
             box: spec.sideBox,
             at: { x: 0.6, y: 0.62, w: 0.38, h: 0.36 },
             title: 'FROM THE SIDE',
-            draw: (px) => (
-              <>
-                {spec.side(px)}
-                <HeldArmArt view="side" shoulder={spec.shoulder} p={p} aim={aim} len={look.len} dim={0.7} />
-                <MicAt view="side" p={p} aim={aim} art={look.art} r={look.r} len={look.len} />
-              </>
-            ),
+            draw: (px) =>
+              H ? (
+                <HeldStatic cfg={H.cfg} mics={heldNow}>
+                  {spec.side(px)}
+                  <MicAt view="side" p={p} aim={aim} art={look.art} r={look.r} len={drawnLen} />
+                  <HeldFront view="side" />
+                </HeldStatic>
+              ) : (
+                <>
+                  {spec.side(px)}
+                  <HeldArmArt view="side" shoulder={spec.shoulder} p={p} aim={aim} len={look.len} dim={0.7} />
+                  <MicAt view="side" p={p} aim={aim} art={look.art} r={look.r} len={look.len} />
+                </>
+              ),
             labels: [{ id: 'sideT', text: 'FROM THE SIDE', short: 'SIDE', u: (spec.sideBox.u0 + spec.sideBox.u1) / 2, v: spec.sideBox.v0 + 90, align: 'center', tone: 'muted' }],
           }}
         >
-          {(px) => (
-            <>
-              {spec.top(px)}
-              <LoudSource view="top" c={noise} toward={{ x: (spec.pair.a.x + spec.pair.b.x) / 2, y: 0, z: (spec.pair.a.z + spec.pair.b.z) / 2 }} floor={0} />
-              <Ray a={uvOf('top', noise)} b={uvOf('top', p)} px={px} color={RED} width={2} />
-              <Ray a={uvOf('top', other)} b={uvOf('top', p)} px={px} color={BLUE} width={2} />
-              <Ray a={uvOf('top', speaker)} b={uvOf('top', p)} px={px} color={AMBER} width={3} dash={[1000, 0]} />
-              <LobeTop p={p} aim={aim} pattern={pattern} r={260} px={px} />
-              <HeldArmArt view="top" shoulder={spec.shoulder} p={p} aim={aim} len={look.len} />
-              <MicAt view="top" p={p} aim={aim} art={look.art} r={look.r} len={look.len} />
-              <Circle cx={p.x} cy={p.z} r={5 * px} color={AMBER} />
-            </>
-          )}
+          {(px) =>
+            H ? (
+              <HeldStatic cfg={H.cfg} mics={heldNow}>
+                {spec.top(px)}
+                <LoudSource view="top" c={noise} toward={{ x: (spec.pair.a.x + spec.pair.b.x) / 2, y: 0, z: (spec.pair.a.z + spec.pair.b.z) / 2 }} floor={0} />
+                <Ray a={uvOf('top', noise)} b={uvOf('top', p)} px={px} color={RED} width={2} />
+                <Ray a={uvOf('top', other)} b={uvOf('top', p)} px={px} color={BLUE} width={2} />
+                <Ray a={uvOf('top', speaker)} b={uvOf('top', p)} px={px} color={AMBER} width={3} dash={[1000, 0]} />
+                <LobeTop p={p} aim={aim} pattern={pattern} r={260} px={px} />
+                <MicAt view="top" p={p} aim={aim} art={look.art} r={look.r} len={drawnLen} />
+                <HeldFront view="top" />
+                <Circle cx={p.x} cy={p.z} r={5 * px} color={AMBER} />
+              </HeldStatic>
+            ) : (
+              <>
+                {spec.top(px)}
+                <LoudSource view="top" c={noise} toward={{ x: (spec.pair.a.x + spec.pair.b.x) / 2, y: 0, z: (spec.pair.a.z + spec.pair.b.z) / 2 }} floor={0} />
+                <Ray a={uvOf('top', noise)} b={uvOf('top', p)} px={px} color={RED} width={2} />
+                <Ray a={uvOf('top', other)} b={uvOf('top', p)} px={px} color={BLUE} width={2} />
+                <Ray a={uvOf('top', speaker)} b={uvOf('top', p)} px={px} color={AMBER} width={3} dash={[1000, 0]} />
+                <LobeTop p={p} aim={aim} pattern={pattern} r={260} px={px} />
+                <HeldArmArt view="top" shoulder={spec.shoulder} p={p} aim={aim} len={look.len} />
+                <MicAt view="top" p={p} aim={aim} art={look.art} r={look.r} len={look.len} />
+                <Circle cx={p.x} cy={p.z} r={5 * px} color={AMBER} />
+              </>
+            )
+          }
         </FieldStage>
       ),
       badge: 'From above, the side in the corner · amber = the voice speaking, blue = the other voice, red = the loud source · white dashed = the pattern’s shape · by distance and an ideal pattern: a simplified picture · silent',

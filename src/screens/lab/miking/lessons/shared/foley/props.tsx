@@ -158,8 +158,11 @@ export function FoleyDoor({ view, floorY, open = 0, marks = true }: { view: View
     const base = make();
     rrect(base, -420, -90, 420, W + 90, 14);
     const handle = make();
-    const hx = e.x + (Math.cos(ang) * DOOR.handleZ);
-    const hz = e.z + Math.sin(ang) * DOOR.handleZ;
+    // (in from the latch edge toward the hinge — `ang` points from the hinge to the edge; it was drawn
+    // outside the leaf, 70 mm beyond the latch edge, while the model, the tap area and the label put it on
+    // the leaf: figure V2 round, 2026-11-24, the hand on the handle from above)
+    const hx = e.x - Math.cos(ang) * DOOR.handleZ;
+    const hz = e.z - Math.sin(ang) * DOOR.handleZ;
     rrect(handle, hx - 70, hz - 10, hx + 70, hz + 10, 6);
     const arc = make();
     arc.addArc(Skia.XYWHRect(-W, 0, 2 * W, 2 * W), 180, 90);

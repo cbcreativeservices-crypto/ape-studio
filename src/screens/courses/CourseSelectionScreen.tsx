@@ -555,6 +555,9 @@ const SHOWCASE_LOCAL_ART: Record<string, number> = {
   // Owner 2026-10-24: replaces course_music-production.webp (its AI-drawn piano
   // keyboard had the wrong black-key layout).
   'Music Production': require('../../../assets/home-cards/area_music-production.webp'),
+  // Owner 2026-11-24: new art for both cards (his 941x1672 originals, re-encoded only).
+  'Audio Electronics': require('../../../assets/home-cards/area_audio-electronics.jpg'),
+  'System Design & Maintenance': require('../../../assets/home-cards/area_system-design-and-maintenance.jpg'),
 };
 /** Topic-card art shipped IN the app, keyed like CARD_IMAGE (same reason as
  *  SHOWCASE_LOCAL_ART). Owner 2026-10-24: new DAW Fundamentals & Session

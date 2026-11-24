@@ -48,6 +48,11 @@ import { withHead } from './bodyWorn.ts';
 import { TurnedHeadTop } from './BroadcastArt';
 import { HeadsetFrame } from './BodyWornArt';
 import { BodyChain, HeadsetOnHead, HeldArmArt, KeepOutRegion, PlaceRing, RoleTag, StandingTalker } from './SportSpeechArt';
+import { HeldFront, HeldStatic, heldMicAt, type HeldConfig } from '../figureV2/heldLive';
+import { castFor, type RoleKey } from '../figureV2/cast';
+import { PersonSideV2 } from '../figureV2/personV2';
+import { PersonFrontV2 } from '../figureV2/FigureV2Front';
+import { StandingTalkerV2, headsetEarV2 } from '../figureV2/standingV2';
 
 const v3 = (x: number, y: number, z: number): Vec3 => ({ x, y, z });
 const unit = (a: Vec3): Vec3 => {
@@ -247,6 +252,8 @@ export type SpillSpec = {
   /** The booth from above, around commentator A at the origin and the
    *  partner `gap` mm to their right (frame V on A). */
   top: (gap: number, px: number, mic: SpillMic) => ReactNode;
+  /** (figure V2, the held arm) painted after the mic: a hand's parts in front of a held mic's handle. */
+  over?: (gap: number, px: number, mic: SpillMic) => ReactNode;
   box: (gap: number) => ViewBox;
   words: { looking: string; prompt: string; done: string };
 };
@@ -349,6 +356,7 @@ export function useSpillStep(spec: SpillSpec): MikingStep {
               <Ray a={uvOf('top', pm)} b={uvOf('top', m.p)} px={px} color="#8fbcff" width={2.4} />
               <Ray a={uvOf('top', LIP)} b={uvOf('top', m.p)} px={px} color="#ffc64d" width={3} dash={[1000, 0]} />
               <MicAt view="top" p={m.p} aim={aim} art={m.art} r={m.r} len={m.len} />
+              {spec.over ? spec.over(gap, px, m) : null}
               <Dim a={uvOf('top', pm)} b={uvOf('top', m.p)} px={px} color="#8fbcff" />
             </>
           )}
@@ -387,6 +395,9 @@ export type HandoffSpec = {
   top: (px: number) => ReactNode;
   box: ViewBox;
   words: { looking: string; prompt: string; done: string };
+  /** (figure V2, the held arm) the lesson draws its people new: the scene holds the mic itself (its holder's
+   *  arm at its depth), the hand closes round the handle over the mic; `drawLen` the mic drawn longer at its tail. */
+  held?: { cfg: HeldConfig; typeId: string; drawLen?: number };
 };
 
 const TIMINGS: Readonly<Record<'onTime' | 'late' | 'early', { h: Handoff; label: string; blurb: string }>> = {
@@ -521,15 +532,25 @@ export function useHandoffStep(spec: HandoffSpec): MikingStep {
     { id: 'g', text: 'GUEST', u: spec.guest.x - 160, v: spec.guest.z + 330, align: 'center', tone: who === 'guest' ? 'amber' : 'muted' },
     { id: 'r', text: 'REPORTER', u: spec.reporter.x - 160, v: spec.reporter.z - 330, align: 'center', tone: who === 'reporter' ? 'amber' : 'muted' },
   ];
-  const draw = (px: number) => (
-    <>
-      {spec.top(px)}
-      <Ray a={uvOf('top', speaker)} b={uvOf('top', micP)} px={px} color="#ffc64d" width={3} dash={[1000, 0]} />
-      <Ray a={uvOf('top', other)} b={uvOf('top', micP)} px={px} color="#8fbcff" width={2} />
-      <MicAt view="top" p={micP} aim={aim} art={spec.look.art} r={spec.look.r} len={spec.look.len} />
-      <HeldArmArt view="top" shoulder={spec.shoulder} p={micP} aim={aim} len={spec.look.len} />
-    </>
-  );
+  const H = spec.held;
+  const draw = (px: number) =>
+    H ? (
+      <HeldStatic cfg={H.cfg} mics={[heldMicAt('handoff', micP, aim, spec.look.len, spec.look.r, spec.shoulder, H.cfg, H.typeId)]}>
+        {spec.top(px)}
+        <Ray a={uvOf('top', speaker)} b={uvOf('top', micP)} px={px} color="#ffc64d" width={3} dash={[1000, 0]} />
+        <Ray a={uvOf('top', other)} b={uvOf('top', micP)} px={px} color="#8fbcff" width={2} />
+        <MicAt view="top" p={micP} aim={aim} art={spec.look.art} r={spec.look.r} len={H.drawLen ?? spec.look.len} />
+        <HeldFront view="top" />
+      </HeldStatic>
+    ) : (
+      <>
+        {spec.top(px)}
+        <Ray a={uvOf('top', speaker)} b={uvOf('top', micP)} px={px} color="#ffc64d" width={3} dash={[1000, 0]} />
+        <Ray a={uvOf('top', other)} b={uvOf('top', micP)} px={px} color="#8fbcff" width={2} />
+        <MicAt view="top" p={micP} aim={aim} art={spec.look.art} r={spec.look.r} len={spec.look.len} />
+        <HeldArmArt view="top" shoulder={spec.shoulder} p={micP} aim={aim} len={spec.look.len} />
+      </>
+    );
   return {
     key: 'handoff',
     title: 'The handoff',
@@ -575,6 +596,10 @@ export function useHandoffStep(spec: HandoffSpec): MikingStep {
 /* ── A BODY MIC, FRONT AND SIDE (frame T) ── */
 
 export type BodySpec = {
+  /** (figure V2, wave 4) the lesson draws its people new: the wearer (`who`) from the front, the side and
+   *  above, the turned head. */
+  v2?: boolean;
+  who?: RoleKey;
   wearers: readonly Wearer[];
   words: { looking: string; prompt: string; done: string; wearer: Readonly<Record<Wearer, string>> };
 };
@@ -682,11 +707,11 @@ export function useBodyStep(spec: BodySpec): MikingStep {
     title: 'FROM ABOVE',
     draw: (px) => (
       <>
-        <StandingTalker view="top" t={HOST} headless />
-        <TurnedHeadTop yawDeg={yaw} />
+        {spec.v2 ? <StandingTalkerV2 view="top" t={HOST} headless who={spec.who} /> : <StandingTalker view="top" t={HOST} headless />}
+        <TurnedHeadTop yawDeg={yaw} v2={spec.v2} who={spec.who} />
         {at === 'headset' ? (
           <Group transform={[{ translateX: TURN_PIVOT.x }, { translateY: TURN_PIVOT.z }, { rotate: (yaw * Math.PI) / 180 }, { translateX: -TURN_PIVOT.x }, { translateY: -TURN_PIVOT.z }]}>
-            <HeadsetFrame view="top" capsule={chain.mic} />
+            <HeadsetFrame view="top" capsule={chain.mic} ear={spec.v2 ? headsetEarV2(spec.who ?? 'talker.wearer') : undefined} />
           </Group>
         ) : null}
         <Dim a={uvOf('top', mouth)} b={uvOf('top', worn)} px={px} color="#ffc64d" />
@@ -724,9 +749,19 @@ export function useBodyStep(spec: BodySpec): MikingStep {
               {() => (
                 <>
                   {view === 'side' ? <BodyChain uv={uvS} chain={chain} /> : null}
-                  <PlayerBehind pose={pose} />
-                  <PlayerInFront pose={pose} hands />
-                  {at === 'headset' ? <HeadsetOnHead view={view} /> : null}
+                  {spec.v2 ? (
+                    view === 'front' ? (
+                      <PersonFrontV2 pose={TORSO_FRONT} who={castFor(spec.who ?? 'talker.wearer')} opts={{ lip: { u: 0, v: 0 } }} />
+                    ) : (
+                      <PersonSideV2 pose={SINGER_SIDE} who={castFor(spec.who ?? 'talker.wearer')} opts={{ lip: { u: 0, v: 0 }, rest: 'restSide' }} />
+                    )
+                  ) : (
+                    <>
+                      <PlayerBehind pose={pose} />
+                      <PlayerInFront pose={pose} hands />
+                    </>
+                  )}
+                  {at === 'headset' ? <HeadsetOnHead view={view} ear={spec.v2 ? headsetEarV2(spec.who ?? 'talker.wearer') : undefined} /> : null}
                   {view === 'front' ? <BodyChain uv={uvF} chain={chain} showPack={false} /> : null}
                   {kos.map((k) => (
                     <KeepOutRegion key={k.id} shape={k.shape} uv={uv} />

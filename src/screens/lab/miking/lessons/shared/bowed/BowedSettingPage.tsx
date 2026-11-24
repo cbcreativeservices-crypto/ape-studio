@@ -36,6 +36,7 @@ import { CymbalPlan, DrumPlan, KickFromAbove, topTransform } from '../drums/Drum
 import { KICK_22x18 } from '../drums/drumSpec.ts';
 import { KIT_CYMBALS, KIT_DRUMS } from '../kitPlanModel.ts';
 import { hatchFor, pluckPath, sceneGroups, sweepPaths } from './BowedArt';
+import { bowedSecond } from './bowedFigureV2';
 import type { Posture } from './posture.ts';
 import { KitTop } from '../kitScene/KitSceneArt';
 import { Pianist } from '../piano/PianoArt';
@@ -318,14 +319,16 @@ export function WedgeTop({ at, faces }: { at: { x: number; z: number }; faces: {
 }
 
 /** A string player and instrument from above (the family's own art). */
-function BowedTop({ P, dim, bow = true }: { P: Posture; dim: number; bow?: boolean }) {
-  const groups = useMemo(() => sceneGroups(P, 'top', { bow }), [P, bow]);
+function BowedTop({ P, dim, bow = true, second = false }: { P: Posture; dim: number; bow?: boolean; /** a neighbor playing the lesson's own instrument: another person */ second?: boolean }) {
+  const groups = useMemo(() => sceneGroups(P, 'top', { bow, ...(second ? { who: bowedSecond() } : {}) }), [P, bow, second]);
   return (
     <Group opacity={dim}>
       {groups.map((g) => (
         <Group key={g.key}>
           {g.items.map((it, i) =>
-            typeof it.fill === 'object' ? (
+            it.node ? (
+              <Group key={i}>{it.node}</Group>
+            ) : typeof it.fill === 'object' ? (
               <Path key={i} path={it.path}>
                 <LinearGradient start={vec(it.box.u0, it.box.v0)} end={vec(it.box.u1, it.box.v1)} colors={it.fill.colors} positions={it.fill.positions} />
               </Path>
@@ -442,7 +445,7 @@ export function BowedPlan({ w, h, cfg, box, scene, wedges, items, highlight, onT
               ) : o.kind === 'pair' ? (
                 <MainPair />
               ) : o.kind === 'bowed' && o.posture ? (
-                <BowedTop P={o.posture} dim={0.72} />
+                <BowedTop P={o.posture} dim={0.72} second={o.posture.spec.id === self.spec.id} />
               ) : null}
             </Group>
           ))}

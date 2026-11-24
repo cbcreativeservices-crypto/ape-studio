@@ -17,6 +17,7 @@ import { Arm, ShirtLight, type Torso } from './FigureV2Side';
 import { DrummerTopLegsV2, HeadTop, topPaths } from './FigureV2Top';
 import { Folds } from './paint';
 import { personTopPlan, type PersonTopOpts } from './topPerson.ts';
+import type { PlacedHand } from './authoredHands.ts';
 import { FigureScale, levelOf, useFigureScale } from './detail';
 import { FigureLook } from './look';
 import type { CastMember } from './cast';
@@ -32,6 +33,14 @@ export type PersonOpts = {
   seatV?: number;
   /** (wave 3, the dress variant) a jacket over the shirt (jacketPlan.ts) in the person's own jacket tone. */
   jacket?: boolean;
+  /** (wave 3, the held arm) that arm not drawn — a step draws it holding a mic, so a new body never carries
+   *  an old arm. 'near' / 'far' as the side plan names them (near = the pose's R); 'both' (wave 4, the boom
+   *  operator: both arms drawn holding the pole). */
+  noArm?: 'near' | 'far' | 'both';
+  /** (wave 7, the clapper) hands already placed (authoredHands placeRest …), passed straight to the side plan;
+   *  they win over `rest`. */
+  placedR?: PlacedHand | null;
+  placedL?: PlacedHand | null;
 };
 
 const boxOf = (p: { getBounds: () => { x: number; y: number; width: number; height: number } }) => {
@@ -75,7 +84,7 @@ export const headPt = (pose: PlayerPose, ptPerMm: number | null) => (ptPerMm ?? 
 
 /** The plan for a cast member on a pose (memoised per pose and options). */
 export function personPlan(pose: PlayerPose, who: CastMember, o: PersonOpts = {}): SidePlan {
-  return sidePlan(pose, { head: who.head, lip: o.lip, restR: o.rest, restL: o.rest, seatV: o.seatV, body: who.body });
+  return sidePlan(pose, { head: who.head, lip: o.lip, restR: o.rest, restL: o.rest, seatV: o.seatV, body: who.body, ...(o.placedR ? { placedR: o.placedR } : {}), ...(o.placedL ? { placedL: o.placedL } : {}) });
 }
 
 /** A cast member in profile. `dim` fades the whole person as one layer. */
@@ -93,6 +102,7 @@ export const PersonSideV2 = memo(function PersonSideV2({ pose, who, opts, dim = 
               plan={plan}
               P={sidePaths(plan)}
               part={part}
+              noArm={opts?.noArm}
               over={opts?.jacket && part !== 'head' ? sideJacket(plan, pose, who, true) : undefined}
               fullHead={
                 headPt(pose, ptPerMm) >= FULL_HEAD_PT ? (
@@ -103,7 +113,7 @@ export const PersonSideV2 = memo(function PersonSideV2({ pose, who, opts, dim = 
               }
             />
           ) : (
-            <FigureV2Side plan={plan} part={part} over={opts?.jacket && part !== 'head' ? sideJacket(plan, pose, who, false) : undefined} />
+            <FigureV2Side plan={plan} part={part} noArm={opts?.noArm} over={opts?.jacket && part !== 'head' ? sideJacket(plan, pose, who, false) : undefined} />
           )}
         </Group>
       </FigureLook>
@@ -157,6 +167,7 @@ export const PersonTopV2 = memo(function PersonTopV2({ pose, who, opts = {}, par
           T={T}
           part={part === 'lower' ? 'legs' : legs ? part : 'upper'}
           arms={arms}
+          noArm={opts.noArm}
           head={head === 'show'}
           over={
             JT && JTP
@@ -178,8 +189,8 @@ export const PersonTopV2 = memo(function PersonTopV2({ pose, who, opts = {}, par
         {part !== 'upper' && legs ? <DrummerTopLegsV2 plan={plan} /> : null}
         {part !== 'lower' ? (
           <Group>
-            {arms ? <Arm a={plan.arms.far} P={T.far} t={torso} /> : null}
-            {arms ? <Arm a={plan.arms.near} P={T.near} t={torso} /> : null}
+            {arms && opts.noArm !== 'far' ? <Arm a={plan.arms.far} P={T.far} t={torso} /> : null}
+            {arms && opts.noArm !== 'near' ? <Arm a={plan.arms.near} P={T.near} t={torso} /> : null}
             {JT && JTP && JT.sleeves && JTP.near && JTP.far ? (
               <Group>
                 <JacketSleeve s={JT.sleeves.far} P={JTP.far} axis={JT.axis} bodyBox={boxOf(JTP.slab)} body={JTP.slab} cuff={T.far.cuffCloth} />

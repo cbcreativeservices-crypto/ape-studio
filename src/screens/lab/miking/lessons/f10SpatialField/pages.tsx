@@ -52,7 +52,8 @@ import { headAbove, FigureHead } from '../shared/players/PlayerFigure';
 import { pt } from '../shared/players/playerPose.ts';
 import { EAR_SEATED, EAR_STANDING, EVENT, LISTENER, PA_BOXES, PLAZA, WALKER_AT } from './geometry.ts';
 import { F10_SETUPS, F10_ZONES, setupsIn, type SpatialRig, type SpatialSetup } from './model.ts';
-import { RigArt, SiteArt, rigCapsules } from './scene';
+import { RigArt, SiteArt, rigCapsules, V2 } from './scene';
+import { ListenerHeadV2 } from './peopleV2';
 import { along } from '../shared/field/spatial.ts';
 import { aimShort, aimWords } from '../shared/sports/venuePlan.ts';
 import { zoneActivityLine } from '../../engine/progress/zoneActivity.ts';
@@ -750,9 +751,14 @@ function InEarHead({ px }: { px: number }) {
   }, []);
   return (
     <Group>
-      <Group transform={[{ rotate: -Math.PI / 2 }]}>
-        <FigureHead fill={head.fill} />
-      </Group>
+      {V2 ? (
+        // (figure V2) the listener's own head (Mei), its ears where the in-ear mics sit
+        <ListenerHeadV2 mid={{ u: -4, v: 0 }} half={85} face={0} />
+      ) : (
+        <Group transform={[{ rotate: -Math.PI / 2 }]}>
+          <FigureHead fill={head.fill} />
+        </Group>
+      )}
       <Path path={g.cable} style="stroke" strokeWidth={Math.max(2.2, 1.2 * px)} strokeCap="round" color="#0b0c0e" />
       <Path path={g.cable} style="stroke" strokeWidth={Math.max(1.2, 0.6 * px)} strokeCap="round" color="#4a4e57" />
       <Path path={g.body}>
@@ -1316,9 +1322,14 @@ function DestArt({ d, px }: { d: Destination; px: number }) {
   return (
     <Group>
       {/* The listener faces the front of the layout (up), toward the speakers at 0° (round 2: it faced sideways). */}
-      <Group transform={[{ rotate: Math.PI }]}>
-        <FigureHead fill={head.fill} />
-      </Group>
+      {V2 ? (
+        // (figure V2) the listener's own head (Mei), facing up toward the speakers, the ears inside the earcups
+        <ListenerHeadV2 mid={{ u: 0, v: 10 }} half={90} face={-Math.PI / 2} />
+      ) : (
+        <Group transform={[{ rotate: Math.PI }]}>
+          <FigureHead fill={head.fill} />
+        </Group>
+      )}
       {d === 'headphones' ? (
         // Round 2 (2026-10-10): the two earcups (about 100 × 40 mm seen edge-on
         // from above) joined by the headband over the crown.

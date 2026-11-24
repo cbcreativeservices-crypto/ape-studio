@@ -47,7 +47,25 @@ import { BODY_MOUNTS } from '../screens/lab/miking/lessons/shared/broadcast/body
 import { SEATED_FLOOR, SEAT_Y } from '../screens/lab/miking/lessons/shared/broadcast/talkerPose';
 import { clipOnCloth, jacketSidePlan } from '../screens/lab/miking/lessons/shared/figureV2/jacketPlan';
 import { FigureLook } from '../screens/lab/miking/lessons/shared/figureV2/look';
+import { ARM_CASES, ArmScene, armCaseTitle, armCentre, armFrame, STEP_IN_MM, type ArmCaseId, type ArmFrame, type ArmOpt } from './heldArmStudy';
 import { HELD_CASES, HeldStudy, STEP_IN, heldArmNumbers, heldGeo, heldViewOf, steppedIn, type HeldCaseId } from './heldStudy';
+import { ElsewhereStudy } from './elsewhereStudy';
+import { FamiliesStudy } from './familyStudy';
+import { PlayersStudy } from './playersStudy';
+import { Players3dStudy } from './players3dStudy';
+import { PlayersGuitarStudy } from './playersGuitarStudy';
+import { PlayersMalletStudy } from './playersMalletStudy';
+import { OperatorsStudy } from './operatorsStudy';
+import { FrontStudy } from './frontBoomStudy';
+import { HeldLessonsStudy } from './heldLessonsStudy';
+import { Foley3Study } from './foley3Study';
+import { Ensembles2Study } from './ensembles2Study';
+import { MetalStudy } from './metalStudy';
+import { PoleHandStudy } from './poleHandStudy';
+import { PoleHandBackStudy } from './poleHandBackStudy';
+import { PoleHandTopStudy } from './poleHandTopStudy';
+import { PoleHandEndStudy } from './poleHandEndStudy';
+import { MalletHandStudy } from './malletHandStudy';
 
 const BG = '#0d0f13';
 const STAGE = '#14171d';
@@ -814,6 +832,92 @@ function MicHands({ width, view }: { width: number; view: 'side' | 'top' }) {
   );
 }
 
+/* ── THE ARM THAT CARRIES THE MIC HAND (dev page `heldarm`, step B) ── */
+
+const KS = [0, 0.5, 1] as const;
+const KW = ['start', 'middle', 'end'] as const;
+
+function armWords(f: ArmFrame) {
+  const s = f.sol;
+  return `forearm to handle ${s.angle.toFixed(0)}° · wrist ${s.wristTurn < 0.5 ? 'straight' : `turned ${s.wristTurn.toFixed(0)}°`} · elbow ${s.elbowRise > 0 ? `${s.elbowRise.toFixed(0)} mm above` : `${(-s.elbowRise).toFixed(0)} mm below`} the shoulder${s.far ? ' · OUT OF REACH' : ''}`;
+}
+
+function ArmRows({ id, width, o = {}, ks = KS, only = false }: { id: ArmCaseId; width: number; o?: ArmOpt; ks?: readonly number[]; /** the whole pictures only (the page keeps under the canvas limit) */ only?: boolean }) {
+  const big = Math.min(380, (width - 32) / 2);
+  const lesson = Math.min(120, (width - 24 - 5 * 8) / 6);
+  const frames = ks.map((k) => armFrame(id, k, o));
+  const word = (k: number) => KW[KS.indexOf(k as never)] ?? `${k}`;
+  return (
+    <View style={{ marginBottom: 12 }}>
+      {frames.map((f) => (
+        <Text key={`w${f.k}`} style={{ color: DIM, fontSize: 10 }}>
+          {word(f.k)}: {armWords(f)}
+        </Text>
+      ))}
+      <PicGrid
+        w={big}
+        cols={2}
+        pics={frames.flatMap((f) =>
+          (['side', 'top'] as const).map((view) => {
+            const c = armCentre(f, view, 'whole');
+            return { key: `${id}${f.k}${view}`, title: `${word(f.k)} · ${view === 'side' ? 'side' : 'from above'}`, draw: <ArmScene f={f} view={view} />, cu: c.u, cv: c.v, mmW: 1100, mmH: 1100 };
+          }),
+        )}
+      />
+      {only ? null : <Text style={{ color: DIM, fontSize: 10, marginTop: 6 }}>The joins, closer (hand to wrist, wrist to cuff, cuff to sleeve):</Text>}
+      {only ? null : (
+      <PicGrid
+        w={big}
+        cols={2}
+        pics={frames.flatMap((f) =>
+          (['side', 'top'] as const).map((view) => {
+            const c = armCentre(f, view, 'wrist');
+            return { key: `j${id}${f.k}${view}`, title: `${word(f.k)} · ${view === 'side' ? 'side' : 'from above'}`, draw: <ArmScene f={f} view={view} />, cu: c.u, cv: c.v, mmW: 320, mmH: 320 };
+          }),
+        )}
+      />
+      )}
+      {only ? null : <Text style={{ color: DIM, fontSize: 10, marginTop: 6 }}>At lesson size (about 0.1 pt/mm):</Text>}
+      {only ? null : (
+      <PicGrid
+        w={lesson}
+        cols={6}
+        pics={frames.flatMap((f) =>
+          (['side', 'top'] as const).map((view) => {
+            const c = armCentre(f, view, 'whole');
+            return { key: `l${id}${f.k}${view}`, title: `${word(f.k)} ${view === 'side' ? 'side' : 'above'}`, draw: <ArmScene f={f} view={view} />, cu: c.u, cv: c.v, mmW: 1400, mmH: 1400 };
+          }),
+        )}
+      />
+      )}
+    </View>
+  );
+}
+
+function HeldArms({ width }: { width: number }) {
+  return (
+    <View>
+      <Caption title="THE ARM THAT CARRIES THE MIC HAND (dev, step B)" note="The whole person with the held arm at the start, the middle and the end of each move, side and from above; then the joins closer; then lesson size. The mic, its capsule and every measured point are the lesson's own. No lesson draws this yet." />
+      {ARM_CASES.map((id) => (
+        <View key={id}>
+          <Text style={{ color: INK, fontSize: 12, fontWeight: '700', marginTop: 8 }}>{armCaseTitle(id)}</Text>
+          <ArmRows id={id} width={width} />
+        </View>
+      ))}
+      <Caption title="OPEN DECISION (a): B03, THE OMNI AT THE GUEST'S MOUTH" note={`Left: the reporter where they stand (the arm level at shoulder height). Right: the reporter about ${STEP_IN_MM / 10} cm nearer the guest (moves the reporter). The mic and every measured point unchanged.`} />
+      <Text style={{ color: INK, fontSize: 11 }}>As they stand:</Text>
+      <ArmRows only id="b3" width={width} ks={[1]} />
+      <Text style={{ color: INK, fontSize: 11 }}>{`${STEP_IN_MM / 10} cm nearer the guest:`}</Text>
+      <ArmRows only id="b3" width={width} ks={[1]} o={{ stepIn: true }} />
+      <Caption title="OPEN DECISION (b): B10, THE FLAG MIC'S HANDLE" note="Top: drawn about 5 cm longer at the tail, the hand on the free handle below the flag. Below: as it is today, the hand where the engine puts it (it reaches into the flag). The capsule, the flag and every printed number are the same." />
+      <Text style={{ color: INK, fontSize: 11 }}>Longer at the tail:</Text>
+      <ArmRows only id="b10" width={width} ks={[0, 1]} />
+      <Text style={{ color: INK, fontSize: 11 }}>As today:</Text>
+      <ArmRows only id="b10" width={width} ks={[0, 1]} o={{ flagToday: true }} />
+    </View>
+  );
+}
+
 export function FigureStudy() {
   const route = useRoute();
   const only = String((route.params as { id?: string } | undefined)?.id ?? '');
@@ -821,6 +925,12 @@ export function FigureStudy() {
   const { width } = useWindowDimensions();
   const pane = Math.min(330, width - 24);
   const big = Math.min(width - 24, 640);
+  // (the pole hand, 2026-11-24: its own page, nothing else on it)
+  if (only === 'polehand') return <PoleHandStudy />;
+  if (only === 'polehandback') return <PoleHandBackStudy />;
+  if (only === 'polehandtop') return <PoleHandTopStudy />;
+  if (only === 'polehandend') return <PoleHandEndStudy />;
+  if (only === 'mallethand') return <MalletHandStudy />;
   return (
     <ScrollView style={{ flex: 1, backgroundColor: BG }} contentContainerStyle={{ padding: 12 }}>
       <Text style={{ color: INK, fontSize: 18, fontWeight: '700', marginBottom: 4 }}>Figure study — the kit drummer</Text>
@@ -970,6 +1080,11 @@ export function FigureStudy() {
           <Wave3 width={width} />
         </Section>
       ) : null}
+      {only === 'heldarm' ? (
+        <Section>
+          <HeldArms width={width} />
+        </Section>
+      ) : null}
       {only === 'michand' || only === 'michandtop' ? (
         <Section>
           <MicHands width={width} view={only === 'michand' ? 'side' : 'top'} />
@@ -980,9 +1095,69 @@ export function FigureStudy() {
           <Jacket width={width} />
         </Section>
       ) : null}
+      {only.startsWith('elsewhere') ? (
+        <Section>
+          <ElsewhereStudy width={width} part={only.slice(10)} />
+        </Section>
+      ) : null}
       {only === 'deskhand' ? (
         <Section>
           <DeskHands width={width} />
+        </Section>
+      ) : null}
+      {only.startsWith('families') ? (
+        <Section>
+          <FamiliesStudy width={width} only={only.split('-')[1]} dbg={only.split('-')[2] === 'dbg'} />
+        </Section>
+      ) : null}
+      {only.startsWith('players3d') ? (
+        <Section>
+          <Players3dStudy width={width} only={only} />
+        </Section>
+      ) : null}
+      {only.startsWith('players') && !only.startsWith('playersGuitar') && !only.startsWith('players3d') && !only.startsWith('playersMallet') ? (
+        <Section>
+          <PlayersStudy width={width} only={only} />
+        </Section>
+      ) : null}
+      {only.startsWith('playersMallet') ? (
+        <Section>
+          <PlayersMalletStudy width={width} only={only} />
+        </Section>
+      ) : null}
+      {only.startsWith('playersGuitar') ? (
+        <Section>
+          <PlayersGuitarStudy width={width} only={only} />
+        </Section>
+      ) : null}
+      {only.startsWith('operators') ? (
+        <Section>
+          <OperatorsStudy width={width} only={only} />
+        </Section>
+      ) : null}
+      {only.startsWith('heldlessons') ? (
+        <Section>
+          <HeldLessonsStudy width={width} only={only} />
+        </Section>
+      ) : null}
+      {only.startsWith('foley3') ? (
+        <Section>
+          <Foley3Study width={width} only={only} />
+        </Section>
+      ) : null}
+      {only.startsWith('front') || only.startsWith('boom') ? (
+        <Section>
+          <FrontStudy width={width} only={only} />
+        </Section>
+      ) : null}
+      {only.startsWith('ensembles2') ? (
+        <Section>
+          <Ensembles2Study width={width} part={only.slice(11)} />
+        </Section>
+      ) : null}
+      {only.startsWith('metal') ? (
+        <Section>
+          <MetalStudy width={width} only={only} />
         </Section>
       ) : null}
       {show('foot') ? (

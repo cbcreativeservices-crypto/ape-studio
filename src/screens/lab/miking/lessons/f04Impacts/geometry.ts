@@ -37,8 +37,14 @@ export const floorOf = (v: VariantId) => FLOOR[v] ?? TABLE_H;
 export const TABLE = { x0: -380, x1: 300, z0: -450, z1: 450 } as const;
 export const tableTop = (v: VariantId) => (v === 'water' ? BASIN.water : v === 'texture' ? BOARD_T : 0);
 
-const IMPACT_BODY: Body3 = standing({ floorY: FLOOR.impact, x: -500, lean: 28, wrR: v3(-110, -180, 40), elR: v3(-330, -300, 230), wrL: v3(-330, -40, -210), elL: v3(-420, -300, -260), kindR: 'grip' });
-const WATER_BODY: Body3 = standing({ floorY: FLOOR.water, x: -560, lean: 24, wrR: v3(-190, -320, 60), elR: v3(-400, -480, 230), wrL: v3(-170, -250, -40), elL: v3(-380, -420, -260), kindR: 'grip' });
+// (second review 2026-11-24: "from the side the far arm grows out of the hip; from above the far fist is behind the
+// body") the left hand lies flat on the table further forward, the arm reaching to it in front of the body — seen
+// from the side its forearm comes out ahead of the torso, from above the hand lies ahead of the shoulders
+const IMPACT_BODY: Body3 = standing({ floorY: FLOOR.impact, x: -500, lean: 28, wrR: v3(-110, -180, 40), elR: v3(-330, -300, 230), wrL: v3(-200, -40, -240), elL: v3(-360, -300, -300), kindR: 'grip' });
+// (review 2026-11-24: the steadying left hand floated beside the jug, its forearm hidden behind the right one —
+// it now steadies the tipped jug under its belly, the forearm running in lower than the pouring arm, where it
+// shows; the hand clear of the body. A drawing default: no keep-out reads this hand.)
+const WATER_BODY: Body3 = standing({ floorY: FLOOR.water, x: -560, lean: 24, wrR: v3(-190, -320, 60), elR: v3(-400, -480, 230), wrL: v3(-185, -165, -40), elL: v3(-430, -350, -230), kindR: 'grip' });
 const TEXTURE_BODY: Body3 = standing({ floorY: FLOOR.texture, x: -520, lean: 25, wrR: v3(-110, -90, 80), elR: v3(-330, -300, 230), wrL: v3(-200, -40, -260), elL: v3(-400, -300, -280), kindR: 'grip' });
 export const BODIES: Readonly<Record<string, Body3>> = { impact: IMPACT_BODY, water: WATER_BODY, texture: TEXTURE_BODY, live: IMPACT_BODY };
 export const bodyOf = (v: VariantId): Body3 => BODIES[v] ?? IMPACT_BODY;

@@ -26,6 +26,10 @@ import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabe
 import { useStageTextScale } from '../../../../rack/stageAspect';
 import { ChairsTop, makeChairsTop } from '../../../../../../features/lab/audienceChairs';
 import { WindScene } from './WindArt';
+import { windSeatPlayer } from './windFigureV2';
+import { ConductorV2 } from '../figureV2/conductorV2';
+import { castFor } from '../figureV2/cast';
+import { figureV2On } from '../figureV2/figureV2Config';
 import { WedgePlan } from '../KitPlan';
 import { PlanPaStack } from '../speakers/BacklinePlan';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
@@ -206,9 +210,16 @@ function WindPlan({ w, h, scene, variant, items, wedges, highlight, onTap, acces
                   <LinearGradient start={vec(STAGE.podium.u0, STAGE.podium.v0)} end={vec(STAGE.podium.u1, STAGE.podium.v1)} colors={['#4a3a2c', '#2a2018']} />
                 </Path>
                 <Path path={f.podium} style="stroke" strokeWidth={8} color="#120d09" />
-                <Circle cx={STAGE.conductor.u} cy={STAGE.conductor.v + 40} r={110}>
-                  <RadialGradient c={vec(STAGE.conductor.u - 40, STAGE.conductor.v)} r={140} colors={['#7c8492', '#3b404a']} />
-                </Circle>
+                {/* (Ensembles2) the conductor from above in the approved look, the players' look (familyWinds); else the old marker */}
+                {figureV2On('familyWinds') ? (
+                  <Group transform={[{ translateX: STAGE.conductor.u }, { translateY: STAGE.conductor.v }]}>
+                    <ConductorV2 who={castFor('ensemble.conductor')} view="top" assumePtPerMm={xf.s} />
+                  </Group>
+                ) : (
+                  <Circle cx={STAGE.conductor.u} cy={STAGE.conductor.v + 40} r={110}>
+                    <RadialGradient c={vec(STAGE.conductor.u - 40, STAGE.conductor.v)} r={140} colors={['#7c8492', '#3b404a']} />
+                  </Circle>
+                )}
               </>
             ) : null}
             {/* the shared music stands */}
@@ -221,7 +232,7 @@ function WindPlan({ w, h, scene, variant, items, wedges, highlight, onTap, acces
             {/* the players, each with its own instrument, from above */}
             {(Object.entries(SLOTS) as [SlotId, (typeof SLOTS)[SlotId]][]).map(([id, sl]) => (
               <Group key={id} transform={[{ translateX: sl.at.u }, { translateY: sl.at.v }]}>
-                <WindScene L={lay(id)} view="top" showJet={false} playerDim={id === own ? 1 : 0.62} />
+                <WindScene L={lay(id)} view="top" showJet={false} playerDim={id === own ? 1 : 0.62} who={id === own ? undefined : windSeatPlayer(id)} />
               </Group>
             ))}
             {/* STAGE: the lesson's floor wedges (the shared 2-way wedge), in its own frame */}

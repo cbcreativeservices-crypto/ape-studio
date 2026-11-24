@@ -42,6 +42,10 @@ import { CueMixPlan } from '../monitoring/CueMixPlan';
 import { cueCables, cueLabels, type CueRig } from '../monitoring/cueMix.ts';
 import { clearOfFoots, planTurn, type PlanCable, rectOfCircle, unionRect, type PlanFoot, type PlanRect } from '../planFoot.ts';
 import { GLYPH, roomOfBox, spotAngle, spotFoots, spotsIn, type PlanGlyph, type PlanScene, type PlanSpot } from './pstagePlanModel.ts';
+// (figure V2, wave 6 of D78: a spot's person in the approved look, behind `v2`)
+import { MarkerTopV2 } from '../figureV2/elsewhereTop';
+import { castForKey } from '../figureV2/markerPose';
+import type { CastMember } from '../figureV2/cast';
 
 export type { PlanGlyph, PlanSpot } from './pstagePlanModel.ts';
 
@@ -161,7 +165,7 @@ function glyphPaths(g: PlanGlyph, half?: { u: number; v: number }): Record<strin
   return o;
 }
 
-function Glyph({ spot, lit }: { spot: PlanSpot; lit: boolean }) {
+function Glyph({ spot, lit, v2 = false, who }: { spot: PlanSpot; lit: boolean; /** (figure V2) the person in the approved look — OFF by default */ v2?: boolean; who?: CastMember }) {
   if (spot.glyph === 'none') return null;
   const ang = spotAngle(spot);
   if (spot.glyph === 'wedge') {
@@ -179,12 +183,21 @@ function Glyph({ spot, lit }: { spot: PlanSpot; lit: boolean }) {
       {spot.glyph === 'singer' || spot.glyph === 'chair' ? (
         <>
           {p.seat ? <Path path={p.seat} color="#2a2b31" /> : null}
-          <Path path={p.shoulders}>
-            <LinearGradient start={vec(-120, -230)} end={vec(120, 230)} colors={['#4b5366', '#353b49', '#232733']} />
-          </Path>
-          <Group transform={[{ translateX: 5 }, { rotate: -Math.PI / 2 }]}>
-            <FigureHead fill={p.head} />
-          </Group>
+          {v2 ? (
+            // (the old marker's head was 5 mm ahead of its body's centre; the new neck sits 13 mm behind it)
+            <Group transform={[{ translateX: -13 }]}>
+              <MarkerTopV2 who={who ?? castForKey(spot.item)} />
+            </Group>
+          ) : (
+            <>
+              <Path path={p.shoulders}>
+                <LinearGradient start={vec(-120, -230)} end={vec(120, 230)} colors={['#4b5366', '#353b49', '#232733']} />
+              </Path>
+              <Group transform={[{ translateX: 5 }, { rotate: -Math.PI / 2 }]}>
+                <FigureHead fill={p.head} />
+              </Group>
+            </>
+          )}
           {p.stand ? <Path path={p.base} style="stroke" strokeWidth={12} strokeCap="round" color="#4d515b" /> : null}
           {p.stand ? <Path path={p.stand} style="stroke" strokeWidth={14} strokeCap="round" color="#5a5f69" /> : null}
           {p.mic ? <Path path={p.mic} color="#1a1b1f" /> : null}
@@ -287,7 +300,7 @@ function roomPath(r: PlanRect): SkPath {
   return p;
 }
 
-export function StagePlanCanvas({ spec, w, h, variant, scene, items, highlight, onTap, accessibilityLabel }: { spec: StagePlanSpec; w: number; h: number; variant: VariantId; scene: PlanScene; items: readonly SettingItem[]; highlight: string | null; onTap: (id: string) => void; accessibilityLabel: string }) {
+export function StagePlanCanvas({ spec, w, h, variant, scene, items, highlight, onTap, accessibilityLabel, v2 = false, people }: { spec: StagePlanSpec; w: number; h: number; variant: VariantId; scene: PlanScene; items: readonly SettingItem[]; highlight: string | null; onTap: (id: string) => void; accessibilityLabel: string; /** (figure V2, wave 6) the spots' people in the approved look — OFF by default: the lesson switches it with its own player; `people` names who stands at a spot (else the cast in turn by the spot) */ v2?: boolean; people?: (item: string) => CastMember | undefined }) {
   const textScale = useStageTextScale();
   const box = scene === 'near' ? spec.near(variant) : scene === 'stage' && spec.wideStage ? spec.wideStage(variant) : spec.wide(variant);
   // DOWNSTAGE = BOTTOM (owner 2026-10-16): a stage laid out with its audience
@@ -343,11 +356,11 @@ export function StagePlanCanvas({ spec, w, h, variant, scene, items, highlight, 
           {/* Stage: the deck's downstage edge (dashed), the house beyond it. */}
           {scene === 'stage' ? <StageLip box={box} lip={spec.audience(variant).lip} /> : null}
           {spots.filter((s) => s.glyph === 'band').map((s) => (
-            <Glyph key={s.item} spot={s} lit={highlight === s.item} />
+            <Glyph key={s.item} spot={s} lit={highlight === s.item} v2={v2} who={people?.(s.item)} />
           ))}
           <Own variant={variant} lit={highlight === spec.ownItem} />
           {spots.filter((s) => s.glyph !== 'band').map((s) => (
-            <Glyph key={s.item} spot={s} lit={highlight === s.item} />
+            <Glyph key={s.item} spot={s} lit={highlight === s.item} v2={v2} who={people?.(s.item)} />
           ))}
           {/* Studio: each performer's headphone mix (no wedges in a studio). */}
           {cue ? <CueMixPlan rig={cue} /> : null}

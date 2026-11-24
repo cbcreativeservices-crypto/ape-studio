@@ -24,7 +24,9 @@
 import { useMemo } from 'react';
 import { Circle, DashPathEffect, Group, Line, LinearGradient, Path, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
 import { levelColorForDb, rampColors } from '../../../../../features/tools/levelColor';
-import { PlayerBehind, PlayerInFront } from '../../../miking/lessons/shared/players/PlayerFigure';
+// (figure V2, wave 7 of D78: YOU from above, a cast member)
+import { PersonTopV2 } from '../../../miking/lessons/shared/figureV2/personV2';
+import { castFor } from '../../../miking/lessons/shared/figureV2/cast';
 import { SINGER_TOP } from '../../../miking/lessons/shared/voice/voicePose';
 import { gaNow } from '../../model/gaStore';
 import type { GaHudProps } from './gaHudTypes';
@@ -41,8 +43,7 @@ const ORBIT = 18.5;
 function Head({ x, y, turn }: { x: number; y: number; turn: number }) {
   return (
     <Group transform={[{ translateX: x }, { translateY: y }, { rotate: turn }, { scale: FIG }]}>
-      <PlayerBehind pose={SINGER_TOP} />
-      <PlayerInFront pose={SINGER_TOP} hands={false} />
+      <PersonTopV2 pose={SINGER_TOP} who={castFor('ga.you')} />
     </Group>
   );
 }

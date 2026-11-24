@@ -70,10 +70,13 @@ import { CHAIR_MM, CHAIR_PITCH_MM, FRONT_ROW_GAP_MM } from '../../../features/la
 // The house figures (fix pass 2026-10-16: the coverage scenes drew a stick
 // guitarist and line-art head icons for the band): Miking's PlayerFigure and
 // its plan-view players, in millimetres, scaled to the scene's metre.
-import { FigureHead, PlayerBehind, PlayerInFront, headAbove } from '../miking/lessons/shared/players/PlayerFigure';
-import { pt } from '../miking/lessons/shared/players/playerPose';
+// (figure V2, wave 7 of D78: the band and the singer in the cast, the approved drawing)
+import { PersonSideV2, PersonTopV2 } from '../miking/lessons/shared/figureV2/personV2';
+import { PlayerTopV2 } from '../miking/lessons/shared/figureV2/elsewhereTop';
+import { BAND_TOP_PLAYERS } from '../miking/lessons/shared/figureV2/elsewhereBand';
+import { castFor } from '../miking/lessons/shared/figureV2/cast';
 import { FLOOR_Y as SINGER_FLOOR_MM, SINGER_NECK, SINGER_SIDE, SINGER_TOP } from '../miking/lessons/shared/voice/voicePose';
-import { PlanInstrumentEdge, PlanPlayerTop } from '../miking/lessons/shared/speakers/BacklinePlan';
+import { PlanInstrumentEdge } from '../miking/lessons/shared/speakers/BacklinePlan';
 import { coverageT, dirGain, smoothEdge } from './coverageModel';
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 
@@ -3424,7 +3427,7 @@ function BandTop({ cx, chestY }: { cx: number; chestY: number }) {
     base.addCircle(230, 0, 125);
     const tube = Skia.Path.Make();
     tube.addCircle(230, 0, 12);
-    return { head: headAbove(pt(0, 0), 100).fill, base, tube };
+    return { base, tube };
   }, []);
   // Plan positions (mm across the stage from the center line).
   const players: { kind: 'guitar' | 'bass'; dx: number }[] = [
@@ -3436,10 +3439,8 @@ function BandTop({ cx, chestY }: { cx: number; chestY: number }) {
       {players.map((p) => (
         <Group key={p.kind} transform={[{ translateX: cx + p.dx * COVER_K }, { translateY: chestY }, { rotate: Math.PI / 2 }, { scale: COVER_K }]}>
           <PlanInstrumentEdge bass={p.kind === 'bass'} />
-          <PlanPlayerTop pose={p.kind} />
-          <Group transform={[{ rotate: -Math.PI / 2 }]}>
-            <FigureHead fill={g.head} />
-          </Group>
+          {/* (figure V2, wave 7 of D78: the guitarist Ruth and the bassist Kofi, the approved top view) */}
+          <PlayerTopV2 player={BAND_TOP_PLAYERS[p.kind]} who={castFor(p.kind === 'bass' ? 'coverage.bass' : 'coverage.guitar')} />
         </Group>
       ))}
       {/* The singer: the neck on the chest line, the stand in front. */}
@@ -3448,8 +3449,7 @@ function BandTop({ cx, chestY }: { cx: number; chestY: number }) {
           <RadialGradient c={vec(200, -30)} r={160} colors={['#4a4d56', '#1c1d22']} />
         </Path>
         <Path path={g.base} style="stroke" strokeWidth={14} color="#6a6f7a" />
-        <PlayerBehind pose={SINGER_TOP} />
-        <PlayerInFront pose={SINGER_TOP} hands={false} />
+        <PersonTopV2 pose={SINGER_TOP} who={castFor('voice.singer')} />
         <Path path={g.tube} color="#9aa0aa" />
         <HandheldMic x={70} y={0} angleDeg={-90} grilleR={25} bodyLen={150} />
       </Group>
@@ -3784,8 +3784,8 @@ function SingerAtStandSide({ lipX, deckY }: { lipX: number; deckY: number }) {
   }, []);
   return (
     <Group transform={[{ translateX: lipX }, { translateY: deckY - SINGER_FLOOR_MM * COVER_K }, { scale: COVER_K }]}>
-      <PlayerBehind pose={SINGER_SIDE} />
-      <PlayerInFront pose={SINGER_SIDE} />
+      {/* (figure V2, wave 7 of D78: the singer is the cast's singer, Ana, her mouth on the lip point) */}
+      <PersonSideV2 pose={SINGER_SIDE} who={castFor('voice.singer')} opts={{ lip: { u: 0, v: 0 }, rest: 'restSide' }} />
       <Path path={g.tube}>
         <LinearGradient start={vec(220, 0)} end={vec(240, 0)} colors={[METAL_HI, METAL_MID, METAL_LO]} />
       </Path>

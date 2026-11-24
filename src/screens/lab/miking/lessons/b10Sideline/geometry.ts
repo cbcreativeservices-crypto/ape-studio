@@ -64,9 +64,43 @@ export const PA_C = v3(2600, -1300, 1500);
 
 /** The post-event backdrop behind the guest. */
 export const BACKDROP_X = -650;
-/** The boom operator (post-event): outside the frame, to the guest's right. */
-export const OPERATOR = { feet: v3(1150, FLOOR, 1150), box: { min: v3(1000, -210, 960), max: v3(1300, FLOOR, 1340) } };
 export const GRIP = v3(930, -285, 920);
+
+/**
+ * THE BOOM HOLD (figure V2, step B round 3; for the owner): 'overhead' — the operator stands UNDER the pole, both
+ * hands up on its one straight line from the mic through the grip (the front hand 42 cm nearer the mic, the rear
+ * hand at the grip), the pole clear above the head; 'old' — the old drawing's stance beside the mark, the pole's
+ * drawn stub bending down through where the operator's head is. ONE line flips it. The mic, its aim, the grip
+ * (the engine's clamp point) and every measured point are the same either way; only the operator's stance and the
+ * pole's drawn rear part move.
+ */
+export const B10_BOOM_HOLD = 'overhead' as 'overhead' | 'old';
+/** The pole's line: from the boom's start capsule's tail (model.ts BOOM: 900 mm at 45° above the mouth's axis, a
+ *  50 mm capsule) through the grip. */
+export const BOOM_TAIL = v3(900 * Math.SQRT1_2 + 50 * Math.SQRT1_2, -900 * Math.SQRT1_2 - 50 * Math.SQRT1_2, 0);
+const BOOM_DIR = (() => {
+  const d = v3(GRIP.x - BOOM_TAIL.x, GRIP.y - BOOM_TAIL.y, GRIP.z - BOOM_TAIL.z);
+  const l = Math.hypot(d.x, d.y, d.z);
+  return v3(d.x / l, d.y / l, d.z / l);
+})();
+const along = (k: number) => v3(GRIP.x + BOOM_DIR.x * k, GRIP.y + BOOM_DIR.y * k, GRIP.z + BOOM_DIR.z * k);
+/** The overhead hold: the front hand on the pole 42 cm nearer the mic, the rear hand at the grip (the engine's
+ *  clamp point, where its pole from the mic ends), the end 11 cm past it (clear of the back of the head); the
+ *  operator's head under the middle of the two hands. On the starting setup's line (the mic's tail through the
+ *  grip) the pole is ONE straight line through both hands. (2026-11-24, FrontAndBoom: the hands cannot sit
+ *  behind the grip — the line falls toward its rear and would run into the head; with the mic moved off its
+ *  start the engine's pole pivots on the grip while the drawn hands keep this line: see the hand-back.) */
+export const BOOM_FRONT_HAND = along(-420);
+export const BOOM_REAR_HAND = GRIP;
+export const BOOM_POLE_END = along(110);
+const MID = along(-210);
+const FEET_OVERHEAD = v3(MID.x - 10, FLOOR, MID.z);
+
+/** The boom operator (post-event): outside the frame, to the guest's right. */
+export const OPERATOR =
+  B10_BOOM_HOLD === 'overhead'
+    ? { feet: FEET_OVERHEAD, box: { min: v3(FEET_OVERHEAD.x - 150, -210, FEET_OVERHEAD.z - 190), max: v3(FEET_OVERHEAD.x + 150, FLOOR, FEET_OVERHEAD.z + 190) } }
+    : { feet: v3(1150, FLOOR, 1150), box: { min: v3(1000, -210, 960), max: v3(1300, FLOOR, 1340) } };
 
 /** The guest's body mic: at the breastbone (frame T), aimed up at the mouth. */
 export const LAV_P = TORSO.sternum;

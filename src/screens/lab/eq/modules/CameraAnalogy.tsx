@@ -28,7 +28,9 @@
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Ellipse, G, Line, Path, Polygon, Rect } from 'react-native-svg';
-import { FigureStandingFrontSvg } from '../../../../features/lab/figureBodySvg';
+// (figure V2, wave 7 of D78: the person is a cast member from the front, the approved drawing in SVG, 1.745 m as before)
+import { PersonFrontSvg } from '../../../../features/lab/figureV2Svg';
+import { castFor } from '../../miking/lessons/shared/figureV2/cast';
 import { eqResponseDb, type ResponseCurve } from '../../../../features/lab/fxViz';
 import { ResponseCurveGraph } from './eqResponseGraph';
 import { CheckQuestion, type CheckSpec } from '../../foundations/bits';
@@ -152,7 +154,7 @@ function RoomScene({ aimX, halfW, width }: { aimX: number; halfW: number; width:
           head): the shared standing FIGURE, front view, at the room's scale
           (≈ 37.7 units/m: an adult 1.75 m = 66 units, crown at y 50), feet
           on the floor, centred; the figure's own skin-silhouette head. */}
-      <FigureStandingFrontSvg cx={160} floorY={FLOOR_Y} px={0.0377} minContour={0.7} />
+      <PersonFrontSvg cx={160} floorY={FLOOR_Y} px={0.0377} who={castFor('eq.person')} heightMm={1745} />
 
       {/* FLOOR LAMP — base, pole, shade */}
       <Ellipse cx={214} cy={116} rx={10} ry={2.6} fill={FILL2} stroke={INK} strokeWidth={1.2} />

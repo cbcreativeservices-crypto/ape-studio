@@ -62,6 +62,9 @@ function draw(props: Props) {
     './planArt': { Wedge2WayPlan: none, wedgeJackY: () => 0 },
     '../../../../features/lab/headIconsSvg': { HeadIconSvg: none },
     '../../../../features/lab/figureAboveSvg': { FigureAboveSvg: none },
+    // (figure V2, wave 7 of D78: the performer is a cast member, PersonAboveSvg)
+    '../../../../features/lab/figureV2Svg': { PersonAboveSvg: none },
+    '../../miking/lessons/shared/figureV2/cast': { castFor: () => null },
     './VenueView': { CABLE_COLORS: { line: '#line', mic: '#mic', speaker: '#speaker' } },
   };
   const req = (spec: string): unknown => {

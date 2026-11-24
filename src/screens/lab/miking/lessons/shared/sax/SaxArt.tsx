@@ -37,6 +37,10 @@ import { add, dot, scale, sub } from '../../../engine/geometry/vec.ts';
 import { FigureHead, headAbove, headProfile, intoCollar } from '../players/PlayerFigure';
 import { PaintItem as FigurePaint, playerGroups as figureGroups, type HandHold, type Item as FigureItem } from '../bowed/BowedArt';
 import { saxHands, type SaxHand, type SaxTouch } from './saxHands.ts';
+import { figureV2On } from '../figureV2/figureV2Config.ts';
+import type { CastMember } from '../figureV2/cast';
+import { FamilyFigureFrontV2, FamilyFigureV2 } from '../figureV2/familyV2';
+import { saxFigure } from './saxFigureV2';
 import { pt } from '../players/playerPose';
 import { fingering, holesOf, pathOf, radiusAt, type Fingering, type SaxRow } from './saxSpec.ts';
 import { anchorsOf, centre, onTube, tangent, tubeDir, type PlaneAxes, type SaxPosture } from './saxPosture.ts';
@@ -407,10 +411,31 @@ export const REST_NOTE = 9;
  *  parts behind the horn, the horn, the parts in front of it (the near arm,
  *  the hands on the keys). Opaque (owner 2026-10-10: a see-through limb reads
  *  as a mannequin). */
-export function SaxScene({ P, view, f }: { P: SaxPosture; view: ViewId; f?: Pick<Fingering, 'open' | 'octaveKey'> | null }) {
+export function SaxScene({ P, view, f, v2: v2In, who }: { P: SaxPosture; view: ViewId; f?: Pick<Fingering, 'open' | 'octaveKey'> | null; /** (the study page) old or new whatever the switch */ v2?: boolean; /** (a plan's neighbor) another cast member */ who?: CastMember }) {
   const fing = useMemo(() => f ?? fingering(P.row, REST_NOTE), [P, f]);
   const pg = useMemo(() => playerGroups(P, view), [P, view]);
   const hook = useMemo(() => saxHands(P).R.thumb, [P]);
+  const v2 = v2In ?? figureV2On('familySax');
+  const fig = useMemo(() => (v2 ? saxFigure(P, view, who) : null), [v2, P, view, who]);
+  if (fig) {
+    // (figure roll-out wave 5: the player in the approved look — whole behind the horn, the strap over the shirt,
+    // the horn, then the person again where its parts lie over the horn)
+    const strap = pg.groups.filter((g) => g.key === 'strap');
+    return (
+      <Group>
+        <FamilyFigureV2 fp={fig.fp} />
+        {strap.map((g) => (
+          <Group key={g.key}>
+            {g.items.map((it, i) => (
+              <FigurePaint key={i} it={it} />
+            ))}
+          </Group>
+        ))}
+        <SaxInstrument P={P} view={view} f={fing} hook={hook} table={saxHands(P).L} />
+        <FamilyFigureFrontV2 fp={fig.fp} region={fig.region} />
+      </Group>
+    );
+  }
   const draw = (gs: Group3[]) =>
     gs.map((g) => (
       <Group key={g.key}>

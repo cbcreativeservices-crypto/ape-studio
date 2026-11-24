@@ -27,6 +27,19 @@ import { h3, handOn, type HandView, type V3 } from '../shared/players/handModel.
 import type { SharedValue } from 'react-native-reanimated';
 import { harpElbow, harpHandPlan, harpHands, harpistBody, type HarpHand } from './harpistPose.ts';
 import { pt, type PlayerPose } from '../shared/players/playerPose.ts';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+import { HarpistSideBehindV2, HarpistSideLegsV2, HarpistSideNearV2, HarpistTopV2, harpistNearLegPath, harpistSideV2 } from './harpistV2';
+import { personShapes } from '../shared/figureV2/personV2';
+import { inPoly } from '../shared/figureV2/geom.ts';
+/** (the new look) whether the new harpist, as drawn in profile, covers (u, v): the body's outlines (labels keep off). */
+const harpistV2Covers = (lever: boolean, u: number, v: number, tol: number) => {
+  const shapes = personShapes(harpistSideV2(harpistPose('side', lever)).plan);
+  const pts = tol > 0 ? [{ u, v }, { u: u - tol, v }, { u: u + tol, v }, { u, v: v - tol }, { u, v: v + tol }] : [{ u, v }];
+  return pts.some((q) => shapes.some((sh) => inPoly(q, sh)));
+};
+
+/** The new look (figure V2, wave 3 set 3c): the harpist is Ruth of the cast. */
+export const V2 = figureV2On('sidePlayers');
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -340,6 +353,22 @@ function nearLegClip(lever: boolean): SkPath | null {
   return clip;
 }
 
+/** (the new look) the near leg of the NEW figure where it lies over the harp's painted area. */
+const nearLegClipsV2 = new Map<string, SkPath | null>();
+function nearLegClipV2(lever: boolean): SkPath | null {
+  const key = lever ? 'lever' : 'pedal';
+  if (nearLegClipsV2.has(key)) return nearLegClipsV2.get(key) ?? null;
+  const g = harpGeom(lever);
+  const o = sidePaths(g, key);
+  let harp: SkPath = make();
+  for (const q of [o.box, o.holes, o.base, o.pedals, o.feet]) harp = Skia.Path.MakeFromOp(harp, q, PathOp.Union) ?? harp;
+  const edge = harp.copy().stroke({ width: 10 });
+  if (edge) harp = Skia.Path.MakeFromOp(harp, edge, PathOp.Union) ?? harp;
+  const clip = Skia.Path.MakeFromOp(harpistNearLegPath(harpistPose('side', lever)), harp, PathOp.Intersect);
+  nearLegClipsV2.set(key, clip);
+  return clip;
+}
+
 export function HarpSide({ variant, dim = 1, highlightString }: { variant: VariantId; dim?: number; highlightString?: number }) {
   const lever = isLever(variant);
   const g = harpGeom(lever);
@@ -449,7 +478,7 @@ function topPaths(g: HarpGeom, key: string): SidePaths {
   return o;
 }
 
-export function HarpistPlan({ dim = 1, lever = false, part = 'all' }: { dim?: number; lever?: boolean; part?: 'all' | 'behind' | 'front' }) {
+export function HarpistPlan({ dim = 1, lever = false, part = 'all', v2 = false }: { dim?: number; lever?: boolean; part?: 'all' | 'behind' | 'front'; /** the new look (figure V2): a lesson opts in at its call sites */ v2?: boolean }) {
   const h = harpistAt(lever);
   const key = lever ? 'harpistTopL' : 'harpistTop';
   let o = topCache.get(key);
@@ -467,8 +496,17 @@ export function HarpistPlan({ dim = 1, lever = false, part = 'all' }: { dim?: nu
           <LinearGradient start={vec(h.seat.x0, -h.seat.hw)} end={vec(h.seat.x1, h.seat.hw)} colors={['#4a4c55', '#141418']} />
         </Path>
       ) : null}
-      {part !== 'front' ? <PlayerBehind pose={pose} dim={dim} /> : null}
-      {part !== 'behind' ? <PlayerInFront pose={pose} dim={dim} /> : null}
+      {v2 ? (
+        <>
+          {part !== 'front' ? <HarpistTopV2 pose={pose} lever={lever} part="behind" dim={dim} /> : null}
+          {part !== 'behind' ? <HarpistTopV2 pose={pose} lever={lever} part="front" dim={dim} /> : null}
+        </>
+      ) : (
+        <>
+          {part !== 'front' ? <PlayerBehind pose={pose} dim={dim} /> : null}
+          {part !== 'behind' ? <PlayerInFront pose={pose} dim={dim} /> : null}
+        </>
+      )}
     </Group>
   );
 }
@@ -476,13 +514,13 @@ export function HarpistPlan({ dim = 1, lever = false, part = 'all' }: { dim?: nu
 /** The harp and its harpist from above, far to near: the harpist's body and
  *  far arm; the base, pedals and soundbox; the near arm and both hands over
  *  the soundbox; the neck, strings, pillar and crown above them all. */
-export function HarpWithHarpistPlan({ variant, dim = 1 }: { variant: VariantId; dim?: number }) {
+export function HarpWithHarpistPlan({ variant, dim = 1, v2 = V2 }: { variant: VariantId; dim?: number; v2?: boolean }) {
   const lever = isLever(variant);
   return (
     <Group>
-      <HarpistPlan lever={lever} dim={dim} part="behind" />
+      <HarpistPlan lever={lever} dim={dim} part="behind" v2={v2} />
       <HarpPlan variant={variant} part="lower" />
-      <HarpistPlan lever={lever} dim={dim} part="front" />
+      <HarpistPlan lever={lever} dim={dim} part="front" v2={v2} />
       <HarpPlan variant={variant} part="upper" />
     </Group>
   );
@@ -543,11 +581,30 @@ export function HarpPlan({ variant, dim = 1, part = 'all' }: { variant: VariantI
  * moving hand), each shown at its own opacity; `dim` blends the figure toward
  * the stage's dark (it recedes, still opaque).
  */
-export function HarpWithHarpistSide({ variant, dim = 1, harpDim = 1, fronts }: { variant: VariantId; dim?: number; harpDim?: number; fronts?: { pose: PlayerPose; opacity: number | SharedValue<number> }[] }) {
+export function HarpWithHarpistSide({ variant, dim = 1, harpDim = 1, fronts, v2 = V2 }: { variant: VariantId; dim?: number; harpDim?: number; fronts?: { pose: PlayerPose; opacity: number | SharedValue<number> }[]; v2?: boolean }) {
   const lever = isLever(variant);
   const pose = harpistPose('side', lever);
-  const clip = nearLegClip(lever);
   const near = fronts ?? [{ pose, opacity: 1 }];
+  if (v2) {
+    // THE NEW LOOK, far to near: the chair; the far arm and hand (beyond the strings) and the body; the harp;
+    // the near leg again where it lies in front of the soundbox and pedals; the near arm and hand over the
+    // strings (each pluck step's at its own opacity)
+    const clipV2 = nearLegClipV2(lever);
+    return (
+      <Group>
+        <ChairSide lever={lever} />
+        <HarpistSideBehindV2 pose={pose} dim={dim} />
+        <HarpSide variant={variant} dim={harpDim} />
+        {clipV2 ? <HarpistSideLegsV2 pose={pose} clip={clipV2} dim={dim} /> : null}
+        {near.map((f, i) => (
+          <Group key={i} opacity={f.opacity}>
+            <HarpistSideNearV2 pose={f.pose} dim={dim} />
+          </Group>
+        ))}
+      </Group>
+    );
+  }
+  const clip = nearLegClip(lever);
   return (
     <Group>
       <ChairSide lever={lever} />
@@ -568,9 +625,9 @@ export function HarpWithHarpistSide({ variant, dim = 1, harpDim = 1, fronts }: {
   );
 }
 
-export function HarpArt({ view, variant }: { view: ViewId; variant: VariantId }) {
-  if (view === 'side') return <HarpWithHarpistSide variant={variant} />;
-  return <HarpWithHarpistPlan variant={variant} />;
+export function HarpArt({ view, variant, v2 = V2 }: { view: ViewId; variant: VariantId; /** (the study page compares the old look) */ v2?: boolean }) {
+  if (view === 'side') return <HarpWithHarpistSide variant={variant} v2={v2} />;
+  return <HarpWithHarpistPlan variant={variant} v2={v2} />;
 }
 
 export function harpLabels(view: ViewId, variant: VariantId): ArtLabel[] {
@@ -644,7 +701,7 @@ export const HARP_BASE_ART: Pick<LessonArt, 'Instrument' | 'labels' | 'hitTest' 
   labels: harpLabels,
   hitTest: harpHitTest,
   // The drawn harpist, so the part labels keep off the figure too.
-  figureAt: (view, variant, u, v, tol) => figureCovers(harpistPose(view, isLever(variant)), u, v, tol),
+  figureAt: (view, variant, u, v, tol) => (V2 && view === 'side' ? harpistV2Covers(isLever(variant), u, v, tol) : figureCovers(harpistPose(view, isLever(variant)), u, v, tol)),
   // The column right of the pillar is where the mic works: a label the mic
   // sits under steps back (clash sweep 2026-10-10: SOUNDBOARD on the boom).
   labelsYieldToMic: true,

@@ -240,6 +240,10 @@ export type SideOpts = {
   /** (wave 3) A hand holding nothing: at the side (restSide) or on a desk (restFlat). */
   restR?: 'restSide' | 'restFlat';
   restL?: 'restSide' | 'restFlat';
+  /** (wave 3, the players) a hand already placed by the caller (an approved resting hand turned to
+   *  what it rests on — a cajón's plate); it wins over holdR / restR. */
+  placedR?: PlacedHand | null;
+  placedL?: PlacedHand | null;
   /** (wave 3) The person's build and dress (cast.ts): a body in depth — the
    *  chest deeper than the waist, the back's gentle S, the seat running into
    *  the thigh — fuller legs with the far foot set back, a relaxed bend at the
@@ -1019,7 +1023,7 @@ export function sidePlan(pose: PlayerPose, opts: SideOpts = {}): SidePlan {
     byOpts = new Map();
     planCache.set(pose, byOpts);
   }
-  const key = JSON.stringify({ r: opts.holdR?.wrist ?? null, l: opts.holdL?.wrist ?? null, sr: opts.soleR ?? null, sl: opts.soleL ?? null, n: opts.nod ?? 0, s: opts.seatV ?? null, a: [!!opts.awayR, !!opts.awayL], t: [opts.tiltR ?? 0, opts.tiltL ?? 0], fb: opts.farBehind !== false, ...(opts.head ? { hd: opts.head } : {}), ...(opts.lip ? { lp: opts.lip } : {}), ...(opts.restR ? { rr: opts.restR } : {}), ...(opts.restL ? { rl: opts.restL } : {}), ...(opts.body ? { b: opts.body } : {}) });
+  const key = JSON.stringify({ r: opts.holdR?.wrist ?? null, l: opts.holdL?.wrist ?? null, sr: opts.soleR ?? null, sl: opts.soleL ?? null, n: opts.nod ?? 0, s: opts.seatV ?? null, a: [!!opts.awayR, !!opts.awayL], t: [opts.tiltR ?? 0, opts.tiltL ?? 0], fb: opts.farBehind !== false, ...(opts.head ? { hd: opts.head } : {}), ...(opts.lip ? { lp: opts.lip } : {}), ...(opts.restR ? { rr: opts.restR } : {}), ...(opts.restL ? { rl: opts.restL } : {}), ...(opts.body ? { b: opts.body } : {}), ...(opts.placedR ? { pr: [opts.placedR.art.view ?? '', opts.placedR.wrist, opts.placedR.ex] } : {}), ...(opts.placedL ? { pl: [opts.placedL.art.view ?? '', opts.placedL.wrist, opts.placedL.ex] } : {}) });
   const hit = byOpts.get(key);
   if (hit) return hit;
   const plan = buildPlan(pose, opts);
@@ -1082,9 +1086,9 @@ function buildPlan(pose: PlayerPose, opts: SideOpts): SidePlan {
   // (a hand holding nothing: thumb forward at the side; palm down on a desk)
   // (a hand on a desk lies LEVEL on it: the pose's small tilt would sink its fingertips into the desk top)
   const rest = (v: 'restSide' | 'restFlat' | 'restFlatThumb' | undefined, h: PlayerPose['handR']): PlacedHand | null => (v ? placeRest(v, h.wrist, v !== 'restSide' ? (facing > 0 ? 0 : Math.PI) : h.dir, v === 'restSide' ? P(facing, 0) : P(0, 1)) : null);
-  const pR = placedOf(opts.holdR, pose.elbowR) ?? rest(opts.restR, pose.handR);
+  const pR = opts.placedR ?? placedOf(opts.holdR, pose.elbowR) ?? rest(opts.restR, pose.handR);
   // (the far hand on a desk is the person's other hand: seen from its THUMB side)
-  const pL = placedOf(opts.holdL, pose.elbowL) ?? rest(opts.restL === 'restFlat' ? 'restFlatThumb' : opts.restL, pose.handL);
+  const pL = opts.placedL ?? placedOf(opts.holdL, pose.elbowL) ?? rest(opts.restL === 'restFlat' ? 'restFlatThumb' : opts.restL, pose.handL);
   // The sleeve runs to the drawn hand's wrist; a forearm running away from the
   // viewer runs to the pose's own wrist (the hand beyond it is drawn behind).
   const wristOf = (pl: PlacedHand | null, h: StickHold | null | undefined, away: boolean, w: Pt) => (pl ? (away && h ? P(h.poseWrist.x, h.poseWrist.y) : pl.wrist) : w);

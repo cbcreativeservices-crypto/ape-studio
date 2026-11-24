@@ -24,7 +24,9 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Canvas, Circle, DashPathEffect, Group, Line as SkLine, LinearGradient, Path as SkPath, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import { HandheldMic } from '../../../features/lab/micDrawings';
 import { ChairsTop, makeChairsTop, CHAIR_PITCH_MM } from '../../../features/lab/audienceChairs';
-import { PlayerBehind, PlayerInFront } from '../miking/lessons/shared/players/PlayerFigure';
+// (figure V2, wave 7 of D78: the singer is the cast's singer, from above, as the kit drummer beside her)
+import { PersonTopV2 } from '../miking/lessons/shared/figureV2/personV2';
+import { castFor } from '../miking/lessons/shared/figureV2/cast';
 import { SINGER_TOP } from '../miking/lessons/shared/voice/voicePose';
 import { Wedge2WayTop } from '../miking/lessons/shared/wedge2Way';
 import { CymbalPlan, DrumPlan, KickFromAbove, topTransform } from '../miking/lessons/shared/drums/DrumArt';
@@ -184,8 +186,7 @@ export function PolarStage({ w, h, pattern, verdictFor }: { w: number; h: number
         // frame V's lips at the origin, the chest toward +x, turned a quarter.
         return (
           <Group key={key} transform={[{ translateX: x }, { translateY: y + 3 }, { rotate: Math.PI / 2 }, { scale: K * 2.1 }]}>
-            <PlayerBehind pose={SINGER_TOP} />
-            <PlayerInFront pose={SINGER_TOP} hands={false} />
+            <PersonTopV2 pose={SINGER_TOP} who={castFor('voice.singer')} />
           </Group>
         );
       case 'drums':

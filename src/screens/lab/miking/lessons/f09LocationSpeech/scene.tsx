@@ -9,15 +9,25 @@ import type { ReactElement } from 'react';
 import { Group } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel } from '../../engine/scene/sceneTypes.ts';
-import { VoiceFigure, voiceFigureAt, voiceHitTest, voiceLabels } from '../shared/voice/VoiceArt';
+import { VoiceFigure, voiceFigureAt, voiceFigureAtFor, voiceHitTest, voiceLabels } from '../shared/voice/VoiceArt';
 import { BoomOperator, CameraRig, Counter, FrameLines, PowerLineArt, operatorPoses, type CameraSpec } from '../shared/field/LocationArt';
 import { figureCovers } from '../shared/players/PlayerFigure';
 import { operatorSide, operatorTop } from '../shared/measure/measureModel.ts';
 import { MicAt } from '../shared/field/FieldStage';
-import { BeltPack } from '../shared/broadcast/BodyWornArt';
+import { BeltPack, packOnTop } from '../shared/broadcast/BodyWornArt';
+import { SINGER_TOP } from '../shared/voice/voicePose.ts';
 import { packAt } from '../shared/broadcast/bodyWorn.ts';
 import { BOOM, BOOM_FUR, CAMERA_BOX, COUNTER_BOX, F09_VIEWS, FLOOR, FRAME, GRIP, HEAD_TOP, JAR, KEYS, LAV_P, LENS, OPERATOR, POWER_LINE, TRIPOD } from './geometry.ts';
 import { LavRun } from './lavRun';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+import { castFor } from '../shared/figureV2/cast';
+import { BoomOperatorV2, type BoomRig } from '../shared/figureV2/BoomV2';
+import { PersonSideV2, PersonTopV2 } from '../shared/figureV2/personV2';
+
+/** (figure V2, wave 4: the whole lesson in the new look — the talker Ana, the boom operator Mei holding the
+ *  pole in both hands; in every picture and step of this lesson, or in none) */
+export const V2 = figureV2On('frontAndBoom');
+const OP_WHO = castFor('operator.boom');
 
 export const CAMERA: CameraSpec = { box: CAMERA_BOX, lens: LENS, floor: FLOOR, spread: TRIPOD.spread };
 /** The pole's rear end, behind the front hand: along the line from the boom's
@@ -36,12 +46,23 @@ const IDLE_POSES = {
 };
 /** The whole pole when the scene holds its own boom (no mic placed): from the
  *  mic's mount through both hands to the rear end. */
-const FULL_POLE = { a: TAIL, b: POLE_STUB.b };
+export const FULL_POLE = { a: TAIL, b: POLE_STUB.b };
 const TAIL_FUR = { x: BOOM_FUR.tip.x - BOOM_FUR.aim.x * 420, y: BOOM_FUR.tip.y - BOOM_FUR.aim.y * 420, z: BOOM_FUR.tip.z - BOOM_FUR.aim.z * 420 };
 const FULL_POLE_FUR = { a: TAIL_FUR, b: POLE_STUB.b };
 /** The pack on the back of the belt, the lav's tail (the body mic). */
 export const LAV_PACK = packAt(true);
+/** (FrontBoom3) the pack from above on the new figure's belt (computed on first use: Skia paths). */
+let lavPackTopCache: typeof LAV_PACK | null = null;
+const lavPackTop = () => (lavPackTopCache ??= packOnTop(LAV_PACK, SINGER_TOP, castFor('voice.singer')));
 const LAV_TAIL = { x: LAV_P.x - 3, y: LAV_P.y + 16, z: 0 };
+
+/** (figure V2) the holds as rigs: the lesson's own hand points on the pole (GRIP, REAR_HAND), the pole drawn
+ *  from the mic's tail (or the front hand, a placed boom) to its rear end; the near arm (the operator's left)
+ *  on the rear hand, as the old drawing chose. */
+const rig = (a: { x: number; y: number; z: number }): BoomRig => ({ side: OPERATOR_POSES.side, top: OPERATOR_POSES.top, front: GRIP, rear: REAR_HAND, pole: { a, b: POLE_STUB.b }, rearArm: 'L' });
+const RIG_FULL = rig(TAIL);
+const RIG_FUR = rig(TAIL_FUR);
+const RIG_STUB = rig(GRIP);
 
 /** What the operator does in a drawing: holds the scene's own boom ('full',
  *  no mic placed: a part tour), holds the pole's end of a placed boom
@@ -64,13 +85,22 @@ export function LocationScene({ view, variant, frame = FRAME, operator = true, m
   const box = F09_VIEWS[variant as 'set' | 'outdoor' | 'live']?.[view] ?? F09_VIEWS.set[view];
   const op = operator && onSet(variant);
   const fur = variant === 'outdoor';
-  const opArt =
+  const opArt = V2 ? (
     mode === 'idle' ? (
-      // From above the hanging hands are under the cuffs (not drawn).
-      <BoomOperator view={view} poses={IDLE_POSES} hands={view === 'side'} />
+      view === 'side' ? (
+        <PersonSideV2 pose={IDLE_POSES.side} who={OP_WHO} opts={{ rest: 'restSide' }} dim={0.82} />
+      ) : (
+        <PersonTopV2 pose={IDLE_POSES.top} who={OP_WHO} dim={0.82} />
+      )
     ) : (
-      <BoomOperator view={view} poses={OPERATOR_POSES} stub={mode === 'full' ? (fur ? FULL_POLE_FUR : FULL_POLE) : POLE_STUB} />
-    );
+      <BoomOperatorV2 view={view === 'side' ? 'side' : 'top'} rig={mode === 'full' ? (fur ? RIG_FUR : RIG_FULL) : RIG_STUB} who={OP_WHO} />
+    )
+  ) : mode === 'idle' ? (
+    // From above the hanging hands are under the cuffs (not drawn).
+    <BoomOperator view={view} poses={IDLE_POSES} hands={view === 'side'} />
+  ) : (
+    <BoomOperator view={view} poses={OPERATOR_POSES} stub={mode === 'full' ? (fur ? FULL_POLE_FUR : FULL_POLE) : POLE_STUB} />
+  );
   // The scene's own boom mic (a part tour): the shotgun in its suspension at
   // the starting place, outdoors in its basket windshield.
   const ownMic = op && mode === 'full' ? (fur ? <MicAt view={view} p={BOOM_FUR.tip} aim={BOOM_FUR.aim} art="blimp" r={45} len={420} /> : <MicAt view={view} p={BOOM.tip} aim={BOOM.aim} art="shotgun" r={9.5} len={250} />) : null;
@@ -80,9 +110,10 @@ export function LocationScene({ view, variant, frame = FRAME, operator = true, m
       {onSet(variant) ? <FrameLines view={view} frame={frame} farX={box.u0} headTopY={HEAD_TOP} /> : null}
       {op && view === 'side' ? opArt : null}
       {lav && view === 'side' ? <BeltPack view="side" at={LAV_PACK} /> : null}
-      <VoiceFigure view={view} variant={variant} />
-      {lav && lavCable ? <LavRun view={view} from={LAV_TAIL} pack={LAV_PACK} /> : null}
-      {lav && view === 'top' ? <BeltPack view="top" at={LAV_PACK} /> : null}
+      <VoiceFigure view={view} variant={variant} opts={{ v2: V2 }} />
+      {lav && lavCable ? <LavRun view={view} from={LAV_TAIL} pack={view === 'top' && V2 ? lavPackTop() : LAV_PACK} /> : null}
+      {/* (FrontBoom3) from above the pack ON the new figure's belt (drawing only) */}
+      {lav && view === 'top' ? <BeltPack view="top" at={V2 ? lavPackTop() : LAV_PACK} /> : null}
       {variant === 'set' ? <Counter view={view} box={COUNTER_BOX} keys={KEYS} jar={JAR} /> : null}
       {op && view === 'top' ? opArt : null}
       {ownMic}
@@ -143,6 +174,7 @@ export function locationHitTest(view: ViewId, variant: VariantId, u: number, v: 
 }
 
 export function locationFigureAt(view: ViewId, variant: VariantId, u: number, v: number, tol: number): boolean {
+  if (V2 && voiceFigureAtFor({ v2: true })(view, variant, u, v, tol)) return true;
   if (voiceFigureAt(view, variant, u, v, tol)) return true;
   return onSet(variant) && figureCovers(view === 'side' ? OPERATOR_POSES.side : OPERATOR_POSES.top, u, v, tol);
 }

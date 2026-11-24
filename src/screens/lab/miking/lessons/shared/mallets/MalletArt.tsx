@@ -33,6 +33,16 @@ import { frameEnds, malletGeom, type MalletFamily, type MalletGeom } from './mal
 import { FIGURE_TONES, FigureMass, PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
 import { BODY, pt, type PlayerPose } from '../players/playerPose';
 import { metalFrontPose } from '../metal/metalFigure.ts';
+import { figureV2On } from '../figureV2/figureV2Config';
+import { castFor, type CastMember } from '../figureV2/cast';
+import { MalletPlayerV2 } from './MalletPlayerArtV2';
+import { malletBodyPoses, malletGrips } from './malletPlayerV2.ts';
+
+/** The new look (figure V2, the Players builder): the player is a cast member, each hand the approved grip
+ *  round its mallet. One person per instrument's lesson. */
+export const V2 = figureV2On('sidePlayers');
+export const malletPlayerOf = (inst: MalletInst): CastMember => castFor(inst === 'vibe' ? 'player.vibe' : inst === 'marimba' ? 'player.marimba' : inst === 'xylo' ? 'player.xylo' : 'player.glock');
+type V2Props = { v2: boolean; L: Layout; yF: number };
 
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
@@ -790,7 +800,7 @@ function MalletHead({ x, y, r, look }: { x: number; y: number; r: number; look: 
   );
 }
 
-function Side({ b, look, inst }: { b: SideBuilt; look: Look; inst: MalletInst }) {
+function Side({ b, look, inst, v2, L, yF }: { b: SideBuilt; look: Look; inst: MalletInst } & V2Props) {
   const headR = malletHeadR(inst);
   const yTubes0 = b.barTop;
   const yTubes1 = b.yFloor;
@@ -805,9 +815,14 @@ function Side({ b, look, inst }: { b: SideBuilt; look: Look; inst: MalletInst })
       </Path>
 
       {/* The player, behind the keyboard (quiet: we look past them to the bars). */}
-      <Group transform={[{ translateY: b.yFloor }]}>
-        <PlayerBehind pose={b.player.pose} dim={0.42} />
-      </Group>
+      {v2 ? (
+        // (the new look: one person, one tone — the body and the arms recede alike)
+        <MalletPlayerV2 L={L} yF={yF} poses={malletPoses(L)} who={malletPlayerOf(inst)} view="side" part="body" shaftColor={look.mallet.shaft} dim={PLAYER_DIM_V2} />
+      ) : (
+        <Group transform={[{ translateY: b.yFloor }]}>
+          <PlayerBehind pose={b.player.pose} dim={0.42} />
+        </Group>
+      )}
 
       {/* A table under a case model. */}
       {b.table && b.tableLegs ? (
@@ -938,13 +953,26 @@ function Side({ b, look, inst }: { b: SideBuilt; look: Look; inst: MalletInst })
 
       {/* The arms over the bars, then two mallets in the player's fists —
           one striking, one raised — each shaft THROUGH its fist. */}
-      <Group transform={[{ translateY: b.yFloor }]}>
-        <PlayerInFront pose={b.player.pose} dim={0.9} hands={false} />
-      </Group>
-      <Fists fists={b.mallets.fists} heads={b.mallets.heads} r={headR} look={look} />
+      {v2 ? (
+        <>
+          <MalletPlayerV2 L={L} yF={yF} poses={malletPoses(L)} who={malletPlayerOf(inst)} view="side" part="arms" shaftColor={look.mallet.shaft} dim={PLAYER_DIM_V2} />
+          {b.mallets.heads.map((h) => (
+            <MalletHead key={`m${h.x}`} x={h.x} y={h.y} r={headR} look={look} />
+          ))}
+        </>
+      ) : (
+        <>
+          <Group transform={[{ translateY: b.yFloor }]}>
+            <PlayerInFront pose={b.player.pose} dim={0.9} hands={false} />
+          </Group>
+          <Fists fists={b.mallets.fists} heads={b.mallets.heads} r={headR} look={look} />
+        </>
+      )}
     </Group>
   );
 }
+/** (the new look) the player from the audience: behind the keyboard, a step toward the stage's dark. */
+const PLAYER_DIM_V2 = 0.8;
 
 function BarsPlan({ f, look, front }: { f: BarsTop; look: Look; front: boolean }) {
   return (
@@ -965,7 +993,7 @@ function BarsPlan({ f, look, front }: { f: BarsTop; look: Look; front: boolean }
   );
 }
 
-function Top({ b, look, inst }: { b: TopBuilt; look: Look; inst: MalletInst }) {
+function Top({ b, look, inst, v2, L, yF }: { b: TopBuilt; look: Look; inst: MalletInst } & V2Props) {
   const headR = malletHeadR(inst);
   return (
     <Group>
@@ -1038,9 +1066,21 @@ function Top({ b, look, inst }: { b: TopBuilt; look: Look; inst: MalletInst }) {
       ) : null}
 
       {/* The player, from above, reaching in with two mallets (the house figure). */}
-      <PlayerBehind pose={b.player.pose} />
-      <PlayerInFront pose={b.player.pose} hands={false} />
-      <Fists fists={b.mallets.fists} heads={b.mallets.heads.map((h) => ({ x: h.x, y: h.z }))} r={headR} look={look} />
+      {v2 ? (
+        <>
+          <MalletPlayerV2 L={L} yF={yF} poses={malletPoses(L)} who={malletPlayerOf(inst)} view="top" part="body" shaftColor={look.mallet.shaft} />
+          <MalletPlayerV2 L={L} yF={yF} poses={malletPoses(L)} who={malletPlayerOf(inst)} view="top" part="arms" shaftColor={look.mallet.shaft} />
+          {b.mallets.heads.map((h) => (
+            <MalletHead key={`m${h.x}`} x={h.x} y={h.z} r={headR} look={look} />
+          ))}
+        </>
+      ) : (
+        <>
+          <PlayerBehind pose={b.player.pose} />
+          <PlayerInFront pose={b.player.pose} hands={false} />
+          <Fists fists={b.mallets.fists} heads={b.mallets.heads.map((h) => ({ x: h.x, y: h.z }))} r={headR} look={look} />
+        </>
+      )}
     </Group>
   );
 }
@@ -1048,12 +1088,13 @@ function Top({ b, look, inst }: { b: TopBuilt; look: Look; inst: MalletInst }) {
 /** The instrument as the engine's scene draws it. */
 export function malletInstrument(fam: MalletFamily) {
   const G = malletGeom(fam);
-  return function MalletInstrument({ view, variant }: { view: ViewId; variant: VariantId }): ReactElement {
+  return function MalletInstrument({ view, variant, v2 = V2 }: { view: ViewId; variant: VariantId; /** (the study page compares the old look) */ v2?: boolean }): ReactElement {
     const v = G.layouts[variant] ? variant : fam.variants[0].row.id;
     const inst = G.layouts[v].row.inst;
     const look = LOOK[inst];
     const b = getBuilt(G, v, view);
-    return b.kind === 'side' ? <Side b={b} look={look} inst={inst} /> : <Top b={b} look={look} inst={inst} />;
+    const p2 = { v2, L: G.layouts[v], yF: G.floor[v] };
+    return b.kind === 'side' ? <Side b={b} look={look} inst={inst} {...p2} /> : <Top b={b} look={look} inst={inst} {...p2} />;
   };
 }
 
@@ -1069,7 +1110,12 @@ export function malletLabels(fam: MalletFamily) {
     if (view === 'side') {
       out.push({ id: 'low', text: 'LOW END', short: 'LOW', u: L.xLow - 10, v: L.yAcc - 70, align: 'right', tone: 'muted' });
       out.push({ id: 'high', text: 'HIGH END', short: 'HIGH', u: L.xHigh + 10, v: L.yAcc - 70, align: 'left', tone: 'muted' });
-      out.push({ id: 'bars', text: 'BARS', u: 0, v: L.yAcc - 26, align: 'center' });
+      if (V2) {
+        // (review 2026-11-24, KeysGuitar3: the BARS leader ran across the player's arm to the bars' middle, between
+        // his hands) the same name on a natural toward the high end, clear of the arms, its leader short and on the bar
+        const nb = [...L.naturals].sort((p, q) => p.x - q.x)[Math.max(0, Math.floor(L.naturals.length * 0.12))];
+        out.push({ id: 'bars', text: 'BARS', u: nb.x, v: L.yAcc - 120, align: 'center', at: { u: nb.x, v: L.yNat + 2 } });
+      } else out.push({ id: 'bars', text: 'BARS', u: 0, v: L.yAcc - 26, align: 'center' });
       if (L.tubes.length) {
         const t = L.tubes.find((q) => q.x > (L.span.hi * 0.5)) ?? L.tubes[0];
         // Named on a TUBE's body (owner 2026-10-06: the resonators are the
@@ -1115,6 +1161,40 @@ function segDist(u: number, v: number, ax: number, av: number, bx: number, bv: n
   return Math.hypot(u - (ax + t * dx), v - (av + t * dv));
 }
 
+/**
+ * (figure V2, from the front) Whether the drawn player covers (u, v): the head with its hair, the neck, the shirt
+ * from the shoulders to the hips, the legs, each arm shoulder → elbow → wrist, the fists and the mallets' shafts
+ * (malletPlayerV2's own body pose and held arms — the same the art draws).
+ */
+const frontFigCache = new WeakMap<Layout, (u: number, v: number, t: number) => boolean>();
+function frontFigureAt(L: Layout, yF: number, u: number, v: number, tol: number): boolean {
+  let f = frontFigCache.get(L);
+  if (!f) {
+    const poses = malletPoses(L);
+    const P = malletBodyPoses(L, yF, poses).front;
+    const g = malletGrips(L, yF, poses);
+    const hipV = (P.hipR.v + P.hipL.v) / 2;
+    const shV = Math.min(P.shoulderR.v, P.shoulderL.v);
+    const half = Math.max(Math.abs(P.shoulderR.u), Math.abs(P.shoulderL.u));
+    f = (uu, vv, t) => {
+      if (Math.hypot(uu - P.head.c.u, (vv - P.head.c.v) / 1.15) <= P.head.r * 1.2 + t) return true;
+      if (Math.abs(uu - P.neck.u) <= 65 + t && vv >= P.head.c.v && vv <= shV + t) return true;
+      if (Math.abs(uu) <= half + 60 + t && vv >= shV - 40 - t && vv <= hipV + 80 + t) return true;
+      if (Math.abs(uu) <= 220 + t && vv >= hipV && vv <= yF + t) return true;
+      for (let i = 0; i < g.length; i++) {
+        const a = g[i];
+        if (segDist(uu, vv, a.shoulder.x, a.shoulder.y, a.elbow.x, a.elbow.y) <= 58 + t) return true;
+        if (segDist(uu, vv, a.elbow.x, a.elbow.y, a.wrist.x, a.wrist.y) <= 52 + t) return true;
+        if (Math.hypot(uu - a.fist.x, vv - a.fist.y) <= 70 + t) return true;
+        if (segDist(uu, vv, a.fist.x, a.fist.y, poses[i].head.x, poses[i].head.y) <= 8 + t) return true;
+      }
+      return false;
+    };
+    frontFigCache.set(L, f);
+  }
+  return f(u, v, tol);
+}
+
 /** The drawn player from above (shoulders, arms, mallets), which the hit test
  *  does not name, so the part labels keep off it (label occupancy only; taps
  *  unchanged — clash sweep 2026-10-10: NATURALS sat on the player's arm). The
@@ -1122,7 +1202,13 @@ function segDist(u: number, v: number, ax: number, av: number, bx: number, bv: n
 export function malletDrawnAt(fam: MalletFamily) {
   const G = malletGeom(fam);
   return function drawnAt(view: ViewId, variant: VariantId, u: number, v: number, tol: number): boolean {
-    if (view === 'side') return false;
+    if (view === 'side') {
+      // (review 2026-11-24, KeysGuitar3: "START HERE" and "PLAYER (BEHIND)" on Kofi's shoulder and chest, the BARS
+      // leader across his arm) the new figure from the front: the labels keep off its outline (text unchanged)
+      if (!V2) return false;
+      const vs = G.layouts[variant] ? variant : fam.variants[0].row.id;
+      return frontFigureAt(G.layouts[vs], G.floor[vs], u, v, tol);
+    }
     const vv = G.layouts[variant] ? variant : fam.variants[0].row.id;
     const L = G.layouts[vv];
     const zP = L.zPlayer;

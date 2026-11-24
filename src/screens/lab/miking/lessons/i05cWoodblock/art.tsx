@@ -16,6 +16,10 @@ import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { make } from '../shared/concert/paths.ts';
 import { Hand3, SIDE_VIEW, TOP_VIEW } from '../shared/smallperc/Hand';
+import { figureV2On } from '../shared/figureV2/figureV2Config.ts';
+import { SPHand3 } from '../shared/smallperc/smallPercV2';
+
+const SP_ON = figureV2On('familySmallPerc');
 import type { Pt } from '../shared/smallperc/hands.ts';
 import { Arm2D, PlayerSide, PlayerTop } from '../shared/smallperc/Player';
 import { FoamPad, RUBBER, Stick, TrapTable, Woodblock } from '../shared/smallperc/objects';
@@ -69,8 +73,17 @@ export function WoodblockArt({ view, variant }: { view: ViewId; variant: Variant
   const onTable = s.id === 'table';
   // The holding hand: what lies beyond the block's middle (seen from this view) behind it.
   const cut = useMemo(() => ({ p: s.c, n: view === 'side' ? v3(0, 0, 1) : v3(0, -1, 0) }), [s, view]);
-  const hold = (part: 'behind' | 'front') => (h && s.hands.holder ? <Hand3 sk={s.hands.holder} view={V} fore={foreIn(P, h.E, h.W)} cut={cut} part={part} /> : null);
-  const malletHand = (
+  const hold = (part: 'behind' | 'front') => (h && s.hands.holder ? <SPHand3 on={SP_ON} sk={s.hands.holder} view={view} S={h.S} E={h.E} cut={cut} part={part} old={<Hand3 sk={s.hands.holder} view={V} fore={foreIn(P, h.E, h.W)} cut={cut} part={part} />} /> : null);
+  // (figure roll-out wave 5: the mallet's handle lies IN the closed hand — it enters and leaves the fist)
+  const mcut = null;
+  const malletHand = SP_ON ? (
+    <>
+      <Arm2D s={P(a.S)} e={P(a.E)} w={P(a.W)} />
+      <SPHand3 on sk={s.hands.stick} view={view} S={a.S} E={a.E} cut={mcut} part="behind" old={null} />
+      {mallet}
+      <SPHand3 on sk={s.hands.stick} view={view} S={a.S} E={a.E} cut={mcut} part="front" old={null} />
+    </>
+  ) : (
     <>
       {mallet}
       <Arm2D s={P(a.S)} e={P(a.E)} w={P(a.W)} />

@@ -51,6 +51,8 @@
  * the house figure (features/lab/figureAboveSvg), as on the stage.
  */
 import { Circle, Ellipse, G, Line, Path, Rect } from 'react-native-svg';
+// OWNER RULING 2026-11-24 (D78): in the Stage Plot lab every person is the same generic "person"
+// (the plot symbol), never a cast member; the cast is for the other labs.
 import { FigureAboveSvg } from '../../../../features/lab/figureAboveSvg';
 import type { TopArtMap } from './topArtTypes';
 
