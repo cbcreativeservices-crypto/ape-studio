@@ -728,6 +728,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-23 19:05 · ccode · 39e15eaf
+changed: Figure roll-out wave 3: the jacket as a cast dress variant, and the news-desk lesson (owner 2026-11-23) [MD:D78]
+affects other side: nothing on the server. Lesson pictures only (News Desk now shows the drawn cast; the anchor wears a drawn jacket).
+needs: nothing. Not published; OTA 16 waits for the owner's word [MD:D77].
+
 ### 2026-11-23 17:35 · ccode · 072646d2
 changed: Figure roll-out wave 3: the desk hand, and the panel and voiceover lessons in the cast (owner 2026-11-23) [MD:D78]
 affects other side: nothing on the server. Lesson pictures only (Panels and Voiceover now show the drawn cast).

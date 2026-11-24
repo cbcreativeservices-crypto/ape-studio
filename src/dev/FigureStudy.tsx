@@ -46,6 +46,8 @@ import { LavClip } from '../screens/lab/miking/lessons/shared/broadcast/BodyWorn
 import { BODY_MOUNTS } from '../screens/lab/miking/lessons/shared/broadcast/bodyWorn';
 import { SEATED_FLOOR, SEAT_Y } from '../screens/lab/miking/lessons/shared/broadcast/talkerPose';
 import { clipOnCloth, jacketSidePlan } from '../screens/lab/miking/lessons/shared/figureV2/jacketPlan';
+import { FigureLook } from '../screens/lab/miking/lessons/shared/figureV2/look';
+import { HELD_CASES, HeldStudy, STEP_IN, heldArmNumbers, heldGeo, heldViewOf, steppedIn, type HeldCaseId } from './heldStudy';
 
 const BG = '#0d0f13';
 const STAGE = '#14171d';
@@ -337,6 +339,41 @@ function CastLineup({ width, only }: { width: number; only: string }) {
 type Pic = { key: string; title: string; draw: ReactNode; cu: number; cv: number; mmW: number; mmH: number };
 
 /** Several pictures side by side in ONE canvas (a browser allows only so many canvases), each cropped. */
+/** Pictures in a grid of `cols`, ONE canvas (the page keeps under the browser's canvas limit). */
+function PicGrid({ pics, w, cols, gap = 8 }: { pics: Pic[]; w: number; cols: number; gap?: number }) {
+  const h = Math.max(...pics.map((q) => (q.mmH * w) / q.mmW));
+  const rows = Math.ceil(pics.length / cols);
+  const lab = 14;
+  const W = cols * w + (cols - 1) * gap;
+  const H = rows * (h + lab) + (rows - 1) * gap;
+  return (
+    <View>
+      <Canvas style={{ width: W, height: H }}>
+        {pics.map((q, i) => {
+          const s = w / q.mmW;
+          const x0 = (i % cols) * (w + gap);
+          const y0 = Math.floor(i / cols) * (h + lab + gap);
+          return (
+            <Group key={q.key} clip={Skia.XYWHRect(x0, y0, w, h)}>
+              <Rect x={x0} y={y0} width={w} height={h} color={STAGE} />
+              <Group transform={[{ translateX: x0 + w / 2 - q.cu * s }, { translateY: y0 + h / 2 - q.cv * s }, { scale: s }]}>
+                <FigureScale ptPerMm={s}>{q.draw}</FigureScale>
+              </Group>
+            </Group>
+          );
+        })}
+      </Canvas>
+      <View style={{ position: 'absolute', left: 0, top: 0, width: W, height: H }} pointerEvents="none">
+        {pics.map((q, i) => (
+          <Text key={q.key} style={{ position: 'absolute', left: (i % cols) * (w + gap), top: Math.floor(i / cols) * (h + lab + gap) + h + 1, color: DIM, fontSize: 10, width: w }}>
+            {q.title}
+          </Text>
+        ))}
+      </View>
+    </View>
+  );
+}
+
 function PicRow({ pics, w, gap = 8 }: { pics: Pic[]; w: number; gap?: number }) {
   const h = Math.max(...pics.map((q) => (q.mmH * w) / q.mmW));
   const W = pics.length * w + (pics.length - 1) * gap;
@@ -674,6 +711,109 @@ function Jacket({ width }: { width: number }) {
   );
 }
 
+/* ── THE HAND ROUND A HAND-HELD MIC (dev pages `michand` side, `michandtop` from above) ── */
+
+const TONES: CastId[] = ['drummer', 'ana', 'ruth', 'kofi', 'mei'];
+
+function MicHands({ width, view }: { width: number; view: 'side' | 'top' }) {
+  const small = Math.min(150, (width - 56) / 5);
+  const big = Math.min(380, (width - 32) / 2);
+  const lesson = Math.min(120, (width - 24 - 5 * 8) / 6);
+  const fistAt = (id: HeldCaseId) => {
+    const g = heldGeo(id);
+    return view === 'side' ? { u: g.fist.x, v: g.fist.y } : { u: g.fist.x, v: g.fist.z };
+  };
+  const tone = (who: CastId, id: HeldCaseId) => (
+    <FigureLook look={CAST[who].look}>
+      <HeldStudy id={id} view={view} />
+    </FigureLook>
+  );
+  return (
+    <View>
+      <Caption
+        title={view === 'side' ? 'THE HELD MIC — SIDE VIEW (dev)' : 'THE HELD MIC — FROM ABOVE (dev)'}
+        note="Each lesson's held mic at its starting place, the arm as the engine solves it, the side of the hand read from the arm's real rotation. Five skin tones at about 1 pt/mm, then each drawing at about 3 pt/mm, then the lesson size."
+      />
+      {HELD_CASES.map((id) => {
+        const s = heldViewOf(id, view);
+        const d = heldViewOf(id, view, true);
+        const n = heldArmNumbers(id);
+        const c = fistAt(id);
+        return (
+          <View key={id} style={{ marginBottom: 8 }}>
+            <Text style={{ color: INK, fontSize: 11, marginBottom: 2 }}>
+              {heldGeo(id).title} — {s.words} (back {s.sides.back.toFixed(2)} · forearm {s.sides.forearm.toFixed(2)} · thumb {s.sides.thumb.toFixed(2)})
+            </Text>
+            {n.corrected ? (
+              <Text style={{ color: DIM, fontSize: 10, marginBottom: 2 }}>
+                Drawn: {d.words} (back {d.sides.back.toFixed(2)} · forearm {d.sides.forearm.toFixed(2)} · thumb {d.sides.thumb.toFixed(2)}) · forearm to handle {n.engine.angle.toFixed(0)}° → {n.drawn.angle.toFixed(0)}° · fist moved {n.fistMoved.toFixed(0)} mm along the handle
+              </Text>
+            ) : null}
+            <PicRow w={small} pics={TONES.map((t) => ({ key: `${id}${t}`, title: CAST[t].name, draw: tone(t, id), cu: c.u, cv: c.v, mmW: 170, mmH: 210 }))} />
+          </View>
+        );
+      })}
+      <View style={{ height: 10 }} />
+      <Caption title="B03 OMNI AT THE GUEST'S MOUTH — THE ARM, OLD AND NEW" note="Gray: the engine's arm (the forearm runs along the handle). Gold: the best elbow from where the reporter stands (same shoulder, same fist, upper arm 300 mm, forearm 290 mm, the elbow no higher than the shoulder); the arm is near full reach, so the forearm cannot meet the handle at 60–90° from here. Teal: the same arm with the reporter a short step nearer the guest (needs the owner's word: it moves the reporter). The mic and every measured point unchanged." />
+      {(() => {
+        const n = heldArmNumbers('b3.handoffOmni');
+        const g = heldGeo('b3.handoffOmni');
+        const a = view === 'side' ? { u: (g.shoulder.x + g.front.x) / 2, v: (g.shoulder.y + g.front.y) / 2 } : { u: (g.shoulder.x + g.front.x) / 2, v: (g.shoulder.z + g.front.z) / 2 };
+        const f3 = (q: { x: number; y: number; z: number }) => `(${q.x.toFixed(0)}, ${q.y.toFixed(0)}, ${q.z.toFixed(0)})`;
+        return (
+          <View style={{ marginBottom: 8 }}>
+            <Text style={{ color: INK, fontSize: 11, marginBottom: 2 }}>
+              Old elbow {f3(n.engine.elbow)}, forearm to handle {n.engine.angle.toFixed(0)}° · new elbow {f3(n.drawn.elbow)}, forearm to handle {n.drawn.angle.toFixed(0)}° · upper arm {n.drawn.upper.toFixed(0)} mm, forearm {n.drawn.fore.toFixed(0)} mm
+            </Text>
+            <Text style={{ color: DIM, fontSize: 10, marginBottom: 2 }}>
+              Stepped in {STEP_IN} mm: elbow {f3(steppedIn('b3.handoffOmni').elbow)}, forearm to handle {steppedIn('b3.handoffOmni').angle.toFixed(0)}°
+            </Text>
+            <PicRow
+              w={big}
+              pics={(['ana', 'kofi'] as CastId[]).map((t) => ({
+                key: `arm${t}`,
+                title: CAST[t].name,
+                draw: (
+                  <FigureLook look={CAST[t].look}>
+                    <HeldStudy id="b3.handoffOmni" view={view} arms />
+                  </FigureLook>
+                ),
+                cu: a.u,
+                cv: a.v,
+                mmW: 700,
+                mmH: 700,
+              }))}
+            />
+          </View>
+        );
+      })()}
+      <View style={{ height: 10 }} />
+      <Caption title="EACH CASE AT ABOUT 3 PT/MM, ALL FIVE TONES" note="The one 3-D grip, projected: the handle in the palm, the fingers round its far edge, the thumb round its near edge the other way." />
+      {HELD_CASES.map((id) => {
+        const c = fistAt(id);
+        return (
+          <View key={`3x${id}`} style={{ marginBottom: 10 }}>
+            <Text style={{ color: INK, fontSize: 11, marginBottom: 2 }}>
+              {heldGeo(id).title} — {heldViewOf(id, view, true).words}
+            </Text>
+            <PicGrid w={big} cols={2} pics={TONES.map((t) => ({ key: `3${id}${t}`, title: CAST[t].name, draw: tone(t, id), cu: c.u, cv: c.v, mmW: 125, mmH: 125 }))} />
+          </View>
+        );
+      })}
+      <View style={{ height: 10 }} />
+      <Caption title="AT LESSON SIZE (about 0.1 pt/mm)" />
+      <PicRow
+        w={lesson}
+        pics={HELD_CASES.map((id) => {
+          const g = heldGeo(id);
+          const a = view === 'side' ? { u: (g.shoulder.x + g.front.x) / 2, v: (g.shoulder.y + g.front.y) / 2 } : { u: (g.shoulder.x + g.front.x) / 2, v: (g.shoulder.z + g.front.z) / 2 };
+          return { key: `L${id}`, title: id, draw: tone('ana', id), cu: a.u, cv: a.v, mmW: 1200, mmH: 1200 };
+        })}
+      />
+    </View>
+  );
+}
+
 export function FigureStudy() {
   const route = useRoute();
   const only = String((route.params as { id?: string } | undefined)?.id ?? '');
@@ -828,6 +968,11 @@ export function FigureStudy() {
       {only === 'wave3' ? (
         <Section>
           <Wave3 width={width} />
+        </Section>
+      ) : null}
+      {only === 'michand' || only === 'michandtop' ? (
+        <Section>
+          <MicHands width={width} view={only === 'michand' ? 'side' : 'top'} />
         </Section>
       ) : null}
       {only === 'jacket' ? (
