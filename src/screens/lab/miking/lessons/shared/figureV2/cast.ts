@@ -80,7 +80,14 @@ const TROUSERS_BLACK = m(['#4a4b50', '#37383c', '#27282b', '#16171a', '#1f2023']
 const SHOES_BLACK = m(['#4b4a4c', '#323133', '#212022', '#0f0f10', '#1b1a1c'], '#9d9b9f', '#070707', '#050505');
 const SHOES_BROWN = DRUMMER_LOOK.MAT.leather;
 
-function lookOf(skin: SkinSet, hair: Material, shirt: Material, trousers: Material, leather: Material): Look {
+/* ── jackets (the dress variant, wave 3 piece 2): dark neutral wool tones, each clearly apart from the
+ *  person's trousers and from the dark lab glass, suiting their own colors ── */
+const JACKET_NAVY = m(['#5f6a86', '#48526c', '#353d53', '#1f2435', '#2b3246'], '#9aa6c0', '#0b0d14', '#080a10');
+const JACKET_MOCHA = m(['#85776a', '#685b4f', '#4f443a', '#2f2822', '#3e352d'], '#beb1a3', '#12100d', '#0d0b09');
+const JACKET_SLATE = m(['#67707c', '#4f5763', '#3c434d', '#23272e', '#2f353d'], '#a3acb8', '#0d0f12', '#090b0d');
+const JACKET_TAUPE = m(['#716b64', '#58534d', '#433f3a', '#272522', '#34312d'], '#aaa49c', '#0f0e0c', '#0b0a09');
+
+function lookOf(skin: SkinSet, hair: Material, shirt: Material, trousers: Material, leather: Material, jacket?: Material): Look {
   return {
     MAT: { skin: skin.skin, hair, shirt, trousers, leather },
     HEAD_SKIN: { ...skin.skin, form: skin.head },
@@ -88,6 +95,7 @@ function lookOf(skin: SkinSet, hair: Material, shirt: Material, trousers: Materi
     LIP: skin.lip,
     NAIL: skin.nail,
     HAND: skin.hand,
+    ...(jacket ? { JACKET: jacket } : {}),
   };
 }
 
@@ -98,13 +106,13 @@ export const CAST: Readonly<Record<CastId, CastMember>> = {
   // do not read the cast — kitDrummerV2 — and are unchanged)
   drummer: { id: 'drummer', name: 'the drummer', woman: false, head: { hair: 'short', face: 'drummer' }, look: DRUMMER_LOOK, body: { chest: 1, back: 1, waist: 1, hip: 1, shoulder: 1, limb: 1, tucked: true, collar: 'crew' } },
   // 2. a woman, medium-brown skin, dark hair pulled back to a low ponytail, a teal shirt
-  ana: { id: 'ana', name: 'Ana', woman: true, head: { hair: 'pony', face: 'fine' }, look: lookOf(SKIN_MEDIUM, HAIR_BLACK, SHIRT_TEAL, TROUSERS_NAVY, SHOES_BLACK), body: { chest: 0.95, back: 0.95, waist: 0.92, hip: 1.05, bust: 6, shoulder: 0.93, limb: 0.96, tucked: false, collar: 'crew' } },
+  ana: { id: 'ana', name: 'Ana', woman: true, head: { hair: 'pony', face: 'fine' }, look: lookOf(SKIN_MEDIUM, HAIR_BLACK, SHIRT_TEAL, TROUSERS_NAVY, SHOES_BLACK, JACKET_TAUPE), body: { chest: 0.95, back: 0.95, waist: 0.92, hip: 1.05, bust: 6, shoulder: 0.93, limb: 0.96, tucked: false, collar: 'crew' } },
   // 3. a woman, fair skin, auburn hair in a chin-length bob, a burgundy shirt
-  ruth: { id: 'ruth', name: 'Ruth', woman: true, head: { hair: 'bob', face: 'fine' }, look: lookOf(SKIN_FAIR, HAIR_AUBURN, SHIRT_BURGUNDY, TROUSERS_CHARCOAL, SHOES_BLACK), body: { chest: 1.0, back: 1.0, waist: 1.04, hip: 1.1, bust: 7, shoulder: 0.96, limb: 1.05, tucked: true, collar: 'shirt' } },
+  ruth: { id: 'ruth', name: 'Ruth', woman: true, head: { hair: 'bob', face: 'fine' }, look: lookOf(SKIN_FAIR, HAIR_AUBURN, SHIRT_BURGUNDY, TROUSERS_CHARCOAL, SHOES_BLACK, JACKET_MOCHA), body: { chest: 1.0, back: 1.0, waist: 1.04, hip: 1.1, bust: 7, shoulder: 0.96, limb: 1.05, tucked: true, collar: 'shirt' } },
   // 4. a man, deep brown skin, close-cropped black hair, a sand shirt
-  kofi: { id: 'kofi', name: 'Kofi', woman: false, head: { hair: 'crop', face: 'open' }, look: lookOf(SKIN_DEEP, HAIR_BLACK, SHIRT_SAND, TROUSERS_UMBER, SHOES_BROWN), body: { chest: 0.98, back: 1.08, waist: 1.0, hip: 1.0, shoulder: 1.05, limb: 1.03, tucked: false, collar: 'shirt' } },
+  kofi: { id: 'kofi', name: 'Kofi', woman: false, head: { hair: 'crop', face: 'open' }, look: lookOf(SKIN_DEEP, HAIR_BLACK, SHIRT_SAND, TROUSERS_UMBER, SHOES_BROWN, JACKET_NAVY), body: { chest: 0.98, back: 1.08, waist: 1.0, hip: 1.0, shoulder: 1.05, limb: 1.03, tucked: false, collar: 'shirt' } },
   // 5. a woman, light warm skin, dark-brown hair in a low bun, a muted rust shirt
-  mei: { id: 'mei', name: 'Mei', woman: true, head: { hair: 'bun', face: 'fine' }, look: lookOf(SKIN_LIGHT_WARM, HAIR_DARK_BROWN, SHIRT_RUST, TROUSERS_BLACK, SHOES_BLACK), body: { chest: 0.92, back: 0.92, waist: 0.88, hip: 1.0, bust: 5, shoulder: 0.9, limb: 0.92, tucked: true, collar: 'crew' } },
+  mei: { id: 'mei', name: 'Mei', woman: true, head: { hair: 'bun', face: 'fine' }, look: lookOf(SKIN_LIGHT_WARM, HAIR_DARK_BROWN, SHIRT_RUST, TROUSERS_BLACK, SHOES_BLACK, JACKET_SLATE), body: { chest: 0.92, back: 0.92, waist: 0.88, hip: 1.0, bust: 5, shoulder: 0.9, limb: 0.92, tucked: true, collar: 'crew' } },
 };
 
 /**

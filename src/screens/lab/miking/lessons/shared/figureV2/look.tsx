@@ -24,6 +24,9 @@ export type Look = {
   NAIL: { fill: string; edge: string };
   /** The hand's one skin light, lit end to shadow end (authored hands). */
   HAND: string[];
+  /** (wave 3, the jacket: a dress variant) the person's jacket cloth — a dark neutral wool tone that
+   *  suits their own colors (jacketV2.tsx). Absent: no jacket of their own (a default navy). */
+  JACKET?: Material;
 };
 
 /** The trousers' cloth as one garment: the same ramp on seat, thigh, knee and

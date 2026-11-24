@@ -74,7 +74,7 @@ function arcs(cx: number, cy: number, radii: number[], spread: number): SkPath {
 
 export const SEQ_BOX: ViewBox = { u0: -345, u1: 330, v0: -200, v1: 345 };
 
-export function VoiceSequence({ w, h, shown, accessibilityLabel, who }: { w: number; h: number; shown: number; accessibilityLabel: string; /** (figure V2) the cut-away dressed as the lesson's cast member (lessons that draw all their figures new) */ who?: CastMember }) {
+export function VoiceSequence({ w, h, shown, accessibilityLabel, who, jacket = false }: { w: number; h: number; shown: number; accessibilityLabel: string; /** (figure V2) the cut-away dressed as the lesson's cast member (lessons that draw all their figures new) */ who?: CastMember; /** …in their jacket */ jacket?: boolean }) {
   const breath = useMemo(() => {
     const p = make();
     arrow(p, -84, 336, -79, 268, 16);
@@ -112,7 +112,7 @@ export function VoiceSequence({ w, h, shown, accessibilityLabel, who }: { w: num
       ]}
     >
       {/* A cut through the middle of the head, neck and chest. */}
-      <VoiceCutaway tint={tint} who={who} />
+      <VoiceCutaway tint={tint} who={who} jacket={jacket} />
       {/* ① breath up the windpipe */}
       {s >= 1 ? <Path path={breath} style="stroke" strokeWidth={5} strokeCap="round" strokeJoin="round" color={AIR} opacity={s === 1 ? 1 : 0.45} /> : null}
       {/* ② the buzz above the folds */}

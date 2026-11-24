@@ -18,6 +18,13 @@ import { cameraBody } from '../shared/broadcast/cameraFrame.ts';
 import { DESK_TOP_Y, SEATED_FLOOR, SEATED_SOLIDS, onTalker } from '../shared/broadcast/talkerPose.ts';
 import { HEAD_C, HEAD_R } from '../shared/voice/voiceSpec.ts';
 import { ANCHOR, B02_VIEWS, CAM_OF, DESK, GOOSE_BASE, GUEST, HEAD_TOP, PA_C } from './geometry.ts';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+
+/** (figure V2, wave 3 piece 2: the whole lesson in the new look — the anchor Kofi in his jacket, the
+ *  guest Mei; in every picture of this lesson, or in none) */
+export const V2 = figureV2On('sideDeskTalker');
+/** The anchor wears the jacket (the dress variant); the guest, as the old lesson showed her, does not. */
+const ANCHOR_JACKET = true;
 
 /** Each talker's bodypack, on the back of the belt (seated). */
 const PACK_SEATED = packAt(false);
@@ -28,7 +35,7 @@ const vOf = (v: VariantId): V => (v === 'twoShot' ? 'twoShot' : v === 'public' ?
 /** Everything at the desk, far side first. `headless`: the anchor drawn
  *  without a head (a step draws it turned); `camera` false leaves the camera
  *  and its frame to the step; `base` false hides the gooseneck's base. */
-export function B02Scene({ view, variant, headless = false, camera = true, base = true }: { view: ViewId; variant: VariantId; headless?: boolean; camera?: boolean; base?: boolean }): ReactElement {
+export function B02Scene({ view, variant, headless = false, camera = true, base = true, v2 = V2 }: { view: ViewId; variant: VariantId; headless?: boolean; camera?: boolean; base?: boolean; /** (the study page compares the old look) */ v2?: boolean }): ReactElement {
   const v = vOf(variant);
   const cam = CAM_OF[v];
   const box = B02_VIEWS[v][view];
@@ -43,8 +50,8 @@ export function B02Scene({ view, variant, headless = false, camera = true, base 
         <Desk view="side" box={DESK} floor={SEATED_FLOOR} skirt />
         {base ? <GooseBase view="side" at={GOOSE_BASE} /> : null}
         <Script view="side" at={{ x: 420, y: DESK_TOP_Y, z: 160 }} />
-        <SeatedTalker view="side" t={ANCHOR} headless={headless} />
-        <Jacket view="side" standing={false} />
+        <SeatedTalker view="side" t={ANCHOR} headless={headless} v2={v2} jacket={ANCHOR_JACKET} />
+        {v2 ? null : <Jacket view="side" standing={false} />}
         <DeskNearLegs box={DESK} floor={SEATED_FLOOR} skirt />
         {camera ? <BroadcastCameraRig view="side" cam={cam} floor={SEATED_FLOOR} /> : null}
       </Group>
@@ -58,15 +65,15 @@ export function B02Scene({ view, variant, headless = false, camera = true, base 
       <StudioChair view="top" t={GUEST} />
       <BeltPack view="top" at={PACK_SEATED} />
       <BeltPack view="top" at={onTalker(GUEST, PACK_SEATED)} />
-      <SeatedTalker view="top" t={ANCHOR} part="lower" />
-      <SeatedTalker view="top" t={GUEST} part="lower" />
+      <SeatedTalker view="top" t={ANCHOR} part="lower" v2={v2} jacket={ANCHOR_JACKET} />
+      <SeatedTalker view="top" t={GUEST} part="lower" v2={v2} />
       <Desk view="top" box={DESK} floor={SEATED_FLOOR} skirt />
       <Script view="top" at={{ x: 420, y: DESK_TOP_Y, z: 160 }} turn={-0.06} />
       <Script view="top" at={{ x: 420, y: DESK_TOP_Y, z: GUEST.lip.z + 160 }} turn={0.05} />
       {base ? <GooseBase view="top" at={GOOSE_BASE} /> : null}
-      <SeatedTalker view="top" t={GUEST} part="upper" />
+      <SeatedTalker view="top" t={GUEST} part="upper" v2={v2} />
       {/* The left hand rests inside the gooseneck's base (it lay on it). */}
-      <SeatedTalker view="top" t={ANCHOR} part="upper" headless={headless} leftHandIn={75} />
+      <SeatedTalker view="top" t={ANCHOR} part="upper" headless={headless} leftHandIn={75} v2={v2} jacket={ANCHOR_JACKET} />
       {camera ? <BroadcastCameraRig view="top" cam={cam} floor={SEATED_FLOOR} /> : null}
     </Group>
   );
@@ -114,6 +121,6 @@ export function b02HitTest(view: ViewId, variant: VariantId, u: number, v: numbe
 }
 
 export function b02FigureAt(view: ViewId, _variant: VariantId, u: number, v: number, tol: number): boolean {
-  if (talkerCovers(view, ANCHOR, u, v, tol)) return true;
-  return view === 'top' && talkerCovers(view, GUEST, u, v, tol);
+  if (talkerCovers(view, ANCHOR, u, v, tol, V2, ANCHOR_JACKET)) return true;
+  return view === 'top' && talkerCovers(view, GUEST, u, v, tol, V2);
 }

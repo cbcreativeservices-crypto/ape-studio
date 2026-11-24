@@ -412,10 +412,11 @@ describe('figure V2 wave 3a — kind A in the lessons (the switches, the lessons
     assert.match(read(`${L}/b07Voiceover/scene.tsx`), /const BOOTH_OPTS: VoiceArtOpts = \{ v2: V2, who: 'talker\.host' \};/);
   });
   it('every other lesson keeps ALL its figures old for now (no lesson mixes the two looks)', () => {
-    const files = ['b02NewsAnchor/scene.tsx', 'b02NewsAnchor/pages.tsx', 'b03FieldReporter/scene.tsx', 'b04BoomCamera/scene.tsx', 'b05Lavalier/scene.tsx', 'b09Commentators/scene.tsx', 'b10Sideline/scene.tsx', 'b11Athletes/scene.tsx', 'f09LocationSpeech/scene.tsx', 'f09LocationSpeech/pages.tsx', 'e07SingerInstrument/art.tsx'];
+    // (B02 converted whole in wave 3 piece 2: test/figureV2B02_20261123)
+    const files = ['b03FieldReporter/scene.tsx', 'b04BoomCamera/scene.tsx', 'b05Lavalier/scene.tsx', 'b09Commentators/scene.tsx', 'b10Sideline/scene.tsx', 'b11Athletes/scene.tsx', 'f09LocationSpeech/scene.tsx', 'f09LocationSpeech/pages.tsx', 'e07SingerInstrument/art.tsx'];
     for (const f of files) assert.doesNotMatch(read(`${L}/${f}`), /\bv2\b|figureV2On/, f);
     // (the shared drawings default to the old look; a lesson opts in at its call sites)
-    assert.match(read(`${L}/shared/broadcast/BroadcastArt.tsx`), /leftHandIn = 0, v2 = false \}/);
+    assert.match(read(`${L}/shared/broadcast/BroadcastArt.tsx`), /leftHandIn = 0, v2 = false, jacket = false \}/);
   });
   it('from above: a standing singer shows no legs (under the shoulders, as the old figure); her ponytail lies behind the crown', () => {
     const TPn = PV;
@@ -455,10 +456,10 @@ describe('figure V2 wave 3a — kind A fixes (the level from each picture, the h
   });
   it('the cut-away: dressed as the cast member only where the lesson opted in; otherwise exactly as before', () => {
     const cut = read(`${L}/shared/voice/VoiceCutaway.tsx`);
-    assert.match(cut, /export function VoiceCutaway\(\{ tint, who \}/);
+    assert.match(cut, /export function VoiceCutaway\(\{ tint, who(, jacket = false)? \}/);
     assert.match(cut, /<FigureMass path=\{A\.head\} tone="skin" contour=\{2\.6\} \/>/);
     const seq = read(`${L}/shared/voice/VoiceSoundArt.tsx`);
-    assert.match(seq, /<VoiceCutaway tint=\{tint\} who=\{who\} \/>/);
+    assert.match(seq, /<VoiceCutaway tint=\{tint\} who=\{who\}( jacket=\{jacket\})? \/>/);
     assert.match(read(`${L}/shared/voice/VoicePages.tsx`), /<VoiceSequence w=\{w\} h=\{h\} shown=\{st\.shown\} who=\{spec\.v2 \? castFor\('voice\.singer'\) : undefined\}/);
     // (the broadcast and location lessons' cut-aways pass nothing: old)
     assert.match(read(`${L}/shared/broadcast/broadcastPages.tsx`), /<VoiceSequence w=\{w\} h=\{h\} shown=\{st\.shown\} who=\{spec\.v2 \? castFor\('talker\.host'\) : undefined\}/);

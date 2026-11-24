@@ -481,10 +481,13 @@ export type FigureV2SideProps = {
   nearStick?: ReactNode;
   /** (wave 3) 'headless': the body and its neck (a step draws the head turned); 'head': the head alone. */
   part?: 'all' | 'headless' | 'head';
+  /** (wave 3, the jacket) a garment over the shirt, each piece in its place in the depth order: the far
+   *  sleeve after the far arm, the body after the shirt's collar, the near sleeve after the near arm. */
+  over?: { far?: ReactNode; body?: ReactNode; near?: ReactNode };
 };
 
 /** The whole person in profile, far to near. */
-export function FigureV2Side({ plan, farStick, nearStick, part = 'all' }: FigureV2SideProps) {
+export function FigureV2Side({ plan, farStick, nearStick, part = 'all', over }: FigureV2SideProps) {
   const { MAT } = useLook();
   const P = sidePaths(plan);
   // (wave 3: the head alone, turned by a step; or the body with only its neck)
@@ -510,6 +513,7 @@ export function FigureV2Side({ plan, farStick, nearStick, part = 'all' }: Figure
             </Group>
           ))
         : null}
+      {over?.far ?? null}
       <Shoe s={P.shoeNear} />
       <Leg path={P.trousersNear} shin={P.shinNear} knee={P.kneeNear} folds={P.legFoldsNear} l={L.near} shoe={P.shoeNear.upper} />
       <Head plan={plan} P={P} show={part === 'headless' ? 'neck' : 'all'} />
@@ -565,7 +569,9 @@ export function FigureV2Side({ plan, farStick, nearStick, part = 'all' }: Figure
           <Path path={P.collar} style="stroke" strokeWidth={2} color={MAT.shirt.rim} opacity={0.18} />
         </Group>
       </Form>
+      {over?.body ?? null}
       <Arm a={plan.arms.near} P={P.near} t={torso} stick={nearStick} />
+      {over?.near ?? null}
     </Group>
   );
 }

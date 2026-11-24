@@ -728,6 +728,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-23 17:35 · ccode · 072646d2
+changed: Figure roll-out wave 3: the desk hand, and the panel and voiceover lessons in the cast (owner 2026-11-23) [MD:D78]
+affects other side: nothing on the server. Lesson pictures only (Panels and Voiceover now show the drawn cast).
+needs: nothing. Not published; OTA 16 waits for the owner's word [MD:D77].
+
 ### 2026-11-23 16:24 · ccode · 3ad1b900
 changed: Figure roll-out wave 3a: a cast of five, the standing singer and the desk-seated radio hosts (owner 2026-11-23) [MD:D78]
 affects other side: nothing on the server. For store pictures later: lesson figures are becoming a cast of five drawn people (Lead Vocal, Rap Vocal and Radio Host so far); screenshots taken before this show the old bald figure.

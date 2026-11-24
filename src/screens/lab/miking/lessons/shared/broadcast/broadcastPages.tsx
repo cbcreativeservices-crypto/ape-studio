@@ -672,6 +672,8 @@ export function useRoutingStep(spec: RoutingSpec): MikingStep {
 export type BroadcastSoundSpec = {
   /** (figure V2) the lesson draws all its figures new: the cut-away dressed as its host. */
   v2?: boolean;
+  /** (with v2) the host wears the jacket in this lesson: so does the cut-away. */
+  jacket?: boolean;
   /** The lesson's own tool steps (hooks: called on every render). */
   useTools: (p: PageProps) => MikingStep[];
   silentNote: string;
@@ -697,7 +699,7 @@ export function makeBroadcastSound(spec: BroadcastSoundSpec): PageFn {
         kind: 'WATCH',
         layout: 'rack',
         rack: {
-          render: (w, h) => <VoiceSequence w={w} h={h} shown={st.shown} who={spec.v2 ? castFor('talker.host') : undefined} accessibilityLabel={`A talker in profile, the head and neck cut through the middle to show the airway, step ${st.shown} of ${n}: ${stage.title}. ${stage.text}`} />,
+          render: (w, h) => <VoiceSequence w={w} h={h} shown={st.shown} who={spec.v2 ? castFor('talker.host') : undefined} jacket={!!spec.jacket} accessibilityLabel={`A talker in profile, the head and neck cut through the middle to show the airway, step ${st.shown} of ${n}: ${stage.title}. ${stage.text}`} />,
           badge: 'A simplified picture: a cut through the middle of the head · the order of events, not their speed or size · silent',
           bezel: [
             { k: 'EVENT', v: `${st.shown}`, flex: 0.8 },

@@ -23,7 +23,7 @@ import { makeBroadcastSetting, makeBroadcastSound, useOpenMicStep, useReflectSte
 import { useShotStep } from '../shared/broadcast/cameraPages';
 import { useBodyTurnStep } from '../shared/broadcast/bodyWornPages';
 import type { RoutingPlan } from '../shared/broadcast/routing.ts';
-import { B02Scene } from './scene';
+import { B02Scene, V2 } from './scene';
 import { B02_ZONES } from './model.ts';
 import { BOOM_CLOSE, CAM_CLOSE, CAM_TWO, DESK, DESK_PLATE, GUEST, HEAD_TOP, LAV_A, LAV_G_AT } from './geometry.ts';
 import { SEATED_FLOOR } from '../shared/broadcast/talkerPose.ts';
@@ -35,6 +35,7 @@ const GOOSE = { art: 'gooseneck' as const, r: 9.5, len: 60, pattern: 'cardioid' 
 
 function useTools() {
   const turn = useBodyTurnStep({
+    v2: V2,
     mics: [
       { id: 'lav', label: 'The lav on the sternum', short: 'LAV', p: LAV_A.at, rides: 'chest', art: 'lavalier', r: 3, len: 12 },
       { id: 'boom', label: 'The fixed boom', short: 'BOOM', p: BOOM_CLOSE.p, rides: 'fixed', art: 'shotgun', r: 9.5, len: 250 },
@@ -127,6 +128,8 @@ function useTools() {
 }
 
 const B02Sound = makeBroadcastSound({
+  v2: V2,
+  jacket: true,
   useTools: () => useTools(),
   highs: 'The voice’s highest frequencies go out ahead of the mouth: an anchor who turns to the guest or reads down drifts off a fixed mic’s axis and sounds duller; a lav below the chin hears a little less of them. In words only — the shape of that spread is not drawn.',
   silentNote: 'This lab never plays a sound and draws no frequency curve for a voice: how a real anchor sounds depends on the voice, the mic, the desk and the room. The pictures show where the sound comes from and where it goes.',

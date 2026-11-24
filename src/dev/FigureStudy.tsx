@@ -39,6 +39,13 @@ import { B07Scene } from '../screens/lab/miking/lessons/b07Voiceover/scene';
 import { talkerPose, TurnedHeadSide, TurnedHeadTop } from '../screens/lab/miking/lessons/shared/broadcast/BroadcastArt';
 import { DESK_TOP_Y, HOST } from '../screens/lab/miking/lessons/shared/broadcast/talkerPose';
 import { personTopPlan } from '../screens/lab/miking/lessons/shared/figureV2/topPerson';
+import { B02Scene } from '../screens/lab/miking/lessons/b02NewsAnchor/scene';
+import { ANCHOR, DESK as B02_DESK } from '../screens/lab/miking/lessons/b02NewsAnchor/geometry';
+import { Desk, DeskNearLegs, StudioChair } from '../screens/lab/miking/lessons/shared/broadcast/BroadcastArt';
+import { LavClip } from '../screens/lab/miking/lessons/shared/broadcast/BodyWornArt';
+import { BODY_MOUNTS } from '../screens/lab/miking/lessons/shared/broadcast/bodyWorn';
+import { SEATED_FLOOR, SEAT_Y } from '../screens/lab/miking/lessons/shared/broadcast/talkerPose';
+import { clipOnCloth, jacketSidePlan } from '../screens/lab/miking/lessons/shared/figureV2/jacketPlan';
 
 const BG = '#0d0f13';
 const STAGE = '#14171d';
@@ -461,6 +468,26 @@ function Wave3({ width }: { width: number }) {
           <PicRow w={Math.min(330, (width - 32) / 2)} pics={[{ key: `${k}o`, title: `OLD · ${t}`, draw: o, cu, cv, mmW, mmH }, { key: `${k}n`, title: `NEW · ${t}`, draw: n, cu, cv, mmW, mmH }]} />
         </View>
       ))}
+      <View style={{ height: 14 }} />
+      <Caption title="B02 NEWS DESK: OLD BESIDE NEW" note="The anchor Kofi in his jacket (the dress variant), the guest Mei; the side close-up, from above (two-shot) and the side at the lesson's size. The lav's clip is drawn on the shirt in the V; the capsule, where every distance is read, has not moved." />
+      <PicRow
+        w={Math.min(330, (width - 32) / 2)}
+        pics={[
+          { key: 'b2so', title: 'OLD · B02 · side', draw: <B02Scene view="side" variant="close" camera={false} v2={false} />, cu: 60, cv: 330, mmW: 900, mmH: 1100 },
+          { key: 'b2sn', title: 'NEW · B02 · side', draw: <B02Scene view="side" variant="close" camera={false} v2 />, cu: 60, cv: 330, mmW: 900, mmH: 1100 },
+        ]}
+      />
+      <View style={{ height: 8 }} />
+      <PicRow
+        w={w}
+        pics={[
+          { key: 'b2to', title: 'OLD · top · two-shot', draw: <B02Scene view="top" variant="twoShot" camera={false} v2={false} />, cu: 150, cv: 350, mmW: 1500, mmH: 1700 },
+          { key: 'b2tn', title: 'NEW · top · two-shot', draw: <B02Scene view="top" variant="twoShot" camera={false} v2 />, cu: 150, cv: 350, mmW: 1500, mmH: 1700 },
+          { key: 'b2lo', title: 'OLD · side · lesson size', draw: <B02Scene view="side" variant="close" v2={false} />, cu: 1150, cv: 130, mmW: 3700, mmH: 2300 },
+          { key: 'b2ln', title: 'NEW · side · lesson size', draw: <B02Scene view="side" variant="close" v2 />, cu: 1150, cv: 130, mmW: 3700, mmH: 2300 },
+        ]}
+      />
+      <View style={{ height: 14 }} />
       <PicRow
         w={w}
         pics={[
@@ -504,6 +531,145 @@ function DeskHands({ width }: { width: number }) {
       <PicRow w={small} pics={ids.map((id) => ({ key: `t${id}`, title: CAST[id].name, draw: <Group>{deskTop}<PersonTopV2 pose={top} who={CAST[id]} opts={{ desk: true }} /></Group>, cu: topAt(id).u, cv: topAt(id).v, mmW: 230, mmH: 230 }))} />
       <View style={{ height: 8 }} />
       <PicRow w={big} pics={(['kofi', 'ruth'] as CastId[]).map((id) => ({ key: `T${id}`, title: CAST[id].name, draw: <Group>{deskTop}<PersonTopV2 pose={top} who={CAST[id]} opts={{ desk: true }} /></Group>, cu: topAt(id).u - 40, cv: topAt(id).v, mmW: 300, mmH: 220 }))} />
+    </View>
+  );
+}
+
+/* ── THE JACKET (dev page `jacket`): the dress variant, alone — Kofi as the news anchor, Ruth standing ── */
+
+const KOFI = CAST.kofi;
+const RUTH = CAST.ruth;
+const ANCHOR_OPTS = { lip: { u: 0, v: 0 }, rest: 'restFlat' as const, seatV: SEAT_Y, jacket: true };
+const STAND_OPTS = { lip: { u: 0, v: 0 }, rest: 'restSide' as const, jacket: true };
+const STAND_LEFT = poseOnTalker(SINGER_SIDE, { id: 'left', lip: { x: 0, y: 0, z: 0 }, facing: -1 });
+
+/** The lesson's clip point drawn ON the cloth (its height kept; the drawing only). */
+function onCloth(pose: typeof SINGER_SIDE, who: typeof KOFI, opts: typeof ANCHOR_OPTS | typeof STAND_OPTS, mount: 'sternum' | 'lapel', standing: boolean) {
+  const g = BODY_MOUNTS[mount].grip;
+  const plan = personPlan(pose, who, opts);
+  const J = opts.jacket ? jacketSidePlan(plan, who.body, standing) : null;
+  const p = clipOnCloth(plan, J, g, mount === 'lapel' ? 'lapel' : 'shirt');
+  return { x: p.u, y: p.v, z: g.z };
+}
+
+function AnchorSide({ who = KOFI, jacket = true, clip = true }: { who?: typeof KOFI; jacket?: boolean; clip?: boolean }) {
+  return (
+    <Group>
+      <StudioChair view="side" t={ANCHOR} />
+      <Desk view="side" box={B02_DESK} floor={SEATED_FLOOR} skirt />
+      <PersonSideV2 pose={talkerPose('side', ANCHOR)} who={who} opts={{ ...ANCHOR_OPTS, jacket }} />
+      <DeskNearLegs box={B02_DESK} floor={SEATED_FLOOR} skirt />
+      {clip ? <LavClip view="side" grip={onCloth(talkerPose('side', ANCHOR), who, { ...ANCHOR_OPTS, jacket }, 'sternum', false)} /> : null}
+    </Group>
+  );
+}
+function AnchorTop() {
+  const pose = talkerPose('top', ANCHOR);
+  return (
+    <Group>
+      <StudioChair view="top" t={ANCHOR} />
+      <PersonTopV2 pose={pose} who={KOFI} opts={{ desk: true, jacket: true }} part="lower" />
+      <Desk view="top" box={B02_DESK} floor={SEATED_FLOOR} skirt />
+      <PersonTopV2 pose={pose} who={KOFI} opts={{ desk: true, jacket: true }} part="upper" />
+      <LavClip view="top" grip={BODY_MOUNTS.sternum.grip} />
+    </Group>
+  );
+}
+const StandSide = ({ who, clip }: { who: typeof KOFI; clip?: 'sternum' | 'lapel' }) => (
+  <Group>
+    <PersonSideV2 pose={SINGER_SIDE} who={who} opts={STAND_OPTS} />
+    {clip ? <LavClip view="side" grip={onCloth(SINGER_SIDE, who, STAND_OPTS, clip, true)} /> : null}
+  </Group>
+);
+const StandTop = ({ who }: { who: typeof KOFI }) => <PersonTopV2 pose={SINGER_TOP} who={who} opts={{ jacket: true }} />;
+
+type CloseItem = readonly [string, string, ReactNode, number, number, number, number];
+const CLOSE_ROW: CloseItem[] = [];
+
+function Jacket({ width }: { width: number }) {
+  const two = Math.min(330, (width - 32) / 2);
+  const three = Math.min(220, (width - 40) / 3);
+  const four = Math.min(170, (width - 24 - 3 * 8) / 4);
+  const plan = personPlan(talkerPose('side', ANCHOR), KOFI, ANCHOR_OPTS);
+  const cuffAt = plan.arms.near.placed!.at({ u: -30, v: 0 });
+  const sp = personPlan(SINGER_SIDE, KOFI, STAND_OPTS);
+  const sCuff = sp.arms.near.placed!.at({ u: -30, v: 0 });
+  return (
+    <View>
+      <Caption title="THE JACKET (dev): KOFI AS THE NEWS ANCHOR" note="The old B02 anchor beside the new: Kofi seated at the anchor desk in his jacket (navy), the lav clip on B02's own point over the breastbone (on the shirt, in the jacket's V)." />
+      <PicRow
+        w={two}
+        pics={[
+          { key: 'old', title: 'OLD · B02 anchor · side', draw: <B02Scene view="side" variant="close" camera={false} v2={false} />, cu: 60, cv: 330, mmW: 900, mmH: 1100 },
+          { key: 'new', title: 'NEW · seated at the desk · side', draw: <AnchorSide />, cu: 60, cv: 330, mmW: 900, mmH: 1100 },
+        ]}
+      />
+      <View style={{ height: 10 }} />
+      <Caption title="FULL DETAIL" note="Standing from the side (the hands at rest), seated from above (the forearms on the desk), standing from above." />
+      <PicRow
+        w={three}
+        pics={[
+          { key: 'fs', title: 'Standing · side', draw: <StandSide who={KOFI} />, cu: -90, cv: 420, mmW: 640, mmH: 1300 },
+          { key: 'ft', title: 'Seated · from above', draw: <AnchorTop />, cu: 20, cv: 0, mmW: 760, mmH: 760 },
+          { key: 'fst', title: 'Standing · from above', draw: <StandTop who={KOFI} />, cu: -110, cv: 0, mmW: 620, mmH: 620 },
+        ]}
+      />
+      <View style={{ height: 10 }} />
+      <Caption title="AT LESSON SIZE (lite, about 0.1 pt/mm)" note="The same four pictures as a 390 pt phone draws them." />
+      <PicRow
+        w={four}
+        pics={[
+          { key: 'ls', title: 'Seated · side', draw: <AnchorSide />, cu: 200, cv: 300, mmW: 1700, mmH: 1700 },
+          { key: 'lst', title: 'Standing · side', draw: <StandSide who={KOFI} />, cu: -90, cv: 650, mmW: 1700, mmH: 2000 },
+          { key: 'lt', title: 'Seated · above', draw: <AnchorTop />, cu: 200, cv: 0, mmW: 1700, mmH: 1700 },
+          { key: 'ltt', title: 'Standing · above', draw: <StandTop who={KOFI} />, cu: -110, cv: 0, mmW: 1700, mmH: 1700 },
+        ]}
+      />
+      <View style={{ height: 14 }} />
+      <Caption title="THE SAME JACKET ON RUTH (the presenter of B04 / B05)" note="The same cut, no shaping, in her own tone (mocha); the lav clip on the lapel point B05 uses. Beside her, Kofi standing with the same clip; then both at lesson size, and Kofi facing left (his left side: the breast pocket)." />
+      <PicRow
+        w={three}
+        pics={[
+          { key: 'rs', title: 'Ruth · standing · side', draw: <StandSide who={RUTH} clip="lapel" />, cu: -90, cv: 420, mmW: 640, mmH: 1300 },
+          { key: 'ks', title: 'Kofi · standing · side', draw: <StandSide who={KOFI} clip="lapel" />, cu: -90, cv: 420, mmW: 640, mmH: 1300 },
+          { key: 'rt', title: 'Ruth · from above', draw: <StandTop who={RUTH} />, cu: -110, cv: 0, mmW: 620, mmH: 620 },
+        ]}
+      />
+      <View style={{ height: 6 }} />
+      <PicRow
+        w={four}
+        pics={[
+          { key: 'rl', title: 'Ruth · lesson size', draw: <StandSide who={RUTH} />, cu: -90, cv: 650, mmW: 1700, mmH: 2000 },
+          { key: 'kl', title: 'Kofi · lesson size', draw: <StandSide who={KOFI} />, cu: -90, cv: 650, mmW: 1700, mmH: 2000 },
+          { key: 'kfl', title: 'Facing left (breast pocket)', draw: <PersonSideV2 pose={STAND_LEFT} who={KOFI} opts={STAND_OPTS} />, cu: 110, cv: 380, mmW: 640, mmH: 900 },
+        ]}
+      />
+      <View style={{ height: 14 }} />
+      <Caption title="CLOSE (about 3 times the enlarged size)" note="The collar, the lapel and the shirt in the V with the clip; the sleeve's end and the shirt's cuff; the seated waist and the skirt over the chair; the standing sleeve's end." />
+      {(
+        [
+          ['c0', 'Seated · the upper back and the collar (Kofi)', <AnchorSide />, -190, 200, 420, 420],
+          ['c0p', 'Seated · the same body without the jacket (B01, approved)', <AnchorSide jacket={false} clip={false} />, -190, 200, 420, 420],
+          ['c0r', 'Seated · the upper back (Ruth)', <AnchorSide who={RUTH} />, -190, 200, 420, 420],
+          ['c0m', 'Seated · the upper back (Mei)', <AnchorSide who={CAST.mei} />, -190, 200, 420, 420],
+          ['c0s', 'Seated · the back skirt on the chair', <AnchorSide />, -230, 640, 260, 260],
+          ['c1', 'Seated · collar and lapel, the clip on the shirt in the V', <AnchorSide />, -60, 200, 300, 300],
+          ['c2', 'Seated · the sleeve end and the shirt cuff', <AnchorSide />, cuffAt.u, cuffAt.v, 200, 160],
+          ['c3', 'Seated · waist, lap and chair', <AnchorSide clip={false} />, -60, 620, 520, 420],
+          ['c4', 'Standing · the sleeve end and the shirt cuff', <StandSide who={KOFI} />, sCuff.u, sCuff.v, 200, 200],
+          ['c5', 'Standing · back and hem', <StandSide who={KOFI} />, -150, 620, 420, 420],
+          ['c6', 'Ruth · collar and lapel, the lapel clip', <StandSide who={RUTH} clip="lapel" />, -60, 200, 300, 300],
+          ['c7', 'Seated · from above: the shoulders, the lapels and the V', <AnchorTop />, -60, 0, 460, 460],
+          ['c8', 'Standing · from above, close', <StandTop who={KOFI} />, -100, 0, 460, 460],
+        ] as const
+      )
+        // (two to a canvas: a browser allows only so many canvases on one page)
+        .reduce<(typeof CLOSE_ROW)[]>((rows, x, i) => (i % 2 ? rows[rows.length - 1].push(x) : rows.push([x]), rows), [])
+        .map((row) => (
+          <View key={row[0][0]} style={{ marginBottom: 6 }}>
+            <PicRow w={Math.min((width - 32) / 2, 380)} pics={row.map(([k, t, d, cu, cv, mmW, mmH]) => ({ key: k, title: t, draw: d, cu, cv, mmW, mmH }))} />
+          </View>
+        ))}
     </View>
   );
 }
@@ -662,6 +828,11 @@ export function FigureStudy() {
       {only === 'wave3' ? (
         <Section>
           <Wave3 width={width} />
+        </Section>
+      ) : null}
+      {only === 'jacket' ? (
+        <Section>
+          <Jacket width={width} />
         </Section>
       ) : null}
       {only === 'deskhand' ? (

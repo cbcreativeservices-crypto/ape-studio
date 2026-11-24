@@ -77,6 +77,15 @@ const SHIRT: readonly P2[] = [
   [-50, 152], [-36, 176], [-22, 210], [-12, 250], [-6, 290], [-4, 340], [-3, 620], [-232, 620], [-231, 320], [-226, 250], [-214, 196], [-194, 158], [-174, 134], [-158, 120], [-108, 134],
 ];
 const COLLAR: readonly P2[] = [[-160, 119], [-112, 133], [-74, 144], [-49, 153]];
+/** (figure V2, the jacket: a dress variant) the jacket in the same section: close over the shirt's back,
+ *  its collar close on the neck below the shirt's collar, the front FOLD (the lapel's roll) from the neck
+ *  down to the button with the shirt showing in the V in front of it, the lapel's cut edge behind it. */
+const JACKET: readonly P2[] = [
+  [-164, 125], [-120, 140], [-90, 150], [-72, 160], // the collar's crease round the neck, to the gorge
+  [-58, 180], [-42, 214], [-27, 254], [-15, 294], [-6, 325], // the fold, behind the shirt's front, to the button
+  [-1, 345], [0, 620], [-237, 620], [-236, 320], [-231, 250], [-219, 196], [-199, 156], [-180, 132], // the front, the back
+];
+const JACKET_CUT: readonly P2[] = [[-6, 325], [-23, 292], [-43, 252], [-62, 212], [-80, 180], [-93, 166], [-86, 160], [-98, 158], [-130, 150], [-176, 136]];
 /** The cut through the chest: a window in the shirt along the midline. */
 const CHEST_CUT: readonly P2[] = [
   [-50, 158], [-48, 200], [-50, 260], [-52, 330], [-52, 620], [-150, 620], [-152, 300], [-150, 232], [-152, 180], [-153, 132], [-110, 142],
@@ -150,6 +159,9 @@ function cutawayPaths() {
     head,
     shirt,
     collar: open(COLLAR),
+    jacket: closed(JACKET, 0.4),
+    jacketCut: open(JACKET_CUT),
+    jacketFold: open(JACKET.slice(0, 9)),
     chestCut: closed(CHEST_CUT, 0.45),
     hair: open(HAIR),
     brain: closed(BRAIN, 0.5),
@@ -228,7 +240,7 @@ function castHair(style: CastMember['head']['hair']): SkPath {
 /** The cutaway; `tint` lights the airway in the order the steps name it. `who`: drawn as that cast
  *  member (her skin, her shirt, her hair outside the section) — the lessons that draw all their figures
  *  new; without it, exactly as before. */
-export function VoiceCutaway({ tint, who }: { tint: CutawayTint; who?: CastMember }) {
+export function VoiceCutaway({ tint, who, jacket = false }: { tint: CutawayTint; who?: CastMember; /** (with `who`) in the person's jacket */ jacket?: boolean }) {
   const A = useMemo(cutawayPaths, []);
   const hair = useMemo(() => (who ? castHair(who.head.hair) : null), [who]);
   const L = who?.look;
@@ -245,6 +257,16 @@ export function VoiceCutaway({ tint, who }: { tint: CutawayTint; who?: CastMembe
             <LinearGradient start={vec(-232, 0)} end={vec(-3, 0)} colors={[L.MAT.shirt.form[3], L.MAT.shirt.form[2], L.MAT.shirt.form[1]]} />
           </Path>
           <Path path={A.collar} style="stroke" strokeWidth={9} strokeCap="round" color={L.MAT.shirt.form[3]} />
+          {jacket && L.JACKET ? (
+            <Group>
+              <Path path={A.jacket}>
+                <LinearGradient start={vec(-237, 0)} end={vec(0, 0)} colors={[L.JACKET.form[3], L.JACKET.form[2], L.JACKET.form[1]]} />
+              </Path>
+              <Path path={A.jacket} style="stroke" strokeWidth={2} color={L.JACKET.edge} opacity={0.8} />
+              <Path path={A.jacketCut} style="stroke" strokeWidth={2} strokeCap="round" color={L.JACKET.edge} opacity={0.75} />
+              <Path path={A.jacketFold} style="stroke" strokeWidth={2.4} strokeCap="round" color={L.JACKET.rim} opacity={0.3} />
+            </Group>
+          ) : null}
         </Group>
       ) : (
         <Group>

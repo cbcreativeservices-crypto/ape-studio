@@ -20,6 +20,8 @@ import { personTopPlan, type PersonTopOpts } from './topPerson.ts';
 import { FigureScale, levelOf, useFigureScale } from './detail';
 import { FigureLook } from './look';
 import type { CastMember } from './cast';
+import { jacketSidePlan, jacketTopPlan } from './jacketPlan.ts';
+import { Far, JacketSideBody, JacketSideBodyLite, JacketSleeve, JacketSleeveLite, JacketTopBody, JacketTopBodyLite, coverOf, jacketSidePaths, jacketTopPaths } from './jacketV2';
 
 export type PersonOpts = {
   /** Where the front of the mouth is (a talker's lip point), when the pose has one. */
@@ -28,7 +30,41 @@ export type PersonOpts = {
   rest?: 'restSide' | 'restFlat';
   /** A seated figure's seat top (its soft contact shadow). */
   seatV?: number;
+  /** (wave 3, the dress variant) a jacket over the shirt (jacketPlan.ts) in the person's own jacket tone. */
+  jacket?: boolean;
 };
+
+const boxOf = (p: { getBounds: () => { x: number; y: number; width: number; height: number } }) => {
+  const b = p.getBounds();
+  return { x: b.x, y: b.y, width: b.width, height: b.height };
+};
+
+/** The jacket's pieces for the side view, each to its place in the figure's depth order. */
+function sideJacket(plan: SidePlan, pose: PlayerPose, who: CastMember, lite: boolean) {
+  const J = jacketSidePlan(plan, who.body, pose.posture === 'standing');
+  const JP = jacketSidePaths(J);
+  const P = sidePaths(plan);
+  const box = boxOf(JP.body);
+  if (lite)
+    return {
+      far: (
+        <Far>
+          <JacketSleeveLite s={J.sleeves.far} P={JP.far} />
+        </Far>
+      ),
+      body: <JacketSideBodyLite J={J} />,
+      near: <JacketSleeveLite s={J.sleeves.near} P={JP.near} />,
+    };
+  return {
+    far: (
+      <Far>
+        <JacketSleeve s={J.sleeves.far} P={JP.far} axis={J.axis} bodyBox={box} body={JP.body} cuff={P.far.cuffCloth} behind={plan.arms.far.behind ? { dx: -plan.facing * 5 } : undefined} />
+      </Far>
+    ),
+    body: <JacketSideBody J={J} shirt={P.shirt} />,
+    near: <JacketSleeve s={J.sleeves.near} P={JP.near} axis={J.axis} bodyBox={box} body={JP.body} cuff={P.near.cuffCloth} cover={coverOf(P.near.upper, JP.body)} />,
+  };
+}
 
 /** A head drawn this many points tall or more takes full detail even where the body is lite
  *  (coordinator round, 2026-11-23: "the HEAD takes full detail whenever it is drawn about 45 px tall or
@@ -57,6 +93,7 @@ export const PersonSideV2 = memo(function PersonSideV2({ pose, who, opts, dim = 
               plan={plan}
               P={sidePaths(plan)}
               part={part}
+              over={opts?.jacket && part !== 'head' ? sideJacket(plan, pose, who, true) : undefined}
               fullHead={
                 headPt(pose, ptPerMm) >= FULL_HEAD_PT ? (
                   <FigureScale ptPerMm={ptPerMm} level="full">
@@ -66,7 +103,7 @@ export const PersonSideV2 = memo(function PersonSideV2({ pose, who, opts, dim = 
               }
             />
           ) : (
-            <FigureV2Side plan={plan} part={part} />
+            <FigureV2Side plan={plan} part={part} over={opts?.jacket && part !== 'head' ? sideJacket(plan, pose, who, false) : undefined} />
           )}
         </Group>
       </FigureLook>
@@ -80,9 +117,14 @@ export function personShapes(plan: SidePlan): Poly[] {
   return [plan.shirt, plan.head.skull, plan.head.hair, plan.head.neck, plan.seat, plan.legs.near.outline, plan.legs.near.lower, plan.legs.far.outline, plan.legs.far.lower, plan.shoes.near.upper, plan.shoes.far.upper, ...arm(plan.arms.near), ...arm(plan.arms.far)];
 }
 
-/** Whether the person, as drawn, covers (u, v) within `tol` mm. */
+/** Whether the person, as drawn, covers (u, v) within `tol` mm (in a jacket: its outline too). */
 export function personCovers(pose: PlayerPose, who: CastMember, o: PersonOpts, u: number, v: number, tol = 0): boolean {
-  const shapes = personShapes(personPlan(pose, who, o));
+  const plan = personPlan(pose, who, o);
+  const shapes = personShapes(plan);
+  if (o.jacket) {
+    const J = jacketSidePlan(plan, who.body, pose.posture === 'standing');
+    shapes.push(J.body, J.sleeves.near.outline, J.sleeves.far.outline);
+  }
   const pts: Pt[] = tol > 0 ? [P(u, v), P(u - tol, v), P(u + tol, v), P(u, v - tol), P(u, v + tol)] : [P(u, v)];
   for (const q of pts) for (const s of shapes) if (inPoly(q, s)) return true;
   return false;
@@ -101,13 +143,36 @@ export const PersonTopV2 = memo(function PersonTopV2({ pose, who, opts = {}, par
   const b = T.torso.getBounds();
   const torso: Torso = { axis: plan.torsoAxis, box: { x: b.x, y: b.y, width: b.width, height: b.height }, body: T.torso };
   const arms = !!opts.desk;
+  const JT = opts.jacket ? jacketTopPlan(plan, who.body, arms) : null;
+  const JTP = JT ? jacketTopPaths(JT) : null;
   // (standing, seen from directly above: the legs and feet lie under the shoulders — not drawn, as the old figure)
   const legs = !!opts.desk;
   const body =
     head === 'only' ? (
       <HeadTop plan={plan} T={T} />
     ) : level === 'lite' ? (
-      legs || part !== 'lower' ? <TopLite plan={plan} T={T} part={part === 'lower' ? 'legs' : legs ? part : 'upper'} arms={arms} head={head === 'show'} /> : null
+      legs || part !== 'lower' ? (
+        <TopLite
+          plan={plan}
+          T={T}
+          part={part === 'lower' ? 'legs' : legs ? part : 'upper'}
+          arms={arms}
+          head={head === 'show'}
+          over={
+            JT && JTP
+              ? {
+                  arms: JT.sleeves && JTP.near && JTP.far ? (
+                    <Group>
+                      <JacketSleeveLite s={JT.sleeves.far} P={JTP.far} />
+                      <JacketSleeveLite s={JT.sleeves.near} P={JTP.near} />
+                    </Group>
+                  ) : null,
+                  body: <JacketTopBodyLite J={JT} />,
+                }
+              : undefined
+          }
+        />
+      ) : null
     ) : (
       <Group>
         {part !== 'upper' && legs ? <DrummerTopLegsV2 plan={plan} /> : null}
@@ -115,11 +180,18 @@ export const PersonTopV2 = memo(function PersonTopV2({ pose, who, opts = {}, par
           <Group>
             {arms ? <Arm a={plan.arms.far} P={T.far} t={torso} /> : null}
             {arms ? <Arm a={plan.arms.near} P={T.near} t={torso} /> : null}
+            {JT && JTP && JT.sleeves && JTP.near && JTP.far ? (
+              <Group>
+                <JacketSleeve s={JT.sleeves.far} P={JTP.far} axis={JT.axis} bodyBox={boxOf(JTP.slab)} body={JTP.slab} cuff={T.far.cuffCloth} />
+                <JacketSleeve s={JT.sleeves.near} P={JTP.near} axis={JT.axis} bodyBox={boxOf(JTP.slab)} body={JTP.slab} cuff={T.near.cuffCloth} />
+              </Group>
+            ) : null}
             <ShirtLight path={T.torso} t={torso} />
             <Group clip={T.torso}>
               <Folds path={T.blades} mat={who.look.MAT.shirt} opacity={0.5} />
             </Group>
             <Path path={T.torso} style="stroke" strokeWidth={1} color={who.look.MAT.shirt.edge} opacity={0.5} />
+            {JT ? <JacketTopBody J={JT} /> : null}
             {head === 'show' ? <HeadTop plan={plan} T={T} /> : null}
           </Group>
         ) : null}
@@ -139,6 +211,10 @@ export function personTopCovers(pose: PlayerPose, who: CastMember, o: PersonTopO
   const plan = personTopPlan(pose, who, o);
   const arm = (a: typeof plan.arms.near): Poly[] => [a.upper, a.foreSleeve, a.cuff, a.wristSkin, ...(a.placed ? a.placed.parts.map((q) => q.placed) : [])];
   const shapes = [plan.torso, plan.head.skull, plan.head.hair, plan.head.nose, ...(o.desk ? [...plan.legs.thighs, ...plan.legs.shins, ...plan.shoes.map((s) => s.sole), ...arm(plan.arms.near), ...arm(plan.arms.far)] : [])];
+  if (o.jacket) {
+    const J = jacketTopPlan(plan, who.body, !!o.desk);
+    shapes.push(J.slab, ...J.lapels, ...(J.sleeves ? [J.sleeves.near.outline, J.sleeves.far.outline] : []));
+  }
   const pts: Pt[] = tol > 0 ? [P(u, v), P(u - tol, v), P(u + tol, v), P(u, v - tol), P(u, v + tol)] : [P(u, v)];
   for (const q of pts) for (const sh of shapes) if (inPoly(q, sh)) return true;
   return false;

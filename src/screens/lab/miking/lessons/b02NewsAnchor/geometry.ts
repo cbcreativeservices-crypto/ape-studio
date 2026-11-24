@@ -31,6 +31,7 @@ import { BODY_MOUNTS, lavLead } from '../shared/broadcast/bodyWorn.ts';
 import { SHOT_PRESETS, boomAbove, cameraBody, cameraForShot, headroomFan, sideFan, type BroadcastCamera } from '../shared/broadcast/cameraFrame.ts';
 import { standBoomRule } from '../shared/broadcast/boomPole.ts';
 import { SHOTGUN_BODY } from '../shared/fieldmics/fieldMics.ts';
+import { figureV2On } from '../shared/figureV2/figureV2Config.ts';
 
 const ill = (reason: string): Provenance => ({ kind: 'illustrative', reason });
 const v3 = (x: number, y: number, z: number): Vec3 => ({ x, y, z });
@@ -85,6 +86,13 @@ export const BOUNDARY_AT = v3(330, DESK_TOP_Y, 40);
 
 /* ── the lavs ── */
 export const LAV_A = BODY_MOUNTS.sternum;
+/** (figure V2, the anchor Kofi in his jacket) the clip's GRIP drawn on the cloth: the lesson's own grip
+ *  height, brought back along the horizontal onto the new figure's shirt in the jacket's V
+ *  (figureV2/jacketPlan clipOnCloth; pinned by test/figureV2B02_20261123). The CAPSULE — the point every
+ *  distance and angle is read from (LAV_A.at) — does not move: no number the lesson prints changes. */
+export const LAV_A_GRIP_ON_CLOTH = v3(-2.4, LAV_A.grip.y, LAV_A.grip.z);
+const GRIP_DX = figureV2On('sideDeskTalker') ? LAV_A_GRIP_ON_CLOTH.x - LAV_A.grip.x : 0;
+const GRIP_A = v3(LAV_A.grip.x + GRIP_DX, LAV_A.grip.y, LAV_A.grip.z);
 export const LAV_G_AT = onTalker(GUEST, BODY_MOUNTS.sternum.at);
 export const LAV_G_GRIP = onTalker(GUEST, BODY_MOUNTS.sternum.grip);
 
@@ -127,7 +135,7 @@ const envelopes: Envelope[] = [
 ];
 
 const rims: Rim[] = [
-  { id: 'clip.sternum', label: 'a clip on the anchor’s shirt, over the breastbone', c: LAV_A.grip, axis: v3(1, 0, 0), r: 0, types: ['locLav'], lead: lavLead(LAV_A.grip, true) },
+  { id: 'clip.sternum', label: 'a clip on the anchor’s shirt, over the breastbone', c: GRIP_A, axis: v3(1, 0, 0), r: 0, types: ['locLav'], lead: lavLead(LAV_A.grip, true).map((p) => v3(p.x + GRIP_DX, p.y, p.z)) },
   { id: 'clip.guest', label: 'a clip on the guest’s shirt, over the breastbone', c: LAV_G_GRIP, axis: v3(1, 0, 0), r: 0, types: ['locLav'], lead: lavLead(BODY_MOUNTS.sternum.grip, true).map((p) => onTalker(GUEST, p)) },
   { id: 'goose.desk', label: 'the gooseneck’s base on the desk', c: GOOSE_BASE, axis: v3(0, -1, 0), r: 0, types: ['bcGoose', 'bcGooseSuper'] },
 ];

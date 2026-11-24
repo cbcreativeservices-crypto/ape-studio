@@ -35,7 +35,7 @@ const HAIR_BOB: readonly (readonly [number, number])[] = [
 const EAR: readonly (readonly [number, number])[] = [[73, -14], [86, -8], [90, 6], [88, 18], [77, 26]];
 const NOSE: readonly (readonly [number, number])[] = [[-12, 88], [-7, 104], [0, 113], [7, 104], [12, 88]];
 
-export type PersonTopOpts = { /** Forearms and hands on a desk (a seated talker). */ desk?: boolean };
+export type PersonTopOpts = { /** Forearms and hands on a desk (a seated talker). */ desk?: boolean; /** (wave 3) a jacket over the shirt (jacketPlan.ts; the plan itself does not change) */ jacket?: boolean };
 
 const cache = new WeakMap<PlayerPose, Map<string, TopPlan>>();
 
