@@ -477,7 +477,8 @@ describe('figure V2 — the arm into the hand (owner: "check for hand transition
   it('one skin across forearm, wrist and hand: the wrist is painted as the hand’s own first part, in the hand’s one light', () => {
     const paths = read('src/screens/lab/miking/lessons/shared/figureV2/paths.ts');
     assert.match(paths, /kind: 'wrist', name: 'wrist'/);
-    assert.match(paths, /art: a\.placed \? artPaths\(a\.placed, a\.away \? null : \{ poly: a\.wristSkin/);
+    // (a hand lying on a desk carries its own forearm on under the cuff instead: wave 3, "the wrist looks odd")
+    assert.match(paths, /art: a\.placed \? artPaths\(a\.placed, a\.away( \|\| FLAT_VIEWS\.has\(a\.placed\.art\.view\))? \? null : \{ poly: a\.wristSkin/);
     const side = read('src/screens/lab/miking/lessons/shared/figureV2/FigureV2Side.tsx');
     assert.match(side, /\{P\.art \? null : \(\s*<Form path=\{P\.wristSkin\} mat=\{MAT\.skin\}/);
     const paint = read('src/screens/lab/miking/lessons/shared/figureV2/paint.tsx');

@@ -128,6 +128,12 @@ export const ROLES = {
   'talker.wearer': 'kofi', // b11 the body-worn wearer
   // the presenter in a jacket (b04, b05)
   'presenter': 'ruth',
+  // B06's panel, left to right P1 · FOCUS (the host, Kofi) · P3 · P4: neighbors are different people
+  'talker.p1': 'mei',
+  'talker.p3': 'drummer',
+  'talker.p4': 'ruth',
+  // B06's presenter at the lectern
+  'lectern.presenter': 'ana',
 } as const satisfies Record<string, CastId>;
 
 export type RoleKey = keyof typeof ROLES;

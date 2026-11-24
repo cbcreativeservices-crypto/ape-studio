@@ -10,7 +10,10 @@ import type { ReactElement } from 'react';
 import { Group } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel } from '../../engine/scene/sceneTypes.ts';
-import { VoiceFigure, voiceFigureAt, voiceHitTest } from '../shared/voice/VoiceArt';
+import { VoiceFigure, voiceFigureAtFor, voiceHitTest, type VoiceArtOpts } from '../shared/voice/VoiceArt';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+import { castFor } from '../shared/figureV2/cast';
+import { PersonSideV2, PersonTopV2 } from '../shared/figureV2/personV2';
 import { PlayerBehind, PlayerInFront } from '../shared/players/PlayerFigure';
 import { SINGER_SIDE, SINGER_TOP, SINGER_SOLIDS } from '../shared/voice/voicePose.ts';
 import { AcousticPanels, ArmClamp, Desk, DeskNearLegs, Headphones, PaSpeaker, ScriptStand, SeatedTalker, StudioChair, talkerCovers } from '../shared/broadcast/BroadcastArt';
@@ -18,12 +21,22 @@ import { DESK_TOP_Y, SEATED_FLOOR, SEATED_SOLIDS } from '../shared/broadcast/tal
 import { HEAD_C, HEAD_R } from '../shared/voice/voiceSpec.ts';
 import { BOOTH_FLOOR, DESK, GRIP_G, GRIP_H, GUEST, MONITOR_C, READER, STAND, WALL_X } from './geometry.ts';
 
+/** (figure V2, wave 3: every person in this lesson in the new look; the reader — standing in the booth,
+ *  seated at the desk — is one person, the host's role) */
+export const V2 = figureV2On('sideDeskTalker') && figureV2On('sideStanding');
+const BOOTH_OPTS: VoiceArtOpts = { v2: V2, who: 'talker.host' };
 const SIDE_HEADLESS = { ...SINGER_SIDE, head: { ...SINGER_SIDE.head, r: 1 } };
 const TOP_HEADLESS = { ...SINGER_TOP, head: { ...SINGER_TOP.head, r: 1 } };
 
 /** The standing reader without a head (a step draws it turned). */
-export function ReaderHeadless({ view }: { view: ViewId }) {
+export function ReaderHeadless({ view, v2 = V2 }: { view: ViewId; v2?: boolean }) {
   const pose = view === 'side' ? SIDE_HEADLESS : TOP_HEADLESS;
+  if (v2)
+    return view === 'side' ? (
+      <PersonSideV2 pose={SINGER_SIDE} who={castFor('talker.host')} opts={{ lip: { u: 0, v: 0 }, rest: 'restSide' }} part="headless" />
+    ) : (
+      <PersonTopV2 pose={SINGER_TOP} who={castFor('talker.host')} head="none" />
+    );
   return (
     <Group>
       <PlayerBehind pose={pose} />
@@ -32,13 +45,13 @@ export function ReaderHeadless({ view }: { view: ViewId }) {
   );
 }
 
-export function B07Scene({ view, variant, headless = false }: { view: ViewId; variant: VariantId; headless?: boolean }): ReactElement {
+export function B07Scene({ view, variant, headless = false, v2 = V2 }: { view: ViewId; variant: VariantId; headless?: boolean; /** (the study page compares the old look) */ v2?: boolean }): ReactElement {
   const g = variant === 'guest';
   if (variant === 'booth') {
     return (
       <Group>
         <AcousticPanels view={view} x={WALL_X} y0={-600} y1={900} z0={-560} z1={560} />
-        {headless ? <ReaderHeadless view={view} /> : <VoiceFigure view={view} variant="booth" />}
+        {headless ? <ReaderHeadless view={view} v2={v2} /> : <VoiceFigure view={view} variant="booth" opts={{ ...BOOTH_OPTS, v2 }} />}
         {!headless ? <Headphones view={view} /> : null}
         <ScriptStand view={view} s={STAND} />
       </Group>
@@ -50,10 +63,10 @@ export function B07Scene({ view, variant, headless = false }: { view: ViewId; va
         <ArmClamp view="side" grip={GRIP_H} deskTop={DESK_TOP_Y} on="side" />
         <StudioChair view="side" t={READER} />
         {g ? <StudioChair view="side" t={GUEST} /> : null}
-        {g ? <SeatedTalker view="side" t={GUEST} phones /> : null}
+        {g ? <SeatedTalker view="side" t={GUEST} phones v2={v2} /> : null}
         <PaSpeaker view="side" c={MONITOR_C} faces={-1} h={260} d={200} w={160} floor={SEATED_FLOOR} pole={false} />
         <Desk view="side" box={DESK} floor={SEATED_FLOOR} />
-        <SeatedTalker view="side" t={READER} phones headless={headless} />
+        <SeatedTalker view="side" t={READER} phones headless={headless} v2={v2} />
         <DeskNearLegs box={DESK} floor={SEATED_FLOOR} />
         {g ? <ArmClamp view="side" grip={GRIP_G} deskTop={DESK_TOP_Y} edge={1} on="side" /> : null}
       </Group>
@@ -63,14 +76,14 @@ export function B07Scene({ view, variant, headless = false }: { view: ViewId; va
     <Group>
       <StudioChair view="top" t={READER} />
       {g ? <StudioChair view="top" t={GUEST} /> : null}
-      <SeatedTalker view="top" t={READER} part="lower" />
-      {g ? <SeatedTalker view="top" t={GUEST} part="lower" /> : null}
+      <SeatedTalker view="top" t={READER} part="lower" v2={v2} />
+      {g ? <SeatedTalker view="top" t={GUEST} part="lower" v2={v2} /> : null}
       <Desk view="top" box={DESK} floor={SEATED_FLOOR} />
       <PaSpeaker view="top" c={MONITOR_C} faces={-1} h={260} d={200} w={160} floor={SEATED_FLOOR} pole={false} />
       <ArmClamp view="top" grip={GRIP_H} deskTop={DESK_TOP_Y} on="side" />
       {g ? <ArmClamp view="top" grip={GRIP_G} deskTop={DESK_TOP_Y} edge={1} on="side" /> : null}
-      {g ? <SeatedTalker view="top" t={GUEST} part="upper" phones /> : null}
-      <SeatedTalker view="top" t={READER} part="upper" phones headless={headless} />
+      {g ? <SeatedTalker view="top" t={GUEST} part="upper" phones v2={v2} /> : null}
+      <SeatedTalker view="top" t={READER} part="upper" phones headless={headless} v2={v2} />
     </Group>
   );
 }
@@ -132,8 +145,8 @@ export function b07HitTest(view: ViewId, variant: VariantId, u: number, v: numbe
 }
 
 export function b07FigureAt(view: ViewId, variant: VariantId, u: number, v: number, tol: number): boolean {
-  if (variant === 'booth') return voiceFigureAt(view, variant, u, v, tol);
-  return talkerCovers(view, READER, u, v, tol) || (variant === 'guest' && talkerCovers(view, GUEST, u, v, tol));
+  if (variant === 'booth') return voiceFigureAtFor(BOOTH_OPTS)(view, variant, u, v, tol);
+  return talkerCovers(view, READER, u, v, tol, V2) || (variant === 'guest' && talkerCovers(view, GUEST, u, v, tol, V2));
 }
 
 export const B07_FLOOR = { booth: BOOTH_FLOOR, desk: SEATED_FLOOR };

@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-23 16:24 · ccode · 3ad1b900
+changed: Figure roll-out wave 3a: a cast of five, the standing singer and the desk-seated radio hosts (owner 2026-11-23) [MD:D78]
+affects other side: nothing on the server. For store pictures later: lesson figures are becoming a cast of five drawn people (Lead Vocal, Rap Vocal and Radio Host so far); screenshots taken before this show the old bald figure.
+needs: nothing. Not published; OTA 16 waits for the owner's word [MD:D77].
+
+
 ### 2026-11-23 12:55 · ccode · 7caefea5
 changed: Drummer hands and cuffs from above, a guest's weekly calculator allowance, Low-Light card in Settings (owner 2026-11-23) [MD:D78] [MD:D80] [MD:D81]
 affects other side: the calculator rule changed in the app: a guest (no account) now gets 5 calculations per rolling week counted on the device, with no server call; free and lapsed accounts still use calc_consume / calc_usage_status unchanged. The server counts per account only (calc_usage is keyed by user_id, no device column), so a guest who uses 5 and then creates a free account gets the account's own 5 in the same week. The Glossary meter already counts per device as well (migration 2026092502). Store and website text that says a free ACCOUNT is needed for calculations is now wrong once this is published.

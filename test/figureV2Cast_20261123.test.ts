@@ -127,7 +127,7 @@ describe('figure V2 wave 3 — the cast', () => {
 });
 
 describe('figure V2 wave 3 — the role table', () => {
-  const EXPECTED = ['kit.drummer', 'voice.singer', 'talker.host', 'talker.hostB', 'talker.guest', 'talker.asker', 'talker.analyst', 'talker.reporter', 'talker.wearer', 'presenter'];
+  const EXPECTED = ['kit.drummer', 'voice.singer', 'talker.host', 'talker.hostB', 'talker.guest', 'talker.asker', 'talker.analyst', 'talker.reporter', 'talker.wearer', 'presenter', 'talker.p1', 'talker.p3', 'talker.p4', 'lectern.presenter'];
   it('is one fixed table, every role a cast member, the drummer playing the kit', () => {
     assert.deepEqual(Object.keys(CAST.ROLES), EXPECTED);
     for (const k of EXPECTED) assert.ok(CAST.castFor(k), k);
@@ -227,12 +227,64 @@ describe('figure V2 wave 3 — heads and hands', () => {
     };
     assert.ok(widthAt(2) < widthAt(90) - 15, `wrist ${widthAt(2).toFixed(0)} vs knuckles ${widthAt(90).toFixed(0)}`);
   });
-  it('restFlat: the hand with its little finger, at most two fingertips beyond — never more than four fingers', () => {
+  it('restFlat (the NEAR desk hand, the true view): its little-finger side — no thumb; the little finger nearest and shortest; the others stepping forward; rounded pads; the arch', () => {
     const a = AH.handArt('restFlat');
+    assert.equal(a.thumbTip, null, 'no thumb on the near side');
+    assert.equal(a.parts.some((p: { digit?: string }) => p.digit === 'thumb'), false);
     const digits = a.parts.filter((p: { kind: string }) => p.kind === 'digit');
-    assert.ok(digits.length <= 2);
-    assert.equal(a.parts[a.parts.length - 1].name, 'hand');
-    assert.equal(a.thumbTip, null);
+    assert.deepEqual(digits.map((p: { digit: string }) => p.digit), ['middle', 'ring', 'little'], 'far to near: the little finger painted last (nearest)');
+    const tip = (d: { chain: { pts: { u: number }[]; r: number[] } }) => d.chain.pts[d.chain.pts.length - 1].u + d.chain.r[d.chain.r.length - 1];
+    const [mid, ring, little] = digits.map(tip);
+    assert.ok(little < ring && ring < mid, `tips step forward: little ${little}, ring ${ring}, middle ${mid}`);
+    const knuckleToTip = little - digits[2].chain.pts[0].u;
+    assert.ok(knuckleToTip >= 55 && knuckleToTip <= 68, `little finger knuckle to tip ${knuckleToTip} mm`);
+    // rounded pads with depth (≈ 12–14 mm at the last joint)
+    for (const d of digits) assert.ok(2 * d.chain.r[d.chain.r.length - 1] >= 12, `${d.digit} pad depth`);
+    // (owner "the wrist looks odd") the top contour from the cuff to the knuckle crest is ONE smooth line: no step
+    // larger than 2 mm between neighboring points; the wrist the narrowest, the crest above it
+    const h = a.parts[3].outline as { u: number; v: number }[];
+    const crestI = h.findIndex((q) => q.u >= 86);
+    for (let i = 1; i <= crestI; i++) assert.ok(Math.abs(h[i].v - h[i - 1].v) <= 2, `step at ${h[i - 1].u}→${h[i].u}: ${(h[i].v - h[i - 1].v).toFixed(1)} mm`);
+    const top = (x: number) => Math.min(...h.filter((q) => Math.abs(q.u - x) < 6).map((q) => q.v));
+    assert.ok(top(84) < top(12), 'the knuckle crest above the wrist');
+    assert.ok(a.contact && a.contact.length >= 3, 'contact shadows under the heel and the tips');
+  });
+  it('the FAR desk hand is the thumb-side view (the thumb beside the index on the viewer’s side); from above the thumb lies 20–35° off the index with a soft web', () => {
+    const pose = BA.talkerPose('side', TK.HOST);
+    const plan = PV.personPlan(pose, CAST.CAST.kofi, { lip: { u: 0, v: 0 }, rest: 'restFlat', seatV: 0 });
+    assert.equal(plan.arms.near.placed.art.view, 'restFlat');
+    assert.equal(plan.arms.far.placed.art.view, 'restFlatThumb');
+    assert.ok(AH.handArt('restFlatThumb').thumbTip);
+    const t = AH.handArt('restTop');
+    const ang = (Math.atan2(t.thumbTip.v - t.thumbWeb.v, t.thumbTip.u - t.thumbWeb.u) * 180) / Math.PI;
+    assert.ok(ang >= 20 && ang <= 35, `thumb ${ang.toFixed(1)}° off the index`);
+    assert.equal(t.gaps.length, 3);
+    assert.equal(t.nails.length, 4, 'a faint nail on each fingertip');
+    // the thumb's tip about level with the index's first joint (not past the knuckles' far side by much)
+    assert.ok(t.thumbTip.u > 110 && t.thumbTip.u < 135);
+  });
+  it('the under-cuff skin of a desk hand lies inside the cuff and the sleeve (never a block of its own); no separate wrist piece', () => {
+    const pose = BA.talkerPose('side', TK.HOST);
+    for (const id of ['drummer', 'ana', 'ruth', 'kofi', 'mei'] as const) {
+      const plan = PV.personPlan(pose, CAST.CAST[id], { lip: { u: 0, v: 0 }, rest: 'restFlat', seatV: 0 });
+      for (const arm of [plan.arms.near, plan.arms.far]) {
+        const art = arm.placed.art;
+        const hand = art.parts[art.parts.length - 1].outline as { u: number; v: number }[];
+        const under = hand.filter((q) => q.u < -17).map((q) => arm.placed.at(q));
+        assert.ok(under.length > 0);
+        for (const q of under) assert.ok(GE.inPoly(q, arm.cuff) || GE.inPoly(q, arm.foreSleeve), `${id} ${art.view}: ${q.u.toFixed(0)},${q.v.toFixed(0)} outside the cuff`);
+      }
+    }
+    assert.match(read(`${FV}/paths.ts`), /a\.away \|\| FLAT_VIEWS\.has\(a\.placed\.art\.view\) \? null/);
+  });
+  it('a desk hand lies LEVEL on the desk: no fingertip sunk into it, none hovering', () => {
+    const pose = BA.talkerPose('side', TK.HOST);
+    for (const id of ['kofi', 'ruth'] as const) {
+      const plan = PV.personPlan(pose, CAST.CAST[id], { lip: { u: 0, v: 0 }, rest: 'restFlat', seatV: 0 });
+      const vs = plan.arms.near.placed.parts.flatMap((p: { placed: { v: number }[] }) => p.placed.map((q) => q.v));
+      const bottom = Math.max(...vs);
+      assert.ok(Math.abs(bottom - TK.DESK_TOP_Y) < 3, `${id}: the hand's underside at ${bottom.toFixed(1)}, the desk at ${TK.DESK_TOP_Y}`);
+    }
   });
   it('holdSide is the approved fist from above, placed by the handle', () => {
     const h = AH.handArt('holdSide');
@@ -344,8 +396,23 @@ describe('figure V2 wave 3a — kind A in the lessons (the switches, the lessons
       assert.match(src, /makeVoiceSound\(\{\n\s+v2: V2,/);
     }
   });
+  it('B06 and B07 draw every figure new: panelists (neighbors different people), the lectern presenter, the asker, the booth reader (the same person as the desk reader), headless steps, turned heads, cut-aways, label covers', () => {
+    for (const d of ['b06Panels', 'b07Voiceover']) {
+      const scene = read(`${L}/${d}/scene.tsx`);
+      assert.match(scene, /export const V2 = figureV2On\('sideDeskTalker'\) && figureV2On\('sideStanding'\);/);
+      for (const m of scene.match(/<SeatedTalker [^>]*\/>/g) ?? []) assert.match(m, /v2=\{v2\}/, m);
+      assert.match(scene, /v2 = V2 \}: \{ view: ViewId; variant: VariantId;/);
+      const pages = read(`${L}/${d}/pages.tsx`);
+      assert.match(pages, /useTurnStep\(\{\n\s+v2: V2,/);
+      assert.match(pages, /makeBroadcastSound\(\{\n\s+v2: V2,/);
+    }
+    const ids = ['p1', 'host', 'p3', 'p4'].map((id) => CAST.castFor(CAST.talkerRole(id)).id);
+    for (let i = 1; i < ids.length; i++) assert.notEqual(ids[i], ids[i - 1], `panel neighbors ${ids[i - 1]} / ${ids[i]}`);
+    assert.equal(CAST.castFor(CAST.talkerRole('asker')).id, 'ruth');
+    assert.match(read(`${L}/b07Voiceover/scene.tsx`), /const BOOTH_OPTS: VoiceArtOpts = \{ v2: V2, who: 'talker\.host' \};/);
+  });
   it('every other lesson keeps ALL its figures old for now (no lesson mixes the two looks)', () => {
-    const files = ['b02NewsAnchor/scene.tsx', 'b02NewsAnchor/pages.tsx', 'b03FieldReporter/scene.tsx', 'b04BoomCamera/scene.tsx', 'b05Lavalier/scene.tsx', 'b06Panels/scene.tsx', 'b06Panels/pages.tsx', 'b07Voiceover/scene.tsx', 'b09Commentators/scene.tsx', 'b10Sideline/scene.tsx', 'b11Athletes/scene.tsx', 'f09LocationSpeech/scene.tsx', 'f09LocationSpeech/pages.tsx', 'e07SingerInstrument/art.tsx'];
+    const files = ['b02NewsAnchor/scene.tsx', 'b02NewsAnchor/pages.tsx', 'b03FieldReporter/scene.tsx', 'b04BoomCamera/scene.tsx', 'b05Lavalier/scene.tsx', 'b09Commentators/scene.tsx', 'b10Sideline/scene.tsx', 'b11Athletes/scene.tsx', 'f09LocationSpeech/scene.tsx', 'f09LocationSpeech/pages.tsx', 'e07SingerInstrument/art.tsx'];
     for (const f of files) assert.doesNotMatch(read(`${L}/${f}`), /\bv2\b|figureV2On/, f);
     // (the shared drawings default to the old look; a lesson opts in at its call sites)
     assert.match(read(`${L}/shared/broadcast/BroadcastArt.tsx`), /leftHandIn = 0, v2 = false \}/);

@@ -1080,9 +1080,11 @@ function buildPlan(pose: PlayerPose, opts: SideOpts): SidePlan {
   const seat: Poly = B && pose.posture === 'standing' ? bodySeat(along, B) : [along(0.14, 104), along(0.04, 102), along(-0.08, 92), along(-0.16, 40), along(-0.16, -40), along(-0.08, -108), along(0.04, -116), along(0.14, -114)];
   const view: HandView = (p) => ({ u: p.x, v: p.y, d: p.z });
   // (a hand holding nothing: thumb forward at the side; palm down on a desk)
-  const rest = (v: 'restSide' | 'restFlat' | undefined, h: PlayerPose['handR']): PlacedHand | null => (v ? placeRest(v, h.wrist, h.dir, v === 'restSide' ? P(facing, 0) : P(0, 1)) : null);
+  // (a hand on a desk lies LEVEL on it: the pose's small tilt would sink its fingertips into the desk top)
+  const rest = (v: 'restSide' | 'restFlat' | 'restFlatThumb' | undefined, h: PlayerPose['handR']): PlacedHand | null => (v ? placeRest(v, h.wrist, v !== 'restSide' ? (facing > 0 ? 0 : Math.PI) : h.dir, v === 'restSide' ? P(facing, 0) : P(0, 1)) : null);
   const pR = placedOf(opts.holdR, pose.elbowR) ?? rest(opts.restR, pose.handR);
-  const pL = placedOf(opts.holdL, pose.elbowL) ?? rest(opts.restL, pose.handL);
+  // (the far hand on a desk is the person's other hand: seen from its THUMB side)
+  const pL = placedOf(opts.holdL, pose.elbowL) ?? rest(opts.restL === 'restFlat' ? 'restFlatThumb' : opts.restL, pose.handL);
   // The sleeve runs to the drawn hand's wrist; a forearm running away from the
   // viewer runs to the pose's own wrist (the hand beyond it is drawn behind).
   const wristOf = (pl: PlacedHand | null, h: StickHold | null | undefined, away: boolean, w: Pt) => (pl ? (away && h ? P(h.poseWrist.x, h.poseWrist.y) : pl.wrist) : w);

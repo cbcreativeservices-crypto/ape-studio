@@ -397,9 +397,14 @@ export function AuthoredHand({ a, stick }: { a: ArtPaths; stick?: ReactNode }) {
   };
   const edge = <Path path={a.all} style="stroke" strokeWidth={0.9} strokeJoin="round" color={SKIN.edge} opacity={0.5} />;
   if (a.rest)
-    // A hand holding nothing (wave 3): its parts far to near, its one edge.
+    // A hand holding nothing (wave 3): its soft contact shadow on what it rests on, its parts far to near, its one edge.
     return (
       <Group>
+        {a.contact ? (
+          <Path path={a.contact} color="#000" opacity={0.42}>
+            <Blur mm={3.5} />
+          </Path>
+        ) : null}
         {paint('back')}
         {paint('front')}
         {edge}

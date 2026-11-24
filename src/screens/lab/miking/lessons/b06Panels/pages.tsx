@@ -21,7 +21,7 @@ import { aimedAtLips, makeBroadcastSetting, makeBroadcastSound, useOpenMicStep, 
 import { aimOf } from '../shared/ensemble/frameS.ts';
 import type { RoutingPlan } from '../shared/broadcast/routing.ts';
 import type { PanelMic, PanelTalker } from '../shared/broadcast/openMicPanel.ts';
-import { B06Scene } from './scene';
+import { B06Scene, V2 } from './scene';
 import { B06_ZONES } from './model.ts';
 import { FOCUS, P1, P3, P4 } from './geometry.ts';
 
@@ -38,6 +38,7 @@ const gooseAt = (dz: number): Vec3 => v3(GOOSE_P.x, GOOSE_P.y, GOOSE_P.z + dz);
 
 function useTools() {
   const turn = useTurnStep({
+    v2: V2,
     mics: [aimedAtLips('goose', 'The gooseneck, about 25 cm', 'GOOSENECK', GOOSE_P, GOOSE), { id: 'bound', label: 'The shared boundary on the table', short: 'BOUNDARY', p: zone('b6.boundary').start.p, aim: v3(-1, 0, 0), ...BOUND }],
     oneAtATime: true,
     top: () => <B06Scene view="top" variant="panel" headless />,
@@ -81,6 +82,7 @@ function useTools() {
 }
 
 const B06Sound = makeBroadcastSound({
+  v2: V2,
   useTools,
   highs: 'The voice’s highest frequencies go out ahead of the mouth: a panelist who turns to a neighbor drifts off their own mic’s axis and toward the neighbor’s. In words only — the shape of that spread is not drawn.',
   silentNote: 'This lab never plays a sound and draws no frequency curve for a voice: how a real panel sounds depends on the voices, the mics, the table, the room and the PA. The pictures show where the sound comes from and where it goes.',

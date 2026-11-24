@@ -22,7 +22,7 @@ import type { ArtLabel, LessonArt } from '../../../engine/scene/sceneTypes.ts';
 import { PlayerBehind, PlayerInFront, figureCovers } from '../players/PlayerFigure';
 import { EAR, EAR_HALF, HEAD_C, HEAD_R, NOSE, VOICE_DIMS } from './voiceSpec.ts';
 import { SINGER_NECK, SINGER_SIDE, SINGER_SOLIDS, SINGER_TOP } from './voicePose.ts';
-import { castFor } from '../figureV2/cast';
+import { castFor, type RoleKey } from '../figureV2/cast';
 import { PersonSideV2, PersonTopV2, personCovers, personTopCovers } from '../figureV2/personV2';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
@@ -36,6 +36,8 @@ export type VoiceArtOpts = {
   /** (figure V2) The new look — the singer as the cast member the role table names ('voice.singer');
    *  a lesson passes it for ALL its figures or for none. */
   v2?: boolean;
+  /** (figure V2) who stands here (default the singer's role). */
+  who?: RoleKey;
 };
 
 /** The singer drawn new: the mouth on the lip point (frame V's origin), the hands at rest. */
@@ -139,9 +141,9 @@ export function VoiceFigure({ view, variant, opts = {} }: { view: ViewId; varian
       {work ? <WorkZone view={view} /> : null}
       {opts.v2 ? (
         view === 'side' ? (
-          <PersonSideV2 pose={pose} who={castFor('voice.singer')} opts={SINGER_OPTS} />
+          <PersonSideV2 pose={pose} who={castFor(opts.who ?? 'voice.singer')} opts={SINGER_OPTS} />
         ) : (
-          <PersonTopV2 pose={pose} who={castFor('voice.singer')} />
+          <PersonTopV2 pose={pose} who={castFor(opts.who ?? 'voice.singer')} />
         )
       ) : (
         <>
@@ -261,7 +263,7 @@ export function voiceFigureAtFor(opts: VoiceArtOpts) {
   return (view: ViewId, variant: VariantId, u: number, v: number, tol: number): boolean => {
     if (voiceFigureAt(view, variant, u, v, tol)) return true;
     if (!opts.v2) return false;
-    const who = castFor('voice.singer');
+    const who = castFor(opts.who ?? 'voice.singer');
     return view === 'side' ? personCovers(SINGER_SIDE, who, SINGER_OPTS, u, v, tol) : personTopCovers(SINGER_TOP, who, {}, u, v, tol);
   };
 }

@@ -43,7 +43,7 @@
 import { add, limbOutline, mul, P, perp, sub, unit, type Poly, type Pt } from './geom.ts';
 import type { Ellipse } from './sidePlan.ts';
 
-export type HandArtView = 'fistEdge' | 'palmThumb' | 'backTop' | 'restSide' | 'restFlat' | 'holdSide';
+export type HandArtView = 'fistEdge' | 'palmThumb' | 'backTop' | 'restSide' | 'restFlat' | 'restFlatThumb' | 'restTop' | 'holdSide';
 
 /** A digit as joints (base → tip) and radii: drawn as one tapered form. */
 type Chain = { pts: readonly (readonly [number, number])[]; r: readonly number[] };
@@ -86,6 +86,8 @@ export type HandArt = {
   /** (wave 3) The gaps between fingers in one group (closed, thin wedges): darkest and
    *  widest at the notch between two fingertips, narrowing to nothing toward the knuckles. */
   gaps?: Poly[];
+  /** (wave 3) Soft contact shadows on what the hand rests on (painted under the hand, not clipped to it). */
+  contact?: Ellipse[];
   /** Nail slivers (closed), where a nail truly faces the viewer. */
   nails: Poly[];
   /** Warmer, redder skin: knuckles and fingertips. */
@@ -451,26 +453,38 @@ function restSide(): HandArt {
 }
 
 /*
- * A RELAXED HAND LYING ON A DESK, SEEN FROM ITS LITTLE-FINGER SIDE (a seated
- * talker's hand from the talker's side): x forward along the desk, y DOWN
- * toward it (the palm's side). Drawn by the rules of the approved resting hand
- * (owner 2026-11-23 "Hand passes"):
- *   • ONE outline for the hand and its fingers: the heel resting on the desk,
- *     the palm arched a little off it, the back of the hand rising to a soft
- *     knuckle swell; the fingers curving down to the desk as one group — the
- *     little finger nearest, the ring and middle fingertips stepping forward
- *     beyond it, each a rounded tip touching the desk;
- *   • the fingers told apart only by GAPS that start in the notch between two
- *     fingertips (strongest there) and fade back toward the knuckles;
- *   • the thumb lies on the far side of the hand, hidden;
- *   • the skin runs on up under the cuff (no edge of its own at the wrist).
+ * A RELAXED HAND LYING PALM-DOWN ON A DESK, SEEN FROM THE SIDE (a seated
+ * talker's hand; coordinator round, 2026-11-23, after "it reads as a paddle"):
+ * x forward along the desk, y DOWN toward it (the desk's top at y ≈ 26, the
+ * pose's wrist 26 mm above it). Drawn by the rules of the approved resting hand:
+ *   • the forearm comes out of the cuff NARROWING to the wrist, which rests just
+ *     above the desk;
+ *   • the TOP contour: a dip at the wrist, the back of the hand rising in a low
+ *     arch to the KNUCKLE CREST (≈ 35 mm above the desk), then the index finger
+ *     sloping DOWN, gently bent at its two joints, to a fingertip on the desk;
+ *     ≈ 85 mm knuckle to tip;
+ *   • the other fingers lie behind the index: the middle fingertip shows as a
+ *     sliver stepping just beyond it, the gap between them starting at the tips
+ *     and fading back toward the knuckles;
+ *   • the THUMB on the near side lies on the desk beside the index, coming out
+ *     of the hand's lower near edge below the index knuckle — part of the one
+ *     outline, a blunt tip at about the index's middle joint; no line along it,
+ *     only a soft shade where it lies against the index;
+ *   • daylight under the arch of the fingers between the thumb's tip and the
+ *     fingertips; a soft contact shadow under the heel, the thumb and the tips;
+ *   • the skin runs on up under the cuff.
  */
 const FLAT_BODY: readonly (readonly [number, number])[] = [
-  [-26, -20], [0, -20], [30, -23], [55, -25.5], [80, -25], [92, -23.6], [100, -21.4], [108, -17], [118, -10.6], [128, -2.6], [135, 6], [139.4, 14.6], [140.6, 20.6],
-  // the little fingertip, then the ring and middle fingertips stepping forward along the desk
-  [139.2, 24.4], [141.6, 22.6], [146, 20.4], [149.6, 23], [149.4, 26.4], [151.6, 25.4], [156, 22.6], [159.6, 24.8], [159, 27.6],
-  // along the desk under the fingers, the palm arched off it, the heel resting on it
-  [150, 28], [140, 27.6], [130, 23], [118, 15.6], [104, 12], [86, 15], [64, 21.5], [40, 25.6], [16, 25.4], [0, 21], [-26, 20],
+  // the top: out of the cuff, narrowing to the wrist's dip, the back of the hand's arch to the knuckle crest
+  [-26, -19], [-18, -17.6], [-10, -16], [-2, -14.4], [6, -12.8], [12, -12], [20, -12], [30, -12.6], [40, -13.2], [50, -13.8], [60, -14.4], [70, -15], [78, -15.4], [86, -15.4],
+  // the index finger: nearly level to its middle joint, then bending down to its tip on the desk
+  [97, -13.4], [110, -8.6], [124, -2.6], [134, 4], [143, 11], [151, 17.3], [157.5, 21.8], [162, 24], [163.5, 24.4],
+  // the notch, then the middle fingertip's sliver stepping just beyond the index (the gap starts here)
+  [164.5, 25], [167, 24.2], [170, 25.4], [169.5, 27.4],
+  // along the desk under the tips, then daylight under the fingers' arch, back along the index's underside
+  [161, 27.8], [153, 25.2], [145, 21.4], [137, 17.6], [130, 15.2], [126.5, 14.6],
+  // the thumb's blunt tip on the desk, just under the index's middle joint, its underside along the desk, the heel, the wrist
+  [128, 16.4], [129, 19.6], [128.4, 23.4], [125, 26.4], [116, 26.9], [100, 26.6], [80, 26.2], [60, 25.4], [40, 24.6], [24, 24.2], [12, 22.6], [0, 22.8], [-14, 23], [-26, 23.2],
 ];
 /** A gap between two fingers in one group: a thin wedge from the notch `n` (widest, darkest) back along
  *  `toward` (a unit direction), narrowing to nothing at `len`. */
@@ -482,28 +496,158 @@ const gapAlong = (n: readonly [number, number], toward: readonly [number, number
   return [at(-1.2, -w / 2), at(len * 0.5, -w * 0.22), at(len, 0), at(len * 0.5, w * 0.22), at(-1.2, w / 2)];
 };
 
+/** The FAR hand on the desk (the person's other hand, seen from its THUMB side): the index in
+ *  profile, the thumb on the viewer's side under the index's middle joint (round 1's drawing). */
+function restFlatThumb(): HandArt {
+  return {
+    view: 'restFlatThumb',
+    F: P(150, 24),
+    parts: [{ name: 'hand', layer: 'front', outline: pts(FLAT_BODY), axis: [P(0, -2), P(150, -2)], kind: 'palm' }],
+    creases: [
+      pts([[124.5, -0.6], [123.5, 4.5], [123, 8]]), // the index's middle joint
+    ],
+    gaps: [gapAlong([164.5, 25], [-0.72, -0.69], 24)],
+    nails: [],
+    warm: [{ c: P(85, -7), r: 5 }],
+    lights: [
+      E(50, -3, 34, 4.2, -0.03), // the back of the hand's top plane
+      E(85, -8.5, 6, 3.6), // the index knuckle: a soft swell
+      E(72, -6.5, 5, 3.2), // the middle knuckle just behind it
+      E(110, 19.5, 18, 3, 0.04), // the thumb's top face, lit
+    ],
+    darks: [
+      E(108, 15, 22, 2.8, 0.06), // the thumb's soft shade where it lies against the index (its top edge)
+      E(60, 21, 36, 3.4, 0), // the palm's edge turning under toward the desk
+    ],
+    // soft contact shadows on the desk: the heel, the thumb, the fingertips
+    contact: [E(36, 27.5, 30, 3.5), E(112, 27.6, 18, 3), E(165, 28, 9, 2.5)],
+    knuckle: P(86, -11.4),
+    wristTop: P(0, -2),
+    wristBottom: P(0, 23),
+    thumbTip: P(129, 19.6),
+    thumbWeb: P(92, 12),
+  };
+}
+
+/*
+ * THE NEAR HAND ON THE DESK, THE TRUE VIEW (coordinator round 2, 2026-11-23: "a right hand lying
+ * palm-down, seen from the person's right, shows its LITTLE-FINGER side"): x forward, y down (the desk
+ * at y ≈ 26).
+ *   • the near contour is the hand's outer edge: from the wrist along the fleshy edge below the little
+ *     finger to the little-finger knuckle; the LITTLE finger seen whole in profile, gently bent, its
+ *     rounded pad on the desk — the shortest finger (≈ 58 mm knuckle to tip);
+ *   • behind it the ring and middle fingers step forward, each a rounded pad on the desk beyond the
+ *     one in front (the ring ≈ 12 mm beyond the little finger, the middle ≈ 20 mm); the index lies
+ *     farthest, its tip hidden behind the ring's, its knuckle the crest of the arch;
+ *   • the gaps start at the tips (where a nearer finger's pad lies over the next) and fade back;
+ *   • fingertips are rounded pads ≈ 13 mm deep with a hint of a nail line on top;
+ *   • NO thumb: it lies on the far side, hidden;
+ *   • the wrist's dip, the low arch to the knuckle crest, the fingers sloping down, daylight under the
+ *     little finger's arch, contact shadows under the heel and the tips, the skin on under the cuff.
+ */
+const FLAT_HAND: readonly (readonly [number, number])[] = [
+  // (its front edge lies inside the fingers' roots, under their top line: no step where the fingers begin)
+  // (owner 2026-11-23, "the wrist looks odd": out of the cuff the forearm tapers smoothly to the wrist — its
+  // narrowest point — then the back of the hand rises a little to the crest; no edge, no step, no block)
+  [-26, -19], [-18, -17.6], [-10, -16], [-2, -14.4], [6, -12.8], [12, -12], [20, -12], [30, -12.6], [40, -13.2], [50, -13.8], [60, -14.4], [70, -15], [78, -15.4], [86, -15.4], [91, -14], [93.5, -8.5], [94.5, -1], [93.5, 6], [91.5, 13], [89, 19], [85, 23],
+  [78, 25.2], [60, 25.6], [40, 25], [24, 24.2], [12, 22.6], [0, 22.8], [-14, 23], [-26, 23.2],
+];
+const FLAT_MIDDLE: Chain = { pts: [[88, -5.4], [124, 4], [148, 14.6], [157.5, 19.6]], r: [10, 9, 7.6, 6.8] };
+const FLAT_RING: Chain = { pts: [[86, -1], [118, 8], [140, 15.4], [149.5, 19.6]], r: [9.6, 8.6, 7.2, 6.6] };
+const FLAT_LITTLE: Chain = { pts: [[82, 4], [104, 10.5], [124, 16.4], [137.5, 19.6]], r: [8.6, 7.8, 6.8, 6.4] };
+
 function restFlat(): HandArt {
-  const back = [-0.62, -0.78] as const; // from the tips up and back toward the knuckles
+  const digit = (name: string, c: Chain, d: HandArtPart['digit']): HandArtPart => ({ name, layer: 'front', outline: chain(c), axis: axisOf(c), kind: 'digit', chain: bones(c), digit: d });
   return {
     view: 'restFlat',
     F: P(150, 24),
-    parts: [{ name: 'hand', layer: 'front', outline: pts(FLAT_BODY), axis: [P(0, 0), P(150, 0)], kind: 'palm' }],
-    creases: [],
-    gaps: [gapAlong([140.4, 23.6], back, 26), gapAlong([150.4, 25], back, 30)],
+    // far to near: the middle, the ring, the little finger, then the hand over their roots (no line where a finger meets it)
+    parts: [
+      digit('middle', FLAT_MIDDLE, 'middle'),
+      digit('ring', FLAT_RING, 'ring'),
+      digit('little', FLAT_LITTLE, 'little'),
+      { name: 'hand', layer: 'front', outline: pts(FLAT_HAND), axis: [P(0, -2), P(100, -2)], kind: 'palm' },
+    ],
+    creases: [
+      pts([[121, 9.6], [119.5, 13.5], [119, 17]]), // the little finger's middle joint
+      pts([[132.5, 13.3], [136.5, 13]]), // a hint of the little finger's nail on top of its pad
+      pts([[151.5, 12.9], [155.5, 13]]), // the middle finger's nail, beyond
+    ],
+    // the gaps: from where each nearer pad lies over the next finger, back along it, fading
+    gaps: [gapAlong([143.6, 17.6], [-0.9, -0.42], 22, 2.4), gapAlong([155.8, 17.4], [-0.9, -0.42], 20, 2.2)],
     nails: [],
+    warm: [{ c: P(84, -9), r: 5 }],
+    lights: [
+      E(50, -3, 34, 4.2, -0.03), // the back of the hand's top plane
+      E(86, -8.5, 6, 3.6), // the knuckle crest
+      E(108, 7, 14, 2.4, 0.2), // the little finger's lit top
+    ],
+    darks: [E(60, 21, 36, 3.4, 0)],
+    contact: [E(38, 27.5, 30, 3.5), E(138, 27.4, 6, 2), E(150, 27.4, 6, 2), E(158, 27.6, 6, 2)],
+    knuckle: P(82, 4),
+    knuckles: [P(82, 4), P(86, -1), P(88, -5.4)],
+    wristTop: P(12, -12),
+    wristBottom: P(0, 23),
+    thumbTip: null,
+  };
+}
+
+/*
+ * THE SAME HAND FROM ABOVE (the top view of a desk talker): the BACK of a
+ * relaxed hand lying palm-down, x forward along the fingers, y toward the THUMB
+ * (the body's midline). One outline for hand, fingers and thumb: the wrist out
+ * of the cuff widening to the knuckle row; the four fingers forward, side by
+ * side, their tips a stepped line (the middle longest, the little shortest), the
+ * gaps between them starting at the tips and fading toward the knuckles; the
+ * thumb on the midline side, leaving the hand at its mound, separated from the
+ * index by a narrow V, a blunt tip; four soft knuckle swells along the row.
+ */
+const TOP_HAND: readonly (readonly [number, number])[] = [
+  [-26, -21], [0, -22], [30, -27], [60, -33], [88, -37], [110, -38.5],
+  // the little finger, a little fanned out, its rounded tip; the notch
+  [128, -38], [140, -36.6], [148, -34], [152.5, -29.6], [152, -24.6], [148, -21.6], [141, -20.6], [136, -20.5],
+  // the ring finger
+  [146, -19.5], [158, -18.5], [167, -16], [170.5, -11], [169, -5.6], [164, -3], [157, -2.6], [152, -2.5],
+  // the middle finger, the longest
+  [162, -1.5], [172, 0.5], [178, 4], [179, 9.5], [175.5, 14], [168, 16], [158, 16.4], [152, 16.5],
+  // the index finger, its outer edge back to the web
+  [161, 18], [168, 20.5], [170, 25], [167, 29.5], [159, 32], [146, 32.4], [128, 32.6], [110, 32.6], [92, 32.4], [84, 33],
+  // the web: a soft U, then the thumb at ≈ 25–30° to the index, its tip about level with the index's first joint
+  [78, 34.8], [75, 38], [84, 43], [98, 48.5], [110, 52.5], [118, 54.8], [123, 57.8], [124, 62.2], [121, 66.2], [115, 67.8],
+  [104, 66.4], [88, 61.8], [70, 55.5], [52, 47.5], [36, 39.5], [20, 31.5], [0, 23], [-26, 22],
+];
+const TOP_NOTCHES = [[136, -20.5], [152, -2.5], [152, 16.5]] as const;
+/** A faint nail on a fingertip seen from above (a small rounded oblong set back from the tip). */
+const nailAt = (x: number, y: number, len = 9, w = 7): Poly => {
+  const out: Poly = [];
+  for (let j = 0; j < 12; j++) {
+    const t = (Math.PI * 2 * j) / 12;
+    out.push(P(x + (len / 2) * Math.cos(t), y + (w / 2) * Math.sin(t)));
+  }
+  return out;
+};
+
+function restTop(): HandArt {
+  return {
+    view: 'restTop',
+    F: P(150, 0),
+    parts: [{ name: 'hand', layer: 'front', outline: pts(TOP_HAND), axis: [P(0, 0), P(170, 0)], kind: 'palm' }],
+    creases: [],
+    gaps: TOP_NOTCHES.map((n) => gapAlong(n, [-1, 0], (n[0] - 95) * 0.68, 3.2)),
+    nails: [nailAt(144, -29), nailAt(163, -10.5), nailAt(171, 8.5), nailAt(161, 25)],
     warm: [],
     lights: [
-      E(58, -19, 32, 5, 0), // the back of the hand's top plane
-      E(97, -21.5, 5.2, 3.8), // the little knuckle: a soft swell
-      E(90, -24, 4.6, 3.4), // the ring knuckle just beyond it
+      E(58, -1, 34, 18, 0), // the broad back of the hand
+      E(97, -30, 5.2, 4), E(98, -12, 5.6, 4.3), E(97, 6, 5.6, 4.3), E(95, 24, 5.2, 4), // the knuckles: four soft swells
+      E(90, 55, 18, 5, 0.36), // the thumb's back
     ],
-    darks: [
-      E(64, 22, 34, 4.6, 0), // the palm's edge turning under toward the desk
-    ],
-    knuckle: P(97, -22),
-    wristTop: P(0, -20),
-    wristBottom: P(0, 21),
-    thumbTip: null,
+    darks: [E(160, -2, 7, 32, 0)],
+    knuckle: P(97, 24),
+    knuckles: [P(97, -30), P(98, -12), P(97, 6), P(95, 24)],
+    wristTop: P(0, 23),
+    wristBottom: P(0, -22),
+    thumbTip: P(122, 62),
+    thumbWeb: P(78, 35),
   };
 }
 
@@ -521,7 +665,7 @@ function holdSide(): HandArt {
   return { ...t, view: 'holdSide', F: P(104, 0), stickLocal: Math.PI / 2 };
 }
 
-const ARTS: Record<HandArtView, HandArt> = { fistEdge: fistEdge(), palmThumb: palmThumb(), backTop: backTop(), restSide: restSide(), restFlat: restFlat(), holdSide: holdSide() };
+const ARTS: Record<HandArtView, HandArt> = { fistEdge: fistEdge(), palmThumb: palmThumb(), backTop: backTop(), restSide: restSide(), restFlat: restFlat(), restFlatThumb: restFlatThumb(), restTop: restTop(), holdSide: holdSide() };
 export const handArt = (v: HandArtView): HandArt => ARTS[v];
 
 /**
@@ -529,7 +673,7 @@ export const handArt = (v: HandArtView): HandArt => ARTS[v];
  * pointing the pose's way: its local +y (the thumb's side for restSide, the
  * palm's for restFlat) turned toward `yToward` in the view.
  */
-export function placeRest(view: 'restSide' | 'restFlat', wrist: Pt, dir: number, yToward: Pt): PlacedHand {
+export function placeRest(view: 'restSide' | 'restFlat' | 'restFlatThumb' | 'restTop', wrist: Pt, dir: number, yToward: Pt): PlacedHand {
   const art = handArt(view);
   const ex = P(Math.cos(dir), Math.sin(dir));
   let ey = perp(ex);
@@ -552,6 +696,7 @@ export function placeRest(view: 'restSide' | 'restFlat', wrist: Pt, dir: number,
     parts: art.parts.map((p) => ({ ...p, placed: p.outline.map(at), placedAxis: [at(p.axis[0]), at(p.axis[1])] as [Pt, Pt], placedChain: p.chain ? { pts: p.chain.pts.map(at), r: [...p.chain.r] } : null, placedEdge: p.edge ? p.edge.map(at) : null, placedShade: p.shade ? ([at(p.shade[0]), at(p.shade[1])] as [Pt, Pt]) : null })),
     creases: art.creases.map((c) => c.map(at)),
     ...(art.gaps ? { gaps: art.gaps.map((c) => c.map(at)) } : {}),
+    ...(art.contact ? { contact: art.contact.map(mapE) } : {}),
     nails: art.nails.map((c) => c.map(at)),
     warm: art.warm.map((w) => ({ c: at(w.c), r: w.r })),
     lights: art.lights.map(mapE),
@@ -593,6 +738,7 @@ export type PlacedHand = {
   parts: (HandArtPart & { placed: Poly; placedAxis: [Pt, Pt]; placedChain: { pts: Pt[]; r: number[] } | null; placedEdge: Poly | null; placedShade: [Pt, Pt] | null })[];
   creases: Poly[];
   gaps?: Poly[];
+  contact?: Ellipse[];
   nails: Poly[];
   warm: { c: Pt; r: number }[];
   lights: Ellipse[];

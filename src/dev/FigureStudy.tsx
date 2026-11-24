@@ -34,8 +34,11 @@ import { PlayerBehind, PlayerInFront } from '../screens/lab/miking/lessons/share
 import { poseOnTalker } from '../screens/lab/miking/lessons/shared/broadcast/talkerPose';
 import { castFor } from '../screens/lab/miking/lessons/shared/figureV2/cast';
 import { B01Scene } from '../screens/lab/miking/lessons/b01RadioHost/scene';
+import { B06Scene } from '../screens/lab/miking/lessons/b06Panels/scene';
+import { B07Scene } from '../screens/lab/miking/lessons/b07Voiceover/scene';
 import { talkerPose, TurnedHeadSide, TurnedHeadTop } from '../screens/lab/miking/lessons/shared/broadcast/BroadcastArt';
-import { HOST } from '../screens/lab/miking/lessons/shared/broadcast/talkerPose';
+import { DESK_TOP_Y, HOST } from '../screens/lab/miking/lessons/shared/broadcast/talkerPose';
+import { personTopPlan } from '../screens/lab/miking/lessons/shared/figureV2/topPerson';
 
 const BG = '#0d0f13';
 const STAGE = '#14171d';
@@ -444,6 +447,20 @@ function Wave3({ width }: { width: number }) {
           { key: 'c7', title: 'Turned head · top, 40°', draw: <Group><B01Scene view="top" variant="studio" headless v2 /><TurnedHeadTop yawDeg={40} v2 /></Group>, cu: -60, cv: 0, mmW: 620, mmH: 620 },
         ]}
       />
+      <View style={{ height: 14 }} />
+      <Caption title="B06 PANELS AND B07 VOICEOVER: OLD BESIDE NEW" note="B06: the panel (side: the focus panelist Kofi; from above: Mei · Kofi · the drummer · Ruth), the lectern (presenter Ana, the press member Ruth at the aisle mic). B07: the booth reader and the desk (reader Kofi, guest Mei)." />
+      {([
+        ['b6ps', 'B06 panel · side', <B06Scene view="side" variant="panel" v2={false} />, <B06Scene view="side" variant="panel" v2 />, 0, 330, 1000, 1000],
+        ['b6pt', 'B06 panel · top', <B06Scene view="top" variant="panel" v2={false} />, <B06Scene view="top" variant="panel" v2 />, 200, 500, 1600, 2000],
+        ['b6ls', 'B06 lectern · side', <B06Scene view="side" variant="lectern" v2={false} />, <B06Scene view="side" variant="lectern" v2 />, 700, 650, 2600, 2000],
+        ['b6lt', 'B06 lectern · top', <B06Scene view="top" variant="lectern" v2={false} />, <B06Scene view="top" variant="lectern" v2 />, 700, 400, 2600, 2000],
+        ['b7bs', 'B07 booth · side', <B07Scene view="side" variant="booth" v2={false} />, <B07Scene view="side" variant="booth" v2 />, 0, 650, 1400, 2000],
+        ['b7gs', 'B07 desk with guest · side', <B07Scene view="side" variant="guest" v2={false} />, <B07Scene view="side" variant="guest" v2 />, 750, 400, 2400, 1700],
+      ] as const).map(([k, t, o, n, cu, cv, mmW, mmH]) => (
+        <View key={k} style={{ marginBottom: 8 }}>
+          <PicRow w={Math.min(330, (width - 32) / 2)} pics={[{ key: `${k}o`, title: `OLD · ${t}`, draw: o, cu, cv, mmW, mmH }, { key: `${k}n`, title: `NEW · ${t}`, draw: n, cu, cv, mmW, mmH }]} />
+        </View>
+      ))}
       <PicRow
         w={w}
         pics={[
@@ -452,6 +469,41 @@ function Wave3({ width }: { width: number }) {
           { key: 'rh', title: 'Facing right · her hand', draw: sideNew, cu: handAt.u, cv: handAt.v, mmW: 200, mmH: 560 },
         ]}
       />
+    </View>
+  );
+}
+
+
+/* ── THE DESK HAND (dev page `deskhand`): side and from above, five skin tones ── */
+
+const DESK_SIDE = { lip: { u: 0, v: 0 }, rest: 'restFlat' as const, seatV: 0 };
+function DeskHands({ width }: { width: number }) {
+  const ids: CastId[] = ['drummer', 'ana', 'ruth', 'kofi', 'mei'];
+  const side = talkerPose('side', HOST);
+  const top = talkerPose('top', HOST);
+  const sideAt = (id: CastId) => personPlan(side, CAST[id], DESK_SIDE).arms.near.placed!.at({ u: 80, v: 0 });
+  const topAt = (id: CastId) => personTopPlan(top, CAST[id], { desk: true }).arms.near.placed!.at({ u: 95, v: 12 });
+  const desk = (
+    <Group>
+      <Rect x={-2000} y={DESK_TOP_Y} width={4000} height={30} color="#6b4f3a" />
+      <Rect x={-2000} y={DESK_TOP_Y} width={4000} height={3} color="#8f6e55" />
+    </Group>
+  );
+  const deskTop = <Rect x={-2000} y={-2000} width={4000} height={4000} color="#5a4231" />;
+  const small = Math.min(150, (width - 56) / 5);
+  const big = Math.min(380, (width - 32) / 2);
+  // (≈ 3 pt/mm in the large row: a crop 120 mm wide)
+  return (
+    <View>
+      <Caption title="THE DESK HAND — SIDE (dev)" note="Each cast member's near hand resting palm-down on the desk, seen from the side, about 3 pt/mm; then two of them larger." />
+      <PicRow w={small} pics={ids.map((id) => ({ key: `s${id}`, title: CAST[id].name, draw: <Group>{desk}<PersonSideV2 pose={side} who={CAST[id]} opts={DESK_SIDE} /></Group>, cu: sideAt(id).u, cv: sideAt(id).v, mmW: 230, mmH: 160 }))} />
+      <View style={{ height: 8 }} />
+      <PicRow w={big} pics={(['kofi', 'ruth'] as CastId[]).map((id) => ({ key: `S${id}`, title: CAST[id].name, draw: <Group>{desk}<PersonSideV2 pose={side} who={CAST[id]} opts={DESK_SIDE} /></Group>, cu: sideAt(id).u - 30, cv: sideAt(id).v - 10, mmW: 300, mmH: 150 }))} />
+      <View style={{ height: 14 }} />
+      <Caption title="THE DESK HAND — FROM ABOVE (dev)" note="The same hands from above (the back of the hand, the thumb toward the body's midline), about 3 pt/mm." />
+      <PicRow w={small} pics={ids.map((id) => ({ key: `t${id}`, title: CAST[id].name, draw: <Group>{deskTop}<PersonTopV2 pose={top} who={CAST[id]} opts={{ desk: true }} /></Group>, cu: topAt(id).u, cv: topAt(id).v, mmW: 230, mmH: 230 }))} />
+      <View style={{ height: 8 }} />
+      <PicRow w={big} pics={(['kofi', 'ruth'] as CastId[]).map((id) => ({ key: `T${id}`, title: CAST[id].name, draw: <Group>{deskTop}<PersonTopV2 pose={top} who={CAST[id]} opts={{ desk: true }} /></Group>, cu: topAt(id).u - 40, cv: topAt(id).v, mmW: 300, mmH: 220 }))} />
     </View>
   );
 }
@@ -610,6 +662,11 @@ export function FigureStudy() {
       {only === 'wave3' ? (
         <Section>
           <Wave3 width={width} />
+        </Section>
+      ) : null}
+      {only === 'deskhand' ? (
+        <Section>
+          <DeskHands width={width} />
         </Section>
       ) : null}
       {show('foot') ? (

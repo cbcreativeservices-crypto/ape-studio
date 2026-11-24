@@ -109,7 +109,7 @@ function build(pose: PlayerPose, who: CastMember, o: PersonTopOpts): TopPlan {
     if (!o.desk) return armPlan(s, add(s, mul(f, 4)), add(s, mul(f, 120)), null, false, null, 0, null, true, armB);
     const w = W(h.wrist);
     const dir = Math.atan2(turn(P(Math.cos(h.dir), Math.sin(h.dir))).v, turn(P(Math.cos(h.dir), Math.sin(h.dir))).u);
-    const placed = placeRest('restSide', w, dir, thumbSide);
+    const placed = placeRest('restTop', w, dir, thumbSide);
     return armPlan(s, W(e), placed.wrist, null, false, placed, 0, null, true, armB);
   };
   const near = arm(sR, pose.elbowR, pose.handR, left);

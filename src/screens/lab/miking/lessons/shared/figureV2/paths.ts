@@ -331,6 +331,8 @@ export type ArtPaths = {
   rest: boolean;
   /** (wave 3) The gaps between the fingers of one group (thin wedges, darkest at the tips). */
   gaps: SkPath | null;
+  /** (wave 3) Soft contact shadows on what the hand rests on. */
+  contact: SkPath | null;
 };
 
 function bar(a: Pt, b: Pt, r: number): SkPath {
@@ -398,8 +400,13 @@ function artPaths(h: NonNullable<SidePlan['arms']['near']['placed']>, wrist: { p
     stubCap,
     endOn,
     stickUnder: h.art.view === 'backTop' || h.art.view === 'holdSide',
-    rest: h.art.view === 'restSide' || h.art.view === 'restFlat',
+    rest: h.art.view === 'restSide' || h.art.view === 'restFlat' || h.art.view === 'restFlatThumb' || h.art.view === 'restTop',
     gaps: h.gaps && h.gaps.length ? many(h.gaps) : null,
+    contact: h.contact && h.contact.length ? (() => {
+      const c = make();
+      for (const e of h.contact) c.addPath(ellipsePath(e));
+      return c;
+    })() : null,
   };
 }
 
@@ -493,6 +500,8 @@ const many = (ps: readonly Poly[], closed = true): SkPath => {
   return p;
 };
 
+const FLAT_VIEWS = new Set(['restFlat', 'restFlatThumb', 'restTop']);
+
 export function armPaths(a: SidePlan['arms']['near'], view: HandView): ArmPaths {
   const fore = Math.atan2(a.wrist.v - a.elbow.v, a.wrist.u - a.elbow.u);
   return {
@@ -527,7 +536,8 @@ export function armPaths(a: SidePlan['arms']['near'], view: HandView): ArmPaths 
     folds: many(a.folds),
     armhole: smoothOpen(a.armhole),
     hand: a.hold && !a.placed ? handBuilt(a.hold.sk, view, fore, a.hold.fulcrum, a.hold.dir) : null,
-    art: a.placed ? artPaths(a.placed, a.away ? null : { poly: a.wristSkin, axis: a.foreAxis, bones: [a.ulna, a.radiusBone] }) : null,
+    // (a hand on a desk carries its own forearm on under the cuff: no separate wrist piece, which stood up as a block)
+    art: a.placed ? artPaths(a.placed, a.away || FLAT_VIEWS.has(a.placed.art.view) ? null : { poly: a.wristSkin, axis: a.foreAxis, bones: [a.ulna, a.radiusBone] }) : null,
   };
 }
 
