@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-24 23:43 · ccode · 6e55970d
+changed: Circle menu picks (owner 2026-11-24): subtitle lines on Audio Tools, Settings and Community; the word STUDY is orange everywhere [MD:D73]
+affects other side: nothing on the server. Store screenshots: three header lines changed and Study text is orange (Comp A refreshes screenshots at the 1.0.1 submission anyway).
+needs: nothing from A. Not published; rides OTA 16 on the owner's word; both phones still to check [MD:D73].
+
+
 ### 2026-11-24 20:07 · ccode · b77edea2
 changed: Stage Plot rulings (owner 2026-11-23): phantom No for dynamic and ribbon mics, solo compact PDF on 1 page, table header keeps 3 rows in the print sheet [MD:D60]
 affects other side: nothing on the server. Stage Plot packets: a dynamic or ribbon microphone prints "no phantom power"; an active ribbon prints required with its note; the solo compact PDF is 1 page. JS only.
