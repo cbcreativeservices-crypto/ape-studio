@@ -7,7 +7,7 @@
  */
 import type { LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { voiceLabelObstacles } from '../shared/voice/VoiceArt';
-import { LocationInstrument, locationFigureAt, locationHitTest, locationLabels } from './scene';
+import { LocationHandsOver, LocationInstrument, locationFigureAt, locationHitTest, locationLabels } from './scene';
 import { F09_ZONES } from './model.ts';
 import { F09_PAGES, F09_STEP_COUNTS } from './pages';
 
@@ -20,4 +20,6 @@ export const F09_ART: LessonArt = {
   labelsYieldToMic: true,
   pages: F09_PAGES,
   stepCounts: F09_STEP_COUNTS,
+  // (figure V2, 2026-11-24) the operator's fists painted again over the engine's pole
+  poleHandsOver: LocationHandsOver,
 };

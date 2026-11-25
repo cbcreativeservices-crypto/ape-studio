@@ -19,6 +19,9 @@ export const MALLET_SIZES: Readonly<Record<MalletKind, { headR: number; shaftR: 
   stick: { headR: 5, shaftR: 7.5 },
 };
 
+/** The shaft's wood across it, from its local −y side (the beater's frame: x from the grip to the head). */
+export const MALLET_WOOD: readonly string[] = ['#f2d3a0', '#c48f52', '#7a4a20'];
+
 /** A beater from `grip` (the hand end) to `head` (the head's centre). */
 export function Mallet({ kind, grip, head, opacity = 1 }: { kind: MalletKind; grip: { x: number; y: number }; head: { x: number; y: number }; opacity?: number }) {
   const sz = MALLET_SIZES[kind];
@@ -50,7 +53,7 @@ export function Mallet({ kind, grip, head, opacity = 1 }: { kind: MalletKind; gr
   return (
     <Group opacity={opacity} transform={[{ translateX: grip.x }, { translateY: grip.y }, { rotate: ang }]}>
       <Path path={shaft}>
-        <LinearGradient start={vec(0, -sz.shaftR)} end={vec(0, sz.shaftR)} colors={['#f2d3a0', '#c48f52', '#7a4a20']} />
+        <LinearGradient start={vec(0, -sz.shaftR)} end={vec(0, sz.shaftR)} colors={[...MALLET_WOOD]} />
       </Path>
       <Path path={shaft} style="stroke" strokeWidth={0.9} color="#3a2210" />
       <Path path={hi} style="stroke" strokeWidth={1.4} strokeCap="round" color="#fff0d0" opacity={0.6} />

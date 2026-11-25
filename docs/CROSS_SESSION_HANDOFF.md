@@ -728,6 +728,17 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-24 18:40 · ccode · (no commit: log only)
+changed: Logged from Comp A's brief of 2026-11-24 (Downloads/2026-11-24_CCODE_BRIEF_1.html). SERVER-ONLY changes Comp A already made, no app change and no OTA: (1) 2026-11-22: Comp B round 2 fixes applied, 68 questions and 18 glossary terms; verify check clean. (2) 2026-11-23: duplicate-card merge (D30's server half) for the 2,158 high-confidence pairs: the duplicate's name went into the kept card's also_called; its 9,844 questions in that topic moved to the kept card; its topic link was removed (the card row stays); its 11 pictures moved; study progress merged, completion % raised only, never lowered; topics went from 32,407 to 30,249 linked terms; the offline glossary drops the merged cards at its weekly recheck; the 875 medium-confidence pairs are with Comp B for a strict "same thing?" check first. Rollback: private._mhi_rollback_20261123(). (3) 2026-11-23: two glossary indexes, idx_glossary_term_trgm (GIN trigram on term; pg_trgm in schema extensions) and idx_glossary_also_called_gin (GIN on also_called), because signed-out term lookup timed out at the 3 s anon limit (HRTF 3.2 s); they cover GlossaryTermPopup.tsx .ilike('term', ...), lookupByOtherName .overlaps('also_called', ...) and forum/api.ts glossaryMatches; verified as role anon: HRTF 56 ms, Audio listener 27 ms, also_called lookup 9 ms. Rollback: drop the two indexes. ALSO this session, read-only on the server: the engineer's 46 new WAVs (bucket lab-audio-source, created on or after 2026-11-15 UTC) downloaded to Downloads/2026-11-23_ENGINEER_WAVS with 00_MANIFEST.csv: 46 files, 48,426,982 bytes, 0 size mismatches, 46 of 46 md5 equal to the bucket's eTag [MD:D61].
+affects other side: nothing to change. The WAVs are ready for Comp A to measure; nothing was renamed, placed in a lab or changed on the server, and the upload portal was not touched.
+needs: nothing.
+
+### 2026-11-24 14:48 · ccode · f6857d86
+changed: Figures D78: overnight roll-out + five approved hands, percussion re-pose, two menu cards [MD:D78]
+affects other side: nothing on the server. Lesson and lab pictures only (drawn people, five approved hand drawings, timpani and bass drum players re-posed). Two Home carousel cards (Audio Electronics, System Design & Maintenance) now use art bundled in the app, so the bucket files for those two cards are no longer read once OTA 16 is out; do not delete them before then. Mic hand commit b980c6d4 (2026-11-24) had no entry of its own: same answer, nothing on the server.
+needs: nothing. Not published; OTA 16 waits for the owner's word, and before it every figure family he has not approved is switched off [MD:D78].
+
+
 ### 2026-11-23 19:05 · ccode · 39e15eaf
 changed: Figure roll-out wave 3: the jacket as a cast dress variant, and the news-desk lesson (owner 2026-11-23) [MD:D78]
 affects other side: nothing on the server. Lesson pictures only (News Desk now shows the drawn cast; the anchor wears a drawn jacket).

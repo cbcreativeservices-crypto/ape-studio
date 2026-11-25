@@ -21,7 +21,7 @@ import { BOOM, BOOM_FUR, CAMERA_BOX, COUNTER_BOX, F09_VIEWS, FLOOR, FRAME, GRIP,
 import { LavRun } from './lavRun';
 import { figureV2On } from '../shared/figureV2/figureV2Config';
 import { castFor } from '../shared/figureV2/cast';
-import { BoomOperatorV2, type BoomRig } from '../shared/figureV2/BoomV2';
+import { BoomOperatorV2, fistDisk, type BoomRig } from '../shared/figureV2/BoomV2';
 import { PersonSideV2, PersonTopV2 } from '../shared/figureV2/personV2';
 
 /** (figure V2, wave 4: the whole lesson in the new look — the talker Ana, the boom operator Mei holding the
@@ -118,6 +118,18 @@ export function LocationScene({ view, variant, frame = FRAME, operator = true, m
       {op && view === 'top' ? opArt : null}
       {ownMic}
       {onSet(variant) ? <CameraRig view={view} spec={CAMERA} /> : null}
+    </Group>
+  );
+}
+
+/** (figure V2, 2026-11-24; LessonArt.poleHandsOver) After the engine's pole: the operator's fists again — the same
+ *  rig and look the scene draws her with (a placed boom: 'stub') — so the pole passes THROUGH her front fist, never
+ *  laid over it. Nothing where the scene draws no operator holding the pole. */
+export function LocationHandsOver({ view, variant, micTypes }: { view: ViewId; variant: VariantId; micTypes?: readonly string[] }): ReactElement | null {
+  if (!V2 || !onSet(variant) || operatorMode(micTypes) !== 'stub') return null;
+  return (
+    <Group clip={fistDisk(view, GRIP)}>
+      <BoomOperatorV2 view={view === 'side' ? 'side' : 'top'} rig={RIG_STUB} who={OP_WHO} part="hands" />
     </Group>
   );
 }

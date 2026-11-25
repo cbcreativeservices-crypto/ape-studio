@@ -181,7 +181,7 @@ function Set3b({ width }: { width: number }) {
           { title: 'ABOVE · THE HANDS, ABOUT 6×', view: 'top', box: [-560, -380, 320, 420] },
           { title: 'SIDE · THE NEAR ELBOW, ABOUT 6×', view: 'side', box: [TIMP_STICKS.R.elbow.x + 40, TIMP_STICKS.R.elbow.y, 300, 300] },
           { title: 'SIDE · THE NEAR HAND (THE APPROVED MALLET HAND), ABOUT 12×', view: 'side', box: [TIMP_MALLETS[1].hand.x - 40, TIMP_MALLETS[1].hand.y + 10, 150, 120] },
-          { title: 'SIDE · THE FAR HAND (PALM SIDE: THE DRUMMER’S FIST), ABOUT 12×', view: 'side', box: [TIMP_MALLETS[0].hand.x - 30, TIMP_MALLETS[0].hand.y + 10, 150, 120] },
+          { title: 'SIDE · THE FAR HAND (THE APPROVED PALM-SIDE MALLET HAND), ABOUT 12×', view: 'side', box: [TIMP_MALLETS[0].hand.x - 30, TIMP_MALLETS[0].hand.y + 10, 150, 120] },
         ]}
       />
       <Lesson

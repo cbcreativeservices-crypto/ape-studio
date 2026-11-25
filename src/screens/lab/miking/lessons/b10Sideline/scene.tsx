@@ -26,7 +26,7 @@ import { castFor } from '../shared/figureV2/cast';
 import { SoftFolds } from '../shared/figureV2/paint';
 import { StandingV2, standingCoversV2 } from '../shared/broadcast/heldPeopleV2';
 import { B10_FAINT_PLAIN, B10_HELD, GUEST_HOLDER, REP_HOLDER, V2 } from './held';
-import { BoomOperatorV2, type BoomRig } from '../shared/figureV2/BoomV2';
+import { BoomOperatorV2, boomPlans, sideDrawings, type BoomRig, type SideDrawing } from '../shared/figureV2/BoomV2';
 import { useHeldMicsNow, type HeldConfig, type HeldMicNow } from '../shared/figureV2/heldLive';
 import { alongPole } from '../shared/figureV2/boomGrip.ts';
 import { SINGER_SOLIDS } from '../shared/voice/voicePose.ts';
@@ -128,35 +128,57 @@ function liveRig(m: HeldMicNow): BoomRig | null {
   liveCache.set(key, out);
   return out;
 }
+/**
+ * (2026-11-24, "the hands flip between old and new while dragging") THE HANDS' DRAWINGS HELD THROUGH A DRAG: the side
+ * view's choice of drawing per hand (BoomV2: end-on, flat, or the old hand) is made for each new rig with the drawing
+ * each hand carried on the last one passed in (`hold`): a drawing is kept while it still fits with a little room, and
+ * another takes over only where it fits with a little to spare — one change where the view really changes, never a
+ * flicker at the edge. Decided ONCE per rig (every layer that draws that rig — the operator, her fists over the
+ * engine's pole — gets the same hold, so they draw the same hands).
+ */
+let lastHold: SideDrawing[] | undefined;
+const holdCache = new WeakMap<BoomRig, { h: { side: SideDrawing[] } | undefined }>();
+function holdFor(rig: BoomRig): { side: SideDrawing[] } | undefined {
+  let e = holdCache.get(rig);
+  if (!e) {
+    const h = lastHold ? { side: lastHold } : undefined;
+    lastHold = sideDrawings(boomPlans(rig, WHO.operator, 'side', false, h));
+    e = { h };
+    holdCache.set(rig, e);
+  }
+  return e.h;
+}
 /** The operator's rig now: the dragged boom's line (the engine's store), else the starting setup's; `live` when
- *  the engine draws the pole too. */
-function useB10Rig(): { rig: BoomRig; live: boolean } {
+ *  the engine draws the pole too; `hold` the side hands' drawings kept through the drag. */
+function useB10Rig(): { rig: BoomRig; live: boolean; hold?: { side: SideDrawing[] } } {
   const mics = useHeldMicsNow();
   const boom = mics?.find((m) => Math.hypot(m.grip.x - GRIP.x, m.grip.y - GRIP.y, m.grip.z - GRIP.z) < 2 && (m.len ?? 0) > 0);
   if (!boom || B10_BOOM_HOLD !== 'overhead') return { rig: RIG, live: !!boom };
   const r = liveRig(boom);
   if (r) lastLive = r;
-  return { rig: r ?? lastLive ?? RIG, live: true };
+  const rig = r ?? lastLive ?? RIG;
+  return { rig, live: true, hold: holdFor(rig) };
 }
 /** (FrontBoom3) the operator drawn whole at full strength: her fists are painted again over the engine's pole. */
 const B10_OPERATOR_DIM = 1;
 function BoomLiveV2({ view }: { view: 'side' | 'top' }) {
-  const { rig } = useB10Rig();
-  return <BoomOperatorV2 view={view} rig={rig} who={WHO.operator} dim={B10_OPERATOR_DIM} />;
+  const { rig, hold } = useB10Rig();
+  return <BoomOperatorV2 view={view} rig={rig} who={WHO.operator} dim={B10_OPERATOR_DIM} hold={hold} />;
 }
 /** (dev, the study page) the operator now with her rig's points and solved joints as dots. */
 export function B10BoomDebugV2({ view, part = 'all' }: { view: 'side' | 'top'; part?: 'all' | 'hands' }) {
-  const { rig } = useB10Rig();
-  return <BoomOperatorV2 view={view} rig={rig} who={WHO.operator} dim={B10_OPERATOR_DIM} part={part} debug />;
+  const { rig, hold } = useB10Rig();
+  return <BoomOperatorV2 view={view} rig={rig} who={WHO.operator} dim={B10_OPERATOR_DIM} part={part} debug hold={hold} />;
 }
 /** (FrontBoom3) After the engine's pole (heldLive HeldFront, `HeldConfig.front`): the operator's two fists again,
- *  each with the pole's piece inside it, so the pole passes THROUGH the closed hands (never laid over them). */
+ *  each with the pole's piece inside it, so the pole passes THROUGH the closed hands (never laid over them).
+ *  (2026-11-24) From above too: the engine's pole is drawn after the scene, so without this it lay over her fingers
+ *  there — the approved hand from above closes its fingers OVER the pole. The same rig and hold as the operator drawn
+ *  in the scene (useB10Rig: one store read the same way by both — heldLive.useHeldNow), so the fists land on her hands. */
 export function B10BoomHandsOver({ view }: { view: ViewId }) {
-  const { rig, live } = useB10Rig();
-  // (from the side, where the pole runs between the fists and the viewer; from above it lies over the hands' backs
-  // as drawn by the operator — not painted again there)
-  if (!live || view !== 'side') return null;
-  return <BoomOperatorV2 view="side" rig={rig} who={WHO.operator} dim={B10_OPERATOR_DIM} part="hands" />;
+  const { rig, live, hold } = useB10Rig();
+  if (!live) return null;
+  return <BoomOperatorV2 view={view === 'side' ? 'side' : 'top'} rig={rig} who={WHO.operator} dim={B10_OPERATOR_DIM} part="hands" hold={hold} />;
 }
 
 // (FrontBoom3) after the engine's pole (heldLive HeldFront): the operator's fists again, the pole through them

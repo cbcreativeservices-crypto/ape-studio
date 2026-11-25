@@ -22,8 +22,8 @@ import { metalSidePose, metalTopPose } from '../shared/metal/metalFigure.ts';
 import { PlayerBehind, PlayerInFront } from '../shared/players/PlayerFigure';
 import { figureV2On } from '../shared/figureV2/figureV2Config';
 import { PlayerSideV2, PlayerTopV2 } from '../shared/figureV2/playersV2';
-import { TIMP_NEAR_POSE, TIMPANIST, timpanistSidePlan, timpanistTopPlan } from './timpanistV2.ts';
-import { MalletInBackHand } from '../shared/figureV2/malletHeld';
+import { TIMP_FAR_POSE, TIMP_NEAR_POSE, TIMPANIST, timpanistSidePlan, timpanistTopPlan } from './timpanistV2.ts';
+import { MalletInBackHand, MalletInPalmHand } from '../shared/figureV2/malletHeld';
 
 /** The new look (figure V2, wave 3 set 3b): the timpanist is Kofi of the cast, each hand closed on its mallet. */
 export const V2 = figureV2On('sidePlayers');
@@ -160,12 +160,22 @@ function TimpaniArtV2({ view, drums }: { view: ViewId; drums: Timpano[] }) {
           one, its fingers hidden: its mallet is drawn only from its grip point toward the head (the butt end is inside
           the far fist, behind the near fist), so no shaft ever lies across the outside of a hand */}
       {/* (owner 2026-11-24, "Raise the hands") the near (right) hand is the approved mallet hand, its arm re-posed
-          (timpanistV2 TIMP_NEAR_POSE); the far (left) keeps the drummer's palm-side fist */}
+          (timpanistV2 TIMP_NEAR_POSE); (owner 2026-11-24, "Palm mallet passes") the far (left) hand is the approved
+          palm-side mallet hand on its own straight-wrist arm (TIMP_FAR_POSE): the whole mallet under it, the butt
+          inside the hand */}
       <PlayerSideV2
         plan={timpanistSidePlan()}
         who={TIMPANIST}
         dim={0.6}
-        farStick={<Group clip={FAR_FROM_GRIP_OF()}>{malletNode(MALLETS.side[0])}</Group>}
+        farStick={
+          TIMP_FAR_POSE ? (
+            <MalletInPalmHand grip={TIMP_MALLETS[0].hand} head={TIMP_MALLETS[0].ball} shaftR={MALLET_SIZES.timpani.shaftR} far>
+              {malletNode(MALLETS.side[0])}
+            </MalletInPalmHand>
+          ) : (
+            <Group clip={FAR_FROM_GRIP_OF()}>{malletNode(MALLETS.side[0])}</Group>
+          )
+        }
         nearStick={
           TIMP_NEAR_POSE ? (
             <MalletInBackHand grip={TIMP_MALLETS[1].hand} head={TIMP_MALLETS[1].ball} shaftR={MALLET_SIZES.timpani.shaftR}>

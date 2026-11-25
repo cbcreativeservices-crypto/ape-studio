@@ -17,7 +17,7 @@
  * paints the hand's parts that lie in front of the handle again, so the
  * fingers close round it. Nothing here moves a mic or a measured point.
  */
-import { createContext, memo, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, memo, useContext, useEffect, useMemo, useSyncExternalStore, type ReactNode } from 'react';
 import { ColorMatrix, Group, Paint } from '@shopify/react-native-skia';
 import { useAnimatedReaction, type SharedValue } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
@@ -164,11 +164,21 @@ export function HeldBridge({ store, slot, pose, body, scene, typeId, cfg }: { st
   return null;
 }
 
+/**
+ * (2026-11-24, B10: "the operator's fists painted again over the pole do not land on her hands") The store is read as
+ * an external store (React's useSyncExternalStore): a layer mounted while the engine's bridge fills the store — the
+ * bridges push from the native tree's effects, which run apart from the canvas tree's — never misses that first update
+ * and so never draws an older state than its neighbours (B10's operator stood at the starting rig while her fists,
+ * painted again after the mics, were drawn at the dragged rig's). The snapshot is the store's own array, replaced only
+ * when a mic changes.
+ */
+const NO_MICS: readonly HeldMicNow[] = [];
+const noSubscribe = () => () => undefined;
+const noSnapshot = () => NO_MICS;
 function useHeldNow(): { cfg: HeldConfig; mics: readonly HeldMicNow[] } | null {
   const ctx = useContext(HeldCtx);
-  const [, tick] = useState(0);
-  useEffect(() => (ctx ? ctx.src.subscribe(() => tick((n) => n + 1)) : undefined), [ctx]);
-  return ctx ? { cfg: ctx.cfg, mics: ctx.src.snapshot() } : null;
+  const mics = useSyncExternalStore(ctx ? ctx.src.subscribe : noSubscribe, ctx ? ctx.src.snapshot : noSnapshot);
+  return ctx ? { cfg: ctx.cfg, mics } : null;
 }
 
 /** (additive) The mics now in the engine's store (null outside a placement scene), re-rendering as they move. */

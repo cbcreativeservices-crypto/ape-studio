@@ -45,9 +45,10 @@ import { Group, LinearGradient, Paint, Path, PathOp, Rect, Skia, vec } from '@sh
 import { Blur, FigureScale } from './detail';
 import { FigureLook, useLook } from './look';
 import { ellipsePath, op, rimOf, smoothClosed, smoothOpen, unionOf, type SkPath } from './paths';
-import { P, type Poly, type Pt } from './geom.ts';
+import { LIGHT, P, type Poly, type Pt } from './geom.ts';
 import type { Ellipse } from './sidePlan.ts';
 import type { CastMember } from './cast.ts';
+import { lightMapOf, type LightMap } from './poleHandFront';
 
 /* ── the art (pure: the tests read these points) ── */
 
@@ -275,7 +276,35 @@ const rect = (x: number, y: number, w: number, h: number): SkPath => {
   return p;
 };
 
-function build(a: PoleHandTopArt, x0: number, x1: number, sleeveOn: boolean) {
+/* ── (options, 2026-11-24 "Boom top") the light kept at the page's upper left when the art is turned or mirrored, as
+ *  the other approved pole hands do it (identity: exactly as authored) ── */
+const IDENTITY: LightMap = { a: 1, b: 0, c: 0, d: 1 };
+const isId = (M: LightMap) => M.a === 1 && M.b === 0 && M.c === 0 && M.d === 1;
+const mv = (M: LightMap, u: number, v: number): Pt => P(M.a * u + M.b * v, M.c * u + M.d * v);
+/** A soft light or shade moved round its form toward the light the map brings (identity: as authored). */
+function relit(es: Ellipse[], M: LightMap, sign: 1 | -1, k = 0.35): Ellipse[] {
+  if (isId(M)) return es;
+  const L = mv(M, LIGHT.u, LIGHT.v);
+  return es.map((e) => {
+    const r = Math.min(e.rx, e.ry) * k * sign;
+    return { ...e, c: P(e.c.u + r * (L.u - LIGHT.u), e.c.v + r * (L.v - LIGHT.v)) };
+  });
+}
+/** The lit edge of a mass for the light the map brings. */
+function rimL(path: SkPath, w: number, M: LightMap): SkPath {
+  if (isId(M)) return rimOf(path, w);
+  const L = mv(M, LIGHT.u, LIGHT.v);
+  const q = path.copy();
+  q.offset(-L.u * w, -L.v * w);
+  return op(path, q, PathOp.Difference);
+}
+/** A page offset (mm) carried into the art's frame: a cast shadow falls the same way on the page. */
+const offM = (M: LightMap, u: number, v: number) => {
+  const q = mv(M, u, v);
+  return [{ translateX: q.u }, { translateY: q.v }];
+};
+
+function build(a: PoleHandTopArt, x0: number, x1: number, sleeveOn: boolean, M: LightMap = IDENTITY) {
   const body = smoothClosed(a.body);
   const group = smoothClosed(a.group, 0.45);
   const pole = rect(x0, -POLE_R, x1 - x0, POLE_R * 2);
@@ -310,11 +339,14 @@ function build(a: PoleHandTopArt, x0: number, x1: number, sleeveOn: boolean) {
       return WR[i].marks.map(({ d, h, bow }) => smoothOpen([P(m - h * w, f.pip + d + bow * 0.7), P(m + 0.3, f.pip + d - bow * 0.4), P(m + h * w * 0.9, f.pip + d + bow * 0.6)]));
     }),
   );
-  const tendons = many(a.tendons.map(ellipsePath));
+  const tendons = many(relit(a.tendons, M, 1).map(ellipsePath));
   return {
+    M,
     body,
     group,
     pole,
+    /** (poleLook 'boom') the scene pole's rim, tube and lit band, along the art's pole axis. */
+    poleBoom: [15.5, 13.5, 3].map((h) => rect(x0, -h, x1 - x0, 2 * h)) as [SkPath, SkPath, SkPath],
     poleEdges,
     sleeveOn,
     sleeve,
@@ -330,23 +362,25 @@ function build(a: PoleHandTopArt, x0: number, x1: number, sleeveOn: boolean) {
     // the dark wedge where two bends meet at the front, and the crease between neighbours back to the knuckles
     wedges: many(a.notches.map(([t]) => polyPath([P(t.u - 2.4, t.v - 4.5), P(t.u + 2.4, t.v - 4.5), P(t.u + 0.3, t.v + 5), P(t.u - 0.3, t.v + 5)]))),
     seams: many(a.notches.map(([t, b]) => smoothOpen([t, P((t.u + b.u) / 2 + 0.2, (t.v + b.v) / 2), b]))),
-    lights: many(a.lights.map(ellipsePath)),
-    darks: many(a.darks.map(ellipsePath)),
-    knuckleLights: many(a.knuckleLights.map(ellipsePath)),
-    knuckleDarks: many(a.knuckleDarks.map(ellipsePath)),
-    ridgeLights: many(a.ridgeLights.map(ellipsePath)),
-    groupLights: many(a.groupLights.map(ellipsePath)),
-    groupDarks: many(a.groupDarks.map(ellipsePath)),
+    lights: many(relit(a.lights, M, 1).map(ellipsePath)),
+    darks: many(relit(a.darks, M, -1).map(ellipsePath)),
+    knuckleLights: many(relit(a.knuckleLights, M, 1).map(ellipsePath)),
+    knuckleDarks: many(relit(a.knuckleDarks, M, -1).map(ellipsePath)),
+    ridgeLights: many(relit(a.ridgeLights, M, 1).map(ellipsePath)),
+    groupLights: many(relit(a.groupLights, M, 1).map(ellipsePath)),
+    groupDarks: many(relit(a.groupDarks, M, -1).map(ellipsePath)),
     groupWarm: many(a.groupWarm.map(ellipsePath)),
+    bodyRim: rimL(body, 2, M),
+    groupRim: rimL(group, 1.6, M),
   };
 }
 type Built = ReturnType<typeof build>;
 
 /** The hand's one skin light (the approved hands': one fixed span, every piece shares it — no seam). */
-function HandFill({ path }: { path: SkPath }) {
+function HandFill({ path, M = IDENTITY }: { path: SkPath; M?: LightMap }) {
   const { HAND } = useLook();
   const c = { u: 0, v: 8 };
-  const Ld = { u: -0.36, v: -0.93 };
+  const Ld = mv(M, -0.36, -0.93);
   const R = 68;
   return (
     <Path path={path}>
@@ -355,20 +389,25 @@ function HandFill({ path }: { path: SkPath }) {
   );
 }
 
-const shift = (u: number, v: number) => [{ translateX: u }, { translateY: v }];
 
-function TopPaint({ B }: { B: Built }) {
+function TopPaint({ B, poleLook = 'study' }: { B: Built; poleLook?: 'study' | 'boom' }) {
   const { MAT } = useLook();
   const SKIN = MAT.skin;
   const shirt = MAT.shirt;
   const F = POLE_HAND_TOP.fingers;
+  const M = B.M;
+  const Lm = mv(M, LIGHT.u, LIGHT.v);
+  // (the light's side in the art's own frame: as authored the page's upper left; turned or mirrored, wherever it falls)
+  const litLeft = Lm.u <= 0;
+  const litTop = Lm.v <= 0;
+  const hl = mv(M, -1.5, -2);
   return (
     <Group>
       {/* 0. THE SLEEVE (farthest: the forearm going down away under the hand), its opening dark round the wrist */}
       {B.sleeveOn ? (
         <Group>
           <Path path={B.sleeve}>
-            <LinearGradient start={vec(-36, 0)} end={vec(36, 0)} colors={shirt.form} positions={shirt.pos} />
+            <LinearGradient start={vec(litLeft ? -36 : 36, 0)} end={vec(litLeft ? 36 : -36, 0)} colors={shirt.form} positions={shirt.pos} />
           </Path>
           <Group clip={B.sleeve}>
             {/* (the tube's side beyond the rim: going down, away from the camera and the light) */}
@@ -387,7 +426,7 @@ function TopPaint({ B }: { B: Built }) {
               <Blur mm={2} />
             </Path>
             {/* the hand's soft shadow on the cuff and into its opening */}
-            <Group transform={shift(1.4, 3)}>
+            <Group transform={offM(M, 1.4, 3)}>
               <Path path={B.all} color="#000" opacity={0.22}>
                 <Blur mm={3} />
               </Path>
@@ -400,7 +439,7 @@ function TopPaint({ B }: { B: Built }) {
       ) : null}
 
       {/* 1. THE HAND'S BODY (under the pole and the fingers) */}
-      <HandFill path={B.body} />
+      <HandFill path={B.body} M={M} />
       <Group clip={B.body}>
         {/* the back of the hand, turned back toward the operator: away from the light, deeper toward the wrist */}
         <Path path={B.body}>
@@ -417,25 +456,39 @@ function TopPaint({ B }: { B: Built }) {
           <Blur mm={1.2} />
         </Path>
         {/* the pole's soft shadow where the thumb's base and the hand's edge go in under it */}
-        <Group transform={shift(1.2, 3.4)}>
+        <Group transform={offM(M, 1.2, 3.4)}>
           <Path path={B.pole} color={SKIN.deep} opacity={0.42}>
             <Blur mm={2.4} />
           </Path>
         </Group>
-        <Path path={rimOf(B.body, 2)} color={SKIN.rim} opacity={0.26}>
+        <Path path={B.bodyRim} color={SKIN.rim} opacity={0.26}>
           <Blur mm={1} />
         </Path>
       </Group>
       <Path path={B.body} style="stroke" strokeWidth={0.9} strokeJoin="round" color={SKIN.edge} opacity={0.5} />
 
       {/* 2. THE POLE (through the hand: over the palm, under the fingers) */}
-      <Path path={B.pole}>
-        <LinearGradient start={vec(0, -POLE_R)} end={vec(0, POLE_R)} colors={POLE_STOPS} positions={POLE_POS} />
-      </Path>
-      <Path path={B.poleEdges} style="stroke" strokeWidth={0.8} color="#0c0d10" opacity={0.7} />
+      {poleLook === 'boom' ? (
+        // (option: the scene's own pole as BoomV2's PoleSeg paints it — a dark rim, the tube, its lit band — only inside
+        // the hand's outline: outside it the scene draws the pole whole)
+        <Group clip={B.all}>
+          <Path path={B.poleBoom[0]} color="#0b0c0f" />
+          <Path path={B.poleBoom[1]} color="#3a3d45" />
+          <Group transform={[{ translateY: hl.v }]}>
+            <Path path={B.poleBoom[2]} color="#d4d8e0" opacity={0.45} />
+          </Group>
+        </Group>
+      ) : (
+        <Group>
+          <Path path={B.pole}>
+            <LinearGradient start={vec(0, litTop ? -POLE_R : POLE_R)} end={vec(0, litTop ? POLE_R : -POLE_R)} colors={POLE_STOPS} positions={POLE_POS} />
+          </Path>
+          <Path path={B.poleEdges} style="stroke" strokeWidth={0.8} color="#0c0d10" opacity={0.7} />
+        </Group>
+      )}
       {/* the fingers' soft shadow on the pole */}
       <Group clip={B.pole}>
-        <Group transform={shift(1.2, 2)}>
+        <Group transform={offM(M, 1.2, 2)}>
           <Path path={B.group} color="#000" opacity={0.55}>
             <Blur mm={1.8} />
           </Path>
@@ -444,7 +497,7 @@ function TopPaint({ B }: { B: Built }) {
 
       {/* the bends' soft cast shadow in front of the pole, onto what lies below them (a faint dark edge only) */}
       <Group clip={B.frontZone}>
-        <Group transform={shift(0.6, -0.9)}>
+        <Group transform={offM(M, 0.6, -0.9)}>
           <Path path={B.group} color="#000" opacity={0.5}>
             <Blur mm={1.6} />
           </Path>
@@ -452,14 +505,14 @@ function TopPaint({ B }: { B: Built }) {
       </Group>
 
       {/* 3. THE FINGERS (nearest the camera) */}
-      <HandFill path={B.group} />
+      <HandFill path={B.group} M={M} />
       <Group clip={B.group}>
         {/* each finger turning round its own length: lit on its side toward the light, its other side turning away —
             fading back toward the knuckles, where the fingers join the hand */}
         <Group layer={<Paint />}>
           {B.bands.map((b, i) => (
             <Path key={`b${i}`} path={b}>
-              <LinearGradient start={vec(F[i].L, 0)} end={vec(F[i].R, 0)} colors={['rgba(255,238,226,0.2)', 'rgba(255,238,226,0.03)', 'rgba(52,26,16,0.12)', 'rgba(52,26,16,0.4)']} positions={[0, 0.3, 0.72, 1]} />
+              <LinearGradient start={vec(litLeft ? F[i].L : F[i].R, 0)} end={vec(litLeft ? F[i].R : F[i].L, 0)} colors={['rgba(255,238,226,0.2)', 'rgba(255,238,226,0.03)', 'rgba(52,26,16,0.12)', 'rgba(52,26,16,0.4)']} positions={[0, 0.3, 0.72, 1]} />
             </Path>
           ))}
           <Rect x={-60} y={-45} width={120} height={95} blendMode="dstIn">
@@ -495,7 +548,7 @@ function TopPaint({ B }: { B: Built }) {
         </Path>
         {/* the lit edge only where the fingers face up (never round the bends, which turn away) */}
         <Group clip={B.frontZone} invertClip>
-          <Path path={rimOf(B.group, 1.6)} color={SKIN.rim} opacity={0.3}>
+          <Path path={B.groupRim} color={SKIN.rim} opacity={0.3}>
             <Blur mm={0.8} />
           </Path>
         </Group>
@@ -543,22 +596,52 @@ export type PoleHandTopProps = {
   sleeve?: boolean;
   /** (option, default true) false: keep the scene's own figure scale (the hand drawn inside a figure). */
   ownScale?: boolean;
+  /** (option, 2026-11-24 "Boom top") the LEFT hand: the mirror image, re-lit so the light stays at the page's upper
+   *  left (turned, the light is kept there too — as the other approved pole hands do it). */
+  mirror?: boolean;
+  /** (option) 'boom': the pole painted as the boom operator's scene pole, and only inside the hand's outline. */
+  poleLook?: 'study' | 'boom';
 };
 
 /** Where the art's own cuff rim is (local mm): a figure's sleeve mouth goes here. */
 export const POLE_HAND_TOP_CUFF = CUFF_C;
 
+/** (option) The art's frame on the page: local (mm) → page. */
+export function poleHandTopToPage({ x, y, s, rot = 0, mirror = false }: Pick<PoleHandTopProps, 'x' | 'y' | 's' | 'rot' | 'mirror'>) {
+  const m = mirror ? -1 : 1;
+  const co = Math.cos(rot);
+  const si = Math.sin(rot);
+  return (q: Pt): Pt => {
+    const u = q.u * s * m;
+    const v = q.v * s;
+    return P(x + u * co - v * si, y + u * si + v * co);
+  };
+}
+
+/** (option) The hand's whole outline on the page (the fingers and the body; without its sleeve where `sleeve` is false). */
+export function poleHandTopOutline(o: Pick<PoleHandTopProps, 'x' | 'y' | 's' | 'rot' | 'mirror' | 'sleeve'>): SkPath {
+  const B = build(POLE_HAND_TOP, -1, 1, o.sleeve ?? true);
+  const p = (o.sleeve ?? true) ? unionOf(B.all, B.sleeve) : B.all.copy();
+  const mt = Skia.Matrix();
+  mt.translate(o.x, o.y);
+  mt.rotate(o.rot ?? 0);
+  mt.scale(o.s * (o.mirror ? -1 : 1), o.s);
+  p.transform(mt);
+  return p;
+}
+
 /**
  * The right hand on its pole seen from directly above, for one cast member: drawn at (x, y) (pt — the pole's axis under
  * the middle of the fist), `s` pt per mm, turned `rot` radians (unturned: the pole left → right, the operator toward the
- * page's bottom, the thumb on the left). The pole runs from `pole[0]` to `pole[1]` mm along its axis.
+ * page's bottom, the thumb on the left). The pole runs from `pole[0]` to `pole[1]` mm along its axis. With `mirror`, the
+ * left hand, re-lit.
  */
-export function PoleHandTop({ who, x, y, s, rot = 0, pole = [-120, 120], sleeve = true, ownScale = true }: PoleHandTopProps) {
-  const B = useMemo(() => build(POLE_HAND_TOP, pole[0], pole[1], sleeve), [pole[0], pole[1], sleeve]);
-  const paint = <TopPaint B={B} />;
+export function PoleHandTop({ who, x, y, s, rot = 0, pole = [-120, 120], sleeve = true, ownScale = true, mirror = false, poleLook = 'study' }: PoleHandTopProps) {
+  const B = useMemo(() => build(POLE_HAND_TOP, pole[0], pole[1], sleeve, mirror || rot !== 0 ? lightMapOf(rot, mirror) : IDENTITY), [pole[0], pole[1], sleeve, rot, mirror]);
+  const paint = <TopPaint B={B} poleLook={poleLook} />;
   const art = who ? <FigureLook look={who.look}>{paint}</FigureLook> : paint;
   return (
-    <Group transform={[{ translateX: x }, { translateY: y }, { rotate: rot }, { scale: s }]}>
+    <Group transform={[{ translateX: x }, { translateY: y }, { rotate: rot }, { scale: s }, ...(mirror ? [{ scaleX: -1 }] : [])]}>
       {ownScale ? <FigureScale ptPerMm={s}>{art}</FigureScale> : art}
     </Group>
   );

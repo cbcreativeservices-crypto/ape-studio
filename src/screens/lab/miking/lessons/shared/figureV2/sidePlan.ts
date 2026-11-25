@@ -971,7 +971,7 @@ type Along = (t: number, fwd: number) => Pt;
 /** The shirt on a body in depth (t along hip → neck, fwd toward the face, mm):
  *  the chest deeper than the waist, the upper back gently convex, the small of
  *  the back hollow; tucked into the belt, or hanging loose over the hips. */
-function bodyShirt(along: Along, B: BodyBuild): { shirt: Poly; back: Poly; placket: Poly | null } {
+export function bodyShirt(along: Along, B: BodyBuild): { shirt: Poly; back: Poly; placket: Poly | null } {
   const c = B.chest;
   const w = B.waist;
   const h = B.hip;

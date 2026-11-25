@@ -67,14 +67,17 @@ function mallet(ballAtStroke: P3, handY: number, handZ: number, raisedDeg: numbe
  *   • the RIGHT (raised) hand: the approved mallet hand; the grip malletPlaced.malletGripFor finds — up 219 mm to
  *     elbow height, the forearm level (2°); the shaft now runs 17° DOWN from the hand to the ball (the whole forearm
  *     lifted, not the ball tipped up over the wrist);
- *   • the LEFT (stroke) hand: its palm to the camera, the drummer's palm-side fist. The drum's head is too low for a
- *     level forearm on a standing player with a 31 cm mallet; raised 43 mm the elbow had to come up and forward and
- *     the forearm bent into the fist (owner: "look like a broken arm"). Its grip is where that fist takes a STRAIGHT
- *     wrist on a relaxed arm (malletPlaced.palmFistArm: the elbow 266 mm below the shoulder, 100 mm forward, the
- *     forearm 57° down): the shaft 20° to the head, the hand 12 cm over it (the playing standard) — 58 mm LOWER than
- *     before.
+ *   • the LEFT (stroke) hand: its palm to the camera — the approved PALM-side mallet hand (owner 2026-11-24, "Palm
+ *     mallet passes": malletHandPalm.tsx, the same grip as the right, a straight wrist, the shaft 15° below the
+ *     forearm). Its grip is the one malletPlaced.malletGripFor finds, as for the right: the lowest grip at which that
+ *     straight wrist sits on a real arm from the far shoulder — the elbow hanging at the side (≈ 300 mm below the
+ *     shoulder, 10 mm forward), the forearm 28° down. 101 mm higher and 62 mm nearer the drum than the stand-in
+ *     fist's grip (−534.75, −882.19): the shaft now 41° to the head, the hand 22 cm over it. Lower, the drawing's
+ *     wrist leaves a standing player's reach (at the old 20° / 12 cm it lies 604 mm from the shoulder, past a 590 mm
+ *     arm) or needs a bent wrist (24° / 145 mm: 50°; 32° / 183 mm: 24°; 38° / 210 mm: 8°) — numbers in
+ *     test/figureV2MalletPlaced_20261124.test.ts. OWNER TO CONFIRM: this is off the 10–20° / 10–15 cm playing standard.
  */
-export const RAISED_HANDS = { stroke: { x: -534.75, y: -882.19, z: PLAYER_Z - 150 }, raised: { x: -516.6, y: -1169.3, z: PLAYER_Z + 150 } } as const;
+export const RAISED_HANDS = { stroke: { x: -473.325, y: -983.218, z: PLAYER_Z - 150 }, raised: { x: -516.6, y: -1169.3, z: PLAYER_Z + 150 } } as const;
 /** The same ball, the hand moved round it on the mallet's length (toward `hand`). */
 function regrip(m: MalletPose3, hand: P3): MalletPose3 {
   const L = TIMP_MALLET.len - TIMP_MALLET.butt;

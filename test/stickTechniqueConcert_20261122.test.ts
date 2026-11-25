@@ -272,10 +272,15 @@ describe('M06 timpani: two real mallets on the 29 in drum, the hands on their gr
     // (owner 2026-11-24, "Raise the hands" and, on the left arm, "look like a broken arm": the stroke hand is where the
     // drummer's palm-side fist takes a straight wrist on a relaxed arm — the playing standard itself, 20° and 12 cm;
     // the RAISED hand is lifted with its forearm to elbow height: malletPose.ts RAISED_HANDS)
+    // (owner 2026-11-24, "Palm mallet passes", then "Accept 41°" when shown the numbers: the stroke hand now carries the approved palm-side
+    // mallet hand — a straight wrist, the shaft 15° below the forearm. From this standing figure's shoulder the lowest
+    // grip that drawing sits on with a straight wrist is 41° / 22 cm (malletGripFor; lower grips need a 9–50° bent
+    // wrist or leave the arm's reach: test/figureV2MalletPlaced_20261124.test.ts) — steeper and higher than the
+    // 10–20° / 10–15 cm standard above. Held here at what it is, not widened further.)
     const ang = Math.asin((stroke.ball.y - stroke.hand.y) / d3(stroke.hand, stroke.ball)) * DEG;
-    assert.ok(ang >= 10 && ang <= 32, `stroke ${ang.toFixed(1)}°`);
+    assert.ok(ang >= 10 && ang <= 42, `stroke ${ang.toFixed(1)}°`);
     const above = TP_M.HEAD_Y - stroke.hand.y;
-    assert.ok(above >= 100 && above <= 200, `stroke hand ${above.toFixed(0)} mm over the head`);
+    assert.ok(above >= 100 && above <= 225, `stroke hand ${above.toFixed(0)} mm over the head`);
     const lifted = TP_M.HEAD_Y - raised.hand.y;
     assert.ok(lifted >= 350 && lifted <= 450, `raised hand ${lifted.toFixed(0)} mm over the head (at elbow height)`);
   });
@@ -313,11 +318,10 @@ describe('M06 timpani: two real mallets on the 29 in drum, the hands on their gr
       const f = fist(h);
       assert.ok(Math.hypot(f.u + TP.PLAYER_SHIFT - m.hand.x, f.v - m.hand.y) <= 15, 'the fist on the grip (side)');
     }
-    // (2026-11-24, OWNER TO CONFIRM: the stroke hand at the playing standard — 12 cm over the head — sits at hip
-    // height ≈ 28 cm in front of the hip on this standing figure; the "no hand in front of the pelvis" check flags
-    // exactly that and nothing else. Every higher straight-wrist grip for the palm-side fist needed a 25–60° bent
-    // wrist or the elbow up and forward — the "broken arm" the owner rejected.)
-    assert.deepEqual(poseIssues(side).filter((s) => s !== 'L wrist in front of the pelvis' && s !== 'L hand in front of the pelvis'), []);
+    // (2026-11-24: with the stand-in palm-side fist the stroke hand sat 12 cm over the head, at hip height in front of
+    // the hip, and the "no hand in front of the pelvis" check was allowed for it. With the approved palm-side mallet
+    // hand the stroke hand is 10 cm higher and clear of the pelvis: the allowance is dropped.)
+    assert.deepEqual(poseIssues(side), []);
     assert.deepEqual(poseIssues(TP_A.TOP_POSE), []);
   });
   it('the hands are inside a keep-out; no starting point sits on a mallet or a hand', () => {

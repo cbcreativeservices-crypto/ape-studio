@@ -21,7 +21,7 @@ import { add, dot, mul, P, sub, unit, type Pt } from './geom.ts';
 import { STICK_ARM, stickArm3, stickSidePlan, twoBone, type StickArm3 } from './playersStick.ts';
 import { stickHold } from './grip.ts';
 import { placeHand } from './authoredHands.ts';
-import { armPlan, type SidePlan } from './sidePlan.ts';
+import { armPlan, bodyShirt, type SidePlan } from './sidePlan.ts';
 import type { PlayerPose } from '../players/playerPose.ts';
 import type { CastMember } from './cast';
 
@@ -220,25 +220,36 @@ const sideCache = new WeakMap<SidePlan, SidePlan>();
  * own: the caller draws MalletHandBack (sleeve off, the scene's scale) in the near stick's place, between the cuff's
  * far and near rims, over the lesson's own mallet.
  */
-export function malletSidePlan(pose: PlayerPose, who: CastMember, o: { near: StickArm3; nearPose: MalletArmPose; far?: StickArm3 | null; nod?: number }): SidePlan {
+export function malletSidePlan(pose: PlayerPose, who: CastMember, o: { near: StickArm3; nearPose: MalletArmPose; far?: StickArm3 | null; /** (2026-11-24) the far arm re-posed for the approved PALM-side mallet hand (malletHandPalm.tsx, mirrored: it lands where malletHandBack would) */ farPose?: MalletArmPose | null; nod?: number }): SidePlan {
   const base = stickSidePlan(pose, who, { near: o.near, far: o.far ?? null, ...(o.nod ? { nod: o.nod } : {}) });
-  const hit = sideCache.get(base);
+  const cache = o.farPose ? sideCacheFar : sideCache;
+  const hit = cache.get(base);
   if (hit) return hit;
-  const p = o.nearPose;
+  const B = who.body;
+  const build = B ? { one: true, k: B.shoulder, fore: B.limb } : { one: true };
+  const near = straightArm(pose.shoulderR, o.nearPose, build, null);
+  // THE FAR ARM for the palm-side drawing: the same straight-wrist sleeve, from the lesson's far shoulder through the
+  // re-posed elbow along the drawing's forearm line, its mouth on the drawing's cuff rim — hung BEHIND the torso as
+  // every far arm is (no shoulder cap of its own; its root inside the back's outline), no hand of its own (the caller
+  // draws MalletHandPalm in the far stick's place).
+  const far = o.farPose ? straightArm(pose.shoulderL, o.farPose, build, { shirt: base.shirt, back: B ? bodyShirt(base.along, B).back : base.shirt.slice(9), facing: base.facing }) : base.arms.far;
+  const out: SidePlan = { ...base, arms: { near, far } };
+  cache.set(base, out);
+  return out;
+}
+const sideCacheFar = new WeakMap<SidePlan, SidePlan>();
+
+/** A straight-wrist sleeve for an approved mallet drawing: shoulder → the pose's elbow → the drawing's cuff rim. */
+function straightArm(shoulder: Pt, p: MalletArmPose, build: { one: boolean; k?: number; fore?: number }, farRoot: { shirt: Pt[]; back: Pt[]; facing: number } | null) {
   const E = P(p.elbow.x, p.elbow.y);
   const W = P(p.wrist.x, p.wrist.y);
   const df = unit(sub(W, E));
-  const B = who.body;
-  const build = B ? { one: true, k: B.shoulder, fore: B.limb } : { one: true };
   // (the forearm's tilt toward the camera, +z: whether the cuff's opening shows)
   const tilt = (p.wrist.z - p.elbow.z) / (p.fore || 1);
-  const plan = (w: Pt) => armPlan(pose.shoulderR, E, w, null, false, null, tilt, null, false, build);
+  const plan = (w: Pt) => armPlan(shoulder, E, w, null, false, null, tilt, farRoot, false, build);
   const a0 = plan(W);
   const offs = dot(sub(a0.opening.e.c, W), df);
-  const near = plan(add(W, mul(df, MALLET_CUFF_IN - offs)));
-  const out: SidePlan = { ...base, arms: { ...base.arms, near } };
-  sideCache.set(base, out);
-  return out;
+  return plan(add(W, mul(df, MALLET_CUFF_IN - offs)));
 }
 
 /**

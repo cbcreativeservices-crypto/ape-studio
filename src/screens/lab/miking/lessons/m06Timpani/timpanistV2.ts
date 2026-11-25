@@ -40,20 +40,28 @@ const FWD = { x: 1, y: 0, z: 0 };
  * the drawing's own line — level, the elbow at the side (malletPlaced.ts). Null only if no arm reaches it.
  */
 export const TIMP_NEAR_POSE: MalletArmPose | null = malletArmAt(TIMP_MALLETS[1].hand, TIMP_MALLETS[1].ball, SH_R, false);
-/** R: the right (near) hand, its mallet raised (the forearm lifted, level); L: the left (far) hand at the stroke —
- *  its PALM side to this camera: the drummer's palm-side fist, until a palm-side mallet hand is approved. */
+/**
+ * (owner 2026-11-24, "Palm mallet passes") The LEFT (far) hand shows its PALM to this camera: the approved palm-side
+ * mallet hand (malletHandPalm.tsx, mirrored, re-lit), which lands exactly where malletHandBack would — so its arm is
+ * solved the same way as the right one (malletArmAt): one straight forearm along the drawing's own line, the elbow at
+ * the side. Null only if no arm reaches it (then the drummer's palm-side fist, as before).
+ */
+export const TIMP_FAR_POSE: MalletArmPose | null = malletArmAt(TIMP_MALLETS[0].hand, TIMP_MALLETS[0].ball, SH_L, false);
+/** R: the right (near) hand, its mallet raised (the forearm lifted, level); L: the left (far) hand at the stroke, its
+ *  palm side to this camera. */
 export const TIMP_STICKS: { R: StickArm3; L: StickArm3 } = {
   R: TIMP_NEAR_POSE
     ? malletStickArm('R', TIMP_NEAR_POSE, SH_R, { x: 0, y: 0, z: 1 })
     : stickArm3({ hand: 'R', fulcrum: TIMP_MALLETS[1].hand, bead: TIMP_MALLETS[1].ball, shoulder: SH_R, out: { x: 0, y: 0, z: 1 }, fwd: FWD, level: 0.6 }),
-  // (owner 2026-11-24, the left arm "look like a broken arm": the side plan bent the forearm into a banana toward a
-  // fist pointing far off the elbow's line) the drummer's palm-side fist, its elbow chosen so the forearm runs
-  // STRAIGHT into it (malletPlaced.palmFistArm); with the near hand at elbow height the fists no longer overlap
-  L: palmFistArm({ grip: TIMP_MALLETS[0].hand, head: TIMP_MALLETS[0].ball, shoulder: SH_L, out: { x: 0, y: 0, z: -1 }, fwd: FWD }).arm,
+  // (fallback, the stand-in: the drummer's palm-side fist with its elbow chosen so the forearm runs straight into it —
+  // owner 2026-11-24 on the bent forearm: "look like a broken arm")
+  L: TIMP_FAR_POSE
+    ? malletStickArm('L', TIMP_FAR_POSE, SH_L, { x: 0, y: 0, z: -1 })
+    : palmFistArm({ grip: TIMP_MALLETS[0].hand, head: TIMP_MALLETS[0].ball, shoulder: SH_L, out: { x: 0, y: 0, z: -1 }, fwd: FWD }).arm,
 };
 /** (kept for callers that read the arms by their earlier name) */
 export const TIMP_ARMS = TIMP_STICKS;
 
 export const timpanistSidePlan = () =>
-  TIMP_NEAR_POSE ? malletSidePlan(SIDE0, TIMPANIST, { near: TIMP_STICKS.R, nearPose: TIMP_NEAR_POSE, far: TIMP_STICKS.L, nod: 10 }) : stickSidePlan(SIDE0, TIMPANIST, { near: TIMP_STICKS.R, far: TIMP_STICKS.L, nod: 10 });
+  TIMP_NEAR_POSE ? malletSidePlan(SIDE0, TIMPANIST, { near: TIMP_STICKS.R, nearPose: TIMP_NEAR_POSE, far: TIMP_STICKS.L, farPose: TIMP_FAR_POSE, nod: 10 }) : stickSidePlan(SIDE0, TIMPANIST, { near: TIMP_STICKS.R, far: TIMP_STICKS.L, nod: 10 });
 export const timpanistTopPlan = () => stickTopPlan(TOP0, TIMPANIST, TIMP_STICKS.R, TIMP_STICKS.L);

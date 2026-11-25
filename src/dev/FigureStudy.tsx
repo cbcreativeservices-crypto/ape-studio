@@ -65,7 +65,10 @@ import { PoleHandStudy } from './poleHandStudy';
 import { PoleHandBackStudy } from './poleHandBackStudy';
 import { PoleHandTopStudy } from './poleHandTopStudy';
 import { PoleHandEndStudy } from './poleHandEndStudy';
+import { PoleHandEndBackStudy } from './poleHandEndBackStudy';
+import { PoleHandEndLittleStudy } from './poleHandEndLittleStudy';
 import { MalletHandStudy } from './malletHandStudy';
+import { MalletHandPalmStudy } from './malletHandPalmStudy';
 
 const BG = '#0d0f13';
 const STAGE = '#14171d';
@@ -930,7 +933,12 @@ export function FigureStudy() {
   if (only === 'polehandback') return <PoleHandBackStudy />;
   if (only === 'polehandtop') return <PoleHandTopStudy />;
   if (only === 'polehandend') return <PoleHandEndStudy />;
+  if (only === 'polehandendback') return <PoleHandEndBackStudy />;
+  if (only === 'polehandendlittle') return <PoleHandEndLittleStudy />;
+  if (only === 'polehandtopmirror') return <PoleHandTopStudy mirror />;
+  if (only === 'polehandendmirror') return <PoleHandEndStudy mirror />;
   if (only === 'mallethand') return <MalletHandStudy />;
+  if (only === 'mallethandpalm') return <MalletHandPalmStudy />;
   return (
     <ScrollView style={{ flex: 1, backgroundColor: BG }} contentContainerStyle={{ padding: 12 }}>
       <Text style={{ color: INK, fontSize: 18, fontWeight: '700', marginBottom: 4 }}>Figure study — the kit drummer</Text>

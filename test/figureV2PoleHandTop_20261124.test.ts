@@ -14,6 +14,7 @@
  */
 import './_mikingTsxLoader.ts';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 
 const R = <T>(m: T): T => (m as { default?: T }).default ?? m;
@@ -116,5 +117,20 @@ describe('the pole hand from above (poleHandTop)', () => {
     const ww = wr[wr.length - 1] - wr[0];
     assert.ok(ww >= 54 && ww <= 62, `wrist ${ww.toFixed(1)}`);
     assert.ok(ww < w * 0.72, 'the wrist clearly narrower than the hand');
+  });
+
+  it('(2026-11-24, "Boom top") only options added: the left hand mirrored and re-lit, the scene’s pole, its frame and outline — the default unchanged', () => {
+    const src = readFileSync(new URL('../src/screens/lab/miking/lessons/shared/figureV2/poleHandTop.tsx', import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+    for (const k of ['mirror?: boolean', "poleLook?: 'study' | 'boom'", 'export function poleHandTopToPage', 'export function poleHandTopOutline']) assert.ok(src.includes(k), k);
+    // (the defaults: no mirror, the study pole; unturned and unmirrored the light map is the identity — exactly as authored)
+    assert.match(src, /mirror = false, poleLook = 'study' \}: PoleHandTopProps\)/);
+    assert.match(src, /mirror \|\| rot !== 0 \? lightMapOf\(rot, mirror\) : IDENTITY/);
+    assert.match(src, /if \(isId\(M\)\) return es;/);
+    assert.match(src, /if \(isId\(M\)\) return rimOf\(path, w\);/);
+    // (the frame: the origin on the page point, +x along the turn; mirrored, the art's +x runs the other way)
+    const T = PT.poleHandTopToPage({ x: 5, y: 7, s: 1, rot: 0 });
+    assert.deepEqual(T({ u: 2, v: 3 }), { u: 7, v: 10 });
+    const M = PT.poleHandTopToPage({ x: 5, y: 7, s: 1, rot: 0, mirror: true });
+    assert.deepEqual(M({ u: 2, v: 3 }), { u: 3, v: 10 });
   });
 });

@@ -74,9 +74,9 @@ describe('figure V2 players (set 3b)', () => {
   it('M06: each hand closes on its own mallet where the lesson poses it, the wrist easy', () => {
     assert.ok(near(TIMP.TIMP_ARMS.R.hold.fulcrum, TM.TIMP_MALLETS[1].hand));
     assert.ok(near(TIMP.TIMP_ARMS.L.hold.fulcrum, TM.TIMP_MALLETS[0].hand));
-    // (owner 2026-11-24, "Raise the hands") the near (right) hand is the APPROVED MALLET HAND on a straight-wrist arm
-    // (figureV2MalletPlaced_20261124.test.ts); the far (left) keeps the drummer's palm-side fist, its elbow chosen so
-    // the forearm runs straight into it ("look like a broken arm")
+    // (owner 2026-11-24, "Raise the hands") the near (right) hand is the APPROVED MALLET HAND on a straight-wrist arm;
+    // ("Palm mallet passes") the far (left) is the approved PALM-side mallet hand on its own straight-wrist arm
+    // (figureV2MalletPlaced_20261124.test.ts)
     for (const a of [TIMP.TIMP_STICKS.R, TIMP.TIMP_STICKS.L]) {
       assert.ok(Math.abs(d3(a.shoulder, a.elbow) - 300) <= 1, `upper arm ${d3(a.shoulder, a.elbow)}`);
       assert.ok(a.elbow.y > a.shoulder.y + 200, 'the elbow hangs below the shoulder');
@@ -85,8 +85,8 @@ describe('figure V2 players (set 3b)', () => {
     const p = TIMP.timpanistSidePlan();
     const t = TIMP.timpanistTopPlan();
     assert.equal(p.arms.near.placed, null, 'the near arm draws the approved mallet hand, no authored fist');
-    fistOn(p.arms.far, TM.TIMP_MALLETS[0].hand.x, TM.TIMP_MALLETS[0].hand.y);
-    assert.equal(p.arms.far.placed!.art.view, 'palmThumb');
+    assert.equal(p.arms.far.placed, null, 'the far arm draws the approved palm-side mallet hand, no authored fist');
+    assert.ok(TIMP.TIMP_FAR_POSE, 'the far arm reaches the palm-side drawing');
     for (const [arm, m] of [[t.arms.near, TM.TIMP_MALLETS[1]], [t.arms.far, TM.TIMP_MALLETS[0]]] as const) {
       fistOn(arm, m.hand.x, m.hand.z);
       assert.equal(arm.placed!.art.view, 'backTop', 'from above the drummer’s fist from above');

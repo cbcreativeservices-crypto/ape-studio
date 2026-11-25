@@ -132,14 +132,46 @@ export type BoomHandPlan = {
   toPage: (l: { u: number; w: number; n: number }) => Pt;
   /** (FrontBoom5, the front view) drawn by the approved mic hand's own painter (heldHandV2), not boomFist;
    *  (2026-11-24) 'poleFront': the approved authored pole hand, palm side (poleHandFront.tsx). */
-  painter?: 'held' | 'poleFront' | 'poleBack';
+  painter?: 'held' | 'poleFront' | 'poleBack' | 'poleEnd' | 'poleEndBack' | 'poleEndLittle' | 'poleTop';
   /** ('poleFront') where the authored hand sits on the page: its pole axis's middle under the fist, its turn, mirrored for a left hand. */
   poleFront?: { x: number; y: number; rot: number; mirror: boolean };
   /** ('poleBack', the side view) the approved authored pole hand seen from its BACK (poleHandBack.tsx), placed as poleFront. */
   poleBack?: { x: number; y: number; rot: number; mirror: boolean };
+  /** ('poleEnd', the side view, 2026-11-24) the approved authored pole hand seen END-ON from its thumb / index end
+   *  (poleHandEnd.tsx): (x, y) the drawing's origin (the pole's axis where it enters the fist on the index side), its
+   *  turn, mirrored for a left hand. */
+  poleEnd?: { x: number; y: number; rot: number; mirror: boolean };
+  /** ('poleEndBack', the side view) the approved end-on hand from the thumb / index end, the camera tilted toward the BACK
+   *  of the hand (poleHandEndBack.tsx), placed as poleEnd. */
+  poleEndBack?: { x: number; y: number; rot: number; mirror: boolean };
+  /** ('poleEndLittle', the side view) the approved end-on hand seen from the LITTLE-FINGER end (poleHandEndLittle.tsx):
+   *  (x, y) the drawing's origin (the pole's axis where it enters the fist on the little-finger side), placed as poleEnd. */
+  poleEndLittle?: { x: number; y: number; rot: number; mirror: boolean };
+  /** ('poleTop', from above, 2026-11-24) the approved authored pole hand from directly above (poleHandTop.tsx): its pole
+   *  axis under the middle of the fist, its turn, mirrored for a left hand. */
+  poleTop?: { x: number; y: number; rot: number; mirror: boolean };
   /** (the side view's authored hands) what the rig's real 3-D hand shows the camera: the face, how far (degrees) the
    *  hand's plane is turned from square to the camera, how far the forearm is from square to the pole (3-D, degrees). */
-  sideFace?: { face: 'back' | 'palm'; turn: number; foreSquare: number; /** the drawing could be placed with a reachable straight-wrist arm */ fits: boolean; why?: string };
+  sideFace?: {
+    face: 'back' | 'palm';
+    turn: number;
+    foreSquare: number;
+    /** the drawing could be placed with a reachable straight-wrist arm */
+    fits: boolean;
+    why?: string;
+    /** (2026-11-24) which approved drawing this hand carries ('old': none could be placed — the old hand) */
+    drawing?: 'back' | 'palm' | 'end' | 'endBack' | 'endLittle' | 'old';
+    /** (2026-11-24) each end-on drawing tried for this hand: how far its forearm lies off the arm's on the page (deg),
+     *  the camera's angle off the pole against the drawing's 25° (deg), whether it could be placed, and why not */
+    tried?: { drawing: 'end' | 'endBack' | 'endLittle'; lean: number; axisOff: number; fits: boolean; why?: string }[];
+    /** (2026-11-24) the flat drawing's forearm on the page against the arm's (deg) */
+    flatLean?: number;
+    /** how far the camera is along the pole toward the fist's THUMB / index end (+1: straight along it from that end;
+     *  −1: from the little-finger end) */
+    thumbEnd?: number;
+  };
+  /** (from above, 2026-11-24) the approved top drawing's fit: placed, or why not (the old hand kept). */
+  topFace?: { fits: boolean; why?: string };
 };
 
 /**

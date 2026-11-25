@@ -323,7 +323,7 @@ export const RIG_B11: BoomRig = { side: B11_POSES.side, top: B11_POSES.top, fron
  * lesson's own and not exported): the pole from the mic's tail through the grip, the front hand 42 cm toward the mic,
  * her stance under the pole or behind its end. For the study page only; the lesson keeps its own.
  */
-function b10LiveRig(front: { x: number; y: number; z: number }, aim: { x: number; y: number; z: number }): BoomRig | null {
+export function b10LiveRig(front: { x: number; y: number; z: number }, aim: { x: number; y: number; z: number }): BoomRig | null {
   const len = 50;
   const G = B10_GRIP_PT;
   const tail = { x: front.x - aim.x * len, y: front.y - aim.y * len, z: front.z - aim.z * len };
@@ -374,33 +374,41 @@ function sideWords(rig: BoomRig, who: typeof OPERATOR): string {
       const f = a.hand.sideFace;
       const side = a.hand.arm.side === 'L' ? 'left' : 'right';
       if (!f) return `${side}: old hand`;
-      const art = f.face === 'back' ? 'BACK of the hand (poleHandBack)' : 'PALM side (poleHandFront)';
-      const kept = a.hand.painter === 'poleBack' || a.hand.painter === 'poleFront' ? '' : ` — OLD HAND KEPT (${f.fits ? 'the other hand cannot be placed' : f.why})`;
-      return `${a.far ? 'far' : 'near'} ${side} hand: ${art}${a.hand.arm.side === 'L' ? ', mirrored' : ''}; the real hand turned ${f.turn.toFixed(0)}° from square to the camera${f.turn > SIDE_TURN_MAX ? ' (PAST 30°: the nearer drawing)' : ''}; its forearm ${f.foreSquare.toFixed(0)}° off square to the pole${kept}`;
+      const end = (f.thumbEnd ?? 0) >= 0 ? `the camera ${Math.round((Math.acos(Math.min(1, f.thumbEnd ?? 0)) * 180) / Math.PI)}° off the pole at the THUMB end` : `the camera ${Math.round((Math.acos(Math.min(1, -(f.thumbEnd ?? 0))) * 180) / Math.PI)}° off the pole at the LITTLE-FINGER end`;
+      const art = f.drawing === 'end' ? 'END-ON, thumb end, toward the palm (poleHandEnd)' : f.drawing === 'endBack' ? 'END-ON, thumb end, toward the back (poleHandEndBack)' : f.drawing === 'endLittle' ? 'END-ON, little-finger end (poleHandEndLittle)' : f.drawing === 'back' ? 'BACK of the hand (poleHandBack)' : f.drawing === 'palm' ? 'PALM side (poleHandFront)' : 'OLD HAND KEPT';
+      // (each end-on drawing tried: its forearm's lean off the arm's on the page)
+      const tried = (f.tried ?? []).filter((t) => Number.isFinite(t.lean)).map((t) => `${t.drawing} forearm ${Math.round(t.lean)}° off${t.fits ? '' : ' ✗'}`).join(', ');
+      return `${a.far ? 'far' : 'near'} ${side} hand: ${art}${a.hand.arm.side === 'L' && f.drawing !== 'old' ? ', mirrored' : ''}; the real hand turned ${f.turn.toFixed(0)}° from the flat drawings (flat forearm ${Math.round(f.flatLean ?? 0)}° off), ${end}${tried ? ` [${tried}]` : ''}${f.turn > SIDE_TURN_MAX && (f.drawing === 'back' || f.drawing === 'palm') ? ' (PAST 30°: the nearer flat drawing)' : ''}; its forearm ${f.foreSquare.toFixed(0)}° off square to the pole${f.drawing === 'old' ? ` — why: ${f.why}` : ''}`;
     })
     .join('  ·  ');
 }
 
 function BoomSideStudy({ width, only }: { width: number; only: string }) {
   const w = Math.min(Math.floor((width - 40) / 2), 560);
-  if (only.startsWith('boomsidez')) {
-    // (dev) each hand close (about 2.5 pt/mm), old beside new: boomsidez[-<rig key>]
-    const pick = only.split('-')[1];
+  if (only.startsWith('boomsidez') || only.startsWith('boomtopz')) {
+    // (dev) each hand close (about 2.5 pt/mm), old beside new: boomsidez[-<rig key>] from the side,
+    // boomtopz[-<rig key>] from above (2026-11-24, "Boom top")
+    // (boomsidez-<rig>@<pt per mm>: a closer look, e.g. @6)
+    const pick = only.split('-')[1]?.split('@')[0];
+    const ptmm = Number(only.split('@')[1]) || 2.5;
+    const view: BoomView = only.startsWith('boomtopz') ? 'top' : 'side';
     const z = Math.min(Math.floor((width - 40) / 2), 400);
     return (
       <View>
         {SIDE_RIGS.filter((r) => !pick || r.key === pick).map((r) => {
-          const B = boomPlans(r.rig, r.who, 'side');
+          const B = boomPlans(r.rig, r.who, view);
           const its: PicItem[] = B.arms.flatMap((a, i) => {
             const f = B.vs.proj(a.hand.arm.fist);
-            const at = a.hand.poleBack ?? a.hand.poleFront;
-            // (the window on the hand: a little toward its wrist)
-            const c = at ? { u: f.u - Math.sin(at.rot) * 30, v: f.v + Math.cos(at.rot) * 30 } : f;
-            const mm = z / 2.5;
+            const at = a.hand.poleBack ?? a.hand.poleFront ?? a.hand.poleTop;
+            // (the window on the hand: a little toward its wrist; an end-on hand: toward its cuff)
+            const ea = a.hand.poleEnd ?? a.hand.poleEndBack ?? a.hand.poleEndLittle;
+            const c = at ? { u: f.u - Math.sin(at.rot) * 30, v: f.v + Math.cos(at.rot) * 30 } : ea ? (ptmm > 5 ? f : { u: (f.u * 2 + a.arm.wrist.u) / 3, v: (f.v * 2 + a.arm.wrist.v) / 3 }) : f;
+            const mm = z / ptmm;
             const lab = `${a.far ? 'far' : 'near'} ${a.hand.arm.side === 'L' ? 'left' : 'right'}`;
+            const what = view === 'top' ? (a.hand.painter === 'poleTop' ? 'from above (poleHandTop)' : `OLD KEPT: ${a.hand.topFace?.why ?? ''}`) : `${a.hand.sideFace?.drawing ?? ''} ${a.hand.sideFace ? `${a.hand.sideFace.turn.toFixed(0)}°` : ''}`;
             return [
-              { key: `z${r.key}${i}o`, cu: c.u, cv: c.v, mmW: mm, mmH: mm, label: `${r.key} OLD · ${lab}`, node: <BoomOperatorV2 view="side" rig={r.rig} who={r.who} dim={1} oldSide /> },
-              { key: `z${r.key}${i}n`, cu: c.u, cv: c.v, mmW: mm, mmH: mm, label: `${r.key} NEW · ${lab} · ${a.hand.sideFace?.face ?? ''} ${a.hand.sideFace ? `${a.hand.sideFace.turn.toFixed(0)}°` : ''}`, node: <BoomOperatorV2 view="side" rig={r.rig} who={r.who} dim={1} /> },
+              { key: `z${r.key}${i}o`, cu: c.u, cv: c.v, mmW: mm, mmH: mm, label: `${r.key} OLD · ${lab}`, node: <BoomOperatorV2 view={view} rig={r.rig} who={r.who} dim={1} oldSide /> },
+              { key: `z${r.key}${i}n`, cu: c.u, cv: c.v, mmW: mm, mmH: mm, label: `${r.key} NEW · ${lab} · ${what}`, node: <BoomOperatorV2 view={view} rig={r.rig} who={r.who} dim={1} /> },
             ];
           });
           return <Pics key={r.key} w={z} per={2} level="full" items={its} />;
@@ -422,7 +430,7 @@ function BoomSideStudy({ width, only }: { width: number; only: string }) {
     <View>
       <Caption
         title="THE BOOM OPERATOR FROM THE SIDE — THE APPROVED POLE HANDS (Boom side)"
-        note={`Each rig: old beside new, the two hands at about 1 pt/mm, then the whole operator at the lesson's size. Each hand is one of the two approved drawings (back of the hand / palm side), the left hand the mirror image, its pole axis on the rig's pole through the middle of the fist, the wrist straight. POLE_SIDE_HANDS = ${String(POLE_SIDE_HANDS)}.`}
+        note={`Each rig: old beside new, the two hands at about 1 pt/mm, then the whole operator at the lesson's size. Each hand carries the approved drawing the camera really sees — END-ON from the thumb end toward the palm (poleHandEnd) or toward the back (poleHandEndBack), END-ON from the little-finger end (poleHandEndLittle), else the back of the hand or the palm side — or, where none can be placed, its old hand (the line under the title says why). The left hand the mirror image, its pole axis on the rig's pole through the middle of the fist, the wrist straight. POLE_SIDE_HANDS = ${String(POLE_SIDE_HANDS)}.`}
       />
       {SIDE_RIGS.map((r) => (
         <View key={r.key}>
@@ -438,7 +446,7 @@ function BoomSideStudy({ width, only }: { width: number; only: string }) {
 function BoomStudy({ width, only }: { width: number; only: string }) {
   const w3 = Math.min(Math.floor((width - 50) / 3), 300);
   const w2 = Math.min(Math.floor((width - 40) / 2), 420);
-  if (only.startsWith('boomside')) return <BoomSideStudy width={width} only={only} />;
+  if (only.startsWith('boomside') || only.startsWith('boomtopz')) return <BoomSideStudy width={width} only={only} />;
   return (
     <View>
       {only === 'boom' || only === 'boomwhole' ? (
@@ -460,7 +468,7 @@ function BoomStudy({ width, only }: { width: number; only: string }) {
         // window's middle, mm; a minus sign as 'm')
         (() => {
           const [, r, vw, mm, cuv] = only.split('-');
-          const rig = r === 'low' ? RIG_B04_LOW : r === 'f09' ? RIG_F09 : r === 'b10' ? B10_BOOM_RIGS.overhead : RIG_B04;
+          const rig = r === 'low' ? RIG_B04_LOW : r === 'f09' ? RIG_F09 : r === 'b10' ? B10_BOOM_RIGS.overhead : r === 'b11' ? RIG_B11 : RIG_B04;
           const at = cuv ? (([u, v]) => ({ u: Number(u.replace('m', '-')), v: Number(v.replace('m', '-')) }))(cuv.split('_')) : undefined;
           return <Pics w={Math.min(width - 24, 760)} per={1} level="full" items={boomItems(rig, vw as BoomView, Number(mm) || 1300, 'z', false, r === 'b10' ? B10_OPERATOR_WHO : OPERATOR, at)} />;
         })()

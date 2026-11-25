@@ -106,6 +106,12 @@ export type LessonArt = {
   /** (figure V2, Foley3) The pole operator is drawn OVER the engine's pole (its own fists close round it) and
    *  re-solved for the pole's slope (`pole`). Without it the operator is drawn under the pole, as before. */
   poleOperatorOver?: boolean;
+  /** (figure V2, 2026-11-24) A lesson whose own scene draws the boom operator holding the end of a placed boom (the
+   *  engine draws the pole from the mic to her front hand): her fists painted again AFTER the engine's mounts (with
+   *  the pole's piece inside each), so the pole passes THROUGH the closed hand — never laid over the front fist.
+   *  Given the scene's own props; it draws only where the scene has her holding a placed boom. A lesson without it
+   *  is unchanged. */
+  poleHandsOver?: (props: { view: ViewId; variant: VariantId; micTypes?: readonly string[]; setup?: readonly string[] }) => ReactNode;
   /** (figure V2, the held arm; wave 3 step B round 2) The lesson's people hold their hand-held mics
    *  themselves: its scene draws each held arm at the holder's depth (figureV2/heldLive HeldBy), the engine
    *  draws no arm and no fist for a held mic — only, after the mics, the hand's parts in front of the handle.

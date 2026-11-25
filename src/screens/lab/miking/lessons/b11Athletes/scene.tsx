@@ -21,7 +21,7 @@ import { SINGER_SOLIDS } from '../shared/voice/voicePose.ts';
 import { FIELD_X, FLOOR, GRIP, OPERATOR, PA_C, WEARER } from './geometry.ts';
 import { figureV2On } from '../shared/figureV2/figureV2Config';
 import { castFor } from '../shared/figureV2/cast';
-import { BoomOperatorV2, type BoomRig } from '../shared/figureV2/BoomV2';
+import { BoomOperatorV2, fistDisk, type BoomRig } from '../shared/figureV2/BoomV2';
 import { alongPole } from '../shared/figureV2/boomGrip.ts';
 import { StandingTalkerV2, standingCoversV2 } from '../shared/figureV2/standingV2';
 
@@ -70,6 +70,19 @@ export function B11Scene({ view, variant, headless = false }: { view: ViewId; va
       ) : null}
       {athlete ? <KeepOuts view={view} /> : null}
       {coach && !side ? V2 ? <BoomOperatorV2 view="top" rig={RIG} who={castFor('operator.boom')} /> : <BoomOperator view={view} poses={OPERATOR_POSES} stub={POLE_STUB} /> : null}
+    </Group>
+  );
+}
+
+/** (figure V2, 2026-11-24; LessonArt.poleHandsOver) After the engine's pole (the perimeter boom placed: the pole from
+ *  the mic to her front hand): the operator's front fist again — the rig and look the scene draws her with — so the
+ *  pole passes THROUGH the closed hand, never laid over it. */
+export function B11HandsOver({ view, variant, micTypes }: { view: ViewId; variant: VariantId; micTypes?: readonly string[] }): ReactElement | null {
+  if (!V2 || variant !== 'coach' || !micTypes?.includes('locBoomSgCap')) return null;
+  const side = view === 'side';
+  return (
+    <Group clip={fistDisk(view, GRIP)}>
+      <BoomOperatorV2 view={side ? 'side' : 'top'} rig={RIG} who={castFor('operator.boom')} part="hands" {...(side ? { dim: 0.6 } : {})} />
     </Group>
   );
 }

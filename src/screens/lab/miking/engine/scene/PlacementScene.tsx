@@ -2879,6 +2879,8 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
           {micsShown.map((m) => (
             <PoleMount key={`pole:${m.slot}:${m.typeId}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} Operator={art.PoleOperator} hk={hkView} over={!!art.poleOperatorOver} />
           ))}
+          {/* (figure V2, opt-in LessonArt.poleHandsOver) the scene's operator's fists again over the engine's boom */}
+          {art.poleHandsOver ? <FigureScale ptPerMm={base.s}>{art.poleHandsOver({ view, variant, micTypes, setup: zoneIds })}</FigureScale> : null}
           {micsShown.map((m) => (
             <ClampArm key={`clamp:${m.slot}:${m.typeId}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} v2held={!!heldCfg} />
           ))}
