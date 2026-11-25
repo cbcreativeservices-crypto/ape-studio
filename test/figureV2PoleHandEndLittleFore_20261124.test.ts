@@ -80,7 +80,7 @@ describe('the pole hand end-on from the little-finger end, toward the front of t
     assert.ok(Math.abs(SEC.rx / SEC.ry - Math.cos(PF.POLE_END_LITTLE_FORE_TILT as number)) < 1e-9);
     assert.ok(Math.abs((PF.POLE_END_LITTLE_FORE_TILT as number) - (PE.POLE_END_TILT as number)) < 1e-12, 'the same tilt as poleHandEnd');
     assert.ok(!('thumb' in A), 'no thumb: it lies behind the four fingers from this side');
-    assert.equal(PF.POLE_END_LITTLE_FORE_NEAR, 110, "B10's pole goes on 110 mm past this hand");
+    assert.equal(PF.POLE_END_LITTLE_FORE_NEAR, 70, "B10's pole ends about 70 mm past the little-finger side (110 past the grip)");
   });
 
   it('the forearm leaves 9° clockwise from the near pole: the left hand fits B10 overhead; raised and dragged below are other views', () => {
@@ -116,6 +116,21 @@ describe('the pole hand end-on from the little-finger end, toward the front of t
     for (const p of [A.knuckle, A.littleTip, ...A.knuckles, ...A.bends]) assert.ok(!underNear(p), 'the knuckles, the bends and the tip in view');
     // the tip tucked just under the pole's lower edge, against the heel
     assert.ok(Math.abs(across(A.littleTip)) < r + 6 && Math.hypot(A.littleTip.u - A.heel.u, A.littleTip.v - A.heel.v) < 40);
+  });
+
+  it('the grip shows: the little finger’s curl lies IN FRONT of the pole where it enters; the heel’s pad over its lower edge', () => {
+    const at = PF.poleEndLittleForeAxisAt as (a: number) => Pt;
+    const front = A.littleFront as unknown as Pt[];
+    // the section and the pole's first stretch are under the finger; the pole comes out from under its near edge
+    for (const a of [0, 4, 8]) assert.ok(inside(front, at(a)), `the finger over the pole at ${a} mm`);
+    assert.ok(!inside(front, at(30)), 'the pole out from under it by 30 mm');
+    // the finger's curl 15–25 mm wide along the pole on the page (a finger, not a strap, not a blob)
+    const w = Math.max(...front.map(along)) - Math.min(...front.map(along));
+    assert.ok(w > 15 && w < 25, `the curl ${w.toFixed(1)} mm wide`);
+    // the heel's pad rises 2–4.5 mm over the pole's lower edge along the side of the hand
+    const top = (A.heelLipEdge as unknown as Pt[]).filter((q) => along(q) > 4 && along(q) < 20);
+    assert.ok(top.length >= 2);
+    for (const p of top) assert.ok(r - Math.abs(across(p)) > 2 && r - Math.abs(across(p)) < 4.5, `the pad over the pole's edge by ${(r - Math.abs(across(p))).toFixed(1)} mm`);
   });
 
   it('the far pole hidden in the fist and out past the index finger’s front', () => {

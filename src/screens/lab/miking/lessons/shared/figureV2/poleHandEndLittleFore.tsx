@@ -61,9 +61,10 @@
  *   2. Behind it, each farther along the pole and so each a step to the RIGHT (0.42 mm per mm: about 8 mm a finger) and
  *      a hair higher, the RING, MIDDLE and INDEX: their sides hidden behind the finger in front, so each shows only as a
  *      band beyond the one in front — the back of its first segment running down from its knuckle to its bend, the bend,
- *      and a sliver of its end along the bottom. Together the four bands are the FRONT of the fist seen obliquely: one
- *      surface with soft valleys, never four rolls. Each its own width (the ring's and the middle's wide, the index's
- *      narrow) and its own height (the middle reaches farthest and lowest). Their big KNUCKLES make ONE row along the top,
+ *      and a sliver of its end along the bottom. Together the bands are the FRONT of the fist seen obliquely: one
+ *      receding surface, never rolls (lead's round 2026-11-24: mostly the RING shows beside the little finger; the
+ *      middle and the index only as slivers narrowing toward their bends; no line along the backs of the first
+ *      segments, one short crease at the ring's bend, the top one line). Their big KNUCKLES make ONE row along the top,
  *      stepping up to the right — the little's lowest (under the fist's top edge), the ring's a step up, the middle's the
  *      highest, the index's a little lower and last; the finger BENDS a second, lower corner of each band on the right:
  *      that is the one row of knuckles and the one row of bends a fist shows from its side, never a doubled row.
@@ -74,17 +75,21 @@
  *      rim a narrow ellipse, the wrist going in behind its near half, a dark opening above and below the wrist).
  *   4. THE POLE: its round section (an ellipse, a little narrower along the pole) sits inside the little finger's curl,
  *      ringed by skin — the little finger above, right and below, the side of the hand and the heel to the left. The
- *      NEAR part comes out of that ring toward us and, on the page, runs to the LEFT and a little down, IN FRONT of the
- *      side of the hand and the top of the heel (its soft shadow on them) — in B10 only 110 mm of pole is left past
- *      this hand, so its end shows over the heel. The FAR part goes away to the right inside the fist and comes out past
- *      the index finger's front, at mid-height: the pole enters at the little finger and leaves past the index.
+ *      NEAR part comes out of that ring toward us and, on the page, runs to the LEFT and a little down, in front of the
+ *      side of the hand (its soft shadow on it) and on out of the picture. (Lead's round 2026-11-24, "the pole WITHIN the
+ *      closed hand": the ring's NEAR side — the little finger's base and curl coming down past the pole's left to its
+ *      tip, tucked against the heel — lies IN FRONT of the pole's first stretch, a band about 15 mm wide, and the heel's
+ *      pad rises a little in front of the pole's lower edge along the side of the hand: the pole comes out from under
+ *      the finger and lies in a channel of the hand, sunk in it with contact shadows, never on it.) The FAR part goes
+ *      away to the right inside the fist and comes out past the index finger's front: the pole enters at the little
+ *      finger and leaves past the index.
  *   5. The THUMB is at the far (index) end, wrapped round the pole the other way, lying on the outside of the index's end
  *      bones along the bottom: behind the four fingers from here. Its lower edge would show at most 2–4 mm below the
  *      fingers' ends at the far end of the fist — drawn only as the bottom edge there going a little lower, no thumb of
  *      its own (its nail faces down, edge-on: no nail is owed, and no light sits where a nail could be read).
  * Paint order (far → near): the far pole → the cuff's dark opening → the index, middle and ring fingers → the hand's
- * body (back of the hand, side, heel, wrist, forearm) → the little finger → the sleeve → the near pole (in front of all,
- * its soft shadow on the hand).
+ * body (back of the hand, side, heel, wrist, forearm) → the little finger → the sleeve → the near pole (its soft shadow on
+ * the hand) → the heel's pad and the ring's near side, in front of the pole (their contact shadows on it).
  *
  * THE NEAR POLE IN 'boom' LOOK: as poleHandEndLittleBack — only the pole's piece inside the hand's outline, on the scene
  * pole's own axis and width (dark rim 31 mm, tube 27 mm, lit band 6 mm at the scene's page offset), straight stripes
@@ -143,8 +148,10 @@ export function poleEndLittleForeAxisAt(a: number): Pt {
 }
 /** The grip's centre: the middle of the fist along the pole (≈ 40 mm in from the little-finger side). */
 export const POLE_END_LITTLE_FORE_GRIP: Pt = poleEndLittleForeAxisAt(-40);
-/** B10's pole goes on only 110 mm past this (its rear) hand: the default near length. */
-export const POLE_END_LITTLE_FORE_NEAR = 110;
+/** (for the placer) B10's pole goes on only 110 mm past the middle of this (its rear) fist — about 70 mm past the
+ *  fist's little-finger side, this drawing's origin: that end lands ON the side of the hand, so the drawing's default
+ *  runs the near pole on out of frame (420) and a placer must decide where B10's real end shows. */
+export const POLE_END_LITTLE_FORE_NEAR = 70;
 
 /**
  * THE LITTLE FINGER — the nearest form: its outer side (one tight "C" round the pole's section), with the back of its
@@ -176,10 +183,10 @@ const LITTLE_H: readonly (readonly [number, number])[] = [
   [-3.8, -17.8], [-7.8, -21],
 ];
 const LITTLE = pts(LITTLE_H);
-/** The little finger's drawn edge: from past its knuckle's top (where the ring finger shows behind it) round the C, the
- *  tip, and the inner side up to the pole's top edge, ending under it (no line over the knuckle into the hand: the
- *  finger grows out of it, the back of the hand's sliver above it is one skin; the web beyond is one skin: no line). */
-const LITTLE_EDGE = [...LITTLE.slice(6, 36), turn(-0.6, -14)];
+/** The little finger's drawn edge: from past its knuckle's top (where the ring finger shows behind it) round the C to
+ *  its tip, where the near edge of its curl over the pole (LITTLE_FRONT) takes over (no line over the knuckle into the
+ *  hand: the finger grows out of it; its pads lie behind the curl's near side now: no line). */
+const LITTLE_EDGE = LITTLE.slice(6, 26);
 /** Where the little finger's side turns into its back (the band's inner edge, no line: a soft change of light). */
 const LITTLE_TURN_H: readonly (readonly [number, number])[] = [
   [2, -36.8], [8, -34.6], [13, -31.6], [17.6, -27.8], [21.4, -23.6], [24.6, -18.4], [26.8, -12.4], [27.8, -6.4], [28, -0.6], [27, 5],
@@ -206,57 +213,78 @@ const RING = pts([
   [12, 23.4], [8, 20], [14, 16], [22, 8], [25, 0], [22, -12], [16, -24], [9, -32], [4, -36.4],
 ]);
 const MIDDLE = pts([
-  // (hidden under the ring's) the knuckle: the highest, a taller, narrower peak
-  [11, -43], [15, -45.6], [18.8, -47.2], [22.4, -47.6], [25.8, -46.6],
-  // the back of the first segment: the longest bone, straight
-  [28.4, -43.6], [31.2, -39.2], [34.2, -34], [37.4, -28.2], [40.8, -22], [44.2, -15.6],
-  // the bend: the farthest out of the three in front of the index, a little lower than the ring's
-  [47.6, -8.6], [50.4, -1.8], [51.8, 4.8], [51.6, 10.8],
-  // the middle segment's back, straight down and under (in shade)
-  [49.6, 16], [46, 20.2], [41.4, 23.2], [36.2, 25],
+  // (hidden under the ring's) the knuckle: the highest, the next step of the one contour
+  [11, -43], [15, -45.4], [18.6, -46.6], [22, -46.6], [25, -45.2],
+  // the back of the first segment: from here only a sliver past the ring's, narrowing toward the bend
+  [26.8, -42.6], [29.2, -38], [32, -32.6], [35, -26.6], [38.2, -20.2], [41.2, -13.6],
+  // the bend, just past the ring's
+  [44, -6.4], [46, 0], [46.8, 6.4], [46.2, 11.6],
+  // the middle segment's back, down and under (in shade)
+  [44.4, 16], [41, 19.8], [36.6, 22.8], [31.6, 24.6],
   // its underside, in behind the ring's
-  [31.4, 25.6], [26.6, 25],
-  [22, 22], [28, 16], [36, 10], [39, 0], [34, -14], [25, -28], [19, -38], [15, -42.4],
+  [26.6, 25.2], [22, 25],
+  [18, 22], [26, 16], [34, 10], [38, 0], [33, -14], [25, -28], [19, -38], [15, -42.4],
 ]);
 const INDEX = pts([
-  // (hidden under the middle's) the knuckle: a small bump, lower than the middle's, last in the row
-  [21, -44.8], [24.6, -45.6], [28.2, -45.8], [31.4, -45.2], [34, -43.6],
-  // the back of the first segment: the narrowest band, past the middle's, straight
-  [36.4, -41.4], [39.6, -36.8], [42.8, -31.4], [46, -25.6], [49, -19.4], [51.6, -13],
-  // the bend: higher than the middle's (a firm corner), and it goes in behind the middle's
-  [53.6, -6.6], [54.6, -0.6], [54.2, 4.8], [52.8, 9],
-  [50.8, 11.6],
-  [48, 6], [47, -6], [38, -22], [30, -36], [27, -42.6], [24, -44.8],
+  // (hidden under the middle's) the knuckle: a low shoulder, the contour's last step, down
+  [21, -44], [24.6, -45], [28, -45], [31, -44], [32.6, -41.8],
+  // the back of the first segment: the thinnest sliver, past the middle's, fading out at the bend
+  [33.6, -38.6], [35.6, -33.4], [38, -27.8], [40.6, -21.8], [43.2, -15.4], [45.4, -9], [46.8, -3], [47.4, 2.6], [46.8, 7.4],
+  // (hidden behind the middle finger)
+  [44, 4], [41, -6], [36, -22], [29, -36], [26, -42], [23, -43.6],
 ]);
-/** Their drawn edges — only where an edge really shows: the index's whole outer edge (the fist's front silhouette); for
- *  the ring and the middle, their knuckles on the fist's top edge, and from their bends round to where they go in
- *  under the finger in front. The long backs of the first segments lie side by side as ONE surface: no line between
- *  them (only a soft shade), never a row of rolls. */
+/** Their drawn edges — only where an edge really shows: the index's outer edge (the fist's front silhouette), the
+ *  ring's and the middle's undersides along the bottom. The backs of the first segments lie side by side as ONE
+ *  receding surface: no line between them (only a soft shade), never a row of rolls; the top is one line (below). */
 const RING_EDGE: Poly[] = [RING.slice(18, 21)];
-const MIDDLE_EDGE: Poly[] = [MIDDLE.slice(14, 21)];
-const INDEX_EDGE: Poly[] = [INDEX.slice(4, 16)];
+const MIDDLE_EDGE: Poly[] = [MIDDLE.slice(14, 20)];
+const INDEX_EDGE: Poly[] = [INDEX.slice(3, 14)];
 /** (the knuckle row's top edge is drawn as ONE line: the whole hand's outline along the top, from over the little
  *  finger's knuckle to the index's — never a dash per knuckle) where that line is taken. */
 const TOP_LINE_CLIP = pts([[-12, -90], [46, -90], [46, -33], [38, -38.6], [32, -43.2], [24, -44.6], [16, -42.8], [10, -40.8], [4, -40.2], [-12, -40.6]]);
-/** The bends of the ring and the middle finger against the finger beyond: a fainter, thinner line round the corner
- *  only (a joint's edge inside the fist's front, not its outline). */
-const BEND_CREASES: Poly[] = [RING.slice(10, 16), MIDDLE.slice(10, 15)];
-/** The fingers behind, each: the soft valleys between it and the finger in front — only at the knuckles and round the
- *  bends, where the fingers are round; along the backs of the first segments they lie flat together (no valley). */
-const VALLEYS: Poly[][] = [
-  [pts(LITTLE_H.slice(3, 7)), pts(LITTLE_H.slice(9, 15))],
-  [RING.slice(2, 7), RING.slice(10, 16)],
-  [MIDDLE.slice(3, 8), MIDDLE.slice(10, 15)],
-];
-/** The fingers behind, each: a soft light on the back of its first segment (it faces up and catches the light), and
- *  one on the top of its bend (the joint's knob). */
-const BEHIND_LIGHTS: Ellipse[][] = [
-  [E(25.6, -32, 8, 2, 0.98), E(40.4, -3.4, 2.4, 4.6, -0.36)],
-  [E(34, -34, 9, 1.8, 1.02), E(48.8, -5.4, 2, 4, -0.32)],
-  [E(42.4, -31, 6.4, 1.3, 0.92), E(52.6, -8.6, 1.3, 3, -0.3)],
-];
+/** The ring finger's bend against the middle finger's sliver: the one short crease line on the fist's front (a
+ *  joint's edge, round the corner only). */
+const BEND_CREASES: Poly[] = [RING.slice(11, 15)];
+/** The fingers behind, each: the soft valley between it and the finger in front — the ring's against the little
+ *  finger at the knuckle and round the bend, the middle's against the ring's only at the knuckle; the index none. */
+const VALLEYS: Poly[][] = [[pts(LITTLE_H.slice(3, 7)), pts(LITTLE_H.slice(9, 15))], [RING.slice(2, 7)], []];
+/** The fingers behind, each: a soft light on the back of its first segment (it faces up and catches the light); the
+ *  ring's on its bend too (the joint's knob). */
+const BEHIND_LIGHTS: Ellipse[][] = [[E(25.6, -32, 8, 2, 0.98), E(40.4, -3.4, 2.4, 4.6, -0.36)], [E(31.4, -33, 6, 1.3, 1.02)], [E(29, -43.4, 2.4, 1, 0)]];
 /** The fingers behind, each: the bend and the middle segment turned down, away from the light. */
-const BEHIND_DARKS: Ellipse[] = [E(38, 16, 8, 5.4, -0.5), E(46.6, 16, 6, 6, -0.3), E(52, 4, 2, 5, 0)];
+const BEHIND_DARKS: Ellipse[] = [E(38, 16, 8, 5.4, -0.5), E(43.6, 14, 3, 6, -0.3), E(45.6, 0, 1.4, 6, 0)];
+
+/**
+ * THE RING THE POLE GOES THROUGH, ITS NEAR SIDE (lead's round 2026-11-24: "the pole WITHIN the closed hand"): the
+ * pole's section is ringed by skin all round, and the near side of that ring — the little finger's curl coming down in
+ * front of the pole's section to its tip, tucked against the heel — lies IN FRONT of the pole where it enters, a band
+ * about 18 mm wide filling the curl (no keyhole of pole inside it). The near pole comes out from under its near edge.
+ * One skin with the little finger (no line where they join: the finger's pads now lie behind it).
+ */
+const LITTLE_FRONT_H: readonly (readonly [number, number])[] = [
+  // its near edge, from the tip up over the pole, rounded (the finger's side): where the pole comes out from under it
+  [-2.8, 22.6], [-3.2, 19.6], [-4.8, 15.6], [-6.6, 10.4], [-7.8, 4.6], [-8.2, -1.4], [-7.8, -7.2], [-6.6, -12], [-5, -15.6],
+  // the top: into the little finger's web over the pole
+  [-3.4, -17.8], [0.4, -17.4],
+  // its far side, along the little finger's pads round the pole's section (a little inside them: one skin)
+  [5.2, -16.4], [9.6, -13.8], [13.2, -10], [15.8, -5], [16.4, 0.4], [15.2, 6.4], [12.2, 11.6], [8, 15.4], [3, 17.4], [0.4, 21],
+];
+const LITTLE_FRONT = pts(LITTLE_FRONT_H);
+/** Its drawn edge: the near edge, where the pole comes out from under it (from the heel's pad up to the pole's top
+ *  edge; below, finger on pad: no line). */
+const LITTLE_FRONT_EDGES: Poly[] = [pts(LITTLE_FRONT_H.slice(2, 9))];
+/**
+ * THE HEEL'S LIP — the pad of the heel rising a little in front of the near pole's lower edge, along the side of the
+ * hand: the pole lies IN a channel of the hand (the little finger's curl above, the heel's pad below), never on it.
+ */
+/** (the pad is the hand's own body below this line — the same skin, the same shading — painted again over the pole's
+ *  lower edge; its top a little above that edge, until the pole leaves the hand's outline) */
+const HEEL_LIP_TOP_H: readonly (readonly [number, number])[] = [
+  [-2, 13.2], [-10, 13.7], [-20, 15], [-30, 16.4], [-40, 18], [-50, 19.6], [-60, 21.2], [-70, 22.8], [-92, 26.4],
+];
+const HEEL_LIP = pts([...HEEL_LIP_TOP_H, [-92, 70], [-2, 70]]);
+/** Its drawn edge: its top, against the pole (kept inside the hand's outline). */
+const HEEL_LIP_EDGE = pts(HEEL_LIP_TOP_H);
 
 /**
  * THE HAND'S BODY — the back of the hand's sliver (its top edge the fist's top edge from the wrist to the knuckle row),
@@ -329,8 +357,15 @@ export type PoleHandEndLittleForeArt = {
   behindDarks: Ellipse[];
   /** The soft valleys between each finger behind and the finger in front (at the knuckles and round the bends only). */
   valleys: Poly[][];
-  /** The ring's and the middle finger's bends against the finger beyond (fainter lines, round the corner only). */
+  /** The ring finger's bend against the middle's sliver (a fainter line, round the corner only). */
   bendCreases: Poly[];
+  /** The near side of the ring the pole goes through (the little finger's base and curl down to its tip), in FRONT of
+   *  the near pole's first stretch, and its drawn edges against the pole. */
+  littleFront: Poly;
+  littleFrontEdges: Poly[];
+  /** The heel's pad rising in front of the near pole's lower edge, and its top edge. */
+  heelLip: Poly;
+  heelLipEdge: Poly;
   littleTip: Pt;
   heel: Pt;
   lights: Ellipse[];
@@ -355,12 +390,16 @@ export const POLE_HAND_END_LITTLE_FORE: PoleHandEndLittleForeArt = {
   sleeve: SLEEVE,
   cuff: { c: turn(CUFF_H.u, CUFF_H.v), rx: CUFF_RX, ry: CUFF_RY, rot: END_LITTLE_FORE_TURN },
   knuckle: turn(5.6, -38.2),
-  knuckles: [turn(5.6, -38.2), turn(13.6, -43.6), turn(22.4, -47.6), turn(31.4, -45.2)],
-  bends: [turn(33.6, -3.8), turn(44, 7.2), turn(51.8, 4.8), turn(54.6, -0.6)],
+  knuckles: [turn(5.6, -38.2), turn(13.6, -43.6), turn(20.3, -46.8), turn(28, -45)],
+  bends: [turn(33.6, -3.8), turn(44, 7.2), turn(46.8, 6.4), turn(47.4, 2.6)],
   behindLights: BEHIND_LIGHTS,
   behindDarks: BEHIND_DARKS,
   valleys: VALLEYS,
   bendCreases: BEND_CREASES,
+  littleFront: LITTLE_FRONT,
+  littleFrontEdges: LITTLE_FRONT_EDGES,
+  heelLip: HEEL_LIP,
+  heelLipEdge: HEEL_LIP_EDGE,
   littleTip: turn(-3.2, 19.6),
   heel: turn(-28, 30.6),
   lights: [
@@ -393,8 +432,6 @@ export const POLE_HAND_END_LITTLE_FORE: PoleHandEndLittleForeArt = {
   littleDarks: [
     // the band: the back of the first segment and of the bend, turned away from the light
     E(22.4, -29.6, 10, 2.4, 0.74), E(32, -10, 2.2, 10, 0.06),
-    // the finger's inner side turning in toward the pole, round the section (top, right, bottom)
-    E(7, -18.4, 7.4, 2.6, 0.32), E(17.2, -1, 2.6, 7.4), E(9.4, 15.6, 6.6, 2.4, -0.62),
     // the middle joint's crease on the finger's side
     E(19.5, -5.4, 4.2, 2.4, -0.5),
     // the last segment and the tip turning under, along the bottom
@@ -504,8 +541,10 @@ function build(a: PoleHandEndLittleForeArt, a0: number, a1: number, M: LightMap,
   const middle = smoothClosed(a.middle, 0.5);
   const index = smoothClosed(a.index, 0.5);
   const behind = [ring, middle, index];
-  const fingers = unionOf(little, ring, middle, index);
-  const all = unionOf(body, fingers);
+  const front = smoothClosed(a.littleFront, 0.5);
+  const lip = op(body, polyPath(a.heelLip), PathOp.Intersect);
+  const fingers = unionOf(little, ring, middle, index, front);
+  const all = unionOf(body, fingers, lip);
   const sec = POLE_END_LITTLE_FORE_SECTION;
   const big = Skia.Path.Make();
   big.addRect(Skia.XYWHRect(-400, -400, 800, 800));
@@ -565,6 +604,12 @@ function build(a: PoleHandEndLittleForeArt, a0: number, a1: number, M: LightMap,
     behindEdges: a.behindEdges.map((es) => many(es.map((e) => smoothOpen(e)))),
     valleys: a.valleys.map((es) => many(es.map((e) => smoothOpen(e)))),
     bendCreases: a.bendCreases.map((e) => smoothOpen(e)),
+    front,
+    lip,
+    frontEdges: many(a.littleFrontEdges.map(smoothOpen)),
+    /** The ring's near side in shade: along its inner side (turning in to the pole) and at its tip. */
+    frontShade: many(relit([E(9, 9, 8, 3.6, -0.7), E(0, 20.4, 4, 2.2, 0)], M, -1).map(ellipsePath)),
+    lipEdge: smoothOpen(a.heelLipEdge),
     creases: many(a.creases.map(smoothOpen)),
     lights: relit(a.lights, M, 1).map(ellipsePath),
     darks: relit(a.darks, M, -1).map(ellipsePath),
@@ -630,7 +675,7 @@ function EndLittleForePaint({ B, poleLook }: { B: Built; poleLook: 'study' | 'bo
   const Lm = mv(M, LIGHT.u, LIGHT.v);
   // (the fingers behind, ring → index: the backs of their first segments lie side by side as one surface — one shade,
   // the same for all; each finger's bend and middle segment carry their own shade)
-  const depthShade = [0.1, 0.1, 0.12];
+  const depthShade = [0.08, 0.15, 0.22];
   return (
     <Group>
       {/* 0. THE FAR POLE (behind the whole fist: seen only past the index finger's front) */}
@@ -680,7 +725,7 @@ function EndLittleForePaint({ B, poleLook }: { B: Built; poleLook: 'study' | 'bo
             </Path>
           </Group>
           <Path path={B.behindEdges[i]} style="stroke" strokeWidth={0.8} strokeCap="round" strokeJoin="round" color={SKIN.edge} opacity={0.42} />
-          {i < 2 ? <Path path={B.bendCreases[i]} style="stroke" strokeWidth={0.65} strokeCap="round" strokeJoin="round" color={SKIN.edge} opacity={0.26} /> : null}
+          {i === 0 ? <Path path={B.bendCreases[0]} style="stroke" strokeWidth={0.65} strokeCap="round" strokeJoin="round" color={SKIN.edge} opacity={0.26} /> : null}
         </Group>
       ))}
 
@@ -812,7 +857,67 @@ function EndLittleForePaint({ B, poleLook }: { B: Built; poleLook: 'study' | 'bo
             <Blur mm={1.8} />
           </Path>
         </Group>
+        {/* the ring's near side and the heel's pad in front: their soft contact shadows on the pole (the pole sunk in
+            the channel, never lying on the hand) */}
+        <Group transform={off(M, 1.4, 2.2)}>
+          <Path path={B.front} color="#000" opacity={0.4}>
+            <Blur mm={1.6} />
+          </Path>
+        </Group>
+        <Path path={B.lipEdge} style="stroke" strokeWidth={3.2} color="#000" opacity={0.36}>
+          <Blur mm={1.4} />
+        </Path>
       </Group>
+
+      {/* 6. THE NEAR SIDE OF THE RING, IN FRONT OF THE POLE: the heel's pad along the pole's lower edge, then the little
+          finger's base and curl coming down past the pole to its tip — the pole comes out of the closed hand */}
+      {/* (the hand's own skin, painted again as the body is: no seam) */}
+      <HandFill path={B.lip} M={M} />
+      <Group clip={B.lip}>
+        <Path path={B.lip}>
+          <LinearGradient start={vec(FOREARM_A.u, FOREARM_A.v)} end={vec(FOREARM_B.u, FOREARM_B.v)} colors={['rgba(52,26,16,0)', 'rgba(52,26,16,0.2)']} />
+        </Path>
+        {B.lights.map((l, i) => (
+          <Path key={`ll${i}`} path={l} color={SKIN.rim} opacity={i === 0 ? 0.3 : 0.16}>
+            <Blur mm={i === 0 ? 2 : 3} />
+          </Path>
+        ))}
+        {B.darks.map((l, i) => (
+          <Path key={`ld${i}`} path={l} color={SKIN.deep} opacity={i === 0 ? 0.22 : 0.24}>
+            <Blur mm={i === 0 ? 2.2 : 3.2} />
+          </Path>
+        ))}
+        <Path path={rimL(B.body, 2, M)} color={SKIN.rim} opacity={0.26}>
+          <Blur mm={1} />
+        </Path>
+        {/* the little finger's curl (its tip in front of the pole) casting its soft shadow on the pad */}
+        <Group transform={off(M, 0.8, 1.6)}>
+          <Path path={B.front} color={SKIN.deep} opacity={0.26}>
+            <Blur mm={2.2} />
+          </Path>
+        </Group>
+        {/* the pad's top, rounding up against the pole: lit a little */}
+        <Path path={B.lipEdge} style="stroke" strokeWidth={3} color={SKIN.rim} opacity={0.22}>
+          <Blur mm={1.2} />
+        </Path>
+      </Group>
+      <Group clip={B.body}>
+        <Path path={B.lipEdge} style="stroke" strokeWidth={0.85} strokeCap="round" strokeJoin="round" color={SKIN.edge} opacity={0.5} />
+      </Group>
+      <HandFill path={B.front} M={M} />
+      <Group clip={B.front}>
+        {/* round: lit on its upper left, turning away into shade toward the pole inside the ring and at the tip */}
+        <Path path={B.frontShade} color={SKIN.deep} opacity={0.3}>
+          <Blur mm={2.6} />
+        </Path>
+        <Path path={rimL(B.front, 2, M)} color={SKIN.rim} opacity={0.32}>
+          <Blur mm={1} />
+        </Path>
+        <Path path={B.littleWarm} color={WARM} opacity={0.14}>
+          <Blur mm={2.4} />
+        </Path>
+      </Group>
+      <Path path={B.frontEdges} style="stroke" strokeWidth={0.85} strokeCap="round" strokeJoin="round" color={SKIN.edge} opacity={0.5} />
     </Group>
   );
 }
@@ -825,7 +930,7 @@ export type PoleHandEndLittleForeProps = {
   s: number;
   rot?: number;
   /** The pole from `pole[0]` (behind the fist, negative) to `pole[1]` (toward the viewer: where it ENDS) mm along its
-   *  axis. Default [−600, 110]: B10's pole goes on 110 mm past this hand. */
+   *  axis. Default [−600, 420]: the near pole runs on out of the picture (B10's real end: POLE_END_LITTLE_FORE_NEAR). */
   pole?: [number, number];
   /** (option) the LEFT hand: the mirror image, re-lit so the light stays at the page's upper left. */
   mirror?: boolean;
@@ -881,7 +986,7 @@ export function poleHandEndLittleForeOutline(o: Pick<PoleHandEndLittleForeProps,
  * fist, for one cast member: drawn at (x, y) (pt — the pole's axis where it enters the fist on the little-finger side),
  * `s` pt per mm, turned `rot` radians. With `mirror`, the left hand (seen from ITS little-finger end), re-lit.
  */
-export function PoleHandEndLittleFore({ who, x, y, s, rot = 0, pole = [-600, POLE_END_LITTLE_FORE_NEAR], mirror = false, sleeve = true, poleLook = 'study', ownScale = true }: PoleHandEndLittleForeProps) {
+export function PoleHandEndLittleFore({ who, x, y, s, rot = 0, pole = [-600, 420], mirror = false, sleeve = true, poleLook = 'study', ownScale = true }: PoleHandEndLittleForeProps) {
   const B = useMemo(() => build(POLE_HAND_END_LITTLE_FORE, pole[0], pole[1], mirror || rot !== 0 ? lightMapOf(rot, mirror) : IDENTITY, sleeve), [pole[0], pole[1], rot, mirror, sleeve]);
   const paint = <EndLittleForePaint B={B} poleLook={poleLook} />;
   const art = who ? <FigureLook look={who.look}>{paint}</FigureLook> : paint;

@@ -5,8 +5,8 @@
  * (poleHandEndLittleFore.tsx — the view of the boom operator's left hand on B10 post-event overhead, the same 25° pole
  * tilt): about 3 pt/mm for each of the five cast skin tones; then 1, 0.45 and 0.15 pt/mm; then the LEFT hand (the mirror
  * image, re-lit — the one B10 uses): all five tones at 3 pt/mm and a row at 1 pt/mm; then the left hand in 'boom' pole
- * look at 1 pt/mm, each over a scene pole painted as BoomV2 paints it, ending 110 mm past the hand as B10's does (the
- * drawing's near piece must run on as the same pole and end as it does), and one such tile at 3 pt/mm.
+ * look at 1 pt/mm, each over a scene pole painted as BoomV2 paints it, going on out of the picture (the drawing's near
+ * piece must run on as the same pole), and one such tile at 3 pt/mm.
  */
 import { ScrollView, Text, View, useWindowDimensions } from 'react-native';
 import { Canvas, Group, Path, Rect, Skia } from '@shopify/react-native-skia';
@@ -23,8 +23,10 @@ const CW = CROP.x1 - CROP.x0;
 const CH = CROP.y1 - CROP.y0;
 /** The hand's origin across its window (mirrored: the art runs the other way). */
 const ox = (s: number, mirror: boolean) => (mirror ? CROP.x1 * s : -CROP.x0 * s);
-/** (boom) the pole as B10 has it at this hand: from far behind to its end 110 mm past the hand. */
-const BOOM_POLE: [number, number] = [-70, POLE_END_LITTLE_FORE_NEAR];
+/** (boom) the scene's pole going on past the hand, out of the picture. (B10's own end, POLE_END_LITTLE_FORE_NEAR mm past
+ *  the little-finger side, would land on the hand: that is the placer's to settle.) */
+const BOOM_POLE: [number, number] = [-70, 420];
+void POLE_END_LITTLE_FORE_NEAR;
 
 /** The scene's pole under a placed hand, as BoomV2's PoleSeg paints it (dark rim, tube, lit band, round caps), on the
  *  drawing's own axis through (x, y), mirrored with the hand, ending where B10's pole ends. */
@@ -125,7 +127,7 @@ export function PoleHandEndLittleForeStudy() {
       <Label t="THE LEFT HAND, 0.45 pt/mm" />
       <Row s={0.45} gap={8} width={width} mirror />
       <View style={{ height: 18 }} />
-      <Label t={`THE LEFT HAND in 'boom' pole look over the scene's pole (no sleeve of its own; the pole ends 110 mm past the hand, as B10's does), ${one.toFixed(2)} pt/mm`} />
+      <Label t={`THE LEFT HAND in 'boom' pole look over the scene's pole (no sleeve of its own; the scene's pole going on), ${one.toFixed(2)} pt/mm`} />
       <Row s={one} gap={8} width={width} mirror boom />
       <View style={{ height: 8 }} />
       <Label t={`(check) the same, ${big.toFixed(2)} pt/mm`} />

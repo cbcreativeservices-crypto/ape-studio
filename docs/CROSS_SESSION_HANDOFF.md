@@ -728,6 +728,24 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-24 20:07 · ccode · b77edea2
+changed: Stage Plot rulings (owner 2026-11-23): phantom No for dynamic and ribbon mics, solo compact PDF on 1 page, table header keeps 3 rows in the print sheet [MD:D60]
+affects other side: nothing on the server. Stage Plot packets: a dynamic or ribbon microphone prints "no phantom power"; an active ribbon prints required with its note; the solo compact PDF is 1 page. JS only.
+needs: nothing from A. Not published; rides OTA 16 on the owner's word. Open with the owner: the browser print view of the solo compact is still 2 pages [MD:D60].
+
+
+### 2026-11-24 20:07 · ccode · 2532b1c7
+changed: Glossary card: 56 lab-instruction lines hidden on cards only, one closing line added (owner 2026-11-23) [MD:D82]
+affects other side: nothing on the server. Glossary cards hide 56 lab-instruction lines and end the lab section with one closing line; the labs and content.ts are unchanged. 4 of the 56 strings differ from the list taken from forum-next-build (distortion 1, 6; stereo 1; fm 4), matched on this branch's wording.
+needs: nothing from A. The owner decides the timing: OTA 16 or the 1.0.1 build [MD:D82].
+
+
+### 2026-11-24 20:07 · ccode · 7895613f
+changed: Figures D78: two more pole hands drawn alone (little-finger end: back side, front of the fist) [MD:D78]
+affects other side: nothing on the server. Covers 8a35dab1 too (no entry of its own): drawn hands for the boom operator and the timpanist, lesson pictures only.
+needs: nothing. Not published; OTA 16 waits for the owner's word [MD:D78].
+
+
 ### 2026-11-24 18:40 · ccode · (no commit: log only)
 changed: Logged from Comp A's brief of 2026-11-24 (Downloads/2026-11-24_CCODE_BRIEF_1.html). SERVER-ONLY changes Comp A already made, no app change and no OTA: (1) 2026-11-22: Comp B round 2 fixes applied, 68 questions and 18 glossary terms; verify check clean. (2) 2026-11-23: duplicate-card merge (D30's server half) for the 2,158 high-confidence pairs: the duplicate's name went into the kept card's also_called; its 9,844 questions in that topic moved to the kept card; its topic link was removed (the card row stays); its 11 pictures moved; study progress merged, completion % raised only, never lowered; topics went from 32,407 to 30,249 linked terms; the offline glossary drops the merged cards at its weekly recheck; the 875 medium-confidence pairs are with Comp B for a strict "same thing?" check first. Rollback: private._mhi_rollback_20261123(). (3) 2026-11-23: two glossary indexes, idx_glossary_term_trgm (GIN trigram on term; pg_trgm in schema extensions) and idx_glossary_also_called_gin (GIN on also_called), because signed-out term lookup timed out at the 3 s anon limit (HRTF 3.2 s); they cover GlossaryTermPopup.tsx .ilike('term', ...), lookupByOtherName .overlaps('also_called', ...) and forum/api.ts glossaryMatches; verified as role anon: HRTF 56 ms, Audio listener 27 ms, also_called lookup 9 ms. Rollback: drop the two indexes. ALSO this session, read-only on the server: the engineer's 46 new WAVs (bucket lab-audio-source, created on or after 2026-11-15 UTC) downloaded to Downloads/2026-11-23_ENGINEER_WAVS with 00_MANIFEST.csv: 46 files, 48,426,982 bytes, 0 size mismatches, 46 of 46 md5 equal to the bucket's eTag [MD:D61].
 affects other side: nothing to change. The WAVs are ready for Comp A to measure; nothing was renamed, placed in a lab or changed on the server, and the upload portal was not touched.
