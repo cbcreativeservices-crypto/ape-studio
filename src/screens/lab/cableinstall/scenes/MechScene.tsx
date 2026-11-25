@@ -331,6 +331,15 @@ const BendArt = memo(function BendArt({
   );
 });
 
+/** A CHECK BEND verdict speaks for the bend it was checked at, and only that
+ *  bend (owner 2026-11-25, fix-first 15): once the slider or GENTLER/TIGHTER
+ *  moves the bend, the old "Meets the spec" / "Too tight" card and the MEETS
+ *  SPEC ✓ lock no longer describe what is drawn, so they clear until the next
+ *  check. Credit already earned is kept (the card's ✓ header stays). */
+export function bendCheckIsCurrent(verdict: 'good' | 'bad' | null, checkedT: number | null, t: number): boolean {
+  return verdict != null && checkedT != null && Math.abs(checkedT - t) < 1e-9;
+}
+
 /* ── A — one bend exercise (owns its slider so a drag re-renders one card) ─ */
 function BendCard({
   ex,
@@ -353,6 +362,11 @@ function BendCard({
 }) {
   const m = useCiMotion();
   const [t, setT] = useState(initialT);
+  // The bend the shown verdict was checked at (a completed stage arrives checked
+  // at its starting bend). See bendCheckIsCurrent.
+  const [checkedT, setCheckedT] = useState<number | null>(verdict ? initialT : null);
+  const verdictCurrent = bendCheckIsCurrent(verdict, checkedT, t);
+  const locked = done && verdictCurrent; // MEETS SPEC ✓ only beside the bend that met it
   const [dragging, setDragging] = useState(false);
   const dragRef = useRef(false);
 
@@ -436,15 +450,19 @@ function BendCard({
           <Text style={styles.nudgeText}>TIGHTER ▸</Text>
         </Pressable>
         <Pressable
-          style={[styles.checkBtn, done && styles.checkBtnDone]}
-          onPress={() => !done && onCheck(diaRef.current)}
-          disabled={done}
+          style={[styles.checkBtn, locked && styles.checkBtnDone]}
+          onPress={() => {
+            if (locked) return;
+            setCheckedT(t);
+            onCheck(diaRef.current);
+          }}
+          disabled={locked}
           accessibilityRole="button"
-          accessibilityState={{ disabled: done }}
-          aria-disabled={done}
-          accessibilityLabel={done ? `${ex.cableName}: bend meets its specification` : `Check the ${ex.cableName} bend against its specification`}
+          accessibilityState={{ disabled: locked }}
+          aria-disabled={locked}
+          accessibilityLabel={locked ? `${ex.cableName}: bend meets its specification` : `Check the ${ex.cableName} bend against its specification`}
         >
-          <Text style={[styles.checkText, done && { color: '#0a1a0f' }]}>{done ? 'MEETS SPEC ✓' : 'CHECK BEND'}</Text>
+          <Text style={[styles.checkText, locked && { color: '#0a1a0f' }]}>{locked ? 'MEETS SPEC ✓' : 'CHECK BEND'}</Text>
         </Pressable>
       </View>
   );
@@ -498,7 +516,7 @@ function BendCard({
         onDragActive={onDragActive}
       />
       {nudgeRow}
-      {verdict ? (
+      {verdict && verdictCurrent ? (
         <Appear>
           <RuleFeedback
             ruleId="mech-bend-radius"
@@ -981,7 +999,10 @@ export function MechScene({ width, completed, onComplete, openSources }: CiModul
   const checkBend = (i: number, dia: number) => {
     const ex = CI_BEND_EXERCISES[i];
     const ok = dia + 1e-6 >= ex.minRadiusDia;
-    if (!ok) badBendRef.current += 1;
+    // Only a bend that has not yet met its spec scores a miss: since a bend can be
+    // re-checked after it passed (fix-first 15), a later "Too tight" try is
+    // practice and must not lower the stage score (owner 2026-11-25, round 2).
+    if (!ok && !bendDone[i]) badBendRef.current += 1;
     const nextDone = bendDone.map((v, j) => (j === i ? v || ok : v));
     setBendDone(nextDone);
     setBendVerdict((arr) => arr.map((v, j) => (j === i ? (ok ? 'good' : 'bad') : v)));
@@ -1042,7 +1063,7 @@ export function MechScene({ width, completed, onComplete, openSources }: CiModul
         ))}
         <Text style={styles.progressLine} accessibilityLiveRegion="polite">
           {bendsDone >= CI_BEND_EXERCISES.length ? '✓ ' : ''}
-          {bendsDone === CI_BEND_EXERCISES.length ? 'Every bend meets its spec' : `${CI_BEND_EXERCISES.length - bendsDone} bend${CI_BEND_EXERCISES.length - bendsDone === 1 ? '' : 's'} still outside spec`}
+          {bendsDone === CI_BEND_EXERCISES.length ? 'Every bend has met its spec' : `${CI_BEND_EXERCISES.length - bendsDone} bend${CI_BEND_EXERCISES.length - bendsDone === 1 ? '' : 's'} still outside spec`}
         </Text>
         {bendsDone >= CI_BEND_EXERCISES.length ? (
           <Appear>

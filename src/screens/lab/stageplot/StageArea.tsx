@@ -402,7 +402,7 @@ export function StageArea() {
       <RackUnit stage={{ render: stage, size: 'L', phoneHeight, minWell, hideDragTag: true, fullScreen: true }} params={params} initialParam="zoom">
         <View style={styles.well}>
           <Text style={styles.status} accessibilityLiveRegion="polite">
-            {`${p.objects.length === 1 ? '1 object' : `${p.objects.length} objects`} on the stage. ${sel ? `Selected: ${selName} (${stageWhere(sel, p.stage)}, ${stageFacingWord(sel.rot, p.stage)}).` : 'Nothing is selected.'}`}
+            {`${p.objects.length === 1 ? '1 object' : `${p.objects.length} objects`} on the stage. ${sel ? `Selected: ${selName} (${stageWhere(sel, p.stage)}, ${stageFacingWord(shownRot, p.stage)}).` : 'Nothing is selected.'}`}
           </Text>
           {leftOut > 0 || codesOut > 0 || crowded > 0 || numbersOut > 0 || peopleOut > 0 || shortNames.count > 0 ? (
             <Note>

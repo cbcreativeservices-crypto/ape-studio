@@ -102,6 +102,22 @@ const MODE_COLOR: Record<Mode, string> = {
 const TAP_RESET_GAP_MS = 2500;
 const MAX_TAPS = 16;
 
+/** AVG (5 s) blanks 5 s after the last tap, but never while HOLD is on: HOLD
+ *  freezes every Tap result (round 2, 2026-11-25). Returns the clear timer's
+ *  delay, or null for no timer (held). After a release it is only what is left
+ *  of the 5 s, so a hold never extends the average's life. */
+export function tapAvgClearDelayMs(lastTapMs: number, nowMs: number, held: boolean): number | null {
+  if (held) return null;
+  return Math.max(0, 5000 - Math.max(0, nowMs - lastTapMs));
+}
+
+/** Is the AVG (5 s) window still live (under 5 s since the last tap)? Only then
+ *  is the average recomputed: HOLD re-runs the effect and must freeze what is
+ *  on screen, never bring back an average that already blanked. */
+export function tapAvgWindowLive(lastTapMs: number, nowMs: number): boolean {
+  return nowMs - lastTapMs < 5000;
+}
+
 type TapStats = {
   freq: number; // Hz
   periodMs: number;
@@ -1167,18 +1183,22 @@ function TapMode({ onOpenLibrary, help, helpAll }: { onOpenLibrary: () => void; 
   );
 
   // Recompute the 5 s trailing average whenever the taps change, and (re)arm the
-  // 5 s clear timer so it holds for 5 s past the last tap.
+  // 5 s clear timer so it holds for 5 s past the last tap. HOLD freezes it too
+  // (round 2, 2026-11-25): while held no clear timer runs; on release the
+  // timer gets only what is left of the 5 s (see tapAvgClearDelayMs).
   useEffect(() => {
     if (taps.length < 2) return; // keep the last value visible until the timer clears it
     const last = taps[taps.length - 1];
     const recent = taps.filter((t) => last - t <= 5000);
-    if (recent.length >= 2) {
+    if (recent.length >= 2 && tapAvgWindowLive(last, Date.now())) {
       const span = recent[recent.length - 1] - recent[0];
       if (span > 0) setAvg5s((recent.length - 1) / (span / 1000)); // events/sec = Hz
     }
     if (avgClearTimer.current) clearTimeout(avgClearTimer.current);
-    avgClearTimer.current = setTimeout(() => setAvg5s(null), 5000);
-  }, [taps]);
+    avgClearTimer.current = null;
+    const delay = tapAvgClearDelayMs(last, Date.now(), held);
+    if (delay != null) avgClearTimer.current = setTimeout(() => setAvg5s(null), delay);
+  }, [taps, held]);
 
   const onTap = useCallback(() => {
     if (held) return;

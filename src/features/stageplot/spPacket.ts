@@ -448,18 +448,17 @@ export function spBadgeRuns(badges: string[]): string[] {
   return [...out, ...other];
 }
 
-/** The name printed beside an object. An object the band left with no name
- *  prints NO name: the editor's drawing and the packet agree. (A monitor
- *  device with no name of its own on the symbol takes the device's name.) */
+/** The name printed beside an object, by the same rule as the editor's drawing
+ *  (stageLinks `stageName`). An object the band left with no name prints NO
+ *  name, a monitor symbol too: "Name on the plot" says "Leave it empty to print
+ *  no name", and the drawing shows none. (Until 2026-11-25, round 2, a monitor
+ *  symbol with an empty name printed its device's name here only, so the paper
+ *  and the screen disagreed.) */
 function objectLabel(p: SpProject, o: SpObject): string {
   let label = o.label.trim();
   if (o.kind === 'performer') label = spPerformer(p, o.performerId)?.name.trim() || label;
   // a stage box prints its own name and size ("SB2 16/8", round 3)
   else if (spBox(p, o.boxId)) label = spBoxPlotLabel(spBox(p, o.boxId) as NonNullable<ReturnType<typeof spBox>>);
-  else if (!label && o.deviceId) {
-    const d = p.devices.find((x) => x.id === o.deviceId);
-    label = d ? d.label.trim() || SP_DEVICE_WORD[d.type] : '';
-  }
   // a choir prints its size after its name (round 3, owner 2026-11-13:
   // "build the remaining held items too"): "Choir (24 singers, 3 rows)"
   const size = [o.kind === 'choir' ? spChoirCountWords(spChoirOf(o)) : '', o.sizeNote.trim()].filter(Boolean).join('; ');
@@ -1723,7 +1722,15 @@ function plotSection(p: SpProject, stamp: string, kind: SpPacketKind, generatedA
 
   const blocks: SpDocBlock[] = [{ t: 'facts', rows: facts }, { t: 'plot', plot: spPlotDoc(p, { brief: kind === 'compact', roomy: kind === 'plot' }) }];
 
-  const stageNotes = p.objects.filter((o) => o.note.trim()).map((o) => `${objectLabel(p, o) || 'An object with no name'}: ${o.note.trim()}`);
+  // A note must say what it is about: a monitor symbol printed with no name on
+  // the plot is still named by its device here (round 2 check, 2026-11-25).
+  const noteSubject = (o: SpObject): string => {
+    const own = objectLabel(p, o);
+    if (own) return own;
+    const d = o.deviceId ? p.devices.find((x) => x.id === o.deviceId) : undefined;
+    return d ? d.label.trim() || SP_DEVICE_WORD[d.type] : 'An object with no name';
+  };
+  const stageNotes = p.objects.filter((o) => o.note.trim()).map((o) => `${noteSubject(o)}: ${o.note.trim()}`);
   // each choir on risers: the riser units it needs, and how close the
   // drawing stands the singers (round 3; venues supply risers from this)
   for (const o of p.objects) if (o.kind === 'choir' && spChoirRiserNote(spChoirOf(o))) stageNotes.push(`${objectLabel(p, o) || 'Choir'}: ${spChoirRiserNote(spChoirOf(o))}`);

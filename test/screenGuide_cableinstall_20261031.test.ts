@@ -160,7 +160,7 @@ describe('2. each guide quotes its screen’s real names', () => {
     know: ['THE CABLE WORKBENCH', 'PERMANENT', 'TEMPORARY', 'PERM · TEMP', 'SECTION', 'CHECK BEFORE ROUTING', 'SCENARIO DRILL — WHAT ARE YOU INSTALLING?', '1 · WHAT CABLE IS THIS?', '2 · TEMPORARY OR PERMANENT?', '3 · THE LIKELY PATHWAY?', '4 · THE KEY RISK?', 'THEN THE PAPERWORK', 'Microphone cable', 'Fiber-optic cable'],
     route: ['Scale: 20 units = 1 m · person 1.75 m', 'CABLE: ', 'FINISHED', 'X-RAY', 'WHICH ROUTE DO YOU PULL?', 'PULL ', 'THE VERDICT — ALL THREE ROUTES, SCORED', '✕ REJECTED — SAFETY', 'Across the hallway floor', '×1.0', '/100', '▸ WHY?'],
     mech: ['A · BEND RADIUS', 'SIMULATED SPEC', 'B · PULLING', 'C · RESTRAINT', 'LOOSE', 'SECURE', 'EXCESSIVE', 'BEND TIGHTNESS', '◂ GENTLER', 'TIGHTER ▸', 'CHECK BEND', 'MEETS SPEC ✓', 'Steady smooth pull', 'Pull harder through the snag', 'Hard yank around the corner', 'Pull it through by the connector', 'STRAP TENSION', 'SET LOOSE', 'SET SECURE', 'SET EXCESSIVE'],
-    supports: ['A · FOUR JOBS', 'SUPPORT', 'PATHWAY', 'PROTECTION', 'MANAGEMENT', 'B · THE SORT', 'C · SUPPORT SPACING', 'MAX SAG ½ UNIT', 'APPROVE', 'REJECT', 'NEXT ITEM ›', 'FINISH SORT ›', 'RETRY THE SORT', 'RUN THE SORT AGAIN', 'CHECK SPACING'],
+    supports: ['A · FOUR JOBS', 'SUPPORT', 'PATHWAY', 'PROTECTION', 'MANAGEMENT', 'B · THE SORT', 'C · SUPPORT SPACING', 'MAX SAG', '½ UNIT', 'APPROVE', 'REJECT', 'NEXT ITEM ›', 'FINISH SORT ›', 'RETRY THE SORT', 'RUN THE SORT AGAIN', 'CHECK SPACING'],
     rack: ['RACK', 'PHASE A — INSPECT', 'PHASE B — DRESS', 'PHASE C — SERVICE', 'PHASE D — MAINTAIN', 'FIX', '▸ SUSPECT LIST', 'RACK CONDEMNED — NOW DRESS IT RIGHT ›', 'DSP INPUT 7', 'REPLACE THIS CABLE ✓', 'STRIP THE RACK', 'CUT THE DRESSING', 'USE THE DRESSING', 'FORCE IT', 'A-007', 'THE SAME JOB, BEFORE'],
     walls: ['ROOM', 'X-RAY WALL VIEW', '1 · SURFACE RACEWAY', '2 · WALL PENETRATION', '3 · THE DOORWAY', '4 · SHARP EDGE', 'NEXT WALL ›', 'TEMPORARY', 'PERMANENT', 'Wedge the door open for the event', 'Wrap the edge in tape and move on', 'Install a bushing / grommet on the opening'],
     ceiling: ['CEILING', 'ABOVE CEILING · AS FOUND', 'FINISHED VIEW', 'EXERCISE 1 · FIND THE PROBLEMS', 'EXERCISE 2 · INSTALL THE ROUTE', 'SUSPECT LIST', 'CONTINUE TO THE INSTALL ›', '1 · PICK THE PATHWAY / SUPPORT', '2 · PLACE J-HOOKS ON THE 12-UNIT SPAN', 'CHECK SPACING', 'CONFIRM THE ROUTE ✓'],
@@ -260,13 +260,19 @@ describe('3. every TRY THIS number is one the screen prints', () => {
     assert.equal(maxGap([4, 8]), 4);
     assert.equal(maxGap([2, 6, 10]), 4);
     // The drawn dip: a 4-unit span sags exactly TO the MAX SAG ½ UNIT line (not
-    // level); 6- and 8-unit spans hit the drawing's cap, past the line.
-    assert.match(sc, /const depthPx = span > 0 \? Math\.min\(27, SAG_LIMIT_UNITS \* Math\.pow\(span \/ SPEC_EVERY, 2\) \* UNIT\) : 0;/);
+    // level); past it every longer span dips deeper (owner 2026-11-25, fix-first 15
+    // round 2: the old 27 px cap drew 6, 8, 10 and 12 units with the same sag).
+    // The label now reads on two lines, MAX SAG / ½ UNIT, so the deeper sag misses it.
+    assert.match(sc, /const depthPx = sagDepthPx\(span, SPEC_EVERY, SAG_LIMIT_UNITS \* UNIT, SAG_ROOM_PX\);/);
     assert.match(sc, /y1=\{CABLE_Y \+ SAG_LIMIT_UNITS \* UNIT\}/);
     const unitPx = Number(/const UNIT = (\d+(?:\.\d+)?);/.exec(sc)?.[1]);
-    const dip = (span: number) => Math.min(27, 0.5 * (span / 4) ** 2 * unitPx);
-    assert.equal(dip(4), 0.5 * unitPx, '4-unit span dips just to the line');
-    assert.ok(dip(6) > 0.5 * unitPx && dip(6) === dip(8), '6 and 8 both capped, past the line');
+    const room = Number(/const SAG_ROOM_PX = (\d+(?:\.\d+)?);/.exec(sc)?.[1]);
+    const m = sc.match(/export function sagDepthPx\([\s\S]*?\n\}\n/);
+    assert.ok(m);
+    const dip = new Function(`${m[0].replace('export ', '').replace(/: number/g, '')}\nreturn sagDepthPx;`)() as (s: number, e: number, l: number, r: number) => number;
+    const d = (span: number) => dip(span, 4, 0.5 * unitPx, room);
+    assert.equal(d(4), 0.5 * unitPx, '4-unit span dips just to the line');
+    assert.ok(d(6) > 0.5 * unitPx && d(6) < d(8) && d(8) < d(10) && d(10) < d(12), 'past the line, longer spans dip deeper');
     assert.ok(!tryOf('supports').includes('level'));
     assert.match(sc, /P\{i \+ 1\}/);
     assert.ok(tryOf('supports').includes('P3 (6u)') && tryOf('supports').includes('P2 and P4 (4u, 8u)'));

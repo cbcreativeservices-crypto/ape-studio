@@ -32,6 +32,7 @@ import { BEATS_PER_PHRASE, barInPhrase, phaseOffset, playedBpm } from '../model/
 import type { Booth } from '../model/djModel';
 import { useBoothKit } from './shared';
 import { beatAligned, beatOffsetText } from './fixGuards';
+import { plainTempoDeck } from './tempoDeck';
 
 const TERMS = [
   { term: 'BPM', def: 'Beats per minute: the tempo. 122 BPM is about two beats a second.' },
@@ -152,7 +153,10 @@ function PageTempo({ ctx }: { ctx: PageCtx }) {
     x = cueAtBar(x, 'B', 'glassHarbour', 1);
     return {
       ...x,
-      decks: { A: { ...x.decks.A, pitch: 0 }, B: { ...x.decks.B, pitch: 0 } },
+      // plain players, as the page teaches (owner 2026-11-25, fix-first 15):
+      // key lock off, no key shift, ±8 % — earlier screens leave B key-locked
+      // and Screen 14 can leave a key shift and ±16 %.
+      decks: { A: plainTempoDeck(x.decks.A), B: plainTempoDeck(x.decks.B) },
       ch: { 1: { ...x.ch[1], fader: 0.85, xf: 'THRU', cue: false }, 2: { ...x.ch[2], fader: 0, xf: 'THRU', cue: true } },
       mixer: { ...x.mixer, splitCue: true, phones: 0.45 },
       perspective: 'PHONES',

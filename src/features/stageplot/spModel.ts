@@ -791,10 +791,22 @@ export function spAddDevice(p: SpProject, f: Partial<Omit<SpDevice, 'id'>> & { t
   });
   return { p: q, id };
 }
+/** Change a device. A monitor device has ONE name (owner 2026-11-25, fix-first
+ *  15): a new name also reaches every symbol drawn for it, so the stage
+ *  drawing, the object list and the printed plot say what the monitor plan
+ *  says, whichever area renamed it (the Monitors sheet, a performer rename in
+ *  Setup, or the Stage). A symbol the band left with NO name keeps none, and an
+ *  empty new name changes no symbol, as on the Stage side. */
 export const spUpdateDevice = (p: SpProject, id: SpId, patch: Partial<Omit<SpDevice, 'id'>>): SpProject =>
   spEdit(p, (d) => {
     const x = d.devices.find((y) => y.id === id);
-    if (x) Object.assign(x, patch);
+    if (!x) return;
+    Object.assign(x, patch);
+    const name = patch.label?.trim() ?? '';
+    // The device keeps the same trimmed name its symbols get (round 2,
+    // 2026-11-25), so the monitor plan and the drawing never differ by a space.
+    if (patch.label !== undefined) x.label = name;
+    if (name) for (const o of d.objects) if (o.deviceId === id && o.label.trim()) o.label = name;
   });
 /** Remove a device. Its icon, if it has one, stays as a drawing. */
 export const spRemoveDevice = (p: SpProject, id: SpId): SpProject =>

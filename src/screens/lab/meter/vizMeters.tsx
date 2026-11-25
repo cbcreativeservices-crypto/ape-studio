@@ -3088,6 +3088,10 @@ export function PeakAvgMeterView(p: {
    *  (black ground), no HOLD/MONO footer. Same engine, same shared values — the
    *  readouts can never disagree with the home meter. Default off. */
   stack?: boolean;
+  /** RESET PEAK HOLD NOW (owner 2026-11-25, fix-first 15): bump this number to
+   *  drop the held peak (cap + PK readout) back to the current peak at once.
+   *  0/omitted = never reset by the parent. */
+  holdResetKey?: number;
 }) {
   const w = p.width;
   const h = p.height ?? 260;
@@ -3260,6 +3264,16 @@ export function PeakAvgMeterView(p: {
     }
     return lPk.value;
   }, [p.phase, livePeak, liveRms, holdSecs, showCap, LOOP, splOffset]);
+  // RESET PEAK HOLD NOW (owner 2026-11-25, fix-first 15): the native reset clears
+  // only the engine's number; this meter keeps its own `lHold`, so the parent
+  // bumps `holdResetKey` and the held peak drops to the current peak right away
+  // (the cap and the PK readout both read `lHold`, so both follow).
+  const holdResetKey = p.holdResetKey ?? 0;
+  useEffect(() => {
+    if (holdResetKey === 0) return;
+    lHold.value = lPk.value;
+    lHoldAge.value = 0;
+  }, [holdResetKey, lHold, lHoldAge, lPk]);
 
   // PEAK loudness fill — segments ABOVE the average level up to the peak. The
   // region below the average is left for the purple avg fill (litAvg), so the two

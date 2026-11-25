@@ -380,7 +380,10 @@ export function InputsArea() {
           ) : null}
 
           <Small>{SP_INPUTS_DEEPER_LINE}</Small>
-          <OrderPanel patchId={patchId} fold={fold('order')} />
+          {/* key: each list (House / Band) reads its OWN "keep reserved channels
+              free" choice and its own "not read as a channel" note when you
+              switch lists (round 2, 2026-11-25; R2-SP2-07). */}
+          <OrderPanel key={`${p.id}:${patchId}`} patchId={patchId} fold={fold('order')} />
           <DiPanel selectedId={popup?.k === 'di' ? popup.id : ([...marked][0] ?? null)} onOpen={openDi} fold={fold('di')} />
           <BoxPanel selectedId={popup?.k === 'box' ? popup.id : ([...marked][0] ?? null)} onOpen={openBox} fold={fold('box')} />
           <SummaryPanel onOpenIssue={goToIssue} fold={fold('summary')} />

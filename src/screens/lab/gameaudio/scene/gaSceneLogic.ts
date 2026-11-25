@@ -116,7 +116,10 @@ export function gaSoundingOf(s: GaState, now: number = s.t): GaSounding[] {
             return { id: v.v, start: v.born + v.delayS, len: gaNominalSeconds(v.asset), db: lv <= 0 ? -120 : gainDb(place * lv) };
           })
         : [];
-    const speed = i.event === 'generator' ? (s.machines.find((m) => m.id === i.owner)?.speed ?? 0.4) : null;
+    // the SAME rule as the sound (gaModel speedOf): an orphaned loop keeps the
+    // speed its removed machine had, so its rings keep the pace you hear
+    // (round 2, 2026-11-25; they used to fall back to the 0.4 default)
+    const speed = i.event === 'generator' ? (s.machines.find((m) => m.id === i.owner)?.speed ?? i.speed ?? 0.4) : null;
     const prev = out.get(key);
     if (!prev) {
       out.set(key, { key, name: alarm ? 'the alarm' : (SOURCE_NAME[i.owner] ?? i.owner), owner: i.owner, at: i.pos, kind, db, virtual, stolen, muted, muffled: ob.obstructed, speed, alarm, ids: [i.id], rings });

@@ -19,6 +19,7 @@
  */
 import { useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { Group, RoundedRect } from '@shopify/react-native-skia';
 import { colors } from '../../../../theme/tokens';
 import { LabChip } from '../../LabShell';
@@ -257,8 +258,21 @@ function PageHybrid({ ctx }: { ctx: PageCtx }) {
   const leader = counterBpm(booth, 1);
   const bpm = dmBpm(booth);
   const phase = dmPhase(booth);
-  // drift on INTERNAL, read now (the page re-renders with every chunk)
-  const drift = dm.sync === 'INT' && running ? dmDrift(booth, boothNow()) : null;
+  // drift on INTERNAL, read now. The page used to re-render only with each sound
+  // chunk (about every 8 s), so the drift jumped in steps; while it can drift a
+  // clock tick re-reads it 4 times a second, as Screens 10 and 11 do (round 2,
+  // 2026-11-25), so it creeps the way the drum machine does.
+  const driftLive = dm.sync === 'INT' && running;
+  const [, setDriftTick] = useState(0);
+  const bumpDrift = (v: number) => setDriftTick(v);
+  useAnimatedReaction(
+    () => (driftLive ? Math.floor(motion.clock.value * 4) : -1),
+    (n, p) => {
+      if (n !== p) runOnJS(bumpDrift)(n);
+    },
+    [driftLive],
+  );
+  const drift = driftLive ? dmDrift(booth, boothNow()) : null;
   const intArmed = useRef(false);
   const driftSeen = useRef(false);
   if (ready && startMsg === 'armedInt' && dm.sync === 'INT') intArmed.current = true;

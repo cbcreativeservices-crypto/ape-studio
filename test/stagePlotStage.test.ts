@@ -1422,7 +1422,9 @@ describe('the Stage screen', () => {
     assert.match(list, /kind\.toLowerCase\(\) === name\.toLowerCase\(\) \? '' : kind/);
     // a short status line
     // (2026-11-13, on purpose: the stage is passed, so the words follow its shape)
-    assert.match(shown, /\$\{sel \? `Selected: \$\{selName\} \(\$\{stageWhere\(sel, p\.stage\)\}, \$\{stageFacingWord\(sel\.rot, p\.stage\)\}\)\.` : 'Nothing is selected\.'\}/);
+    // owner 2026-11-25, fix-first 15 (round 2): the facing words follow the TURN
+    // fader during the drag (shownRot), as the drawing does, not the old sel.rot
+    assert.match(shown, /\$\{sel \? `Selected: \$\{selName\} \(\$\{stageWhere\(sel, p\.stage\)\}, \$\{stageFacingWord\(shownRot, p\.stage\)\}\)\.` : 'Nothing is selected\.'\}/);
     // removing asks in place first, as the Inputs area does
     assert.match(shown, /<RemoveStep\s/);
   });

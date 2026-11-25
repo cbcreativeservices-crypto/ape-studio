@@ -217,7 +217,7 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
       'Pass the sort and meet the spacing spec to finish the stage.',
     ],
     changes: [
-      'Sag grows with the square of the unsupported span: double the span, four times the dip. Past the limit the drawing shows its deepest dip and glows strained.',
+      'Sag grows with the square of the span: double the span, four times the dip. Past the limit the dip glows strained and is drawn compressed, not to scale.',
       'The spec allows at most 4 units between supports; a longer span draws strained. Extra supports pass, but cost hardware.',
       'Pipes, tiles, grid wires and other systems’ conduit are rejected: they belong to another trade or hold up the ceiling.',
     ],

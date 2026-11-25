@@ -873,7 +873,10 @@ export function FireScene({ completed, onComplete, openSources, head }: CiModule
                   verdict={solvedBy(selSpace.id, selAns, selSpace.correctIdx) ? 'correct' : 'wrong'}
                   text={verdictText(selSpace.id, selAns, selSpace.correctIdx, selSpace.reveal, selSpace.why)}
                 />
-                <RuleFeedback ruleId={selSpace.ruleId} verdict={selAns === selSpace.correctIdx ? 'good' : 'bad'} openSources={openSources} />
+                {/* the rule card agrees with the banner above it (round 2,
+                    2026-11-25): ✓ once the space is solved, on a retry too.
+                    The scored FIRST pick still decides the stage score. */}
+                <RuleFeedback ruleId={selSpace.ruleId} verdict={solvedBy(selSpace.id, selAns, selSpace.correctIdx) ? 'good' : 'bad'} openSources={openSources} />
               </Appear>
             ) : null}
           </View>
@@ -946,7 +949,7 @@ export function FireScene({ completed, onComplete, openSources, head }: CiModule
                         verdict={solvedBy(q.id, ans, q.correctIdx) ? 'correct' : 'wrong'}
                         text={verdictText(q.id, ans, q.correctIdx, q.reveal, q.why)}
                       />
-                      <RuleFeedback ruleId={q.ruleId} verdict={ans === q.correctIdx ? 'good' : 'bad'} openSources={openSources} />
+                      <RuleFeedback ruleId={q.ruleId} verdict={solvedBy(q.id, ans, q.correctIdx) ? 'good' : 'bad'} openSources={openSources} />
                     </Appear>
                   ) : null}
                 </Appear>
