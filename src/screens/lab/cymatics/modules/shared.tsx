@@ -8,7 +8,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, fonts } from '../../../../theme/tokens';
 import { rampColors } from '../../../../features/tools/levelColor';
-import { effectiveQ, plateModes, readResonance, sampleField, type PlateMode, type PlateSpec } from '../../../../features/cymatics/plateModes';
+import { effectiveQ, plateModes, plateRefQ, readResonance, sampleField, type PlateMode, type PlateSpec } from '../../../../features/cymatics/plateModes';
 import { requireVizPlate, skiaAvailable } from '../skiaGate';
 import type { PlateViewMode } from '../vizPlate';
 import { useStageTextScale } from '../../rack/stageAspect';
@@ -71,10 +71,12 @@ export function PlateDemo({
 }) {
   const viz = skiaAvailable ? requireVizPlate() : null;
   const N = 48;
-  const { grid, strength } = useMemo(() => {
+  const { grid, strength, near } = useMemo(() => {
     const modes = plateModes(spec, 14);
     const Q = effectiveQ(spec.material, spec.damping);
-    return { grid: sampleField(spec, modes, hz, Q, N), strength: readResonance(hz, modes, Q).strength };
+    // RESPONSE against the studio's fixed reference (plateRefQ; checker Y5); NEAR forms the figure.
+    const r = readResonance(hz, modes, Q, plateRefQ(spec.material));
+    return { grid: sampleField(spec, modes, hz, Q, N), strength: r.strength, near: r.near };
   }, [spec, hz]);
   const h = height ?? Math.round(width * 0.66);
   if (!viz) {
@@ -92,6 +94,7 @@ export function PlateDemo({
       grid={grid}
       N={N}
       strength={strength}
+      near={near}
       amplitude={0.8}
       view={view}
       running={running}

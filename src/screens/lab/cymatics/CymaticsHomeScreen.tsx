@@ -17,7 +17,7 @@ import { ScreenGuideHost } from '../../../features/lab/screenGuide';
 import { CYMATICS_END_GUIDE, CYMATICS_HOME_GUIDE } from './cymaticsScreenGuides';
 import type { RootStackParamList } from '../../../navigation/types';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
-import { DEFAULT_PLATE, effectiveQ, plateModes, readResonance, sampleField } from '../../../features/cymatics/plateModes';
+import { DEFAULT_PLATE, effectiveQ, plateModes, plateRefQ, readResonance, sampleField } from '../../../features/cymatics/plateModes';
 import { CYMATICS_MODULES, PLANNED_AREAS, type CymaticsModuleId } from './modules/registry';
 import { useCymaticsEnd } from './useCymaticsEnd';
 import { requireVizPlate, skiaAvailable } from './skiaGate';
@@ -59,12 +59,14 @@ function HeroPlate({ width }: { width: number }) {
   const focused = useIsFocused();
   // The classic square aluminum plate parked on its second excitable mode.
   const spec = DEFAULT_PLATE;
-  const { grid, strength } = useMemo(() => {
+  const { grid, strength, near } = useMemo(() => {
     const modes = plateModes(spec, 12);
     const Q = effectiveQ(spec.material, spec.damping);
     const ex = modes.filter((m) => m.drive > 0.05);
     const f = ex[1]?.hz ?? ex[0]?.hz ?? 300;
-    return { grid: sampleField(spec, modes, f, Q, HERO_N), strength: readResonance(f, modes, Q).strength };
+    // RESPONSE against the studio's fixed reference (plateRefQ; checker Y5); NEAR forms the figure.
+    const r = readResonance(f, modes, Q, plateRefQ(spec.material));
+    return { grid: sampleField(spec, modes, f, Q, HERO_N), strength: r.strength, near: r.near };
   }, [spec]);
   if (!viz) {
     return (
@@ -82,6 +84,7 @@ function HeroPlate({ width }: { width: number }) {
       grid={grid}
       N={HERO_N}
       strength={strength}
+      near={near}
       amplitude={0.8}
       view="particles"
       running={focused}

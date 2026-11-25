@@ -46,6 +46,7 @@ import { RackUnit } from '../../rack/RackUnit';
 import type { DockParam } from '../../rack/rackTypes';
 import { requireVizSignal, type VizSignalModule } from '../skiaGate';
 import { samplingZoom } from '../samplingZoom';
+import { samplingFreqMax, samplingFreqOf, samplingFreqOnRate, samplingPosOf } from '../samplingFreq';
 import type { WaveKind } from '../vizSignal';
 import type { DigitalModuleProps } from '../DigitalModuleScreen';
 import { useStopWhenSilenced } from '../../../../features/audio/useStopWhenSilenced';
@@ -395,7 +396,6 @@ export function AnalogModule(p: DigitalModuleProps) {
 const RATE_CHIPS = [8000, 16000, 22050, 32000, 44100, 48000, 96000, 192000];
 const CYC_CHIPS = [4, 3, 2.5, 2, 1.7];
 const SLOPE_CHIPS = [12, 24, 48];
-const F2_MIN = 100;
 const LEVEL_DB = -22;
 /** Honest playable window for the generator demo (hearing + speaker safety). */
 const PLAY_MIN_HZ = 40;
@@ -598,7 +598,12 @@ function SamplingHero({
 export function SamplingModule(p: DigitalModuleProps) {
   const viz = useState(() => requireVizSignal())[0];
   const [rateMode, setRateMode] = useState<RateMode>({ kind: 'abs', fs: 48000 });
-  const [freqV, setFreqV] = useState(() => Math.log(1000 / F2_MIN) / Math.log(30000 / F2_MIN));
+  // The input tone is kept in Hz (owner 2026-11-25, fix-first 15): a new RATE
+  // leaves it where the student set it (samplingFreq.ts). It used to be kept
+  // as a fader POSITION, so RATE moved the tone (1 kHz became 914 Hz at 32k).
+  const [f, setF] = useState(1000);
+  // Set when a new RATE's fader range could not reach the tone, so it was lowered.
+  const [clampedFrom, setClampedFrom] = useState<number | null>(null);
   const [zoomV, setZoomV] = useState(0.3);
   const [recon, setRecon] = useState(false);
   const [filterOn, setFilterOn] = useState(false);
@@ -606,9 +611,20 @@ export function SamplingModule(p: DigitalModuleProps) {
   const [slope, setSlope] = useState(24);
 
   // Input frequency — the NYQUIST SWEEP fader. Range adapts so the sweep can
-  // actually cross Nyquist at studio rates (96k/192k get the honest caption).
-  const fMax = rateMode.kind === 'abs' ? Math.min(rateMode.fs * 0.75, 30000) : 8000;
-  const f = Math.round(F2_MIN * Math.pow(fMax / F2_MIN, freqV));
+  // actually cross Nyquist at studio rates (96k/192k get the honest caption);
+  // the fader shows the kept Hz at its position on THIS rate's range.
+  const fMax = samplingFreqMax(rateMode);
+  const freqV = samplingPosOf(f, fMax);
+  const setFreqV = (v: number) => {
+    setF(samplingFreqOf(v, fMax));
+    setClampedFrom(null);
+  };
+  const pickRate = (m: RateMode) => {
+    const next = samplingFreqOnRate(f, samplingFreqMax(m));
+    setRateMode(m);
+    setF(next.fHz);
+    setClampedFrom(next.clampedFrom);
+  };
   const fs = rateMode.kind === 'abs' ? rateMode.fs : f * rateMode.mult;
   const nyq = fs / 2;
   const spc = fs / f;
@@ -680,7 +696,7 @@ export function SamplingModule(p: DigitalModuleProps) {
                 key={r}
                 label={`${r / 1000}k`}
                 selected={rateMode.kind === 'abs' && rateMode.fs === r}
-                onPress={() => setRateMode({ kind: 'abs', fs: r })}
+                onPress={() => pickRate({ kind: 'abs', fs: r })}
                 onLongPress={() => p.help('sample_rate')}
               />
             ))}
@@ -691,11 +707,16 @@ export function SamplingModule(p: DigitalModuleProps) {
                 key={m}
                 label={`${m} /CYC`}
                 selected={rateMode.kind === 'cyc' && rateMode.mult === m}
-                onPress={() => setRateMode({ kind: 'cyc', mult: m })}
+                onPress={() => pickRate({ kind: 'cyc', mult: m })}
                 onLongPress={() => p.help('samples_per_cycle')}
               />
             ))}
           </View>
+          {clampedFrom != null ? (
+            <Text style={dstyles.caption}>
+              {`At this RATE the FREQ fader only reaches ${fmtHz(f)}, so your ${fmtHz(clampedFrom)} tone was lowered to ${fmtHz(f)}.`}
+            </Text>
+          ) : null}
           <Badge text="Demo modes set the sample rate relative to the input frequency, to show the idea; not a real converter setting." />
           {/* RECONSTRUCTED curve — was its own RECON key; folded in here so
               the dock keeps five whole keys now that ALIAS and CUTOFF joined

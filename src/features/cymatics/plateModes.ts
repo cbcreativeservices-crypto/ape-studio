@@ -145,6 +145,21 @@ function modeHz(lam2: number, D: number, rho: number, h_m: number, a_m: number):
   return (lam2 / (2 * Math.PI * a_m * a_m)) * Math.sqrt(D / (rho * h_m));
 }
 
+/**
+ * Where a driver or clamp asked for at `p` (grid units, y ∈ [0, aspect])
+ * actually sits: on a solved (library) shape a point in the corner box, past
+ * the outline or in the ring's hole is moved to the nearest plate point. The
+ * modes are driven there, so the drawn puck and the printed position use it
+ * too (fix-next CYM, audit row 17: the Center chip drew the puck in the
+ * ring's hole). Analytic shapes return `p` unchanged.
+ */
+export function plateDrivePoint(spec: PlateSpec, p: { x: number; y: number }): { x: number; y: number } {
+  if (!isLibraryShape(spec.shape)) return p;
+  const asp = plateAspect(spec);
+  const q = librarySnapInside(loadLibraryShape(spec.shape), p.x, p.y / asp);
+  return { x: q.x, y: q.y * asp };
+}
+
 /** The plate's modes for the current spec, ascending by frequency. */
 export function plateModes(spec: PlateSpec, count = 14): PlateMode[] {
   const mat = MATERIAL_BY_ID[spec.material];
@@ -264,6 +279,7 @@ export function plateModes(spec: PlateSpec, count = 14): PlateMode[] {
   // nearest plate, so a driver never sits where there is no plate.
   const asp = plateAspect(spec);
   const lib = isLibraryShape(spec.shape) ? loadLibraryShape(spec.shape) : null;
+  // The same snap as plateDrivePoint (which the drawing uses), kept in shape units.
   const toShape = (p: { x: number; y: number }) => {
     const q = { x: p.x, y: p.y / asp };
     return lib ? librarySnapInside(lib, q.x, q.y) : q;
@@ -284,6 +300,26 @@ export function effectiveQ(material: MaterialId, damping: number): number {
   const Q = MATERIAL_BY_ID[material].Q;
   const d = Math.max(0, Math.min(1, damping));
   return Q * Math.pow(10, -1.5 * d);
+}
+
+/**
+ * The FIXED reference RESPONSE is measured against (owner 2026-11-25,
+ * fix-first 15, item 15): the material's Q at the lab's lightest damping
+ * setting (Low = 0.1, the starting plate). A damped resonator's peak is
+ * proportional to its Q, so measured against this fixed Q, more DAMPING reads
+ * as a LOWER (and wider) peak: on a mode, Low ≈ 98 %, Medium ≈ 35 %, High ≈ 7 %.
+ * (It used to be divided by the CURRENT Q, so a direct hit read full whatever
+ * the damping.) At Low every number is exactly what it was.
+ */
+export const PLATE_REF_DAMPING = 0.1;
+export function plateRefQ(material: MaterialId): number {
+  return effectiveQ(material, PLATE_REF_DAMPING);
+}
+/** This plate's Q over its reference (Low-damping) Q, at most 1: 1 at Low,
+ *  0.35 at Medium, 0.075 at High. How much DAMPING has lowered every peak;
+ *  the sand uses it to blur the figure (vizGain.sandDrive). */
+export function plateQRel(material: MaterialId, damping: number): number {
+  return Math.min(1, effectiveQ(material, damping) / plateRefQ(material));
 }
 
 /** Single-DOF response magnitude of a mode at drive frequency f. */
@@ -315,18 +351,25 @@ export type ResonanceState = 'below' | 'approaching' | 'at' | 'between';
 
 export type ResonanceRead = {
   state: ResonanceState;
-  /** 0..1 — the nearest excitable mode's normalised response. */
+  /** 0..1 — the nearest excitable mode's response against the fixed reference (`refQ`): how FAR the plate moves. */
   strength: number;
+  /** 0..1 — the same response against THIS plate's own peak: "am I on a mode?".
+   *  Damping does not change it (it decides the state and whether sand forms a figure). */
+  near: number;
   /** The mode that dominates at this frequency (highest weighted response). */
   dominant: PlateMode | null;
   /** The next excitable mode above f (for the "approaching" cue), if any. */
   next: PlateMode | null;
 };
 
-/** Read the resonance situation at drive frequency f. */
-export function readResonance(f: number, modes: PlateMode[], Q: number): ResonanceRead {
+/** Read the resonance situation at drive frequency f. `refQ` is the fixed
+ *  reference `strength` is measured against (plateRefQ; it defaults to the
+ *  current Q, the old normalisation). The STATE (at / approaching / between)
+ *  still asks "how close to a mode's own peak", so a damped plate on a mode
+ *  still reads AT: damping blurs a resonance, it does not move it. */
+export function readResonance(f: number, modes: PlateMode[], Q: number, refQ: number = Q): ResonanceRead {
   const excitable = modes.filter((m) => m.drive > 0.05);
-  if (excitable.length === 0) return { state: 'between', strength: 0, dominant: null, next: null };
+  if (excitable.length === 0) return { state: 'between', strength: 0, near: 0, dominant: null, next: null };
   let best: PlateMode | null = null;
   let bestVal = 0;
   for (const m of excitable) {
@@ -337,15 +380,17 @@ export function readResonance(f: number, modes: PlateMode[], Q: number): Resonan
     }
   }
   const peak = best ? Q * best.drive : 1; // response at exact resonance ≈ Q
-  const strength = Math.max(0, Math.min(1, bestVal / peak));
+  const near = Math.max(0, Math.min(1, bestVal / peak)); // relative to this mode's own peak
+  const refPeak = best ? refQ * best.drive : 1; // the same peak on the reference (Low-damping) plate
+  const strength = Math.max(0, Math.min(1, bestVal / refPeak));
   const next = excitable.find((m) => m.hz > f * 1.02) ?? null;
   const first = excitable[0];
   let state: ResonanceState;
-  if (strength >= 0.5) state = 'at';
+  if (near >= 0.5) state = 'at';
   else if (f < first.hz * 0.9) state = 'below';
-  else if (strength >= 0.12) state = 'approaching';
+  else if (near >= 0.12) state = 'approaching';
   else state = 'between';
-  return { state, strength, dominant: best, next };
+  return { state, strength, near, dominant: best, next };
 }
 
 /**

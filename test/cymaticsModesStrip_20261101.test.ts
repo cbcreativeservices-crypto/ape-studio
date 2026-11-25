@@ -75,7 +75,8 @@ test('#21 Nodes: one list in the source — no second plateModes/excitableModes 
   assert.match(src, /const \{ tray \} = nodesModeLists\(\{ \.\.\.DEFAULT_PLATE, shape: s,/);
   assert.doesNotMatch(src, /plateModes\(|excitableModes\(/);
   assert.match(src, /makeFreqFader\(F_MIN, F_MAX, allModes, Q\)/);
-  assert.match(src, /readResonance\(hz, allModes, Q\)/);
+  // owner 2026-11-25, fix-first 15 (checker Y5): the same list, read against the fixed reference.
+  assert.match(src, /readResonance\(hz, allModes, Q, plateRefQ\(spec\.material\)\)/);
   assert.match(src, /sampleField\(spec, allModes, hz, Q, N\)/);
 });
 

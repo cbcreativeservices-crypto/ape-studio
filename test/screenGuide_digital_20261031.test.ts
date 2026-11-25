@@ -197,7 +197,9 @@ describe('4. TRY THIS numbers are what the modules print', () => {
   });
   it('Module 2: 48k default, sweep tops at 30 kHz, alias 18 kHz; cutoff floor 0.3 × Nyquist = 7.2 kHz; 1.7 /CYC folds to 0.7 × f', () => {
     assert.match(A, /useState<RateMode>\(\{ kind: 'abs', fs: 48000 \}\)/);
-    assert.match(A, /Math\.min\(rateMode\.fs \* 0\.75, 30000\)/);
+    // owner 2026-11-25, fix-first 15: the FREQ range moved to samplingFreq.ts (the tone is now kept in Hz across RATE).
+    assert.match(A, /const fMax = samplingFreqMax\(rateMode\);/);
+    assert.match(code('src/screens/lab/digital/samplingFreq.ts'), /Math\.min\(mode\.fs \* 0\.75, 30000\)/);
     assert.match(A, /const cutoffHz = \(0\.3 \+ 0\.68 \* cutV\) \* nyq;/);
     assert.match(A, /const CYC_CHIPS = \[4, 3, 2\.5, 2, 1\.7\];/);
     const alias = (f: number, fs: number) => Math.abs(f - Math.round(f / fs) * fs);

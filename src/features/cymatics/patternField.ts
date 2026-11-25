@@ -4,13 +4,13 @@
  * (plateModes / membrane / faraday). Nothing is stored twice: the gallery, the
  * art board, the compare canvas and the Lab Print all derive from the state.
  */
-import { HEAD_BY_ID, fundamentalHz, membraneModes, membraneQ, membraneStrength, sampleMembrane } from './membrane';
+import { HEAD_BY_ID, fundamentalHz, membraneModes, membraneQ, membraneRefQ, membraneStrength, sampleMembrane } from './membrane';
 import { FAMILY_LABEL, STAGE_LABEL, readFaraday, readLiquid, sampleSurface } from './faraday';
 import { LIQUID_BY_ID } from './liquids';
 import { MATERIAL_BY_ID } from './materials';
 import { isLibraryShape, loadLibraryShape } from './modalLibrary';
 import { formatHz, nearestNote, type NoteReadout } from './music';
-import { effectiveQ, plateAspect, plateModes, readResonance, sampleField } from './plateModes';
+import { effectiveQ, plateAspect, plateDrivePoint, plateModes, plateRefQ, readResonance, sampleField } from './plateModes';
 import { TONE_RATIOS, type PatternState } from './patternStore';
 import type { Pt } from './contours';
 
@@ -40,12 +40,14 @@ export function patternGeometry(state: PatternState, N: number): PatternGeometry
     const { spec } = state;
     const modes = plateModes(spec, 16);
     const Q = effectiveQ(spec.material, spec.damping);
-    const res = readResonance(state.hz, modes, Q);
+    // The studio's fixed RESPONSE reference (fix-first 15), so a saved pattern reads as it did on screen.
+    const refQ = plateRefQ(spec.material);
+    const res = readResonance(state.hz, modes, Q, refQ);
     const ratio = TONE_RATIOS[state.multi] ?? null;
     let field = sampleField(spec, modes, state.hz, Q, N);
     let strength = res.strength;
     if (ratio) {
-      const resB = readResonance(state.hz * ratio, modes, Q);
+      const resB = readResonance(state.hz * ratio, modes, Q, refQ);
       const g2 = sampleField(spec, modes, state.hz * ratio, Q, N);
       const out = new Float32Array(field.length);
       let peak = 1e-9;
@@ -73,7 +75,7 @@ export function patternGeometry(state: PatternState, N: number): PatternGeometry
     const Q = membraneQ(spec);
     const field = sampleMembrane(modes, state.hz, Q, N);
     const head = HEAD_BY_ID[spec.head];
-    return { field, N, aspect: 1, outline: { kind: 'circle' }, face: head.tint, edge: '#6b5a3a', texture: 'head', strength: membraneStrength(modes, state.hz, Q).strength };
+    return { field, N, aspect: 1, outline: { kind: 'circle' }, face: head.tint, edge: '#6b5a3a', texture: 'head', strength: membraneStrength(modes, state.hz, Q, membraneRefQ(spec)).strength };
   }
   const { spec } = state;
   const st = readLiquid(spec, state.hz, state.accelG);
@@ -109,7 +111,7 @@ export function patternReadout(state: PatternState): PatternReadout {
     const mat = MATERIAL_BY_ID[spec.material];
     const modes = plateModes(spec, 16);
     const Q = effectiveQ(spec.material, spec.damping);
-    const res = readResonance(state.hz, modes, Q);
+    const res = readResonance(state.hz, modes, Q, plateRefQ(spec.material));
     const shape = isLibraryShape(spec.shape)
       ? loadLibraryShape(spec.shape).info.label
       : spec.shape === 'circle'
@@ -118,15 +120,21 @@ export function patternReadout(state: PatternState): PatternReadout {
           ? `rectangle ${Math.round(spec.aspect * 100) / 100}`
           : 'square';
     const ratio = TONE_RATIOS[state.multi] ?? null;
+    // With a SECOND TONE the saved row describes the tone that moves the plate
+    // more, as the studio's readouts do (fix-next CYM, audit row 18).
+    const resB = ratio ? readResonance(state.hz * ratio, modes, Q, plateRefQ(spec.material)) : null;
+    const leadIsB = !!resB && resB.strength > res.strength;
+    const lead = leadIsB && resB ? resB : res;
     const rows = [
       { k: 'Plate', v: `${mat.label} · ${shape} · ${mm(spec.sizeMm)}` },
       { k: 'Thickness', v: mm(spec.thicknessMm) },
       { k: 'Edges', v: spec.edge === 'free' ? 'free' : spec.edge === 'supported' ? 'simply supported' : 'clamped' },
-      { k: 'Driver', v: `at ${pos(spec.exciter)}` },
-      { k: 'Support', v: spec.support ? `clamp at ${pos(spec.support)}` : 'center post' },
+      // Where the plate is really driven / held (a chip point off a solved shape snaps onto it, as in the studio).
+      { k: 'Driver', v: `at ${pos(plateDrivePoint(spec, spec.exciter))}` },
+      { k: 'Support', v: spec.support ? `clamp at ${pos(plateDrivePoint(spec, spec.support))}` : 'center post' },
       { k: 'Damping', v: `${Math.round(spec.damping * 100)} % (Q ≈ ${Math.round(Q)})` },
       { k: 'Drive', v: `${formatHz(state.hz)} · ${noteStr}${ratio ? ` + second tone ×${Math.round(ratio * 100) / 100}` : ''}` },
-      { k: 'Resonance', v: `${res.state.toUpperCase()}${res.dominant ? ` · mode ${res.dominant.label}` : ''} · strength ${Math.round(res.strength * 100)} %` },
+      { k: 'Resonance', v: `${leadIsB && ratio ? `tone B (${formatHz(state.hz * ratio)}) · ` : ''}${lead.state.toUpperCase()}${lead.dominant ? ` · mode ${lead.dominant.label}` : ''} · strength ${Math.round(lead.strength * 100)} %` },
       { k: 'Level', v: `${Math.round(state.amplitude * 100)} %` },
     ];
     if (mat.texture === 'grain') rows.splice(2, 0, { k: 'Grain', v: `${spec.grainDeg}° from x` });
@@ -137,7 +145,7 @@ export function patternReadout(state: PatternState): PatternReadout {
     const head = HEAD_BY_ID[spec.head];
     const modes = membraneModes(spec, 16);
     const Q = membraneQ(spec);
-    const st = membraneStrength(modes, state.hz, Q);
+    const st = membraneStrength(modes, state.hz, Q, membraneRefQ(spec));
     const rows = [
       { k: 'Head', v: `${head.label} · Ø ${mm(spec.diameterMm)}${spec.kettle ? ' · timpani kettle' : ''}` },
       { k: 'Tension', v: `${Math.round(spec.tensionNpm)} N/m` },

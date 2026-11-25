@@ -24,6 +24,8 @@
  * to see — so the display is STROBED to ~1.4 Hz (0.3 Hz in slow motion) and
  * the host says so. The platform in the RIG view bobs at twice the surface
  * rate, i.e. at the drive frequency: the subharmonic relationship, visible.
+ * Below onset (no f/2 response) the surface rides at the platform's own rate,
+ * as RESP's "f" says (liquidMotion.surfaceCycles).
  */
 import { useEffect, useMemo, useRef } from 'react';
 import { PanResponder, StyleSheet, Text, View } from 'react-native';
@@ -50,7 +52,8 @@ import {
 } from '@shopify/react-native-skia';
 import { useDerivedValue, useFrameCallback, useSharedValue } from 'react-native-reanimated';
 import { MIDLINE_BLUE, WAVE_LEVEL_STOPS, heatColor, heatRgbW } from '../../../features/tools/levelColor';
-import type { LiquidSpec, LiquidState, Stage } from '../../../features/cymatics/faraday';
+import type { LiquidSpec, LiquidState } from '../../../features/cymatics/faraday';
+import { STAGE_CODE, contourOpacity, crestField, surfaceCycles, weightsW } from '../../../features/cymatics/liquidMotion';
 import { colors, fonts } from '../../../theme/tokens';
 import { useStageTextScale } from '../rack/stageAspect';
 
@@ -66,7 +69,6 @@ export const LIQUID_VIEW_LABELS: Record<LiquidViewMode, string> = {
   section: 'CROSS-SECTION',
 };
 
-const STAGE_CODE: Record<Stage, number> = { flat: 0, damped: 0, sloshing: 1, ripples: 1, onset: 2, stable: 2, transition: 3, mixed: 4, unstable: 5, chaotic: 6, splash: 7 };
 const VIEW_CODE: Record<LiquidViewMode, number> = { rig: 0, surface: 1, height: 2, contours: 3, refraction: 4, liquid3d: 6, section: 7 };
 
 // ── worklet helpers ──────────────────────────────────────────────────────────
@@ -75,19 +77,8 @@ function hashW(n: number): number {
   const s = Math.sin(n * 12.9898 + 78.233) * 43758.5453123;
   return s - Math.floor(s);
 }
-/** Stage → (wA, wB) blend weights at strobed response phase t and raw time tr. */
-function weightsW(stage: number, blend: number, t: number, tr: number): [number, number] {
-  'worklet';
-  const w = Math.cos(2 * Math.PI * t);
-  if (stage <= 2) return [w, 0];
-  if (stage === 3) return [w * (1 - blend), w * blend];
-  if (stage === 4) {
-    const b = 0.5 + 0.5 * Math.sin(2 * Math.PI * 0.18 * tr);
-    return [w * (1 - b), w * b];
-  }
-  if (stage === 5) return [Math.cos(2 * Math.PI * t), Math.sin(2 * Math.PI * t)];
-  return [w * (0.6 + 0.4 * Math.sin(2 * Math.PI * 0.7 * tr)), Math.cos(2 * Math.PI * t + 1.2) * (0.6 + 0.4 * Math.cos(2 * Math.PI * 0.9 * tr))];
-}
+// weightsW (stage → A/B blend weights) and STAGE_CODE live in
+// features/cymatics/liquidMotion.ts, with the surface's own clock.
 function hexRgb(h: string): [number, number, number] {
   const s = h.replace('#', '');
   return [parseInt(s.slice(0, 2), 16), parseInt(s.slice(2, 4), 16), parseInt(s.slice(4, 6), 16)];
@@ -165,6 +156,8 @@ export function LiquidView(p: LiquidViewProps) {
   const envSV = useSharedValue(state.envelope);
   const stageSV = useSharedValue(STAGE_CODE[state.stage]);
   const blendSV = useSharedValue(state.blend);
+  // Above threshold the surface answers at f/2, below it at f (liquidMotion.surfaceCycles, audit row 12).
+  const subSV = useSharedValue(state.subharmonic);
   const viewSV = useSharedValue(VIEW_CODE[view]);
   const glossSV = useSharedValue(p.gloss);
   const tintSV = useSharedValue(hexRgb(p.tint));
@@ -177,7 +170,8 @@ export function LiquidView(p: LiquidViewProps) {
     envSV.value = state.envelope;
     stageSV.value = STAGE_CODE[state.stage];
     blendSV.value = state.blend;
-  }, [state, envSV, stageSV, blendSV]);
+    subSV.value = state.subharmonic;
+  }, [state, envSV, stageSV, blendSV, subSV]);
   useEffect(() => {
     viewSV.value = VIEW_CODE[view];
     glossSV.value = p.gloss;
@@ -193,7 +187,7 @@ export function LiquidView(p: LiquidViewProps) {
     const B = gridBSV.value;
     const n = N;
     if (A.length !== n * n || B.length !== n * n) return null;
-    const [wA, wB] = weightsW(stageSV.value, blendSV.value, clock.value, raw.value);
+    const [wA, wB] = weightsW(stageSV.value, blendSV.value, surfaceCycles(clock.value, subSV.value), raw.value);
     const env = envSV.value;
     const gloss = glossSV.value;
     const tint = tintSV.value;
@@ -319,6 +313,9 @@ export function LiquidView(p: LiquidViewProps) {
     // line down each trough ring is exactly what the view promises.
     const levels = [-0.55, 0.55];
     const n = N;
+    // The pattern the image shows at its crest: A and B blended by the stage
+    // (audit row 14: this traced gridA alone, so a second pattern never drew).
+    const F = crestField(gridA, gridB, STAGE_CODE[state.stage], state.blend);
     const cw = dishW / n;
     const ch = dishH / n;
     const BINS = 24;
@@ -334,7 +331,7 @@ export function LiquidView(p: LiquidViewProps) {
     let gmax = 0;
     for (let j = 0; j < n; j++) {
       for (let i = 0; i < n; i++) {
-        const v = gridA[j * n + i];
+        const v = F[j * n + i];
         if (Number.isNaN(v)) continue;
         const a = Math.abs(v);
         if (a > gmax) gmax = a;
@@ -352,7 +349,7 @@ export function LiquidView(p: LiquidViewProps) {
       const d = env[b < BINS - 1 ? b + 1 : BINS - 1];
       sm[b] = Math.max(floor, (a + 2 * c + d) / 4);
     }
-    const at = (i: number, j: number) => gridA[j * n + i] / sm[binOf(i, j)];
+    const at = (i: number, j: number) => F[j * n + i] / sm[binOf(i, j)];
     const lerp = (a: number, b: number, c: number) => (c - a) / (b - a || 1e-9);
     for (const lv of levels) {
       const path = lv > 0 ? pos : neg;
@@ -391,7 +388,9 @@ export function LiquidView(p: LiquidViewProps) {
       }
     }
     return { pos: pos.detach(), neg: neg.detach() };
-  }, [gridA, N, view, ox, oy, dishW, dishH]);
+  }, [gridA, gridB, state.stage, state.blend, N, view, ox, oy, dishW, dishH]);
+  // The lines fade with the envelope, so lowering SHAKE makes the pattern go (audit row 14).
+  const contourAlpha = contourOpacity(state.envelope);
 
   // ── 3D surface (angled) ──────────────────────────────────────────────────
   // 40, not 30: quads are dropped where they fall outside the dish (see below),
@@ -436,7 +435,7 @@ export function LiquidView(p: LiquidViewProps) {
     const A = gridASV.value;
     const B = gridBSV.value;
     const n = N;
-    const [wA, wB] = weightsW(stageSV.value, blendSV.value, clock.value, raw.value);
+    const [wA, wB] = weightsW(stageSV.value, blendSV.value, surfaceCycles(clock.value, subSV.value), raw.value);
     const env = envSV.value;
     const out: { x: number; y: number }[] = new Array(M * M);
     const cx = width / 2;
@@ -486,7 +485,7 @@ export function LiquidView(p: LiquidViewProps) {
     const n = N;
     if (A.length !== n * n) return path.detach();
     const j = Math.max(0, Math.min(n - 1, Math.round(sectionYSV.value * (n - 1))));
-    const [wA, wB] = weightsW(stageSV.value, blendSV.value, clock.value, raw.value);
+    const [wA, wB] = weightsW(stageSV.value, blendSV.value, surfaceCycles(clock.value, subSV.value), raw.value);
     const env = envSV.value;
     const base = oy + dishH + 54;
     const amp = 24;
@@ -568,7 +567,7 @@ export function LiquidView(p: LiquidViewProps) {
     const n = N;
     if (A.length !== n * n) return path.detach();
     const j = Math.floor(n / 2);
-    const [wA, wB] = weightsW(stageSV.value, blendSV.value, clock.value, raw.value);
+    const [wA, wB] = weightsW(stageSV.value, blendSV.value, surfaceCycles(clock.value, subSV.value), raw.value);
     const env = envSV.value;
     const { cx, dishRimY, dishHalfW, dishDepthPx, liquidPx } = rig;
     const surfY = dishRimY + dishDepthPx - liquidPx + bob.value;
@@ -712,8 +711,8 @@ export function LiquidView(p: LiquidViewProps) {
               ) : null}
               {view === 'contours' ? (
                 <Group>
-                  <Path path={contours.pos} style="stroke" strokeWidth={1.3} color="#ffc64d" />
-                  <Path path={contours.neg} style="stroke" strokeWidth={1.3} color={MIDLINE_BLUE} />
+                  <Path path={contours.pos} style="stroke" strokeWidth={1.3} color="#ffc64d" opacity={contourAlpha} />
+                  <Path path={contours.neg} style="stroke" strokeWidth={1.3} color={MIDLINE_BLUE} opacity={contourAlpha} />
                 </Group>
               ) : null}
               {isSection ? <SkLine p1={vec(ox, oy + p.sectionY * dishH)} p2={vec(ox + dishW, oy + p.sectionY * dishH)} color="#ffc64d" strokeWidth={1.5} /> : null}

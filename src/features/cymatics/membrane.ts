@@ -190,19 +190,44 @@ export function sampleMembrane(modes: MembraneMode[], f: number, Q: number, N: n
   return out;
 }
 
+/**
+ * The FIXED reference the head's RESPONSE is measured against (owner
+ * 2026-11-25, fix-first 15, item 15): this head's Q at the lab's lightest
+ * damping (Open = 0.15, the starting drum). A damped resonator's peak is
+ * proportional to its Q, so more damping reads as a LOWER, wider peak. (It
+ * used to be divided by the CURRENT Q, so (1,1) on the starting drum read
+ * 43 % for Open, Muffled and Hand on the head alike.) At Open every number is
+ * exactly what it was.
+ */
+export const MEMBRANE_REF_DAMPING = 0.15;
+export function membraneRefQ(spec: MembraneSpec): number {
+  return membraneQ({ ...spec, damping: MEMBRANE_REF_DAMPING });
+}
+
 /** Strength 0..1 of the head's response at f (the best-driven mode's response
- *  relative to a perfect resonance), plus the dominant mode. */
-export function membraneStrength(modes: MembraneMode[], f: number, Q: number): { strength: number; dominant: MembraneMode | null } {
+ *  relative to a perfect resonance of the REFERENCE head, `refQ`, which
+ *  defaults to the current Q, the old normalisation), plus the dominant mode.
+ *  `near` is the same response relative to the CURRENT head's own peak: "am I
+ *  on a mode?", which damping does not change. */
+export function membraneStrength(
+  modes: MembraneMode[],
+  f: number,
+  Q: number,
+  refQ: number = Q,
+): { strength: number; near: number; dominant: MembraneMode | null } {
   let best = 0;
+  let bestRef = 0;
   let dom: MembraneMode | null = null;
   for (const m of modes) {
-    const r = (modeResponse(f, m.hz, Q) / Q) * m.drive;
+    const resp = modeResponse(f, m.hz, Q);
+    const r = (resp / Q) * m.drive;
     if (r > best) {
       best = r;
+      bestRef = (resp / refQ) * m.drive;
       dom = m;
     }
   }
-  return { strength: Math.min(1, best), dominant: dom };
+  return { strength: Math.min(1, bestRef), near: Math.min(1, best), dominant: dom };
 }
 
 // ── loudspeaker ─────────────────────────────────────────────────────────────

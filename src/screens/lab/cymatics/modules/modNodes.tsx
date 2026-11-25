@@ -9,7 +9,7 @@
  */
 import { useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
-import { DEFAULT_PLATE, effectiveQ, readResonance, sampleField, type PlateSpec } from '../../../../features/cymatics/plateModes';
+import { DEFAULT_PLATE, effectiveQ, plateRefQ, readResonance, sampleField, type PlateSpec } from '../../../../features/cymatics/plateModes';
 import { formatHz, formatHzPrecise, nearestNote } from '../../../../features/cymatics/music';
 import { makeFreqFader } from '../../../../features/cymatics/freqFader';
 import { bezelModeLabel } from '../../../../features/cymatics/plateBezel';
@@ -51,7 +51,8 @@ export function NodesModule({ width, focused, help }: CymaticsModuleProps) {
   const [view, setView] = useState<PlateViewMode>('nodes');
   const [silent, setSilent] = useState(false);
   const tone = useDriveTone(hz, null, START_LEVEL_01);
-  const res = useMemo(() => readResonance(hz, allModes, Q), [hz, allModes, Q]);
+  // RESPONSE against the studio's fixed reference (plateRefQ; checker Y5, fix-first 15).
+  const res = useMemo(() => readResonance(hz, allModes, Q, plateRefQ(spec.material)), [hz, allModes, Q, spec.material]);
   const grid = useMemo(() => sampleField(spec, allModes, hz, Q, N), [spec, allModes, hz, Q]);
   const viz = skiaAvailable ? requireVizPlate() : null;
   const note = nearestNote(hz);
@@ -151,6 +152,7 @@ export function NodesModule({ width, focused, help }: CymaticsModuleProps) {
               grid={grid}
               N={N}
               strength={res.strength}
+              near={res.near}
               amplitude={0.8}
               view={view}
               // Silent drive kept simulating on a hidden page (bug hunt 2026-09-29).

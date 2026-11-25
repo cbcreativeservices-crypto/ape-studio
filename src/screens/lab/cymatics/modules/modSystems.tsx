@@ -25,12 +25,17 @@ import { goToCymatics } from '../goToCymatics';
 
 const STOPS = WAVE_LEVEL_STOPS.map((s) => ({ offset: `${Math.round(s.offset * 100)}%`, color: s.color }));
 
-/** A strobe clock local to a drawing: 10 Hz phase ticks stay inside the stage. */
+/** A strobe clock local to a drawing: 10 Hz phase ticks stay inside the stage.
+ *  It wraps at 4π, not 2π (audit row 13): the water's surface runs at HALF
+ *  the shake, cos(phase / 2), and a 2π wrap snapped it from trough back to
+ *  crest once per shake. Every other drawing uses whole multiples of phase,
+ *  so a 4π wrap leaves them exactly as they were. */
+const PHASE_WRAP = 4 * Math.PI;
 function usePhase(running: boolean) {
   const [phase, setPhase] = useState(0);
   useEffect(() => {
     if (!running) return;
-    const id = setInterval(() => setPhase((p) => (p + 0.35) % (2 * Math.PI)), 100);
+    const id = setInterval(() => setPhase((p) => (p + 0.35) % PHASE_WRAP), 100);
     return () => clearInterval(id);
   }, [running]);
   return phase;

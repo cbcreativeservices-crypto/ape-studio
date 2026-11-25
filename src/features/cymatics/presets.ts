@@ -88,7 +88,7 @@ export const EXPERIMENTS: readonly Experiment[] = [
       'Switch to PARTICLES + HEAT and press RESET to scatter the sand.',
       'Watch it migrate onto the dark lines.',
     ],
-    lookFor: 'Sand collects on the nodal lines (minimum motion) and is thrown off the red antinodes (maximum motion). The heat map is the prediction; the sand is the confirmation.',
+    lookFor: 'Sand collects on the nodal lines (minimum motion) and is thrown off the brightest antinodes (maximum motion). The heat map is the prediction; the sand is the confirmation.',
     studio: 'plate',
     preset: { id: 'predict', spec: { shape: 'square', material: 'aluminum', sizeMm: 240, thicknessMm: 1 }, freq: { kind: 'mode', index: 2 }, view: 'heat' },
   },

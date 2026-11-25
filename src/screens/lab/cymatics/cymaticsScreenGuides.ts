@@ -196,7 +196,7 @@ export const CYMATICS_SCREEN_GUIDES: Record<CymaticsModuleId, ScreenGuide> = {
       'Once B has changed, CHANGE B FIRST — THEN READ IT becomes REVEAL HOW TO READ IT ›.',
     ],
     changes: [
-      'The tone stays put. Each plate either has a mode there (AT, bright map, sand on lines) or doesn’t (BETWEEN, dark map).',
+      'The tone stays put. Each plate either has a mode there (AT, sand on lines, a bright map unless damping lowers it) or doesn’t (BETWEEN, dark map).',
       'Double the size and every mode drops to a quarter; double the thickness and every mode doubles. A new material moves them too (Solid wood also re-orders them), so the tone stops matching.',
       'Damping doesn’t move a resonance. It widens it and lowers its peak.',
     ],

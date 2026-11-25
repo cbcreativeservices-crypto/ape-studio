@@ -11,7 +11,7 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
-import { DEFAULT_PLATE, effectiveQ, plateModes, readResonance, sampleField, type PlateShape, type PlateSpec } from '../../../../features/cymatics/plateModes';
+import { DEFAULT_PLATE, effectiveQ, plateModes, plateRefQ, readResonance, sampleField, type PlateShape, type PlateSpec } from '../../../../features/cymatics/plateModes';
 import { formatHz } from '../../../../features/cymatics/music';
 import type { DockParam } from '../../rack/rackTypes';
 import type { PlateViewMode } from '../vizPlate';
@@ -62,7 +62,7 @@ function useSide(spec: PlateSpec, hz: number) {
   return useMemo(() => {
     const modes = plateModes(spec, 16);
     const Q = effectiveQ(spec.material, spec.damping);
-    const res = readResonance(hz, modes, Q);
+    const res = readResonance(hz, modes, Q, plateRefQ(spec.material)); // fixed reference: damping weakens (fix-first 15)
     return { res, Q, grid: sampleField(spec, modes, hz, Q, N) };
   }, [spec, hz]);
 }
@@ -147,7 +147,7 @@ export function ChangeModule({ focused, help }: CymaticsModuleProps) {
 
   const plate = (w: number, h: number, spec: PlateSpec, side: ReturnType<typeof useSide>) =>
     viz ? (
-      <viz.PlateView width={w} height={h} spec={spec} grid={side.grid} N={N} strength={side.res.strength} amplitude={0.8} view={view} running={focused} slowMo={false} particleCount={1100} particleSize={0.4} friction={0.4} resetToken={0} sectionY={0.5} dragTarget={null} />
+      <viz.PlateView width={w} height={h} spec={spec} grid={side.grid} N={N} strength={side.res.strength} near={side.res.near} amplitude={0.8} view={view} running={focused} slowMo={false} particleCount={1100} particleSize={0.4} friction={0.4} resetToken={0} sectionY={0.5} dragTarget={null} />
     ) : (
       <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center' }}>
         <Text style={P.caption}>This plate can’t be drawn on this device.</Text>
@@ -186,7 +186,7 @@ export function ChangeModule({ focused, help }: CymaticsModuleProps) {
       {revealed && bMoved ? (
         <>
           <Text style={P.h}>READ IT</Text>
-          <View style={P.bullet}><Text style={P.dot}>•</Text><Text style={[P.body, { flex: 1 }]}>AT RESONANCE with a bright, full heat map: this plate has a mode at the locked frequency. BETWEEN with a dark map: the same tone finds nothing to excite.</Text></View>
+          <View style={P.bullet}><Text style={P.dot}>•</Text><Text style={[P.body, { flex: 1 }]}>AT RESONANCE with sand on the lines: this plate has a mode at the locked frequency (its heat map is bright unless damping has lowered the peak). BETWEEN with a dark map: the same tone finds nothing to excite.</Text></View>
           <View style={P.bullet}><Text style={P.dot}>•</Text><Text style={[P.body, { flex: 1 }]}>If B goes dark, the frequency did not change — the plate did. That is the lab’s central discovery, and you just made it.</Text></View>
           <View style={P.bullet}><Text style={P.dot}>•</Text><Text style={[P.body, { flex: 1 }]}>Damping is the exception worth noticing: it does not move the resonance, it blurs and weakens it. Steel is the near miss: about three times stiffer and three times denser, so its modes land only about 1% below aluminum’s — yet a resonance this sharp is still missed, and B goes dark.</Text></View>
         </>

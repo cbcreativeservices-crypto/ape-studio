@@ -473,9 +473,13 @@ function LiquidStudio() {
           <Text style={styles.trayBlurb}>
             {spec.waveform === 'sine'
               ? 'A sine isolates one drive frequency — the cleanest demonstration.'
-              : spec.waveform === 'pulse'
-                ? 'Tone bursts (four per second) at the drive frequency — the surface builds and relaxes each burst.'
-                : `A ${spec.waveform} adds odd harmonics of the drive (${tone.additiveReady ? 'you hear them as well as see them' : 'shown only, not heard on this device'}). Faraday onset still keys on the fundamental.`}
+              : // What is HEARD and what is DRAWN, said apart (audit row 11): the
+                // simulated surface is the fundamental's pattern for every
+                // waveform, and with a second frequency playing the two tones
+                // are sines (useDriveTone's dual branch), so the shape is not heard.
+                spec.waveform === 'pulse'
+                ? `${dualId !== 'off' && tone.dualReady ? 'With a SECOND FREQUENCY on, the two tones play as steady sines, not bursts.' : 'Tone bursts (four per second) at the drive frequency, heard as bursts.'} The picture shows the steady pattern; this simulation does not draw each burst.`
+                : `A ${spec.waveform} adds odd harmonics of the drive: ${dualId !== 'off' && tone.dualReady ? 'not heard while a SECOND FREQUENCY plays (the two tones play as sines)' : tone.additiveReady ? 'you hear them' : 'not heard on this device'}. The picture stays the same: Faraday onset keys on the fundamental, and this simulation draws the fundamental’s pattern.`}
           </Text>
           <Text style={styles.trayHead}>RUN</Text>
           <View style={styles.chips}>

@@ -134,8 +134,11 @@ export function HarmonicsModule({ help }: CymaticsModuleProps) {
         initialParam: 'mode',
         bezel: [
           { k: 'LADDER', v: (LADDER_SHORT[ladder.id] ?? ladder.name).toUpperCase(), helpKey: 'harmonics', caption: 'which object' },
-          { k: 'RATIO', v: sel ? `${sel.ratio.toFixed(2)}×` : '—', helpKey: 'harmonics', caption: 'times the base' },
-          { k: 'FREQ', v: sel ? formatHz(hz) : '—', helpKey: 'harmonics' },
+          // RATIO and FREQ describe a mode of the SHOWN ladder, as the MODE key
+          // does (audit row 24: after a switch they read the old ladder's
+          // 1.73× under STRING · HARMONIC). The card below still names what plays.
+          { k: 'RATIO', v: sel && sel.ladder === ladder.id ? `${sel.ratio.toFixed(2)}×` : '—', helpKey: 'harmonics', caption: 'times the base' },
+          { k: 'FREQ', v: sel && sel.ladder === ladder.id ? formatHz(hz) : '—', helpKey: 'harmonics' },
           { k: 'FAMILY', v: ladder.harmonic ? 'HARMONIC' : 'INHARM.', tint: ladder.harmonic ? '#37e05f' : '#ff6b5e', helpKey: 'harmonics', flex: 1.2, caption: 'evenly spaced?' },
         ],
         stage: (w, h) => <LadderStage w={w} h={h} ladders={ladders} active={ladder.id} sel={sel} />,

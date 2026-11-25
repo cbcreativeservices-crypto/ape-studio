@@ -46,6 +46,7 @@ import {
   fundamentalHz,
   membraneModes,
   membraneQ,
+  membraneRefQ,
   membraneStrength,
   readCone,
   sampleCone,
@@ -148,7 +149,11 @@ function MembraneStudio() {
   const modes = useMemo(() => membraneModes(spec, 16), [spec]);
   const Q = useMemo(() => membraneQ(spec), [spec]);
   const f01 = useMemo(() => fundamentalHz(spec), [spec]);
-  const st = useMemo(() => membraneStrength(modes, freq, Q), [modes, freq, Q]);
+  // RESPONSE (st.strength) against a FIXED reference, the Open head, so DAMPING
+  // lowers the peak (owner 2026-11-25, fix-first 15). "On a mode?" (AT
+  // RESONANCE, MODE, LAND ON) reads st.near, which damping does not change.
+  const refQ = useMemo(() => membraneRefQ(spec), [spec]);
+  const st = useMemo(() => membraneStrength(modes, freq, Q, refQ), [modes, freq, Q, refQ]);
   const grid = useMemo(() => sampleMembrane(modes, freq, Q, GRID_N), [modes, freq, Q]);
   const head = HEAD_BY_ID[spec.head];
 
@@ -298,14 +303,14 @@ function MembraneStudio() {
       chooser: {
         title: isSpeaker ? 'JUMP TO A CONE STAGE' : 'JUMP TO A MODE',
         options: modeOptions.map((o) => ({ id: o.id, label: o.label, blurb: o.blurb })),
-        selectedId: isSpeaker ? null : st.dominant && st.strength > 0.5 ? st.dominant.id : null,
+        selectedId: isSpeaker ? null : st.dominant && st.near > 0.5 ? st.dominant.id : null,
         onSelect: (id) => {
           const o = modeOptions.find((x) => x.id === id);
           if (o) land(o.hz);
         },
         // Land on the nearest driven mode — was a tap on the RESPONSE bezel
         // cell (owner rule 2026-10-10: the bezel is read-only; controls dock).
-        onReset: nearestDriven && st.strength <= 0.5 ? { label: `LAND ON ${nearestDriven.label.split(' · ')[0]} · ${formatHz(nearestDriven.hz)}`, onPress: () => land(nearestDriven.hz) } : undefined,
+        onReset: nearestDriven && st.near <= 0.5 ? { label: `LAND ON ${nearestDriven.label.split(' · ')[0]} · ${formatHz(nearestDriven.hz)}`, onPress: () => land(nearestDriven.hz) } : undefined,
       },
     },
     {
@@ -444,7 +449,7 @@ function MembraneStudio() {
     : [
         { k: 'DRIVE', v: formatHzPrecise(freq, true), helpKey: 'frequency', caption: 'tone fed in' },
         { k: 'FUNDAMENTAL', v: formatHz(f01), helpKey: 'tension', flex: 1.2, caption: 'lowest note' },
-        { k: 'MODE', v: st.dominant && st.strength > 0.5 ? st.dominant.label.split(' · ')[0] : '—', helpKey: 'modes', caption: 'which pattern' },
+        { k: 'MODE', v: st.dominant && st.near > 0.5 ? st.dominant.label.split(' · ')[0] : '—', helpKey: 'modes', caption: 'which pattern' },
         // Read-only (owner rule 2026-10-10): LAND ON is in the FREQ tray.
         { k: 'RESPONSE', v: `${Math.round(st.strength * 100)} %`, tint: levelColor(st.strength), helpKey: 'resonance', caption: 'how much moves' },
       ];
@@ -530,6 +535,7 @@ function MembraneStudio() {
                   grid={grid}
                   N={GRID_N}
                   strength={st.strength}
+                  near={st.near}
                   amplitude={amplitude}
                   view={view}
                   running={driving}
@@ -579,14 +585,14 @@ function MembraneStudio() {
         {!isSpeaker ? (
           <View style={styles.card}>
             <View style={styles.rowBetween}>
-              <Text style={[styles.resLabel, { color: RES_TINT[st.strength > 0.5 ? 'at' : st.strength > 0.15 ? 'approaching' : 'between'] }]}>{st.strength > 0.5 ? 'AT RESONANCE' : st.strength > 0.15 ? 'APPROACHING' : 'BETWEEN RESONANCES'}</Text>
+              <Text style={[styles.resLabel, { color: RES_TINT[st.near > 0.5 ? 'at' : st.near > 0.15 ? 'approaching' : 'between'] }]}>{st.near > 0.5 ? 'AT RESONANCE' : st.near > 0.15 ? 'APPROACHING' : 'BETWEEN RESONANCES'}</Text>
               <Text style={styles.resPct}>{Math.round(st.strength * 100)} %</Text>
             </View>
             <View style={styles.meterTrack}>
               <LinearGradient colors={rampColors(st.strength)} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[styles.meterFill, { width: `${Math.max(2, Math.round(st.strength * 100))}%` }]} />
             </View>
             <Text style={styles.caption}>
-              {st.dominant && st.strength > 0.5
+              {st.dominant && st.near > 0.5
                 ? `Mode ${st.dominant.label} at ${formatHz(st.dominant.hz)} · Q ≈ ${Math.round(Q)}. LEVEL ${Math.round(amplitude * 100)} % sets how far the head moves — not which mode.`
                 : ex.length
                   ? `Nearest driven mode: ${ex.reduce((a, b) => (Math.abs(a.hz - freq) < Math.abs(b.hz - freq) ? a : b)).label} at ${formatHz(ex.reduce((a, b) => (Math.abs(a.hz - freq) < Math.abs(b.hz - freq) ? a : b)).hz)}.`
