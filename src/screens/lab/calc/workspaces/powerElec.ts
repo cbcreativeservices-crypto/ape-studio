@@ -376,7 +376,11 @@ const VDROP: Workspace = {
                 text: `Any gauge up to ${AWG_FINEST} AWG (the finest this calculator covers) keeps the drop inside the budget — the drop does not limit this run. Size it with the ${AMPACITY_CALC_NAME}.`,
               }
             : awg >= 0 || !Number.isFinite(awg)
-            ? { label: 'DROP-LIMITED AWG (CHECK AMPACITY)', value: awg, quantity: 'number', chainable: false }
+            ? // Fix-first 15 (owner 2026-11-25): still never offered as ⤵ USE or
+              // SEND → (not a gauge to use), but its meaning lets the Long Power
+              // Run template CARRY it into the ampacity check's CONDUCTOR SIZE
+              // (AWG), the same AWG numbering.
+              { label: 'DROP-LIMITED AWG (CHECK AMPACITY)', value: awg, quantity: 'number', chainable: false, meaning: 'number:awg' }
             : {
                 label: 'DROP-LIMITED AWG (CHECK AMPACITY)',
                 text: name

@@ -743,10 +743,18 @@ type ChainNumOut = Extract<OutputVal, { value: number }>;
  *  offer (chainFits, D41). null: no answer to judge yet (the upstream step is
  *  incomplete or refused) — the field reads honestly empty, no reason given. */
 export function liveImport(
-  out: readonly ({ result: { refused?: boolean; outputs: OutputVal[] } } | undefined)[],
+  out: readonly ({ result: { refused?: boolean; outputs: OutputVal[] }; carried?: Record<string, ChainNumOut> } | undefined)[],
   src: Extract<ValueSource, { kind: 'prior-step' }>,
   f: Pick<FieldDef, 'name' | 'quantity' | 'meaning'>,
 ): { o: ChainNumOut; fits: boolean } | null {
+  // A carried INPUT (fix-first 15, 2026-11-25): that step's own value, as
+  // typed or carried there — read even when its answer is refused (the value
+  // the learner entered is still the value). Kind and unit must still fit.
+  if (src.inputKey != null) {
+    const c = out[src.stepIndex]?.carried?.[src.inputKey];
+    if (!c) return null;
+    return { o: c, fits: c.quantity === f.quantity && unitFits(c.label, c.quantity, f) };
+  }
   // A REFUSED upstream step has no answer to pass on (owner 2026-10-03,
   // "do 1"): a figure printed beside the refusal is not this step's input.
   const up0 = out[src.stepIndex];

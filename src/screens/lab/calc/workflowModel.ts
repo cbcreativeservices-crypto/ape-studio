@@ -24,7 +24,33 @@ export type WorkflowStep = {
   fnKey: string;
   /** Optional short instruction shown above the step while running. */
   note?: string;
+  /** Fix-first 15 (owner 2026-11-25): values this step CARRIES from earlier
+   *  steps, by input field key. Each fills its field LIVE until the learner
+   *  types over it (workflowCarry.ts `carrySource`). Templates only so far. */
+  carry?: Record<string, StepCarry>;
+  /** Round 2 (owner 2026-11-25): an input this step can fill with a stated
+   *  ESTIMATE when the learner does not know it (workflowEstimate.ts), by
+   *  input field key. Offered, never applied without a tap. Templates only. */
+  estimate?: Record<string, EstimateId>;
 };
+
+/** A labeled typical value a step may offer (workflowEstimate.ts). */
+export type EstimateId = 'untreated-room';
+
+/** One carried value: an earlier step's INPUT (`input`, a field key) or one of
+ *  its ANSWERS (`output`, the output label). `ws` + `fn` name that earlier
+ *  step, so a link whose source step has moved or changed is ignored.
+ *  `snap` (round 2, 2026-11-25): 'awg-table' carries a gauge as the next
+ *  THICKER size NEC Table 310.16 lists (11 → 10), and says so in the step. */
+export type StepCarry = {
+  from: number;
+  ws: string;
+  fn: string;
+  input?: string;
+  output?: string;
+  snap?: CarrySnap;
+};
+export type CarrySnap = 'awg-table';
 
 export type Workflow = {
   id: string;
@@ -48,7 +74,13 @@ export type ValueSource =
    *  ("RECOMMENDED GAIN LEAVING 12 dB HEADROOM", "EXACT A4"), so editing the
    *  upstream step renamed the output and the import went blank. The position
    *  is the fallback when the label no longer matches. Optional: older drafts. */
-  | { kind: 'prior-step'; stepIndex: number; outputLabel: string; outputIndex?: number }
+  /** `inputKey` (fix-first 15, 2026-11-25): the value is that step's INPUT
+   *  field (as typed or carried there), not one of its answers; `outputLabel`
+   *  then holds the field's name for the source label. */
+  | { kind: 'prior-step'; stepIndex: number; outputLabel: string; outputIndex?: number; inputKey?: string; snap?: CarrySnap }
+  /** Round 2 (owner 2026-11-25): a stated typical value the learner chose
+   *  ("I don't know it"), worked out live from the same step's other inputs. */
+  | { kind: 'estimate'; id: EstimateId }
   | { kind: 'project'; projectId: string; valueLabel: string }
   | { kind: 'fixed' } // a constant saved in the workflow itself
   | { kind: 'override'; replaced: ValueSource }; // manually replaced an import

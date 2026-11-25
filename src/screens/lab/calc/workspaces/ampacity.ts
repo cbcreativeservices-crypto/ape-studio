@@ -336,6 +336,8 @@ const FIELDS: Workspace['fields'] = [
     key: 'awg',
     name: 'CONDUCTOR SIZE (AWG)',
     quantity: 'number',
+    // Takes a drop-limited gauge to check (fix-first 15, 2026-11-25).
+    meaning: 'number:awg',
     signed: true,
     integer: true,
     range: [-3, 18],

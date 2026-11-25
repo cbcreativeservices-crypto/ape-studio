@@ -512,7 +512,10 @@ describe('4. every TRY THIS number is what the screen prints', () => {
     assert.equal(shown, '5 A');
     const t = STATIC.workflowRun.tryThis.join('\n');
     assert.ok(t.includes('type 40 in VOLTAGE (RMS) and 8 in IMPEDANCE on step 1: POWER reads 200 W and CURRENT reads 5 A'));
-    assert.ok(t.includes(`⤵ USE POWER (STEP 1) and type 40 in VOLTAGE (RMS): CURRENT reads ${shown}, the same current`), `CURRENT reads ${shown}`);
+    // Owner 2026-11-25, fix-first 15: the template CARRIES POWER and VOLTAGE
+    // (RMS) into step 2 (the same '200' and '40' as above), no tap or retyping.
+    assert.deepEqual(Object.keys(tpl.steps[1].carry ?? {}).sort(), ['p', 'vrms']);
+    assert.ok(t.includes(`Step 2 arrives with POWER and VOLTAGE (RMS) carried in from step 1: CURRENT reads ${shown}, the same current`), `CURRENT reads ${shown}`);
     // The import button's words, as drawn.
     assert.match(code('src/screens/lab/calc/CalcWorkflowRunScreen.tsx'), /⤵ USE \{s\.label\.toUpperCase\(\)\} \(STEP \{s\.fromStep \+ 1\}\)/);
   });
@@ -579,7 +582,11 @@ describe('4. every TRY THIS number is what the screen prints', () => {
     assert.deepEqual(links, ['RT60@1>REVERBERATION TIME (RT60)@2', 'RT60@1>REVERBERATION TIME (RT60)@3']);
     assert.match(textOf(STATIC.workflows), /RT60 comes first, then critical distance, then the direct-to-reverberant ratio/);
     assert.ok(textOf(STATIC.workflows).includes('Room Acoustics Survey'));
-    assert.ok(STATIC.workflows.tryThis.join(' ').includes('On step 2, look for ⤵ USE RT60 (STEP 1)'));
+    // owner 2026-11-25, fix-first 15 round 2: the template CARRIES RT60 into
+    // step 2 now, so no ⤵ USE button is drawn for it.
+    assert.ok(STATIC.workflows.tryThis.join(' ').includes('On step 2, RT60 arrives carried in from step 1, marked with its source'));
+    assert.ok(STATIC.workflows.intro.start.includes('On step 2, RT60 arrives carried in from step 1, marked with its source.'));
+    assert.doesNotMatch(textOf(STATIC.workflows), /look for ⤵ USE RT60/);
     assert.doesNotMatch(textOf(STATIC.workflows), /speed of sound → distance delay/i);
   });
   it('home: the lab has its own Home card, not a place in the Advanced Training Labs; most calculators hold several calculations', () => {

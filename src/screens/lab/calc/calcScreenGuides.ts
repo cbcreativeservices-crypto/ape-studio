@@ -353,7 +353,8 @@ export const CALC_SCREEN_GUIDES: Record<CalcScreenId, ScreenGuide> = {
   workflows: {
     intro: {
       learning: 'How a real audio design job chains calculations in order: in a room survey, RT60 comes first, then critical distance, then the direct-to-reverberant ratio.',
-      start: 'Tap ▶ RUN on the Room Acoustics Survey template and fill in step 1. On step 2, look for ⤵ USE RT60 (STEP 1).',
+      // Round 2 (2026-11-25): the template now CARRIES RT60 into step 2.
+      start: 'Tap ▶ RUN on the Room Acoustics Survey template and fill in step 1. On step 2, RT60 arrives carried in from step 1, marked with its source.',
     },
     seeing: [
       'CALCULATOR WORKFLOWS are guided sequences that run several calculators in order.',
@@ -377,7 +378,7 @@ export const CALC_SCREEN_GUIDES: Record<CalcScreenId, ScreenGuide> = {
       'Same unit isn’t same meaning: the voltage lost along a cable is not the voltage your supply delivers.',
     ],
     tryThis: [
-      'Tap ▶ RUN on Room Acoustics Survey and fill in step 1. On step 2, look for ⤵ USE RT60 (STEP 1): the RT60 you just worked out, ready to use.',
+      'Tap ▶ RUN on Room Acoustics Survey and fill in step 1. On step 2, RT60 arrives carried in from step 1, marked with its source: the RT60 you just worked out, already in place.',
       'Tap DUPLICATE & CUSTOMIZE on a template: your copy opens in the builder with “copy” added to its name.',
     ],
   },
@@ -420,7 +421,11 @@ export const CALC_SCREEN_GUIDES: Record<CalcScreenId, ScreenGuide> = {
       // Pixel test 2026-11-15 (D62 waves 1-3): a job from the Calculator home
       // ("Pick a job") opens its own workflow, so the start line no longer
       // names one template; the Ohm's Law example stays in TRY THIS.
-      start: 'Fill in step 1 and read its answer, then tap CONTINUE ›. On the next step, ⤵ USE … carries that answer forward.',
+      // Fix-first 15 (owner 2026-11-25): a template step now arrives with the
+      // values it shares with earlier steps carried in.
+      // Round 2 (2026-11-25): templates (and copies made from them) carry; a
+      // workflow built from scratch offers ⤵ USE only.
+      start: 'Fill in step 1 and read its answer, then tap CONTINUE ›. In a template, the next step arrives with what it shares with step 1 carried in; ⤵ USE … offers anything else that fits.',
     },
     seeing: [
       'At the top: the workflow’s name, with this step’s calculation under it.',
@@ -445,7 +450,7 @@ export const CALC_SCREEN_GUIDES: Record<CalcScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'In the Ohm’s Law template, type 40 in VOLTAGE (RMS) and 8 in IMPEDANCE on step 1: POWER reads 200 W and CURRENT reads 5 A.',
-      'Then CONTINUE ›. On step 2, tap ⤵ USE POWER (STEP 1) and type 40 in VOLTAGE (RMS): CURRENT reads 5 A, the same current worked out from the power.',
+      'Then CONTINUE ›. Step 2 arrives with POWER and VOLTAGE (RMS) carried in from step 1: CURRENT reads 5 A, the same current worked out from the power.',
     ],
   },
 
