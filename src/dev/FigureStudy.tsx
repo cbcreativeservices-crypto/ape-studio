@@ -67,6 +67,8 @@ import { PoleHandTopStudy } from './poleHandTopStudy';
 import { PoleHandEndStudy } from './poleHandEndStudy';
 import { PoleHandEndBackStudy } from './poleHandEndBackStudy';
 import { PoleHandEndLittleStudy } from './poleHandEndLittleStudy';
+import { PoleHandEndLittleBackStudy } from './poleHandEndLittleBackStudy';
+import { PoleHandEndLittleForeStudy } from './poleHandEndLittleForeStudy';
 import { MalletHandStudy } from './malletHandStudy';
 import { MalletHandPalmStudy } from './malletHandPalmStudy';
 
@@ -935,6 +937,8 @@ export function FigureStudy() {
   if (only === 'polehandend') return <PoleHandEndStudy />;
   if (only === 'polehandendback') return <PoleHandEndBackStudy />;
   if (only === 'polehandendlittle') return <PoleHandEndLittleStudy />;
+  if (only === 'polehandendlittleback') return <PoleHandEndLittleBackStudy />;
+  if (only === 'polehandendlittlefore') return <PoleHandEndLittleForeStudy />;
   if (only === 'polehandtopmirror') return <PoleHandTopStudy mirror />;
   if (only === 'polehandendmirror') return <PoleHandEndStudy mirror />;
   if (only === 'mallethand') return <MalletHandStudy />;
