@@ -695,6 +695,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-24 18:20 · ccode · 875251e8
+changed: Location pop-up: the owner's sentence, word for word (owner 2026-11-23) [MD:E4]
+affects other side: nothing on the server. For the Play precise-location declaration: the next build targets Android SDK 36 (Android 16, below Android 17); no override in app.json or eas.json. The pop-up text now ends "We never receive or store your location on our end."
+needs: nothing from A. The app.json change (expo-location "always" strings to false) waits for the owner's OK and is NOT made [MD:E4].
+
+
+### 2026-11-12 11:05 · ccode · 12ab3e8c
+changed: docs: must-do synced (Meta paused, D60 new labs) [MD:D60]
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-11-11 18:00 · ccode · e71732ad
 changed: 1.0.1: COMMUNITY_VISIBLE = true (forum live by OTA since 2026-11-08; the build must not switch it off) + web Privacy 3.2 and instructor wording from the one branch [MD:D44] [MD:E1]
 affects other side: forum stays ON in 1.0.1 (see the OTA-branch 20:30 LOG entry).

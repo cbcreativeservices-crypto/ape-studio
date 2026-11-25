@@ -32,13 +32,18 @@ describe('1. MultiMeter TAG LOCATION is back, foreground only', () => {
     assert.ok(pkg.dependencies['expo-location'], 'expo-location in dependencies');
     assert.match(read('src/features/tools/capture/optionalModule.ts'), /'expo-location': \(\) => require\('expo-location'\),/);
   });
-  it('iOS: every location purpose string is the approved sentence (none left at the SDK default)', () => {
+  it('iOS: the while-in-use purpose string is the approved sentence; the two "always" strings do not ship', () => {
     assert.equal(app.ios.infoPlist.NSLocationWhenInUseUsageDescription, SENTENCE);
     const plugin = app.plugins.find((p: unknown) => Array.isArray(p) && p[0] === 'expo-location');
     assert.ok(plugin, 'expo-location listed with its options (otherwise prebuild auto-applies it with "Allow $(PRODUCT_NAME)…")');
     assert.equal(plugin[1].locationWhenInUsePermission, SENTENCE);
-    assert.equal(plugin[1].locationAlwaysAndWhenInUsePermission, SENTENCE);
-    assert.equal(plugin[1].locationAlwaysPermission, SENTENCE);
+    // Owner 2026-11-24 ("Yes, remove"): the app only asks for location while it
+    // is open, so the two "always" strings are set to false and the build omits
+    // them (false, not missing: a missing key would ship the SDK default text).
+    assert.equal(plugin[1].locationAlwaysAndWhenInUsePermission, false);
+    assert.equal(plugin[1].locationAlwaysPermission, false);
+    assert.equal(app.ios.infoPlist.NSLocationAlwaysAndWhenInUseUsageDescription, undefined);
+    assert.equal(app.ios.infoPlist.NSLocationAlwaysUsageDescription, undefined);
     // Foreground only: no background mode, no Android background or foreground service.
     for (const k of ['isIosBackgroundLocationEnabled', 'isAndroidBackgroundLocationEnabled', 'isAndroidForegroundServiceEnabled', 'isAndroidMotionActivityEnabled']) {
       assert.ok(!plugin[1][k], `${k} stays off`);
