@@ -30,7 +30,9 @@ import { fingerAt, fingerOffset, pickHandle, planTransform, touchToGlass, type F
 import { boxAround, CAPS_W, MONO_W, pickSpot, textBox, type Anchor, type Box } from './planLabels';
 import { modeCaptionLines } from './modeCaption';
 import {
+  basstrapOutline,
   bounds,
+  GOBO_FOOTPRINT_M,
   distToEdge,
   edgePoint,
   FIELD_RANGE_M,
@@ -1073,30 +1075,31 @@ function TreatmentGlyph({ t, T, room, centroid, fs, selected }: { t: Treatment; 
     );
   }
   if (t.kind === 'basstrap') {
-    if (t.wall == null) return null;
-    const i = t.wall % v.length;
-    const corner = v[i];
-    const prev = v[(i - 1 + v.length) % v.length];
-    const next = v[(i + 1) % v.length];
-    const along = (from: Pt, to: Pt, d: number) => {
-      const len = Math.hypot(to.x - from.x, to.y - from.y) || 1;
-      return { x: from.x + ((to.x - from.x) / len) * d, y: from.y + ((to.y - from.y) / len) * d };
-    };
-    const w = Math.max(0.3, t.thickness * 1.6);
-    const p1 = T.toPx(along(corner, prev, w));
-    const p2 = T.toPx(along(corner, next, w));
-    const cq = T.toPx(corner);
+    if (t.wall == null || v.length < 3) return null;
+    // Drawn from SIZE (the face) and THICK (the porous depth): basstrapOutline
+    // (owner 2026-11-25, fix-first round 2 — SIZE never widened the drawing).
+    const o = basstrapOutline(v, t.wall, t.width, t.thickness);
+    // An outside (270 degree) corner holds no corner trap: nothing to draw.
+    if (!o) return null;
+    const pts = (ps: Pt[]) => ps.map((p) => T.toPx(p)).map((q) => `${q.x},${q.y}`).join(' ');
+    const f1 = T.toPx(o.face[0]);
+    const f2 = T.toPx(o.face[1]);
     return (
       <G>
-        <Polygon points={`${cq.x},${cq.y} ${p1.x},${p1.y} ${p2.x},${p2.y}`} fill="rgba(201,162,74,0.4)" stroke={stroke} strokeWidth={selected ? 1.6 : 1} strokeLinejoin="round" />
-        {!t.enabled ? <Line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="#6a6a72" strokeWidth={1} /> : null}
+        {o.gap ? <Polygon points={pts(o.gap)} fill="none" stroke={stroke} strokeWidth={0.8} strokeDasharray="2 2" strokeLinejoin="round" /> : null}
+        <Polygon points={pts(o.body)} fill="rgba(201,162,74,0.4)" stroke={stroke} strokeWidth={selected ? 1.6 : 1} strokeLinejoin="round" />
+        {!t.enabled ? <Line x1={f1.x} y1={f1.y} x2={f2.x} y2={f2.y} stroke="#6a6a72" strokeWidth={1} /> : null}
       </G>
     );
   }
   if (t.x == null || t.y == null) return null;
-  const q = T.toPx({ x: t.x - t.width / 2, y: t.y - t.height / 2 });
+  // A gobo's `height` is its face's height (checker 2026-11-25: new ones are
+  // 1.6 m tall); the plan keeps drawing it as a thin panel on a stand of a
+  // fixed footprint, never as a 1.6 m-deep block.
+  const depthM = t.kind === 'gobo' ? GOBO_FOOTPRINT_M : t.height;
+  const q = T.toPx({ x: t.x - t.width / 2, y: t.y - depthM / 2 });
   const W = t.width * T.k;
-  const H = t.height * T.k;
+  const H = depthM * T.k;
   if (t.kind === 'cloud') {
     return (
       <G>

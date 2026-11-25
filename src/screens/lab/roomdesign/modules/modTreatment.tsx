@@ -18,8 +18,10 @@ import { PLAIN_TERMS } from '../../../../features/lab/plainTerms';
 import {
   analyze,
   basstrapAt,
-  clampInside,
   depthLimitHz,
+  goboBeside,
+  goboOutOfPlayLine,
+  isReflexVertex,
   fmtHz,
   fmtLen,
   signedSeconds,
@@ -121,7 +123,10 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
   };
   const addTraps = () => {
     const have = new Set(design.treatment.filter((t) => t.kind === 'basstrap').map((t) => t.wall));
-    const fresh = room.vertices.map((_, i) => i).filter((i) => !have.has(i)).slice(0, 4).map((i) => basstrapAt(room, i));
+    // Never on an outside (270 degree) corner (the alcove's inner one): a corner
+    // trap cannot sit there. Four traps as before, so the RT60 (which reads
+    // each trap's area, not its corner) is unchanged (checker 2026-11-25).
+    const fresh = room.vertices.map((_, i) => i).filter((i) => !have.has(i) && !isReflexVertex(room.vertices, i)).slice(0, 4).map((i) => basstrapAt(room, i));
     if (fresh.length === 0) return;
     // A double tap read the same stale corner set twice and put two traps in
     // every corner — re-check against the latest list (bug pass 2026-10-01).
@@ -154,9 +159,10 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
       });
       t = { id: newId('tr'), kind, wall: rear, pos: 0.5, width: 1.2, height: 1.2, thickness: 0.15, z: 1.2, enabled: true };
     } else if (kind === 'gobo') {
-      // Beside the left speaker — inside the walls even when L is near one.
-      const at = clampInside({ x: L.x - 0.6, y: lis.y - 0.3 }, room, { x: lis.x, y: lis.y });
-      t = { id: newId('tr'), kind, x: at.x, y: at.y, width: 1.2, height: 0.4, thickness: 0.1, z: 1.0, enabled: true };
+      // Beside the left speaker, inside the walls even when L is near one; a
+      // 1.6 m-tall face (GOBO_FACE, checker 2026-11-25). It always faces down
+      // the room: the model has no rotation.
+      t = goboBeside(room, lay);
     }
     else t = { id: newId('tr'), kind: 'absorber', wall: 0, pos: 0.5, width: 0.6, height: 1.2, thickness: 0.1, z: 1.2, enabled: true };
     // A double tap made two items in the same place (bug pass 2026-10-01);
@@ -237,9 +243,9 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
               stays 0/14" read as "it didn't work". TREATED counts reflection
               paths that land on a panel; corner traps rarely sit on one. */}
           {design.treatment.some((t) => t.kind === 'basstrap') ? (
-            <Caption>{`Bass traps work on the low notes: watch RT60 125 ≈ fall. TREATED counts only the reflection paths that land on a panel (now ${treated}/${total}); corner traps rarely sit on one, so TREATED may not move.`}</Caption>
+            <Caption>{`Bass traps work on the low notes: watch RT60 125 ≈ fall. TREATED counts only the reflection paths that land on a panel or pass through a freestanding one (now ${treated}/${total}); corner traps rarely sit on one, so TREATED may not move.`}</Caption>
           ) : null}
-          <Caption>{`The suggested spots follow your speaker and listening positions: the model puts the first reflection points where they are, and the absorber lands there. ABSORB NEXT names its target${next ? ` — now ${next.speaker} → ${reflectionSurfaceName(next)}` : ''}. The desk bounce is not in the list: nothing in the kit treats a desk top. Drag any item afterwards.`}</Caption>
+          <Caption>{`The suggested spots follow your speaker and listening positions: the model puts the first reflection points where they are, and the absorber lands there. ABSORB NEXT names its target${next ? ` — now ${next.speaker} → ${reflectionSurfaceName(next)}` : ''}. The desk bounce is not in the list: no panel mounts on a desk top, though a freestanding panel standing in that path counts. Drag any item afterwards.`}</Caption>
         </View>
       ),
     },
@@ -315,6 +321,8 @@ export function TreatmentModule({ ctx }: { ctx: RoomLabCtx }) {
         sel ? (
           <View style={{ gap: 4 }}>
             <Text style={styles.line}>{`${TREATMENT_INFO[sel.kind].label}: ${TREATMENT_INFO[sel.kind].blurb}`}</Text>
+            {/* A gobo in the direct sound or on a speaker / the seat treats nothing (checker 2026-11-25). */}
+            {goboOutOfPlayLine(sel, design.layouts[design.active] ?? design.layouts[0]) ? <Text style={styles.line}>{goboOutOfPlayLine(sel, design.layouts[design.active] ?? design.layouts[0])}</Text> : null}
             {withSel && withoutSel ? (
               <Text style={styles.line}>
                 {sel.kind === 'diffuser'

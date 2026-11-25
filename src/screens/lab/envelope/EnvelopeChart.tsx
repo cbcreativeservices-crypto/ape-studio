@@ -35,6 +35,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { adsrCurve, adsrTotalMs, columnMinMax, envelopeAudio, riseTimes, peakAbs, rms, DEFAULT_TONE, type Adsr, type ToneSpec } from '../../../features/envelope/envelopeModel';
 import { LOUDNESS_STOPS, MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../../features/tools/levelColor';
 import { ExpandableFigure } from '../kit/ExpandableFigure';
+import { envelopeSweep } from './sweepTiming';
 
 const W = 340;
 const ALine = Animated.createAnimatedComponent(Line);
@@ -145,9 +146,8 @@ export function EnvelopeChart({
   const gradId = `env${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
 
   /* ── sweep: a playhead + a dot riding the envelope, slowed for visibility ── */
-  const sweepMs = Math.round(Math.max(1600, Math.min(4000, total * 4)));
-  const slow = sweepMs / total;
-  const slowLabel = slow >= 1.5 ? `×${slow < 10 ? slow.toFixed(1) : slow.toFixed(0)} slower than real time` : 'about real time';
+  // Never faster than real time (sweepTiming.ts; owner 2026-11-25, fix-first round 2).
+  const { sweepMs, label: slowLabel } = envelopeSweep(total);
   const prog = useSharedValue(0);
   const [playing, setPlaying] = useState(false);
   const tFrac = Array.from(t, (ms) => ms / total);

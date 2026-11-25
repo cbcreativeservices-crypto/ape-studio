@@ -72,7 +72,6 @@ import { useStageTextScale } from '../rack/stageAspect';
 import type { BezelItem, DockParam } from '../rack/rackTypes';
 import { ConceptBadge, DragSlider, LevelMeterBar, PlainModelNote, TracerCaption, VizUnavailableCard } from './bits';
 import { requireViz, type VizModule } from './skiaGate';
-import { visHzFor } from './FoundationsCourseScreen';
 import { START_LEVEL_01 } from '../../../features/audio/startLevel';
 import { useStopOnAudioMute } from '../../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced';
@@ -111,6 +110,9 @@ const SWEEPS = [
   { key: 'slow', label: 'SLOW SWEEP', secs: 8 },
   { key: 'fast', label: 'FAST SWEEP', secs: 2 },
 ] as const;
+/** The sweep's span — the generator's and the drawing's (one place). */
+const SWEEP_START_HZ = 100;
+const SWEEP_END_HZ = 8000;
 const DELAYS = [
   { key: 0, label: 'DELAY OFF' },
   { key: 30, label: '30 ms' },
@@ -211,6 +213,9 @@ export function FoundationsPlaygroundScreen() {
   const stopGenRef = useRef(0); // generation of the last stop() — see start()
   const stateRef = useRef({ source, wave, noise, sweepKey, freq, levelDb, amps, phases });
   stateRef.current = { source, wave, noise, sweepKey, freq, levelDb, amps, phases };
+  // Every sweep genSet restarts the sweep at 100 Hz (setSweep retriggers);
+  // the drawing's sweep clock restarts with it (owner 2026-11-25, fix-first round 2).
+  const [sweepToken, setSweepToken] = useState(0);
 
   const pushSource = useCallback(() => {
     const s = stateRef.current;
@@ -225,9 +230,10 @@ export function FoundationsPlaygroundScreen() {
       const sw = SWEEPS.find((x) => x.key === s.sweepKey)!;
       ApeDsp.genSet({
         mode: GEN_MODES.sweepLog,
-        sweep: { startHz: 100, endHz: 8000, seconds: sw.secs, repeat: true },
+        sweep: { startHz: SWEEP_START_HZ, endHz: SWEEP_END_HZ, seconds: sw.secs, repeat: true },
         levelDb: guardToneLevelForEngine(s.levelDb, 100),
       });
+      setSweepToken((n) => n + 1);
       return;
     }
     // Waves ride the additive path (phase/polarity/harmonics need it); a
@@ -340,7 +346,14 @@ export function FoundationsPlaygroundScreen() {
   // ── Display derivations (lockstep with the audio settings) ─────────────────
   const amp01 = (levelDb + 48) / 32;
   const airMode = source === 'noise' ? 'noise' : 'wave';
-  const displayVisHz = source === 'sweep' ? visHzFor(900) : visHzFor(freq);
+  // The drawn motion follows the tone (motionHz.ts, one mapping 55 Hz–8 kHz);
+  // on a sweep it follows the sweep itself, so SLOW and FAST differ (owner
+  // 2026-11-25, fix-first round 2 — it used to rock at visHzFor(900) throughout).
+  const sweepSecs = SWEEPS.find((x) => x.key === sweepKey)!.secs;
+  const displaySweep = useMemo(
+    () => (source === 'sweep' ? { startHz: SWEEP_START_HZ, endHz: SWEEP_END_HZ, secs: sweepSecs } : null),
+    [source, sweepSecs],
+  );
   const gainDbAt = useMemo(() => {
     if (eqCut <= 0) return null;
     const band = [{ type: 'lowPass' as const, freq: eqCut, q: eqQ, gainDb: 0 }];
@@ -651,7 +664,8 @@ export function FoundationsPlaygroundScreen() {
                 viz={viz}
                 w={w}
                 h={h}
-                visHz={displayVisHz}
+                sweep={displaySweep}
+                sweepToken={sweepToken}
                 amp={0.25 + amp01 * 0.75}
                 airMode={airMode}
                 running={playing}
@@ -811,7 +825,8 @@ function StageViz({
   viz,
   w,
   h,
-  visHz,
+  sweep,
+  sweepToken,
   amp,
   airMode,
   running,
@@ -828,7 +843,10 @@ function StageViz({
   viz: VizModule;
   w: number;
   h: number;
-  visHz: number;
+  /** The sweep the generator is running (null for a wave or noise). */
+  sweep: { startHz: number; endHz: number; secs: number } | null;
+  /** Bumped on every sweep (re)start, so the drawn sweep restarts with it. */
+  sweepToken: number;
   amp: number;
   airMode: 'wave' | 'noise';
   running: boolean;
@@ -843,7 +861,15 @@ function StageViz({
   /** STEREO BALANCE 0 (L) .. 1 (R) — drawn on the L–R strip (slider audit held item #17). */
   balance: number;
 }) {
-  const clock = viz.useVizClock(running);
+  // A wave or a sweep rides an INTEGRATED phase clock (owner 2026-11-25,
+  // fix-first round 2): a FREQ drag speeds the motion up or slows it, never
+  // jumps it, and a sweep's motion climbs with the sweep. Noise jitters on
+  // real seconds (its hash is quantized in time), so it keeps the plain clock.
+  const noiseClock = viz.useVizClock(running && airMode === 'noise');
+  const phaseClock = viz.useMotionPhaseClock(running && airMode === 'wave', freq, sweep, sweepToken);
+  const clock = airMode === 'wave' ? phaseClock : noiseClock;
+  // With a phase clock the views' ω·t = 2π·visHz·clock must equal the phase.
+  const visHz = viz.PHASE_CLOCK_VIS_HZ;
   const ts = useStageTextScale(); // pane names grow with the picture in FULL SCREEN
   const GAP = 3;
   // Pane names at 10.5 pt (art grading 2026-10-16: 9 pt read as tiny at 390).

@@ -69,7 +69,7 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'Attack, Decay and Release sliders: 0 ms up to about 2 s (Attack) or 3 s, on a log scale, so short times get more room. Sustain level: 0 to 100 %.',
       'Hold (energy still supplied): 0 to 2000 ms at the sustain level, after attack and decay, before release.',
       'ATTACK: LINEAR / SNAP and DECAY: LINEAR / NATURAL switch the curve shapes. RESET brings back the starting shape.',
-      '▶ SWEEP THE SHAPE runs a slowed playhead along the shape (the slow-down is printed). ⤢ FULL SCREEN enlarges the chart with the four sliders under it.',
+      '▶ SWEEP THE SHAPE runs a playhead along the shape, slowed for a short shape and in real time for a long one (the speed is printed). ⤢ FULL SCREEN enlarges the chart with the four sliders under it.',
       'In the strip under the title: ⏮ goes to the first module, ‹ PREV and NEXT › step one module, and MODULE ▾ opens the list of modules.',
     ],
     changes: [

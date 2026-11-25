@@ -18,7 +18,7 @@ import { levelColorForDb } from '../../../features/tools/levelColor';
 import { StageAspectReport, useStageTextScale } from '../rack/stageAspect';
 import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../modules/ape-gesture-exclusion';
 import { fingerAt, fingerOffset, pickHandle, sideLabelRows, sideTransform, touchToGlass, type Finger, type PlanTransform } from './planGeom';
-import { bounds, ceilingHeightAt, cloudHangZ, fmtLen, type Analysis, type Pt, type RoomDesign } from './roomModel';
+import { basstrapOutline, bounds, ceilingHeightAt, cloudHangZ, fmtLen, type Analysis, type Pt, type RoomDesign } from './roomModel';
 import { SURFACE_TINT, type PlanHandle } from './RoomPlanView';
 import { MonitorSide, StandSide, SubSide } from './studioPlanArt';
 
@@ -215,7 +215,13 @@ export function RoomSideView({
           }
           if (t.kind === 'basstrap' && t.wall != null && (t.wall === 0 || t.wall === 1)) {
             const q = toSide({ y: b.minY, z: t.z + t.height / 2 });
-            return <Path key={t.id} d={`M${q.x},${q.y} l${t.thickness * 1.6 * T.k},0 l${-t.thickness * 1.6 * T.k},${t.height * T.k * 0.08} Z M${q.x},${q.y} l0,${t.height * T.k} l${t.thickness * 1.6 * T.k},0 Z`} fill="rgba(201,162,74,0.4)" stroke={col} strokeWidth={1} />;
+            // How far the plan's trap reaches into the room from the front
+            // wall — the same outline, so SIZE and THICK show here too
+            // (owner 2026-11-25, fix-first round 2).
+            const o = basstrapOutline(room.vertices, t.wall, t.width, t.thickness);
+            if (!o) return null; // an outside corner holds no corner trap
+            const reachK = (Math.max(...o.body.map((p) => p.y)) - b.minY) * T.k;
+            return <Path key={t.id} d={`M${q.x},${q.y} l${reachK},0 l${-reachK},${t.height * T.k * 0.08} Z M${q.x},${q.y} l0,${t.height * T.k} l${reachK},0 Z`} fill="rgba(201,162,74,0.4)" stroke={col} strokeWidth={1} />;
           }
           return null;
         })}

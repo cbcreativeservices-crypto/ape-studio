@@ -74,6 +74,7 @@ import { PersonStandingFrontAt } from '../../../features/lab/figureV2Front';
 import { castFor } from '../miking/lessons/shared/figureV2/cast';
 import { levelColor, WAVE_LEVEL_STOPS } from '../../../features/tools/levelColor';
 import { TRACER_COLOR, TRACER_MARK_COLOR } from './tracer';
+import { motionHzFor, sweepHzAt } from './motionHz';
 
 /** Amplitude ramp for SPECTRUM STICKS / recipe bars, ordered TOP (full scale,
  *  red) → BASE (silence, blue). A stick's height already encodes amplitude, so
@@ -249,6 +250,59 @@ export function usePhaseClock(
   const cb = useFrameCallback((info) => {
     if (info.timeSincePreviousFrame != null) {
       phase.value += 2 * Math.PI * rate.value * (Math.min(info.timeSincePreviousFrame, 64) / 1000);
+    }
+  }, false);
+  useEffect(() => {
+    cb.setActive(running);
+  }, [running, cb]);
+  return phase;
+}
+
+/** Passed as `visHz` with a PHASE clock (radians) to the views that compute
+ *  ω·t = 2π·visHz·clock: then ω·t is the integrated phase itself. */
+export const PHASE_CLOCK_VIS_HZ = 1 / (2 * Math.PI);
+
+/** The Sound Playground's phase clock (radians; owner 2026-11-25, fix-first
+ *  round 2). Integrated like usePhaseClock, so a FREQ drag only speeds up or
+ *  slows the motion (the plain seconds clock jumped about 20 cycles on a
+ *  290 → 667 Hz drag a minute after PLAY). With `sweep` set it follows the
+ *  generator's log sweep frame by frame: the drawn rate is
+ *  motionHzFor(sweepHzAt(t)), t counted from the last (re)start — the sweep
+ *  restarts on every reprogram (Generator.hpp setSweep retriggers), so the
+ *  screen bumps `sweepToken` each time it reprograms it. SLOW and FAST then
+ *  climb at their own pace. */
+export function useMotionPhaseClock(
+  running: boolean,
+  freqHz: number,
+  sweep: { startHz: number; endHz: number; secs: number } | null,
+  sweepToken: number,
+): SharedValue<number> {
+  const phase = useSharedValue(0);
+  const rate = useSharedValue(motionHzFor(freqHz));
+  const sw0 = useSharedValue(sweep ? sweep.startHz : 0);
+  const sw1 = useSharedValue(sweep ? sweep.endHz : 0);
+  const swSecs = useSharedValue(sweep ? sweep.secs : 0);
+  const swT = useSharedValue(0);
+  useEffect(() => {
+    rate.value = motionHzFor(freqHz);
+  }, [freqHz, rate]);
+  useEffect(() => {
+    sw0.value = sweep ? sweep.startHz : 0;
+    sw1.value = sweep ? sweep.endHz : 0;
+    swSecs.value = sweep ? sweep.secs : 0;
+  }, [sweep?.startHz, sweep?.endHz, sweep?.secs, sw0, sw1, swSecs]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    swT.value = 0;
+  }, [sweepToken, swT]);
+  const cb = useFrameCallback((info) => {
+    if (info.timeSincePreviousFrame != null) {
+      const dt = Math.min(info.timeSincePreviousFrame, 64) / 1000;
+      let r = rate.value;
+      if (swSecs.value > 0) {
+        r = motionHzFor(sweepHzAt(swT.value, sw0.value, sw1.value, swSecs.value));
+        swT.value += dt;
+      }
+      phase.value += 2 * Math.PI * r * dt;
     }
   }, false);
   useEffect(() => {

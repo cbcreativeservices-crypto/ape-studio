@@ -94,7 +94,9 @@ export const FOUNDATIONS_CAPTIONS: Readonly<Record<string, string>> = {
   F0: 'base note',
   SEL: 'chosen layer',
   UNMIX: 'pulled apart',
-  OUT: 'sum level',
+  // M10's OUT prints the two tones' frequencies ("220/222"), not a level
+  // (owner 2026-11-25, fix-first round 2).
+  OUT: 'L/R tones',
   SUM: 'A plus B',
   'A (': 'fixed tone',
   'B (': 'your tone',

@@ -809,6 +809,9 @@ export function moveTreatment(t: Treatment, p: Pt, room: Pick<Room, 'vertices'>)
     let best = t.wall ?? 0;
     let bd = Infinity;
     v.forEach((q, i) => {
+      // Never onto an outside (270 degree) corner: a corner trap cannot sit
+      // there (owner 2026-11-25, fix-first round 2 checker).
+      if (isReflexVertex(v, i)) return;
       const d = Math.hypot(q.x - p.x, q.y - p.y);
       if (d < bd) {
         bd = d;
@@ -1112,6 +1115,21 @@ export function firstReflections(room: Room, spk: Speaker, lis: Listener, c: num
   const out: Reflection[] = [];
   const S = { x: spk.x, y: spk.y };
   const Lp = { x: lis.x, y: lis.y };
+  // A freestanding panel (gobo) standing across either leg of a path — the
+  // way to "test a reflection point before drilling" (owner 2026-11-25,
+  // fix-first round 2: it used to change no path). The path then meets
+  // treatment, and its bounce loses the panel's α where that is more than
+  // the surface's own — the same convention as a wall panel covering the
+  // point. ESTIMATED: what bends round the panel's edges is not modelled.
+  // A panel touching the speaker or the ears (within GOBO_END_CLEAR_M along
+  // the leg) is not "in the path": it is on the source or the listener
+  // (checker 2026-11-25). A panel in the DIRECT sound treats nothing: analyze
+  // drops it (goboInDirectSound).
+  const S3 = { x: spk.x, y: spk.y, z: spk.z };
+  const L3 = { x: lis.x, y: lis.y, z: lis.earZ };
+  const goboOn = (p: { x: number; y: number; z: number }) =>
+    treatment.find((t) => t.enabled && t.kind === 'gobo' && (goboCrossesLeg(t, S3, p, GOBO_END_CLEAR_M, 0) || goboCrossesLeg(t, p, L3, 0, GOBO_END_CLEAR_M)));
+  const withGobo = (alpha: number, g: Treatment | undefined) => (g ? Math.max(alpha, treatmentBroadbandAlpha(g)) : alpha);
   const dh = Math.hypot(Lp.x - S.x, Lp.y - S.y);
   const dz = lis.earZ - spk.z;
   const directLen = Math.hypot(dh, dz);
@@ -1139,7 +1157,8 @@ export function firstReflections(room: Room, spk: Speaker, lis: Listener, c: num
     const treated = treatment.find((t) => t.enabled && (t.kind === 'absorber' || t.kind === 'diffuser') && t.wall === i && coversWallPoint(t, v, i, hit.t, z));
     // The bounce loses what the surface it meets absorbs: the panel's α where
     // a panel covers the point, the wall's (or an opening's) otherwise.
-    const alpha = treated ? treatmentBroadbandAlpha(treated) : broadbandAlpha(wallMaterialAt(room, i, hit.t));
+    const gobo = goboOn({ x: hit.p.x, y: hit.p.y, z });
+    const alpha = withGobo(treated ? treatmentBroadbandAlpha(treated) : broadbandAlpha(wallMaterialAt(room, i, hit.t)), gobo);
     out.push({
       speaker: spk.role,
       surface: { kind: 'wall', edge: i },
@@ -1148,7 +1167,7 @@ export function firstReflections(room: Room, spk: Speaker, lis: Listener, c: num
       directLen,
       delayMs: ((pathLen - directLen) / c) * 1000,
       ...level(pathLen, alpha, { dx: hit.p.x - S.x, dy: hit.p.y - S.y, dz: z - spk.z }),
-      treatedBy: treated?.id,
+      treatedBy: treated?.id ?? gobo?.id,
     });
   }
   // Floor: image at −z. Reflection point where the straight line from the
@@ -1160,7 +1179,8 @@ export function firstReflections(room: Room, spk: Speaker, lis: Listener, c: num
     const px = S.x + (Lp.x - S.x) * f;
     const py = S.y + (Lp.y - S.y) * f;
     const rug = treatment.find((t) => t.enabled && t.kind === 'rug' && coversPlanPoint(t, px, py));
-    const alpha = rug ? treatmentBroadbandAlpha(rug) : broadbandAlpha(room.floor);
+    const gobo = goboOn({ x: px, y: py, z: 0 });
+    const alpha = withGobo(rug ? treatmentBroadbandAlpha(rug) : broadbandAlpha(room.floor), gobo);
     out.push({
       speaker: spk.role,
       surface: { kind: 'floor' },
@@ -1169,7 +1189,7 @@ export function firstReflections(room: Room, spk: Speaker, lis: Listener, c: num
       directLen,
       delayMs: ((pathLen - directLen) / c) * 1000,
       ...level(pathLen, alpha, { dx: px - S.x, dy: py - S.y, dz: -spk.z }),
-      treatedBy: rug?.id,
+      treatedBy: rug?.id ?? gobo?.id,
     });
   }
   // Ceiling: local height at the midpoint of the run (a sloped ceiling is
@@ -1183,7 +1203,8 @@ export function firstReflections(room: Room, spk: Speaker, lis: Listener, c: num
     const px = S.x + (Lp.x - S.x) * f;
     const py = S.y + (Lp.y - S.y) * f;
     const cloud = treatment.find((t) => t.enabled && t.kind === 'cloud' && coversPlanPoint(t, px, py));
-    const alpha = cloud ? treatmentBroadbandAlpha(cloud) : broadbandAlpha(room.ceilingMat);
+    const gobo = goboOn({ x: px, y: py, z: H });
+    const alpha = withGobo(cloud ? treatmentBroadbandAlpha(cloud) : broadbandAlpha(room.ceilingMat), gobo);
     out.push({
       speaker: spk.role,
       surface: { kind: 'ceiling' },
@@ -1192,7 +1213,7 @@ export function firstReflections(room: Room, spk: Speaker, lis: Listener, c: num
       directLen,
       delayMs: ((pathLen - directLen) / c) * 1000,
       ...level(pathLen, alpha, { dx: px - S.x, dy: py - S.y, dz: up }),
-      treatedBy: cloud?.id,
+      treatedBy: cloud?.id ?? gobo?.id,
     });
   }
   // The desk top (audio review 4): the strongest early reflection in most
@@ -1208,7 +1229,8 @@ export function firstReflections(room: Room, spk: Speaker, lis: Listener, c: num
     const py = S.y + (Lp.y - S.y) * frac;
     if (Math.abs(px - f.x) > f.w / 2 || Math.abs(py - f.y) > f.d / 2) continue;
     const pathLen = Math.hypot(dh, down + up);
-    const alpha = broadbandAlpha('wood');
+    const gobo = goboOn({ x: px, y: py, z: f.h });
+    const alpha = withGobo(broadbandAlpha('wood'), gobo);
     out.push({
       speaker: spk.role,
       surface: { kind: 'desk', id: f.id },
@@ -1217,6 +1239,7 @@ export function firstReflections(room: Room, spk: Speaker, lis: Listener, c: num
       directLen,
       delayMs: ((pathLen - directLen) / c) * 1000,
       ...level(pathLen, alpha, { dx: px - S.x, dy: py - S.y, dz: -down }),
+      ...(gobo ? { treatedBy: gobo.id } : {}),
     });
   }
   return out.sort((a, b) => a.delayMs - b.delayMs);
@@ -1274,6 +1297,107 @@ function coversWallPoint(t: Treatment, v: Pt[], edge: number, u: number, z: numb
 function coversPlanPoint(t: Treatment, x: number, y: number): boolean {
   if (t.x == null || t.y == null) return false;
   return Math.abs(x - t.x) <= t.width / 2 && Math.abs(y - t.y) <= t.height / 2;
+}
+
+/** How far along a leg a freestanding panel must stand from the speaker or
+ *  the ears to count as "in the path" (checker 2026-11-25): a panel on the
+ *  listener or on a speaker is not treating a reflection. */
+export const GOBO_END_CLEAR_M = 0.15;
+
+/** A NEW freestanding panel's face (checker 2026-11-25): 1.2 m wide, 1.6 m
+ *  tall, centred 1.0 m up (0.2 m to 1.8 m, a typical stand-mounted gobo,
+ *  clear above and below ear and speaker heights). The one stored face is
+ *  what both the path test and the RT60 area read. Designs saved earlier
+ *  keep their stored size. */
+export const GOBO_FACE = { width: 1.2, height: 1.6, z: 1.0, thickness: 0.1 } as const;
+/** The plan draws a gobo as a thin panel on a stand of this depth (its
+ *  `height` is the face's height, not a footprint). */
+export const GOBO_FOOTPRINT_M = 0.4;
+
+/** The app's own new gobo (the ADD tray's FREESTANDING PANEL): beside the
+ *  left speaker, inside the walls even when L is near one. */
+export function goboBeside(room: Pick<Room, 'vertices'>, lay: Pick<Layout, 'speakers' | 'listener'>): Treatment {
+  const lis = lay.listener;
+  const L = lay.speakers.find((s) => s.role === 'L') ?? lis;
+  const at = clampInside({ x: L.x - 0.6, y: lis.y - 0.3 }, room, { x: lis.x, y: lis.y });
+  return { id: newId('tr'), kind: 'gobo', x: at.x, y: at.y, ...GOBO_FACE, enabled: true };
+}
+
+/** Does a straight leg a→b (3-D, metres) pass through a freestanding
+ *  panel's face? The face is the one the plan draws: `width` wide along x,
+ *  centred on (x, y), from z − height/2 to z + height/2 (its stand below is
+ *  open). The model has no rotation: a gobo always faces down the room (its
+ *  face runs side to side, along x). The crossing must lie at least `clearA`
+ *  from a and `clearB` from b along the leg. Exported for the node test
+ *  (owner 2026-11-25, fix-first round 2). */
+export function goboCrossesLeg(
+  t: Pick<Treatment, 'x' | 'y' | 'z' | 'width' | 'height'>,
+  a: { x: number; y: number; z: number },
+  b: { x: number; y: number; z: number },
+  clearA = 0,
+  clearB = 0,
+): boolean {
+  if (t.x == null || t.y == null) return false;
+  const dy = b.y - a.y;
+  // A leg running parallel to the face never passes through it.
+  if (Math.abs(dy) < 1e-9) return false;
+  const u = (t.y - a.y) / dy;
+  if (u < 0 || u > 1) return false;
+  const len = Math.hypot(b.x - a.x, dy, b.z - a.z);
+  if (u * len < clearA || (1 - u) * len < clearB) return false;
+  const x = a.x + (b.x - a.x) * u;
+  if (Math.abs(x - t.x) > t.width / 2) return false;
+  const z = a.z + (b.z - a.z) * u;
+  return Math.abs(z - t.z) <= t.height / 2 + 1e-9;
+}
+
+/** A switched-on gobo standing in the DIRECT sound of any speaker (sub
+ *  excepted), clear of both ends: it would block the direct sound, which this
+ *  model does not simulate, so it treats no reflection (checker 2026-11-25).
+ *  The Treatment page says so in words. */
+export function goboInDirectSound(t: Treatment, lay: Pick<Layout, 'speakers' | 'listener'>): boolean {
+  if (t.kind !== 'gobo' || !t.enabled) return false;
+  const L3 = { x: lay.listener.x, y: lay.listener.y, z: lay.listener.earZ };
+  return lay.speakers.some((s) => s.role !== 'SUB' && goboCrossesLeg(t, { x: s.x, y: s.y, z: s.z }, L3, GOBO_END_CLEAR_M, GOBO_END_CLEAR_M));
+}
+
+/** A switched-on gobo whose face stands within GOBO_END_CLEAR_M (in plan)
+ *  of a speaker (sub excepted) or of the listener: it is standing ON the
+ *  source or the seat, not in a reflection path, so it treats no reflection
+ *  (checker 2026-11-25). */
+export function goboOnSpeakerOrSeat(t: Treatment, lay: Pick<Layout, 'speakers' | 'listener'>): boolean {
+  if (t.kind !== 'gobo' || !t.enabled || t.x == null || t.y == null) return false;
+  const tx = t.x;
+  const ty = t.y;
+  const near = (p: { x: number; y: number }) => Math.hypot(Math.max(0, Math.abs(p.x - tx) - t.width / 2), p.y - ty) < GOBO_END_CLEAR_M;
+  return near(lay.listener) || lay.speakers.some((s) => s.role !== 'SUB' && near(s));
+}
+
+/** Why a gobo treats nothing, in the learner's words, or null when it can
+ *  treat the paths it stands in (the Treatment page shows it). */
+export function goboOutOfPlayLine(t: Treatment, lay: Pick<Layout, 'speakers' | 'listener'>): string | null {
+  if (goboOnSpeakerOrSeat(t, lay)) return 'This panel stands on a speaker or the listening seat: move it to a reflection path.';
+  if (goboInDirectSound(t, lay)) return 'This panel stands in the direct sound: move it to a reflection path.';
+  return null;
+}
+
+/** An outside corner (interior angle over 180 degrees, e.g. the alcove's
+ *  inner corner): the turn at i goes against the polygon's winding. */
+export function isReflexVertex(v: Pt[], i: number): boolean {
+  const n = v.length;
+  if (n < 4) return false;
+  let w = 0;
+  for (let k = 0; k < n; k++) {
+    const p = v[k];
+    const q = v[(k + 1) % n];
+    w += p.x * q.y - q.x * p.y;
+  }
+  const j = ((i % n) + n) % n;
+  const P = v[(j - 1 + n) % n];
+  const C = v[j];
+  const N = v[(j + 1) % n];
+  const cross = (C.x - P.x) * (N.y - C.y) - (C.y - P.y) * (N.x - C.x);
+  return cross * w < -1e-12;
 }
 
 /* ────────────────────────────────── SBIR ────────────────────────────────── */
@@ -1647,7 +1771,10 @@ export function analyze(d: RoomDesign, layoutIndex = d.active): Analysis {
     const p = modePressure(modalDims.L, modalDims.W, modalDims.H, mode, lis.y - b.minY, lis.x - b.minX, lis.earZ);
     return { mode, pressure: p, zone: p > 0.8 ? 'peak' : p < 0.2 ? 'null' : 'between' };
   });
-  const reflections = lay.speakers.filter((s) => s.role !== 'SUB').flatMap((s) => firstReflections(room, s, lis, c, d.treatment));
+  // A gobo in the direct sound, or standing on a speaker or the seat,
+  // treats no reflection (goboOutOfPlayLine).
+  const pathTreatment = d.treatment.filter((t) => goboOutOfPlayLine(t, lay) == null);
+  const reflections = lay.speakers.filter((s) => s.role !== 'SUB').flatMap((s) => firstReflections(room, s, lis, c, pathTreatment));
   const sbir = lay.speakers.flatMap((s) => sbirNotches(room, s, lis, c));
   const stereo = stereoGeometry(room, lay);
   const rt60 = rt60Bands(room, d.treatment);
@@ -1887,6 +2014,63 @@ export function treatmentAtReflection(r: Reflection, room: Room): Treatment | nu
 /** A corner bass trap at vertex i. */
 export function basstrapAt(room: Room, vertex: number): Treatment {
   return { id: newId('tr'), kind: 'basstrap', wall: vertex, width: 0.6, height: Math.min(2.4, room.height), thickness: 0.3, z: Math.min(2.4, room.height) / 2, enabled: true };
+}
+
+/** A corner bass trap as the plan draws it (metres), from the two numbers
+ *  the model uses: `width` is its FRONT FACE (the area the RT60 counts is
+ *  width × height) and `thickness` its porous depth behind that face (what
+ *  sets its α). Owner 2026-11-25, fix-first round 2: the drawing used to be
+ *  sized from THICK alone, so SIZE ("TRAP x wide") never widened it.
+ *  - The face spans the corner wall to wall, `width` long: it meets each wall
+ *    `leg` from the corner, `apex` in front of the corner.
+ *  - thickness ≤ apex: a panel across the corner; `body` is the porous band
+ *    behind the face and `gap` the air triangle behind it.
+ *  - thickness > apex: a solid block filling the corner whose face stands
+ *    `thickness` out from the corner (`gap` null).
+ *  `face` is the front edge, [end on the previous wall, end on the next]. */
+export function basstrapOutline(
+  v: Pt[],
+  vertex: number,
+  width: number,
+  thickness: number,
+): { body: Pt[]; gap: Pt[] | null; face: [Pt, Pt]; leg: number; apex: number } | null {
+  const n = v.length;
+  const i = ((vertex % n) + n) % n;
+  // No corner trap on an outside (270 degree) corner: it would lie outside the room.
+  if (n < 3 || isReflexVertex(v, i)) return null;
+  const C = v[i];
+  const unit = (p: Pt) => {
+    const l = Math.hypot(p.x - C.x, p.y - C.y) || 1;
+    return { x: (p.x - C.x) / l, y: (p.y - C.y) / l };
+  };
+  const a = unit(v[(i - 1 + n) % n]);
+  const b = unit(v[(i + 1) % n]);
+  const at = (d: Pt, s: number) => ({ x: C.x + d.x * s, y: C.y + d.y * s });
+  const half = Math.acos(Math.max(-1, Math.min(1, a.x * b.x + a.y * b.y))) / 2;
+  const W = Math.max(0.01, width);
+  const D = Math.max(0, thickness);
+  // Never past the next corner: the face ends on the shorter adjoining wall
+  // (then the drawn face is narrower than SIZE: the corner cannot hold more).
+  const wallLen = (j: number) => Math.hypot(v[j].x - C.x, v[j].y - C.y);
+  const leg = Math.min(W / 2 / Math.max(1e-6, Math.sin(half)), wallLen((i - 1 + n) % n), wallLen((i + 1) % n));
+  const apex = leg * Math.cos(half);
+  const p1 = at(a, leg);
+  const p2 = at(b, leg);
+  // A µm of rounding is not an air gap: a trap as deep as its corner is solid.
+  if (D <= apex + 1e-9 || apex < 1e-6) {
+    const k = apex < 1e-6 ? 1 : Math.min(1, D / apex);
+    if (k > 1 - 1e-9) return { body: [p1, p2, C], gap: null, face: [p1, p2], leg, apex };
+    const q1 = { x: p1.x + (C.x - p1.x) * k, y: p1.y + (C.y - p1.y) * k };
+    const q2 = { x: p2.x + (C.x - p2.x) * k, y: p2.y + (C.y - p2.y) * k };
+    return { body: [p1, p2, q2, q1], gap: [C, q1, q2], face: [p1, p2], leg, apex };
+  }
+  // Deeper than the corner triangle: the face moves out along the bisector.
+  const ul = Math.hypot(a.x + b.x, a.y + b.y) || 1;
+  const u = { x: (a.x + b.x) / ul, y: (a.y + b.y) / ul };
+  const along = (p: Pt) => ({ x: p.x + u.x * (D - apex), y: p.y + u.y * (D - apex) });
+  const f1 = along(p1);
+  const f2 = along(p2);
+  return { body: [C, p1, f1, f2, p2], gap: null, face: [f1, f2], leg, apex };
 }
 
 export const TREATMENT_INFO: Record<TreatmentKind, { label: string; short: string; blurb: string; safety: string }> = {

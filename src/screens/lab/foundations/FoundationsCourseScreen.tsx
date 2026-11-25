@@ -87,6 +87,7 @@ import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced
 import { useStopOnClose } from '../../../features/audio/useStopOnBlur';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { PLAIN_TERMS } from '../../../features/lab/plainTerms';
+import { motionHzFor } from './motionHz';
 
 /** The shared plain dB line (plainTerms.ts, D62 guardrail 3), said once before
  *  Module 9's readouts use dB (FO-03, owner 2026-11-15, "build waves 1 thru 3"). */
@@ -919,7 +920,9 @@ function M6Rack({ viz, tone: _tone, focused, help, wellTop, wellBottom }: RackPr
 function M6Stage({ viz, w, h, f, focused }: { viz: VizModule; w: number; h: number; f: number; focused: boolean }) {
   // Phase clock — continuous while the lane drags the frequency. The tracer
   // molecules ride the same phase (owner 2026-10-16), so no second clock.
-  const phase = viz.usePhaseClock(focused, visHzFor(f));
+  // motionHzFor, not visHzFor: 55 and 110 Hz must not rock alike (owner
+  // 2026-11-25, fix-first round 2; the mapping is stated in motionHz.ts).
+  const phase = viz.usePhaseClock(focused, motionHzFor(f));
   return (
     <View style={{ width: w, height: h, justifyContent: 'center' }}>
       <viz.WavelengthRulerView phase={phase} width={w} height={h} freqHz={f} />
@@ -1349,8 +1352,10 @@ function M9Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
   );
 }
 function M9Stage({ viz, w, h, f, lvl, focused }: { viz: VizModule; w: number; h: number; f: number; lvl: number; focused: boolean }) {
-  // Phase clock — continuous while the frequency sweep drags.
-  const phase = viz.usePhaseClock(focused, visHzFor(f));
+  // Phase clock — continuous while the frequency sweep drags. motionHzFor:
+  // 80 and 110 Hz, and 2 kHz and 8 kHz, must not pulse alike (owner
+  // 2026-11-25, fix-first round 2; the mapping is stated in motionHz.ts).
+  const phase = viz.usePhaseClock(focused, motionHzFor(f));
   return (
     <View style={{ width: w, height: h, justifyContent: 'center' }}>
       <viz.EqualLoudnessView phase={phase} width={w} height={h} freqHz={f} level01={lvl} />
