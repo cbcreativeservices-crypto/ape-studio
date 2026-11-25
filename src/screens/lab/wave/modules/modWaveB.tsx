@@ -961,7 +961,7 @@ export function DelayAlignModule(p: WaveModuleProps) {
             </Text>
           ) : null}
           <Text style={dstyles.caption}>
-            Watch the null through the room close in HEAT as the mismatch approaches 0 — then DRAG THE LISTENER: an alignment that only works at one seat is not an alignment.
+            Watch the two balls in PRESSURE: at DELAY 0 the main’s ball reaches you first, because the main is closer. Raise DELAY and the main fires later; when DELAY equals REQ the two balls land together. Watch the null through the room close in HEAT as the mismatch approaches 0 — then DRAG THE LISTENER: an alignment that only works at one seat is not an alignment.
           </Text>
         </PanelCard>
       }

@@ -145,7 +145,7 @@ import { softDeadline } from '../../lib/boundedCall';
 import { V3_CURRICULUM_VERSION_ID } from '../../data/v3Curriculum';
 import { isCalcBackedTerm, calcLinkForTerm } from '../lab/calc/calcGlossaryLinks';
 import { SUPABASE_URL } from '../../lib/env';
-import { colors, fonts } from '../../theme/tokens';
+import { colors, fonts, STUDY_COLOR } from '../../theme/tokens';
 import {
   getLearningProfile,
   ACTION_LABELS,
@@ -4328,7 +4328,7 @@ ${COPY.glossaryFreeAllowance}`,
           active={filter === 'custom'}
           icon={(c) => (
             // [deck] CUSTOM STUDY [headphones] LIST (owner 2026-10-16): the deck
-            // leads; STUDY and the Study tab's headphones are in the Study blue,
+            // leads; STUDY is in the Study orange (owner 2026-11-24, "orange everywhere"),
             // tying the list to studying. Count lives in the "# Terms" readout.
             <View style={styles.chipIconWrap}>
               {/* The deck stays cyan, as on Enrollments, lit or not (owner 2026-10-14). */}
@@ -4336,7 +4336,7 @@ ${COPY.glossaryFreeAllowance}`,
                 <DeckIcon color={CUSTOM_CYAN} size={16} fill={filter === 'custom' ? `${CUSTOM_CYAN}33` : 'none'} />
               </AckFlash>
               <Text style={[styles.chipText, { color: c }]}>
-                CUSTOM <Text style={{ color: colors.blue }}>STUDY</Text>
+                CUSTOM <Text style={{ color: STUDY_COLOR }}>STUDY</Text>
               </Text>
               <View style={{ marginLeft: -2 }}>
                 <StudyGlyph size={14} />

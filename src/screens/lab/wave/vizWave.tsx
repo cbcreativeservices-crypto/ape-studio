@@ -85,6 +85,16 @@ import {
   type WaveScene,
   type WaveSource,
 } from './waveEngine';
+import {
+  PULSE_MS,
+  nodeState,
+  pulseDelayPx,
+  pulseFront,
+  pulsePaceLen,
+  pulseRingRadius,
+  pulseTimeEnv,
+  type TraceRay,
+} from './pulseTracer';
 
 /** Side-view scenes (barrier, gradient) keep the L glass's shape in FULL
  *  SCREEN so their ground line and sky stay where the learner saw them. */
@@ -982,40 +992,11 @@ function RoomRing({
 // remainder is a beat of silence before the next pulse. Node counts are FIXED
 // per frame (one circle per ray); the ring is one path.
 
-// 3 s between pulses — more time to watch the decay — then stretched so every
-// ball travels 13 % SLOWER (owner 2026-09-26: "the balls travel too fast").
-// Speed ∝ 1 / PULSE_MS; the fade points are fractions of the cycle, so the
-// whole choreography stretches together (≈3.45 s).
-const PULSE_MS = Math.round(3000 / 0.87);
-const PULSE_ARRIVE = 0.9; // the pacing span is covered by 90% of the cycle
-/** Room diagonals the wavefront covers per pulse cycle. The pulse speed is
- *  keyed to ROOM GEOMETRY, never to the surviving ray set, so the surface
- *  material can't change how fast the pressure rays travel (owner 2026-08-07).
- *  Sized to let the usual multi-bounce diffuse paths land inside the cycle. */
-const PACE_SPAN = 3.5;
-// Everything fades to nothing by this fraction of the cycle (2.98 s of 3 s),
-// leaving a clean beat before the next pulse — catches even long free-bounce
-// nodes that would otherwise still be travelling at the reset.
-const PULSE_FADE_END = 2.98 / 3;
-const PULSE_FADE_START = 0.9;
-
-/** `segGain` = amplitude gain while travelling segment i (1.0 leaving the
- *  source, × √(1−α) after each bounce) — the MATERIAL loss. `free` traces are
- *  the extra diffuse reflections (multi-bounce paths that reach the listener);
- *  the rest are the line-traced image-source reflections. Every trace ENDS at
- *  the listener. */
-type TraceRay = {
-  pts: number[];
-  cum: number[];
-  len: number;
-  order: number;
-  segGain: number[];
-  free?: boolean;
-  /** A fragment of a pulse split by a diffuser: it rides one ray of the
-   *  scatter fan and VANISHES at the ray's end (it does not reach the
-   *  listener, so it must not park anywhere). */
-  split?: boolean;
-};
+// The pacing (PULSE_MS, PULSE_ARRIVE, PACE_SPAN, the fade points), the
+// TraceRay shape, nodeState and pulseTimeEnv live in ./pulseTracer (pure, so
+// node tests can check them). Each trace carries its SOURCE DELAY (delayPx):
+// a delayed source fires late, so its ball and ring start late by exactly the
+// distance sound covers in that delay (owner 2026-11-25, Delay Alignment).
 
 // The nodes carry LOUDNESS in the app-wide MIDI velocity colours (levelColor:
 // 1 = red / full scale → 0 = MIDI-0 blue / silence — src/features/tools/
@@ -1043,66 +1024,8 @@ const NODE_COLORS: string[] = Array.from({ length: NODE_BUCKETS }, (_, i) => {
   return brightenHex(levelColor(amp), amp * NODE_BRIGHT);
 }); // index 0 = blue (quiet, unbrightened) … last = bright red (loud)
 
-// A node's loudness has TWO parts (owner 2026-08-02):
-//  1. DISTANCE — spherical spreading (1/r) referenced to the DIRECT path
-//     length: a node is red/full at the direct distance and cools smoothly
-//     red→orange→yellow→green→blue the farther it travels. So the shortest
-//     path (the DIRECT sound) arrives red, and every LONGER reflection arrives
-//     cooler, passing through all the in-between colours. DIST_POW < 1 softens
-//     the 1/r curve so the mid colours get more of the room (lower = gentler,
-//     slower red→blue transition).
-//  2. MATERIAL — the accumulated reflection gain √(1−α) (segGain) STEPS the
-//     loudness down at each bounce: glass (α≈0) barely, fiberglass (α≈0.98) a
-//     lot, so an absorptive bounce drops the colour cooler right at the wall.
-// The two multiply: distance gives the gradient, material gives the per-bounce
-// step. Only the direct (shortest, unbounced) reaches the listener red.
-const DIST_POW = 0.58;
-// Stretch the distance/time colour decay so nodes hold their warmer colours
-// ~37% longer before cooling (owner 2026-08-02) — scales the 1/r reference
-// length, so any given colour is reached at 37% more travel (= time).
-const NODE_TIME_STRETCH = 1.37;
-
-type NodeState = { x: number; y: number; amp: number; r: number };
-
-/** Position + loudness (amp 0..1) + radius of a ray's node at wavefront
- *  distance `dist` — travels source→listener, then holds at the listener. */
-function nodeState(ray: TraceRay, dist: number, minLen: number, timeEnv: number): NodeState {
-  'worklet';
-  if (ray.split && dist >= ray.len) return { x: 0, y: 0, amp: 0, r: 0 };
-  const travelled = Math.min(dist, ray.len); // stop at the listener
-  let i = 1;
-  while (i < ray.cum.length - 1 && travelled > ray.cum[i]) i++;
-  const d0 = ray.cum[i - 1];
-  const seg = ray.cum[i] - d0 || 1;
-  const f = (travelled - d0) / seg;
-  const x = ray.pts[(i - 1) * 2] + (ray.pts[i * 2] - ray.pts[(i - 1) * 2]) * f;
-  const y = ray.pts[(i - 1) * 2 + 1] + (ray.pts[i * 2 + 1] - ray.pts[(i - 1) * 2 + 1]) * f;
-  // Every sound LEAVES THE SOURCE FULL RED in EVERY room — before any bounce
-  // the gain is 1, so the colour at the source is identical regardless of wall
-  // treatment. It then cools with DISTANCE travelled and STEPS cooler at each
-  // bounce by that wall's √(1−α) (glass barely, fiberglass a lot). So the rooms
-  // differ only AFTER the walls act: a close/reflective path arrives redder, a
-  // far/absorptive one arrives bluer. `timeEnv` decays everything to blue by
-  // the end of the pulse (all full blue at PULSE_FADE_END).
-  const gain = ray.segGain[i - 1] ?? 1; // material left on the CURRENT segment
-  const ref = minLen * NODE_TIME_STRETCH;
-  const level = gain * Math.pow(ref / Math.max(ref, travelled), DIST_POW);
-  const amp = Math.max(0, Math.min(1, level * timeEnv));
-  // Diffuser fragments keep a visible floor: each carries 1/√N of the energy,
-  // so by level alone they shrank to sub-pixel specks and the split could not
-  // be seen (owner 2026-09-26: "there should be MANY balls"). Colour still
-  // tells the truth about their level.
-  const r = Math.max(ray.split ? 1.7 : 0, 2.5 * (0.34 + 0.66 * amp));
-  return { x, y, amp, r };
-}
-
-/** Global loudness envelope: full until PULSE_FADE_START, then eased to 0 by
- *  PULSE_FADE_END so every node is full blue (lowest level) at 2.98 s. */
-function pulseTimeEnv(u: number): number {
-  'worklet';
-  if (u < PULSE_FADE_START) return 1;
-  return Math.max(0, 1 - (u - PULSE_FADE_START) / (PULSE_FADE_END - PULSE_FADE_START));
-}
+// A node's loudness (distance travelled × material left, × the global time
+// fade) is computed in ./pulseTracer nodeState — see the notes there.
 
 /** The nodes for ALL rays, coloured by each ray's ECHO LEVEL (its own path
  *  length + material) on the MIDI ramp, decaying to blue over the pulse.
@@ -1124,10 +1047,10 @@ function PulseNodes({
   // A soft bloom under every node so they read over the heat field.
   const glow = useDerivedValue(() => {
     const p = Skia.Path.Make();
-    const dist = t.value * (paceLen / PULSE_ARRIVE);
+    const front = pulseFront(t.value, paceLen); // each ball subtracts its source's delay
     const env = pulseTimeEnv(t.value);
     for (let k = 0; k < traces.length; k++) {
-      const n = nodeState(traces[k], dist, minLen, env);
+      const n = nodeState(traces[k], front, minLen, env);
       p.addCircle(n.x, n.y, n.r * 1.5 * scale);
     }
     return p;
@@ -1139,10 +1062,10 @@ function PulseNodes({
     buckets.push(
       useDerivedValue(() => {
         const p = Skia.Path.Make();
-        const dist = t.value * (paceLen / PULSE_ARRIVE);
+        const front = pulseFront(t.value, paceLen);
         const env = pulseTimeEnv(t.value);
         for (let k = 0; k < traces.length; k++) {
-          const n = nodeState(traces[k], dist, minLen, env);
+          const n = nodeState(traces[k], front, minLen, env);
           if (Math.round(n.amp * (NODE_BUCKETS - 1)) === b) p.addCircle(n.x, n.y, n.r * scale);
         }
         return p;
@@ -1162,20 +1085,25 @@ function PulseNodes({
 }
 
 /** The pulse itself: a bright ring expanding from each source at the nodes'
- *  exact speed (the nodes ride this wavefront), fading as it grows. */
+ *  exact speed (the nodes ride this wavefront), fading as it grows. A delayed
+ *  source's ring starts growing only when that source fires (`delayPx` behind
+ *  the shared front), so it stays the wavefront its own balls ride. */
 function PulseRing({
   t,
   origins,
   paceLen,
 }: {
   t: SharedValue<number>;
-  origins: { x: number; y: number }[];
+  origins: { x: number; y: number; delayPx: number }[];
   paceLen: number;
 }) {
   const path = useDerivedValue(() => {
     const p = Skia.Path.Make();
-    const r = t.value * (paceLen / PULSE_ARRIVE);
-    if (r > 1.5) for (let i = 0; i < origins.length; i++) p.addCircle(origins[i].x, origins[i].y, r);
+    const front = pulseFront(t.value, paceLen);
+    for (let i = 0; i < origins.length; i++) {
+      const r = pulseRingRadius(front, origins[i].delayPx);
+      if (r > 1.5) p.addCircle(origins[i].x, origins[i].y, r);
+    }
     return p;
   }, [t, origins, paceLen]);
   const op = useDerivedValue(() => 0.5 * (1 - t.value) * (1 - t.value), [t]);
@@ -1551,8 +1479,12 @@ export function RoomSceneView(p: RoomSceneProps) {
     const X = (mx: number) => geo.x0 + mx * geo.pxPerM;
     const Y = (my: number) => geo.y0 + my * geo.pxPerM;
     const L = scene.listener;
+    // Each source's pulse fires `delayPx` behind the shared wavefront: the
+    // distance sound covers in its delay (0 ms → exactly 0, no change).
+    const cAir = speedOfSound(scene.tempC);
     for (const s of scene.sources) {
       if (s.muted) continue;
+      const delayPx = pulseDelayPx(s.delayMs, cAir, geo.pxPerM);
       for (const img of imageSources(scene, s, freq, 2)) {
         // The ROOM governs how a reflection BEHAVES (the node shrinks/dies as
         // it travels — see segGain), NOT how many rays emanate from the source
@@ -1657,6 +1589,7 @@ export function RoomSceneView(p: RoomSceneProps) {
               len: leadLen + legLen,
               order,
               segGain: [...gains.slice(0, sIdx + 1), gains[sIdx + 1] * share],
+              delayPx,
               split: true,
             });
           }
@@ -1685,7 +1618,7 @@ export function RoomSceneView(p: RoomSceneProps) {
           g *= Math.sqrt(Math.max(0, 1 - alphaAt(scene.boundary[img.bounces[bi]], freq)));
           segGain.push(g);
         }
-        if (!splitHere) traces.push({ pts: flat, cum, len: total, order, segGain });
+        if (!splitHere) traces.push({ pts: flat, cum, len: total, order, segGain, delayPx });
         // Arrowhead just before the listener, along the final segment.
         const a = pts[pts.length - 2];
         const b = pts[pts.length - 1];
@@ -1717,6 +1650,7 @@ export function RoomSceneView(p: RoomSceneProps) {
       const share = wallGain / BURST_FRAGS;
       for (const s of scene.sources) {
         if (s.muted) continue;
+        const delayPx = pulseDelayPx(s.delayMs, cAir, geo.pxPerM);
         for (let hI = 0; hI < BURST_HITS; hI++) {
           const along = ((hI + 0.5) / BURST_HITS) * wallLen;
           const hx = horizW ? along : scatterWall === 1 ? scene.w : 0;
@@ -1750,6 +1684,7 @@ export function RoomSceneView(p: RoomSceneProps) {
               len: leadPx + legPx,
               order: 1,
               segGain: [1, share],
+              delayPx,
               split: true,
             });
           }
@@ -1772,6 +1707,7 @@ export function RoomSceneView(p: RoomSceneProps) {
     const LR = Math.max(0.35, 0.5 * (scene.w + scene.h) * 0.06); // head catch radius, m
     for (const s of scene.sources) {
       if (s.muted) continue;
+      const delayPx = pulseDelayPx(s.delayMs, cAir, geo.pxPerM);
       let kept = 0;
       for (let n = 0; n < FREE_CAST && kept < FREE_KEEP; n++) {
         const ang = hashFrac(n * 1.37 + 0.11) * Math.PI * 2;
@@ -1832,7 +1768,7 @@ export function RoomSceneView(p: RoomSceneProps) {
           cum.push(total);
         }
         if (total > 1) {
-          traces.push({ pts: flat, cum, len: total, order: 0, segGain, free: true });
+          traces.push({ pts: flat, cum, len: total, order: 0, segGain, delayPx, free: true });
           kept++;
         }
       }
@@ -1862,7 +1798,7 @@ export function RoomSceneView(p: RoomSceneProps) {
   // across room sizes.) A path longer than the span simply fades out still
   // travelling, which is honest: very long echoes arrive late and quiet.
   const paceLen = useMemo(
-    () => Math.max(1, PACE_SPAN * Math.hypot(scene.w * geo.pxPerM, scene.h * geo.pxPerM)),
+    () => pulsePaceLen(scene.w, scene.h, geo.pxPerM),
     [scene.w, scene.h, geo.pxPerM],
   );
   // The colour reference is the SHORTEST real reflection = the direct sound
@@ -1876,12 +1812,14 @@ export function RoomSceneView(p: RoomSceneProps) {
   const pulseOrigins = useMemo(() => {
     if (!traces) return [];
     const seen = new Set<string>();
-    const out: { x: number; y: number }[] = [];
+    // One ring per source, carrying that source's delay (two boxes in one
+    // spot with different delays fire two rings, one after the other).
+    const out: { x: number; y: number; delayPx: number }[] = [];
     for (const r of traces) {
-      const k = `${Math.round(r.pts[0])},${Math.round(r.pts[1])}`;
+      const k = `${Math.round(r.pts[0])},${Math.round(r.pts[1])},${Math.round(r.delayPx)}`;
       if (!seen.has(k)) {
         seen.add(k);
-        out.push({ x: r.pts[0], y: r.pts[1] });
+        out.push({ x: r.pts[0], y: r.pts[1], delayPx: r.delayPx });
       }
     }
     return out;
