@@ -690,10 +690,11 @@ export function SpeakerCoverageLabScreen() {
           ) : null}
           {sectionIdx === 1 && rearDelay ? (
             <Text style={styles.modelNote}>
-              Delay alignment, as a conceptual model, not true time-alignment math. The two traveling
-              fronts (green lines) show firing the rear speaker late so the arrivals fuse. In the
+              Delay alignment, simplified: measured along the floor. The two traveling fronts (green
+              lines) show firing the rear speaker late so the arrivals fuse. In the
               field it is set a few milliseconds later still, so the ear keeps locating the sound on
-              the stage (the precedence effect). The timing here is illustrative only.
+              the stage (the precedence effect). The fronts are slowed down so you can watch them; both move at
+              one speed, and the aligned rear speaker waits exactly as long as the stage sound takes to reach it.
             </Text>
           ) : null}
           {/* Starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal): extra reading, one tap away. */}

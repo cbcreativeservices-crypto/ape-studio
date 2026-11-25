@@ -1887,6 +1887,35 @@ export const POP_MODES: { key: string; label: string; pass: number }[] = [
   { key: 'blimp', label: 'SHOTGUN WINDSHIELD', pass: 0.12 },
 ];
 
+/** Radius of plosive air particle `i` of `n` at x (0 = not drawn). The share
+ *  of air drawn arriving at the grille equals BLAST AT CAPSULE (`pass`): the
+ *  passing particles (i / n < pass) keep an area of pass × n full particles
+ *  between them (owner 2026-11-25, fix-first 15: FOAM drew less air at the
+ *  grille than POP FILTER while the readout said the reverse). The rest stop
+ *  at the hoop (pop) or shrink to nothing inside the foam / basket. `edge` =
+ *  the front of the foam or windshield; `gx` = the grille centre. */
+export function plosivePuffRadius(mode: string, i: number, n: number, x: number, pass: number, barX: number, edge: number, gx: number): number {
+  'worklet';
+  const FULL = 2.2;
+  if (mode === 'none') return FULL;
+  const passes = i / n < pass;
+  const passCount = Math.max(1, Math.ceil(pass * n - 1e-9));
+  const rPass = FULL * Math.sqrt((pass * n) / passCount);
+  if (mode === 'pop') {
+    if (x <= barX) return FULL;
+    return passes ? rPass : 0;
+  }
+  if (x <= edge) return FULL;
+  // Both settle by halfway through the windscreen, so from there to the
+  // grille the air drawn is exactly the `pass` share.
+  const depth = Math.min(1, (2 * (x - edge)) / Math.max(1, gx - edge));
+  // Through: eases from full size to its share.
+  if (passes) return FULL + (rPass - FULL) * depth;
+  // Absorbed: shrinks to nothing from its full size (no jump at the edge).
+  const rr = FULL * (1 - depth);
+  return rr > 0.2 ? rr : 0;
+}
+
 export function PopFilterView({
   phase,
   width,
@@ -1988,9 +2017,12 @@ export function PopFilterView({
   // Plosive puffs (owner 2026-08-05): a DENSER stream of air particles — two
   // phase-staggered clusters of 8. Behaviour per barrier:
   //   none → all cross to the grille.
-  //   pop  → most stop at the hoop; a few (`pass`) slip past, smaller.
-  //   foam / shotgun windshield → particles ENTER the windscreen then quickly
-  //     shrink to nothing as the foam/basket ABSORBS them.
+  //   pop  → most stop at the hoop; the `pass` share slips past.
+  //   foam / shotgun windshield → particles ENTER the windscreen; the `pass`
+  //     share comes through to the grille, the rest shrink to nothing as the
+  //     foam/basket ABSORBS them.
+  // The air drawn reaching the grille is exactly BLAST AT CAPSULE's share
+  // (plosivePuffRadius), so POP FILTER (30 %) shows less air than FOAM (50 %).
   const puffs = useDerivedValue(() => {
     const ph = phase.value;
     const p = Skia.Path.Make();
@@ -1998,28 +2030,15 @@ export function PopFilterView({
     const N = 8;
     const foamEdge = gx - 17; // foam front surface
     const blimpEdge = gx - 54; // zeppelin windshield front
+    const edge = mode === 'blimp' ? blimpEdge : foamEdge;
     for (const fo of [0, 0.5]) {
       const f = (f0 + fo) % 1;
       const x = srcX + 12 + f * (micX - srcX - 16);
       for (let i = 0; i < N; i++) {
         const spread = 4 + f * 20 + (i % 4) * 3;
         const yy = mid + (i - (N - 1) / 2) * (spread / (N / 2));
-        if (mode === 'none') {
-          p.addCircle(x, yy, 2.2);
-        } else if (mode === 'pop') {
-          if (x <= barX) p.addCircle(x, yy, 2.2);
-          else if (i / N < pass) p.addCircle(x, yy, 1.6);
-        } else {
-          const edge = mode === 'foam' ? foamEdge : blimpEdge;
-          if (x <= edge) {
-            p.addCircle(x, yy, 2.2);
-          } else if (i / N < pass) {
-            // Absorbed: shrink to nothing across the windscreen depth.
-            const depth = (x - edge) / Math.max(1, gx - edge);
-            const rr = 2.0 * (1 - Math.min(1, depth * 1.35));
-            if (rr > 0.2) p.addCircle(x, yy, rr);
-          }
-        }
+        const rr = plosivePuffRadius(mode, i, N, x, pass, barX, edge, gx);
+        if (rr > 0) p.addCircle(x, yy, rr);
       }
     }
     return p;
@@ -2030,11 +2049,6 @@ export function PopFilterView({
      <Group transform={[{ scale: ts }]}>
       <Floor w={w} y={h - 12} h={12} />
       <GlowStroke path={sound} color={WAVE} width={1.6} opacity={0.6} />
-      {/* Wind puffs: soft-glowing air, not sound. */}
-      <Path path={puffs} color={ACCENT_BLUE} opacity={0.4}>
-        <BlurMask blur={3.5} style="normal" />
-      </Path>
-      <Path path={puffs} color={ACCENT_BLUE} />
       {/* The talker firing the plosive — TRUE proportion to the mic. */}
       <ProfileHead x={srcX} y={mid} angleRad={0} scale={headScaleForMic(8, 37)} tint={CONE} speaking />
       {/* Handheld for every mode except the shotgun windshield, which shows a
@@ -2080,6 +2094,15 @@ export function PopFilterView({
           <Path path={gear.blimp} color={METAL_MID} style="stroke" strokeWidth={1.8} />
         </>
       ) : null}
+      {/* Wind puffs: soft-glowing air, not sound. Painted AFTER the talker,
+          the mic and the barrier gear (owner 2026-11-25, fix-first 15, W1):
+          under the foam (94 % opaque) and the grille, the air that gets
+          through was hidden, so FOAM still looked like less air than POP
+          FILTER. On top, what the eye sees is the drawn share, 30 / 50 / 12 %. */}
+      <Path path={puffs} color={ACCENT_BLUE} opacity={0.4}>
+        <BlurMask blur={3.5} style="normal" />
+      </Path>
+      <Path path={puffs} color={ACCENT_BLUE} />
       <Vignette w={w} h={h} />
      </Group>
     </Canvas>
@@ -3578,6 +3601,9 @@ export function TopCoverageView({
       y: s.y,
       dirDeg: 90 - s.aim, // screen angle of the aim vector (sin θ, cos θ)
       maxR: s.small ? fieldH * 0.42 : fieldH * 1.05,
+      // ITS OWN pattern (the fills' fixed 90°, not the mains'): the arcs and
+      // the heat agree (audit row 16). The mains' value is unchanged.
+      spreadDeg: ringSpreadDeg(s.hd),
     }));
     return { buckets: bucketPaths, aims: aimPath, spkList: spks, ringCenters: rings };
   }, [w, fieldY0, fieldH, stageH, spk1x01, spk1AimDeg, spk2On, spk2x01, spk2AimDeg, hDeg, frontFills, fillSpread01]);
@@ -3652,7 +3678,7 @@ export function TopCoverageView({
         {/* Wavefronts and aim cues travel in the HOUSE only — never back
             over the deck or out past the walls. */}
         <Group clip={house}>
-          <WavefrontRings phase={ringPhase} centers={ringCenters} spreadDeg={Math.min(170, hDeg + 30)} />
+          <WavefrontRings phase={ringPhase} centers={ringCenters} spreadDeg={ringSpreadDeg(hDeg)} />
           <GlowStroke path={aims} color={PARTICLE} width={1.6} opacity={0.8} />
         </Group>
         <SkLine p1={{ x: 0, y: stageH }} p2={{ x: w, y: stageH }} color={GRID} strokeWidth={1.5} />
@@ -3849,8 +3875,47 @@ function rigPath(mode: 'fly' | 'stand', x: number, y: number, tiltDeg: number, s
  * FIRES LATE — held back by the propagation delay (distance ÷ speed) — so both
  * fronts land on the rear rows TOGETHER (green "IN STEP" flash). When not
  * aligned, the rear fires with the mains, arrives early, and the two arrivals
- * separate (an echo). It is illustrative timing, NOT true time-alignment math.
+ * separate (an echo). Slowed down to be watched, and measured along the floor
+ * (not the full slant path), but the timing is the geometry's (owner
+ * 2026-11-25, fix-first 15: it was a fixed 0.16 of the cycle whatever AUDIENCE
+ * DISTANCE was, with the rear front 1.25–2.6× faster than the stage front):
+ * ONE speed for both fronts, and an aligned rear speaker waits exactly the
+ * time the stage sound takes to reach it (`alignmentTiming`).
  */
+type AlignTiming = { rearStart: number; rearTravel: number };
+
+/** The alignment race as fractions of one cycle. The stage front crosses
+ *  mainX → targetX in the whole cycle, so ONE speed of sound means the rear
+ *  front needs (targetX − rearX) / (targetX − mainX) of it. Aligned: the rear
+ *  speaker fires late by the stage → rear-speaker travel time, so both land at
+ *  the end of the cycle together; misaligned: it fires with the mains and
+ *  lands early by exactly that travel time. */
+export function alignmentTiming(mainX: number, rearX: number, targetX: number, aligned: boolean): AlignTiming {
+  const span = Math.max(1e-6, targetX - mainX);
+  const rearTravel = Math.max(0, Math.min(1, (targetX - rearX) / span));
+  const rearStart = aligned ? 1 - rearTravel : 0;
+  return { rearStart, rearTravel };
+}
+
+/** The top box's y for a line-array hang at HEIGHT `h01` (0..1): 0 = the
+ *  lowest legal trim (`clearTop`: the bottom box 1 m over the performer's
+ *  head), 1 = just under the ceiling's rigging (`topY`), linear between, so
+ *  every step of the fader moves the hang. A room too low for any travel
+ *  (clearTop ≤ topY) hangs at topY, as the old clamp did. At h01 = 1 this
+ *  is topY, the old value. */
+export function arrayTrimTopY(h01: number, clearTop: number, topY: number): number {
+  if (clearTop <= topY) return topY;
+  const t = Math.max(0, Math.min(1, h01));
+  return topY + (1 - t) * (clearTop - topY);
+}
+
+/** Wavefront-arc spread (degrees) for a box of `patternDeg` coverage: its
+ *  pattern + 30°, capped at 170°. Each source uses ITS OWN pattern (audit
+ *  row 16: the fixed 90° fills and the delay box drew the mains' spread). */
+export function ringSpreadDeg(patternDeg: number): number {
+  return Math.min(170, patternDeg + 30);
+}
+
 function AlignmentOverlay({
   phase,
   mainX,
@@ -3868,7 +3933,9 @@ function AlignmentOverlay({
   yBot: number;
   aligned: boolean;
 }) {
-  const D_REAR = 0.16; // rear front's travel time as a fraction of the cycle
+  // Rear front's start and travel time as fractions of the cycle, from the
+  // drawn distances (AUDIENCE DISTANCE moves rearX) — never a fixed share.
+  const { rearStart, rearTravel } = alignmentTiming(mainX, rearX, targetX, aligned);
   const mainPath = useDerivedValue(() => {
     const g = (phase.value / (2 * Math.PI)) % 1;
     const x = mainX + g * (targetX - mainX);
@@ -3879,26 +3946,35 @@ function AlignmentOverlay({
   }, [phase, mainX, targetX, yTop, yBot]);
   const rearPath = useDerivedValue(() => {
     const g = (phase.value / (2 * Math.PI)) % 1;
-    const start = aligned ? 1 - D_REAR : 0; // aligned → fire late by the delay
-    const local = (g - start) / D_REAR;
     const p = Skia.Path.Make();
+    if (rearTravel <= 0) return p;
+    // aligned → fires late by the stage → rear-speaker travel time.
+    const local = (g - rearStart) / rearTravel;
     if (local >= 0 && local <= 1) {
       const x = rearX + local * (targetX - rearX);
       p.moveTo(x, yTop);
       p.lineTo(x, yBot);
     }
     return p;
-  }, [phase, rearX, targetX, yTop, yBot, aligned]);
+  }, [phase, rearX, targetX, yTop, yBot, rearStart, rearTravel]);
   // Both playheads GREEN and identical in look (owner 2026-08-05): the front
   // (main) line and the rear-delay line are the same green sweep. The old green
   // "fizzy ball" pulse at the target rows is removed — the rear SPEAKER flashes
-  // instead (handled in SideCoverageView).
+  // instead, brightest the moment it fires (rearFlashLevel, SideCoverageView).
   return (
     <>
       <Path path={mainPath} color={ACCENT_GREEN} style="stroke" strokeWidth={2.2} opacity={0.9} />
       <Path path={rearPath} color={ACCENT_GREEN} style="stroke" strokeWidth={2.2} opacity={0.9} />
     </>
   );
+}
+
+/** The rear delay speaker's flash (opacity 0.32..1) at cycle position `g`:
+ *  brightest at `rearStart`, the moment it FIRES (fix-first 15, W2; it peaked
+ *  at a quarter cycle whatever the timing). */
+export function rearFlashLevel(g: number, rearStart: number): number {
+  'worklet';
+  return 0.32 + 0.68 * (0.5 + 0.5 * Math.cos((g - rearStart) * 2 * Math.PI));
 }
 
 export function SideCoverageView({
@@ -3992,7 +4068,10 @@ export function SideCoverageView({
     // the ceiling's rigging. The boxes are the level model's sources, so the
     // array's coverage follows the trim (correct physics for a trimmed hang).
     const clearTop = stageTop - (M_HUMAN + 1.0) * MPP - (N - 1) * boxDrawnH - 9 * boxScale;
-    const y0 = Math.max(ceilY + 12 + 9 * boxScale, Math.min(spkY, clearTop));
+    // HEIGHT runs the hang over its OWN legal travel (owner 2026-11-25, next
+    // fixes, audit row 15): it used to follow the single box's height and be
+    // clamped at clearTop, so the bottom 40–63 % of the fader moved nothing.
+    const y0 = arrayTrimTopY(h01, clearTop, ceilY + 12 + 9 * boxScale);
     const yBot = y0 + (N - 1) * boxDrawnH;
     const aimTop = tiltDeg - 2;
     const nearX = audFront + 0.3 * MPP;
@@ -4021,7 +4100,7 @@ export function SideCoverageView({
         gain: Math.pow(throws[i] / Math.max(...throws), 2),
       };
     });
-  }, [spkX, spkY, tiltDeg, boxScale, stageTop, MPP, ceilY, audFront, w, floorY, sloped]);
+  }, [spkX, h01, tiltDeg, boxScale, stageTop, MPP, ceilY, audFront, w, floorY, sloped]);
   const arrayMidY = arrayBoxes.length ? arrayBoxes[Math.floor(arrayBoxes.length / 2)].y : spkY;
 
   // The delay boxes' aims: each cabinet is DRAWN on its own beam's axis
@@ -4264,10 +4343,13 @@ export function SideCoverageView({
     } else {
       r.push({ x: spkX, y: spkY, dirDeg: tiltDeg, maxR: w * 0.85 });
     }
-    if (delayOn) r.push({ x: geo.dlyX, y: geo.dlyY, dirDeg: dlyAxisDeg, maxR: w * 0.5 });
-    if (rearDelayOn) r.push({ x: geo.rearX, y: geo.rearY, dirDeg: geo.rearAxisDeg, maxR: w * 0.42, spreadDeg: 44 });
+    // The delay box's OWN pattern (its heat wedge dlyA..dlyB), not the mains'
+    // V PATTERN (audit row 16).
+    if (delayOn) r.push({ x: geo.dlyX, y: geo.dlyY, dirDeg: dlyAxisDeg, maxR: w * 0.5, spreadDeg: ringSpreadDeg(((dlyB - dlyA) * 180) / Math.PI) });
+    // Its own 44° pattern (half 22°, as its wedge and heat), + 30° like every box.
+    if (rearDelayOn) r.push({ x: geo.rearX, y: geo.rearY, dirDeg: geo.rearAxisDeg, maxR: w * 0.42, spreadDeg: ringSpreadDeg(44) });
     return r;
-  }, [spkX, spkY, arrayMidY, arrayBoxes, tiltDeg, w, delayOn, geo.dlyX, geo.dlyY, lineArray, rearDelayOn, geo.rearX, geo.rearY, geo.rearAxisDeg, dlyAxisDeg]);
+  }, [spkX, spkY, arrayMidY, arrayBoxes, tiltDeg, w, delayOn, geo.dlyX, geo.dlyY, lineArray, rearDelayOn, geo.rearX, geo.rearY, geo.rearAxisDeg, dlyAxisDeg, dlyA, dlyB]);
 
   // What holds each single box up (never floating): the main on its stand or
   // its bridle + hoist, and both delay boxes on theirs.
@@ -4292,11 +4374,12 @@ export function SideCoverageView({
   const alignPhase = usePhaseClock(rearDelayOn, 0.5);
   const rearTargetX = geo.audEnd - 8;
   // Flash the rear-delay speaker itself (owner 2026-08-05) — replaces the old
-  // green pulse at the target rows.
+  // green pulse at the target rows. Brightest when it fires (fix-first 15).
+  const { rearStart } = alignmentTiming(spkX, geo.rearX, rearTargetX, timeAligned);
   const rearFlash = useDerivedValue(() => {
     const g = (alignPhase.value / (2 * Math.PI)) % 1;
-    return 0.32 + 0.68 * (0.5 + 0.5 * Math.sin(g * 2 * Math.PI));
-  }, [alignPhase]);
+    return rearFlashLevel(g, rearStart);
+  }, [alignPhase, rearStart]);
 
   return (
     <View style={{ width, height }}>
@@ -4314,7 +4397,7 @@ export function SideCoverageView({
           {heat.map((p, i) => (
             <Path key={i} path={p} color={JET_BUCKETS[i]} opacity={0.92} />
           ))}
-          <WavefrontRings phase={ringPhase} centers={ringCenters} spreadDeg={Math.min(170, vDeg + 30)} />
+          <WavefrontRings phase={ringPhase} centers={ringCenters} spreadDeg={ringSpreadDeg(vDeg)} />
           {/* Single-box rated-angle edges + axis, OR faint per-box array beams. */}
           {lineArray ? (
             <Path path={geo.boxBeams} color={ACCENT_YELLOW} style="stroke" strokeWidth={0.8} opacity={0.34} />
@@ -4326,7 +4409,7 @@ export function SideCoverageView({
           )}
           {delayOn ? <Path path={geo.delayWedge} color={ACCENT_BLUE} style="stroke" strokeWidth={1} opacity={0.3} /> : null}
           {rearDelayOn ? <Path path={geo.rearWedge} color={ACCENT_BLUE} style="stroke" strokeWidth={1} opacity={0.34} /> : null}
-          {/* Delay-alignment race to the rear rows (conceptual timing). */}
+          {/* Delay-alignment race to the rear rows (slowed; measured along the floor). */}
           {rearDelayOn ? (
             <AlignmentOverlay phase={alignPhase} mainX={spkX} rearX={geo.rearX} targetX={rearTargetX} yTop={ceilY + 6} yBot={floorY - 2} aligned={timeAligned} />
           ) : null}

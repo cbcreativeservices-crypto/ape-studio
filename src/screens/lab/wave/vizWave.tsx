@@ -89,10 +89,17 @@ import {
   PULSE_MS,
   nodeState,
   pulseDelayPx,
+  pulseSourceGain,
+  pulseTopLevelDb,
   pulseFront,
   pulsePaceLen,
   pulseRingRadius,
   pulseTimeEnv,
+  RING_GLOW_TRAINS,
+  ringFade,
+  ringPhaseOffset,
+  ringTrainFrac,
+  ringTrainGroups,
   type TraceRay,
 } from './pulseTracer';
 
@@ -924,29 +931,46 @@ function ListenerGlyph({ x, y, size, rotation }: { x: number; y: number; size: n
 // readable; high freq = tight fronts hugging the source, low freq = wide
 // fronts flooding the room). Speakers draw arcs across their REAL directivity
 // wedge with a brighter axis core; additive blend so crossings reinforce.
-// Node count is FIXED: RING_N ring indices × 2 strokes = 6 paths, regardless
-// of source count (each ring path sums every source).
+// Each source's train runs behind by its own DELAY and POLARITY (owner
+// 2026-11-25, fix-first 15: `off`, ringPhaseOffset in ./pulseTracer — later =
+// a smaller radius, a flip = half a ring; a fraction of the DRAWN spacing, so
+// it stays phase-true where the spacing is clamped). Sources with the same
+// offset share one train; each train is RING_N ring indices × 2 strokes = 6
+// paths, so the layer is 6 paths when every source is on time (as before) and
+// at most 2 × 6 + 4 × 3 = 24 (Beam Steering, 6 boxes all at different
+// delays): only the first two trains draw the blurred glow stroke (W3, a
+// frame-rate guard; 36 paths, 18 of them blurred, before). The count is fixed
+// per frame; it changes only with the scene.
 
 const RING_N = 3;
 
-type RingSrc = { x: number; y: number; dirDeg: number; spreadDeg: number; spacing: number };
+/** `off` = ring-train offset in ring spacings (0..1): delay × freq, + ½ for a
+ *  polarity flip (ringPhaseOffset). 0 = on time, normal polarity. */
+type RingSrc = { x: number; y: number; dirDeg: number; spreadDeg: number; spacing: number; off: number };
 
 function RoomRing({
   phase,
   srcs,
   i,
+  off = 0,
+  glow = true,
   count = RING_N,
 }: {
   phase: SharedValue<number>;
   srcs: RingSrc[];
   i: number;
+  /** This train's offset (every source in `srcs` shares it). */
+  off?: number;
+  /** Draw the blurred glow stroke (default). Off for the 3rd and later
+   *  trains (fix-first 15, W3): up to 36 blurred paths was a frame-rate risk. */
+  glow?: boolean;
   /** Length of the ring train (default RING_N). Scenes that must span a wide
    *  canvas at wavelength-true spacing pass a larger count so the wavefronts
    *  actually reach across (e.g. the diffraction barrier). */
   count?: number;
 }) {
   const path = useDerivedValue(() => {
-    const f = (phase.value / (2 * Math.PI)) % 1;
+    const f = ringTrainFrac((phase.value / (2 * Math.PI)) % 1, off);
     const p = Skia.Path.Make();
     for (let k = 0; k < srcs.length; k++) {
       const s = srcs[k];
@@ -963,22 +987,26 @@ function RoomRing({
       }
     }
     return p;
-  }, [phase, srcs, i, count]);
+  }, [phase, srcs, i, count, off]);
+  // The fade follows THIS train's ring radius, so a late train's rings fade
+  // where they are, never on the on-time train's clock (no pop at the wrap).
   const lineOp = useDerivedValue(() => {
-    const f = (phase.value / (2 * Math.PI)) % 1;
+    const f = ringTrainFrac((phase.value / (2 * Math.PI)) % 1, off);
     const u = (f + i) / count;
-    return 0.42 * Math.min(1, u / 0.12) * (1 - u) * (1 - u);
-  }, [phase, i, count]);
+    return ringFade(u, 0.42);
+  }, [phase, i, count, off]);
   const glowOp = useDerivedValue(() => {
-    const f = (phase.value / (2 * Math.PI)) % 1;
+    const f = ringTrainFrac((phase.value / (2 * Math.PI)) % 1, off);
     const u = (f + i) / count;
-    return 0.2 * Math.min(1, u / 0.12) * (1 - u) * (1 - u);
-  }, [phase, i, count]);
+    return ringFade(u, 0.2);
+  }, [phase, i, count, off]);
   return (
     <>
-      <Path path={path} color="#bcd4ff" style="stroke" strokeWidth={3.4} opacity={glowOp} blendMode="plus">
-        <BlurMask blur={4} style="normal" />
-      </Path>
+      {glow ? (
+        <Path path={path} color="#bcd4ff" style="stroke" strokeWidth={3.4} opacity={glowOp} blendMode="plus">
+          <BlurMask blur={4} style="normal" />
+        </Path>
+      ) : null}
       <Path path={path} color="#e6f0ff" style="stroke" strokeWidth={1.2} opacity={lineOp} blendMode="plus" />
     </>
   );
@@ -1147,10 +1175,13 @@ function OutsideTrain({
   tlDb: number;
   maxR: number;
   scale: number;
-  /** Distance source → this wall's OUTER face, px (rings measured from here out). */
-  rWallPx: number;
-  /** The room's level just inside this wall, on the heat map's 0..1 window. */
-  lvlIn: number;
+  /** Per source (same order as `srcs`): distance from THAT source to this
+   *  wall's OUTER face, px (its rings are measured from here out). Was source
+   *  1's distance for every source until 2026-11-25 (fix-first 15, W2). */
+  rWallPx: number[];
+  /** Per source: the room's level just inside this wall, at the point nearest
+   *  that source, on the heat map's 0..1 window. */
+  lvlIn: number[];
 }) {
   // START just under the colour on the inside of this wall (the room's level
   // there, on the heat map's window), then FADE TO NOTHING over a reach set
@@ -1160,7 +1191,7 @@ function OutsideTrain({
   // side"). DEMO shaping: reach = 1500 / TL² m, capped 6 m (drywall: 6 m at
   // 40 Hz, ≈ 3.4 m at 125 Hz, ≈ 1.4 m at 500 Hz); the THROUGH tags keep the
   // real numbers.
-  const lvl0 = Math.max(0, lvlIn - 0.06);
+  const lvl0 = useMemo(() => lvlIn.map((l) => Math.max(0, l - 0.06)), [lvlIn]);
   const reachM = Math.min(6, Math.max(0.05, 1500 / Math.max(1, tlDb) ** 2));
   const buckets: SharedValue<SkPathT>[] = [];
   for (let b = 0; b < OUT_BUCKETS; b++) {
@@ -1170,19 +1201,23 @@ function OutsideTrain({
         const p = Skia.Path.Make();
         if (srcs.length === 0) return p;
         const sp = srcs[0].spacing;
-        const f = (phase.value / (2 * Math.PI)) % 1;
+        const f0 = (phase.value / (2 * Math.PI)) % 1;
         const K = Math.min(400, Math.ceil(maxR / sp));
         for (let k = 0; k < K; k++) {
-          const r = (f + k) * sp;
-          if (r < 2.5) continue;
-          const dOut = (r - rWallPx) / pxPerM; // metres beyond the wall
-          if (dOut < 0) continue;
-          const frac = 1 - dOut / reachM;
-          if (frac <= 0) continue; // gone — sound does not go on forever
-          const lvl = lvl0 * frac;
-          const bi = Math.round(lvl * (OUT_BUCKETS - 1));
-          if (bi === 0 || bi !== b) continue;
-          for (let i = 0; i < srcs.length; i++) p.addCircle(srcs[i].x, srcs[i].y, r);
+          // Each source's rings: its OWN offset (delay / polarity), its OWN
+          // distance to this wall and its OWN starting level (fix-first 15).
+          for (let i = 0; i < srcs.length; i++) {
+            const r = (ringTrainFrac(f0, srcs[i].off) + k) * sp;
+            if (r < 2.5) continue;
+            const dOut = (r - (rWallPx[i] ?? 0)) / pxPerM; // metres beyond the wall
+            if (dOut < 0) continue;
+            const frac = 1 - dOut / reachM;
+            if (frac <= 0) continue; // gone — sound does not go on forever
+            const lvl = (lvl0[i] ?? 0) * frac;
+            const bi = Math.round(lvl * (OUT_BUCKETS - 1));
+            if (bi === 0 || bi !== b) continue;
+            p.addCircle(srcs[i].x, srcs[i].y, r);
+          }
         }
         return p;
       }, [phase, srcs, pxPerM, maxR, rWallPx, reachM, lvl0]),
@@ -1482,9 +1517,15 @@ export function RoomSceneView(p: RoomSceneProps) {
     // Each source's pulse fires `delayPx` behind the shared wavefront: the
     // distance sound covers in its delay (0 ms → exactly 0, no change).
     const cAir = speedOfSound(scene.tempC);
+    // Each source's balls leave at ITS LEVEL against the loudest live source
+    // (fix-first 15, appendix W3: a −24 dB source's balls left full red, like a
+    // +6 dB one's). Exactly 1 when every source shares one LEVEL — every module
+    // but the Room Builder, and the Room Builder until LEVEL is moved.
+    const topDb = pulseTopLevelDb(scene.sources);
     for (const s of scene.sources) {
       if (s.muted) continue;
       const delayPx = pulseDelayPx(s.delayMs, cAir, geo.pxPerM);
+      const srcGain = pulseSourceGain(s.levelDb, topDb);
       for (const img of imageSources(scene, s, freq, 2)) {
         // The ROOM governs how a reflection BEHAVES (the node shrinks/dies as
         // it travels — see segGain), NOT how many rays emanate from the source
@@ -1590,6 +1631,7 @@ export function RoomSceneView(p: RoomSceneProps) {
               order,
               segGain: [...gains.slice(0, sIdx + 1), gains[sIdx + 1] * share],
               delayPx,
+              srcGain,
               split: true,
             });
           }
@@ -1618,7 +1660,7 @@ export function RoomSceneView(p: RoomSceneProps) {
           g *= Math.sqrt(Math.max(0, 1 - alphaAt(scene.boundary[img.bounces[bi]], freq)));
           segGain.push(g);
         }
-        if (!splitHere) traces.push({ pts: flat, cum, len: total, order, segGain, delayPx });
+        if (!splitHere) traces.push({ pts: flat, cum, len: total, order, segGain, delayPx, srcGain });
         // Arrowhead just before the listener, along the final segment.
         const a = pts[pts.length - 2];
         const b = pts[pts.length - 1];
@@ -1651,6 +1693,7 @@ export function RoomSceneView(p: RoomSceneProps) {
       for (const s of scene.sources) {
         if (s.muted) continue;
         const delayPx = pulseDelayPx(s.delayMs, cAir, geo.pxPerM);
+        const srcGain = pulseSourceGain(s.levelDb, topDb);
         for (let hI = 0; hI < BURST_HITS; hI++) {
           const along = ((hI + 0.5) / BURST_HITS) * wallLen;
           const hx = horizW ? along : scatterWall === 1 ? scene.w : 0;
@@ -1685,6 +1728,7 @@ export function RoomSceneView(p: RoomSceneProps) {
               order: 1,
               segGain: [1, share],
               delayPx,
+              srcGain,
               split: true,
             });
           }
@@ -1708,6 +1752,7 @@ export function RoomSceneView(p: RoomSceneProps) {
     for (const s of scene.sources) {
       if (s.muted) continue;
       const delayPx = pulseDelayPx(s.delayMs, cAir, geo.pxPerM);
+      const srcGain = pulseSourceGain(s.levelDb, topDb);
       let kept = 0;
       for (let n = 0; n < FREE_CAST && kept < FREE_KEEP; n++) {
         const ang = hashFrac(n * 1.37 + 0.11) * Math.PI * 2;
@@ -1768,7 +1813,7 @@ export function RoomSceneView(p: RoomSceneProps) {
           cum.push(total);
         }
         if (total > 1) {
-          traces.push({ pts: flat, cum, len: total, order: 0, segGain, delayPx, free: true });
+          traces.push({ pts: flat, cum, len: total, order: 0, segGain, delayPx, srcGain, free: true });
           kept++;
         }
       }
@@ -1908,9 +1953,18 @@ export function RoomSceneView(p: RoomSceneProps) {
         dirDeg: 90 - (s.aimDeg ?? 0), // screen angle of the aim vector (sin a, cos a)
         spreadDeg: s.kind === 'speaker' ? Math.min(340, 2 * speakerHalfDeg(s, freq) + 24) : 360,
         spacing,
+        // Its rings run behind by its DELAY and POLARITY at the drawn tone
+        // (fix-first 15): exactly 0 for 0 ms, normal polarity.
+        off: ringPhaseOffset(freq, s.delayMs, s.polarity),
       }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, freq, geo, p.layers.pressure, mode]);
+  // One ring train per distinct offset (all sources in ONE train when every
+  // offset is equal, exactly the old drawing).
+  const ringTrains = useMemo(
+    () => ringTrainGroups(ringSrcs.map((s) => s.off)).map((g) => ({ off: g.off, srcs: g.members.map((k) => ringSrcs[k]) })),
+    [ringSrcs],
+  );
 
   const hp = p.highlightPath;
   const highlightPathPx = useMemo(() => {
@@ -1935,22 +1989,23 @@ export function RoomSceneView(p: RoomSceneProps) {
       path.addRect(Skia.XYWHRect(x, y, Math.max(0, rw), Math.max(0, rh)));
       return path;
     };
-    // Source → the wall's OUTER face per band (first source), px: the ring's
-    // reach counts from where it emerges, not from under the wall strip.
-    const s0 = scene.sources[0];
-    const sx = geo.x0 + (s0?.x ?? scene.w / 2) * geo.pxPerM;
-    const sy = geo.y0 + (s0?.y ?? scene.h / 2) * geo.pxPerM;
+    // EACH source → the wall's OUTER face per band, px (fix-first 15, W2: it
+    // was source 1's distance for every source): a ring's reach counts from
+    // where THAT source's sound emerges, not from under the wall strip. Same
+    // order as ringSrcs (the unmuted sources).
+    const live = scene.sources.filter((s) => !s.muted);
     // The room's level just inside each wall (0.25 m in, at the point nearest
-    // the source) — the heat map's own calculation and window.
+    // each source) — the heat map's own calculation and window.
     const images = scene.sources.map((src) => imageSources(scene, src, freq, 2));
     const inside = (mx: number, my: number) =>
       Math.max(0, Math.min(1, (fieldDb(fieldAt(scene, mx, my, freq, images)) + 30) / 42));
-    const s0m = { x: s0?.x ?? scene.w / 2, y: s0?.y ?? scene.h / 2 };
+    const sx = live.map((s) => geo.x0 + s.x * geo.pxPerM);
+    const sy = live.map((s) => geo.y0 + s.y * geo.pxPerM);
     return [
-      { clip: rect(0, 0, w, geo.y0 - T), tl: outsideCfg.tlDb[0], rWall: sy - geo.y0 + T, lvlIn: inside(s0m.x, 0.25) },
-      { clip: rect(geo.x1 + T, geo.y0 - T, w - geo.x1 - T, geo.hPx + 2 * T), tl: outsideCfg.tlDb[1], rWall: geo.x1 - sx + T, lvlIn: inside(scene.w - 0.25, s0m.y) },
-      { clip: rect(0, geo.y1 + T, w, h - geo.y1 - T), tl: outsideCfg.tlDb[2], rWall: geo.y1 - sy + T, lvlIn: inside(s0m.x, scene.h - 0.25) },
-      { clip: rect(0, geo.y0 - T, geo.x0 - T, geo.hPx + 2 * T), tl: outsideCfg.tlDb[3], rWall: sx - geo.x0 + T, lvlIn: inside(0.25, s0m.y) },
+      { clip: rect(0, 0, w, geo.y0 - T), tl: outsideCfg.tlDb[0], rWall: sy.map((y) => y - geo.y0 + T), lvlIn: live.map((s) => inside(s.x, 0.25)) },
+      { clip: rect(geo.x1 + T, geo.y0 - T, w - geo.x1 - T, geo.hPx + 2 * T), tl: outsideCfg.tlDb[1], rWall: sx.map((x) => geo.x1 - x + T), lvlIn: live.map((s) => inside(scene.w - 0.25, s.y)) },
+      { clip: rect(0, geo.y1 + T, w, h - geo.y1 - T), tl: outsideCfg.tlDb[2], rWall: sy.map((y) => geo.y1 - y + T), lvlIn: live.map((s) => inside(s.x, scene.h - 0.25)) },
+      { clip: rect(0, geo.y0 - T, geo.x0 - T, geo.hPx + 2 * T), tl: outsideCfg.tlDb[3], rWall: sx.map((x) => x - geo.x0 + T), lvlIn: live.map((s) => inside(0.25, s.y)) },
     ];
   }, [outsideCfg, geo, w, h, wallPx, scene, freq]);
   // Delay bars: rects behind each source, longest = maxLenM.
@@ -2151,13 +2206,16 @@ export function RoomSceneView(p: RoomSceneProps) {
           </>
         ) : null}
         {/* PRESSURE: constant-speed, wavelength-spaced ring trains (worklets;
-            fixed 3 rings × 2 strokes = 6 paths regardless of source count). */}
+            3 rings × 2 strokes = 6 paths per train, one train per distinct
+            delay/polarity offset — 6 paths when every source is on time). */}
         {/* Clipped to the room: the rings were drawn straight through the
             walls into the margin, as if sound passed through concrete
             (walkthrough 2026-09-26). */}
         {ringSrcs.length > 0 ? (
           <Group clip={interior}>
-            {Array.from({ length: RING_N }, (_, i) => <RoomRing key={i} phase={p.phase} srcs={ringSrcs} i={i} />)}
+            {ringTrains.map((tr, ti) =>
+              Array.from({ length: RING_N }, (_, i) => <RoomRing key={`${ti}-${i}`} phase={p.phase} srcs={tr.srcs} off={tr.off} glow={ti < RING_GLOW_TRAINS} i={i} />),
+            )}
           </Group>
         ) : null}
         {/* Room Builder: the same slow rings continuing OUTSIDE, per wall. */}
