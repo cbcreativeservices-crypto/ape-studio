@@ -29,8 +29,11 @@ for (const page of PAGES) {
   test(`${page}: the scene sits under the pattern inset, and the caption names it`, () => {
     const s = read(page);
     assert.match(s, /<PatternInset w=\{w\} h=\{h\} typeId=\{rig\.mics\[0\]\.typeId\} pattern=\{pattern\} view=\{view\}/);
-    assert.match(s, /angle=\{live \? theta : 0\}/);
-    assert.match(s, /\{\(sceneW\) => [\s\S]{0,40}<PlacementScene[\s\S]{0,120}w=\{sceneW\}/);
+    // owner 2026-11-25, fix-first 15 (item 4): the dot follows the live aim
+    // (thetaNow, from useAimRide), and the scene is PlacementScene memoised
+    // (SteadyScene = memo(PlacementScene)). Was: angle={live ? theta : 0}, the saved pose.
+    assert.match(s, /angle=\{live \? thetaNow : 0\}/);
+    assert.match(s, /\{\(sceneW\) => [\s\S]{0,40}<SteadyScene[\s\S]{0,120}w=\{sceneW\}/);
     assert.match(s, /badge: live \? `\$\{patternInsetBadge\(true[^`]*` : patternInsetBadge\(false\),/);
     assert.doesNotMatch(s, /A simplified pattern \(white dashed: shape, not range\)/);
   });

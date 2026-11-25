@@ -58,7 +58,8 @@ export function PMicOnIt({ lesson, art, variant, startFrom }: PageProps) {
     return m && s ? guideFor(s, m.pose) : null;
   }, [setup, lesson.model.surfaces]);
   const [view, setView] = useState<ViewId>(() => bestView(guide ? [guide] : [], both));
-  const pl = plainLines(t, C.words);
+  // The card's "Pattern:" line describes the pattern picked, as the bezel and the lobe do.
+  const pl = plainLines(t, C.words, pat);
   const zone = setup?.zones[0];
   const typeFits = zone ? typeForZone(lesson, zone, MIC_TYPES) === typeId || (zone.requires?.micTypeIds ?? lesson.micTypeIds).includes(typeId) : false;
 

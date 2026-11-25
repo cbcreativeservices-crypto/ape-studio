@@ -59,9 +59,12 @@ function F06Sound({ lesson, answers, onAnswered, variant }: PageProps) {
       mainWord: 'water',
       otherWord: 'birds',
       note: 'The stream is a steady bed; the birds are events that come and go. Near moving water a few steps change the balance between them a lot — the mic’s position chooses the balance, not the fader.',
-      after: 'A few meters nearer the water and it takes over; a few meters back and the birds come forward. Choose the listening point for the balance the scene needs — then keep it while you record.',
+      after: 'A few meters nearer the water and it takes over; back at the edge of the path the birds come forward a little. Choose the listening point for the balance the scene needs — then keep it while you record.',
     },
     box: { x0: -4000, x1: 16000, z0: -10500, z1: 10500 },
+    // 0.5 m back is the last clear step before the walking path's keep-out
+    // (path centre x = −1.6 m, keep-out ±1.05 m): the range is right, and the
+    // step counts "back" at the lane's end (fix-first 15 item 7).
     x: { min: -500, max: 4500, start: 0 },
     h: AMB_H,
     main: (p) => nearestOnPolyline(STREAM_PTS, p, 0),

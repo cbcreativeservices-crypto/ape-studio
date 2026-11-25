@@ -399,6 +399,21 @@ function polarPath(f: (deg: number) => number, R: number, sign: 1 | -1 | 0 = 0):
   return p;
 }
 
+/** The widest WIDTH the lane offers (k). */
+export const MS_K_MAX = 1.5;
+/** The largest |L| (= |R|) any source can give at width k: M + kS with M a
+ *  cardioid ½(1 + cos θ) and S = sin θ peaks at ½ + √(¼ + k²). */
+export const msPeak = (k: number): number => 0.5 + Math.hypot(0.5, k);
+/**
+ * ONE scale for the polar picture at every width (round 2, audit Appendix E
+ * row 4, owner 2026-11-25): the old picture rescaled to each width's own
+ * peak, so past k 0.5 the white mono outline — the Mid alone, the same at
+ * every width — shrank (to ⅔ at k 1.0, ½ at k 1.5) and looked weaker. Fixed
+ * at the widest width's peak, every lobe fits the outer ring, the mono
+ * outline never moves, and a wider k draws visibly larger side lobes.
+ */
+export const MS_SCALE = 1 / msPeak(MS_K_MAX);
+
 export function useMsWidthStep({ sources, onInteractive, done }: { sources: readonly MsSource[]; onInteractive: (id: string) => void; done: boolean }): MikingStep {
   // The web preview harness only: `&k=<n>` (k = (n − 1) ÷ 4), `&src=<n>`.
   const [k, setK] = useState(() => (devIndex('k') ? Math.min(1.5, devIndex('k') / 4) : 0.5));
@@ -438,8 +453,7 @@ export function useMsWidthStep({ sources, onInteractive, done }: { sources: read
             const ray = make();
             ray.moveTo(0, 0);
             ray.lineTo(-Math.sin((src.deg * Math.PI) / 180) * R, -Math.cos((src.deg * Math.PI) / 180) * R);
-            const peak = Math.max(1, ...[-180, -90, 0, 90].map((q) => Math.max(Math.abs(msDecode(q, k).L), Math.abs(msDecode(q, k).R))));
-            const scale = R / (peak * R);
+            const scale = MS_SCALE;
             return (
               <Group>
                 <Path path={grid} style="stroke" strokeWidth={1 * px} color="#5b5f69" opacity={0.6} />

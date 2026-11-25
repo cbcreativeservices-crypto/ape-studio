@@ -19,7 +19,7 @@ import type { BezelItem, DockParam } from '../../../../../rack/rackTypes';
 import type { MicPattern, MicPose, PatternId, ViewBox, ViewId, Vec3 } from '../../../../engine/model/types.ts';
 import { useRig } from '../../../../engine/scene/useRig.ts';
 import { previewMemo, stopWordOf } from '../../../../engine/scene/placementDock.ts';
-import { PlacementScene } from '../../../../engine/scene/PlacementScene';
+import { SteadyScene, useAimRide } from '../../../../pages/PContext';
 import { PatternInset, patternInsetBadge } from '../../../../engine/scene/PatternInset';
 import { sceneLabel } from '../../../../engine/scene/sceneWords.ts';
 import { arrivalAngle, gainDb, nearNull, nullAngles } from '../../../../engine/physics/polar.ts';
@@ -64,6 +64,14 @@ export function HContext({ lesson, art, answers, onAnswered, onInteractive, inte
   const db = gainDb(pattern, theta);
   const inNull = nearNull(pattern, theta, NULL_TOL);
   const nulls = nullAngles(pattern);
+  // While AIM rides: the inset's dot and the OFF AXIS / PICKUP / REJECTION
+  // cells follow the mic (fix-first 15 item 4, pages/PContext useAimRide).
+  // The credit and the read-aloud label keep the saved pose, as before.
+  const aimLive = useAimRide(rig);
+  const thetaNow = arrivalAngle(aimLive.pose, src);
+  const dbNow = gainDb(pattern, thetaNow);
+  const inNullNow = nearNull(pattern, thetaNow, NULL_TOL);
+  const wedgeArt = useMemo(() => (live ? { at, faces: wedge.faces, src } : null), [live, at, wedge, src]);
   const tried = predicted != null && aimed;
   const first = lesson.live.wedges[0]?.id;
   useEffect(() => {
@@ -103,9 +111,11 @@ export function HContext({ lesson, art, answers, onAnswered, onInteractive, inte
       onChange: (v) => {
         const ang = Math.round(lo + v * (hi - lo));
         const to: MicPose = aimAxis === 'az' ? { ...pose, az: ang } : { ...pose, el: ang };
+        aimLive.ride();
         aimHeld.note(v, rig.preview('A', to));
       },
       onCommit: () => {
+        aimLive.rest();
         rig.commit('A');
         setAimed(true);
       },
@@ -150,20 +160,23 @@ export function HContext({ lesson, art, answers, onAnswered, onInteractive, inte
     { kind: 'toggle', id: 'scenario', label: live ? 'LIVE' : 'STUDIO', value: live, onToggle: () => setLive((x) => !x) },
     ...viewToggle({ view: view, setView: setView, stage: 'single', labels: viewKeyLabels(H), ...(H.context.only ? { both: false } : {}) }),
   ];
-  const pickupCell: BezelItem = isDeepNull(db) ? { k: 'PICKUP', v: 'DEEP NULL', flex: 1.15 } : { k: 'PICKUP', v: fmtDb(db), flex: 1.15 };
+  const pickupCell: BezelItem = isDeepNull(dbNow) ? { k: 'PICKUP', v: 'DEEP NULL', flex: 1.15 } : { k: 'PICKUP', v: fmtDb(dbNow), flex: 1.15 };
   const bezel: BezelItem[] = live
     ? [
-        { k: 'OFF AXIS', v: `≈ ${Math.round(theta / 5) * 5}°`, sub: 'monitor', flex: 1 },
+        { k: 'OFF AXIS', v: `≈ ${Math.round(thetaNow / 5) * 5}°`, sub: 'monitor', flex: 1 },
         pickupCell,
         { k: 'NULL', v: tried ? `≈ ${Math.round(nulls[0])}°` : '?', flex: 0.8 },
-        { k: 'REJECTION', v: inNull ? 'IN NULL' : 'NO', tint: inNull ? '#5bff85' : undefined, flex: 1.15 },
+        { k: 'REJECTION', v: inNullNow ? 'IN NULL' : 'NO', tint: inNullNow ? '#5bff85' : undefined, flex: 1.15 },
       ]
     : [
         { k: 'SCENARIO', v: 'STUDIO' },
         { k: 'PATTERN', v: pattern.toUpperCase() },
       ];
   const m = lesson.model.views;
-  const box: ViewBox = view === 'top' ? { u0: m.top!.u0, u1: Math.max(m.top!.u1, wedge.p.x + 420), v0: Math.min(m.top!.v0, wedge.p.z - 420), v1: Math.max(m.top!.v1, wedge.p.z + 420) } : { u0: m.side!.u0, u1: Math.max(m.side!.u1, wedge.p.x + 360), v0: m.side!.v0, v1: m.side!.v1 };
+  const box: ViewBox = useMemo(
+    () => (view === 'top' ? { u0: m.top!.u0, u1: Math.max(m.top!.u1, wedge.p.x + 420), v0: Math.min(m.top!.v0, wedge.p.z - 420), v1: Math.max(m.top!.v1, wedge.p.z + 420) } : { u0: m.side!.u0, u1: Math.max(m.side!.u1, wedge.p.x + 360), v0: m.side!.v0, v1: m.side!.v1 }),
+    [view, m, wedge],
+  );
   const label = sceneLabel(rig, view, ['A'], live ? `${wedge.label}, ${Math.round(theta)} degrees off the mic's front axis: ${fmtIdealPickup(db)}${inNull ? ', in the rejection region' : ''}.` : 'Studio: no monitor.');
   const pred = lesson.predictions.context;
   const studioCard = lesson.scenarios.filter((s) => s.page === 'context' && /\.studio$/.test(s.id));
@@ -176,8 +189,8 @@ export function HContext({ lesson, art, answers, onAnswered, onInteractive, inte
       layout: 'rack',
       rack: {
         render: (w, h) => (
-          <PatternInset w={w} h={h} typeId={rig.mics[0].typeId} pattern={pattern} view={view} box={box} avoid={live ? [pose.p, at] : [pose.p]} angle={live ? theta : 0} source={live ? 'MONITOR' : null}>
-            {(sceneW) => <PlacementScene rig={rig} art={art} view={view} w={sceneW} h={h} slots={['A']} showZones={false} interactive={false} boxOverride={box} wedge={live ? { at, faces: wedge.faces, src } : null} showLabels={false} accessibilityLabel={label} />}
+          <PatternInset w={w} h={h} typeId={rig.mics[0].typeId} pattern={pattern} view={view} box={box} avoid={live ? [pose.p, at] : [pose.p]} angle={live ? thetaNow : 0} source={live ? 'MONITOR' : null}>
+            {(sceneW) => <SteadyScene rig={rig} art={art} view={view} w={sceneW} h={h} slots={['A']} showZones={false} interactive={false} boxOverride={box} wedge={wedgeArt} showLabels={false} accessibilityLabel={label} />}
           </PatternInset>
         ),
         badge: live ? `${patternInsetBadge(true)} · within ±${NULL_TOL}° counts as in the null · the monitor where a stage often puts it` : patternInsetBadge(false),

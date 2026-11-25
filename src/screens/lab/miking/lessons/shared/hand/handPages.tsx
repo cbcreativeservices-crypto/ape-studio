@@ -39,6 +39,7 @@ import { C20, EQUAL_PATH_MM, deltaTms, effectivePolarity, micGain, notchDepthDb,
 import { fmtAngle, fmtDb, fmtHz, fmtIdealPickup, fmtLen, fmtMs, isDeepNull } from '../../../engine/model/units.ts';
 import { MIC_TYPES, micType } from '../../../data/micTypes';
 import { PTroubleshoot } from '../../../pages/PReadPages';
+import { SteadyScene, useAimRide } from '../../../pages/PContext';
 import { lineFoot, workedMark, type WorkedMark } from '../../../pages/PPlacement';
 import type { PageProps } from '../../../pages/pageTypes';
 import { Chip, GMicrophone, GPractice, factsStep, micSentence, posParams, startStep, type AimAxis, type AxisWords, type MicPageSpec, type PosAxis, type PracticeSpec } from '../journeyPages';
@@ -611,6 +612,14 @@ function HandContext(spec: HandSpec) {
     const db = gainDb(pattern, theta);
     const inNull = nearNull(pattern, theta, NULL_TOL);
     const nulls = nullAngles(pattern);
+    // While AIM rides: the inset's dot and the OFF AXIS / PICKUP / REJECTION
+    // cells follow the mic (fix-first 15 item 4, pages/PContext useAimRide).
+    // The credit and the read-aloud label keep the saved pose, as before.
+    const aimLive = useAimRide(rig);
+    const thetaNow = arrivalAngle(aimLive.pose, src);
+    const dbNow = gainDb(pattern, thetaNow);
+    const inNullNow = nearNull(pattern, thetaNow, NULL_TOL);
+    const wedgeArt = useMemo(() => (live ? { at: wedge.p, faces: wedge.faces, src } : null), [live, wedge, src]);
     const tried = predicted != null && aimed;
     useEffect(() => {
       if (live && wedge.id === C.creditWedge && inNull && aimed && !interactiveDone.has('wedgeInNull')) onInteractive('wedgeInNull');
@@ -633,9 +642,11 @@ function HandContext(spec: HandSpec) {
         // engine's fader contract, 2026-10-06: no page re-render per move).
         onChange: (v) => {
           const ang = Math.round((v * 2 - 1) * lim) + centre;
+          aimLive.ride();
           aimHeld.note(v, rig.preview('A', aimAxis === 'az' ? { ...pose, az: ang } : { ...pose, el: ang }));
         },
         onCommit: () => {
+          aimLive.rest();
           rig.commit('A');
           setAimed(true);
         },
@@ -680,10 +691,10 @@ function HandContext(spec: HandSpec) {
     ];
     const bezel: BezelItem[] = live
       ? [
-          { k: 'OFF AXIS', v: `≈ ${Math.round(theta / 5) * 5}°`, sub: 'monitor', flex: 1 },
-          isDeepNull(db) ? { k: 'PICKUP', v: 'DEEP NULL', flex: 1.15 } : { k: 'PICKUP', v: fmtDb(db), flex: 1.15 },
+          { k: 'OFF AXIS', v: `≈ ${Math.round(thetaNow / 5) * 5}°`, sub: 'monitor', flex: 1 },
+          isDeepNull(dbNow) ? { k: 'PICKUP', v: 'DEEP NULL', flex: 1.15 } : { k: 'PICKUP', v: fmtDb(dbNow), flex: 1.15 },
           { k: 'NULL', v: tried ? `≈ ${Math.round(nulls[0])}°` : '?', flex: 0.8 },
-          { k: 'REJECTION', v: inNull ? 'IN NULL' : 'NO', tint: inNull ? '#5bff85' : undefined, flex: 1.15 },
+          { k: 'REJECTION', v: inNullNow ? 'IN NULL' : 'NO', tint: inNullNow ? '#5bff85' : undefined, flex: 1.15 },
         ]
       : [
           { k: 'SCENARIO', v: 'STUDIO' },
@@ -700,8 +711,8 @@ function HandContext(spec: HandSpec) {
         layout: 'rack',
         rack: {
           render: (w, h) => (
-            <PatternInset w={w} h={h} typeId={rig.mics[0].typeId} pattern={pattern} view={view} box={view === 'top' ? C.plan : C.side} avoid={live ? [pose.p, wedge.p] : [pose.p]} angle={live ? theta : 0} source={live ? 'MONITOR' : null}>
-              {(sceneW) => <PlacementScene rig={rig} art={spec.art} view={view} w={sceneW} h={h} slots={['A']} showZones={false} interactive={false} boxOverride={view === 'top' ? C.plan : C.side} wedge={live ? { at: wedge.p, faces: wedge.faces, src } : null} showLabels={false} accessibilityLabel={label} />}
+            <PatternInset w={w} h={h} typeId={rig.mics[0].typeId} pattern={pattern} view={view} box={view === 'top' ? C.plan : C.side} avoid={live ? [pose.p, wedge.p] : [pose.p]} angle={live ? thetaNow : 0} source={live ? 'MONITOR' : null}>
+              {(sceneW) => <SteadyScene rig={rig} art={spec.art} view={view} w={sceneW} h={h} slots={['A']} showZones={false} interactive={false} boxOverride={view === 'top' ? C.plan : C.side} wedge={wedgeArt} showLabels={false} accessibilityLabel={label} />}
             </PatternInset>
           ),
           badge: live ? `${patternInsetBadge(true)} · counts within ±${NULL_TOL}° of a null · monitors where a stage often puts them` : patternInsetBadge(false),

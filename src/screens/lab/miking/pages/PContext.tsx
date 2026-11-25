@@ -19,12 +19,14 @@
  * Credit: the downstage wedge within ±15° (illustrative tolerance) of a null
  * BY THE LEARNER'S AIM OR PATTERN, in LIVE + the studio card + two checks.
  */
-import { useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useAnimatedReaction } from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
 import type { MicPattern, MicPose, PatternId, ViewBox, ViewId, Vec3 } from '../engine/model/types.ts';
-import { useRig } from '../engine/scene/useRig.ts';
+import { useRig, type Rig } from '../engine/scene/useRig.ts';
 import { previewMemo, stopWordOf } from '../engine/scene/placementDock.ts';
-import { PlacementScene } from '../engine/scene/PlacementScene';
+import { PlacementScene, type PlacementSceneProps } from '../engine/scene/PlacementScene';
 import { PatternInset, patternInsetBadge } from '../engine/scene/PatternInset';
 import { sceneLabel } from '../engine/scene/sceneWords.ts';
 import { solidOnPath } from '../engine/geometry/collision.ts';
@@ -42,6 +44,107 @@ const NULL_TOL = 15; // deg: "in the null" tolerance (the lab's, ruling §16.4)
  *  the mic's real start: useRig tilts a mic clear of a part it would start
  *  inside, so the zone's own angle can be 30° steeper than the mic (C11). */
 const TILT_ONLY_EL = 60;
+
+/** The same pose in every field the readouts use. */
+export function samePose(a: MicPose, b: MicPose): boolean {
+  'worklet';
+  return a.az === b.az && a.el === b.el && a.p.x === b.p.x && a.p.y === b.p.y && a.p.z === b.p.z;
+}
+
+/**
+ * The pose as an "Aim the rejection" page SHOWS it while AIM rides: whole
+ * degrees, whole millimetres (round 2 M1, owner 2026-11-25). The lane itself
+ * moves in whole degrees, but a far tap's glide reaches the shared pose in
+ * fractional sub-steps, one per frame; rounded, those collapse into the
+ * degrees the cells can show (OFF AXIS in 5° steps, PICKUP to 0.1 dB), so
+ * React hears only of a pose the page would show differently.
+ */
+export function shownPose(p: MicPose): MicPose {
+  'worklet';
+  return { p: { x: Math.round(p.p.x), y: Math.round(p.p.y), z: Math.round(p.p.z) }, az: Math.round(p.az), el: Math.round(p.el) };
+}
+
+/**
+ * The pose an "Aim the rejection" page reads its inset's amber dot and its
+ * OFF AXIS / PICKUP / REJECTION cells from (fix-first 15 item 4, owner
+ * 2026-11-25). The AIM lane is a PREVIEW lane: it writes the rig's shared
+ * pose (rig.pose.A) and commits on release, so a number read from the SAVED
+ * pose stood still while the mic turned. This mirrors the same shared pose
+ * the Placement page's live strip and the two-mic comb read, through the same
+ * reaction the live strip uses on web (PlacementScene useLiveText): it reaches
+ * React only while the lane rides (ride → rest) and only when the SHOWN pose
+ * changes (shownPose: whole degrees), so the page re-renders at most once per
+ * degree, never per glide frame. A release during a far tap's glide keeps the
+ * mirror (still following the glide) until the commit lands, i.e. until
+ * rig.version changes (round 2 M2), so the numbers never jump back to the old
+ * saved pose for a moment. At rest it is the saved pose, exactly as before;
+ * the release still commits the saved pose (rig.commit), unchanged.
+ */
+export function useAimRide(rig: Rig): { pose: MicPose; ride: () => void; rest: () => void } {
+  const sv = rig.pose.A;
+  const riding = useRef(false);
+  // rig.version at the release, while its commit has not landed yet (M2).
+  const owed = useRef<number | null>(null);
+  const [seen, setSeen] = useState<MicPose | null>(null);
+  const see = useCallback((p: MicPose) => {
+    if (riding.current || owed.current != null) setSeen((q) => (q && samePose(q, p) ? q : p));
+  }, []);
+  // Deduped on the SHOWN pose (whole degrees), but the RAW pose is sent: the
+  // cells are worked out from the pose itself, as the saved pose is at rest,
+  // so a cell near its edge (IN NULL at ±15°) cannot flip at the release.
+  useAnimatedReaction(
+    () => sv.value,
+    (p, prev) => {
+      if (!prev || !samePose(shownPose(p), shownPose(prev))) scheduleOnRN(see, p);
+    },
+    [sv, see],
+  );
+  const ride = useCallback(() => {
+    riding.current = true;
+  }, []);
+  const version = rig.version;
+  // The version this render saw, for a lane holding an older onCommit.
+  const shownVersion = useRef(version);
+  shownVersion.current = version;
+  // A second release before the first commit lands (a double-tap home
+  // during a far tap's glide) keeps the FIRST owed version; the mirror drops
+  // only once a later version has landed and no lane is riding.
+  const rest = useCallback(() => {
+    riding.current = false;
+    if (owed.current == null) owed.current = shownVersion.current;
+  }, []);
+  useEffect(() => {
+    if (owed.current != null && version > owed.current && !riding.current) {
+      owed.current = null;
+      setSeen(null);
+    }
+  }, [version]);
+  const saved = (rig.mics.find((m) => m.slot === 'A') ?? rig.mics[0]).pose;
+  return { pose: seen ?? saved, ride, rest };
+}
+
+/** Equal props: a fresh `rig` object compares field by field (each field is
+ *  state, a memo or a callback), an array element by element. */
+export function sameSceneProps(a: PlacementSceneProps, b: PlacementSceneProps): boolean {
+  const same = (x: unknown, y: unknown): boolean => Object.is(x, y) || (Array.isArray(x) && Array.isArray(y) && x.length === y.length && x.every((v, i) => Object.is(v, y[i])));
+  const ka = Object.keys(a) as (keyof PlacementSceneProps)[];
+  if (ka.length !== Object.keys(b).length) return false;
+  return ka.every((k) => {
+    if (k !== 'rig') return same(a[k], b[k]);
+    const ra = a.rig as unknown as Record<string, unknown>;
+    const rb = b.rig as unknown as Record<string, unknown>;
+    const kr = Object.keys(ra);
+    return ra === rb || (kr.length === Object.keys(rb).length && kr.every((q) => Object.is(ra[q], rb[q])));
+  });
+}
+
+/**
+ * The read-only scene of an "Aim the rejection" page, skipped when nothing it
+ * draws from changed (fix-first 15 item 4): while AIM rides the page
+ * re-renders once a degree for its numbers, and the scene's mic already
+ * follows the shared pose on the UI thread, so the drawing need not re-render.
+ */
+export const SteadyScene = memo(PlacementScene, sameSceneProps);
 
 export function PContext({ lesson, art, answers, onAnswered, onInteractive, interactiveDone, variant: shared }: PageProps) {
   const C = copyOf(lesson);
@@ -77,6 +180,14 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
   const db = gainDb(pattern, theta);
   const inNull = nearNull(pattern, theta, NULL_TOL);
   const nulls = nullAngles(pattern);
+  // While AIM rides: the inset's dot and the OFF AXIS / PICKUP / REJECTION
+  // cells follow the mic (fix-first 15 item 4). The credit, the notes and the
+  // read-aloud label keep the saved pose, as before.
+  const aimLive = useAimRide(rig);
+  const thetaNow = arrivalAngle(aimLive.pose, src);
+  const dbNow = gainDb(pattern, thetaNow);
+  const inNullNow = nearNull(pattern, thetaNow, NULL_TOL);
+  const wedgeArt = useMemo(() => (live ? { at: wedge.p, faces: wedge.faces, src, glyph: wedge.glyph } : null), [live, wedge, src]);
   const shield = useMemo(() => solidOnPath(rig.scene, pose.p, src, DRUM_PARTS), [rig.scene, pose.p, src]);
   const tried = predicted != null && aimed;
   useEffect(() => {
@@ -112,9 +223,11 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
       onChange: (v) => {
         const ang = a0 + Math.round((v * 2 - 1) * lim);
         const to: MicPose = aimAxis === 'az' ? { ...pose, az: ang } : { ...pose, el: ang };
+        aimLive.ride();
         aimHeld.note(v, rig.preview('A', to));
       },
       onCommit: () => {
+        aimLive.rest();
         rig.commit('A');
         setAimed(true);
       },
@@ -169,16 +282,16 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
 
   const pickupCell: BezelItem = shield
     ? { k: 'PICKUP', v: 'SHIELDED', sub: C.words.shield, flex: 1.15 }
-    : isDeepNull(db)
+    : isDeepNull(dbNow)
       ? { k: 'PICKUP', v: 'DEEP NULL', flex: 1.15 }
-      : { k: 'PICKUP', v: fmtDb(db), flex: 1.15 };
+      : { k: 'PICKUP', v: fmtDb(dbNow), flex: 1.15 };
   const bezel: BezelItem[] = live
     ? [
-        { k: 'OFF AXIS', v: `≈ ${Math.round(theta / 5) * 5}°`, sub: wedge.glyph === 'none' ? wedge.short.toLowerCase() : X.targetWord, flex: 1 },
+        { k: 'OFF AXIS', v: `≈ ${Math.round(thetaNow / 5) * 5}°`, sub: wedge.glyph === 'none' ? wedge.short.toLowerCase() : X.targetWord, flex: 1 },
         pickupCell,
         // An omni has no null (nullAngles → []): say NONE, as PMicrophone does.
         { k: 'NULL', v: !nulls.length ? 'NONE' : tried ? `≈ ${Math.round(nulls[0])}°` : '?', flex: 0.8 },
-        { k: 'REJECTION', v: inNull && !shield ? 'IN NULL' : 'NO', tint: inNull && !shield ? '#5bff85' : undefined, flex: 1.15 },
+        { k: 'REJECTION', v: inNullNow && !shield ? 'IN NULL' : 'NO', tint: inNullNow && !shield ? '#5bff85' : undefined, flex: 1.15 },
       ]
     : [
         { k: 'SCENARIO', v: 'STUDIO' },
@@ -203,9 +316,9 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
       layout: 'rack',
       rack: {
         render: (w, h) => (
-          <PatternInset w={w} h={h} typeId={rig.mics[0].typeId} pattern={pattern} view={view} box={view === 'top' ? PLAN : SIDE} avoid={live ? [pose.p, wedge.glyph === 'none' ? src : wedge.p] : [pose.p]} angle={live ? theta : 0} source={live ? (wedge.glyph === 'none' ? wedge.short : 'MONITOR') : null}>
+          <PatternInset w={w} h={h} typeId={rig.mics[0].typeId} pattern={pattern} view={view} box={view === 'top' ? PLAN : SIDE} avoid={live ? [pose.p, wedge.glyph === 'none' ? src : wedge.p] : [pose.p]} angle={live ? thetaNow : 0} source={live ? (wedge.glyph === 'none' ? wedge.short : 'MONITOR') : null}>
             {(sceneW) => (
-              <PlacementScene
+              <SteadyScene
                 rig={rig}
                 art={art}
                 view={view}
@@ -215,7 +328,7 @@ export function PContext({ lesson, art, answers, onAnswered, onInteractive, inte
                 showZones={false}
                 interactive={false}
                 boxOverride={view === 'top' ? PLAN : SIDE}
-                wedge={live ? { at: wedge.p, faces: wedge.faces, src, glyph: wedge.glyph } : null}
+                wedge={wedgeArt}
                 showLabels={false}
                 accessibilityLabel={label}
               />
