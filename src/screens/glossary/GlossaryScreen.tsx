@@ -152,6 +152,7 @@ import {
   type GlossaryAction,
 } from '../../features/glossary/learningProfiles';
 import { getLabLesson } from '../../features/lab/guidedLessons';
+import { glossaryLabMistakes, glossaryLabMistakesClosing } from '../../features/lab/guidedLessons/glossaryHiddenLabMistakes';
 import type { StudyStackParamList } from '../../navigation/types';
 import { readingColumn, cardColumn } from '../../theme/readingColumn';
 import { safeGoBack } from '../../lib/safeGoBack';
@@ -1079,8 +1080,12 @@ function TermDetails({
   // guided-lesson registry. Client-authored + always available (NOT the
   // academy-gated DB `common_mistakes` below), so it's honest to show for free.
   const labLesson = labProfile ? getLabLesson(labProfile.lab) : null;
+  // On a glossary card the lines that only make sense inside the lab (they
+  // name its controls, presets or readouts) are hidden, and the section ends
+  // with one plain line saying where the rest are (owner 2026-11-23). The lab
+  // itself still shows every line: glossaryHiddenLabMistakes.ts.
   const labMistakesText = labLesson?.commonMistakes?.length
-    ? labLesson.commonMistakes.map((s) => `• ${s}`).join('\n')
+    ? glossaryLabMistakes(labLesson).map((s) => `• ${s}`).join('\n')
     : null;
   const mistakesText = d.common_mistakes?.length
     ? d.common_mistakes.map((s) => `• ${s}`).join('\n')
@@ -1182,10 +1187,11 @@ function TermDetails({
           above Plain English, which read as a misplaced duplicate). Free client
           content (NOT the entitlement-gated DB mistakes), so the eyebrow names
           its source lab. */}
-      {labMistakesText && labLesson ? (
+      {labMistakesText !== null && labLesson ? (
         <View style={styles.detailSection}>
           <Text style={styles.detailEyebrow}>COMMON MISTAKES · {labLesson.name.toUpperCase()} LAB</Text>
-          <Text style={styles.detailBody}>{labMistakesText}</Text>
+          {labMistakesText ? <Text style={styles.detailBody}>{labMistakesText}</Text> : null}
+          <Text style={[styles.detailBody, styles.labMistakesClosing]}>{glossaryLabMistakesClosing(labLesson.name)}</Text>
         </View>
       ) : null}
       {d.related_terms?.length && linkable ? (
@@ -5569,6 +5575,8 @@ const styles = StyleSheet.create({
   calcLinkSigma: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, lineHeight: 18, color: colors.purple },
   calcLinkText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 0.5, color: colors.purple },
   detailBody: { fontFamily: fonts.barlowMedium, fontSize: 16, lineHeight: 25, color: colors.textSecondary },
+  /** The plain line that closes the lab's Common Mistakes on a card. */
+  labMistakesClosing: { marginTop: 8 },
   // "Suggest a correction" affordance at the foot of each detail reveal.
   researchRow: { marginTop: 14 },
   suggestRow: {
