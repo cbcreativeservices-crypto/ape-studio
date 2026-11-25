@@ -35,6 +35,8 @@ import { POLE_HAND_BACK_CUFF, PoleHandBack, poleHandBackOutline, poleHandBackToP
 import { END_TURN, POLE_END_GRIP, POLE_HAND_END_CUFF, POLE_END_TILT, PoleHandEnd, poleHandEndAxisOnPage, poleHandEndOutline, poleHandEndToPage } from './poleHandEnd';
 import { POLE_END_BACK_FORE, POLE_END_BACK_GRIP, POLE_HAND_END_BACK_CUFF, PoleHandEndBack, poleHandEndBackAxisOnPage, poleHandEndBackOutline, poleHandEndBackToPage } from './poleHandEndBack';
 import { END_LITTLE_TURN, POLE_END_LITTLE_GRIP, POLE_HAND_END_LITTLE_CUFF, PoleHandEndLittle, poleHandEndLittleAxisOnPage, poleHandEndLittleOutline, poleHandEndLittleToPage } from './poleHandEndLittle';
+import { POLE_END_UNDER_FORE, POLE_END_UNDER_GRIP, POLE_HAND_END_UNDER_CUFF, PoleHandEndUnder, poleHandEndUnderAxisOnPage, poleHandEndUnderOutline, poleHandEndUnderToPage } from './poleHandEndUnder';
+import { POLE_END_LITTLE_BACK_FORE, POLE_END_LITTLE_BACK_GRIP, POLE_HAND_END_LITTLE_BACK_CUFF, PoleHandEndLittleBack, poleHandEndLittleBackAxisOnPage, poleHandEndLittleBackOutline, poleHandEndLittleBackToPage } from './poleHandEndLittleBack';
 import { POLE_HAND_TOP_CUFF, PoleHandTop, poleHandTopOutline, poleHandTopToPage } from './poleHandTop';
 import { Blur } from './detail';
 import { across } from './paint';
@@ -71,7 +73,38 @@ export type BoomRig = {
   elbows?: ElbowLean;
   /** (FrontBoom3, optional) from the side the FAR arm takes the rear hand (a stance behind the pole's end). */
   sideRearFar?: boolean;
+  /** (2026-11-25, optional) the hands the owner ruled must SUPPORT the pole from below when it is held overhead
+   *  (OVERHEAD_UNDERHAND 'ruledHandOnly'): B10 post-event's left hand. */
+  ruledUnderhand?: readonly ('L' | 'R')[];
+  /** (2026-11-25, optional) a hold that is NOT an overhead hold although a fist rises above a shoulder (B11's perimeter
+   *  boom, angled down to the coach): no hand of it ever takes the underhand roll. */
+  notOverhead?: boolean;
 };
+
+/**
+ * THE UNDERHAND OVERHEAD HOLD (owner 2026-11-24, B10 post-event overhead, left hand: "it curls ontop of the pole and not
+ * cradeling it from below"). A boom held over the head is SUPPORTED: the pole rests in the palm, the palm up under it,
+ * the fingers closing up and over its top, the thumb up the other side, the wrist below the pole, the forearm arriving
+ * from below. Only the hand's roll about the pole changes (boomGrip BoomArm3.under): every grip point, the pole, the mic
+ * and the arm's joints stay. A hand is in the overhead zone while its fist is UNDERHAND_ABOVE mm above its shoulder (a
+ * hand that carried the underhand roll keeps it down to UNDERHAND_HOLD mm lower: no flip at the edge while dragging).
+ *   'ruledHandOnly' (default): only the hands a rig names (rig.ruledUnderhand — B10's left hand);
+ *   'allOverhead': every hand on an overhead pole (B10's right, B04's close shot, F09 — the owner to choose; the study
+ *   page shows each of those hands as now beside underhand).
+ */
+export const OVERHEAD_UNDERHAND: 'ruledHandOnly' | 'allOverhead' = 'ruledHandOnly';
+export const UNDERHAND_ABOVE = 80;
+export const UNDERHAND_HOLD = 40;
+/** Whether each arm (in boomArms' order, L then R) holds underhand: the overhead zone, the rule, the hold. */
+export function underhandOf(rig: BoomRig, arms: readonly BoomArm3[], mode: 'ruledHandOnly' | 'allOverhead' | 'none' = OVERHEAD_UNDERHAND, held?: readonly boolean[]): boolean[] {
+  return arms.map((a, i) => {
+    if (mode === 'none' || rig.notOverhead) return false;
+    if (mode === 'ruledHandOnly' && !rig.ruledUnderhand?.includes(a.side)) return false;
+    const was = held?.[i];
+    const above = was == null ? UNDERHAND_ABOVE : was ? UNDERHAND_ABOVE - UNDERHAND_HOLD : UNDERHAND_ABOVE + UNDERHAND_HOLD;
+    return a.fist.y < a.shoulder.y - above;
+  });
+}
 
 export type BoomView = 'side' | 'top' | 'front';
 
@@ -161,7 +194,7 @@ export function viewOf(view: BoomView, o: OperatorFrame): ViewSpec {
 export type BoomArmPlan = { hand: BoomHandPlan; arm: ArmPlan; far: boolean; /** +1: the pole's mic end comes toward the viewer at this hand; −1 away */ toViewer: 1 | -1; /** (FrontBoom5, front) which approved palm-side picture the hand is */ approved?: string };
 
 export function boomArmPlan(o: OperatorFrame, a: BoomArm3, poleDir: V3, vs: ViewSpec, shoulder2: Pt, far: boolean, /** (FrontBoom5) the front view: each hand the approved mic hand, palm side (approvedFrontArm) */ approved = false): BoomArmPlan {
-  if (approved && a.fist.y < a.shoulder.y) return POLE_FRONT_HANDS ? poleFrontArm(a, poleDir, vs, shoulder2, far) : approvedFrontArm(a, poleDir, vs, shoulder2, far);
+  if (approved && a.fist.y < a.shoulder.y) return POLE_FRONT_HANDS ? (a.under ? poleFrontUnderArm(o, a, poleDir, vs, shoulder2, far) : poleFrontArm(a, poleDir, vs, shoulder2, far)) : approvedFrontArm(a, poleDir, vs, shoulder2, far);
   const h0 = boomHand(o, a, poleDir, vs.toward, vs.proj);
   const fore = unit(sub(h0.wrist3, a.elbow));
   const arm = armPlan(shoulder2, vs.proj(a.elbow), vs.proj(sub(h0.wrist3, mul(fore, 4))), null, h0.away, null, 0, null, false, { one: true });
@@ -325,6 +358,38 @@ function poleFrontArm(a: BoomArm3, poleDir: V3, vs: ViewSpec, shoulder2: Pt, far
 const POLE_FRONT_CUFF_IN = 2;
 
 /**
+ * (2026-11-25) AN UNDERHAND HAND FROM THE FRONT (BoomArm3.under — B10's left hand): its palm is turned up under the pole,
+ * so the front camera sees the BACK of the hand, not the palm-side picture. It takes the approved back-of-hand drawing
+ * (poleHandBack.tsx) placed by the front view's own rule (as poleFrontArm: its pole axis along the pole through the fist,
+ * its wrist toward the elbow, the wrist straight) where the 3-D hand shows its back to the camera and its thumb lies on
+ * the drawing's thumb side; else the palm-side picture stays and says why (frontFace).
+ */
+function poleFrontUnderArm(o: OperatorFrame, a: BoomArm3, poleDir: V3, vs: ViewSpec, shoulder2: Pt, far: boolean): BoomArmPlan {
+  const palm = poleFrontArm(a, poleDir, vs, shoulder2, far);
+  const at = palm.hand.poleFront!;
+  const face = boomHandFace(o, a, poleDir, vs.toward);
+  const F2 = vs.proj(a.fist);
+  const T2 = sub2(vs.proj(add(a.fist, face.thumb)), F2);
+  // (the back drawing's thumb on its −x side; mirrored for a left hand)
+  const sgn = -(at.mirror ? -1 : 1);
+  const thumbOk = sgn * (Math.cos(at.rot) * T2.u + Math.sin(at.rot) * T2.v) > 0;
+  const why = face.face !== 'back' ? 'the palm side is toward the front camera' : !thumbOk ? 'the thumb is on the other side of the fist from the back drawing' : undefined;
+  if (why) return { ...palm, hand: { ...palm.hand, frontFace: { drawing: 'palm', why } } };
+  const W2 = poleHandBackToPage({ ...at, s: 1 })(POLE_HAND_BACK_CUFF);
+  const df = P2(Math.sin(at.rot), -Math.cos(at.rot));
+  const E2 = vs.proj(a.elbow);
+  const L = Math.hypot(E2.u - W2.u, E2.v - W2.v);
+  const elbow2 = sub2(W2, mul2(df, L));
+  const plan = (w: Pt) => armPlan(shoulder2, elbow2, w, null, false, null, 0, null, false, { one: true });
+  const a0 = plan(W2);
+  const offs = dot2(sub2(a0.opening.e.c, W2), df);
+  const arm = plan(add2(W2, mul2(df, POLE_FRONT_CUFF_IN - offs)));
+  const { poleFront: _pf, ...rest } = palm.hand;
+  void _pf;
+  return { ...palm, arm, hand: { ...rest, painter: 'poleBack', poleBack: at, frontFace: { drawing: 'back' } } };
+}
+
+/**
  * THE APPROVED POLE HANDS FROM THE SIDE (2026-11-24, "Boom side": the view the boom lessons draw — B04, B10, B11, F09).
  * The operator stands in profile, the pole across the picture. Which face of each hand the camera sees is read from the
  * rig's own 3-D hand (boomGrip.boomHandFace: the back of the hand square to the forearm and the pole, turned out to the
@@ -430,10 +495,11 @@ export const SIDE_FLAT_TURN_MAX = 70;
 /** The near part of the pole drawn by the end-on hand inside its own outline (mm along the pole; the rest is the scene's). */
 const END_NEAR = 240;
 
-export type SideDrawing = 'back' | 'palm' | 'end' | 'endBack' | 'endLittle' | 'old';
-export type EndDrawing = 'end' | 'endBack' | 'endLittle';
-/** The end-on drawings in the order a hand takes them. */
-export const END_ORDER: readonly EndDrawing[] = ['end', 'endBack', 'endLittle'];
+export type SideDrawing = 'back' | 'palm' | 'end' | 'endBack' | 'endLittle' | 'endLittleBack' | 'endUnder' | 'old';
+export type EndDrawing = 'end' | 'endBack' | 'endLittle' | 'endLittleBack' | 'endUnder';
+/** The end-on drawings in the order a hand takes them (2026-11-25: + poleHandEndLittleBack, approved — the little-finger
+ *  end, the camera toward the BACK of the hand. poleHandEndLittleFore is NOT approved and is never chosen). */
+export const END_ORDER: readonly EndDrawing[] = ['end', 'endBack', 'endLittle', 'endLittleBack', 'endUnder'];
 type EndArt = {
   toPage: (o: { x: number; y: number; s: number; rot?: number; mirror?: boolean }) => (q: Pt) => Pt;
   axisOnPage: (o: { rot?: number; mirror?: boolean }) => Pt;
@@ -444,6 +510,9 @@ type EndArt = {
   fore: Pt;
   /** which end of the fist the camera must be at */
   at: 'thumb' | 'little';
+  /** (2026-11-25) a drawing of the UNDERHAND hold: only for a hand holding underhand (BoomArm3.under), and taken only
+   *  after every other approved drawing (flat included) — the order the owner's brief gives for that hand */
+  under?: boolean;
 };
 /** Each end-on drawing through its own exports (the art untouched). */
 export const END_ART: Record<EndDrawing, EndArt> = {
@@ -451,8 +520,11 @@ export const END_ART: Record<EndDrawing, EndArt> = {
   endBack: { toPage: poleHandEndBackToPage, axisOnPage: poleHandEndBackAxisOnPage, grip: POLE_END_BACK_GRIP, cuff: POLE_HAND_END_BACK_CUFF, fore: POLE_END_BACK_FORE, at: 'thumb' },
   // (its hand frame's −x toward the forearm, turned END_LITTLE_TURN)
   endLittle: { toPage: poleHandEndLittleToPage, axisOnPage: poleHandEndLittleAxisOnPage, grip: POLE_END_LITTLE_GRIP, cuff: POLE_HAND_END_LITTLE_CUFF, fore: { u: -Math.cos(END_LITTLE_TURN), v: -Math.sin(END_LITTLE_TURN) }, at: 'little' },
+  endLittleBack: { toPage: poleHandEndLittleBackToPage, axisOnPage: poleHandEndLittleBackAxisOnPage, grip: POLE_END_LITTLE_BACK_GRIP, cuff: POLE_HAND_END_LITTLE_BACK_CUFF, fore: POLE_END_LITTLE_BACK_FORE, at: 'little' },
+  // (2026-11-25, approved: "ok hand and fixed thumb approved") the lower hand cradling an overhead pole from below
+  endUnder: { toPage: poleHandEndUnderToPage, axisOnPage: poleHandEndUnderAxisOnPage, grip: POLE_END_UNDER_GRIP, cuff: POLE_HAND_END_UNDER_CUFF, fore: POLE_END_UNDER_FORE, at: 'thumb', under: true },
 };
-const END_PAINTER = { end: 'poleEnd', endBack: 'poleEndBack', endLittle: 'poleEndLittle' } as const;
+const END_PAINTER = { end: 'poleEnd', endBack: 'poleEndBack', endLittle: 'poleEndLittle', endLittleBack: 'poleEndLittleBack', endUnder: 'poleEndUnder' } as const;
 /** (degrees) the camera's angle off the pole each end-on drawing is drawn for (all three: 25°). */
 const END_AXIS_DEG = (POLE_END_TILT * 180) / Math.PI;
 /** (degrees) how badly a drawing fits a hand: the view's error (a flat drawing: how far the hand is turned from it; an
@@ -467,7 +539,7 @@ export const littleMisfit = (viewErr: number, lean: number) => viewErr + lean;
  * static rig) the limits are as written above.
  */
 const SIDE_HOLD = { turn: 5, lean: 5, fore: 0.05 } as const;
-function poleSideArm(o: OperatorFrame, a: BoomArm3, poleDir: V3, vs: ViewSpec, shoulder2: Pt, far: boolean, prefer?: SideDrawing): { plan: BoomArmPlan; fit: SideFit; drawing: SideDrawing } {
+function poleSideArm(o: OperatorFrame, a: BoomArm3, poleDir: V3, vs: ViewSpec, shoulder2: Pt, far: boolean, prefer?: SideDrawing, /** the pole as drawn (its ends): the real near stretch past a fist */ poleEnds?: { a: V3; b: V3 }): { plan: BoomArmPlan; fit: SideFit; drawing: SideDrawing } {
   // (the 3-D grip still made: its frame is the one the rest of the figure reads)
   const base = boomArmPlan(o, a, poleDir, vs, shoulder2, far);
   const face = boomHandFace(o, a, poleDir, vs.toward);
@@ -502,10 +574,18 @@ function poleSideArm(o: OperatorFrame, a: BoomArm3, poleDir: V3, vs: ViewSpec, s
   // (the pole's near part — toward the camera — along each drawing's own near axis)
   const near = dot(poleDir, vs.toward) >= 0 ? poleDir : mul(poleDir, -1);
   const n2 = unit2(sub2(vs.proj(add(a.fist, near)), F2));
+  // (the pole's REAL near stretch past the drawing's origin — 40 mm toward the camera from the grip: where the drawn
+  // pole ends on the camera's side; a hand at the pole's end draws no pole that is not there)
+  const nearStub = () => {
+    if (!poleEnds) return END_NEAR;
+    const t = Math.max(dot(sub(poleEnds.a, a.fist), near), dot(sub(poleEnds.b, a.fist), near));
+    return Math.max(0, Math.min(END_NEAR, t - 40));
+  };
   type EndTry = { drawing: EndDrawing; arm: ArmPlan | null; fit: SideFit; at: { x: number; y: number; rot: number; mirror: boolean } | null; lean: number };
   const tryEnd = (k: EndDrawing): EndTry => {
     const A = END_ART[k];
     const r = room(prefer === k);
+    if (A.under && !a.under) return { drawing: k, arm: null, at: null, lean: NaN, fit: { fits: false, why: 'a drawing of the underhand hold (this hand holds overhand)' } };
     if (face.turn <= SIDE_END_TURN - r * SIDE_HOLD.turn) return { drawing: k, arm: null, at: null, lean: NaN, fit: { fits: false, why: `the hand is turned only ${Math.round(face.turn)}° from the flat drawings` } };
     const atEnd = A.at === 'thumb' ? thumbEnd >= SIDE_END_AXIS : thumbEnd <= -SIDE_END_AXIS;
     if (!atEnd) return { drawing: k, arm: null, at: null, lean: NaN, fit: { fits: false, why: `the camera is not along the pole at the ${A.at === 'thumb' ? 'thumb' : 'little-finger'} end (${Math.round(camOff)}° off it at the ${thumbEnd >= 0 ? 'thumb' : 'little-finger'} end)` } };
@@ -525,7 +605,7 @@ function poleSideArm(o: OperatorFrame, a: BoomArm3, poleDir: V3, vs: ViewSpec, s
   };
   const ends = SIDE_END_HANDS ? END_ORDER.map(tryEnd) : [];
   const tried = ends.map((e) => ({ drawing: e.drawing, lean: e.lean, axisOff, fits: e.fit.fits, why: e.fit.why }));
-  const info = { face: face.face, turn: face.turn, foreSquare: face.foreSquare, thumbEnd, tried, flatLean };
+  const info = { face: face.face, turn: face.turn, foreSquare: face.foreSquare, thumbEnd, tried, flatLean, palmUp: face.palmUp, under: !!a.under };
   const littleEnd = face.turn > SIDE_END_TURN && thumbEnd <= -SIDE_END_AXIS;
   const flatTurnOk = face.turn <= SIDE_FLAT_TURN_MAX + rFlat * SIDE_HOLD.turn;
   const flatOk = flat.fit.fits && flatTurnOk && (SIDE_FLAT_LITTLE_END || !littleEnd);
@@ -537,19 +617,30 @@ function poleSideArm(o: OperatorFrame, a: BoomArm3, poleDir: V3, vs: ViewSpec, s
   const endPlan = (e: EndTry): { plan: BoomArmPlan; fit: SideFit; drawing: SideDrawing } => {
     const sideFace = { ...info, fits: true, drawing: e.drawing };
     const painter = END_PAINTER[e.drawing];
-    const where = e.drawing === 'end' ? { poleEnd: e.at! } : e.drawing === 'endBack' ? { poleEndBack: e.at! } : { poleEndLittle: e.at! };
+    const where =
+      e.drawing === 'end'
+        ? { poleEnd: e.at! }
+        : e.drawing === 'endBack'
+          ? { poleEndBack: e.at! }
+          : e.drawing === 'endLittle'
+            ? { poleEndLittle: e.at! }
+            : e.drawing === 'endLittleBack'
+              ? { poleEndLittleBack: { ...e.at!, near: nearStub() } }
+              : { poleEndUnder: { ...e.at!, near: nearStub() } };
     return { plan: { ...base, arm: e.arm!, hand: { ...base.hand, painter, ...where, sideFace } }, fit: e.fit, drawing: e.drawing };
   };
   // (from the little-finger end, where the flat drawing fits too: the end-on drawing only where it fits better)
   const littleBeats = (e: EndTry) => !flatOk || littleMisfit(axisOff, e.lean) < littleMisfit(face.turn, flatLean);
-  const usable = (e: EndTry) => e.fit.fits && (e.drawing !== 'endLittle' || littleBeats(e));
+  const usable = (e: EndTry) => e.fit.fits && (END_ART[e.drawing].at !== 'little' || littleBeats(e));
   // (a drawing this hand carried is kept while it still fits, with its looser limits)
   const kept = ends.find((e) => e.drawing === prefer);
   if (kept && usable(kept)) return endPlan(kept);
   if (flatKept && flatOk) return flatPlan();
-  // (else the end-on drawings in their order, where the camera sees that view)
-  for (const e of ends) if (usable(e)) return endPlan(e);
+  // (else the end-on drawings in their order, where the camera sees that view; then the flat one; then — an underhand
+  // hand only — the underhand drawing)
+  for (const e of ends) if (!END_ART[e.drawing].under && usable(e)) return endPlan(e);
   if (flatOk || !SIDE_FIT_GUARD) return flatPlan();
+  for (const e of ends) if (END_ART[e.drawing].under && usable(e)) return endPlan(e);
   // ── none can be placed: the old hand, saying why ──
   const endWhy = ends.map((e) => `${e.drawing}: ${e.fit.why}`).join('; ');
   const why = [endWhy ? `end-on — ${endWhy}` : null, !flat.fit.fits ? `flat: ${flat.fit.why}` : !flatTurnOk ? `flat: the hand is turned ${Math.round(face.turn)}° from it (past ${SIDE_FLAT_TURN_MAX}°: seen nearly end-on)` : 'flat: kept off the little-finger end'].filter(Boolean).join('; ');
@@ -591,7 +682,9 @@ function poleTopArm(o: OperatorFrame, a: BoomArm3, poleDir: V3, vs: ViewSpec, sh
   const W2 = toPage(POLE_HAND_TOP_CUFF);
   const sa = straightArm(W2, P2(Math.sin(rot), -Math.cos(rot)), E2, shoulder2, false);
   const fit: SideFit =
-    face.face !== 'back' ? { fits: false, why: 'the palm side is toward the camera (the drawing shows the backs of the fingers)' } : up < TOP_FORE_UP_MIN ? { fits: false, why: `the forearm does not rise toward the camera (${up.toFixed(2)})` } : dot2(T2, t2) <= 0 ? { fits: false, why: 'the thumb is on the other side of the fist from the drawing' } : sa.fit;
+    // (2026-11-25: an UNDERHAND hand from above shows its fingers closed up and over the pole's top — the picture the
+    // top drawing is; its palm under the pole faces up only past them)
+    face.face !== 'back' && !a.under ? { fits: false, why: 'the palm side is toward the camera (the drawing shows the backs of the fingers)' } : up < TOP_FORE_UP_MIN ? { fits: false, why: `the forearm does not rise toward the camera (${up.toFixed(2)})` } : dot2(T2, t2) <= 0 ? { fits: false, why: 'the thumb is on the other side of the fist from the drawing' } : sa.fit;
   if (!fit.fits) return { plan: { ...base, hand: { ...base.hand, topFace: fit } }, fit };
   return { plan: { ...base, arm: sa.arm, hand: { ...base.hand, painter: 'poleTop', poleTop: at, topFace: fit } }, fit };
 }
@@ -663,7 +756,11 @@ export const handSil = (hp: BoomHandPlan): SkPath =>
           ? poleHandEndBackOutline({ ...hp.poleEndBack, s: 1, sleeve: false })
           : hp.painter === 'poleEndLittle' && hp.poleEndLittle
             ? poleHandEndLittleOutline({ ...hp.poleEndLittle, s: 1, sleeve: false })
-            : hp.painter === 'poleTop' && hp.poleTop
+            : hp.painter === 'poleEndLittleBack' && hp.poleEndLittleBack
+              ? poleHandEndLittleBackOutline({ ...hp.poleEndLittleBack, s: 1, sleeve: false })
+              : hp.painter === 'poleEndUnder' && hp.poleEndUnder
+                ? poleHandEndUnderOutline({ ...hp.poleEndUnder, s: 1, sleeve: false })
+                : hp.painter === 'poleTop' && hp.poleTop
           ? poleHandTopOutline({ ...hp.poleTop, s: 1, sleeve: false })
           : BOOM_HAND_PAINTER === 'held' || hp.painter === 'held'
             ? gripSilhouette(hp.grip)
@@ -784,6 +881,18 @@ function BoomHandArt({ ap, poleDir, proj, toward: vsToward }: { ap: BoomArmPlan;
     // (the approved end-on hand from the little-finger end: the fingers behind, the hand's body and heel, the little
     // finger, then the pole's near part out of the fist toward the viewer — the scene's pole)
     return <PoleHandEndLittle x={pl.x} y={pl.y} s={1} rot={pl.rot} mirror={pl.mirror} sleeve={false} poleLook="boom" ownScale={false} pole={[-70, END_NEAR]} />;
+  const plb = ap.hand.poleEndLittleBack;
+  if (ap.hand.painter === 'poleEndLittleBack' && plb)
+    // (the approved end-on hand from the little-finger end, the camera toward the back of the hand: the fingers behind,
+    // the back and side of the hand, the little finger, then the pole's near part — the scene's pole, on its own axis,
+    // only as far as the drawn pole really runs toward the viewer)
+    return <PoleHandEndLittleBack x={plb.x} y={plb.y} s={1} rot={plb.rot} mirror={plb.mirror} sleeve={false} poleLook="boom" ownScale={false} pole={[-70, plb.near]} />;
+  const pu = ap.hand.poleEndUnder;
+  if (ap.hand.painter === 'poleEndUnder' && pu)
+    // (the approved underhand hand cradling the pole from below, from the thumb end: the fingers behind, the hand's body
+    // under the pole, the index, the thumb up the near side and over the top, then the pole's near part — the scene's
+    // pole, only as far as the drawn pole really runs toward the viewer)
+    return <PoleHandEndUnder x={pu.x} y={pu.y} s={1} rot={pu.rot} mirror={pu.mirror} sleeve={false} poleLook="boom" ownScale={false} pole={[-70, pu.near]} />;
   const pt = ap.hand.poleTop;
   if (ap.hand.painter === 'poleTop' && pt)
     // (the approved hand from above: the hand's body under the pole, the pole's piece inside the hand as the scene's
@@ -945,13 +1054,23 @@ const torsoOf = (body: SkPath, axis: [Pt, Pt]): Torso => {
 
 /** The rig's plans for a view (memoised per rig, person and view). */
 const cache = new WeakMap<BoomRig, Map<string, { arms: BoomArmPlan[]; torso: Torso; vs: ViewSpec; poleDir: V3; o: OperatorFrame; /** the pole as this view draws it (the rig's, except from the front: frontHandsAside) */ pole: { a: V3; b: V3 } }>>();
-export function boomPlans(rig: BoomRig, who: CastMember, view: BoomView, /** (dev, the study page's OLD beside NEW) the old hands from the side and from above */ oldSide = false, /** (a rig that moves with a drag, B10) the drawing each side hand carried last: kept while it fits (SIDE_HOLD) */ hold?: { side?: readonly SideDrawing[] }) {
+export function boomPlans(
+  rig: BoomRig,
+  who: CastMember,
+  view: BoomView,
+  /** (dev, the study page's OLD beside NEW) the old hands from the side and from above */ oldSide = false,
+  /** (a rig that moves with a drag, B10) the drawing each side hand carried last: kept while it fits (SIDE_HOLD); the
+   *  roll each hand carried last (`roll`, true = underhand): kept within UNDERHAND_HOLD of the zone's edge */
+  hold?: { side?: readonly SideDrawing[]; roll?: readonly boolean[] },
+  /** (dev, the study page) the underhand rule to draw with: OVERHEAD_UNDERHAND unless given ('none': every hand as before) */
+  underhand: 'ruledHandOnly' | 'allOverhead' | 'none' = OVERHEAD_UNDERHAND,
+) {
   let m = cache.get(rig);
   if (!m) {
     m = new Map();
     cache.set(rig, m);
   }
-  const key = `${who.id}:${view}${oldSide ? ':old' : ''}${hold?.side ? `:hold=${hold.side.join(',')}` : ''}`;
+  const key = `${who.id}:${view}${oldSide ? ':old' : ''}${hold?.side ? `:hold=${hold.side.join(',')}` : ''}${hold?.roll ? `:roll=${hold.roll.map(Number).join('')}` : ''}:u=${underhand}`;
   const hit = m.get(key);
   if (hit) return hit;
   const turned = rigFrame(rig, who);
@@ -1029,6 +1148,10 @@ export function boomPlans(rig: BoomRig, who: CastMember, view: BoomView, /** (de
       return a.fist.y < a.shoulder.y ? { s: { u: s.u + out * FRONT_ROOT_SHIFT.out, v: s.v + FRONT_ROOT_SHIFT.down }, far: false } : { s, far: false };
     };
   }
+  // (2026-11-25) the hand's roll about the pole: underhand where the rule and the overhead zone say so (the hold kept
+  // through a drag) — every joint and point as it was
+  const under = underhandOf(rig, arms3, underhand, hold?.roll);
+  arms3 = arms3.map((a, i) => (under[i] ? { ...a, under: true } : a));
   const vs = viewOf(view, o);
   const at = arms3.map((a) => {
     const d = drawn(a);
@@ -1043,7 +1166,7 @@ export function boomPlans(rig: BoomRig, who: CastMember, view: BoomView, /** (de
     // else the flat drawing — or, where none can be placed, its old hand, saying why (sideFace)
     // (kept by arm: the hold names each arm's drawing in the plan's own order, L then R)
     const keep = hold?.side;
-    arms = at.map(({ a, d, lifted }, i) => poleSideArm(o, a, poleDir, vs, lifted, d.far, keep?.[i]).plan);
+    arms = at.map(({ a, d, lifted }, i) => poleSideArm(o, a, poleDir, vs, lifted, d.far, keep?.[i], pole).plan);
   }
   if (view === 'top' && POLE_TOP_HANDS && !oldSide) {
     // (each hand the approved hand from above where the camera sees that view; else its old hand, saying why)
@@ -1064,6 +1187,8 @@ export function fistDisk(view: string, p: V3, r = 130): SkPath {
 
 /** The drawing each side hand carries (in the plan's arm order): what a moving rig passes back as its `hold`. */
 export const sideDrawings = (B: ReturnType<typeof boomPlans>): SideDrawing[] => B.arms.map((a) => a.hand.sideFace?.drawing ?? 'old');
+/** The roll each hand carries (true = underhand; the plan's arm order): what a moving rig passes back as `hold.roll`. */
+export const sideRolls = (B: ReturnType<typeof boomPlans>): boolean[] => B.arms.map((a) => !!a.hand.arm.under);
 
 /**
  * THE OVERHEAD HOLD FROM THE FRONT, HANDS EITHER SIDE OF THE HEAD (coordinator 2026-11-24, on the front view: "her
@@ -1390,11 +1515,11 @@ export function poleFarSide(rig: BoomRig): boolean {
 
 /** The boom operator in the new look. `pole` false: the pole is the scene's own (only the pieces through the
  *  fists are drawn here); `dim` fades the whole operator as one layer. */
-export function BoomOperatorV2({ view, rig, who, dim = 0.82, pole = true, assumePtPerMm, part = 'all', debug = false, oldSide = false, hold }: { view: BoomView; rig: BoomRig; who: CastMember; dim?: number; pole?: boolean; assumePtPerMm?: number; /** 'hands': the two fists alone (with the pole's piece inside each), painted again over a pole the engine draws */ part?: 'all' | 'hands'; /** (dev) the rig's points and the solved joints as dots */ debug?: boolean; /** (dev, the study page) the side view's old hands beside the new */ oldSide?: boolean; /** (a rig that moves with a drag) the drawing each side hand carried last (boomPlans) */ hold?: { side?: readonly SideDrawing[] } }) {
+export function BoomOperatorV2({ view, rig, who, dim = 0.82, pole = true, assumePtPerMm, part = 'all', debug = false, oldSide = false, hold, underhand = OVERHEAD_UNDERHAND }: { view: BoomView; rig: BoomRig; who: CastMember; dim?: number; pole?: boolean; assumePtPerMm?: number; /** 'hands': the two fists alone (with the pole's piece inside each), painted again over a pole the engine draws */ part?: 'all' | 'hands'; /** (dev) the rig's points and the solved joints as dots */ debug?: boolean; /** (dev, the study page) the side view's old hands beside the new */ oldSide?: boolean; /** (a rig that moves with a drag) the drawing and the roll each side hand carried last (boomPlans) */ hold?: { side?: readonly SideDrawing[]; roll?: readonly boolean[] }; /** (dev, the study page) the underhand rule to draw with */ underhand?: 'ruledHandOnly' | 'allOverhead' | 'none' }) {
   const v = useFigureScale();
   const ptPerMm = v.ptPerMm ?? assumePtPerMm ?? null;
   const level = levelOf({ ptPerMm, level: v.level });
-  const B = boomPlans(rig, who, view, oldSide, hold);
+  const B = boomPlans(rig, who, view, oldSide, hold, underhand);
   const proj = B.vs.proj;
   const hands = B.arms.map((a) => handSil(a.hand));
   // (2026-11-24) joined as a true union, so a hand's own HOLE (an end-on fist's ring of skin round the pole's section)

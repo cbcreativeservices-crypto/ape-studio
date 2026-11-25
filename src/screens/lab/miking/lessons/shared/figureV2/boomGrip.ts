@@ -91,11 +91,29 @@ export function boomElbow(shoulder: V3, fist: V3, outward: V3, F: V3, a = BOOM_A
 }
 
 /** One arm on the pole, in the world. */
-export type BoomArm3 = { side: 'L' | 'R'; shoulder: V3; elbow: V3; fist: V3; reach: number; /** how far the shoulder rose and moved toward the reach (world; zero within reach) */ lift?: V3 };
+export type BoomArm3 = {
+  side: 'L' | 'R';
+  shoulder: V3;
+  elbow: V3;
+  fist: V3;
+  reach: number;
+  /** how far the shoulder rose and moved toward the reach (world; zero within reach) */ lift?: V3;
+  /** (2026-11-25, UNDERHAND) the hand SUPPORTS the pole from below: the palm turned up under the pole (the back of the
+   *  hand down), the fingers closing up and over its top, the thumb up the other side — the hand's roll about the
+   *  pole only; the grip point, the pole and the arm's joints are unchanged (BoomV2 decides which hands). */
+  under?: boolean;
+};
+
+/**
+ * THE UNDERHAND ROLL (owner 2026-11-24 on B10 overhead, left hand: "it curls ontop of the pole and not cradeling it
+ * from below"). Of the two backs of the hand square to the forearm and the pole, the one pointing DOWN (frame V: +y),
+ * so the palm faces up under the pole. The same rule in rightFrame (the mirrored world keeps y) and boomHandFace.
+ */
+const underBack = (c: V3): V3 => (c.y >= 0 ? unit(c) : mul(unit(c), -1));
 
 /** The hand's frame for a RIGHT hand closing on a pole along `pole`: the forearm f, the back of the hand
  *  turned out to the side (d), the pole's direction taken toward the thumb's side (h). */
-function rightFrame(elbow: V3, fist: V3, pole: V3, outward: V3, back?: V3): { f: V3; h: V3; d: V3 } {
+function rightFrame(elbow: V3, fist: V3, pole: V3, outward: V3, back?: V3, under = false): { f: V3; h: V3; d: V3 } {
   const f = unit(sub(fist, elbow));
   // (FrontBoom3, review 2026-11-24: the hand was a paddle with the pole across it) the back of the hand is square to
   // BOTH the forearm and the pole (the pole lies in the palm, across the hand): of the two such directions, the one
@@ -107,7 +125,7 @@ function rightFrame(elbow: V3, fist: V3, pole: V3, outward: V3, back?: V3): { f:
   let d: V3;
   if (len(c) > 0.2) {
     const pref = back ?? outward;
-    d = dot(c, pref) >= 0 ? unit(c) : mul(unit(c), -1);
+    d = under ? underBack(c) : dot(c, pref) >= 0 ? unit(c) : mul(unit(c), -1);
   } else {
     d = sub(outward, mul(f, dot(outward, f)));
     d = len(d) < 1e-3 ? unit(cross(f, pole)) : unit(d);
@@ -132,7 +150,7 @@ export type BoomHandPlan = {
   toPage: (l: { u: number; w: number; n: number }) => Pt;
   /** (FrontBoom5, the front view) drawn by the approved mic hand's own painter (heldHandV2), not boomFist;
    *  (2026-11-24) 'poleFront': the approved authored pole hand, palm side (poleHandFront.tsx). */
-  painter?: 'held' | 'poleFront' | 'poleBack' | 'poleEnd' | 'poleEndBack' | 'poleEndLittle' | 'poleTop';
+  painter?: 'held' | 'poleFront' | 'poleBack' | 'poleEnd' | 'poleEndBack' | 'poleEndLittle' | 'poleEndLittleBack' | 'poleEndUnder' | 'poleTop';
   /** ('poleFront') where the authored hand sits on the page: its pole axis's middle under the fist, its turn, mirrored for a left hand. */
   poleFront?: { x: number; y: number; rot: number; mirror: boolean };
   /** ('poleBack', the side view) the approved authored pole hand seen from its BACK (poleHandBack.tsx), placed as poleFront. */
@@ -147,6 +165,15 @@ export type BoomHandPlan = {
   /** ('poleEndLittle', the side view) the approved end-on hand seen from the LITTLE-FINGER end (poleHandEndLittle.tsx):
    *  (x, y) the drawing's origin (the pole's axis where it enters the fist on the little-finger side), placed as poleEnd. */
   poleEndLittle?: { x: number; y: number; rot: number; mirror: boolean };
+  /** ('poleEndLittleBack', the side view, 2026-11-25) the approved end-on hand from the LITTLE-FINGER end, the camera
+   *  toward the BACK of the hand (poleHandEndLittleBack.tsx), placed as poleEnd; `near` the pole's real near stretch
+   *  past the drawing's origin (mm along the pole: where the drawn pole ends on the camera's side, at most END_NEAR). */
+  poleEndLittleBack?: { x: number; y: number; rot: number; mirror: boolean; near: number };
+  /** ('poleEndUnder', the side view, 2026-11-25) the approved UNDERHAND hand cradling the pole from below, seen from the
+   *  thumb / index end toward the palm (poleHandEndUnder.tsx), placed as poleEnd; `near` the pole's real near stretch. */
+  poleEndUnder?: { x: number; y: number; rot: number; mirror: boolean; near: number };
+  /** (from the front, 2026-11-25) an underhand hand's picture there: the back-of-hand drawing, or the palm side and why. */
+  frontFace?: { drawing: 'palm' | 'back'; why?: string };
   /** ('poleTop', from above, 2026-11-24) the approved authored pole hand from directly above (poleHandTop.tsx): its pole
    *  axis under the middle of the fist, its turn, mirrored for a left hand. */
   poleTop?: { x: number; y: number; rot: number; mirror: boolean };
@@ -160,10 +187,14 @@ export type BoomHandPlan = {
     fits: boolean;
     why?: string;
     /** (2026-11-24) which approved drawing this hand carries ('old': none could be placed — the old hand) */
-    drawing?: 'back' | 'palm' | 'end' | 'endBack' | 'endLittle' | 'old';
+    drawing?: 'back' | 'palm' | 'end' | 'endBack' | 'endLittle' | 'endLittleBack' | 'endUnder' | 'old';
+    /** (2026-11-25) the palm's normal against world up: + the palm faces up under the pole (an underhand hold) */
+    palmUp?: number;
+    /** (2026-11-25) the hand holds underhand (BoomArm3.under) */
+    under?: boolean;
     /** (2026-11-24) each end-on drawing tried for this hand: how far its forearm lies off the arm's on the page (deg),
      *  the camera's angle off the pole against the drawing's 25° (deg), whether it could be placed, and why not */
-    tried?: { drawing: 'end' | 'endBack' | 'endLittle'; lean: number; axisOff: number; fits: boolean; why?: string }[];
+    tried?: { drawing: 'end' | 'endBack' | 'endLittle' | 'endLittleBack' | 'endUnder'; lean: number; axisOff: number; fits: boolean; why?: string }[];
     /** (2026-11-24) the flat drawing's forearm on the page against the arm's (deg) */
     flatLean?: number;
     /** how far the camera is along the pole toward the fist's THUMB / index end (+1: straight along it from that end;
@@ -182,13 +213,13 @@ export type BoomHandPlan = {
  * same choice rightFrame makes (in the mirrored world for a left hand, which maps back to the same rule here).
  * `turn`: how far the hand's plane is from square to the camera; `foreSquare`: the forearm's angle off square to the pole.
  */
-export function boomHandFace(o: OperatorFrame, arm: BoomArm3, pole: V3, toward: V3): { face: 'back' | 'palm'; turn: number; foreSquare: number; d: V3; thumb: V3 } {
+export function boomHandFace(o: OperatorFrame, arm: BoomArm3, pole: V3, toward: V3): { face: 'back' | 'palm'; turn: number; foreSquare: number; d: V3; thumb: V3; palmUp: number } {
   const outward = arm.side === 'L' ? mul(o.R, -1) : o.R;
   const back = add(outward, mul(o.F, -1));
   const f = unit(sub(arm.fist, arm.elbow));
   const c = cross(f, pole);
   let d: V3;
-  if (len(c) > 0.2) d = dot(c, back) >= 0 ? unit(c) : mul(unit(c), -1);
+  if (len(c) > 0.2) d = arm.under ? underBack(c) : dot(c, back) >= 0 ? unit(c) : mul(unit(c), -1);
   else {
     d = sub(outward, mul(f, dot(outward, f)));
     d = len(d) < 1e-3 ? unit(cross(f, pole)) : unit(d);
@@ -198,7 +229,8 @@ export function boomHandFace(o: OperatorFrame, arm: BoomArm3, pole: V3, toward: 
   const thumb = dot(pole, W) >= 0 ? unit(pole) : mul(unit(pole), -1);
   const k = dot(d, unit(toward));
   const deg = (x: number) => (Math.acos(Math.max(-1, Math.min(1, x))) * 180) / Math.PI;
-  return { face: k > 0 ? 'back' : 'palm', turn: deg(Math.abs(k)), foreSquare: 90 - deg(Math.abs(dot(f, unit(pole)))), d, thumb };
+  // (palmUp: the palm's normal −d against world up (frame V, y down): + the palm faces up, under the pole)
+  return { face: k > 0 ? 'back' : 'palm', turn: deg(Math.abs(k)), foreSquare: 90 - deg(Math.abs(dot(f, unit(pole)))), d, thumb, palmUp: d.y };
 }
 
 /**
@@ -213,7 +245,7 @@ export function boomHand(o: OperatorFrame, arm: BoomArm3, pole: V3, toward: V3, 
   const outward = left ? mul(o.R, -1) : o.R;
   // (the back of the hand: out to the arm's side and back toward the operator — palms forward on a pole across them)
   const back = add(outward, mul(o.F, -1));
-  const fr = rightFrame(MP(arm.elbow), MP(arm.fist), MV(pole), MV(outward), MV(back));
+  const fr = rightFrame(MP(arm.elbow), MP(arm.fist), MV(pole), MV(outward), MV(back), !!arm.under);
   const projM = (p: V3) => proj(MP(p));
   const grip = placeGrip(MP(arm.fist), fr, MV(toward), projM, POLE_R, wristFrom2 ? { wristFrom2 } : {});
   const wrist3 = MP(grip.wrist3);

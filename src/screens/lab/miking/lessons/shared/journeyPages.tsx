@@ -197,7 +197,8 @@ export function GMicrophone({ lesson, answers, onAnswered }: PageProps, spec: Mi
           {lesson.micTypeIds.map((id) => {
             const m = MIC_TYPES[id];
             const isOpen = open.has(id);
-            const p = m.patterns[0].id;
+            // (audit 2026-11-25, Appendix E: the picked type's card names the pattern picked, as the bezel and the lobe do)
+            const p = id === typeId ? pat : m.patterns[0].id;
             return (
               <Card key={id}>
                 <Point title={m.label.toUpperCase()}>{m.blurb}</Point>

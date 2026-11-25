@@ -33,7 +33,7 @@ export const OPERATOR_POSES = operatorPoses(OPERATOR.feet, GRIP);
 const POLE_STUB = { a: GRIP, b: { x: GRIP.x - 380, y: GRIP.y + 420, z: GRIP.z - 300 } };
 /** (figure V2) the perimeter boom as a rig: the front hand on the lesson's grip, the rear hand 420 mm back
  *  along the pole's own line (the old drawing's stub; a drawing default), the near arm on the rear hand. */
-const RIG: BoomRig = { side: OPERATOR_POSES.side, top: OPERATOR_POSES.top, front: GRIP, rear: alongPole(GRIP, POLE_STUB.b, 420), pole: POLE_STUB, rearArm: 'L' };
+const RIG: BoomRig = { side: OPERATOR_POSES.side, top: OPERATOR_POSES.top, front: GRIP, rear: alongPole(GRIP, POLE_STUB.b, 420), pole: POLE_STUB, rearArm: 'L', notOverhead: true };
 const SIDE_UV = (p: { x: number; y: number }) => ({ u: p.x, v: p.y });
 const TOP_UV = (p: { x: number; z: number }) => ({ u: p.x, v: p.z });
 const CHEST = bodyWornChain('chest');

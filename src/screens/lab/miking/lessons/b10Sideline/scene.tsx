@@ -26,7 +26,7 @@ import { castFor } from '../shared/figureV2/cast';
 import { SoftFolds } from '../shared/figureV2/paint';
 import { StandingV2, standingCoversV2 } from '../shared/broadcast/heldPeopleV2';
 import { B10_FAINT_PLAIN, B10_HELD, GUEST_HOLDER, REP_HOLDER, V2 } from './held';
-import { BoomOperatorV2, boomPlans, sideDrawings, type BoomRig, type SideDrawing } from '../shared/figureV2/BoomV2';
+import { BoomOperatorV2, boomPlans, sideDrawings, sideRolls, type BoomRig, type SideDrawing } from '../shared/figureV2/BoomV2';
 import { useHeldMicsNow, type HeldConfig, type HeldMicNow } from '../shared/figureV2/heldLive';
 import { alongPole } from '../shared/figureV2/boomGrip.ts';
 import { SINGER_SOLIDS } from '../shared/voice/voicePose.ts';
@@ -38,6 +38,9 @@ export const OPERATOR_POSES = B10_BOOM_HOLD === 'overhead' ? operatorPoses(OPERA
 const POLE_STUB = B10_BOOM_HOLD === 'overhead' ? { a: GRIP, b: BOOM_POLE_END } : { a: GRIP, b: { x: GRIP.x + 380, y: GRIP.y + 420, z: GRIP.z + 300 } };
 /** (figure V2) the boom operator's rear hand: the right (the pole runs back to their right, B11's mirrored). */
 const B10_REAR_ARM: 'L' | 'R' = 'R';
+/** (2026-11-25, owner on the overhead hold's LEFT hand: "it curls ontop of the pole and not cradeling it from below")
+ *  the hand that supports the pole from below while it is overhead (BoomV2 OVERHEAD_UNDERHAND). */
+const B10_UNDERHAND: readonly ('L' | 'R')[] = ['L'];
 /** (figure V2) the boom operator's rig (figureV2/BoomV2, as B04 and B11 draw theirs): the front hand at the grip,
  *  the rear hand 42 cm down the pole. */
 /** (the study page: both holds side by side, whichever the constant picks) */
@@ -47,12 +50,12 @@ const OLD_STUB = { a: GRIP, b: { x: GRIP.x + 380, y: GRIP.y + 420, z: GRIP.z + 3
 const OVER_POSES = operatorPoses({ x: (BOOM_FRONT_HAND.x + BOOM_REAR_HAND.x) / 2 - 10, y: FLOOR, z: (BOOM_FRONT_HAND.z + BOOM_REAR_HAND.z) / 2 }, BOOM_FRONT_HAND, { rear: BOOM_REAR_HAND });
 export const B10_BOOM_RIGS: Record<'old' | 'overhead', BoomRig> = {
   old: { side: OLD_POSES.side, top: OLD_POSES.top, front: GRIP, rear: alongPole(GRIP, OLD_STUB.b, 420), pole: OLD_STUB, rearArm: 'R' },
-  overhead: { side: OVER_POSES.side, top: OVER_POSES.top, front: BOOM_FRONT_HAND, rear: BOOM_REAR_HAND, pole: { a: BOOM_TAIL, b: BOOM_POLE_END }, rearArm: 'R', elbows: 'beside' },
+  overhead: { side: OVER_POSES.side, top: OVER_POSES.top, front: BOOM_FRONT_HAND, rear: BOOM_REAR_HAND, pole: { a: BOOM_TAIL, b: BOOM_POLE_END }, rearArm: 'R', elbows: 'beside', ruledUnderhand: B10_UNDERHAND },
 };
 export const B10_OPERATOR_WHO = castFor('operator.boomB10');
 const RIG: BoomRig =
   B10_BOOM_HOLD === 'overhead'
-    ? { side: OPERATOR_POSES.side, top: OPERATOR_POSES.top, front: BOOM_FRONT_HAND, rear: BOOM_REAR_HAND, pole: { a: BOOM_TAIL, b: BOOM_POLE_END }, rearArm: B10_REAR_ARM, elbows: 'beside' }
+    ? { side: OPERATOR_POSES.side, top: OPERATOR_POSES.top, front: BOOM_FRONT_HAND, rear: BOOM_REAR_HAND, pole: { a: BOOM_TAIL, b: BOOM_POLE_END }, rearArm: B10_REAR_ARM, elbows: 'beside', ruledUnderhand: B10_UNDERHAND }
     : { side: OPERATOR_POSES.side, top: OPERATOR_POSES.top, front: GRIP, rear: alongPole(GRIP, POLE_STUB.b, 420), pole: POLE_STUB, rearArm: B10_REAR_ARM };
 
 /**
@@ -121,7 +124,7 @@ function liveRig(m: HeldMicNow): BoomRig | null {
     const poses = operatorPoses(feet, front, { rear: GRIP });
     // (FrontBoom3: ONE straight pole from the mic's tail through both fists to its end — the engine's own pole lies
     // on the same line from the tail to the grip)
-    out = { side: poses.side, top: poses.top, front, rear: GRIP, pole: { a: tail, b: at(110) }, rearArm: B10_REAR_ARM, elbows: 'beside', ...(k > 110 ? { sideRearFar: true } : {}) };
+    out = { side: poses.side, top: poses.top, front, rear: GRIP, pole: { a: tail, b: at(110) }, rearArm: B10_REAR_ARM, elbows: 'beside', ruledUnderhand: B10_UNDERHAND, ...(k > 110 ? { sideRearFar: true } : {}) };
     break;
   }
   if (liveCache.size > 400) liveCache.clear();
@@ -136,21 +139,25 @@ function liveRig(m: HeldMicNow): BoomRig | null {
  * flicker at the edge. Decided ONCE per rig (every layer that draws that rig — the operator, her fists over the
  * engine's pole — gets the same hold, so they draw the same hands).
  */
-let lastHold: SideDrawing[] | undefined;
-const holdCache = new WeakMap<BoomRig, { h: { side: SideDrawing[] } | undefined }>();
-function holdFor(rig: BoomRig): { side: SideDrawing[] } | undefined {
+// (2026-11-25) the hands' ROLL too (underhand or not, BoomV2 OVERHEAD_UNDERHAND): kept through the drag the same way —
+// decided once per rig with the roll each hand carried last, the same hold for every layer and view
+type B10Hold = { side: SideDrawing[]; roll: boolean[] };
+let lastHold: B10Hold | undefined;
+const holdCache = new WeakMap<BoomRig, { h: B10Hold | undefined }>();
+function holdFor(rig: BoomRig): B10Hold | undefined {
   let e = holdCache.get(rig);
   if (!e) {
-    const h = lastHold ? { side: lastHold } : undefined;
-    lastHold = sideDrawings(boomPlans(rig, WHO.operator, 'side', false, h));
+    const h = lastHold;
+    const B = boomPlans(rig, WHO.operator, 'side', false, h);
+    lastHold = { side: sideDrawings(B), roll: sideRolls(B) };
     e = { h };
     holdCache.set(rig, e);
   }
   return e.h;
 }
 /** The operator's rig now: the dragged boom's line (the engine's store), else the starting setup's; `live` when
- *  the engine draws the pole too; `hold` the side hands' drawings kept through the drag. */
-function useB10Rig(): { rig: BoomRig; live: boolean; hold?: { side: SideDrawing[] } } {
+ *  the engine draws the pole too; `hold` the side hands' drawings and rolls kept through the drag. */
+function useB10Rig(): { rig: BoomRig; live: boolean; hold?: B10Hold } {
   const mics = useHeldMicsNow();
   const boom = mics?.find((m) => Math.hypot(m.grip.x - GRIP.x, m.grip.y - GRIP.y, m.grip.z - GRIP.z) < 2 && (m.len ?? 0) > 0);
   if (!boom || B10_BOOM_HOLD !== 'overhead') return { rig: RIG, live: !!boom };

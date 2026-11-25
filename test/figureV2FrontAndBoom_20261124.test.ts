@@ -441,9 +441,9 @@ describe('figure V2 — the boom operator from the side: the approved pole hands
     assert.deepEqual(by('b04'), ['back', 'back']);
     assert.deepEqual(by('b11'), ['palm', 'palm']);
   });
-  const END_KINDS = ['end', 'endBack', 'endLittle'] as const;
-  const PAINTER: Record<string, string | undefined> = { end: 'poleEnd', endBack: 'poleEndBack', endLittle: 'poleEndLittle', back: 'poleBack', palm: 'poleFront', old: undefined };
-  it('one look per HAND (2026-11-24): each hand an approved drawing (end-on ×3, back, palm) or its old hand saying why — never a blend', () => {
+  const END_KINDS = ['end', 'endBack', 'endLittle', 'endLittleBack', 'endUnder'] as const;
+  const PAINTER: Record<string, string | undefined> = { end: 'poleEnd', endBack: 'poleEndBack', endLittle: 'poleEndLittle', endLittleBack: 'poleEndLittleBack', endUnder: 'poleEndUnder', back: 'poleBack', palm: 'poleFront', old: undefined };
+  it('one look per HAND (2026-11-24): each hand an approved drawing (end-on ×4, back, palm) or its old hand saying why — never a blend', () => {
     for (const { key, B } of plans)
       for (const a of B.arms) {
         const f = a.hand.sideFace;
@@ -451,28 +451,28 @@ describe('figure V2 — the boom operator from the side: the approved pole hands
         assert.equal(a.hand.painter, PAINTER[f.drawing], `${key} ${a.hand.arm.side}: painter`);
         if (f.drawing === 'old') assert.ok(!f.fits && !!f.why, `${key} ${a.hand.arm.side}: says why`);
         // (exactly one placement: the painter's own)
-        const placed = ['poleFront', 'poleBack', 'poleEnd', 'poleEndBack', 'poleEndLittle'].filter((k) => !!a.hand[k]);
+        const placed = ['poleFront', 'poleBack', 'poleEnd', 'poleEndBack', 'poleEndLittle', 'poleEndLittleBack', 'poleEndUnder'].filter((k) => !!a.hand[k]);
         assert.ok(f.drawing === 'old' ? placed.length === 0 : placed.length === 1 && placed[0] === a.hand.painter, `${key} ${a.hand.arm.side}: ${placed}`);
       }
     // (what each rig carries now, hand by hand, L then R — the numbers behind each old hand are in its `why`)
     const by = (k: string) => BV.sideDrawings(plans.find((p) => p.key === k)!.B);
     assert.deepEqual(by('b04'), ['back', 'endBack'], 'B04 close: the far right hand end-on from the thumb end, toward the back of the hand');
-    assert.deepEqual(by('low'), ['old', 'endBack'], 'B04 held low: the left seen from its little-finger end tilted toward its back (no drawing of that view)');
+    assert.deepEqual(by('low'), ['endLittleBack', 'endBack'], 'B04 held low: the left end-on from its little-finger end, toward its back (poleHandEndLittleBack, approved 2026-11-25)');
     assert.deepEqual(by('f09'), ['back', 'endBack']);
-    assert.deepEqual(by('b10'), ['old', 'end'], 'B10 overhead: the far right hand end-on; the near left from its little-finger end, tilted toward its back');
+    assert.deepEqual(by('b10'), ['endUnder', 'end'], 'B10 overhead: the far right hand end-on; the near left underhand, cradling the pole from below (poleHandEndUnder)');
     assert.deepEqual(by('b11'), ['palm', 'palm']);
-    assert.deepEqual(by('b10live0'), ['old', 'end']);
+    assert.deepEqual(by('b10live0'), ['endUnder', 'end']);
     assert.deepEqual(by('b10live1'), ['palm', 'palm']);
-    assert.deepEqual(by('b10live2'), ['back', 'end']);
+    assert.deepEqual(by('b10live2'), ['palm', 'end'], 'B10 raised: the left (underhand) on the palm-side drawing');
   });
-  it('the three end-on drawings only where the camera sees that view: turned past 45° from flat, within 45° of the pole at THAT end, the pole leaning its way', () => {
+  it('the four end-on drawings only where the camera sees that view: turned past 45° from flat, within 45° of the pole at THAT end, the pole leaning its way', () => {
     let count = 0;
     for (const { key, B } of plans)
       for (const a of B.arms) {
         const f = a.hand.sideFace;
         const tag = `${key} ${a.hand.arm.side}`;
         // (every end-on drawing tried says how it fares: its forearm's lean on the page, or why it was not tried)
-        assert.equal(f.tried.length, 3, `${tag}: three tried`);
+        assert.equal(f.tried.length, 5, `${tag}: five tried`);
         if (!END_KINDS.includes(f.drawing)) continue;
         count++;
         const A = BV.END_ART[f.drawing];
@@ -521,15 +521,20 @@ describe('figure V2 — the boom operator from the side: the approved pole hands
     const f1 = hand('b10live1', 'L');
     assert.equal(f1.drawing, 'palm');
     assert.ok(Math.abs(little(f1).lean - 29) < 1.5 && /elbow/.test(little(f1).why ?? ''), little(f1).why);
-    // the two hands still on their old drawing, with the numbers: B04 held low left (little-finger drawing 164° off; the
-    // flat one would need a 643 mm upper arm) and B10 overhead left (54° off, past the 40° allowed; flat: 747 mm)
-    for (const [k, lean, mm] of [['low', 164, 643], ['b10', 54, 747]] as const) {
-      const f = hand(k, 'L');
-      assert.equal(f.drawing, 'old', k);
-      assert.ok(Math.abs(little(f).lean - lean) < 1.5, `${k}: ${little(f).lean}`);
-      assert.match(f.why, new RegExp(`${mm} mm`));
-    }
+    // B04 held low left (2026-11-25): the little-finger drawing toward the BACK (poleHandEndLittleBack, approved), its
+    // forearm within 1.5° of the arm; the palm-side little-finger drawing would be 164° off
+    const lo = hand('low', 'L');
+    assert.equal(lo.drawing, 'endLittleBack');
+    assert.ok(Math.abs(little(lo).lean - 164) < 1.5);
+    assert.ok(lo.tried.find((t: { drawing: string }) => t.drawing === 'endLittleBack').lean < 1.5);
+    // B10 overhead left, UNDERHAND (the camera at its THUMB end): poleHandEnd's forearm 36° off (inside the 40°) but its
+    // straight wrist needs a 475 mm upper arm; poleHandEndBack 144° off — so the underhand drawing (poleHandEndUnder)
+    const b = hand('b10', 'L');
+    assert.equal(b.drawing, 'endUnder');
+    const end = b.tried.find((t: { drawing: string }) => t.drawing === 'end');
+    assert.ok(Math.abs(end.lean - 36) < 1.5 && /475 mm/.test(end.why), end.why);
     assert.equal(BV.SIDE_END_LEAN_MAX, 40, 'the guard is not loosened');
+    assert.equal(BV.SIDE_UPPER_SLACK, 1);
   });
   it('"pole within the hand": each authored hand’s pole axis lies on the rig’s pole (≤ 1°), its middle on the fist, the wrist toward the elbow', () => {
     let count = 0;
@@ -569,7 +574,7 @@ describe('figure V2 — the boom operator from the side: the approved pole hands
         const end = END_KINDS.includes(kind);
         if (!authored(a.hand) && !end) continue;
         const A = end ? BV.END_ART[kind] : null;
-        const at = a.hand.poleBack ?? a.hand.poleFront ?? a.hand.poleEnd ?? a.hand.poleEndBack ?? a.hand.poleEndLittle;
+        const at = a.hand.poleBack ?? a.hand.poleFront ?? a.hand.poleEnd ?? a.hand.poleEndBack ?? a.hand.poleEndLittle ?? a.hand.poleEndLittleBack ?? a.hand.poleEndUnder;
         const fore = { u: a.arm.wrist.u - a.arm.elbow.u, v: a.arm.wrist.v - a.arm.elbow.v };
         const toPage = (A ? A.toPage : a.hand.painter === 'poleBack' ? PBm.poleHandBackToPage : PFm.poleHandToPage)({ ...at, s: 1 });
         // (the drawing's own forearm line: the flat drawings' −y; each end-on drawing's own forearm direction)
@@ -612,7 +617,7 @@ describe('figure V2 — the boom operator from the side: the approved pole hands
     // (the two new end-on drawings through their own exports: the back-tilted one's forearm, the little-finger one's turn)
     assert.deepEqual(BV.END_ART.endBack.fore, PEBm.POLE_END_BACK_FORE);
     assert.ok(Math.abs(Math.atan2(BV.END_ART.endLittle.fore.v, BV.END_ART.endLittle.fore.u) - (Math.PI + PELm.END_LITTLE_TURN)) < 1e-9);
-    assert.deepEqual(BV.END_ORDER, ['end', 'endBack', 'endLittle']);
+    assert.deepEqual(BV.END_ORDER, ['end', 'endBack', 'endLittle', 'endLittleBack', 'endUnder']);
     assert.equal(BV.SIDE_UPPER_SLACK, 1);
   });
   it('a hand’s own hole stays a hole: the hands’ outlines are joined as a true union, so the scene’s pole shows through the ring of skin round it', () => {
@@ -637,7 +642,10 @@ describe('figure V2 — the boom operator from above: the approved top hand (Boo
         else assert.ok(a.hand.painter === undefined && !a.hand.topFace.fits && !!a.hand.topFace.why, `${key} ${a.hand.arm.side}`);
       }
     const by = (k: string) => plans.find((p) => p.key === k)!.B.arms.map((a: { hand: { painter?: string } }) => a.hand.painter ?? 'old');
-    for (const k of ['b04', 'b10', 'b11', 'b10live0', 'b10live2']) assert.deepEqual(by(k), ['poleTop', 'poleTop'], k);
+    for (const k of ['b04', 'b11']) assert.deepEqual(by(k), ['poleTop', 'poleTop'], k);
+    // (2026-11-25) B10's left hand underhand: the top drawing's thumb is on the other side of that fist — its old hand
+    // from above (a drawing is owed); the right hand as before
+    for (const k of ['b10', 'b10live0', 'b10live2']) assert.deepEqual(by(k), ['old', 'poleTop'], k);
     // (B04 held low: the palms are up — the drawing shows the backs of the fingers; F09: the left's upper arm would be 404 mm)
     assert.deepEqual(by('low'), ['old', 'old']);
     assert.deepEqual(by('f09'), ['old', 'poleTop']);
@@ -672,7 +680,7 @@ describe('figure V2 — the boom operator from above: the approved top hand (Boo
         assert.ok(Math.hypot(mouth.u - cuff.u, mouth.v - cuff.v) < 12, `${tag}: the sleeve's mouth ${Math.hypot(mouth.u - cuff.u, mouth.v - cuff.v).toFixed(1)} mm from the cuff`);
         assert.ok(Math.hypot(a.arm.elbow.u - a.arm.shoulder.u, a.arm.elbow.v - a.arm.shoulder.v) <= BG.BOOM_ARM.upper + 0.5, `${tag}: upper arm`);
       }
-    assert.ok(count >= 10, `${count} top hands`);
+    assert.ok(count >= 8, `${count} top hands`);
   });
   it('a hand is never cut by the shoulder line’s cut (B11 from above: the left hand’s fingers were cut off along a straight line)', () => {
     const src = read(`${FV}/BoomV2.tsx`);
@@ -713,7 +721,7 @@ describe('figure V2 — B10: the fists painted again over the engine’s pole, s
     for (let e = 20; e <= 80; e += 2) path.push({ d: 800, e });
     for (let d = 1000; d >= 450; d -= 10) path.push({ d, e: 45 });
     for (let d = 450; d <= 1000; d += 10) path.push({ d, e: 45 });
-    let hold: string[] | undefined;
+    let hold: { side: string[]; roll: boolean[] } | undefined;
     const seq: string[][] = [];
     for (const p of path) {
       const r = (p.e * Math.PI) / 180;
@@ -721,13 +729,141 @@ describe('figure V2 — B10: the fists painted again over the engine’s pole, s
       const l = Math.hypot(front.x, front.y);
       const rig = FSm.b10LiveRig(front, { x: -front.x / l, y: -front.y / l, z: 0 });
       if (!rig) continue;
-      hold = BV.sideDrawings(BV.boomPlans(rig, who, 'side', false, hold ? { side: hold } : undefined));
-      seq.push(hold);
+      const B = BV.boomPlans(rig, who, 'side', false, hold);
+      hold = { side: BV.sideDrawings(B), roll: BV.sideRolls(B) };
+      // (the drawing and the roll together: neither may flicker)
+      seq.push(hold.side.map((s: string, i: number) => `${s}${hold!.roll[i] ? ':under' : ''}`));
     }
     assert.ok(seq.length > 100, `${seq.length} positions`);
     // (a flicker: A → B → A within a few steps)
     for (let h = 0; h < 2; h++)
       for (let i = 2; i < seq.length; i++) assert.ok(!(seq[i][h] === seq[i - 2][h] && seq[i - 1][h] !== seq[i][h]), `hand ${h} flickers at ${i}: ${seq[i - 2][h]} → ${seq[i - 1][h]} → ${seq[i][h]}`);
+  });
+  it('the roll is held the same way in both layers (the operator and her fists over the engine’s pole: one hold)', () => {
+    const scene = read('src/screens/lab/miking/lessons/b10Sideline/scene.tsx');
+    assert.match(scene, /lastHold = \{ side: sideDrawings\(B\), roll: sideRolls\(B\) \};/);
+    assert.match(scene, /const B10_UNDERHAND: readonly \('L' \| 'R'\)\[\] = \['L'\];/);
+    assert.equal((scene.match(/ruledUnderhand: B10_UNDERHAND/g) ?? []).length, 3, 'the start rig, the lesson rig and every dragged rig');
+  });
+});
+
+/* ── 2026-11-25: the UNDERHAND overhead hold (owner on B10 overhead, left hand: "it curls ontop of the pole and not
+   cradeling it from below") ── */
+
+describe('figure V2 — the underhand overhead hold: the ruled hand supports the pole from below; the others by switch', () => {
+  const rigs = FSm.SIDE_RIGS as { key: string; rig: { front: unknown; rear: unknown; pole: { a: { x: number; y: number; z: number }; b: { x: number; y: number; z: number } } }; who: unknown }[];
+  const rig = (k: string) => rigs.find((r) => r.key === k)!;
+  const arm = (k: string, side: 'L' | 'R', mode?: string) => BV.boomPlans(rig(k).rig, rig(k).who, 'side', false, undefined, mode).arms.find((a: { hand: { arm: { side: string } } }) => a.hand.arm.side === side);
+  // (2026-11-25) the approved underhand hand (poleHandEndUnder) on B10's ruled hand: the static map of the drag grid,
+  // each pose's drawing (the mic d mm out, e° up; one fresh choice per pose, no hold)
+  const ZONE: Record<string, string> = {};
+  const who10 = rig('b10').who;
+  for (let d = 600; d <= 1000; d += 50)
+    for (let e = 20; e <= 60; e += 5) {
+      const r = (e * Math.PI) / 180;
+      const front = { x: d * Math.cos(r), y: -d * Math.sin(r), z: 0 };
+      const l = Math.hypot(front.x, front.y);
+      const rg = FSm.b10LiveRig(front, { x: -front.x / l, y: -front.y / l, z: 0 });
+      if (rg) ZONE[`${d}/${e}`] = BV.boomPlans(rg, who10, 'side').arms.find((x: { hand: { arm: { side: string } } }) => x.hand.arm.side === 'L').hand.sideFace.drawing;
+    }
+  it('B10 overhead LEFT (underhand) at the start pose: poleHandEndUnder, mirrored, its forearm within 1.5° of the arm, the real near stub', () => {
+    for (const k of ['b10', 'b10live0']) {
+      const a = arm(k, 'L');
+      assert.equal(a.hand.painter, 'poleEndUnder', k);
+      const at = a.hand.poleEndUnder;
+      assert.equal(at.mirror, true);
+      assert.equal(at.near, 70, 'the pole ends 70 mm past the fist (B10’s butt)');
+      const t = a.hand.sideFace.tried.find((x: { drawing: string }) => x.drawing === 'endUnder');
+      assert.ok(t.fits && t.lean < 1.5, `${t.lean}`);
+      assert.ok(Math.hypot(a.arm.elbow.u - a.arm.shoulder.u, a.arm.elbow.v - a.arm.shoulder.v) <= BG.BOOM_ARM.upper + 0.5);
+    }
+    const src = read(`${FV}/BoomV2.tsx`);
+    assert.match(src, /<PoleHandEndUnder x=\{pu\.x\} y=\{pu\.y\} s=\{1\} rot=\{pu\.rot\} mirror=\{pu\.mirror\} sleeve=\{false\} poleLook="boom" ownScale=\{false\} pole=\{\[-70, pu\.near\]\} \/>/);
+    // (only for an underhand hand: every overhand hand is refused it)
+    for (const r of rigs) for (const a of BV.boomPlans(r.rig, r.who, 'side').arms) if (!a.hand.arm.under) assert.notEqual(a.hand.sideFace.drawing, 'endUnder', r.key);
+  });
+  it('its zone over the drag grid (the guards as they are): where it is placed, and what shows where it is not', () => {
+    const at = (k: string) => ZONE[k];
+    // placed: the mic 850 mm out at 30–45° up, 900 mm at 20–50°, 950 mm at 30–50°, 1000 mm at 25° and 35–55°
+    for (const k of ['850/30', '850/45', '900/20', '900/45', '900/50', '950/30', '950/50', '1000/25', '1000/35', '1000/55']) assert.equal(at(k), 'endUnder', k);
+    // not placed — the straight wrist would need a longer upper arm (750–800 mm out; 850 mm at 25° and 50°): the old fist
+    for (const k of ['750/30', '750/45', '800/30', '800/45', '800/50', '850/25', '850/50']) assert.equal(at(k), 'old', k);
+    // the forearm more than 40° off (the mic close in and low): the old fist
+    for (const k of ['600/20', '650/30', '700/25', '750/20', '800/20']) assert.equal(at(k), 'old', k);
+    // an existing approved drawing that fits comes first (poleHandEnd); the camera at the little-finger end: palm or endLittle
+    for (const k of ['950/20', '950/25', '1000/30']) assert.equal(at(k), 'end', k);
+    for (const k of ['600/45', '650/50', '700/60']) assert.equal(at(k), 'palm', k);
+    for (const k of ['700/50', '800/55', '1000/60']) assert.equal(at(k), 'endLittle', k);
+  });
+  it('from above and from the front, the underhand hand (findings 2026-11-25)', () => {
+    const T = BV.boomPlans(rig('b10').rig, who10, 'top').arms.find((a: { hand: { arm: { side: string } } }) => a.hand.arm.side === 'L');
+    assert.equal(T.hand.painter, undefined, 'from above: no approved drawing of that view yet (the old hand)');
+    assert.match(T.hand.topFace.why, /thumb is on the other side/);
+    const Fr = BV.boomPlans(rig('b10').rig, who10, 'front').arms.find((a: { hand: { arm: { side: string } } }) => a.hand.arm.side === 'L');
+    assert.equal(Fr.hand.painter, 'poleBack', 'from the front: its back toward the camera — the approved back-of-hand drawing');
+    assert.deepEqual(Fr.hand.frontFace, { drawing: 'back' });
+    // (the other overhead hands from the front: the palm-side picture as before)
+    const R = BV.boomPlans(rig('b10').rig, who10, 'front').arms.find((a: { hand: { arm: { side: string } } }) => a.hand.arm.side === 'R');
+    assert.equal(R.hand.painter, 'poleFront');
+  });
+  it('one switch, default the ruled hand only', () => {
+    assert.equal(BV.OVERHEAD_UNDERHAND, 'ruledHandOnly');
+    assert.match(read(`${FV}/BoomV2.tsx`), /export const OVERHEAD_UNDERHAND: 'ruledHandOnly' \| 'allOverhead' = 'ruledHandOnly';/);
+  });
+  it('B10 overhead, LEFT hand (the ruling): palm up under the pole (palm·up > 0.3, was −0.68), the wrist below the pole’s axis', () => {
+    for (const k of ['b10', 'b10live0']) {
+      const before = arm(k, 'L', 'none');
+      const now = arm(k, 'L');
+      assert.equal(now.hand.arm.under, true, k);
+      assert.ok(before.hand.sideFace.palmUp < -0.6, `${k} before ${before.hand.sideFace.palmUp}`);
+      assert.ok(now.hand.sideFace.palmUp > 0.3, `${k} now ${now.hand.sideFace.palmUp}`);
+      // the wrist below the pole's axis (frame V: y down)
+      const { a: pa, b: pb } = rig(k).rig.pole;
+      const L = Math.hypot(pb.x - pa.x, pb.y - pa.y, pb.z - pa.z);
+      const u = { x: (pb.x - pa.x) / L, y: (pb.y - pa.y) / L, z: (pb.z - pa.z) / L };
+      const w = now.hand.wrist3;
+      const t = (w.x - pa.x) * u.x + (w.y - pa.y) * u.y + (w.z - pa.z) * u.z;
+      assert.ok(w.y - (pa.y + u.y * t) > 20, `${k}: the wrist ${(w.y - (pa.y + u.y * t)).toFixed(0)} mm below the pole`);
+    }
+  });
+  it('only the roll changes: every grip point, the pole and the arm’s joints exactly as they were', () => {
+    for (const r of rigs)
+      for (const view of ['side', 'top', 'front'] as const) {
+        const a0 = BV.boomPlans(r.rig, r.who, view, false, undefined, 'none');
+        const a1 = BV.boomPlans(r.rig, r.who, view, false, undefined, 'allOverhead');
+        assert.deepEqual(a1.pole, a0.pole, r.key);
+        a0.arms.forEach((x: { hand: { arm: { fist: unknown; elbow: unknown; shoulder: unknown } } }, i: number) => {
+          for (const j of ['fist', 'elbow', 'shoulder'] as const) assert.deepEqual(a1.arms[i].hand.arm[j], x.hand.arm[j], `${r.key} ${view} ${j}`);
+        });
+      }
+  });
+  it('the other overhead hands are unchanged by default; the switch turns each palm up (the owner to choose: /boomsideunder)', () => {
+    for (const [k, side] of [['b10', 'R'], ['b10live2', 'R'], ['b04', 'L'], ['b04', 'R'], ['f09', 'L'], ['f09', 'R']] as const) {
+      const now = arm(k, side);
+      const none = arm(k, side, 'none');
+      const all = arm(k, side, 'allOverhead');
+      assert.equal(!!now.hand.arm.under, false, `${k} ${side}`);
+      assert.equal(now.hand.sideFace.palmUp, none.hand.sideFace.palmUp, `${k} ${side}: unchanged`);
+      assert.equal(all.hand.arm.under, true, `${k} ${side}`);
+      assert.ok(all.hand.sideFace.palmUp >= 0 && Math.abs(Math.abs(all.hand.sideFace.palmUp) - Math.abs(none.hand.sideFace.palmUp)) < 1e-9, `${k} ${side}`);
+    }
+    // (B10 raised over the head, left: the ruled hand, underhand by default there too — no flip while dragging)
+    assert.equal(arm('b10live2', 'L').hand.arm.under, true);
+  });
+  it('B04 held low and B11 never take the underhand roll (not overhead holds)', () => {
+    for (const k of ['low', 'b11']) for (const side of ['L', 'R'] as const) assert.equal(!!arm(k, side, 'allOverhead').hand.arm.under, false, `${k} ${side}`);
+  });
+  it('B04 held low, LEFT: poleHandEndLittleBack (approved), mirrored, its near pole the real stretch toward the camera', () => {
+    const a = arm('low', 'L');
+    assert.equal(a.hand.painter, 'poleEndLittleBack');
+    const at = a.hand.poleEndLittleBack;
+    assert.equal(at.mirror, true);
+    assert.ok(at.near >= 0 && at.near <= 240, `${at.near}`);
+    const src = read(`${FV}/BoomV2.tsx`);
+    assert.match(src, /<PoleHandEndLittleBack x=\{plb\.x\} y=\{plb\.y\} s=\{1\} rot=\{plb\.rot\} mirror=\{plb\.mirror\} sleeve=\{false\} poleLook="boom" ownScale=\{false\} pole=\{\[-70, plb\.near\]\} \/>/);
+    // (poleHandEndLittleFore is not approved: never chosen)
+    assert.ok(!/from '\.\/poleHandEndLittleFore'/.test(src));
+    assert.deepEqual(BV.END_ORDER, ['end', 'endBack', 'endLittle', 'endLittleBack', 'endUnder']);
   });
 });
 
@@ -774,8 +910,8 @@ describe('figure V2 — either arm on either hand (B10 overhead, 2026-11-24)', (
   });
   it('the B10 overhead rig: the arms are assigned so neither crosses the face, the elbows beside the head', () => {
     const src = read('src/screens/lab/miking/lessons/b10Sideline/scene.tsx');
-    assert.match(src, /overhead: \{.*rearArm: 'R', elbows: 'beside' \}/);
+    assert.match(src, /overhead: \{.*rearArm: 'R', elbows: 'beside', ruledUnderhand: B10_UNDERHAND \}/);
     assert.match(src, /const B10_REAR_ARM: 'L' \| 'R' = 'R';/);
-    assert.match(src, /rearArm: B10_REAR_ARM, elbows: 'beside' \}/);
+    assert.match(src, /rearArm: B10_REAR_ARM, elbows: 'beside', ruledUnderhand: B10_UNDERHAND \}/);
   });
 });

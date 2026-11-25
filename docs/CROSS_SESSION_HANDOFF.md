@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-25 09:26 · ccode · b374f01e
+changed: Delay Alignment: the pulse balls and rings follow each speaker's DELAY (owner 2026-11-25) [MD:D83]
+affects other side: nothing on the server. Wave Physics lab only: the pulse visual now shows each speaker's delay (Delay Alignment, Interference, Beam Steering, Cardioid Sub, Room Builder).
+needs: nothing from A. Not published; rides OTA 16 on the owner's word; iPhone not checked [MD:D83].
+
+
 ### 2026-11-24 23:43 · ccode · 6e55970d
 changed: Circle menu picks (owner 2026-11-24): subtitle lines on Audio Tools, Settings and Community; the word STUDY is orange everywhere [MD:D73]
 affects other side: nothing on the server. Store screenshots: three header lines changed and Study text is orange (Comp A refreshes screenshots at the 1.0.1 submission anyway).

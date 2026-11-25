@@ -27,12 +27,12 @@ import { B10_HELD } from '../screens/lab/miking/lessons/b10Sideline/held';
 import { HeldStatic, heldMicAt, type HeldMicNow } from '../screens/lab/miking/lessons/shared/figureV2/heldLive';
 import { FigureLook } from '../screens/lab/miking/lessons/shared/figureV2/look';
 import { HeldStudy, heldGeo, type HeldCaseId } from './heldStudy';
-import { APPROVED_PALMS, POLE_SIDE_HANDS, SIDE_TURN_MAX } from '../screens/lab/miking/lessons/shared/figureV2/BoomV2';
+import { APPROVED_PALMS, OVERHEAD_UNDERHAND, POLE_SIDE_HANDS, SIDE_TURN_MAX } from '../screens/lab/miking/lessons/shared/figureV2/BoomV2';
 import { OPERATOR_POSES as B11_POSES } from '../screens/lab/miking/lessons/b11Athletes/scene';
 import { GRIP as B11_GRIP } from '../screens/lab/miking/lessons/b11Athletes/geometry';
 import { FLOOR as B10_FLOOR } from '../screens/lab/miking/lessons/b10Sideline/geometry';
 import { operatorPoses as b10OperatorPoses } from '../screens/lab/miking/lessons/shared/field/LocationArt';
-import { alongPole } from '../screens/lab/miking/lessons/shared/figureV2/boomGrip';
+import { alongPole, boomHandFace } from '../screens/lab/miking/lessons/shared/figureV2/boomGrip';
 
 const STAGE = '#14171d';
 const INK = '#d7dbe3';
@@ -317,7 +317,7 @@ function B10LiveStudy({ width, only }: { width: number; only: string }) {
 
 const B11_STUB = { a: B11_GRIP, b: { x: B11_GRIP.x - 380, y: B11_GRIP.y + 420, z: B11_GRIP.z - 300 } };
 /** B11's perimeter boom, as b11Athletes/scene builds its rig. */
-export const RIG_B11: BoomRig = { side: B11_POSES.side, top: B11_POSES.top, front: B11_GRIP, rear: alongPole(B11_GRIP, B11_STUB.b, 420), pole: B11_STUB, rearArm: 'L' };
+export const RIG_B11: BoomRig = { side: B11_POSES.side, top: B11_POSES.top, front: B11_GRIP, rear: alongPole(B11_GRIP, B11_STUB.b, 420), pole: B11_STUB, rearArm: 'L', notOverhead: true };
 /**
  * (dev) B10's live rig for a dragged boom mic, rebuilt as b10Sideline/scene's liveRig builds it (that function is the
  * lesson's own and not exported): the pole from the mic's tail through the grip, the front hand 42 cm toward the mic,
@@ -352,7 +352,7 @@ export function b10LiveRig(front: { x: number; y: number; z: number }, aim: { x:
     const far = (p: { x: number; y: number; z: number }) => Math.hypot(p.x - neck.x, p.y - neck.y, p.z - neck.z) > 760;
     if (far(fr) || far(G)) continue;
     const poses = b10OperatorPoses(feet, fr, { rear: G });
-    return { side: poses.side, top: poses.top, front: fr, rear: G, pole: { a: tail, b: end }, rearArm: 'R', elbows: 'beside', ...(k > 110 ? { sideRearFar: true } : {}) };
+    return { side: poses.side, top: poses.top, front: fr, rear: G, pole: { a: tail, b: end }, rearArm: 'R', elbows: 'beside', ruledUnderhand: ['L'], ...(k > 110 ? { sideRearFar: true } : {}) };
   }
   return null;
 }
@@ -375,16 +375,60 @@ function sideWords(rig: BoomRig, who: typeof OPERATOR): string {
       const side = a.hand.arm.side === 'L' ? 'left' : 'right';
       if (!f) return `${side}: old hand`;
       const end = (f.thumbEnd ?? 0) >= 0 ? `the camera ${Math.round((Math.acos(Math.min(1, f.thumbEnd ?? 0)) * 180) / Math.PI)}° off the pole at the THUMB end` : `the camera ${Math.round((Math.acos(Math.min(1, -(f.thumbEnd ?? 0))) * 180) / Math.PI)}° off the pole at the LITTLE-FINGER end`;
-      const art = f.drawing === 'end' ? 'END-ON, thumb end, toward the palm (poleHandEnd)' : f.drawing === 'endBack' ? 'END-ON, thumb end, toward the back (poleHandEndBack)' : f.drawing === 'endLittle' ? 'END-ON, little-finger end (poleHandEndLittle)' : f.drawing === 'back' ? 'BACK of the hand (poleHandBack)' : f.drawing === 'palm' ? 'PALM side (poleHandFront)' : 'OLD HAND KEPT';
+      const art = f.drawing === 'end' ? 'END-ON, thumb end, toward the palm (poleHandEnd)' : f.drawing === 'endBack' ? 'END-ON, thumb end, toward the back (poleHandEndBack)' : f.drawing === 'endLittle' ? 'END-ON, little-finger end (poleHandEndLittle)' : f.drawing === 'endLittleBack' ? 'END-ON, little-finger end, toward the back (poleHandEndLittleBack)' : f.drawing === 'endUnder' ? 'END-ON, UNDERHAND, cradling the pole from below (poleHandEndUnder)' : f.drawing === 'back' ? 'BACK of the hand (poleHandBack)' : f.drawing === 'palm' ? 'PALM side (poleHandFront)' : 'OLD HAND KEPT';
       // (each end-on drawing tried: its forearm's lean off the arm's on the page)
       const tried = (f.tried ?? []).filter((t) => Number.isFinite(t.lean)).map((t) => `${t.drawing} forearm ${Math.round(t.lean)}° off${t.fits ? '' : ' ✗'}`).join(', ');
-      return `${a.far ? 'far' : 'near'} ${side} hand: ${art}${a.hand.arm.side === 'L' && f.drawing !== 'old' ? ', mirrored' : ''}; the real hand turned ${f.turn.toFixed(0)}° from the flat drawings (flat forearm ${Math.round(f.flatLean ?? 0)}° off), ${end}${tried ? ` [${tried}]` : ''}${f.turn > SIDE_TURN_MAX && (f.drawing === 'back' || f.drawing === 'palm') ? ' (PAST 30°: the nearer flat drawing)' : ''}; its forearm ${f.foreSquare.toFixed(0)}° off square to the pole${f.drawing === 'old' ? ` — why: ${f.why}` : ''}`;
+      return `${a.far ? 'far' : 'near'} ${side} hand${f.under ? ' (UNDERHAND)' : ''}: ${art}${a.hand.arm.side === 'L' && f.drawing !== 'old' ? ', mirrored' : ''}; palm·up ${(f.palmUp ?? 0).toFixed(2)}; the real hand turned ${f.turn.toFixed(0)}° from the flat drawings (flat forearm ${Math.round(f.flatLean ?? 0)}° off), ${end}${tried ? ` [${tried}]` : ''}${f.turn > SIDE_TURN_MAX && (f.drawing === 'back' || f.drawing === 'palm') ? ' (PAST 30°: the nearer flat drawing)' : ''}; its forearm ${f.foreSquare.toFixed(0)}° off square to the pole${f.drawing === 'old' ? ` — why: ${f.why}` : ''}`;
     })
     .join('  ·  ');
 }
 
+/** The overhead rigs whose hands the owner may switch to the underhand hold (BoomV2 OVERHEAD_UNDERHAND). */
+const UNDER_RIGS = ['b10', 'b10live2', 'b04', 'f09'];
+/**
+ * (2026-11-25, the owner to choose) EACH HAND ON AN OVERHEAD POLE, AS NOW BESIDE UNDERHAND: `boomsideunder[@pt per mm]`
+ * — for every hand in the overhead zone on B10 (start, raised), B04's close shot and F09, the side view as the lessons
+ * draw it now (OVERHEAD_UNDERHAND as set) beside the same hand supporting the pole from below ('allOverhead'), and the
+ * same two from above; each labelled with its palm·up and the drawing it carries.
+ */
+function UnderhandStudy({ width, only }: { width: number; only: string }) {
+  const ptmm = Number(only.split('@')[1]) || 2.5;
+  const z = Math.min(Math.floor((width - 40) / 2), 400);
+  const mm = z / ptmm;
+  const rows: ReactNode[] = [];
+  for (const r of SIDE_RIGS.filter((q) => UNDER_RIGS.includes(q.key))) {
+    for (const view of ['side', 'top'] as const) {
+      const now = boomPlans(r.rig, r.who, view, false, undefined, 'none');
+      const all = boomPlans(r.rig, r.who, view, false, undefined, 'allOverhead');
+      const its: PicItem[] = [];
+      now.arms.forEach((a, i) => {
+        const b = all.arms[i];
+        if (!b.hand.arm.under) return;
+        const f = now.vs.proj(a.hand.arm.fist);
+        const lab = (x: typeof a) => {
+          const s = x.hand.sideFace;
+          const p = s?.palmUp ?? boomHandFace(now.o, x.hand.arm, now.poleDir, { x: 0, y: 0, z: 1 }).palmUp;
+          return `${x.hand.arm.under ? 'UNDERHAND' : 'the hold before'} · palm·up ${p.toFixed(2)} · ${view === 'side' ? s?.drawing ?? '' : x.hand.painter === 'poleTop' ? 'poleHandTop' : `old (${x.hand.topFace?.why ?? ''})`}`;
+        };
+        const side = `${a.far ? 'far' : 'near'} ${a.hand.arm.side === 'L' ? 'left' : 'right'}`;
+        const ruled = !!(r.rig.ruledUnderhand?.includes(a.hand.arm.side) && b.hand.arm.under);
+        its.push({ key: `u${r.key}${view}${i}n`, cu: f.u, cv: f.v + 30, mmW: mm, mmH: mm, label: `${r.key} ${view} ${side}${ruled ? ' (RULED: the lesson draws the right one)' : ' (the lesson draws this one)'} · ${lab(a)}`, node: <BoomOperatorV2 view={view} rig={r.rig} who={r.who} dim={1} underhand="none" /> });
+        its.push({ key: `u${r.key}${view}${i}u`, cu: f.u, cv: f.v + 30, mmW: mm, mmH: mm, label: `${r.key} ${view} ${side} · ${lab(b)}`, node: <BoomOperatorV2 view={view} rig={r.rig} who={r.who} dim={1} underhand="allOverhead" /> });
+      });
+      if (its.length) rows.push(<Pics key={`${r.key}${view}`} w={z} per={2} level="full" items={its} />);
+    }
+  }
+  return (
+    <View>
+      <Caption title="THE OVERHEAD HANDS — AS NOW BESIDE UNDERHAND (the owner to choose)" note={`OVERHEAD_UNDERHAND = '${OVERHEAD_UNDERHAND}'. Left of each pair: the hand in the hold it had before (palm toward or over the pole); right: the same hand supporting the pole from below (palm up under the pole, fingers over its top) — the grip point, the pole and the arm unchanged. B10's left hand (the owner's ruling) is drawn underhand in the lesson; every other hand as on the left until the switch says 'allOverhead'.`} />
+      {rows}
+    </View>
+  );
+}
+
 function BoomSideStudy({ width, only }: { width: number; only: string }) {
   const w = Math.min(Math.floor((width - 40) / 2), 560);
+  if (only.startsWith('boomsideunder')) return <UnderhandStudy width={width} only={only} />;
   if (only.startsWith('boomsidez') || only.startsWith('boomtopz')) {
     // (dev) each hand close (about 2.5 pt/mm), old beside new: boomsidez[-<rig key>] from the side,
     // boomtopz[-<rig key>] from above (2026-11-24, "Boom top")
@@ -401,7 +445,7 @@ function BoomSideStudy({ width, only }: { width: number; only: string }) {
             const f = B.vs.proj(a.hand.arm.fist);
             const at = a.hand.poleBack ?? a.hand.poleFront ?? a.hand.poleTop;
             // (the window on the hand: a little toward its wrist; an end-on hand: toward its cuff)
-            const ea = a.hand.poleEnd ?? a.hand.poleEndBack ?? a.hand.poleEndLittle;
+            const ea = a.hand.poleEnd ?? a.hand.poleEndBack ?? a.hand.poleEndLittle ?? a.hand.poleEndLittleBack ?? a.hand.poleEndUnder;
             const c = at ? { u: f.u - Math.sin(at.rot) * 30, v: f.v + Math.cos(at.rot) * 30 } : ea ? (ptmm > 5 ? f : { u: (f.u * 2 + a.arm.wrist.u) / 3, v: (f.v * 2 + a.arm.wrist.v) / 3 }) : f;
             const mm = z / ptmm;
             const lab = `${a.far ? 'far' : 'near'} ${a.hand.arm.side === 'L' ? 'left' : 'right'}`;
@@ -494,7 +538,28 @@ function BoomStudy({ width, only }: { width: number; only: string }) {
   );
 }
 
+/**
+ * (2026-11-25, dev) B10 POST-EVENT OVERHEAD FROM THE FRONT — `boomfrontb10`: the left hand holds underhand, so the front
+ * camera sees its back (the approved back-of-hand drawing) — the hold before (palm side) beside the lesson's now, the
+ * whole operator at about 0.35 pt/mm, then the left hand close at about 2.5 pt/mm. (No lesson draws the front view.)
+ */
+function B10FrontStudy({ width }: { width: number }) {
+  const rig = B10_BOOM_RIGS.overhead;
+  const w = Math.min(Math.floor((width - 40) / 2), 400);
+  const B = boomPlans(rig, B10_OPERATOR_WHO, 'front');
+  const L = B.arms.find((a) => a.hand.arm.side === 'L')!;
+  const f = B.vs.proj(L.hand.arm.fist);
+  const pic = (k: string, under: 'none' | 'ruledHandOnly', c: { u: number; v: number }, mm: number, lab: string): PicItem => ({ key: k, cu: c.u, cv: c.v, mmW: mm, mmH: mm * (mm > 500 ? 1.4 : 1), label: lab, node: <BoomOperatorV2 view="front" rig={rig} who={B10_OPERATOR_WHO} dim={1} underhand={under} /> });
+  return (
+    <View>
+      <Caption title="B10 POST-EVENT OVERHEAD FROM THE FRONT — THE LEFT HAND UNDERHAND" note={`Left: the hold before (the palm-side picture). Right: the lesson's hold now — the left hand supporting the pole from below, its back toward the camera: ${L.hand.frontFace?.drawing === 'back' ? 'the approved back-of-hand drawing' : `the palm side kept (${L.hand.frontFace?.why ?? ''})`}.`} />
+      <Pics w={w} per={2} level="full" items={[pic('fw0', 'none', { u: 0, v: 300 }, 1100, 'the hold before · whole'), pic('fw1', 'ruledHandOnly', { u: 0, v: 300 }, 1100, 'now · whole'), pic('fc0', 'none', { u: f.u, v: f.v + 40 }, w / 2.5, 'the hold before · left hand'), pic('fc1', 'ruledHandOnly', { u: f.u, v: f.v + 40 }, w / 2.5, 'now · left hand')]} />
+    </View>
+  );
+}
+
 export function FrontStudy({ width, only }: { width: number; only: string }) {
+  if (only === 'boomfrontb10') return <B10FrontStudy width={width} />;
   if (only.startsWith('boom')) return <BoomStudy width={width} only={only} />;
   const lesson = 64; // ≈ 0.1 pt/mm: a standing person about 190 pt tall, as the body-worn layout shows them
   const big = Math.min(Math.floor((width - 50) / 3), 300);
