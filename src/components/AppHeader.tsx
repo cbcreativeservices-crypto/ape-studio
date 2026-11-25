@@ -28,7 +28,7 @@ export function AppHeader({
   title?: readonly [string, string];
   /** Dashboard passes this to open About/Credits (Booth 2026-07-08). */
   onLogoPress?: () => void;
-  /** Override the brand logo glyph (Dashboard uses the blue Study icon, owner
+  /** Override the brand logo glyph (Dashboard uses the Study icon, orange since owner 2026-11-24; owner
    *  2026-08-01). Defaults to the company BrandLogo. */
   logo?: ReactNode;
 }) {

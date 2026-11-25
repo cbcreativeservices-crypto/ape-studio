@@ -78,7 +78,7 @@ import { JogDial, JogOverlay } from '../../components/JogWheel';
 import { TrophyModal } from '../../components/TrophyModal';
 import { TopicAboutPanel, hasTopicAbout } from '../../components/TopicAboutPanel';
 import { useTopicTrophies, trophyForTopicName } from '../../features/profile/topicTrophies';
-import { BRAND_MAX_FONT_SCALE, colors, fonts, spacing } from '../../theme/tokens';
+import { BRAND_MAX_FONT_SCALE, colors, fonts, spacing, studyRgba } from '../../theme/tokens';
 import {
   fetchEnrollmentDashboard,
   getLastTopic,
@@ -897,7 +897,7 @@ export function DashboardScreen() {
   // The custom-list quiz length popup (owner 2026-10-19: 30 … all terms).
   const [customQuizOpen, setCustomQuizOpen] = useState(false);
   // Topic-deck ordering (owner 2026-08-01): default alphabetical; the Topic-Deck
-  // sheet (blue Study icon) lets the user engage a custom order, remove topics,
+  // sheet (the Study icon) lets the user engage a custom order, remove topics,
   // and jump to one.
   const deckPrefs = useDeckPrefs();
   const deckPrefsRef = useRef<DeckPrefs>(deckPrefs);
@@ -2062,7 +2062,7 @@ export function DashboardScreen() {
               <NavIcon icon="Home" lit />
             </Pressable>
           }
-          // The blue Study icon opens the Topic-Deck manager (owner 2026-08-01);
+          // The Study icon opens the Topic-Deck manager (owner 2026-08-01);
           // About moved to Settings.
           onLogoPress={() => setDeckOpen(true)}
           logo={
@@ -2996,7 +2996,7 @@ export function DashboardScreen() {
         onBegin={beginCustomQuiz}
       />
 
-      {/* Topic-deck manager (blue Study icon) — reorder / remove / jump / mode. */}
+      {/* Topic-deck manager (the Study icon) — reorder / remove / jump / mode. */}
       <TopicDeckSheet
         visible={deckOpen}
         onClose={() => setDeckOpen(false)}
@@ -3196,11 +3196,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(55,224,95,.1)',
   },
   myEnrollBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 0.2, color: '#37e05f' },
-  // Blue Study icon standing in for the company logo (owner 2026-08-01) — the
+  // The Study icon standing in for the company logo (owner 2026-08-01) — the
   // NavIcon Study glyph scaled up to the logo footprint.
   // Bordered so it reads as a pressable BUTTON (owner 2026-08-06) — the study
-  // headphones sit in a subtly-lit rounded key that opens the Topic Deck.
+  // glyph sits in a subtly-lit rounded key that opens the Topic Deck.
   // Sized down (owner 2026-08-06) — the 47px key crowded the header title.
+  // Frame and fill in the Study orange, no longer blue (owner 2026-11-24).
   studyLogo: {
     width: 40,
     height: 40,
@@ -3208,8 +3209,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 9,
     borderWidth: 1,
-    borderColor: 'rgba(120,155,190,0.55)',
-    backgroundColor: 'rgba(47,155,255,0.08)',
+    borderColor: studyRgba(0.45),
+    backgroundColor: studyRgba(0.08),
   },
   pilotDot: {
     position: 'absolute',

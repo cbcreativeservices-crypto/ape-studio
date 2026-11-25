@@ -1,6 +1,6 @@
 /**
  * TopicDeckSheet — the Dashboard topic-deck manager (owner 2026-08-01), opened
- * by the blue Study icon in the header. Lists every topic in the deck and lets
+ * by the Study icon in the header (orange, owner 2026-11-24). Lists every topic in the deck and lets
  * the user:
  *   • switch ordering between ALPHABETICAL (default) and CUSTOM;
  *   • in CUSTOM, move a topic toward the far-left (↑) or right (↓) of the deck;

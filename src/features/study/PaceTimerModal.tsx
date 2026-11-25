@@ -28,7 +28,9 @@ import {
 } from './paceStore';
 import { MiniFader, PresetFader } from './PresetFader';
 
-const ACCENT = colors.blue; // Study-tab accent
+// The timer's own blue clock (TimerIcon). It was named the Study-tab accent;
+// Study turned orange on owner 2026-11-24 and the timer kept its blue.
+const ACCENT = colors.blue;
 
 /** Positive, encouraging one-liner from a stopwatch record. */
 function encouragingRecord(rec: PaceRecord | undefined): string {

@@ -32,8 +32,8 @@ export const colors = {
   ringing: '#c9a6ff',
 
   // Accent hues (per-domain, from README color table)
-  orange: '#ff8a1e', // Home tab, warnings, "continue" method
-  blue: '#2f9bff', // Study tab, selected answers, flashcards
+  orange: '#ff8a1e', // STUDY (owner 2026-11-24, see STUDY_COLOR), warnings, "continue" method
+  blue: '#2f9bff', // Labs, selected answers, flashcards (Study is orange since owner 2026-11-24)
   /** THE custom list colour (owner 2026-10-15): Enrollments, Glossary, Flashcards, Study. */
   customList: '#3fd3e6',
   cyan: '#5bb0ff',
@@ -64,6 +64,21 @@ export const colors = {
   textMutedDeep: '#7a7c85',
   black: '#000000',
 } as const;
+
+/**
+ * STUDY's colour, everywhere (owner 2026-11-24: "Orange everywhere"). On
+ * 2026-11-20 Labs took the blue headphones and Study the orange card and bulb
+ * (circleMenuPlaces: study '#ff8a1e'); the icons followed at once, but Study's
+ * TEXT, button frames/fills and glows stayed blue. Everything that means STUDY
+ * (the STUDY nav label and glow, STUDY / STUDY ALL / STUDY NOW buttons, the
+ * "Study Topic" caption, the Dashboard's Study key) reads this one constant.
+ * `colors.blue` is NOT Study any more: it is Labs, selected answers, flashcards.
+ */
+export const STUDY_COLOR = colors.orange;
+/** STUDY_COLOR as an rgba() with the given alpha, for frames, fills and glows. */
+export function studyRgba(alpha: number): string {
+  return `rgba(255,138,30,${alpha})`;
+}
 
 /**
  * FIXED-GEOMETRY BRAND SURFACES FOLLOW THE OS TEXT SIZE UP TO A POINT (tester

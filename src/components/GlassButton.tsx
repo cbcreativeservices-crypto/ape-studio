@@ -10,7 +10,7 @@ import type { ReactNode } from 'react';
 import { useRef, useState } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { fonts } from '../theme/tokens';
+import { STUDY_COLOR, fonts, studyRgba } from '../theme/tokens';
 
 export type GlassTint = 'gold' | 'steel' | 'green' | 'orange' | 'blue' | 'study' | 'teal' | 'purple';
 
@@ -52,14 +52,15 @@ const TINTS: Record<
     pressedColor: '#5f7f9e',
     pressedGlow: 'rgba(91,176,255,0.25)',
   },
-  // The STUDY tab's own blue (colors.blue #2f9bff + the tab's glow) — for
-  // buttons that lead into Study, so the button and the nav icon read as one
-  // destination (owner 2026-10-16: free-topic STUDY NOW on the Home cards).
+  // The STUDY tab's own colour + the tab's glow — for buttons that lead into
+  // Study, so the button and the nav icon read as one destination (owner
+  // 2026-10-16: free-topic STUDY NOW on the Home cards). Orange since owner
+  // 2026-11-24 ("Orange everywhere"): STUDY_COLOR, no longer the blue.
   study: {
-    color: '#2f9bff',
-    glow: 'rgba(47,155,255,0.7)',
-    pressedColor: '#2a6aa8',
-    pressedGlow: 'rgba(47,155,255,0.25)',
+    color: STUDY_COLOR,
+    glow: studyRgba(0.7),
+    pressedColor: '#a85a14',
+    pressedGlow: studyRgba(0.25),
   },
   // Measurement-tools accents (Booth 2026-07-09v): waveform teal · spectrogram purple.
   teal: {

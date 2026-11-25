@@ -701,7 +701,12 @@ ${LOCAL_LOSS}`
         <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
           <PlaceArt place="set" size={26} />
         </View>
-        <Text accessibilityRole="header" style={styles.headerTitle}>SETTINGS</Text>
+        {/* Title + a small line naming what is on this screen, the Labs
+            screen's subtitle look (owner 2026-11-24). */}
+        <View style={styles.headerTitleCol}>
+          <Text accessibilityRole="header" style={styles.headerTitle}>SETTINGS</Text>
+          <Text style={styles.headerSubtitle} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>Sound · display · reminders · account</Text>
+        </View>
       </View>
 
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: menuClearance(insets.bottom) + 8 }]}>
@@ -1514,7 +1519,10 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.hairlineDim,
     backgroundColor: '#121212',
   },
+  headerTitleCol: { flexShrink: 1 },
   headerTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.6, color: colors.textPrimary },
+  // The Labs screen's subtitle (AudioLearningScreen `subtitle`), owner 2026-11-24.
+  headerSubtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
   backGlyph: { fontFamily: fonts.oswaldSemiBold, fontSize: 28, lineHeight: 28, color: colors.textSubAlt },
   // Sections are cards now, so the gap between them is tighter than the old
   // flat list needed (20 -> 10): the border does the separating.

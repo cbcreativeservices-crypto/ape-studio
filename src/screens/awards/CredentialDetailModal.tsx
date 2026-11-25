@@ -54,7 +54,7 @@ import { Image, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensio
 import { Modal } from '../../components/DimModal';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
 import { CardArt } from '../../components/CardArt';
-import { colors, fonts } from '../../theme/tokens';
+import { STUDY_COLOR, colors, fonts, studyRgba } from '../../theme/tokens';
 import { StudyGlyph } from '../../components/nav/NavIcon';
 import { credentialCopyLazy as credentialCopy } from '../../data/credentialCopyLazy';
 import { REQUIRES_LABEL } from '../../data/careerRequirement';
@@ -527,8 +527,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   progressBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, color: colors.amber },
-  /* STUDY NOW — the Study tab's own blue and its own icon, so the button looks
-     like the place it sends you. */
+  /* STUDY NOW — the Study tab's own colour and its own icon, so the button looks
+     like the place it sends you. Orange, no longer blue (owner 2026-11-24). */
   studyBtn: {
     marginTop: 8,
     flexDirection: 'row',
@@ -536,13 +536,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 9,
     borderWidth: 1.5,
-    borderColor: 'rgba(47,155,255,.7)',
-    backgroundColor: 'rgba(47,155,255,.12)',
+    borderColor: studyRgba(0.7),
+    backgroundColor: studyRgba(0.12),
     borderRadius: 9,
     paddingVertical: 11,
   },
   studyIcon: { width: 19, height: 19 },
-  studyBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, color: colors.blue },
+  studyBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1, color: STUDY_COLOR },
   /* Quieter than the other three: a useful onward door, not the main one. */
   enrollmentsBtn: {
     marginTop: 8,

@@ -48,7 +48,7 @@ import { supabase } from '../../lib/supabase';
 import { safeSessionResult } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../../features/commercial/realAccount';
 import { SUPABASE_URL } from '../../lib/env';
-import { BRAND_MAX_FONT_SCALE, colors, fonts } from '../../theme/tokens';
+import { BRAND_MAX_FONT_SCALE, STUDY_COLOR, colors, fonts } from '../../theme/tokens';
 import { StudyGlyph } from '../../components/nav/NavIcon';
 import { dotRowFit, cardDimsFor, fitCardToRow, isCompactHeader, type CardDims } from './cardDims';
 import { isTabletWindow } from '../../theme/tablet';
@@ -1356,8 +1356,9 @@ function CourseCardView({
             // eyebrow above already says FREE TOPIC, so the button should say
             // what it DOES rather than repeat the price.
             <View style={{ width: cd.btnW }}>
-              {/* Study-tab blue + the tab's own headphones, so the button and the
-                  STUDY nav icon below read as the same place (owner 2026-10-16). */}
+              {/* The Study tab's colour + the tab's own icon, so the button and the
+                  STUDY nav icon below read as the same place (owner 2026-10-16);
+                  orange since owner 2026-11-24 (GlassButton tint "study"). */}
               <GlassButton
                 maxFontSizeMultiplier={HOME_MAX}
                 label="STUDY NOW"
@@ -1445,7 +1446,7 @@ function CourseCardView({
     <View style={[styles.cardOuter, cd.outer]}>
       {free ? (
         // The two free topics (owner 2026-10-23): green "Free", then the Study
-        // tab's blue headphones + "Study Topic" — replaces the in-card amber
+        // tab's own icon + "Study Topic", both orange (owner 2026-11-24) — replaces the in-card amber
         // "Study Topic" line. Members never see "Free" (owner 2026-09-29).
         <View style={styles.cardAbove}>
           <View style={styles.freeTopicRow} accessible accessibilityLabel={upsell ? 'Free. Study topic' : 'Study topic'}>
@@ -2801,13 +2802,14 @@ const styles = StyleSheet.create({
   },
   // The gold key word inside a card title (owner 2026-10-14).
   cardTitleKey: { color: colors.gold },
-  // The free topics' caption above the card: green Free · blue headphones + Study Topic (owner 2026-10-23).
+  // The free topics' caption above the card: green Free · Study icon + Study Topic (owner 2026-10-23),
+  // in the Study orange since owner 2026-11-24 ("Orange everywhere").
   freeTopicRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 5 },
   // Same face as the Eyebrow caption; three short words, so one line at every width.
   freeTopicText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6 },
   freeTopicFree: { color: '#5bff85', marginRight: 10 },
   freeTopicIcon: { width: 15, height: 15, marginRight: 5 },
-  freeTopicStudy: { color: '#2f9bff' },
+  freeTopicStudy: { color: STUDY_COLOR },
   cardTitle: {
     fontFamily: fonts.oswaldMedium,
     fontSize: 26,

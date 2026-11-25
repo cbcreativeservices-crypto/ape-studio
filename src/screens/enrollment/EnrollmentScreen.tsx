@@ -24,7 +24,7 @@ import { Modal } from '../../components/DimModal';
 import { HoldToActivate } from '../../components/HoldToActivate';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
+import { BACK_GLYPH_MAX_SCALE, STUDY_COLOR, colors, fonts, studyRgba } from '../../theme/tokens';
 import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
 import { HomeSetupSheet } from './HomeSetupSheet';
 import { DeckIcon } from '../../components/DeckIcon';
@@ -3321,18 +3321,20 @@ const styles = StyleSheet.create({
     boxShadow: '0px 0px 10px 2px rgba(200,212,236,0.75)',
   },
   loadPill: { borderWidth: 1, borderColor: '#3a3a3a', backgroundColor: '#1c1c1c', borderRadius: 7, paddingVertical: 5, paddingHorizontal: 9 },
-  // AMBER, not blue (owner 2026-09-20). Blue is this screen's STUDY colour —
-  // the headphones icon, STUDY ALL, SEE & EDIT — so a blue LOADED pill sat in
-  // a row of blue controls and read as another button rather than as state.
+  // AMBER, not blue (owner 2026-09-20). Blue was this screen's STUDY colour
+  // then — the headphones icon, STUDY ALL, SEE & EDIT — so a blue LOADED pill
+  // sat in a row of blue controls and read as another button rather than as
+  // state. STUDY is orange since owner 2026-11-24 (STUDY_COLOR); this pill
+  // stays amber (#ffc64d), a different hue from the orange (#ff8a1e).
   loadPillOn: { borderColor: colors.amber, backgroundColor: 'rgba(255,198,77,0.13)' },
   loadPillDim: { opacity: 0.55 },
   loadPillSmall: { paddingVertical: 3, paddingHorizontal: 6 },
   loadPillText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.6, color: GRAY },
   loadPillTextSmall: { fontSize: 10.5, letterSpacing: 0.4 },
   loadPillTextOn: { color: colors.amber },
-  // Award "STUDY ALL" (blue) — loads every topic into the deck.
-  studyAllBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderColor: 'rgba(127,191,255,.6)', backgroundColor: 'rgba(127,191,255,.12)', borderRadius: 7, paddingVertical: 5, paddingHorizontal: 10 },
-  studyAllText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.6, color: BLUE },
+  // Award "STUDY ALL" (Study orange, owner 2026-11-24) — loads every topic into the deck.
+  studyAllBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderColor: studyRgba(0.6), backgroundColor: studyRgba(0.12), borderRadius: 7, paddingVertical: 5, paddingHorizontal: 10 },
+  studyAllText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.6, color: STUDY_COLOR },
   // Award "ADD TOPICS" / "REMOVE TOPICS" (light gray) — list membership.
   addTopicsBtn: { borderWidth: 1, borderColor: '#3a3a3a', backgroundColor: '#1c1c1c', borderRadius: 7, paddingVertical: 6, paddingHorizontal: 10 },
   addTopicsText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.6, color: colors.textSecondary },
@@ -3341,7 +3343,7 @@ const styles = StyleSheet.create({
   // Gray, inactive "Take Final Exam" placeholder in award containers.
   finalExamBtn: { alignSelf: 'stretch', alignItems: 'center', borderWidth: 1, borderColor: '#3a3a3a', backgroundColor: '#1a1a1a', borderRadius: 7, paddingVertical: 8, marginTop: 2, opacity: 0.7 },
   finalExamText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textMuted },
-  studyOn: { backgroundColor: 'rgba(127,191,255,.14)', borderColor: 'rgba(127,191,255,.6)' },
+  studyOn: { backgroundColor: studyRgba(0.14), borderColor: studyRgba(0.6) }, // Study orange (owner 2026-11-24)
   studyOff: { backgroundColor: '#121212', borderColor: '#333' },
   studyText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 0.6 },
   homeToggle: { paddingVertical: 3, paddingHorizontal: 4 },

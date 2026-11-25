@@ -155,7 +155,8 @@ export function AudioCommunityDirectoryScreen() {
             Audio Community
           </Text>
           </View>
-          <Text style={st.sub}>Pro Audio Training Academy</Text>
+          {/* Names the four tabs below (owner 2026-11-24); was the Academy's name. */}
+          <Text style={st.sub}>Directory · forum · your profile · requests</Text>
         </View>
       </View>
 

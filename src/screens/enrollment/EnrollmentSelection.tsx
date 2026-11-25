@@ -28,7 +28,7 @@ import { CredentialThumb } from '../awards/CredentialThumb';
 import { MyTopicsIcon } from '../../components/MyTopicsIcon';
 import { DeckIcon } from '../../components/DeckIcon';
 import { LedMeter, segmentsForPct } from '../../components/LedMeter';
-import { colors, fonts } from '../../theme/tokens';
+import { STUDY_COLOR, colors, fonts, studyRgba } from '../../theme/tokens';
 import { StudyGlyph } from '../../components/nav/NavIcon';
 import { actionsFitBesideIdentity, artSideLen } from './selectionLayout';
 import { HoldToActivate } from '../../components/HoldToActivate';
@@ -399,6 +399,8 @@ const s = StyleSheet.create({
   deckActions: { alignItems: 'flex-end', gap: 8 },
   // Phones: STUDY and LOAD ALL side by side, one row (owner 2026-10-15) — was a column.
   deckActionsStacked: { alignSelf: 'stretch', alignItems: 'center', flexDirection: 'row', flexWrap: 'wrap' },
+  /* STUDY / STUDY ALL: text, frame and fill in the Study orange (owner
+     2026-11-24: "Orange everywhere"), the same colour as its icon. */
   studyBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -406,12 +408,12 @@ const s = StyleSheet.create({
     minHeight: 44,
     paddingHorizontal: 13,
     borderWidth: 1.5,
-    borderColor: colors.blue,
-    backgroundColor: 'rgba(47,155,255,.14)',
+    borderColor: STUDY_COLOR,
+    backgroundColor: studyRgba(0.14),
     borderRadius: 8,
   },
   studyIcon: { width: 26, height: 26 },
-  studyText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13.5, letterSpacing: 1, color: colors.blue },
+  studyText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13.5, letterSpacing: 1, color: STUDY_COLOR },
   /* ⛔ CONTENT-WIDTH, NEVER flex:1. `deckActions` is an auto-width flex-end
      column, so a flex:1 child resolves against a basis of 0 and collapsed to
      roughly the STUDY button's width above — which clipped "UNLOAD ALL" to

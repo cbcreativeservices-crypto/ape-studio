@@ -1,7 +1,8 @@
 /**
  * NavIcon — per-tab icon (bundled PNG) + label, lit (active: full color + iOS
  * glow) / unlit (dimmed).
- *   Home = amber house · Study = blue headphones · Progress = white faders
+ *   Home = amber house · Study = orange (label and glow too, owner 2026-11-24)
+ *   · Progress = white faders
  *   · Profile = green person. (The "Achievements" tab is LABELED "PROGRESS".)
  * Art replaced hand-drawn SVG/View glyphs with bundled transparent PNGs
  * (assets/icons/nav/*, owner 2026-08-13). The PROGRESS glyph never tracks/shows/
@@ -16,7 +17,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { SvgXml } from 'react-native-svg';
 import { AccessibilityInfo, Animated, Easing, Image, Platform, StyleSheet, Text, View } from 'react-native';
-import { colors, fonts } from '../../theme/tokens';
+import { STUDY_COLOR, colors, fonts, studyRgba } from '../../theme/tokens';
 import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
 
 export type NavIconName = 'Home' | 'Study' | 'Achievements' | 'Profile';
@@ -57,7 +58,8 @@ function defFor(icon: NavIconName): Def {
       // App amber (was orange) — user request 2026-07-23.
       return { color: colors.amber, glowRgba: 'rgba(255,198,77,.7)', font: 10, spacing: 1 };
     case 'Study':
-      return { color: colors.blue, glowRgba: 'rgba(47,155,255,.7)', font: 10, spacing: 1 };
+      // STUDY is orange, label and glow (owner 2026-11-24: "Orange everywhere").
+      return { color: STUDY_COLOR, glowRgba: studyRgba(0.7), font: 10, spacing: 1 };
     case 'Achievements':
       // PROGRESS label stays silver-toned; glyph is the white faders PNG.
       return { color: '#d6d6d6', glowRgba: 'rgba(230,230,230,.6)', font: 9.5, spacing: 0.9 };

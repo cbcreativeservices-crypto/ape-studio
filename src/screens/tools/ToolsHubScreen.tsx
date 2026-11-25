@@ -1110,7 +1110,13 @@ export function ToolsHubScreen({ navigation }: Props) {
             <View style={styles.titleArt} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
               <PlaceArt place="tools" size={26} />
             </View>
-            <Text style={styles.screenTitle} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>AUDIO TOOLS</Text>
+            {/* Title + a small line under it, the Labs screen's subtitle look
+                (owner 2026-11-24). The column shrinks before the keys do, so
+                HOME, the icon and the keys keep their places on a 375 pt phone. */}
+            <View style={styles.titleCol}>
+              <Text style={styles.screenTitle} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>AUDIO TOOLS</Text>
+              <Text style={styles.screenSubtitle} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>Measure · generate · analyze</Text>
+            </View>
             <View style={{ flex: 1 }} />
             {/* Owner 2026-11-05: it floated over the dosimeter in the hero. */}
             <AccuracyNote compact />
@@ -1304,7 +1310,10 @@ const styles = StyleSheet.create({
   brandBarCap: { width: '100%', maxWidth: HUB_MAX_CONTENT_W, alignSelf: 'center' },
   /* Same row shape as Learning Labs and the Glossary: way out, title, help. */
   titleBar: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingLeft: 14, paddingRight: 14, paddingBottom: 8 },
+  titleCol: { flexShrink: 1 },
   screenTitle: { flexShrink: 1, fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.2, color: colors.textPrimary },
+  // The Labs screen's subtitle (AudioLearningScreen `subtitle`), owner 2026-11-24.
+  screenSubtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
   moduleTag: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 12,
