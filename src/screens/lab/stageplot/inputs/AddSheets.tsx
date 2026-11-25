@@ -143,7 +143,7 @@ export function PackagePreview({ packageId, sourceId, onBack, onAdded }: { packa
       )}
 
       {view.count ? (
-        <Note>{view.adds} New rows join the end of the input list with the next free numbers. Who brings each item starts as “To be confirmed”, and so does phantom power. You answer them; the tool does not.</Note>
+        <Note>{view.adds} New rows join the end of the input list with the next free numbers. Who brings each item starts as “To be confirmed”, and so does phantom power, except on a dynamic microphone, which does not use it. You answer the rest; the tool does not.</Note>
       ) : (
         <Note tone="warning">{view.adds}</Note>
       )}

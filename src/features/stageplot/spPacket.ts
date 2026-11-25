@@ -39,11 +39,15 @@ import {
   SP_STAND_WORD,
   SP_SUPPLIER_WORD,
   SP_VENUE_FEED_WORD,
+  SP_ACTIVE_RIBBON_NOTE,
+  spMicKind,
+  spPhantomOf,
 } from './spCatalog.ts';
 import { spAllInputsInOrder, spBadge, spBoxMoreWords, spBoxSizeWords, spBoxUse, spBoxUseWords, spDeviceCountWord, spInputSupplier, spMixesOf, spMonoStereoWord, spPatchRows, spSummary, spSupplierWords, type SpBySupplier, type SpSummary } from './spDerive.ts';
 import type { SpDoc, SpDocBlock, SpDocColumn, SpDocDeck, SpDocKeyItem, SpDocPlot, SpDocPlotItem, SpDocRow, SpDocSection, SpDocTable } from './spDocTypes.ts';
 import { spBox, spBoxName, spBoxObject, spBoxPatchWords, spBoxPlotLabel, spBoxes, spEdit, spFreeze, spLocationWord, spMix, spMixWantsReturn, spObjectOfInput, spOnStage, spPerformer, spReturnBoxes, spReturnWords, spVenueGivesReturns } from './spModel.ts';
 import { spPdfEncode, spPdfWidth } from './spPdfFonts.ts';
+import { spPdfPageCount as spPdfLaidPages } from './spPdf.ts';
 import { spChoirCountWords, spChoirOf, spChoirRiserNote } from './spChoir.ts';
 import { spFrontEdges, spHasWings, spIsCircle, spIsShaped, spRoundRef, spRoundSides, spShapeBounds, spShapeDirections, spShapeGridSegments, spShapeOf, spShapeOutline, spShapeWords, spThrustFrac, spWingFrac, spWingRects } from './spShape.ts';
 import { spReview, type SpIssue } from './spReview.ts';
@@ -1335,14 +1339,23 @@ function captureCell(p: SpProject, i: SpInput): string {
   const usual = /^xlr$/i.test(connector) && (i.capture === 'mic' || i.capture === 'di' || i.capture === 'wireless');
   if (connector && !usual) parts.push(connector);
   if (level && !line) parts.push(level);
-  if (i.phantom === 'required') parts.push('phantom power required');
-  else if (i.phantom === 'do-not-apply') parts.push('do not apply phantom power');
-  else if (i.phantom === 'unknown' && (i.capture === 'mic' || i.capture === 'di') && spInputSupplier(p, i) !== 'venue') parts.push('phantom power to be confirmed');
+  // (owner 2026-11-23, D60: a dynamic microphone, and a ribbon that is not
+  // an active one, does not use phantom power: `spPhantomOf`. It prints
+  // "no phantom power" where it would have printed "to be confirmed".)
+  const phantom = spPhantomOf(i);
+  const kind = spMicKind(i);
+  const asked = spInputSupplier(p, i) !== 'venue';
+  if (phantom === 'required') parts.push('phantom power required');
+  else if (phantom === 'do-not-apply') parts.push('do not apply phantom power');
+  else if (phantom === 'unknown' && (i.capture === 'mic' || i.capture === 'di') && asked) parts.push('phantom power to be confirmed');
+  else if (phantom === 'not-required' && (kind === 'dynamic' || kind === 'ribbon') && asked) parts.push('no phantom power');
   return parts.join('; ');
 }
 
 function inputNote(i: SpInput): string {
   const out: string[] = [];
+  // an active ribbon: why it is the one ribbon that needs phantom power (owner 2026-11-23)
+  if (spMicKind(i) === 'active-ribbon' && spPhantomOf(i) === 'required') out.push(SP_ACTIVE_RIBBON_NOTE);
   if (i.alternatives.trim()) out.push(`Acceptable alternatives: ${i.alternatives.trim()}`);
   if (i.adapterNote.trim()) out.push(`Adapter or interface: ${i.adapterNote.trim()}`);
   if (i.destination === 'custom') out.push(`Destination: ${i.splitNote.trim() || 'to be confirmed'}`);
@@ -1975,7 +1988,7 @@ export function spBuildDoc(s: SpSnapshot): SpDoc {
     const br: Break = compact ? 'none' : 'auto';
     sections.push(inputsSection(p, summary, br, compact), monitorsSection(p, summary, br, compact), equipmentSection(p, summary, br, compact), notesSection(p, issues, br));
   }
-  return {
+  const doc: SpDoc = {
     // the header names everything the packet holds; with no band name it
     // has no name in it (a made-up one is never printed)
     title: `${band ? `${band} — ` : ''}${kind === 'plot' ? 'Stage plot' : 'Stage plot, input list and monitor plan'}`,
@@ -1987,6 +2000,20 @@ export function spBuildDoc(s: SpSnapshot): SpDoc {
     revision: p.revision,
     generatedAt: s.generatedAt,
   };
+  // THE ONE-SHEET COMPACT PACKET (owner 2026-11-23, D60: "Solo compact
+  // packet: make it fit on 1 page"). A compact packet that the usual sizes
+  // print on two or more pages, and the one-sheet sizes (9 pt and larger,
+  // less space, the key beside the drawing) print on ONE, is printed on one
+  // sheet. Only for the small acts the small-stage rule is for (one or two
+  // performers, `SP_PLOT_SMALL_PEOPLE`: "so a solo act or a duo can have
+  // its whole packet on one sheet"). Nothing is left out either way; any
+  // other packet is unchanged.
+  const small = p.performers.length >= 1 && p.performers.length <= SP_PLOT_SMALL_PEOPLE;
+  if (compact && small && spPdfLaidPages(doc) > 1) {
+    const one: SpDoc = { ...doc, oneSheet: true };
+    if (spPdfLaidPages(one) === 1) return one;
+  }
+  return doc;
 }
 
 /* ── the structured text view ───────────────────────────────────────────── */

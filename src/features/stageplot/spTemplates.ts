@@ -13,6 +13,10 @@
  *     venue-supplied "dynamic" or "condenser" row stays "unknown" (handoff
  *     §4: no inference from a broad category). It does answer for the band's
  *     OWN named boxes (a passive DI needs none; an active one is marked).
+ *     OVERRULED IN PART by the owner, 2026-11-23 (D60): "dynamic
+ *     microphones and most ribbons do NOT use phantom power." The stored
+ *     answer still stays "unknown"; what is PRINTED for a dynamic or ribbon
+ *     row comes from `spPhantomOf` (spCatalog.ts), never "to be confirmed".
  *   • A wireless in-ear mix always has its TRANSMITTER listed, so the packet
  *     tells the venue that radio equipment is coming.
  *   • A click that only the band's own rig uses is not sent to the house.
@@ -122,7 +126,9 @@ class Build {
 }
 
 /** A microphone and stand the venue is asked for. Phantom power stays
- *  UNKNOWN: nobody has named the microphone. */
+ *  UNKNOWN: nobody has named the microphone (a "dynamic" one reads as no
+ *  phantom power, `spPhantomOf`, owner 2026-11-23; the venue is not asked
+ *  about its own microphones either way). */
 const VENUE_MIC = { supplier: 'venue', standSupplier: 'venue', phantom: 'unknown' } as const;
 const OVERHEAD_VIEW = 'Overhead L and R are named as the audience sees the kit.';
 

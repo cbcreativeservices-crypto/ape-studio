@@ -14,11 +14,13 @@
  *
  * A rule fires only on what was actually entered: a capacity is checked only
  * when a capacity was given, and nothing here guesses phantom power, a DI's
- * type or a supplier.
+ * type or a supplier (the one exception is the owner's ruling of 2026-11-23:
+ * a dynamic or ribbon microphone's phantom power, `spPhantomOf` in
+ * spCatalog.ts).
  *
  * Pure.
  */
-import { SP_DEVICE_WORD, SP_NEED_WORD } from './spCatalog.ts';
+import { SP_DEVICE_WORD, SP_NEED_WORD, SP_PHANTOM_WORD, spMicKind } from './spCatalog.ts';
 import { spBoxUse, spDiTotals, spSocketRuns, spSummary, type SpBoxUse } from './spDerive.ts';
 import { spBox, spBoxName, spBoxes, spBrokenRefs, spMixMaySplit, spMixSplit, spMixWantsReturn, spVenueGivesReturns, spObjectOfSource, spOnStage, spPartner, spPatch, spReturnBoxes, spReturnWords } from './spModel.ts';
 
@@ -245,6 +247,20 @@ export function spReview(p: SpProject): SpIssue[] {
     if (d.kind === 'passive' && on.some((i) => i.phantom === 'required')) {
       add({ key: `dipassive:${d.id}`, rule: 'passive-phantom', level: 'ask', text: `${d.label} is marked passive, and a channel on it is marked “phantom power required”. A passive DI does not use phantom power. Which is right?`, area: 'inputs', target: { kind: 'di', id: d.id }, actions: ['edit'] });
     }
+  }
+
+  // a microphone whose phantom power answer goes against what it is (owner
+  // 2026-11-23, D60: "dynamic microphones and most ribbons do NOT use
+  // phantom power"; an active ribbon does). Only an answer the band gave.
+  for (const i of p.inputs) {
+    const kind = spMicKind(i);
+    if (!kind || i.phantom === 'unknown') continue;
+    if (kind === 'active-ribbon' ? i.phantom === 'required' : i.phantom !== 'required') continue;
+    const text =
+      kind === 'active-ribbon'
+        ? `${i.label} is an active ribbon microphone, and it is marked “${SP_PHANTOM_WORD[i.phantom].toLowerCase()}” for phantom power. An active ribbon needs 48 V phantom power. Which is right?`
+        : `${i.label} is a ${kind} microphone, and it is marked “phantom power required”. ${kind === 'dynamic' ? 'A dynamic microphone does' : 'Most ribbon microphones do'} not use phantom power. Which is right?`;
+    add({ key: `micphantom:${i.id}`, rule: 'mic-phantom', level: 'ask', text, area: 'inputs', target: { kind: 'input', id: i.id }, actions: ['edit'], field: 'phantom' });
   }
 
   // STAGE BOXES (2026-11-13). A socket given to two inputs, and an input on a

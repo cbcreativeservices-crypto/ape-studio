@@ -539,12 +539,12 @@ describe('how long the packet is: pages counted with the app’s own PDF writer'
   it('the stage plot alone is one page for every example, the 12-performer band included', () => {
     for (const t of ['solo', 'duo', 'four-piece', 'playback', 'salsa'] as const) assert.equal(pagesOf(example(t), { paper: 'letter', packet: 'plot' }), 1, t);
   });
-  it('the solo compact packet: 2 pages today (the target is 1; see the report)', () => {
-    // PINNED AS IT IS, not as wished: page 1 holds the plot and the input
-    // list; the monitor plan, the equipment table and the unresolved list run
-    // to page 2. Text is never made smaller to change this. If this number
-    // drops to 1, tighten the assertion.
-    assert.ok(pagesOf(example('solo'), COMPACT) <= 2);
+  // UPDATED: owner 2026-11-23 (D60): "Solo compact packet: make it fit on 1
+  // page ... without dropping content and without body text under 9 pt." It
+  // was 2 pages; the one-sheet layout (`SpDoc.oneSheet`) puts it on 1, at
+  // 9 pt and larger (test/stagePlotRulings_20261124.test.ts pins the rest).
+  it('the solo compact packet: 1 page', () => {
+    assert.equal(pagesOf(example('solo'), COMPACT), 1);
   });
   it('a plot with two performers or fewer is drawn at most 240 pt tall; any other at most 380', () => {
     assert.deepEqual([SP_PLOT_SMALL_H, SP_PLOT_SMALL_PEOPLE, SP_PLOT_MAX_H], [240, 2, 380]);
@@ -890,7 +890,10 @@ describe('the sheet prints well (the web print view, and the phone’s fallback)
     assert.deepEqual([...new Set(html.match(/https?:\/\/[^"' )]+/g) ?? [])], ['http://www.w3.org/2000/svg']);
   });
   it('table headers repeat and a row with its note is not split', () => {
-    assert.ok(style.includes('thead { display: table-header-group; }'));
+    // UPDATED: owner 2026-11-23 (D60): "a table must never leave its header
+    // with fewer than 3 rows at the bottom of a page": the header keeps with
+    // the first rows (`tbody.lead`, test/stagePlotRulings_20261124.test.ts)
+    assert.ok(style.includes('thead { display: table-header-group; break-after: avoid; page-break-after: avoid; }'));
     assert.ok(style.includes('tr { break-inside: avoid; page-break-inside: avoid; }'));
     assert.ok(style.includes('tbody.row { break-inside: avoid; page-break-inside: avoid; }'));
     const tables = html.match(/<table>[\s\S]*?<\/table>/g) ?? [];

@@ -29,6 +29,7 @@ import {
   SP_PRIORITY_WORD,
   SP_STAND_WORD,
   SP_SUPPLIER_WORD,
+  spPhantomOf,
 } from '../../../../features/stageplot/spCatalog';
 import {
   spAssignBox,
@@ -390,7 +391,8 @@ export function InputEditor({
         ) : null}
         {input.stand !== 'none' && input.stand !== 'custom' ? <TextField label="Stand note" value={input.standNote} onCommit={text('standNote')} /> : null}
         <FocusMark k="phantom">
-          <Choice label="Phantom power for this device" value={input.phantom} options={PHANTOM} onChange={(phantom) => (phantom === input.phantom ? undefined : set({ phantom }))} hint={SP_PHANTOM_HINT} />
+          {/* a dynamic or ribbon microphone shows the answer it has (owner 2026-11-23, spPhantomOf) */}
+          <Choice label="Phantom power for this device" value={spPhantomOf(input)} options={PHANTOM} onChange={(phantom) => (phantom === input.phantom ? undefined : set({ phantom }))} hint={SP_PHANTOM_HINT} />
         </FocusMark>
         <FocusMark k="destination">
         <Choice

@@ -21,7 +21,7 @@
  *
  * Pure. US spelling.
  */
-import { SP_CATEGORY_ORDER, SP_DEVICE_PLURAL, SP_DEVICE_WORD, SP_EXTRA_KIND_WORD, SP_STAND_WORD, SP_SUPPLIER_WORD } from './spCatalog.ts';
+import { SP_CATEGORY_ORDER, SP_DEVICE_PLURAL, SP_DEVICE_WORD, SP_EXTRA_KIND_WORD, SP_STAND_WORD, SP_SUPPLIER_WORD, spPhantomOf } from './spCatalog.ts';
 import { spBox, spBoxFeedWords, spBoxName, spBoxObject, spBoxes, spMixReturnSpots, spMixSplit, spPartner, spPatch, spReturnFeedWords } from './spModel.ts';
 import type { SpCapture, SpCategory, SpDeviceType, SpId, SpInput, SpMix, SpMixProvider, SpPatchId, SpProject, SpStageBox, SpStand, SpSupplier } from './spTypes.ts';
 
@@ -299,7 +299,8 @@ export function spOpenItems(p: SpProject): SpOpenItem[] {
     const supplier = spInputSupplier(p, i);
     if (!onDevice && supplier === 'tbc') what.push(`who supplies the ${SP_CAPTURE_THING[i.capture]}`), fields.push('supplier');
     if (i.stand !== 'none' && i.standSupplier === 'tbc') what.push('who supplies the stand'), fields.push('standSupplier');
-    if (!onDevice && supplier !== 'venue' && i.phantom === 'unknown' && (i.capture === 'mic' || i.capture === 'di')) what.push('phantom power'), fields.push('phantom');
+    // (a dynamic or ribbon microphone is not asked: owner 2026-11-23, `spPhantomOf`)
+    if (!onDevice && supplier !== 'venue' && spPhantomOf(i) === 'unknown' && (i.capture === 'mic' || i.capture === 'di')) what.push('phantom power'), fields.push('phantom');
     if (i.audience === 'tbc') what.push('audience mix or monitor only'), fields.push('audience');
     if (i.capture === 'di' && !i.diDeviceId) what.push('which DI device'), fields.push('di');
     if (i.destination === 'both' && !i.splitNote.trim()) splitUnknown.push(i);
@@ -313,7 +314,7 @@ export function spOpenItems(p: SpProject): SpOpenItem[] {
     if (d.supplier !== 'venue') {
       if (d.kind === 'unknown') what.push('passive or active'), fields.push('kind');
       const on = p.inputs.filter((i) => i.capture === 'di' && i.diDeviceId === d.id);
-      if (on.length && on.every((i) => i.phantom === 'unknown')) what.push('phantom power'), fields.push('phantom');
+      if (on.length && on.every((i) => spPhantomOf(i) === 'unknown')) what.push('phantom power'), fields.push('phantom');
     }
     if (what.length) open.push({ text: `${d.label}: ${what.join('; ')}`, kind: 'di', id: d.id, field: fields[0] });
   }

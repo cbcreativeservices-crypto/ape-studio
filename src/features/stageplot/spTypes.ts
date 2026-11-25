@@ -19,6 +19,10 @@
  *     mix. Mix count, device count and output audio channels are separate.
  *   • UNKNOWN STAYS UNKNOWN. "To be confirmed" is a value, kept and printed;
  *     nothing here guesses phantom power, a DI's type or who supplies what.
+ *     (One owner ruling, 2026-11-23: a microphone the band calls dynamic or
+ *     ribbon does not use phantom power, an active ribbon does; that answer
+ *     is read from its equipment words, `spPhantomOf` in spCatalog.ts. The
+ *     stored value stays "unknown" until the band answers it.)
  *   • STAGE SPACE, NOT PIXELS. Positions are fractions of the stage
  *     (x: 0 = stage right, the viewer's left … 1 = stage left;
  *      y: 0 = upstage, the top … 1 = downstage, the audience edge).

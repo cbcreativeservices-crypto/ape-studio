@@ -14,7 +14,9 @@
  *
  * Rules a renderer must keep (handoff §7):
  *   • white paper, dark lines, readable in grayscale; nothing told by color
- *   • table text at least 10 pt: add a page before shrinking
+ *   • table text at least 10 pt: add a page before shrinking (one exception,
+ *     owner 2026-11-23: a compact packet marked `oneSheet` prints at 9 pt
+ *     or larger, so it fits on one sheet)
  *   • a table's header repeats on every page it runs to; a row is not split
  *   • a footer on every page: band, revision, page number
  *   • print EVERY row and every note: never cut text to fit a sheet
@@ -184,4 +186,12 @@ export type SpDoc = {
   revision: number;
   /** Milliseconds since 1970: when the snapshot was frozen. */
   generatedAt: number;
+  /** THE ONE-SHEET COMPACT PACKET (owner 2026-11-23, D60: the solo compact
+   *  packet fits on 1 page, with no content dropped and no text under 9 pt).
+   *  true = a renderer that lays out pages uses its tighter one-sheet sizes
+   *  (tables and the body 9 pt, less space between blocks; the plot's key
+   *  beside the drawing when there is room). spBuildDoc sets it only for a
+   *  compact packet that the PDF writer puts on one sheet this way and not
+   *  with its usual sizes. Absent = the usual sizes. */
+  oneSheet?: boolean;
 };

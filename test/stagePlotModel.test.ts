@@ -457,12 +457,17 @@ describe('sources, capture paths and equipment (section 12, check 6)', () => {
     assert.equal(line.required, 1);
     assert.deepEqual(line.alternatives, ['Any dynamic vocal microphone in good condition']);
   });
-  it('phantom power is never inferred: a new microphone and a new DI both start as unknown', () => {
+  // UPDATED: owner 2026-11-23 (D60) overruled "phantom power is never
+  // inferred": "dynamic microphones and most ribbons do NOT use phantom
+  // power." The stored answer still starts as unknown; a DYNAMIC microphone is
+  // no longer asked about it (test/stagePlotRulings_20261124.test.ts pins the rule).
+  it('phantom power is stored as unknown for a new microphone and a new DI; only the DI is asked about it (a dynamic microphone does not use it)', () => {
     let p = spNewProject({ id: 'p', now: NOW });
     p = spAddPackage(p, 'vocal').p;
     p = spAddPackage(p, 'bass-di').p;
     assert.deepEqual(p.inputs.map((i) => i.phantom), ['unknown', 'unknown']);
-    assert.ok(spSummary(p).open.some((t) => /phantom power/.test(t)));
+    assert.ok(spSummary(p).open.some((t) => /^Bass DI: .*phantom power/.test(t)));
+    assert.ok(!spSummary(p).open.some((t) => /^Vocal: .*phantom power/.test(t)), 'the dynamic vocal microphone is not asked');
     assert.deepEqual(p.inputs.map((i) => i.supplier), ['tbc', 'tbc']);
   });
   it('a click added later is excluded from every existing mix until someone asks for it', () => {

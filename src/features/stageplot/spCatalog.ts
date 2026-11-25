@@ -7,8 +7,11 @@
  * A package is a STARTING POINT WITH VISIBLE ASSUMPTIONS (handoff §2, §4):
  * the rows are shown before they are added, every row can be changed or
  * removed, and a microphone named here is a common generic choice, never a
- * requirement. Nothing here decides phantom power or who supplies an item:
- * those start as "unknown" / "to be confirmed" and the band answers them.
+ * requirement. Nothing here decides who supplies an item: that starts as
+ * "to be confirmed" and the band answers it. PHANTOM POWER is decided for
+ * one kind of row only (owner 2026-11-23, D60: "dynamic microphones and most
+ * ribbons do NOT use phantom power"): see `spPhantomOf`. Every other row
+ * starts as "to be confirmed".
  *
  * Pure data. US spelling.
  */
@@ -19,6 +22,7 @@ import type {
   SpDelivery,
   SpDestination,
   SpDeviceType,
+  SpInput,
   SpMixNeed,
   SpMixProvider,
   SpObjectKind,
@@ -54,6 +58,43 @@ export const SP_PHANTOM_WORD: Record<SpPhantom, string> = {
   'do-not-apply': 'Do not apply',
   unknown: 'To be confirmed',
 };
+/* ── phantom power from what the microphone is ──────────────────────────── */
+
+/**
+ * OWNER RULING 2026-11-23 (D60, overruling "phantom power is never
+ * inferred"): "dynamic microphones and most ribbons do NOT use phantom
+ * power." So a MICROPHONE row whose equipment says what it is gets its
+ * phantom power from that, while the band has not answered it ("unknown"):
+ *   • "dynamic"            → no phantom power (Not required)
+ *   • "ribbon"             → no phantom power (Not required)…
+ *   • "active" + "ribbon"  → …except an ACTIVE ribbon, which has electronics
+ *                            inside that run on 48 V phantom power: Required,
+ *                            and its note says so (`SP_ACTIVE_RIBBON_NOTE`)
+ *   • anything else (a condenser, "Kick drum microphone", a wireless
+ *     receiver, a DI) stays as it was: "to be confirmed" until answered.
+ * The catalog names no brand or model, so an active ribbon is known only by
+ * the word "active" in the equipment the band types (none of the catalog's
+ * packages is a ribbon). A row that says both "dynamic" or "ribbon" and
+ * "condenser" is not decided. The band's own answer always wins.
+ */
+export type SpMicKind = 'dynamic' | 'ribbon' | 'active-ribbon';
+export const SP_ACTIVE_RIBBON_NOTE = 'Active ribbon: needs 48 V phantom power.';
+export function spMicKind(i: Pick<SpInput, 'capture' | 'equipment'>): SpMicKind | null {
+  if (i.capture !== 'mic') return null;
+  const eq = String(i.equipment ?? '').toLowerCase();
+  if (/\bcondenser\b/.test(eq)) return null;
+  if (/\bribbon\b/.test(eq)) return /\bactive\b/.test(eq) ? 'active-ribbon' : 'ribbon';
+  if (/\bdynamic\b/.test(eq)) return 'dynamic';
+  return null;
+}
+/** The phantom power a row has: the band's answer, or (while it is
+ *  "unknown") what its microphone kind says (`spMicKind`). */
+export function spPhantomOf(i: Pick<SpInput, 'capture' | 'equipment' | 'phantom'>): SpPhantom {
+  if (i.phantom !== 'unknown') return i.phantom;
+  const k = spMicKind(i);
+  return k === 'dynamic' || k === 'ribbon' ? 'not-required' : k === 'active-ribbon' ? 'required' : 'unknown';
+}
+
 export const SP_DESTINATION_WORD: Record<SpDestination, string> = {
   house: 'House system',
   band: 'Band monitor rig',
@@ -422,7 +463,8 @@ export const SP_PACKAGES: readonly SpPackage[] = [
    * instrument is a piezo: it wants a DI with a high-impedance input (or the
    * player's own preamp), so the row says so. A clip-on or condenser
    * microphone needs phantom power, but which microphone it is stays the
-   * band's answer, so phantom power stays "to be confirmed" like every row. */
+   * band's answer, so phantom power stays "to be confirmed" (only a dynamic
+   * or ribbon microphone is decided: `spPhantomOf`, owner 2026-11-23). */
   ...stringPackages(),
   {
     id: 'grand-piano-mics',

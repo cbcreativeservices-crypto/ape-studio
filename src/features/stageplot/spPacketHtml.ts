@@ -9,7 +9,11 @@
  *   • white paper, dark lines, system fonts, no images and no web requests;
  *   • every table: `thead { display: table-header-group }` so the header
  *     repeats on each page the engine breaks the table over, and each row
- *     (with its note) is one `tbody` that is not split;
+ *     (with its note) is one `tbody` that is not split; the FIRST THREE
+ *     rows (all of a shorter table) are one `tbody.lead` that is not split,
+ *     so a header never stands at a page foot with fewer than 3 rows under
+ *     it (owner 2026-11-23, D60; checked in Chrome's print engine, the one
+ *     Android's web view uses);
  *   • table text 10 pt. A long table gets more pages, never smaller text;
  *   • the footer (band, revision, page number) and the DRAFT stamp are page
  *     margin boxes, and the same words are also printed in the flow at the
@@ -39,6 +43,9 @@ export const SP_PAGES: Record<SpPaper, { w: number; h: number; css: string }> = 
 export const SP_ROOMY_H: Record<SpPaper, number> = { letter: 520, a4: 560 };
 /** 0.6 in on every side; a little more at the bottom for the footer. */
 export const SP_PAGE_MARGIN = { top: 43, right: 43, bottom: 50, left: 43 } as const;
+/** The rows kept with a table's header at a page foot: the PDF writer's
+ *  `SP_PDF_TABLE_KEEP_ROWS`, on the HTML sheet (owner 2026-11-23, D60). */
+export const SP_HTML_KEEP_ROWS = 3;
 
 export function spEscapeHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -336,9 +343,12 @@ p.empty { font-style: italic; color: #333; }
 ul { margin: 0 0 6pt; padding-left: 14pt; }
 li { margin: 0 0 3pt; overflow-wrap: anywhere; break-inside: avoid; page-break-inside: avoid; }
 table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 10pt; margin: 0 0 8pt; }
-thead { display: table-header-group; }
+thead { display: table-header-group; break-after: avoid; page-break-after: avoid; }
 tr { break-inside: avoid; page-break-inside: avoid; }
 tbody.row { break-inside: avoid; page-break-inside: avoid; }
+tbody.lead { break-before: avoid; page-break-before: avoid; }
+/* a line or two just above a table goes over with it (as in the PDF writer) */
+p:has(+ table) { break-after: avoid; page-break-after: avoid; }
 th { text-align: left; font-weight: 700; padding: 3pt 4pt; border-top: 1pt solid #111; border-bottom: 1pt solid #111; vertical-align: bottom; overflow-wrap: anywhere; }
 td { padding: 3pt 4pt; vertical-align: top; border-bottom: 0.5pt solid #777; overflow-wrap: anywhere; word-break: break-word; }
 th.center, td.center { text-align: center; }
@@ -353,8 +363,28 @@ figure.plot svg { display: block; width: 100%; height: auto; }
 .legend { font-size: 10pt; color: #222; }
 .viewnote { font-size: 10pt; }
 @media screen { body { padding: 12px; } }
-`;
+${d.oneSheet ? ONE_SHEET_CSS : ''}`;
 }
+
+/** THE ONE-SHEET COMPACT PACKET on this sheet (owner 2026-11-23, D60): the
+ *  PDF writer's tighter sizes (tables and the body 9 pt, less space), so
+ *  a browser's print is as close to one sheet as a browser allows. Nothing
+ *  is under 9 pt. */
+const ONE_SHEET_CSS = `
+body { font-size: 9pt; line-height: 1.25; }
+.doctitle { font-size: 14pt; }
+.dochead { padding-bottom: 3pt; margin-bottom: 4pt; }
+.sec { margin: 0 0 6pt; }
+h1 { font-size: 11pt; margin: 0 0 3pt; }
+h2 { font-size: 10.5pt; margin: 6pt 0 2pt; }
+h3 { font-size: 10pt; margin: 5pt 0 2pt; }
+p { margin: 0 0 3pt; }
+p.muted { font-size: 9pt; }
+table { font-size: 9pt; margin: 0 0 4pt; }
+th, td { padding: 2pt 3pt; }
+figure.plot { margin: 0 0 4pt; }
+.legend, .viewnote { font-size: 9pt; }
+`;
 
 function tableHtml(t: SpDocTable): string {
   if (!t.rows.length) return `<p class="empty">${esc(t.empty)}</p>`;
@@ -362,14 +392,19 @@ function tableHtml(t: SpDocTable): string {
   const cls = (align?: 'left' | 'center') => (align === 'center' ? ' class="center"' : '');
   const cols = t.columns.map((c) => `<col style="width:${n2((c.width / total) * 100)}%"/>`).join('');
   const head = t.columns.map((c) => `<th scope="col"${cls(c.align)}>${esc(c.label)}</th>`).join('');
-  const body = t.rows
-    .map((r) => {
-      const rowCls = [r.strong ? 'strong' : '', r.note ? 'hasnote' : ''].filter(Boolean).join(' ');
-      const cells = t.columns.map((c) => `<td${cls(c.align)}>${esc(r.cells[c.key] ?? '')}</td>`).join('');
-      const note = r.note ? `<tr class="note"><td colspan="${t.columns.length}">${esc(r.note)}</td></tr>` : '';
-      return `<tbody class="row"><tr${rowCls ? ` class="${rowCls}"` : ''}>${cells}</tr>${note}</tbody>`;
-    })
-    .join('');
+  const rowHtml = (r: SpDocTable['rows'][number]): string => {
+    const rowCls = [r.strong ? 'strong' : '', r.note ? 'hasnote' : ''].filter(Boolean).join(' ');
+    const cells = t.columns.map((c) => `<td${cls(c.align)}>${esc(r.cells[c.key] ?? '')}</td>`).join('');
+    const note = r.note ? `<tr class="note"><td colspan="${t.columns.length}">${esc(r.note)}</td></tr>` : '';
+    return `<tr${rowCls ? ` class="${rowCls}"` : ''}>${cells}</tr>${note}`;
+  };
+  // KEEP WITH NEXT (owner 2026-11-23, D60: "a table must never leave its
+  // header with fewer than 3 rows at the bottom of a page"). The first
+  // SP_HTML_KEEP_ROWS rows (all of a shorter table) are ONE row group that is
+  // never divided, so the browser moves them, with the header, to the next
+  // page together. Every later row is its own group, as before.
+  const lead = t.rows.slice(0, SP_HTML_KEEP_ROWS);
+  const body = [`<tbody class="row lead">${lead.map(rowHtml).join('')}</tbody>`, ...t.rows.slice(SP_HTML_KEEP_ROWS).map((r) => `<tbody class="row">${rowHtml(r)}</tbody>`)].join('');
   return `<table><colgroup>${cols}</colgroup><thead><tr>${head}</tr></thead>${body}</table>`;
 }
 
