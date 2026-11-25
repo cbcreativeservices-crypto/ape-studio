@@ -58,6 +58,26 @@ const PAPER_EDGE = '#b8ad8d';
 const fmtHz = (hz: number) =>
   `${hz >= 100 ? Math.round(hz) : hz >= 1 ? hz.toFixed(1) : hz.toFixed(2)} Hz`;
 
+/** Honest settings caption (truthful values only — never a prettied stand-in).
+ *  Owner 2026-11-25, audit B13: the platform reads "PLAT OFF" at 0 Hz (it said
+ *  "PLAT 0.00 Hz"), and DETUNE is named only where the machine applies it
+ *  (OSC 2 in LATERAL, the platform in ROTARY), the same rule as the screen's
+ *  `detuneActs`: with ROTARY and PLAT OFF a detune changes nothing on paper. */
+export function harmonoViewerCaption(cfg: HarmonoDrawingCfg, ratioLabel: string, intervalLabel: string, dampingLabel: string): string {
+  const detuneActs = cfg.detune > 0 && (!cfg.rotary || cfg.n3 > 0);
+  const parts: string[] = [
+    `RATIO ${ratioLabel}`,
+    intervalLabel,
+    `${fmtHz(cfg.n1)} : ${fmtHz(cfg.n2)}${cfg.rotary ? ` · PLAT ${cfg.n3 > 0 ? fmtHz(cfg.n3) : 'OFF'}` : ''}`,
+    dampingLabel,
+    cfg.rotary ? 'ROTARY' : 'LATERAL',
+    `φ${cfg.phaseDeg}°`,
+  ];
+  if (detuneActs) parts.push(`DETUNE +${(cfg.detune * 100).toFixed(0)}%`);
+  if (cfg.upTo < 1) parts.push(`FROZEN AT ${Math.round(cfg.upTo * 100)}%`);
+  return parts.join(' · ');
+}
+
 export function HarmonographViewer(props: {
   visible: boolean;
   onClose: () => void;
@@ -129,20 +149,8 @@ export function HarmonographViewer(props: {
   // The figure path — deterministic from the true settings.
   const d = useMemo(() => (visible ? drawingPath(cfg, PATH_SIZE) : ''), [visible, cfg]);
 
-  // Honest settings caption (truthful values only — never a prettied stand-in).
-  const caption = useMemo(() => {
-    const parts: string[] = [
-      `RATIO ${ratioLabel}`,
-      intervalLabel,
-      `${fmtHz(cfg.n1)} : ${fmtHz(cfg.n2)}${cfg.rotary ? ` · PLAT ${fmtHz(cfg.n3)}` : ''}`,
-      dampingLabel,
-      cfg.rotary ? 'ROTARY' : 'LATERAL',
-      `φ${cfg.phaseDeg}°`,
-    ];
-    if (cfg.detune > 0) parts.push(`DETUNE +${(cfg.detune * 100).toFixed(0)}%`);
-    if (cfg.upTo < 1) parts.push(`FROZEN AT ${Math.round(cfg.upTo * 100)}%`);
-    return parts.join(' · ');
-  }, [cfg, ratioLabel, intervalLabel, dampingLabel]);
+  // Honest settings caption (harmonoViewerCaption, above).
+  const caption = useMemo(() => harmonoViewerCaption(cfg, ratioLabel, intervalLabel, dampingLabel), [cfg, ratioLabel, intervalLabel, dampingLabel]);
 
   // Paper square sized to the SHORT dimension, leaving room for the card chrome
   // and the button row; landscape scrolls (the ScrollView keeps it reachable).

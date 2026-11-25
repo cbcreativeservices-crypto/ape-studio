@@ -18,6 +18,8 @@ const DRAG_SNAP = 9;
  *  landmark settles ON it, so the button path can reach 701.955 exactly —
  *  but a step AWAY (1.0 ¢ off) is not pulled back. */
 const STEP_SNAP = 1;
+/** Screen-reader ±10 ¢ snap window (¢): the drag's (audit B14). */
+const A11Y_STEP_SNAP = DRAG_SNAP;
 
 /** Snap a cents value to the nearest landmark inside `window` ¢ — the same
  *  rule the drag and the step keys use, exported so a dock fader driving the
@@ -107,8 +109,12 @@ export function DragRail({
     }),
   ).current;
 
-  const step = (d: number) => {
-    const c = snapped(cents + d, STEP_SNAP);
+  // The screen reader's ±10 ¢ path snaps with the finger's window (owner
+  // 2026-11-25, audit B14): with the 1 ¢ window it stopped at 700 ¢ while the
+  // chapter named "3/2 · fifth · 701.96" (it names a landmark within 6 ¢). A
+  // 10 ¢ step can never be pulled back onto the landmark it left (10 > 9).
+  const step = (d: number, window = STEP_SNAP) => {
+    const c = snapped(cents + d, window);
     onChange(c);
     onSettle?.(c);
   };
@@ -141,7 +147,7 @@ export function DragRail({
         aria-valuenow={cents}
         aria-valuetext={`${cents.toFixed(2)} cents`}
         accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}
-        onAccessibilityAction={(e) => step(e.nativeEvent.actionName === 'increment' ? 10 : -10)}
+        onAccessibilityAction={(e) => step(e.nativeEvent.actionName === 'increment' ? 10 : -10, A11Y_STEP_SNAP)}
       >
         {/* Android gesture nav: a drag that starts at the screen edge must not
             start the system back gesture (modules/ape-gesture-exclusion; the

@@ -52,6 +52,8 @@ import { LabUnderstandingBlock } from '../../../components/LabUnderstandingBlock
 import { useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
 import { UNDERSTANDING_UNIT, understandingFor } from '../../../features/lab/understanding';
 import type { LabEndUnit } from '../kit/labEnd';
+import { biasZone } from './biasCurve';
+import { plateCurrentShare } from './flowModel';
 
 // ── Screen-owned data (no Skia dependency) ──────────────────────────────────
 
@@ -367,7 +369,7 @@ function FlowSection(p: SectionProps) {
   const stageNum = FLOW_STAGES.indexOf(stage) + 1;
   // The section counts once the tube is warmed up to steady current (stage 5).
   useMetWhen(stageNum === FLOW_STAGES.length);
-  const current = heat > 0.7 ? (heat - 0.7) / 0.3 : 0;
+  const current = plateCurrentShare(heat);
   const heatWord = (v: number) => (v < 0.15 ? 'cold' : v < 0.7 ? 'warming…' : 'conducting');
   const glass = useGlassSize();
 
@@ -768,8 +770,11 @@ const BIAS_CHECK: CheckSpec = {
 
 function BiasSection(p: SectionProps) {
   const [b, setB] = useState(0.5);
-  const bad = b < 0.22 || b > 0.8;
-  const zone = b < 0.22 ? 'TOO NEGATIVE — CUTOFF: the bottom of the swing flatlines' : b > 0.8 ? 'TOO POSITIVE — SATURATION: the top of the swing flattens' : 'CORRECT BIAS — the swing rides the straight part of the curve';
+  // One zone rule with the drawn curve (biasCurve.ts, audit B7): CUTOFF exactly
+  // when the bottom of the swing has a flat stretch at zero current.
+  const zk = biasZone(b);
+  const bad = zk !== 'linear';
+  const zone = zk === 'cutoff' ? 'TOO NEGATIVE — CUTOFF: the bottom of the swing flatlines' : zk === 'saturation' ? 'TOO POSITIVE — SATURATION: the top of the swing flattens' : 'CORRECT BIAS — the swing rides the straight part of the curve';
   const glass = useGlassSize();
 
   const params: DockParam[] = [
@@ -779,7 +784,7 @@ function BiasSection(p: SectionProps) {
       label: 'BIAS',
       value: b,
       onChange: setB,
-      format: (x) => `${pct(x)} · ${x < 0.22 ? 'too negative' : x > 0.8 ? 'too positive' : 'correct'}`,
+      format: (x) => `${pct(x)} · ${biasZone(x) === 'cutoff' ? 'too negative' : biasZone(x) === 'saturation' ? 'too positive' : 'correct'}`,
       formatShort: (x) => pct(x),
       tint: bad ? '#ff6b5e' : undefined,
       helpKey: 'bias',
@@ -799,7 +804,7 @@ function BiasSection(p: SectionProps) {
         onGuide: () => p.help('bias'),
         bezel: [
           { k: 'BIAS', v: pct(b), helpKey: 'bias' },
-          { k: 'ZONE', v: b < 0.22 ? 'CUTOFF' : b > 0.8 ? 'SATURATION' : 'LINEAR', tint: bad ? '#ff6b5e' : '#5bff85', flex: 1.3, helpKey: 'bias' },
+          { k: 'ZONE', v: zk === 'cutoff' ? 'CUTOFF' : zk === 'saturation' ? 'SATURATION' : 'LINEAR', tint: bad ? '#ff6b5e' : '#5bff85', flex: 1.3, helpKey: 'bias' },
         ],
         render: stageGlass(p.viz, glass, (viz, w, h) => <BiasViz viz={viz} width={w} height={h} bias={b} running={p.focused} />),
       }}

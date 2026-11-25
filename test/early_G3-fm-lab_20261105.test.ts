@@ -139,19 +139,27 @@ describe('FC moves the picture', () => {
   });
 
   it('every RATIO keeps the carrier moving at index 0, where only the carrier is drawn', () => {
+    // owner 2026-11-25, fix-first 15: the axis no longer zooms in at index 0 (it is
+    // fixed for every setting), so the move is measured in proportion: two octaves
+    // up reads as four times as far along the linear axis, at every ratio.
     for (const r of RATIOS) {
       const lab = openLab();
       lab.setRatio(r);
       lab.setIndex(0);
-      assert.ok(lab.setFc(440).carrierX - lab.setFc(110).carrierX >= 100, `ratio ${r}`);
+      const low = lab.setFc(110).carrierX;
+      const high = lab.setFc(440).carrierX;
+      assert.ok(high - low > 15, `ratio ${r}: it moves (${low} → ${high})`);
+      assert.ok(Math.abs((high - PAD) / (low - PAD) - 4) < 1e-6, `ratio ${r}`);
     }
   });
 });
 
 describe('the picture stays honest and on the glass', () => {
-  it('ratio 7, index 8 widens the axis and keeps every stick on the glass at every FC', () => {
+  it('ratio 7, index 8 keeps the SAME axis and every stick on the glass at every FC', () => {
+    // owner 2026-11-25, fix-first 15: the axis used to widen with RATIO and INDEX
+    // (every stick slid); it is fixed now and reaches Nyquist, so nothing is off it.
     const lab = openLab();
-    const narrow = lab.setFc(440).ticks;
+    const opening = lab.setFc(440).ticks;
     lab.setRatio('7');
     lab.setIndex(8);
     for (const hz of [110, 220, 440]) {
@@ -160,7 +168,7 @@ describe('the picture stays honest and on the glass', () => {
       assert.ok(Math.min(...stickXs) >= PAD, `FC ${hz}: nothing past the left edge`);
       assert.ok(Math.max(...stickXs) <= W - PAD, `FC ${hz}: nothing past the right edge`);
     }
-    assert.notDeepEqual(lab.paint().ticks, narrow, 'the axis widened to fit');
+    assert.deepEqual(lab.paint().ticks, opening, 'the axis did not change');
   });
 
   it('every ratio and index step keeps every stick on the glass at every FC', () => {
@@ -203,10 +211,15 @@ describe('the picture stays honest and on the glass', () => {
     }
   });
 
-  it('FC 440 at the opening ratio and index keeps the picture it always had', () => {
+  it('FC 440 at the opening ratio and index sits on the fixed axis', () => {
+    // owner 2026-11-25, fix-first 15: was PAD + 440/(4840·1.15)·plot (an axis sized
+    // from the current ratio and index); now the fixed linear 0–5 kHz part, 85 % of
+    // the plot: 440 Hz lands about 1.4 px left of where it always did.
     const lab = openLab();
-    const top = 440 + 5 * 880; // J_5(2) is the last stick drawn
-    const expected = PAD + (440 / (top * 1.15)) * (W - 2 * PAD);
-    assert.ok(Math.abs(lab.setFc(440).carrierX - expected) < 1e-6);
+    const expected = PAD + (440 / 5000) * 0.85 * (W - 2 * PAD);
+    const x = lab.setFc(440).carrierX;
+    assert.ok(Math.abs(x - expected) < 1e-6);
+    const old = PAD + (440 / ((440 + 5 * 880) * 1.15)) * (W - 2 * PAD);
+    assert.ok(Math.abs(x - old) < 2, `close to the old picture (${x} vs ${old})`);
   });
 });

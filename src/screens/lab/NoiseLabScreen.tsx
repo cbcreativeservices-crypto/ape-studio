@@ -538,8 +538,10 @@ function SlopeChart({
       s += `${i === 0 ? 'M' : 'L'}${xAt(oct).toFixed(1)} ${yAt(db).toFixed(1)}`;
     }
     return s;
+    // `running` is a dep (owner 2026-11-25, audit B9): on Stop the ticker
+    // stops, so without it the trace froze in its last jittered shape.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tick, selectedSlope, speakerView, W]);
+  }, [tick, running, selectedSlope, speakerView, W]);
 
   // Selected color's response AFTER the speaker high-pass, sampled across the
   // axis (guard is a curve, so a straight line won't do). slope·oct + guardDb(f).

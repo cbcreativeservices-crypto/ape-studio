@@ -74,6 +74,19 @@ const STRINGS = [
   { key: 'G', label: 'G', midi: 43, hz: 97.999 },
 ] as const;
 
+/**
+ * The drawn string's swing rate (owner 2026-11-25, fix-first 15, item 6):
+ * the SOUNDING note's real frequency (string pitch × 2^(fret/12), or string
+ * pitch × harmonic n) divided by ONE constant slow-down factor, so the swing
+ * is strictly proportional to the note: a note an octave up always swings
+ * exactly twice as fast, on any string. The factor is set so open low E
+ * (41.2 Hz) keeps its old 0.45 swings/s (≈ 91.6× slower than real). Range:
+ * 0.45/s (open E) to 5.35/s (G string, 5th harmonic, 490 Hz), about 11
+ * frames per swing at 60 fps: watchable, so no compression is applied.
+ */
+const SWING_SLOWDOWN = STRINGS[0].hz / 0.45;
+const swingHzFor = (soundHz: number) => soundHz / SWING_SLOWDOWN;
+
 const NOTE_NAMES = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'] as const;
 const INTERVALS = [
   'UNISON', 'MINOR 2ND', 'MAJOR 2ND', 'MINOR 3RD', 'MAJOR 3RD', 'PERFECT 4TH', 'TRITONE',
@@ -814,11 +827,12 @@ function Fretboard({
   // THE STRING VIBRATES (art grading 2026-10-16: the wave was a still
   // envelope). The selected string itself swings between the envelope's two
   // edges, y = y0 − A·sin(nπx/L)·cos(2πft), slowed right down to watch; a
-  // higher note (or a higher harmonic) swings proportionally faster. Held
-  // still by Low-Light / reduced motion (decorative-motion gate).
+  // higher note (or a higher harmonic) swings proportionally faster, the
+  // STRING's own pitch included (swingHzFor above). Held still by Low-Light /
+  // reduced motion (decorative-motion gate).
   const motionOk = useDecorativeMotion();
   const vib = useSharedValue(0);
-  const visHz = 0.45 * (mode === 'fretted' ? Math.pow(2, fret / 12) : harmonicN);
+  const visHz = swingHzFor(STRINGS[stringIdx].hz * (mode === 'fretted' ? Math.pow(2, fret / 12) : harmonicN));
   useEffect(() => {
     cancelAnimation(vib);
     vib.value = 0;

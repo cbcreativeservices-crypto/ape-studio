@@ -14,7 +14,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import {
   CONNECTIONS, DEFAULTS, FREQ_HINTS, FREQ_MAX, FREQ_MIN, OVER_STAGES, OVER_THRESHOLD_SPAN_DB, PATH_MAIN, PATH_SIDECHAIN, PATH_SPLIT, PHRASE,
-  bandpassGain, detectorCurve, eqCut, meanSibilantGr, overSettings, overStage, processPhrase, sFrameSpectrum, vowelBrightnessLossDb,
+  bandpassGain, detectorCurve, eqCut, meanSibilantDropDb, meanSibilantGr, overSettings, overStage, processFrame, processPhrase, sFrameSpectrum, splitBandGain, toDb, vowelBrightnessLossDb,
   type Frame, type FreqHint, type Mode, type Settings,
 } from '../../../features/deesser/deEsserModel';
 import { navigationRef } from '../../../navigation/navigationRef';
@@ -167,7 +167,10 @@ function PageEqVs({ ctx }: { ctx: PageCtx }) {
   const de = processPhrase(PHRASE, { ...DEFAULTS, thresholdDb: -12, rangeDb: cut });
   const out = which === 'eq' ? eq : de;
   const loss = vowelBrightnessLossDb(PHRASE, out);
-  const sGr = which === 'eq' ? cut : meanSibilantGr(de);
+  // How far the S's hiss DROPS, the quantity the strips draw (owner 2026-11-25,
+  // round 2 checker): in split-band an off-centre S drops less than the gain
+  // reduction at the band centre.
+  const sGr = which === 'eq' ? cut : meanSibilantDropDb(de);
   // The live readout — shown in the card on the page and at the top of the dock in full screen.
   const lossRead = <Text style={styles.read}>brightness taken from everything that is not an S: {loss.toFixed(1)} dB · S’s reduced by about {sGr.toFixed(1)} dB</Text>;
   const toggle = (
@@ -400,7 +403,7 @@ function PageGr({ ctx }: { ctx: PageCtx }) {
       <ControlSlider level label="Threshold" value={s.thresholdDb} min={-40} max={0} step={1} format={(v) => `${v.toFixed(0)} dB`} onChange={(v) => { set({ thresholdDb: v }); touch(ctx); }} />
     </View>
   );
-  const peak = <Text style={styles.read}>peak reduction {max.toFixed(1)} dB · average on S’s {mean.toFixed(1)} dB · stage: {overStage(mean).name}</Text>;
+  const peak = <Text style={styles.read}>peak gain reduction {max.toFixed(1)} dB · average gain reduction on S’s {mean.toFixed(1)} dB · stage: {overStage(mean).name}</Text>;
   return (
     <View style={{ gap: 12 }}>
       {/* NEW COPY: "the only honest meter" → "the one essential display". */}
@@ -445,12 +448,16 @@ function PageMode({ ctx }: { ctx: PageCtx }) {
   const inSp = sFrameSpectrum(f, 48);
   const g = Math.pow(10, -p.grDb / 20);
   const outMag = new Float64Array(inSp.mag.length);
+  // The exact split-band gain at each frequency (splitBandGain), the same the
+  // frame strip's hiss takes; broadband: everything × g.
   for (let i = 0; i < outMag.length; i++) {
-    const w = s.mode === 'broadband' ? 1 : bandpassGain(inSp.hz[i], s.freqHz, s.q);
-    outMag[i] = inSp.mag[i] * (1 - w * (1 - g));
+    outMag[i] = inSp.mag[i] * (s.mode === 'broadband' ? g : splitBandGain(inSp.hz[i], s, g));
   }
   const go = (i: number) => { setStep((i + PHRASE.length) % PHRASE.length); setAuto(false); touch(ctx); };
   const gr = p.grDb.toFixed(1);
+  // Split-band's cut on THIS frame's hiss, at its own frequency (audit B11): the
+  // band's −gr dB is at its centre; an off-centre hiss loses less.
+  const splitHissDb = (toDb(f.hiss) - toDb(processFrame(f, { ...s, mode: 'split' }).outHiss)).toFixed(1);
   const specCaption = s.mode === 'split' ? 'Gray: before · color: after · gold dashed: the band being turned down.' : 'Gray: before · color: after — the whole spectrum moves together.';
   // Mode + frame controls: on the page, and docked under either figure in full screen.
   const modeRow = (
@@ -459,7 +466,7 @@ function PageMode({ ctx }: { ctx: PageCtx }) {
       <Btn label="SPLIT-BAND" tone={s.mode === 'split' ? 'primary' : 'plain'} selected={s.mode === 'split'} onPress={() => { set({ mode: 'split' }); touch(ctx); }} />
     </Row>
   );
-  const stepRead = <Text style={styles.read}>frame {step + 1} · “{f.label}” · {p.grDb > 0 ? `−${gr} dB reduction` : 'no reduction'}</Text>;
+  const stepRead = <Text style={styles.read}>frame {step + 1} · “{f.label}” · {p.grDb > 0 ? `−${gr} dB gain reduction` : 'no reduction'}</Text>;
   const stepBtns = (
     <>
       <Wide><Btn label="‹" onPress={() => go(step - 1)} a11y="Previous frame" /></Wide>
@@ -500,7 +507,7 @@ function PageMode({ ctx }: { ctx: PageCtx }) {
         <Eyebrow>{s.mode === 'broadband' ? 'BROADBAND' : 'SPLIT-BAND'} · THIS FRAME</Eyebrow>
         {/* NEW COPY: side-by-side worked example for the current frame, so both modes are compared without toggling from memory. */}
         <Text style={styles.read}>{p.grDb > 0
-          ? `broadband → body −${gr} dB, hiss −${gr} dB · split-band → body 0 dB, hiss −${gr} dB`
+          ? `broadband → body −${gr} dB, hiss −${gr} dB · split-band → body 0 dB, hiss −${splitHissDb} dB`
           : 'no reduction on this frame — both modes pass it untouched'}</Text>
         <Body>{s.mode === 'broadband'
           ? 'Simple and natural-sounding in small doses: the whole S gets quieter, like the talker backed off for a moment. Push it and the whole voice ducks on every S — you hear it breathe.'
@@ -525,10 +532,13 @@ function PageOver({ ctx }: { ctx: PageCtx }) {
   const [rackS, set] = useRack();
   const s = overSettings(amount, rackS.mode);
   const out = processPhrase(PHRASE, s);
+  // The stage reads the gain-reduction meter (the progression's scale); the S's
+  // own drop is what the strip draws (owner 2026-11-25, round 2 checker).
   const mean = meanSibilantGr(out);
+  const drop = meanSibilantDropDb(out);
   const stage = overStage(mean);
   const hard = <ControlSlider label="How hard" value={amount} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}% · threshold ${-Math.round(v * OVER_THRESHOLD_SPAN_DB)} dB`} onChange={(v) => { setAmount(v); touch(ctx); }} />;
-  const stageLine = <Eyebrow>{stage.name.toUpperCase()} · ABOUT {mean.toFixed(0)} dB ON THE S’S</Eyebrow>;
+  const stageLine = <Eyebrow>{stage.name.toUpperCase()} · ABOUT {mean.toFixed(0)} dB GAIN REDUCTION · S’S DOWN ABOUT {drop.toFixed(0)} dB</Eyebrow>;
   return (
     <View style={{ gap: 12 }}>
       {/* NEW COPY: lead names what the stages are. */}
@@ -541,7 +551,7 @@ function PageOver({ ctx }: { ctx: PageCtx }) {
         title="OUTPUT"
         badge={CONCEPTUAL}
         controls={<Dock>{stageLine}{hard}</Dock>}
-        render={(w, h) => <FrameStrip width={w} height={h} frames={PHRASE} output={out} a11y={`At this setting the sibilants are reduced by about ${mean.toFixed(0)} dB: ${stage.name}. ${stage.symptoms}`} />}
+        render={(w, h) => <FrameStrip width={w} height={h} frames={PHRASE} output={out} a11y={`At this setting the gain reduction on the sibilants is about ${mean.toFixed(0)} dB and their hiss drops about ${drop.toFixed(0)} dB: ${stage.name}. ${stage.symptoms}`} />}
       />
       <Card tone={stage.id === 'transparent' || stage.id === 'controlled' ? 'ok' : stage.id === 'off' ? 'plain' : 'warn'}>
         {stageLine}

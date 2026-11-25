@@ -120,7 +120,11 @@ describe('DE-R2-01 — the drawing agrees with deEsserModel', () => {
       const sp = processFrame(f, { ...s, mode: 'split' }), bb = processFrame(f, { ...s, mode: 'broadband' });
       const g = fromDb(-sp.grDb);
       assert.equal(sp.outBody, f.body, f.label);
-      assert.ok(Math.abs(sp.outHiss - f.hiss * g) < 1e-12, f.label);
+      // owner 2026-11-25, fix-first 15 round 2 (audit B11 + checker): the hiss takes the
+      // complementary split's exact gain at its own frequency, √((g² + X²)/(1 + X²)),
+      // X = Q·(f/fc − fc/f) (× g at the band centre).
+      const X = s.q * (f.hissHz / s.freqHz - s.freqHz / f.hissHz);
+      assert.ok(Math.abs(sp.outHiss - f.hiss * Math.sqrt((g * g + X * X) / (1 + X * X))) < 1e-12, f.label);
       assert.ok(Math.abs(bb.outBody - f.body * g) < 1e-12 && Math.abs(bb.outHiss - f.hiss * g) < 1e-12, f.label);
     }
   });

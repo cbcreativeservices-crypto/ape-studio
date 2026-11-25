@@ -111,7 +111,7 @@ export function ParametricControlsModule(p: EqModuleComponentProps) {
         ],
         render: (w, h) => (
           <View style={{ width: w, height: h, justifyContent: 'center', paddingHorizontal: 8 }}>
-            <ResponseCurveGraph curves={curves} dbRange={GAIN_RANGE} width={w - 16} totalHeight={Math.max(94, h - 12)} mainColor={gc} focusHz={[freq]} />
+            <ResponseCurveGraph curves={curves} dbRange={GAIN_RANGE} width={w - 16} totalHeight={Math.max(94, h - 12)} mainColor={gc} band={{ f: freq, q }} focusHz={[freq]} />
           </View>
         ),
       }}

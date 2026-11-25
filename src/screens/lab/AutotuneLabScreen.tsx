@@ -94,6 +94,23 @@ function voicePayload(hz: number): number[] {
 /** Fader readout — 0 reads "OFF" (the old "0% — OFF" chip, kept honest). */
 const fmtAmount = (amount: number) => (amount <= 0.005 ? 'OFF' : `${Math.round(amount * 100)}%`);
 
+/** The AMOUNT lane's value as the lab uses it (owner 2026-11-25, audit B18):
+ *  a resting position at or under 0.5 % IS off, for the sound, the curves and
+ *  the readout alike. The lane is continuous, so it could hand over 0.003:
+ *  the readout said OFF and SPEED greyed to UNUSED, but the curve drew solid
+ *  and a faint wedge showed (and the pass corrected by 0.3 %). */
+function amountFromLane(v: number): number {
+  return v <= 0.005 ? 0 : v;
+}
+
+/** Where the pitch dot starts when it (re)appears mid-pass (audit B10): at the
+ *  pass's elapsed share, so it rides the note that is SOUNDING. After a SPEED
+ *  change mid-play the replay starts 250 ms later but the dot was hidden for
+ *  the 1.1 s redraw, then started from the top: ~0.85 s behind the sound. */
+function pitchDotFrom(elapsedMs: number, totalMs: number): number {
+  return totalMs > 0 ? Math.min(1, Math.max(0, elapsedMs / totalMs)) : 0;
+}
+
 const INTRO =
   'Every note has a target line on the cents grid — one vertical line per semitone. This ' +
   'demo melody is sung out of tune on purpose; pitch correction pulls each note toward its ' +
@@ -342,7 +359,7 @@ export function AutotuneLabScreen() {
               // Lockstep rule: a control change ends the running pass; armed, it
               // replays with the new setting (owner 2026-09-29).
               if (playing) hush();
-              setAmount(v);
+              setAmount(amountFromLane(v));
             },
             format: () => fmtAmount(amount),
             helpKey: 'correction',
@@ -621,16 +638,31 @@ function CentsGrid({
     return input.length >= 2 ? { input, xs, ys } : null;
   }, [curves, ts]);
   const showDot = dotRange !== null && reveal >= 1 && isFocused && (playing || motion);
+  // When the pass's audio started (passId bumps as it starts sounding).
+  const passT0 = useRef(Date.now());
+  useEffect(() => {
+    passT0.current = Date.now();
+  }, [passId]);
   useEffect(() => {
     if (!showDot) return;
+    const total = NOTE_MS * MELODY.length;
+    if (playing) {
+      // Mid-pass (e.g. after the redraw that follows a SPEED change), start at
+      // the sounding note, not the top (pitchDotFrom, audit B10).
+      const from = pitchDotFrom(Date.now() - passT0.current, total);
+      dot.setValue(from);
+      const rest = Animated.timing(dot, { toValue: 1, duration: (1 - from) * total, easing: Easing.linear, useNativeDriver: true });
+      rest.start();
+      return () => rest.stop();
+    }
     dot.setValue(0);
     const run = Animated.timing(dot, {
       toValue: 1,
-      duration: NOTE_MS * MELODY.length,
+      duration: total,
       easing: Easing.linear,
       useNativeDriver: true,
     });
-    const anim = playing ? run : Animated.loop(Animated.sequence([run, Animated.delay(900)]));
+    const anim = Animated.loop(Animated.sequence([run, Animated.delay(900)]));
     anim.start();
     return () => anim.stop();
   }, [showDot, playing, passId, dot]);

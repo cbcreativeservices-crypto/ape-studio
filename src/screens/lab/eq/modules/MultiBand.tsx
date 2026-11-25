@@ -404,7 +404,16 @@ export function MultiBandModule(p: EqModuleComponentProps) {
             <View style={{ width: w, height: h, justifyContent: 'center', alignItems: 'center' }}>
               <NodeDragSurface gw={gw} gh={gh} onGrab={grab} onDrag={applyDrag}>
                 {/* Every curve carries its OWN MIDI colour (set per-curve above). */}
-                <ResponseCurveGraph curves={curves} dbRange={DB_RANGE} width={gw} height={gh} />
+                {/* The selected bell's marker (owner 2026-11-25, audit B2): every band
+                    starts at 0 dB, flat, so FREQ and Q show on the glass as its
+                    centre line and half-gain bandwidth (Q), in the band's own colour. */}
+                <ResponseCurveGraph
+                  curves={curves}
+                  dbRange={DB_RANGE}
+                  width={gw}
+                  height={gh}
+                  band={selBell && selBell.on ? { f: selBell.f, q: selBell.q, color: BAND_COLOR[sel] } : undefined}
+                />
                 <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
                   pointerEvents="none"
                   style={StyleSheet.absoluteFill}

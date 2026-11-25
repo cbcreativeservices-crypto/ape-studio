@@ -13,7 +13,8 @@
  * (a copy of the input → band-pass → detector → threshold → gain computer) is
  * the same in both modes, and its dashed control line always lands on the
  * gain element — which in broadband mode carries the whole voice. This
- * matches deEsserModel.processFrame: split → outBody untouched, outHiss × g;
+ * matches deEsserModel.processFrame: split → outBody untouched, outHiss × the
+ * band's gain at the hiss frequency (splitBandGain; × g at the band centre);
  * broadband → both × g.
  *
  * Units are the drawing's 340-unit viewBox. Solid = audio (cyan main path,

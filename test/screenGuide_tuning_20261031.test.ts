@@ -280,8 +280,9 @@ describe('4. TRY THIS numbers are what the chapters print (A4 = 440)', () => {
     // The bezel is STEP / RATIO / Hz; the per-step +Hz is the LAB NOTES card's line.
     assert.ok(code(`${DIR}/chapters/ch10Equal.tsx`).includes('= +{(hz(built) - hz(built - 1)).toFixed(2)} Hz'));
     for (const s of ['RATIO 1.059463, Hz 277.18 Hz; the LAB NOTES card reads +15.56 Hz', 'LAB NOTES reads +29.37 Hz for the last step']) assert.ok(t(10).includes(s), s);
-    // A → B lights BOTH patterns for the whole clip; only A then B shows the move.
-    assert.ok(code(`${DIR}/chapters/ch10Equal.tsx`).includes("last === 'ab' ? [...pattern, ...pattern.map((s) => s + 5)]"));
+    // owner 2026-11-25, fix-first 15 (round 2, audit B20): A → B lights the C pattern,
+    // then the F pattern as it sounds (it used to light both for the whole clip).
+    assert.ok(code(`${DIR}/chapters/ch10Equal.tsx`).includes("last === 'ab' ? (abHalf === 'b' ? pattern.map((s) => s + 5) : pattern)"));
     assert.ok(t(10).includes('Play A · PATTERN IN C, then B · STARTING ON F'));
     assert.doesNotMatch(t(10), /Play A → B[^.]*watch/);
   });

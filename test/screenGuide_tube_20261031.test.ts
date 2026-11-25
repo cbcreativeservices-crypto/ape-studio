@@ -236,7 +236,9 @@ describe('4. the numbers in the guide are the numbers the screen prints', () => 
   });
   it('WARM-UP: 50% → step 3, 0%; 85% → step 5, 50%; PLATE I starts above 70%', () => {
     const body = fnBlock(LAB_SRC, 'FlowSection');
-    assert.match(body, /const current = heat > 0\.7 \? \(heat - 0\.7\) \/ 0\.3 : 0;/);
+    // owner 2026-11-25, fix-first 15 (round 2, audit B8): the same formula, now shared with the drawing.
+    assert.match(body, /const current = plateCurrentShare\(heat\);/);
+    assert.match(read('src/screens/lab/tube/flowModel.ts'), /return heat01 > 0\.7 \? Math\.min\(1, \(heat01 - 0\.7\) \/ 0\.3\) : 0;/);
     assert.match(body, /const stage = FLOW_STAGES\.find\(\(s\) => heat < s\.until\) \?\? FLOW_STAGES\[4\];/);
     const untils = [...LAB_SRC.matchAll(/\{ until: ([\d.]+), text: '(\d) · /g)].map((m) => [Number(m[1]), m[2]] as const);
     assert.deepEqual(untils.map((u) => u[0]), [0.15, 0.35, 0.7, 0.85, 1.01]);
@@ -294,9 +296,12 @@ describe('4. the numbers in the guide are the numbers the screen prints', () => 
   });
   it('BIAS: below 22% CUTOFF, above 80% SATURATION, 50% LINEAR', () => {
     const body = fnBlock(LAB_SRC, 'BiasSection');
-    assert.match(body, /v: b < 0\.22 \? 'CUTOFF' : b > 0\.8 \? 'SATURATION' : 'LINEAR'/);
+    // owner 2026-11-25, fix-first 15 (round 2, audit B7): one rule (biasZone) for the word and
+    // the drawn wave; its edges are still 22 % and 80 % (b − 0.15 < 0.07, b + 0.15 > 0.95).
+    assert.match(body, /v: zk === 'cutoff' \? 'CUTOFF' : zk === 'saturation' \? 'SATURATION' : 'LINEAR'/);
+    assert.match(read('src/screens/lab/tube/biasCurve.ts'), /export const TUBE_BIAS_DRIVE = 0\.15;[\s\S]*export const TUBE_V_CUTOFF = 0\.07;[\s\S]*export const TUBE_V_SAT = 0\.95;/);
     assert.match(body, /const \[b, setB\] = useState\(0\.5\);/);
-    assert.match(body, /x < 0\.22 \? 'too negative' : x > 0\.8 \? 'too positive' : 'correct'/);
+    assert.match(body, /biasZone\(x\) === 'cutoff' \? 'too negative' : biasZone\(x\) === 'saturation' \? 'too positive' : 'correct'/);
     assert.match(MODULES.bias.changes.join(' '), /Below 22%[\s\S]*CUTOFF[\s\S]*Above 80%[\s\S]*SATURATION/);
     assert.match(MODULES.bias.tryThis.join(' '), /50%: ZONE reads LINEAR/);
   });

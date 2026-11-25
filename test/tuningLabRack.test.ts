@@ -318,7 +318,10 @@ describe('every dock key changes the picture (review 2026-09-30)', () => {
     assert.match(ch(6), /<Spiral highlight=\{/);
   });
   test('chapter 8: the EXAMPLE lights its notes on the rail', () => {
-    assert.match(ch(8), /inExample\.includes\(n\.spelling\) \? \('neutral' as const\)/);
+    // owner 2026-11-25, fix-first 15 (round 2, audit B15): one role rule for both lanes;
+    // E, A and B used to stay lit whatever the passage.
+    assert.match(ch(8), /role: exampleRole\(n\.spelling, 0, inExample, sel, DIFFER\)/);
+    assert.match(ch(8), /const lit = inExample\.includes\(spelling\) \|\| spelling === sel;/);
   });
   test('chapter 10: the A / B pick lights the pattern on the rail', () => {
     assert.match(ch(10), /const lit = new Set<number>\(!status\.playing \? \[\]/);

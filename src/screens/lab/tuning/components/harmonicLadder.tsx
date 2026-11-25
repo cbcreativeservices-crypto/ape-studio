@@ -11,6 +11,7 @@ import Svg, { Line, Polyline, Rect, Text as SvgText } from 'react-native-svg';
 import { colors, fonts } from '../../../../theme/tokens';
 import { harmonicFrequency, partialDifferenceHz, ratioToCents } from '../../../../features/tuning/tuningMath';
 import { METER_H, METER_W, ROLE } from './primitives';
+import { beatingTraces } from './beatingModel';
 
 const W = 340;
 const H = 150;
@@ -126,21 +127,11 @@ export const BEATS_H = 90;
 /** Two sine traces drifting in phase plus their sum's envelope — an explanatory model. */
 export function BeatingModel({ diffHz, fit, note = true }: { diffHz: number; /** Fill the box at the viewBox's shape. */ fit?: boolean; /** The sentence under the drawing. */ note?: boolean }) {
   const W2 = BEATS_W, H2 = BEATS_H;
-  const n = 170;
   const d = Math.abs(diffHz);
-  // Draw over a window long enough to show ~1.5 beats when the difference is small.
-  const windowS = d > 0.01 ? Math.min(1.5, 1.5 / d) : 1;
-  const pts1: string[] = [], pts2: string[] = [], env: string[] = [];
-  for (let i = 0; i <= n; i++) {
-    const t = (i / n) * windowS;
-    const xx = 6 + (i / n) * (W2 - 12);
-    const p1 = Math.sin(2 * Math.PI * 12 * t / windowS);
-    const p2 = Math.sin(2 * Math.PI * (12 * t / windowS + d * t));
-    pts1.push(`${xx.toFixed(1)},${(H2 / 2 - p1 * 14).toFixed(1)}`);
-    pts2.push(`${xx.toFixed(1)},${(H2 / 2 - p2 * 14).toFixed(1)}`);
-    const e = Math.abs(Math.cos(Math.PI * d * t));
-    env.push(`${xx.toFixed(1)},${(H2 / 2 - e * 34).toFixed(1)}`);
-  }
+  // One fixed span of time (beatingModel.ts, owner 2026-11-25, audit B4): the
+  // further the third is from 5/4, the more swells fit on screen.
+  const tr = beatingTraces(d, W2, H2);
+  const pts1 = [tr.p1], pts2 = [tr.p2], env = [tr.env];
   return (
     <View style={{ gap: 4 }} accessible accessibilityLabel={`Beating model, explanatory and not a measurement: ${d < 0.01 ? 'no beating, the partials coincide' : `envelope rises and falls ${d.toFixed(2)} times per second`}`}>
       <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width="100%" height={fit ? undefined : H2} style={fit ? { aspectRatio: W2 / H2 } : undefined} viewBox={`0 0 ${W2} ${H2}`} preserveAspectRatio={fit ? 'xMidYMid meet' : 'none'}>

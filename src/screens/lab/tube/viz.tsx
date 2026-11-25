@@ -47,6 +47,8 @@ import { useStageTextScale } from '../rack/stageAspect';
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 import { MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../../features/tools/levelColor';
 import { TUBE_INK, TUBE_INK_EXTRA } from './tubeInks';
+import { TUBE_BIAS_DRIVE, biasZone, plateCurrent01 } from './biasCurve';
+import { plateCurrentShare } from './flowModel';
 
 // ── REFERENCE-CARD INK CODE (owner 2026-08-10) ──────────────────────────────
 // The Tube Reference cards define the official per-element color language;
@@ -94,10 +96,9 @@ function hashW(n: number): number {
 }
 
 /** Normalized illustrative transfer curve: grid drive 0..1 → plate current
- *  0..1 with cutoff at the bottom and saturation at the top. */
-export function plateCurrent01(v01: number): number {
-  return (Math.tanh(4.2 * (Math.max(0, Math.min(1, v01)) - 0.52)) + 1) / 2;
-}
+ *  0..1 with a hard cutoff at the bottom and saturation at the top
+ *  (biasCurve.ts, owner 2026-11-25, audit B7). */
+export { plateCurrent01 };
 
 export type TubeKind = 'triode' | 'tetrode' | 'pentode';
 export type TubePart = 'envelope' | 'heater' | 'cathode' | 'grid' | 'screen' | 'suppressor' | 'plate' | 'vacuum';
@@ -775,7 +776,8 @@ export function ElectronFlowView({
     const n = Math.round(emit * 34);
     for (let i = 0; i < n; i++) {
       const y = top + 8 + hashW(i * 17.9) * (bot - top - 16);
-      if (drifting && hashW(i * 3.7) < (heat01 - 0.7) / 0.3 + 0.25) {
+      // The share drawn crossing = the PLATE I share (flowModel.ts, audit B8).
+      if (drifting && hashW(i * 3.7) < plateCurrentShare(heat01)) {
         const f = (ph / (2 * Math.PI) + hashW(i * 51.3)) % 1;
         // Gently arced flight path instead of a dead-straight lane.
         const bend = Math.sin(f * Math.PI) * 5 * (hashW(i * 2.3) - 0.5);
@@ -1345,10 +1347,10 @@ export function BiasView({
   }, [w, h]);
 
   // Operating point + drive extremes (plain JS — captured by the worklet).
-  const DRIVE = 0.15;
+  const DRIVE = TUBE_BIAS_DRIVE;
   const opX = xOfV(bias01);
   const opY = yOfI(plateCurrent01(bias01));
-  const opBad = bias01 < 0.22 || bias01 > 0.8;
+  const opBad = biasZone(bias01) !== 'linear';
   const opColor = opBad ? ACCENT_RED : ACCENT_GREEN;
 
   const dyn = useDerivedValue(() => {
@@ -1357,7 +1359,7 @@ export function BiasView({
     // The input drive swings the grid around the operating point…
     const vNow = bias01 + DRIVE * Math.sin(ph * 2);
     const vC = vNow < 0 ? 0 : vNow > 1 ? 1 : vNow;
-    const ipNow = (Math.tanh(4.2 * (vC - 0.52)) + 1) / 2;
+    const ipNow = plateCurrent01(vC);
     p.addCircle(cx0 + vC * (cw - 20), cy0 + (1 - ipNow) * chh, 5);
     // …and the OUTPUT wave is that swing read off the curve.
     const N = 56;
@@ -1365,7 +1367,7 @@ export function BiasView({
       const t = i / N;
       const v = bias01 + DRIVE * Math.sin(t * 2 * Math.PI * 2 - ph * 2);
       const vc = v < 0 ? 0 : v > 1 ? 1 : v;
-      const ip = (Math.tanh(4.2 * (vc - 0.52)) + 1) / 2;
+      const ip = plateCurrent01(vc);
       const x = ox0 + t * ow;
       const y = cy0 + (1 - ip) * chh;
       if (i === 0) p.moveTo(x, y);
@@ -1390,8 +1392,9 @@ export function BiasView({
         <LinearGradient start={vec(xOfV(0.8), cy0)} end={vec(xOfV(1), cy0)} colors={['#ff6b5e00', '#ff6b5e17']} />
       </RoundedRect>
       {/* Region hints: cutoff floor and saturation ceiling. */}
-      <SkLine p1={{ x: cx0, y: yOfI(0.02) }} p2={{ x: cx0 + cw - 20, y: yOfI(0.02) }} color={GHOST} strokeWidth={1.4} />
-      <SkLine p1={{ x: cx0, y: yOfI(0.98) }} p2={{ x: cx0 + cw - 20, y: yOfI(0.98) }} color={GHOST} strokeWidth={1.4} />
+      {/* At the curve's real floor and ceiling (biasCurve.ts: it reaches 0 and 1). */}
+      <SkLine p1={{ x: cx0, y: yOfI(0) }} p2={{ x: cx0 + cw - 20, y: yOfI(0) }} color={GHOST} strokeWidth={1.4} />
+      <SkLine p1={{ x: cx0, y: yOfI(1) }} p2={{ x: cx0 + cw - 20, y: yOfI(1) }} color={GHOST} strokeWidth={1.4} />
       <SkLine p1={{ x: ox0 - 8, y: cy0 }} p2={{ x: ox0 - 8, y: cy0 + chh }} color={GHOST} strokeWidth={1.4} />
       <Path path={curves.ticks} color="#3a3a42" style="stroke" strokeWidth={1.2} />
       {/* Transfer curve: gradient underfill + glow stroke + core stroke. */}

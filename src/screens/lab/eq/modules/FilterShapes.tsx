@@ -165,7 +165,10 @@ export function FilterShapesModule(p: EqModuleComponentProps) {
         ],
         render: (w, h) => (
           <View style={{ width: w, height: h, justifyContent: 'center', paddingHorizontal: 8 }}>
-            <ResponseCurveGraph curves={curves} dbRange={18} width={w - 16} totalHeight={Math.max(94, h - 12)} mainColor={gc} focusHz={[freq]} />
+            {/* The band marker (owner 2026-11-25, audit B17): at 0 dB a BELL or shelf
+                is flat, so FREQ (and the bell's Q, shaded as its half-gain bandwidth (Q)) show
+                where the band is. Filters and the notch draw their own shape. */}
+            <ResponseCurveGraph curves={curves} dbRange={18} width={w - 16} totalHeight={Math.max(94, h - 12)} mainColor={gc} band={shape === 'bell' ? { f: freq, q } : hasGain ? { f: freq } : undefined} focusHz={[freq]} />
           </View>
         ),
       }}

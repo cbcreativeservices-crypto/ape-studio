@@ -20,9 +20,12 @@ import { UnderstandingCheck } from '../components/check';
 import { StageFit } from '../../rack/StageFit';
 import type { DockParam } from '../../rack/rackTypes';
 import { TuningRackLayout, playTray, soundCell, stopKey, usePlayerStatus } from '../rackLayout';
+import { sequenceSeconds, useAbHalf } from '../components/abHalf';
 
 const CHROMA = buildEqualChromatic();
 const RAIL_H = 110;
+/** Each pattern note's length (renderSequence; its default 0.05 s gap follows). */
+const NOTE_S = 0.28;
 
 export function Ch10Equal({ ctx }: ChapterProps) {
   const [built, setBuilt] = useState(0); // markers revealed beyond the root
@@ -39,11 +42,13 @@ export function Ch10Equal({ ctx }: ChapterProps) {
   // (review 2026-09-30): in C the steps 0·2·4·7, on F the same shape five
   // steps up (5·7·9·12) — the transposition is SEEN as the same spacing, not
   // only heard. Before, the key changed nothing on the glass.
-  const lit = new Set<number>(!status.playing ? [] : last === 'a' ? pattern : last === 'b' ? pattern.map((s) => s + 5) : last === 'ab' ? [...pattern, ...pattern.map((s) => s + 5)] : []);
+  // A → B lights the C pattern, then the F pattern once it sounds (audit B20; abHalf.ts).
+  const abHalf = useAbHalf(status.playing && last === 'ab', sequenceSeconds(pattern.length, NOTE_S));
+  const lit = new Set<number>(!status.playing ? [] : last === 'a' ? pattern : last === 'b' ? pattern.map((s) => s + 5) : last === 'ab' ? (abHalf === 'b' ? pattern.map((s) => s + 5) : pattern) : []);
   const markers: RailMarker[] = CHROMA.map((n, k) => ({
     id: `e${k}`, cents: n.value.cents, label: k <= built || k === 12 || lit.has(k) ? n.spelling.split('/')[0] : '', role: lit.has(k) ? 'active' : k === built && built > 0 ? 'operation' : k <= built ? 'neutral' : 'muted', emphasis: k === built || lit.has(k), row: k % 2,
   }));
-  const seq = (start: number) => renderSequence(pattern.map((s) => frequencyFromRatio(root, Math.pow(2, (start + s) / 12))), 0.28, 'rich');
+  const seq = (start: number) => renderSequence(pattern.map((s) => frequencyFromRatio(root, Math.pow(2, (start + s) / 12))), NOTE_S, 'rich');
   usePreloadClips(ctx.player, () => [() => seq(0), () => seq(5), () => concatWithGap(seq(0), seq(5))], String(root));
 
   const params: DockParam[] = [

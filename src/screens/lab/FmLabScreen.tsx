@@ -45,7 +45,7 @@ import { LabShell, HeaderPlayButton } from './LabShell';
 import { LabCheckEnd } from './kit/LabCheckEnd';
 import { FM_END_GUIDE, fmScreenGuide } from './fmScreenGuides';
 import { useStageTextScale } from './rack/stageAspect';
-import { fmNoteGrid, fmNoteStep } from './fmGrid';
+import { FM_AXIS_KNEE_FRAC, FM_AXIS_KNEE_HZ, fmAxisFrac, fmAxisLabels, fmNoteGrid, fmNoteStep, fmStickShown } from './fmGrid';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../features/audio/useStopOnBlur';
@@ -63,7 +63,6 @@ const CARRIER_BLURBS: Record<number, string> = {
   220: 'The A one octave above 110 Hz. The starting note.',
   440: 'The A that orchestras tune to, one octave above 220 Hz.',
 };
-const MAX_CARRIER = CARRIERS[CARRIERS.length - 1];
 // Tray blurbs (owner 2026-08-28): the WHOLE FM lesson lives in this choice —
 // integer ratios land the sidebands ON the harmonic series (pitched), while
 // irrational ones (✳) land them BETWEEN it (bells, metal).
@@ -522,32 +521,29 @@ function SidebandGraph({ fc, fm, index, inharmonic, w, h }: { fc: number; fm: nu
 
   const sticks = useMemo(() => sidebandSticks(fc, fm, index), [fc, fm, index]);
 
-  // X range: cover the sticks with margin (log would crowd — linear is the
-  // honest picture of equal ±k·fm spacing, WHICH IS the lesson). Sized for
-  // this ratio and index at the HIGHEST carrier, never the current one: fm is
-  // fc × ratio, so an axis that followed fc left every stick in the same place
-  // and a two-octave FC move drew nothing. The current sticks still count
-  // because a folded one can land higher than the highest carrier's do.
+  // X axis: ONE fixed axis for every FC, RATIO and INDEX (owner 2026-11-25,
+  // fix-first 15; the mapping and why are in fmGrid.ts `fmAxisFrac`). Linear
+  // 0–5 kHz over most of the glass (linear is the honest picture of equal
+  // ±k·fm spacing, WHICH IS the lesson), then 5 kHz–Nyquist squeezed into the
+  // last strip so the extreme settings' sidebands and fold-backs stay drawn.
+  // Riding INDEX adds sticks where they belong; RATIO changes the gaps in
+  // proportion; FC moves every stick (fm is fc × ratio).
   const ratio = fm / fc;
-  const fMax =
-    Math.max(
-      MAX_CARRIER * 2,
-      ...sidebandSticks(MAX_CARRIER, MAX_CARRIER * ratio, index).map((s) => s.f),
-      ...sticks.map((s) => s.f),
-    ) * 1.15;
+  const plotW = lw - 2 * PAD;
+  const xOf = (f: number) => PAD + fmAxisFrac(f, NYQUIST) * plotW;
+  const xKnee = xOf(FM_AXIS_KNEE_HZ);
 
   // A real frequency axis (art grading 2026-10-16: only "fc" and the right
-  // end were labelled): round ticks, at most ~5 across the glass, in Hz.
-  const tickStep = [100, 200, 250, 500, 1000, 2000, 2500, 5000].find((st) => fMax / st <= 5) ?? 10000;
+  // end were labelled): round 1 kHz ticks across the linear part, in Hz, and
+  // the Nyquist end of the squeezed strip.
   const ticks: number[] = [];
-  for (let f = 0; f <= fMax; f += tickStep) ticks.push(f);
-  const xOf = (f: number) => PAD + (f / fMax) * (lw - 2 * PAD);
+  for (let f = 0; f <= FM_AXIS_KNEE_HZ; f += 1000) ticks.push(f);
   const base = lgh - 24; // baseline y
   const ampH = lgh - 54; // |J| = 1 height
-  const hzLabel = (f: number) => (f === 0 ? '0' : f >= 1000 ? `${+(f / 1000).toFixed(2)}k` : `${f}`);
   // FM-03 (owner 2026-11-15, "build waves 1 thru 3"): faint lines at the in-tune spots (fmGrid.ts).
   // Sticks ON them = a clear note; sticks BETWEEN them = a bell. Hidden when too dense to read.
-  const noteLines = fmNoteGrid(fmNoteStep(fc, ratio, inharmonic), fMax, (lw - 2 * PAD) / fMax);
+  // Drawn over the linear part only (in the squeezed strip they would be a grey wash).
+  const noteLines = fmNoteGrid(fmNoteStep(fc, ratio, inharmonic), FM_AXIS_KNEE_HZ, (plotW * FM_AXIS_KNEE_FRAC) / FM_AXIS_KNEE_HZ);
 
   return (
     <View style={{ width: w, height: h }}>
@@ -566,20 +562,25 @@ function SidebandGraph({ fc, fm, index, inharmonic, w, h }: { fc: number; fm: nu
             </SvgText>
           </Fragment>
         ))}
-        {/* Baseline + frequency ticks. */}
-        <Line x1={PAD} y1={base} x2={lw - PAD} y2={base} stroke="#3a3b46" strokeWidth={1.5} />
+        {/* Baseline + frequency ticks: solid over the linear 0–5 kHz part,
+            dashed over the squeezed 5 kHz–Nyquist strip (fmAxisFrac). */}
+        <Line x1={PAD} y1={base} x2={xKnee} y2={base} stroke="#3a3b46" strokeWidth={1.5} />
+        <Line x1={xKnee} y1={base} x2={lw - PAD} y2={base} stroke="#3a3b46" strokeWidth={1.5} strokeDasharray="2 3" />
         {ticks.map((f) => (
-          <Fragment key={`t${f}`}>
-            <Line x1={xOf(f)} y1={base} x2={xOf(f)} y2={base + 4} stroke="#55566a" strokeWidth={1} />
-            <SvgText x={xOf(f)} y={base + 16} fill="#9a9aa6" fontSize={11} fontFamily={fonts.mono} textAnchor={f === 0 ? 'start' : 'middle'}>
-              {hzLabel(f)}
-            </SvgText>
-          </Fragment>
+          <Line key={`t${f}`} x1={xOf(f)} y1={base} x2={xOf(f)} y2={base + 4} stroke="#55566a" strokeWidth={1} />
         ))}
-        <SvgText x={lw - PAD} y={base + 16} fill="#9a9aa6" fontSize={11} fontFamily={fonts.mono} textAnchor="end">
-          Hz
-        </SvgText>
+        {/* The Nyquist end of the squeezed strip: its tick. */}
+        <Line x1={lw - PAD} y1={base} x2={lw - PAD} y2={base + 4} stroke="#55566a" strokeWidth={1} />
+        {/* The axis numbers (fmGrid.ts `fmAxisLabels`): "0 Hz" at the left, 1k…5k on
+            their ticks, "24k" anchored at its own tick (owner 2026-11-25, round 2). */}
+        {fmAxisLabels(PAD, plotW, NYQUIST).map((l) => (
+          <SvgText key={`l${l.text}`} x={l.x} y={base + 16} fill="#9a9aa6" fontSize={11} fontFamily={fonts.mono} textAnchor={l.anchor}>
+            {l.text}
+          </SvgText>
+        ))}
         {sticks.map((s, i) => {
+          // The squeezed strip skips hair-thin stubs (fmStickShown, |J| < 0.01 above 5 kHz).
+          if (!fmStickShown(s.f, s.a)) return null;
           const x = xOf(s.f);
           const sh = s.a * ampH;
           // Folded sticks never wear carrier green (QA night 2026-09-01):

@@ -289,8 +289,10 @@ describe('6. guide fixes vetted against the screen (2026-10-31 review round)', (
       assert.match(G[id].control.join(' '), /While ■ shows, every new pick plays; ■ stops\. If the screen says the string model is playing, you hear a modeled string\./);
     }
   });
-  it('the swing speed follows the FRET, not the string — the guide says "on one string"', () => {
-    assert.match(s, /const visHz = 0\.45 \* \(mode === 'fretted' \? Math\.pow\(2, fret \/ 12\) : harmonicN\);/);
+  it('the swing speed follows the sounding note — the guide\'s "on one string" line stays true', () => {
+    // owner 2026-11-25, fix-first 15: the swing now follows the STRING's pitch too
+    // (it used to ignore it, so open G swung half as fast as E at fret 12).
+    assert.match(s, /const visHz = swingHzFor\(STRINGS\[stringIdx\]\.hz \* \(mode === 'fretted' \? Math\.pow\(2, fret \/ 12\) : harmonicN\)\);/);
     assert.match(G.fretted.changes.join(' '), /On one string, a higher fret swings faster/);
     assert.doesNotMatch(textOf(G.fretted), /a higher note swings faster/);
   });

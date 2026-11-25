@@ -50,6 +50,8 @@ import {
 import type { CheckSpec } from './foundations/bits';
 import { FxLabScreen, type FxLabConfig, type FxSourceSpec } from './FxLabScreen';
 import type { DynSignal, FxSrc } from './fxAnim';
+import { eqBandMarkHz } from './fxEqCurve';
+import { distFaintCaption } from './fxDistCaption';
 import { fmt2sig, snap2sig } from '../../features/lab/sliderMaps';
 import { PLAIN_TERMS } from '../../features/lab/plainTerms';
 // Screen Guides (owner 2026-10-31): every effect lab is a CONCEPT lab (built-in
@@ -240,8 +242,12 @@ const eqConfig: FxLabConfig = {
   },
   Hero: (v) => {
     const band = eqBandOf(v);
+    // Where the band is (owner 2026-11-25, audit B17): at GAIN 0 dB the curve is
+    // flat, so the marker shows FREQ (and a bell's Q, as its half-gain bandwidth (Q)).
+    const markHz = eqBandMarkHz([band]);
     return (
       <ResponseCurveGraph
+        band={markHz != null ? { f: markHz, q: band.type === 'peak' ? band.q : undefined } : undefined}
         curves={[
           { at: () => 0, emphasis: 'ref' },
           { at: (f) => eqResponseDb([band], f), emphasis: 'main' },
@@ -1756,6 +1762,11 @@ const distConfig: FxLabConfig = {
     // cuts nothing, so 0 dBFS belongs to this branch too.
     if (v[P.distType] === 0 && peak <= 0)
       return `DRIVE +${Math.round(v[P.driveDb])} dB lifts the −20 dBFS sine to ${Math.round(peak)} dBFS — ${peak < 0 ? 'still under' : 'right at'} the 0 dBFS ceiling, so the hard clipper has nothing to cut yet: so far DRIVE is just gain. Push past +20 dB to flatten the tops.`;
+    // SOFT / TUBE at low DRIVE barely bend the wave (fxDistCaption.ts, audit B21).
+    if (v[P.distType] !== 0) {
+      const faint = distFaintCaption(v[P.distType] === 2 ? 'tube' : 'soft', v[P.driveDb], SOURCE_PEAK_DB);
+      if (faint) return faint;
+    }
     return v[P.distType] === 2
       ? 'Top and bottom clip DIFFERENTLY (asymmetric) → even harmonics join the odd ones — the “warm” sound of many tube stages.'
       : 'Top and bottom clip the SAME (symmetric) → odd harmonics only — hollow/harsh.';

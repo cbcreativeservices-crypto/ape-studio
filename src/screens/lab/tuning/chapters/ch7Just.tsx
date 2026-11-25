@@ -33,6 +33,10 @@ const JUST = TUNING_SYSTEMS.just;
 const JUST_FRACS: Record<string, Frac | undefined> = { C: frac(1, 1), D: frac(9, 8), E: frac(5, 4), F: frac(4, 3), G: frac(3, 2), A: frac(5, 3), B: frac(15, 8) };
 const jf = (sp: string): Frac => JUST_FRACS[sp] ?? frac(1, 1);
 const THIRDS: [string, string][] = [['C', 'E'], ['F', 'A'], ['G', 'B']];
+/** Each pure third's arc row on the rail (owner 2026-11-25, audit B19): F–A on
+ *  top, C–E under it, G–B lowest, so no label sits on a neighbouring arc
+ *  (F–A and G–B overlap in cents; C–E clears both). */
+const ARC_ROW: Record<string, number> = { C: 1, F: 0, G: 2 };
 const NAMES = ['C', 'D', 'E', 'F', 'G', 'A', 'B'] as const;
 type Tonic = 'C' | 'F' | 'G' | 'D';
 /** Proper major-scale spellings. The letter alone is not enough: F major
@@ -135,6 +139,13 @@ export function Ch7Just({ ctx }: ChapterProps) {
       : []),
   ];
 
+  // SHOW FIRST / NEXT / LAST ARC draws each pure 5/4 third on the rail
+  // (audit B19: the press used to add only a text card). Hidden in RETUNE,
+  // where the upper lane is muted and the lower lane is the lesson.
+  const arcBrackets = revealed >= 7 && !(keyStage && mode === 'retune')
+    ? THIRDS.slice(0, arcs).map(([lo, hi]) => ({ fromCents: ratioToCents(fracValue(jf(lo))), toCents: ratioToCents(fracValue(jf(hi))), label: `${lo}–${hi} · 5/4`, role: 'exact' as const, row: ARC_ROW[lo] }))
+    : undefined;
+
   const clips: PlayClip[] = [
     ...(revealed > 1 ? [{ id: 'newest', label: `C + ${newest.spelling}`, make: () => renderNotes([root, hz(newest.value.numericRatio)], 1.4, 'rich'), name: `C and ${newest.spelling}` }] : []),
     ...(revealed >= 5
@@ -216,7 +227,7 @@ export function Ch7Just({ ctx }: ChapterProps) {
             ],
         stage: (w, h) => (
           <StageFit w={w} h={h} aspect={CENTS_RAIL_W / centsRailH(RAIL_H)}>
-            <CentsRail markers={markers} reduceMotion={ctx.reduceMotion} height={RAIL_H} fit />
+            <CentsRail markers={markers} brackets={arcBrackets} reduceMotion={ctx.reduceMotion} height={RAIL_H} fit />
           </StageFit>
         ),
         params,

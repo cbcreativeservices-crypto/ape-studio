@@ -284,7 +284,7 @@ export function Mod4Classes() {
                             ? // NEW COPY — the model no longer conjures a recovered sine from a device that never conducted.
                               'Below the conduction threshold: the device never turns on, so there are no current pulses and the tuned circuit has nothing to ring from. Raise the input — Class C only wakes up for a signal big enough to push it past its bias.'
                             : (c?.resonanceGain ?? 1) > 0.9
-                              ? 'Tuned: the short current pulses kick a resonant circuit that rings a clean sine at the tuned frequency. The device itself never produces that sine — the tank (that tuned circuit) does. Notice the recovered level does not track the input level: Class C is built for a constant carrier, not for music that rises and falls.'
+                              ? 'Tuned: the short current pulses kick a resonant circuit that rings a clean sine at the tuned frequency. The device itself never produces that sine — the tank (that tuned circuit) does. Notice the recovered level does not follow the input in proportion: below the bias there is none, then it grows far faster than the input does. Class C is built for a constant carrier, not for music that rises and falls.'
                               : 'Mistuned: the tank no longer rings with the pulses and the recovered output collapses. There is no broadband version of this trick, which is why Class C is an RF amplifier, not an audio one.'}
                 </Body>
               </Card>

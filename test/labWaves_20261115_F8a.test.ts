@@ -188,7 +188,8 @@ describe('FM-03 · FM: faint in-tune lines behind the sticks', () => {
   });
   it('the graph draws them faint (1 px), and the key names them', () => {
     const s = code(`${LAB}/FmLabScreen.tsx`);
-    assert.match(s, /const noteLines = fmNoteGrid\(fmNoteStep\(fc, ratio, inharmonic\), fMax, \(lw - 2 \* PAD\) \/ fMax\);/);
+    // owner 2026-11-25, fix-first 15: the axis is fixed (fmAxisFrac), so the lines cover its linear 0–5 kHz part.
+    assert.match(s, /const noteLines = fmNoteGrid\(fmNoteStep\(fc, ratio, inharmonic\), FM_AXIS_KNEE_HZ, \(plotW \* FM_AXIS_KNEE_FRAC\) \/ FM_AXIS_KNEE_HZ\);/);
     assert.match(s, /noteLines\.map\(\(f\) => \(\s*<Line key=\{`n\$\{f\}`\}[^>]*strokeWidth=\{1\} \/>/);
     assert.match(s, /faint lines = in-tune spots for a clear note/);
   });

@@ -128,7 +128,10 @@ export function Ch1Intervals({ ctx }: ChapterProps) {
           {cents >= 1199.5
             ? `Upper frequency = 2 × root frequency: ${upperHz.toFixed(2)} = 2 × ${ctx.rootHz.toFixed(2)}. Ratio 2:1, 1200 cents — an octave.`
             : landmark
-              ? `${landmark.name}: ratio ${landmark.value.exactLabel}, ${landmark.value.cents.toFixed(2)} cents above the root.`
+              ? Math.abs(cents - landmark.value.cents) < 0.005
+                ? `${landmark.name}: ratio ${landmark.value.exactLabel}, ${landmark.value.cents.toFixed(2)} cents above the root.`
+                : // Not exactly on it (owner 2026-11-25, round 2 checker): say where the marker IS.
+                  `Near the ${landmark.name.toLowerCase()} (ratio ${landmark.value.exactLabel}, ${landmark.value.cents.toFixed(2)} cents): the marker is at ${cents.toFixed(2)} cents above the root.`
               : 'Between landmarks — every position is a valid interval; the named ones are just the simplest ratios.'}
         </Body>
       </Card>

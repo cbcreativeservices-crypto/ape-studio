@@ -195,8 +195,12 @@ describe('4. every TRY THIS number is what the model prints at that setting', ()
     assert.match(pageSrc('PageEqVs'), /processPhrase\(PHRASE, \{ \.\.\.DEFAULTS, thresholdDb: -12, rangeDb: cut \}\)/);
     assert.equal(M.vowelBrightnessLossDb(M.PHRASE, eq).toFixed(1), '8.0');
     assert.equal(M.vowelBrightnessLossDb(M.PHRASE, de).toFixed(1), '0.0');
+    // owner 2026-11-25, fix-first 15 round 2: the readout is the S's DROP the strips draw
+    // (split-band, exact gain), no longer the band-centre gain reduction (7.0).
     assert.equal(M.meanSibilantGr(de).toFixed(1), '7.0');
-    assert.match(PAGES.eqVs.tryThis.join('\n'), /8\.0 dB from everything that is not an S\. Tap DE-ESSER: 0\.0 dB[\s\S]*about 7\.0 dB/);
+    assert.equal(M.meanSibilantDropDb(de).toFixed(1), '6.0');
+    assert.match(pageSrc('PageEqVs'), /const sGr = which === 'eq' \? cut : meanSibilantDropDb\(de\);/);
+    assert.match(PAGES.eqVs.tryThis.join('\n'), /8\.0 dB from everything that is not an S\. Tap DE-ESSER: 0\.0 dB[\s\S]*about 6\.0 dB/);
   });
   it('page 4: −10 all sibilants + nothing else (About right); −19 the TH; −21 the P joins; 0 nothing (Too high)', () => {
     const crossing = (t: number) => out({ ...RACK, thresholdDb: t }).filter((p: { grDb: number }) => p.grDb > 0);
@@ -277,7 +281,10 @@ describe('4. every TRY THIS number is what the model prints at that setting', ()
     assert.match(pageSrc('PageOver'), /threshold \$\{-Math\.round\(v \* OVER_THRESHOLD_SPAN_DB\)\} dB/);
     const t = PAGES.over.tryThis.join('\n');
     assert.match(t, /25% \(threshold −6 dB\): Transparent\. Then 45%: Controlled\. Then 75%: Lisping/);
-    assert.match(t, /100% \(threshold −24 dB\) the card reads Dull and lifeless, about 16 dB/);
+    // owner 2026-11-25, fix-first 15 round 2: the card names the gain reduction AND the drawn drop.
+    assert.equal(M.meanSibilantDropDb(out(M.overSettings(1, 'split'))).toFixed(0), '12');
+    assert.match(pageSrc('PageOver'), /ABOUT \{mean\.toFixed\(0\)\} dB GAIN REDUCTION · S’S DOWN ABOUT \{drop\.toFixed\(0\)\} dB/);
+    assert.match(t, /100% \(threshold −24 dB\) the card reads Dull and lifeless: about 16 dB of gain reduction, with the S’s down about 12 dB/);
   });
   it('page 9 + hub: the five connections, in order', () => {
     assert.deepEqual(M.CONNECTIONS.map((c: { name: string }) => c.name), ['EQ Lab', 'Compression', 'Gate / Expander', 'Visual Audio Analysis', 'Speech & Voice Lab']);

@@ -56,8 +56,9 @@ export function Ch13Apply({ ctx }: ChapterProps) {
   const [c1, setC1] = useState<Frac>(frac(9, 4));
   const [c1Hist, setC1Hist] = useState<{ op: '×2' | '÷2'; before: Frac; after: Frac }[]>([]);
   const c1In = fracValue(c1) >= 1 && fracValue(c1) < 2;
+  // Practice after the credit (owner 2026-11-25, audit B5): ×2 / ÷2 keep working
+  // after RESET once the challenge is solved; the credit is never removed.
   const c1Apply = (op: '×2' | '÷2') => {
-    if (done[0]) return;
     const after = op === '÷2' ? frac(c1.n, c1.d * 2) : frac(c1.n * 2, c1.d);
     setC1Hist([...c1Hist, { op, before: c1, after }]);
     setC1(after);
@@ -183,8 +184,9 @@ export function Ch13Apply({ ctx }: ChapterProps) {
 
       <Eyebrow>1 · NORMALIZE</Eyebrow>
       <Prompt>Fold 9/4 into one octave — FIGURE 1 · FOLD, then ×2 / ÷2.</Prompt>
-      <Card tone={done[0] ? 'ok' : 'plain'}>
-        <MathLine>current: {fracLabel(c1)}{done[0] ? ' ✓ inside 1 ≤ r < 2' : ''}</MathLine>
+      {/* The ✓ reads the CURRENT value (audit B5): after RESET, 9/4 is not inside. */}
+      <Card tone={c1In ? 'ok' : 'plain'}>
+        <MathLine>current: {fracLabel(c1)}{c1In ? ' ✓ inside 1 ≤ r < 2' : ''}</MathLine>
         {c1Hist.map((h, i) => <Text key={i} style={styles.hist}>{fracLabel(h.before)} {h.op} = {fracLabel(h.after)}</Text>)}
       </Card>
 

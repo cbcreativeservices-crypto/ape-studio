@@ -136,7 +136,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
     ],
     tryThis: [
       'Tap STATIC EQ CUT · −8 dB: the readout takes 8.0 dB from everything that is not an S. Tap DE-ESSER: 0.0 dB.',
-      'With DE-ESSER on, read the second number: the S’s drop by about 7.0 dB while the vowels keep their brightness.',
+      'With DE-ESSER on, read the second number: the S’s drop by about 6.0 dB while the vowels keep their brightness.',
       'Look at a vowel in HISS BAND ALONE. With the EQ cut, the output sits below its ghost; with DE-ESSER, the two line up.',
     ],
   },
@@ -329,7 +329,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
     ],
     tryThis: [
       'Slide How hard to 25% (threshold −6 dB): Transparent. Then 45%: Controlled. Then 75%: Lisping.',
-      'At 100% (threshold −24 dB) the card reads Dull and lifeless, about 16 dB off the S’s. Tap RESET RACK TO DEFAULTS when you’re done.',
+      'At 100% (threshold −24 dB) the card reads Dull and lifeless: about 16 dB of gain reduction, with the S’s down about 12 dB. Tap RESET RACK TO DEFAULTS when you’re done.',
     ],
   },
 

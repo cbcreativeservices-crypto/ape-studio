@@ -50,7 +50,7 @@ import {
   type SharedValue,
 } from 'react-native-reanimated';
 import { STEREO_TEST_LR_RAD, distShape, eqResponseDb, type EqBandSpec } from '../../features/lab/fxViz';
-import { EQ_CURVE_F_MAX, EQ_CURVE_F_MIN, eqCurvePoints, eqCurveX, eqCurveY } from './fxEqCurve';
+import { EQ_CURVE_F_MAX, EQ_CURVE_F_MIN, eqBandMarkHz, eqCurvePoints, eqCurveX, eqCurveY } from './fxEqCurve';
 import { usePhaseClock } from './foundations/viz';
 import {
   SCOPE_DIV_MS,
@@ -619,7 +619,18 @@ function EqFlow({ w, h, active, label, bands }: { w: number; h: number; active: 
       ticks.moveTo(x, 3);
       ticks.lineTo(x, sh - 3);
     }
-    return { line, area, dots, ticks };
+    // Where the band is (owner 2026-11-25, audit B17): at GAIN 0 dB the curve is
+    // flat, so a short amber centre line shows FREQ on the strip whatever the gain.
+    const markHz = eqBandMarkHz(bands);
+    const mark = Skia.Path.Make();
+    if (markHz != null) {
+      const x = eqCurveX(markHz, x0, x1);
+      for (let y = 4; y < sh - 4; y += 6) {
+        mark.moveTo(x, y);
+        mark.lineTo(x, Math.min(sh - 4, y + 3));
+      }
+    }
+    return { line, area, dots, ticks, mark };
   }, [bands, w, sh]);
   const g0 = useGlide(gains[0]);
   const g1 = useGlide(gains[1]);
@@ -680,6 +691,7 @@ function EqFlow({ w, h, active, label, bands }: { w: number; h: number; active: 
             <RoundedRect x={0} y={0} width={w} height={sh} r={6} color={BG} />
             <Path path={curve.ticks} color={FRAME} style="stroke" strokeWidth={0.8} />
             <SkLine p1={{ x: 4, y: sh / 2 }} p2={{ x: w - 4, y: sh / 2 }} color={ZERO} strokeWidth={1} />
+            <Path path={curve.mark} color={AMBER} style="stroke" strokeWidth={1.2} opacity={0.75} />
             <Path path={curve.area} color={STAGE_GREEN} opacity={0.1} />
             <Path path={curve.line} color={STAGE_GREEN} style="stroke" strokeWidth={1.6} strokeJoin="round" opacity={0.85} />
             <Path path={curve.dots} color={STAGE_GREEN} opacity={0.95} />

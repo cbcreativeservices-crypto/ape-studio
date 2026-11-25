@@ -20,8 +20,11 @@ import { UnderstandingCheck } from '../components/check';
 import { SPIRAL_H, SPIRAL_W, Spiral } from '../components/stageFigures';
 import { StageFit } from '../../rack/StageFit';
 import { BADGE_MODEL, TuningRackLayout, playTray, soundCell, stopKey, usePlayerStatus } from '../rackLayout';
+import { useAbHalf } from '../components/abHalf';
 
 const CHAIN = buildPythagoreanFifthChain(frac(1, 1), 12);
+/** Each single note's length (the A and B clips, and each half of A → B). */
+const NOTE_S = 1.4;
 
 export function Ch6Comma({ ctx }: ChapterProps) {
   const bSharp = fracValue(CHAIN[12].normalized); // 531441/524288 — already folded into C's octave
@@ -29,8 +32,10 @@ export function Ch6Comma({ ctx }: ChapterProps) {
   const actualHz = frequencyFromRatio(ctx.rootHz, bSharp);
   const [last, setLast] = useState<string | null>(null);
   const status = usePlayerStatus(ctx.player);
-  const a = () => renderNotes([expectedHz], 1.4, 'rich');
-  const b = () => renderNotes([actualHz], 1.4, 'rich');
+  const a = () => renderNotes([expectedHz], NOTE_S, 'rich');
+  const b = () => renderNotes([actualHz], NOTE_S, 'rich');
+  // A → B lights C, then B♯ once B sounds (audit B20; abHalf.ts).
+  const abHalf = useAbHalf(status.playing && last === 'ab', NOTE_S);
   const together = () => renderNotes([expectedHz, actualHz], 2.2, 'rich');
   const ab = () => concatWithGap(a(), b());
   usePreloadClips(ctx.player, () => [a, b, together, ab], String(ctx.rootHz));
@@ -55,7 +60,7 @@ export function Ch6Comma({ ctx }: ChapterProps) {
         stage: (w, h) => (
           <StageFit w={w} h={h} aspect={SPIRAL_W / SPIRAL_H}>
             {/* The pick on HEAR rings the note(s) sounding — the key changes the picture. */}
-            <Spiral highlight={!status.playing && !status.rendering ? null : last === 'a' ? 'C' : last === 'b' ? 'B♯' : last ? 'both' : null} />
+            <Spiral highlight={!status.playing && !status.rendering ? null : last === 'a' ? 'C' : last === 'b' ? 'B♯' : last === 'ab' ? (abHalf === 'b' ? 'B♯' : 'C') : last ? 'both' : null} />
           </StageFit>
         ),
         params: [

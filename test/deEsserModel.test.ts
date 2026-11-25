@@ -43,7 +43,9 @@ test('split-band leaves the body alone; broadband ducks it too', () => {
   PHRASE.forEach((f, i) => {
     assert.equal(split[i].outBody, f.body);
     if (split[i].grDb > 0) assert.ok(broad[i].outBody < f.body);
-    assert.ok(Math.abs(split[i].outHiss - broad[i].outHiss) < 1e-12);
+    // owner 2026-11-25, fix-first 15 (round 2, audit B11): split-band cuts the
+    // hiss by the band's gain AT the hiss frequency (never more than broadband).
+    assert.ok(split[i].outHiss >= broad[i].outHiss - 1e-12);
   });
 });
 
