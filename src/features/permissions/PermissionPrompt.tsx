@@ -38,7 +38,8 @@ const COPY: Record<CapabilityKey, PermissionCopy> = {
     body:
       'A measurement snapshot can record where you took it (GPS), which is handy for ' +
       'venue and field documentation. It is optional, stored only in your device’s ' +
-      'measurement library, and never shared automatically.',
+      'measurement library, and never shared automatically. We never receive or store ' +
+      'your location on our end.',
     allowLabel: 'ALLOW LOCATION',
   },
   mic: {
