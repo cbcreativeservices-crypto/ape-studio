@@ -56,6 +56,10 @@ export type PlanThing = {
   /** Facing (plan radians from +x) for wedges / fills / amps. */
   face?: number;
   scene: 'all' | 'stage' | 'studio';
+  /** (cast figures 2026-11-26, owner ruling) a 'player' who holds an instrument instead of reaching for the
+   *  lesson's drums: 'aguitar' — the acoustic guitarist beside I02's cajón (HandPlan draws the guitar family's
+   *  own seated player with the guitar, from above). Absent: the hand-drum marker, as before. */
+  holds?: 'aguitar';
 };
 
 /** A two-mic preset on the TWO MICROPHONES page. */

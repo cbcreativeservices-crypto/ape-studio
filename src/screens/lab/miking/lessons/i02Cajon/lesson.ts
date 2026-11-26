@@ -544,7 +544,7 @@ export const I02_LESSON: SpLesson = {
       things: [
         { id: 'cajon', kind: 'drums', u: 0, v: 0, scene: 'all' },
         { id: 'vocal', kind: 'micstand', u: 850, v: -1000, scene: 'all' },
-        { id: 'guitar', kind: 'player', u: -100, v: 1150, scene: 'all' },
+        { id: 'guitar', kind: 'player', u: -100, v: 1150, scene: 'all', holds: 'aguitar' },
         ...STAGE_THINGS,
       ],
       cue: {

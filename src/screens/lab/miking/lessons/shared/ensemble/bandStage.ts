@@ -214,7 +214,11 @@ export const VOCAL_WEDGE = 1350;
  *  same kit and the same vocal mic on the stage and in the room, so the
  *  shared pages' mics sit on them in either): drawing defaults. */
 export const BAND_KIT = { p: v3(130, 0, -3820), face: 180 } as const;
-export const BAND_SINGER = { p: v3(0, 0, -400), face: 180 } as const;
+/** The singer stands BAND_SINGER_DX to the audience's left of the middle (owner 2026-11-26): from the hall the
+ *  drummer shows beside the singer instead of hidden behind them. The vocal mic, its wedge and the room's gobo
+ *  are read from this seat, so they move with it. */
+export const BAND_SINGER_DX = -600;
+export const BAND_SINGER = { p: v3(BAND_SINGER_DX, 0, -400), face: 180 } as const;
 
 function bandStage(): Seating {
   const gAmp = gear('amp.gtr', 'combo', v3(-2700, 0, -2700), 180, 'the guitar amp', 'GUITAR AMP', 'gtr');
@@ -278,7 +282,7 @@ function bandRoom(): Seating {
       gAmp,
       bAmp,
       gear('gobo.gtr', 'gobo', v3(-2950, 0, -2500), 120, 'a gobo between the guitar amp and the room', 'GOBO', 'gtr'),
-      gear('gobo.vox', 'gobo', v3(0, 0, -1150), 180, 'a gobo screening the singer from the band', 'GOBO', 'vox'),
+      gear('gobo.vox', 'gobo', v3(BAND_SINGER.p.x, 0, -1150), 180, 'a gobo screening the singer from the band', 'GOBO', 'vox'),
       gear('di.bass', 'di', v3(2950, 0, -2500), 280, 'the bass DI box', 'DI', 'bass'),
     ],
     viewer: 'audience',

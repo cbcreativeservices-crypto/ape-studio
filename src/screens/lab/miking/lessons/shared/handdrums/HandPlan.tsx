@@ -26,7 +26,7 @@ import { StaticLabels } from '../../../engine/scene/StaticLabels';
 import type { PlanThing } from './family.ts';
 import { INK } from './handDrumArt';
 import { AMP_TOP, KEYS_TOP, kitOrigin, MICSTAND_TOP, PA_TOP, PERC_TOP, PLAYER_TOP, ROOM_WALL, SIDEFILL_TOP, handPlanLabels, keysBench, micLegAngles, paStacks, planCue, planRoom, shownThings, type ArtPlan, type PlanBox, type PlanCueSpec } from './handPlanModel.ts';
-import { clearOfFoots, planTurn } from '../planFoot.ts';
+import { clearOfFoots, foot, planTurn, unionRect, type PlanFoot, type PlanRect } from '../planFoot.ts';
 import { CueMixPlan } from '../monitoring/CueMixPlan';
 import { cueCables } from '../monitoring/cueMix.ts';
 import { FigureHead, headAbove } from '../players/PlayerFigure';
@@ -35,6 +35,12 @@ import { pt } from '../players/playerPose';
 import { PlayerTopV2 } from '../figureV2/elsewhereTop';
 import { handDrumPlayer } from '../figureV2/markerPose';
 import { castFor, type CastMember } from '../figureV2/cast';
+// (cast figures 2026-11-26) a neighbor who holds an acoustic guitar: the guitar family's own player and plan chair
+import { GuitarSceneArt } from '../guitars/GuitarArt';
+import { ChairPlan, type PlanObject } from '../guitars/StagePlan';
+import { planFrame, playerRect, SIZES } from '../guitars/stagePlanModel.ts';
+import { sceneOf, type GuitarScene } from '../guitars/guitarModel.ts';
+import { C01_VARIANTS } from '../../c01Guitar/model.ts';
 
 /** The player's head from above (nose +v), built once on first draw. */
 let playerHeadTop: ReturnType<typeof headAbove>['fill'] | null = null;
@@ -127,7 +133,43 @@ function cabinet(cx: number, cy: number, w: number, d: number, face: number, gri
   );
 }
 
-function Thing({ t, Drums, variant, box, turnDrums, v2 = false, who }: { t: PlanThing; Drums: (p: { view: 'top'; variant: VariantId; planTurn?: boolean }) => ReactElement; variant: VariantId; box: PlanBox; turnDrums?: boolean; v2?: boolean; who?: CastMember }) {
+/* ── (cast figures 2026-11-26, owner ruling) the neighbor who holds an acoustic guitar (I02's guitarist) ──
+ * Not a new drawing: C01's own seated player with C01's steel-string dreadnought, from above, in the approved
+ * look (GuitarSceneArt v2: the guitar family's player, the left hand on the neck, the right arm over the body,
+ * the hands as that drawing brings them), on the C01 plan's chair (StagePlan ChairPlan at planFrame's chairZ) —
+ * the guitar family's plan, turned into this plan: the head at the marker's point, facing +u, the neck to the
+ * player's left (−v), as the marker faced. The person is the guitar family's (player.guitar). */
+let aguitarScene: GuitarScene | null = null;
+const getAguitarScene = (): GuitarScene => (aguitarScene ??= sceneOf(C01_VARIANTS.find((x) => x.id === 'steel') ?? C01_VARIANTS[0]));
+let aguitarChair: PlanObject | null = null;
+/** The drawn guitarist's footprints on this plan (the guitar family's own: playerRect, the chair, the instrument
+ *  from the tail to the headstock), turned as the drawing is — so the words keep off what is drawn. */
+function aguitarFoots(t: PlanThing): PlanFoot[] {
+  const sc = getAguitarScene();
+  const F = planFrame(sc);
+  const g = sc.g;
+  const C = SIZES.chair;
+  const toPlan = (r: PlanRect): PlanRect => ({ u0: t.u + (r.v0 - F.head.z), u1: t.u + (r.v1 - F.head.z), v0: t.v - (r.u1 - F.head.x), v1: t.v - (r.u0 - F.head.x) });
+  return [
+    foot(`${t.id}:held.player`, 'player', toPlan(playerRect(sc))),
+    foot(`${t.id}:held.chair`, 'chair', toPlan({ u0: F.head.x - C.half, u1: F.head.x + C.half, v0: F.chairZ - C.back, v1: F.chairZ + C.front })),
+    foot(`${t.id}:held.instrument`, 'instrument', toPlan({ u0: g.tail, u1: g.L + g.spec.neck.headLen.mm, v0: -g.depth, v1: 40 })),
+  ];
+}
+function AcousticGuitaristTop({ u, v, ptPerMm }: { u: number; v: number; ptPerMm: number }) {
+  const sc = getAguitarScene();
+  const F = planFrame(sc);
+  const chair = (aguitarChair ??= { id: 'chair', kind: 'chair', at: { x: F.head.x, z: F.chairZ }, scene: 'kit' });
+  // the guitar plan's (x, z) → this plan's (u, v) = (z, −x) about the head (a quarter turn: facing +z → +u)
+  return (
+    <Group transform={[{ translateX: u }, { translateY: v }, { rotate: -Math.PI / 2 }, { translateX: -F.head.x }, { translateY: -F.head.z }]}>
+      <ChairPlan o={chair} hi={false} />
+      <GuitarSceneArt sc={sc} view="top" v2 assumePtPerMm={ptPerMm} />
+    </Group>
+  );
+}
+
+function Thing({ t, Drums, variant, box, turnDrums, v2 = false, who, ptPerMm }: { t: PlanThing; Drums: (p: { view: 'top'; variant: VariantId; planTurn?: boolean }) => ReactElement; variant: VariantId; box: PlanBox; turnDrums?: boolean; v2?: boolean; who?: CastMember; ptPerMm: number }) {
   switch (t.kind) {
     case 'drums':
       return (
@@ -139,6 +181,8 @@ function Thing({ t, Drums, variant, box, turnDrums, v2 = false, who }: { t: Plan
       );
     case 'player': {
       // (figure V2: the player in the approved top view, both hands flat on the heads where the old arms reached)
+      // (cast figures 2026-11-26) a neighbor who holds an acoustic guitar: the guitar family's seated player
+      if (v2 && t.holds === 'aguitar') return <AcousticGuitaristTop u={t.u} v={t.v} ptPerMm={ptPerMm} />;
       if (v2)
         return <PlayerTopV2 player={handDrumPlayer(t.u, t.v)} who={who ?? castFor('plan.handDrums')} />;
       // A player seen from above: shoulders, arms reaching forward, head.
@@ -319,7 +363,19 @@ export function HandPlan({ w, h, scene, variant, Drums, turnDrums, things, box, 
   // clear of every object (and of the studio's walls), each pointing back at
   // its object (handPlanModel — the same footprints the overlap test reads).
   const rig = useMemo(() => planCue(things, box, art, cue, scene), [things, box, art, cue, scene]);
-  const { labels, blockers } = handPlanLabels(things, box, scene, art, cue, shortOf, highlight, xf.s / textScale, T.places);
+  const planWords = handPlanLabels(things, box, scene, art, cue, shortOf, highlight, xf.s / textScale, T.places);
+  // (cast figures 2026-11-26) a neighbor who holds an acoustic guitar is drawn larger than the marker's
+  // footprint: its name goes round what is drawn (the same places, from the drawn footprints), and no word sits on it
+  const held = v2 ? shown.filter((t) => t.kind === 'player' && t.holds === 'aguitar') : [];
+  const heldFoots = held.map((t) => ({ t, fs: aguitarFoots(t) }));
+  const labels = planWords.labels.map((l) => {
+    const h = heldFoots.find((x) => x.t.id === l.id);
+    if (!h) return l;
+    const [first, ...alts] = T.places(unionRect(h.fs), xf.s / textScale);
+    return { ...l, u: first.u, v: first.v, align: first.align, alts };
+  });
+  // (the person and the chair block the other words; the slim neck does not: the neighbors' names stay put)
+  const blockers = [...planWords.blockers, ...heldFoots.flatMap((x) => x.fs.filter((f) => f.kind !== 'instrument'))];
   const hl = shown.find((t) => t.id === highlight);
   return (
     <Pressable
@@ -341,11 +397,21 @@ export function HandPlan({ w, h, scene, variant, Drums, turnDrums, things, box, 
                 <Path path={walls.inner} style="stroke" strokeWidth={8} color="#6b5a48" />
               </>
             ) : null}
-            {shown.map((t) => (
-              <Thing key={t.id} t={t} Drums={Drums} variant={variant} box={box} turnDrums={turnDrums} v2={v2} who={who} />
-            ))}
+            {shown.map((t) =>
+              rig && held.includes(t) ? null : <Thing key={t.id} t={t} Drums={Drums} variant={variant} box={box} turnDrums={turnDrums} v2={v2} who={who} ptPerMm={xf.s} />,
+            )}
             {/* Studio: each performer's headphone mix (no wedges in a studio). */}
             {rig ? <CueMixPlan rig={rig} /> : null}
+            {/* (cast figures 2026-11-26) a seated guitarist's held neck and arms are above the floor's feeds: drawn
+                over them, then his own headphones (and their cord) over him again */}
+            {rig
+              ? held.map((t) => (
+                  <Group key={`held${t.id}`}>
+                    <Thing t={t} Drums={Drums} variant={variant} box={box} turnDrums={turnDrums} v2={v2} who={who} ptPerMm={xf.s} />
+                    {rig.stations.some((s) => s.id === t.id) ? <CueMixPlan rig={{ ...rig, stations: rig.stations.filter((s) => s.id === t.id) }} /> : null}
+                  </Group>
+                ))
+              : null}
             {hl && hl.kind !== 'room' && hl.kind !== 'audience' ? <Circle cx={hl.u} cy={hl.v} r={REACH[hl.kind] * 0.8} style="stroke" strokeWidth={14} color={AMBER} opacity={0.9} /> : null}
             {hl && hl.kind === 'room' ? <Path path={walls.inner} style="stroke" strokeWidth={22} color={AMBER} /> : null}
           </Group>

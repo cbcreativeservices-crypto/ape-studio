@@ -95,7 +95,7 @@ function VocalPlan({ o, hi }: { o: PlanObject; hi: boolean }) {
   );
 }
 
-function ChairPlan({ o, hi }: { o: PlanObject; hi: boolean }) {
+export function ChairPlan({ o, hi }: { o: PlanObject; hi: boolean }) {
   const C = SIZES.chair;
   const seat = rr(o.at.x - C.half, o.at.z - C.front, o.at.x + C.half, o.at.z + C.front, 60);
   const back = rr(o.at.x - C.half, o.at.z - C.back, o.at.x + C.half, o.at.z - C.back + C.backDepth, 24);
