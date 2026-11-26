@@ -266,7 +266,7 @@ const VDROP: Workspace = {
   ],
   warnings:
     'DC or SINGLE-PHASE AC only: round-trip resistance R = ρ(T)·2L/A, drop = I·R. For a ' +
-    'THREE-PHASE feeder use √3·L·I·R per phase — this calculator will read about 15% high. ' +
+    'THREE-PHASE feeder use √3·I·R₁, with R₁ = ρ(T)·L/A the one-way resistance of one conductor (line-to-line drop) — this calculator will read about 15% high. ' +
     'Solid annealed copper (IACS: ρ = 1.7241×10⁻⁸ Ω·m at 20 °C, rising 0.393% per °C), at the ' +
     'conductor temperature you enter — use 75 °C (or the insulation rating) for a cable carrying ' +
     'its load; costed at 20 °C a loaded cable’s drop reads about 18% low. Stranded wire reads about ' +

@@ -7,7 +7,7 @@
  * whose LABELS carry the unit, while gain CHANGES use 'db' (1 LU = 1 dB).
  */
 import type { Workspace } from '../calcTypes';
-import { fmt } from '../calcUnits';
+import { fmt, fmtSamples } from '../calcUnits';
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
 
@@ -74,8 +74,9 @@ const LOUDNORM: Workspace = {
     'too quiet and some platforms turn you up, often only as far as your peaks allow, while others leave you sitting weak. Normalization is level, not tone — ' +
     'the goal is to land on target with peaks under the ceiling so no limiter fires on playback.',
   example:
-    'A master at −9 LUFS aimed at Spotify’s −14 LUFS needs −5 dB of gain. A −0.5 dBTP true peak then ' +
-    'moves to −5.5 dBTP — comfortably under a −1 dBTP ceiling, so no extra limiting is needed.',
+    'A master at −9 LUFS aimed at Spotify’s −14 LUFS will be turned down 5 dB at playback, so its −0.5 dBTP peak plays back at −5.5 dBTP. ' +
+    'But Spotify turns it down in the player, not in your file: a master louder than −14 LUFS should itself peak below −2 dBTP to avoid distortion when it is encoded, ' +
+    'so this −0.5 dBTP master still needs about 1.5 dB more peak limiting.',
   mistakes: [
     'Mastering hotter than the target "to be safe" — the platform just attenuates it, so you lost loudness AND dynamics for nothing.',
     'Forgetting true peak moves WITH the gain — lowering loudness also lowers peaks; RAISING loudness can push peaks over the ceiling.',
@@ -83,6 +84,8 @@ const LOUDNORM: Workspace = {
   ],
   warnings:
     'Level-only model: gain = target − measured (1 LU = 1 dB); resulting true peak = old TP + gain. ' +
+    'The peak check applies when you apply the gain to the file yourself (broadcast delivery, or raising a quiet master). ' +
+    'When a streaming platform turns a loud master down at playback, your file is encoded at its original peak — check your master’s own true peak against the platform’s ceiling (Spotify: below −2 dBTP for masters louder than −14 LUFS). ' +
     'Real integrated loudness is the gated K-weighted BS.1770 measurement of the whole program — ' +
     'this assumes you already measured it correctly.',
   glossary: ['LUFS', 'True Peak', 'Loudness', 'Dynamic Range', 'Gain Staging'],
@@ -106,11 +109,14 @@ const LOUDNORM: Workspace = {
       compute: (v) => {
         const gain = n(v.target) - n(v.measured);
         const newTP = n(v.truePeak) + gain;
-        const over = newTP - n(v.ceiling);
+        // Comp A audit C19 (2026-11-26): float noise on an exact landing read
+        // "OVER CEILING BY 3.331e-16 dB"; the file's own ceilingMargin snaps it.
+        const m = ceilingMargin(n(v.ceiling) - newTP);
         return [
           { label: 'GAIN CHANGE', value: gain, quantity: 'db', meaning: 'db:gain' },
           { label: 'RESULTING TRUE PEAK (dBTP)', value: newTP, quantity: 'number', chainable: false },
-          { label: over > 0 ? 'OVER CEILING BY' : 'HEADROOM TO CEILING', value: Math.abs(over), quantity: 'db', chainable: false },
+          // Label wording is the owner's (2026-10-04): HEADROOM TO CEILING when under.
+          { label: m.label === 'OVER CEILING BY' ? 'OVER CEILING BY' : 'HEADROOM TO CEILING', value: m.value, quantity: 'db', chainable: false },
         ];
       },
       note: LOUDNESS_TARGETS_NOTE,
@@ -122,13 +128,13 @@ const LOUDNORM: Workspace = {
       steps: (v) => {
         const gain = n(v.target) - n(v.measured);
         const newTP = n(v.truePeak) + gain;
-        const over = newTP - n(v.ceiling);
+        const m = ceilingMargin(n(v.ceiling) - newTP);
         return [
           `Gain = ${fmt(n(v.target))} − (${fmt(n(v.measured))}) = ${fmt(gain)} dB (${gain >= 0 ? 'turn up' : 'turn down'}).`,
           `True peak moves to ${fmt(n(v.truePeak))} + ${fmt(gain)} = ${fmt(newTP)} dBTP.`,
-          over > 0
-            ? `That is ${fmt(over)} dB OVER the ${fmt(n(v.ceiling))} dBTP ceiling — limit or lower before export.`
-            : `That leaves ${fmt(-over)} dB under the ${fmt(n(v.ceiling))} dBTP ceiling — safe.`,
+          m.label === 'OVER CEILING BY'
+            ? `That is ${fmt(m.value)} dB OVER the ${fmt(n(v.ceiling))} dBTP ceiling — limit or lower before export.`
+            : `That leaves ${fmt(m.value)} dB under the ${fmt(n(v.ceiling))} dBTP ceiling — safe.`,
         ];
       },
     },
@@ -194,8 +200,8 @@ const LOUDTP: Workspace = {
         ];
       },
       steps: (v) => [
-        `Momentary = 0.4 s × ${fmt(n(v.sr))} = ${fmt(0.4 * n(v.sr))} samples; short-term = 3 s × ${fmt(n(v.sr))} = ${fmt(3 * n(v.sr))} samples.`,
-        `400 ms blocks step every 100 ms (${fmt(0.1 * n(v.sr))} samples), so they overlap 75%. The short 400 ms window is why the momentary meter reacts fast; the 3 s window is why the short-term meter smooths.`,
+        `Momentary = 0.4 s × ${fmtSamples(n(v.sr))} = ${fmtSamples(0.4 * n(v.sr))} samples; short-term = 3 s × ${fmtSamples(n(v.sr))} = ${fmtSamples(3 * n(v.sr))} samples.`,
+        `400 ms blocks step every 100 ms (${fmtSamples(0.1 * n(v.sr))} samples), so they overlap 75%. The short 400 ms window is why the momentary meter reacts fast; the 3 s window is why the short-term meter smooths.`,
       ],
     },
     {

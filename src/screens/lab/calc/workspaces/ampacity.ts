@@ -15,7 +15,9 @@
  *   Table 310.15(C)(1) Adjustment factors for more than three current-carrying
  *                      conductors.
  *   110.14(C)(1)       Termination temperature limits.
- *   240.4(D)           Small-conductor overcurrent limits (14/12/10 AWG copper).
+ *   240.4(B)–(D)       Overcurrent protection of the conductor at its ampacity;
+ *                      (D) small-conductor limits (14/12/10 AWG copper).
+ *   Table 240.6(A)     Standard ampere ratings (next size up / down).
  *   210.19 / 210.20    Continuous loads at 125% (the "80%" figure).
  * Every table value below was hand-checked, row by row, against the published
  * tables (2026-10-04); test/calcAmpacity_20261004.test.ts pins all of them.
@@ -119,6 +121,40 @@ export const NEC_240_4_D_CU: ReadonlyMap<number, number> = new Map([
   [10, 30],
 ]);
 
+/** NEC 2023 Table 240.6(A): standard ampere ratings of fuses and inverse-time
+ *  circuit breakers (10 A first listed in the 2020 edition). */
+export const NEC_240_6_A: readonly number[] = [
+  10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 110, 125, 150, 175, 200, 225, 250, 300, 350, 400,
+  450, 500, 600, 700, 800, 1000, 1200, 1600, 2000, 2500, 3000, 4000, 5000, 6000,
+];
+
+/** The largest overcurrent device allowed to protect the conductor at its
+ *  ALLOWABLE ampacity (Comp A calculator audit C01/C02/C04, 2026-11-26): the
+ *  ampacity itself when it is a standard rating; else the next higher standard
+ *  rating up to 800 A (240.4(B)); above 800 A the next lower one (240.4(C));
+ *  and never above the 240.4(D) small-conductor value. Before this fix the
+ *  bare 240.4(D) value (20 A for 12 AWG) was shown even when the derated wire
+ *  carried only 15 A, and the continuous limit was taken from it. */
+export function maxOcpd(allowable: number, smallCap: number | null): { amps: number; rule: string } {
+  const a = snapWhole(allowable);
+  const exact = NEC_240_6_A.find((r) => r === a);
+  let amps: number;
+  let rule: string;
+  if (exact !== undefined) {
+    amps = exact;
+    rule = '240.4: a standard rating equal to the ampacity';
+  } else if (a <= 800) {
+    const up = NEC_240_6_A.find((r) => r > a && r <= 800);
+    amps = up ?? 800;
+    rule = '240.4(B): the next standard rating above the ampacity';
+  } else {
+    amps = [...NEC_240_6_A].reverse().find((r) => r < a) ?? a;
+    rule = '240.4(C): above 800 A, a standard rating not above the ampacity';
+  }
+  if (smallCap !== null && smallCap < amps) return { amps: smallCap, rule: '240.4(D): the small-conductor limit' };
+  return { amps, rule };
+}
+
 /** How other calculators point here (Voltage Drop's gauge sizing). */
 export const AMPACITY_CALC_NAME = 'Conductor Ampacity (NEC) calculator';
 
@@ -156,7 +192,11 @@ type Ok = {
   corrected: number;
   termLimit: number;
   allowable: number;
+  /** The bare 240.4(D) small-conductor value (14–10 AWG), else null. */
   ocpdMax: number | null;
+  /** The largest device allowed for THIS conductor at its allowable ampacity. */
+  bmax: number;
+  bmaxRule: string;
   continuous: number;
 };
 type Refusal = { ok: false; label: string; why: string };
@@ -249,10 +289,14 @@ function evaluate(row: readonly [number | null, number | null, number | null] | 
   }
   const allowable = Math.min(corrected, termLimit);
   const ocpdMax = awg !== null ? NEC_240_4_D_CU.get(awg) ?? null : null;
+  // 240.4: the breaker must protect the conductor at its allowable ampacity
+  // (Comp A audit C01/C02, 2026-11-26) — when derating governs, that device is
+  // smaller than the 240.4(D) value, and 0.8 × it is the real continuous limit.
+  const ocpd = maxOcpd(allowable, ocpdMax);
   // 210.19 / 210.20: the conductor (before correction, at the termination
   // limit) and its breaker are sized at 125% of a continuous load, and the
   // corrected ampacity must still carry the load itself.
-  const continuous = Math.min(corrected, 0.8 * termLimit, ocpdMax !== null ? 0.8 * ocpdMax : Infinity);
+  const continuous = Math.min(corrected, 0.8 * termLimit, 0.8 * ocpd.amps);
   return {
     ok: true,
     sizeName,
@@ -272,6 +316,8 @@ function evaluate(row: readonly [number | null, number | null, number | null] | 
     termLimit,
     allowable,
     ocpdMax,
+    bmax: ocpd.amps,
+    bmaxRule: ocpd.rule,
     continuous,
   };
 }
@@ -290,11 +336,7 @@ function outputsOf(e: Ok | Refusal): OutputVal[] {
     { label: `TERMINATION LIMIT (${e.term} °C TERMINALS)`, value: e.termLimit, quantity: 'current', chainable: false },
     { label: 'ALLOWABLE AMPACITY', value: e.allowable, quantity: 'current' },
   ];
-  out.push(
-    e.ocpdMax !== null
-      ? { label: 'MAX OVERCURRENT DEVICE (240.4(D))', value: e.ocpdMax, quantity: 'current', chainable: false }
-      : { label: 'MAX OVERCURRENT DEVICE (240.4(D))', text: '240.4(D) covers copper from 18 to 10 AWG. This size is larger, so the overcurrent device follows 240.4(B) and (C). Above 10 AWG, the next standard overcurrent device size above the ampacity may be used, up to 800 A (240.4(B)); above 800 A it may not exceed the ampacity (240.4(C)).' },
-  );
+  out.push({ label: 'MAX OVERCURRENT DEVICE (240.4)', value: e.bmax, quantity: 'current', chainable: false });
   out.push(
     { label: 'MAX CONTINUOUS LOAD (80%)', value: e.continuous, quantity: 'current', chainable: false },
     { label: 'WHICH TERMINAL RATING', text: WHICH_TERMINATION },
@@ -315,11 +357,19 @@ function stepsOf(e: Ok | Refusal): string[] {
     `Corrected ampacity = ${e.base} × ${f2(e.ca)} × ${f2(e.adj)} = ${fmt(e.corrected)} A.`,
     `${e.term} °C terminals (110.14(C)): the conductor may be used only at its ${e.limCol} °C column value, ${e.termLimit} A. Allowable ampacity = the smaller of ${fmt(e.corrected)} A and ${e.termLimit} A = ${fmt(e.allowable)} A.`,
   ];
-  if (e.ocpdMax !== null) {
-    s.push(`240.4(D): ${e.sizeName} copper may be protected at no more than ${e.ocpdMax} A, whatever the table says.`);
-  }
-  const parts = [`${fmt(e.corrected)} A (corrected)`, `0.8 × ${e.termLimit} A = ${fmt(0.8 * e.termLimit)} A (125% rule at the terminals)`];
-  if (e.ocpdMax !== null) parts.push(`0.8 × ${e.ocpdMax} A = ${fmt(0.8 * e.ocpdMax)} A (limit from the largest breaker)`);
+  s.push(
+    `The breaker must protect the conductor at its ${fmt(e.allowable)} A allowable ampacity (240.4). ` +
+      (e.ocpdMax !== null
+        ? `240.4(D): ${e.sizeName} copper may be protected at no more than ${e.ocpdMax} A, whatever the table says. `
+        : '240.4(D) covers copper from 18 to 10 AWG only, so it does not apply to this size. ') +
+      `Largest device: ${e.bmax} A (${e.bmaxRule}). Standard ratings are listed in Table 240.6(A). ` +
+      'The next-size-up allowance does not apply to a multioutlet branch circuit feeding cord-and-plug receptacles (240.4(B)(1)).',
+  );
+  const parts = [
+    `${fmt(e.corrected)} A (corrected)`,
+    `0.8 × ${e.termLimit} A = ${fmt(0.8 * e.termLimit)} A (125% rule at the terminals)`,
+    `0.8 × ${e.bmax} A = ${fmt(0.8 * e.bmax)} A (limit from the largest breaker)`,
+  ];
   s.push(
     `A continuous load (3 hours or more) is sized at 125% for the conductor and its breaker (210.19, 210.20), so the most it may be is the smallest of ${parts.join(', ')}: ${fmt(e.continuous)} A.`,
   );
@@ -462,7 +512,7 @@ const evalFactors = (v: CalcValues): Factors | Refusal => {
   return { ok: true, insul: ins, ambientC: n(v.ambient), readAs: amb.readAs, row: amb.row, ca: amb.factor, ccc: n(v.ccc), adjRow: adj.row, adj: adj.factor };
 };
 
-const FORMULA = 'I = min(I table × Ca × Cn, I term); continuous ≤ 0.8 × I term';
+const FORMULA = 'I = min(I table × Ca × Cn, I term); continuous ≤ 0.8 × min(I term, breaker)';
 const PLAIN =
   'The table ampacity times the ambient correction factor times the conductor-count adjustment factor gives the corrected ampacity; the allowable ampacity is the smaller of that and the table value at the termination temperature; a continuous load may be at most 80% of the termination value (and of the largest breaker allowed).';
 

@@ -4,7 +4,7 @@
  * Convolution Resources. Section 'digital'. Same pattern as wave.ts.
  */
 import type { Workspace } from '../calcTypes';
-import { DB_PER_BIT, FULL_SCALE_SINE_DB, fmt, fmtCount, snapWhole } from '../calcUnits';
+import { DB_PER_BIT, FULL_SCALE_SINE_DB, fmt, fmtCount, fmtSamples, snapWhole } from '../calcUnits';
 
 /** 0 ppm is two clocks that match exactly (audit R2, 2026-10-23): it printed
  *  "TIME PER 1-SAMPLE SLIP — ms" beside "must be greater than zero". */
@@ -55,6 +55,20 @@ const firTransitionTooWide = (sr: number, trans: number): string | null =>
     : null;
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
+
+/** HH:MM:SS:FF non-drop label of a frame count at a whole frame rate (the same
+ *  arithmetic as the timecode table). */
+function tcLabel(frames: number, fpsInt: number): string {
+  if (!(fpsInt > 0) || !Number.isFinite(frames)) return '—';
+  // Whole-number arithmetic with %, so no rounding call is needed (P17 ratchet).
+  const ff = frames % fpsInt;
+  const totS = (frames - ff) / fpsInt;
+  const ss = totS % 60;
+  const mm = ((totS % 3600) - ss) / 60;
+  const hh = (totS - (totS % 3600)) / 3600;
+  const p2 = (x: number) => String(x).padStart(2, '0');
+  return `${p2(hh)}:${p2(mm)}:${p2(ss)}:${p2(ff)}`;
+}
 
 const CLOCKDRIFT: Workspace = {
   id: 'clockdrift',
@@ -320,7 +334,12 @@ const TIMECODE: Workspace = {
         const totS = n(v.frames) / n(v.fps);
         return [
           `Time = ${fmtCount(n(v.frames))} frames ÷ ${fmt(n(v.fps), 6)} fps = ${fmt(totS)} s.`,
-          `Broken out into HH:MM:SS:FF in the table below (leftover frames are counted at the whole-number frame rate).`,
+          // Comp A audit C12 (2026-11-26): the table is the non-drop LABEL, not a
+          // breakdown of the real time above — at 29.97 they differ by 3.6 s/hour.
+          Number.isInteger(snapWhole(n(v.fps)))
+            ? `Broken out into HH:MM:SS:FF in the table below.`
+            : `The table below is the non-drop timecode label: it counts ${fmtCount(Math.round(n(v.fps)))} frames per timecode second, so at ${fmt(n(v.fps), 6)} fps it reads behind the real time above ` +
+              `(${fmtCount(Math.round(n(v.frames)))} frames = ${fmt(totS)} s real, labeled ${tcLabel(Math.round(n(v.frames)), Math.round(n(v.fps)))} non-drop).`,
         ];
       },
     },
@@ -457,7 +476,7 @@ const FIRLEN: Workspace = {
         const latS = (N - 1) / 2;
         return [
           `N ≈ (${fmt(n(v.sr))} ÷ ${fmt(n(v.trans))}) × (${fmt(n(v.atten))} ÷ 22) = ${fmtCount(N)} taps.`,
-          `Linear-phase latency = (N−1)/2 = ${fmt(latS)} samples = ${fmt((latS / n(v.sr)) * 1000)} ms.`,
+          `Linear-phase latency = (N−1)/2 = ${fmtSamples(latS)} samples = ${fmt((latS / n(v.sr)) * 1000)} ms.`,
         ];
       },
     },
@@ -487,7 +506,7 @@ const FIRLEN: Workspace = {
       steps: (v) => {
         const latS = (n(v.taps) - 1) / 2;
         return [
-          `Latency = (${fmtCount(n(v.taps))} − 1) ÷ 2 = ${fmt(latS)} samples.`,
+          `Latency = (${fmtCount(n(v.taps))} − 1) ÷ 2 = ${fmtSamples(latS)} samples.`,
           `At ${fmt(n(v.sr))} Hz that is ${fmt((latS / n(v.sr)) * 1000)} ms of delay.`,
         ];
       },

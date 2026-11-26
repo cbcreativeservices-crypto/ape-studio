@@ -121,7 +121,7 @@ export const WORKFLOW_TEMPLATES: Workflow[] = [
     { workspaceId: 'speakerpower', fnKey: 'predictspl', note: 'Predict SPL from sensitivity and amplifier power.' },
     // The level AND the distance it was worked out at (audit item 1): L₁ alone
     // left d₁ to the "often 1 m" hint — 79.93 dB at 8 m for a true 99.93 dB.
-    { workspaceId: 'spldist', fnKey: 'point', note: 'Carry that SPL to the actual listening distance.', carry: { l1: ans(0, 'PREDICTED SPL (one speaker, after headroom)'), d1: inp(0, 'dist') } },
+    { workspaceId: 'spldist', fnKey: 'point', note: 'That SPL is already at your listening distance, so d₁ is that distance. To see it at another seat, enter the new distance as d₂. Do not apply the distance loss again from 1 m.', carry: { l1: ans(0, 'PREDICTED SPL (one speaker, after headroom)'), d1: inp(0, 'dist') } },
   ]),
   tpl('amp-matching', 'Amplifier & Loudspeaker Matching', 'Load impedance, then the amplifier power the target needs.', [
     { workspaceId: 'impedance', fnKey: 'parallel', note: 'Find the combined load the amp will see.' },
@@ -244,16 +244,16 @@ export const WORKFLOW_TEMPLATES: Workflow[] = [
   tpl('treatment-plan', 'Acoustic Treatment Plan', 'The room’s RT60 now, the absorption needed for the target RT, the panels, and wall isolation.', [
     { workspaceId: 'sabine', fnKey: 'rtFromVA', note: 'The room’s RT60 now, from its volume and total absorption. Don’t know the absorption? Tap I DON’T KNOW IT for a typical untreated room: an estimate, said as one.', estimate: { absA: 'untreated-room' } },
     { workspaceId: 'sabine', fnKey: 'neededA', note: 'Absorption needed for the target RT60.', carry: { vol: inp(0, 'vol'), absA: inp(0, 'absA') } },
-    { workspaceId: 'treatment', fnKey: 'panels', note: 'Panels required to add that absorption.', carry: { vol: inp(0, 'vol'), rtCur: ans(0, 'RT60'), rtTgt: inp(1, 'targetRt') } },
+    { workspaceId: 'treatment', fnKey: 'panels', note: 'Panels for the same target. The volume and both RT60s come in from steps 1 and 2. In PANEL AREA (EACH) enter ONE panel’s face area, not the absorption figure.', carry: { vol: inp(0, 'vol'), rtCur: ans(0, 'RT60'), rtTgt: inp(1, 'targetRt') } },
     { workspaceId: 'transloss', fnKey: 'massTL', note: 'Isolation from a wall’s mass at a frequency.' },
   ]),
   tpl('monitor-latency', 'Monitoring Latency', 'One buffer’s latency, then the round-trip in-and-out.', [
     { workspaceId: 'latency', fnKey: 'bufLatency', note: 'Latency of one processing buffer.' },
     { workspaceId: 'latency', fnKey: 'roundTrip', note: 'Round-trip in + out monitoring latency.', carry: { inBuf: inp(0, 'buf'), outBuf: inp(0, 'buf'), sr: inp(0, 'sr') } },
   ]),
-  tpl('session-storage', 'Digital Session Storage', 'Total multitrack session size, then the record time storage allows.', [
-    { workspaceId: 'filesize', fnKey: 'multitrack', note: 'Total size of the multitrack session.' },
-    { workspaceId: 'filesize', fnKey: 'recTime', note: 'Record time your storage allows.', carry: { sr: inp(0, 'sr'), bits: inp(0, 'bits') } },
+  tpl('session-storage', 'Digital Session Storage', 'Multitrack session data rate, then the record time storage allows. In step 2 enter CHANNELS × TRACK COUNT as the channel count.', [
+    { workspaceId: 'filesize', fnKey: 'multitrack', note: 'Data rate of the multitrack session, per minute and per hour.' },
+    { workspaceId: 'filesize', fnKey: 'recTime', note: 'Record time for the whole session: in CHANNELS enter channels × tracks (for example 2 × 24 = 48).', carry: { sr: inp(0, 'sr'), bits: inp(0, 'bits') } },
   ]),
   tpl('speaker-limiter', 'Speaker Protection Limiter', 'Max continuous speaker voltage, then the limiter threshold to set.', [
     { workspaceId: 'limiter', fnKey: 'maxv', note: 'Max continuous voltage the driver takes.' },
