@@ -1,10 +1,11 @@
 /**
  * FIGURE V2 — THE DOUBLE BASS BOW HAND (FRENCH BOW), SEEN FROM THE PLAYER'S RIGHT (C06b; side view).
  *
- * WHAT THE HAND DOES (the French bass bow is held as a cello bow — bowedHands.bowHand, BOW_HOLD.lower): a round,
- * deep hand over the stick at the frog, the fingers draped well round the stick and spread a little, the little
- * finger down on the frog's far face, the bent THUMB's tip under the stick in the corner the stick makes with the
- * frog, opposite the middle finger; the wrist relaxed, the arm's weight sunk into the string.
+ * WHAT THE HAND DOES (the French bass bow is held much as a cello bow — bowedHands.bowHand, BOW_HOLD.lower): a round,
+ * deep hand over the stick at the frog; the fingers drape OVER the stick and curl round its far side, spread a little,
+ * the stick across them near their middle joints; the ring and little fingers' ends down the frog's far side; the
+ * BENT thumb's tip against the stick from below in the corner the stick makes with the frog, opposite the middle
+ * finger; the wrist relaxed, the arm's weight sunk into the string. The stick is held INSIDE the closed hand.
  *
  * WHAT THE EYE SEES from the player's right (read from the lesson's posed hand: the bow crosses the strings toward
  * the camera, so it is seen END-ON; the hand shows its LITTLE-finger edge, 0.92): the forearm out of the cuff sloping
@@ -23,9 +24,12 @@ const S = (x: number, y: number, rx: number, ry: number, rot: number, o: number)
 
 /** The wrist out of the cuff and the hand along its little-finger edge to the knuckles, the back of the hand on top. */
 const BODY = pts([
-  [-6, -20], [10, -20], [26, -18], [42, -14], [58, -9], [72, -3], [84, 4], [92, 12], [96, 22], [92, 30], [80, 32], [64, 32], [48, 30], [32, 26], [18, 22], [4, 20], [-6, 20],
+  [-6, -20], [10, -20], [26, -18], [42, -14], [58, -9], [72, -3], [84, 4], [92, 12], [96, 22], [92, 30],
+  // (round 2, owner 2026-11-25: the thumb's base and its mound belong to the hand — the palm's lower edge runs along
+  // the thumb's first bone, so the thumb leaves the hand only past its knuckle, never as a rod from the wrist)
+  [84, 36], [70, 38], [56, 39], [44, 40], [33, 38], [22, 32], [10, 26], [-6, 21],
 ]);
-const THUMB = digitOutline([P(8, 8), P(38, 31), P(67, 42), P(91, 50)], [14.5, 12.4, 11.2, 10]);
+const THUMB = digitOutline([P(10, 12), P(38, 31), P(67, 42), P(91, 50)], [12, 12.4, 11.2, 10]);
 const INDEX = digitOutline([P(72, 16), P(100, 31), P(103, 51), P(97, 67)], [10.6, 9.9, 8.9, 7.8]);
 const MIDDLE = digitOutline([P(82, 18), P(116, 41), P(109, 66), P(96, 71)], [11, 10.3, 9.3, 8.1]);
 const RING = digitOutline([P(86, 19), P(127, 38), P(119, 62), P(103, 66)], [10.4, 9.7, 8.8, 7.7]);
@@ -48,5 +52,8 @@ export const BOWED_HAND_BASS_BOW_SIDE: BowedHandArt = {
   ],
   grip: P(100.1, 44.7),
   held: [{ kind: 'stick', a: P(99, 49), b: P(101, 41), r: 3.75 }],
+  // (round 3, owner 2026-11-25 "fingers do not wrap around stick of bow": the bow's butt end points at us out of the
+  // curled fingers, nearer than the little finger — painted again over the hand, so the stick is seen INSIDE it)
+  heldFront: [[P(90, 36), P(110, 36), P(110, 60), P(88, 60)]],
   span: { c: P(55, 20), R: 85 },
 };

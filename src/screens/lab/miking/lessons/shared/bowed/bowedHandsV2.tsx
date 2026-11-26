@@ -14,7 +14,7 @@ import { ColorMatrix, Group, Paint } from '@shopify/react-native-skia';
 import type { ViewId } from '../../../engine/model/types.ts';
 import type { FamPlan } from '../figureV2/familyV2';
 import { FAR_SKIN_DIM } from '../figureV2/FigureV2Side';
-import { BowedHandCast, BowedHandLayer, localLight, type BowedHandArt } from '../figureV2/bowedHandPaint';
+import { BowedHandCast, BowedHandLayer, heldFrontPath, localLight, type BowedHandArt } from '../figureV2/bowedHandPaint';
 import { smoothClosed, unionOf } from '../figureV2/paths';
 import { P, type Pt } from '../figureV2/geom.ts';
 import { BOWED_HAND_VIOLIN_BOW_SIDE } from '../figureV2/bowedHandViolinBowSide';
@@ -39,7 +39,25 @@ type Fam = 'violin' | 'cello' | 'bass';
 const famOf = (id: string): Fam => (id === 'cello' ? 'cello' : id === 'bass' ? 'bass' : 'violin');
 
 /** One drawing of the review sheet: its number, its art, what it serves. */
-export type BowedHandEntry = { n: number; id: string; art: BowedHandArt; fam: Fam; view: ViewId; mode: BowedHandMode; serves: string; status: 'NEW' | 'KEPT' };
+export type BowedHandEntry = { n: number; id: string; art: BowedHandArt; fam: Fam; view: ViewId; mode: BowedHandMode; serves: string; status: 'NEW' | 'KEPT'; /** the builder's honest doubt, shown under the caption */ doubt?: string };
+
+/** The builder's remaining doubt per drawing (the sheet shows it under each caption). */
+const DOUBT: Record<number, string> = {
+  1: 'each finger now goes over the top of the stick and its end curls round behind it, the stick crossing in front of the ends; the index end and the thumb tip meet in one soft mass under the palm, which may read unclear.',
+  2: 'the fingers lie over the stick and bend down just past it, the stick showing on both sides of the hand; from above the thumb meets the stick under the index, out of sight, and its base beside the wrist may read broad.',
+  3: 'seen along the little-finger edge, the four finger arches stack into one clump over the board; the thumb is hidden behind the neck.',
+  4: 'the fingertips coming down onto the strings read as short knobs with their nails; the palm under the neck is one smooth mass.',
+  5: 'the bow’s end shows inside the ring of the curled fingers and thumb; the thumb is long and the whole hand may still read like a hanging claw.',
+  6: 'a fist from the back with the stick under it; the thumb shows only as a small bump at the top edge.',
+  7: 'the fingertips beyond the neck form a row of knobs with nails; the palm is behind the neck, as it really is.',
+  8: 'the long bent thumb lies along the back of the neck; the ring and little fingers are mostly hidden under the neck.',
+  9: 'the bow’s butt end now shows inside the curled fingers, toward us; the thumb still runs along under the palm like a rod before it curls in.',
+  10: 'a fist from the back with the stick under it; the little finger reads a little short and stubby.',
+  11: 'the thumb points toward us, so it is short and seen mostly by its nail; the fingertips beyond the neck are small.',
+  12: 'the thumb curls in a hook under the neck; its nail is turned away, so none shows.',
+  13: 'the thumb is the nearest and longest form, hanging down to the board’s edge; the ring and little fingers show only past the board.',
+  14: 'the thumb lies under the wrist from above and is not drawn at all; the fingertips that hook the strings turn under, out of sight.',
+};
 
 export const BOWED_HANDS: BowedHandEntry[] = [
   { n: 1, id: 'violinBowSide', art: BOWED_HAND_VIOLIN_BOW_SIDE, fam: 'violin', view: 'side', mode: 'bow', serves: 'C09a (standing and seated), C09b', status: 'NEW' },
@@ -56,7 +74,7 @@ export const BOWED_HANDS: BowedHandEntry[] = [
   { n: 12, id: 'bassStopTop', art: BOWED_HAND_BASS_STOP_TOP, fam: 'bass', view: 'top', mode: 'stop', serves: 'C06a, C06b and their setting plans', status: 'NEW' },
   { n: 13, id: 'bassPizzSide', art: BOWED_HAND_BASS_PIZZ_SIDE, fam: 'bass', view: 'side', mode: 'pizz', serves: 'C06a', status: 'NEW' },
   { n: 14, id: 'bassPizzTop', art: BOWED_HAND_BASS_PIZZ_TOP, fam: 'bass', view: 'top', mode: 'pizz', serves: 'C06a and its setting plan', status: 'NEW' },
-];
+].map((e) => (DOUBT[e.n] ? { ...e, doubt: DOUBT[e.n] } : e)) as BowedHandEntry[];
 
 /** The drawing for one hand of a lesson's picture (null: none authored — the shared hand draws it). */
 export function bowedHandFor(specId: string, view: ViewId, mode: BowedHandMode): BowedHandEntry | null {
@@ -121,6 +139,7 @@ export function BowedHandNode({ p, part, bowOver }: { p: BowedHandPlaced; part: 
   if (bow) {
     if (part === 'behind') return null;
     const thumbs = art.behind.length ? unionOf(...art.behind.map((q) => smoothClosed(q.outline, q.tension ?? 0.5))) : null;
+    const hf = heldFrontPath(art);
     body = (
       <Group transform={xf(p)}>
         <BowedHandLayer art={art} part="behind" L={p.L} />
@@ -131,6 +150,13 @@ export function BowedHandNode({ p, part, bowOver }: { p: BowedHandPlaced; part: 
         ) : null}
         <BowedHandCast art={art} />
         <BowedHandLayer art={art} part="front" L={p.L} />
+        {/* (where the stick lies nearer than a finger crossing it — the finger going over the top and round behind —
+            the stick and frog again over the finger: each finger is seen wrapping round it) */}
+        {hf && bowOver ? (
+          <Group clip={hf}>
+            <Group transform={inv(p)}>{bowOver}</Group>
+          </Group>
+        ) : null}
       </Group>
     );
   } else {

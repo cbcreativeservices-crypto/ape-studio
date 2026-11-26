@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-25 20:10 · ccode · b93f860a
+changed: Must-do: D85 click tempo committed (3a427f51), Pixel results for all five labs, owner ruling 'Half is enough'; D78 owner verdicts (figures session) [MD:D85] [MD:D78]
+affects other side: nothing. Docs only: must-do rows D85 (click tempo results, owner ruling "Half is enough") and D78 (figures verdicts).
+needs: nothing
+
+
 ### 2026-11-25 17:32 · ccode · 3a427f51
 changed: Effects labs: CLICK tempo control; the picture slows with the tempo and stays locked to the sound (owner 2026-11-25) [MD:D85]
 affects other side: nothing for the backend. App only (OTA-safe JS): Compression, Limiter, Gate, Delay and Reverb labs get a CLICK tempo fader; the picture slows with the tempo. Pixel look done on Compression only. Known limit: audio output delay (Bluetooth 100-300 ms) is not subtracted; that fix is native and waits for a store build.
@@ -892,32 +898,32 @@ needs: nothing
 
 ### 2026-11-22 15:20 · ccode · d651ae0a
 changed: Home + menu (owner 2026-11-22): FREE: on the green/purple/Glossary carousel titles for guests and free users (members keep plain names); menu words tappable; MENU dots see-through with a rim; every guest sign-in shows the MENU callout again
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing on the server. JS only: figure drawings and study pages; no text, number or mic position changed.
+needs: nothing
 
 
 ### 2026-11-22 14:39 · ccode · 39ad5336
 changed: Must-do: Comp A store checks 2026-11-22: B1 (Apple prices scheduled) and B3 (Play open testing paused) DONE; E8 Android 15 deprecated-API warning (inside React Native 0.86 itself, no 1.0.1 change; phone checks at the build)
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing on the server. JS only: figure drawings and study pages; no text, number or mic position changed.
+needs: nothing
 
 
 ### 2026-11-22 14:21 · ccode · 2c1a708d
 changed: Founder page: owner-approved D36 copy (six paragraphs, word for word from Comp A 2026-11-22); Q8 email confirmation stays OFF (owner 2026-11-22). Website not deployed: owner's GO [MD:D36]
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing on the server. JS only: figure drawings and study pages; no text, number or mic position changed.
+needs: nothing
 
 
 ### 2026-11-22 14:00 · ccode · 48b92b28
 changed: Landing: "Watch again" reads "Watch Intro Video Again" (owner 2026-11-22)
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing on the server. JS only: figure drawings and study pages; no text, number or mic position changed.
+needs: nothing
 
 
 ### 2026-11-22 13:15 · ccode · 660b706a
 changed: Landing: the MENU callout greets a first-time user as "YOUR MENU" (owner 2026-11-22: point the menu out to the new arriving user)
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing on the server. JS only: figure drawings and study pages; no text, number or mic position changed.
+needs: nothing
 
 
 ### 2026-11-22 12:30 · ccode · c0967847

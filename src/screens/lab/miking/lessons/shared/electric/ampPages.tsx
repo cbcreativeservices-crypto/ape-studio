@@ -66,6 +66,9 @@ import { cabOf, type AmpRig } from '../speakers/ampModel.ts';
 import { DiPath } from '../speakers/DiPath';
 import { patchVerdict, type ChainSpec } from '../speakers/signalChain.ts';
 import { BacklinePlan, type Backline, type BacklineScene } from '../speakers/BacklinePlan';
+import { figureV2On } from '../figureV2/figureV2Config';
+/** (2026-11-26) the plan player in the approved look, with every other standing player. */
+const BACKLINE_V2 = figureV2On('sidePlayers');
 import { PairComb } from '../speakers/PairComb';
 import type { Back } from '../speakers/cabGeometry.ts';
 import { ElectricExplorer, electricAspect, type ElectricShow } from './ElectricExplorer';
@@ -717,7 +720,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
         kind: 'LEARN',
         layout: 'rack',
         rack: {
-          render: (w, h) => <BacklinePlan w={w} h={h} who={spec.who} scene={scene} wedges={lesson.live.wedges} highlight={sel} onTap={setSel} shortOf={(id) => planItems.find((i) => i.id === id)?.short ?? shortOf(id)} accessibilityLabel={`${scene === 'stage' ? 'A stage' : 'A studio room'} from above: the amp, the player and their keep-clear space, a DI box, the other amp${scene === 'stage' ? ', the monitor wedge, the drum kit, the PA and the audience' : ''}.${ps ? ` Highlighted: ${ps.label}.` : ''}`} />,
+          render: (w, h) => <BacklinePlan v2={BACKLINE_V2} w={w} h={h} who={spec.who} scene={scene} wedges={lesson.live.wedges} highlight={sel} onTap={setSel} shortOf={(id) => planItems.find((i) => i.id === id)?.short ?? shortOf(id)} accessibilityLabel={`${scene === 'stage' ? 'A stage' : 'A studio room'} from above: the amp, the player and their keep-clear space, a DI box, the other amp${scene === 'stage' ? ', the monitor wedge, the drum kit, the PA and the audience' : ''}.${ps ? ` Highlighted: ${ps.label}.` : ''}`} />,
           badge: scene === 'stage' ? 'From above · a typical layout · gray dashes = the player’s space, keep clear' : 'From above · a typical studio room',
           bezel: [
             { k: 'ITEM', v: ps ? ps.short : 'TAP ONE', flex: 1.4 },

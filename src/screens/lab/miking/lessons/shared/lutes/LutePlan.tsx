@@ -42,6 +42,7 @@ import { Head } from './lutePlayers';
 // (figure V2, wave 6 of D78: the accompanists in the approved look, behind the spec's `v2`)
 import { MarkerTopV2 } from '../figureV2/elsewhereTop';
 import { castForKey } from '../figureV2/markerPose';
+import { CAST, type CastId, type CastMember } from '../figureV2/cast';
 
 const AMBER = '#ffc64d';
 const GREY = '#8a8f9c';
@@ -58,12 +59,19 @@ function Shadow({ path }: { path: SkPath }) {
   );
 }
 
+/** (cast figures 2026-11-26) who plays each accompaniment, by the object's id (castForKey: the same object, the
+ *  same person, every time) — except the tanpura, whose key falls on Mei, the veena player herself: the
+ *  tanpura is the drummer on both plans it is on (the sitar's: Ana plays, Kofi the tabla; the veena's: Mei
+ *  plays, Ruth the mridangam), so no plan shows one person twice. */
+const ACCOMPANIST_WHO: Readonly<Record<string, CastId>> = { tanpura: 'drummer' };
+export const accompanistWho = (id: string): CastMember => (ACCOMPANIST_WHO[id] ? CAST[ACCOMPANIST_WHO[id]] : castForKey(id));
+
 /** A seated accompanist from above: shoulders and a bald head, facing the audience. */
 function Seated({ x, z, w = 210, v2 = false, id = '' }: { x: number; z: number; w?: number; /** (figure V2) the accompanist in the approved look (from above: shoulders, back and head; the neck 18 mm behind the old head's point, facing the audience) */ v2?: boolean; id?: string }) {
   if (v2)
     return (
       <Group transform={[{ translateX: x }, { translateY: z - 18 }]}>
-        <MarkerTopV2 who={castForKey(id)} facing={Math.PI / 2} />
+        <MarkerTopV2 who={accompanistWho(id)} facing={Math.PI / 2} />
       </Group>
     );
   const p = smooth([

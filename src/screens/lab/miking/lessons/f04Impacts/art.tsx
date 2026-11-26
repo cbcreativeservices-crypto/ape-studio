@@ -31,7 +31,7 @@ import { figureV2On } from '../shared/figureV2/figureV2Config';
 import { PlayerSideV2, PlayerTopV2 } from '../shared/figureV2/playersV2';
 import { personShapes } from '../shared/figureV2/personV2';
 import { inPoly, P as P2 } from '../shared/figureV2/geom.ts';
-import { FOLEY_PERFORMER, IMPACTS_HOLD, foleySideGrips, foleySidePlan, foleyTopGrips, foleyTopPlan } from '../shared/foley/foleyV2.ts';
+import { FOLEY_PERFORMER, IMPACTS_HOLD, foleySideGrips, foleySidePlan, foleyTopGrips, foleyTopPlan, legsFromAbove } from '../shared/foley/foleyV2.ts';
 import { bodyOf } from './geometry.ts';
 
 /** The new look (figure V2, wave 3 set 3b): the Foley artist is Mei of the cast. */
@@ -152,11 +152,14 @@ export function ImpactsArt({ view, variant, v2 = V2 }: { view: ViewId; variant: 
         <Group>
           <StageFloorPlan u0={TOP.u0 - 200} u1={TOP.u1 + 900} v0={TOP.v0 - 200} v1={TOP.v1 + 200} />
           {live ? <BoothArt view="top" rail={booth.rail} pa={{ x: booth.pa.p.x, y: booth.pa.p.y, z: booth.pa.p.z }} /> : null}
+          {/* (cast sweep 2026-11-26) bent over the table, the seat and the shoes show behind the back from above —
+              drawn before the table, so a toe under its edge stays under the top */}
+          {legsFromAbove(bodyOf(variant)) ? <PlayerTopV2 plan={topOf(variant)} who={FOLEY_PERFORMER} part="legs" legs /> : null}
           {variant === 'water' ? <LowTable view="top" floor={floor} /> : <TableArt view="top" x0={TABLE.x0} x1={TABLE.x1} z0={TABLE.z0} z1={TABLE.z1} topY={tt} floorY={floor} />}
           {variant === 'water' ? <Basin view="top" /> : null}
           {variant === 'texture' ? <BrushBoard view="top" /> : null}
           {variant === 'water' ? <Jug view="top" /> : null}
-          <PlayerTopV2 plan={topOf(variant)} grips={foleyTopGrips(bodyOf(variant), specOf(variant))} who={FOLEY_PERFORMER} nearStick={block ? <PaddedBlock view="top" /> : undefined} />
+          <PlayerTopV2 plan={topOf(variant)} grips={foleyTopGrips(bodyOf(variant), specOf(variant))} who={FOLEY_PERFORMER} part="upper" nearStick={block ? <PaddedBlock view="top" /> : undefined} />
         </Group>
       );
     const s = F04_MODEL.viewsByVariant?.[variant]?.side ?? F04_MODEL.views.side!;

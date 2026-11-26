@@ -24,13 +24,16 @@ const S = (x: number, y: number, rx: number, ry: number, rot: number, o: number)
 
 /** The wrist and the palm (tilted up toward us) to the knuckle row. */
 const BODY = pts([
-  [-6, -24], [8, -25], [22, -29], [36, -33], [50, -31], [62, -23], [71, -13], [76, -3], [74, 5], [66, 11.5], [56, 18.5], [46, 26], [36, 33.5], [26, 39.5], [14, 41.5], [2, 37], [-6, 27],
+  [-6, -24], [8, -25], [22, -29], [36, -33], [50, -31], [62, -23], [71, -13], [76, -3], [74, 5], [66, 11.5], [56, 17], [46, 22], [36, 27.5], [26, 32], [14, 33.5], [2, 30], [-6, 25],
 ]);
-const THUMB = digitOutline([P(16, -14), P(30, -25), P(48, -45), P(59, -52), P(58.5, -43)], [14, 12.4, 11.2, 10, 9.4]);
-const INDEX = digitOutline([P(60, -8), P(88, 5), P(77, -9), P(65, -18)], [10, 9.4, 8.6, 7.6]);
-const MIDDLE = digitOutline([P(57, 12), P(51, 6), P(36, -12), P(33, -19)], [10.6, 10, 9, 8]);
-const RING = digitOutline([P(43, 22), P(49, 0), P(28, -12), P(19, -9)], [10, 9.6, 8.6, 7.6]);
-const LITTLE = digitOutline([P(28, 32), P(23, 9), P(7, -1), P(-6, -2)], [9, 8.4, 7.6, 6.8]);
+const THUMB = digitOutline([P(16, -14), P(30, -25), P(47, -43), P(60, -50)], [14, 12.6, 11.4, 10.4]);
+// (round 2, owner 2026-11-25 "fingers attached": each finger rises out of the palm from deep inside it, along its own
+// bone, so it flows into the hand; never a knob set on the palm's edge)
+const INDEX = digitOutline([P(44, -2), P(66, -6), P(88, 5), P(77, -9), P(65, -18)], [10.6, 10.6, 9.8, 8.8, 7.8]);
+// (the roots kept well inside the palm: no bump of a finger's root on the palm's lower edge)
+const MIDDLE = digitOutline([P(42, 6), P(55, 6), P(51, 4), P(36, -12), P(33, -19)], [9, 10.4, 10.4, 9.2, 8.2]);
+const RING = digitOutline([P(32, 12), P(41, 14), P(49, 0), P(28, -12), P(19, -9)], [8, 9.6, 9.8, 8.8, 7.8]);
+const LITTLE = digitOutline([P(18, 16), P(24, 18), P(23, 9), P(7, -1), P(-6, -2)], [7.5, 8.6, 8.6, 7.8, 7]);
 
 export const BOWED_HAND_VIOLIN_STOP_TOP: BowedHandArt = {
   title: 'violin and viola fingering (left) hand, seen from above',
@@ -48,10 +51,6 @@ export const BOWED_HAND_VIOLIN_STOP_TOP: BowedHandArt = {
     { id: 'index', outline: INDEX, lights: [S(78, -6, 8, 3, 0.6, 0.26)], darks: [S(78, 6, 8, 2.4, 0.4, 0.3)], nails: [{ c: P(68, -16), len: 8, w: 5.8, rot: 0.64 }] },
     { id: 'ring', outline: RING, lights: [S(36, -6, 8, 3, 0.5, 0.26)], darks: [S(44, 8, 3, 8, 0.3, 0.3)], nails: [{ c: P(22, -10.2), len: 7, w: 3.6, rot: -0.32 }] },
     { id: 'middle', outline: MIDDLE, lights: [S(43, -4, 3, 9, 0.7, 0.28)], darks: [S(52, 2, 3, 8, 0.7, 0.3)], nails: [{ c: P(34.5, -16), len: 6, w: 3.2, rot: 1.16 }] },
-  ],
-  frontLines: [
-    { pts: pts([[27.5, -8], [36, -1], [43, 9], [47, 17]]), w: 0.8 },
-    { pts: pts([[42, -4], [49, 4], [56, 12]]), w: 0.8, o: 0.55 },
   ],
   grip: P(32.4, -25.0),
   held: [

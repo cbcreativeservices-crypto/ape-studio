@@ -3,9 +3,11 @@
  * also the setting plans).
  *
  * WHAT THE HAND DOES: the same Franco-Belgian bow hold as bowedHandViolinBowSide.tsx (bowedHands.bowHand,
- * BOW_HOLD.upper): the back of the hand up, the fingers draped over the stick toward the bow's tip side, the index over
- * the stick at its middle joint, the middle finger opposite the bent thumb, the ring finger over the frog, the little
- * finger curved with its tip on top of the stick; the bent thumb under the stick at the frog's front corner.
+ * BOW_HOLD.upper; written out there digit by digit): the back of the hand up; the stick lies INSIDE the hand, across
+ * the fingers between their knuckles and their tips; the index touches it between its first and second joints, the
+ * middle and ring fingers drape OVER it and curl down its far side (the ring's end over the frog), the little finger,
+ * curved, stands with its tip on top of the stick; the BENT thumb's tip meets the stick from UNDER it at the frog's
+ * front corner, opposite the middle finger — hidden from above under the index and the stick.
  *
  * WHAT THE EYE SEES from straight above (read from the lesson's posed hand: the back of the hand faces the camera,
  * 0.93): the forearm from the left out of the cuff; the broad back of the hand, the four knuckles a slanting row from
@@ -33,13 +35,19 @@ const BODY = pts([
 /** The thumb's two segments (lower than the hand, its tip under the stick beside the index): a soft bend at its middle
  *  joint, its root inside the hand at its knuckle. */
 // (round 3: the thumb the thickest digit — its knuckle a full rounded form out of the hand, never a thin flap)
-const THUMB = digitOutline([P(10, -56), P(17, -75), P(41, -92), P(66, -97)], [14, 13.4, 11.6, 10]);
-// (round 2: the fingers a little wider and closer, draped over the stick side by side; each ends at its middle joint's
-// rounded bend, the joint marked by a short soft crease where the finger turns down out of sight)
-const INDEX = pts([[46, -84], [47.5, -99], [50.5, -114], [54, -127], [58.5, -135.5], [65, -139], [71.5, -136], [75, -126.5], [74.5, -112], [71, -98], [66, -87], [58, -80]]);
-const MIDDLE = pts([[62, -80], [69, -96], [76.5, -110], [82, -121.5], [88.5, -128], [96.5, -126.5], [100.5, -117], [97.5, -102], [90, -87], [80, -74]]);
-const RING = pts([[73, -67], [84, -80], [95.5, -92.5], [103, -101.5], [111, -103], [117.5, -95.5], [115.5, -84], [105.5, -71.5], [91, -58]]);
-const LITTLE = pts([[83, -51], [95, -58], [107, -64], [116.5, -68], [123.5, -63.5], [124, -54], [116.5, -46], [101, -39], [87, -37]]);
+// (round 4, owner 2026-11-25: a slimmer thumb that reads as a digit, never a lobe; its tip goes on under the index)
+const THUMB = digitOutline([P(12, -58), P(18, -75), P(41, -92), P(66, -97)], [10.5, 11.6, 10.6, 9.6]);
+// (round 4, owner 2026-11-25 "the fingers are not attached": each finger grows out of the back of the hand from deep
+// inside it (its root never outlined) and the four lie together, touching, draped over the stick; each ends at its
+// middle joint's rounded bend where it turns down out of sight)
+// (round 5, owner 2026-11-25 "fingers do not wrap around stick of bow": each finger crosses OVER the stick and its
+// middle joint bends down just past it — the finger's end goes down round the far side of the stick, out of sight —
+// no straight finger reaching on past the stick, no hooked end; the little finger, curved, stands with its tip on the
+// stick)
+const INDEX = digitOutline([P(46, -62), P(54, -84), P(61.9, -113.3)], [11.4, 11.4, 10.6]);
+const MIDDLE = digitOutline([P(58, -56), P(70, -75), P(80.8, -96)], [12, 12, 11.2]);
+const RING = digitOutline([P(64, -46), P(80, -61), P(99.6, -78.6)], [11.2, 11.2, 10.4]);
+const LITTLE = digitOutline([P(66, -36), P(85, -44), P(111, -52)], [10, 10, 9.2]);
 
 export const BOWED_HAND_VIOLIN_BOW_TOP: BowedHandArt = {
   title: 'violin and viola bow hand, seen from above',
@@ -58,18 +66,13 @@ export const BOWED_HAND_VIOLIN_BOW_TOP: BowedHandArt = {
       lights: [S(36, -30, 34, 20, -0.85, 0.14), S(57, -86, 5.5, 4, -0.9, 0.32), S(70, -76, 5.5, 4, -0.9, 0.3), S(80, -63, 5, 3.6, -0.9, 0.28), S(88, -48, 4.4, 3.2, -0.9, 0.26)],
       darks: [S(-3, 0, 3, 22, 0, 0.32), S(62, -14, 26, 4, -0.85, 0.28), S(64, -78, 2.4, 1.4, -0.9, 0.24), S(75, -66, 2.4, 1.4, -0.9, 0.24), S(85, -53, 2.2, 1.3, -0.9, 0.22)],
     },
-    // (each finger lit along its upper-left side; its end, past the middle joint's crease, turning down out of sight)
-    { id: 'little', outline: LITTLE, lights: [S(103, -58, 11, 2.6, -0.4, 0.26)], darks: [S(104, -43, 10, 2.4, -0.4, 0.3), S(121, -58, 3.4, 6.5, -0.3, 0.34)] },
-    { id: 'ring', outline: RING, lights: [S(95, -90, 10, 2.8, -0.85, 0.26)], darks: [S(103, -78, 10, 2.6, -0.75, 0.3), S(113, -98, 6.5, 3.4, -0.85, 0.34)] },
-    { id: 'middle', outline: MIDDLE, lights: [S(78, -109, 10, 3, -1.1, 0.26)], darks: [S(92, -100, 10, 2.6, -1.1, 0.3), S(93, -124, 6.5, 3.6, -0.55, 0.34)] },
-    { id: 'index', outline: INDEX, lights: [S(55, -116, 3, 13, -0.15, 0.28)], darks: [S(70, -110, 2.6, 12, -0.15, 0.3), S(65, -134, 6.5, 3.6, -0.1, 0.34)] },
+    // (each finger lit along its upper-left side; past the stick its bend turns down, away from us: a deepening tone)
+    { id: 'little', outline: LITTLE, lights: [S(96, -52, 11, 2.6, -0.3, 0.26)], darks: [S(100, -42, 10, 2.4, -0.3, 0.3), S(116, -53, 4, 6, -0.3, 0.34)] },
+    { id: 'ring', outline: RING, lights: [S(87, -74, 9, 2.8, -0.75, 0.26)], darks: [S(97, -66, 9, 2.6, -0.75, 0.3), S(104, -85, 6.5, 4, -0.75, 0.4)] },
+    { id: 'middle', outline: MIDDLE, lights: [S(70, -88, 9, 3, -1.1, 0.26)], darks: [S(82, -82, 9, 2.6, -1.1, 0.3), S(84, -103, 6.5, 4, -0.5, 0.4)] },
+    { id: 'index', outline: INDEX, lights: [S(52, -100, 3, 11, -0.25, 0.28)], darks: [S(66, -96, 2.6, 10, -0.25, 0.3), S(64, -120, 6.5, 4, -0.2, 0.4)] },
   ],
   frontLines: [
-    // the middle joint of each finger: a short soft crease across it where the finger turns down
-    { pts: pts([[56, -128], [63, -130.5], [70, -128.5]]), w: 0.7, o: 0.5, even: true },
-    { pts: pts([[82.5, -119], [89, -123], [96.5, -120]]), w: 0.7, o: 0.5, even: true },
-    { pts: pts([[102, -97.5], [108.5, -99], [114, -93]]), w: 0.7, o: 0.5, even: true },
-    { pts: pts([[116, -64.5], [119.5, -60], [119.5, -52]]), w: 0.7, o: 0.5, even: true },
     // three faint tendons on the back of the hand
     { pts: pts([[22, -10], [38, -40], [52, -72]]), w: 0.9, o: 0.12 },
     { pts: pts([[24, 0], [46, -30], [68, -66]]), w: 0.9, o: 0.12 },

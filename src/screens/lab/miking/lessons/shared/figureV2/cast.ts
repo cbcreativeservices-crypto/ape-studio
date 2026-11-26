@@ -163,7 +163,7 @@ export const ROLES = {
   'bowed.second': 'drummer',
   // the brass: a01 trumpet and flugelhorn, a02 trombones; a plan's second player of the same horn
   'brass.trumpet': 'ruth',
-  'brass.trombone': 'drummer',
+  'brass.trombone': 'mei', // (2026-11-26) not the drummer: he sits at the kit on the same setting plan
   'brass.second': 'kofi',
   // the low brass: a03 horn, a04a tuba, a04b euphonium; a plan's second player of the same instrument
   'lowbrass.horn': 'ana',
@@ -173,9 +173,9 @@ export const ROLES = {
   // the saxophones: a05a soprano, a05b alto, a05c tenor, a05d baritone; a plan's second player of the same horn
   'sax.soprano': 'ana',
   'sax.alto': 'ruth',
-  'sax.tenor': 'drummer',
+  'sax.tenor': 'mei', // (2026-11-26) not the drummer: he sits at the kit on the same setting plan
   'sax.baritone': 'kofi',
-  'sax.second': 'mei',
+  'sax.second': 'kofi', // (2026-11-26) Mei is the tenor now
   // the woodwinds, each lesson's own player (its section seat's person: windFigureV2 WIND_SEATS)
   'wind.flute': 'ana',
   'wind.piccolo': 'drummer',

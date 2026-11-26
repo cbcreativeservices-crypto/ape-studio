@@ -94,21 +94,12 @@ export function bowedFigureGroups(fi: FamIn, view: ViewId, instDepth: number, oc
   const region = famFrontRegion(fp, instDepth, { foreBehind: view === 'side' ? ['L'] : [], headFront: view === 'side' });
   const placed = hands ? bowedHandPlacements(hands.P, hands.D, view, hands.bowed, fp) : [];
   const look = fi.who.look;
-  // (a far hand's part behind the neck — the stopping hand seen from the player's right, beyond the body — goes under
-  // the person, as the far arm does: the body and the cuff lie over it where they meet; a near one over the person)
-  const backFar = placed.filter((p) => p.far).map((p) => <BowedHandNode key={`b${p.side}`} p={p} part="behind" />);
-  const backNear = placed.filter((p) => !p.far).map((p) => <BowedHandNode key={`b${p.side}`} p={p} part="behind" />);
+  // (a hand's part behind the neck is painted over the person — its wrist must cover the sleeve's open cuff; the
+  // instrument then covers what lies behind it)
+  const back = placed.map((p) => <BowedHandNode key={`b${p.side}`} p={p} part="behind" />);
   const front = placed.map((p) => <BowedHandNode key={`f${p.side}`} p={p} part="front" bowOver={hands?.bowOver ?? null} />);
   return [
-    {
-      key: 'figureV2',
-      depth: instDepth - 0.75,
-      items: [
-        ...(backFar.length ? [nodeItem(<FigureLook look={look}>{backFar}</FigureLook>)] : []),
-        nodeItem(<FamilyFigureV2 fp={fp} />),
-        ...(backNear.length ? [nodeItem(<FigureLook look={look}>{backNear}</FigureLook>)] : []),
-      ],
-    },
+    { key: 'figureV2', depth: instDepth - 0.75, items: [nodeItem(<FamilyFigureV2 fp={fp} />), ...(placed.length ? [nodeItem(<FigureLook look={look}>{back}</FigureLook>)] : [])] },
     ...(contact ? [{ key: 'figureV2Contact', depth: instDepth - 0.5, items: [nodeItem(contact)] }] : []),
     { key: 'figureV2Front', depth: instDepth + 1e6, items: [nodeItem(<FamilyFigureFrontV2 fp={fp} region={region} />), ...(placed.length ? [nodeItem(<FigureLook look={look}>{front}</FigureLook>)] : [])] },
   ];

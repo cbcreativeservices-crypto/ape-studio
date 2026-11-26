@@ -44,7 +44,7 @@ import { GripArmV2, gripSilhouette } from '../shared/fieldmics/gripArmV2';
 import type { Torso } from '../shared/figureV2/FigureV2Side';
 import { personPlan } from '../shared/figureV2/personV2';
 import { personTopPlan } from '../shared/figureV2/topPerson.ts';
-import { topPaths } from '../shared/figureV2/FigureV2Top';
+import { DrummerTopLegsV2, topPaths } from '../shared/figureV2/FigureV2Top';
 import { PlayerTopV2 } from '../shared/figureV2/playersV2';
 import { headOverNeck } from '../shared/figureV2/playersGrip.ts';
 import { FLOOR, HOLDER, JACKET, WEARER } from './geometry.ts';
@@ -326,7 +326,14 @@ export function ClothingPersonV2({ view, variant, jacket }: { view: ViewId; vari
     return (
       <SoftFolds.Provider value>
         {worn ? (
-          <PersonTopV2 pose={WORN_TOP_POSE} who={WEARER_WHO} opts={{ jacket: true }} />
+          <>
+            {/* (cast sweep 2026-11-26) walking in place, the stride shows from above as it does from the side: the
+                forward shoe ahead of the jacket's front, the back one behind — the plan's own legs, under the body */}
+            <FigureLook look={WEARER_WHO.look}>
+              <DrummerTopLegsV2 plan={personTopPlan(WORN_TOP_POSE, WEARER_WHO, { jacket: true })} />
+            </FigureLook>
+            <PersonTopV2 pose={WORN_TOP_POSE} who={WEARER_WHO} opts={{ jacket: true }} />
+          </>
         ) : (
           <HeldTop jacket={jacket} />
         )}

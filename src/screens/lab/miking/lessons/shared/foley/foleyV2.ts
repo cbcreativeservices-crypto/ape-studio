@@ -29,7 +29,7 @@ import { armPlan } from '../figureV2/sidePlan.ts';
 import type { TopPlan } from '../figureV2/topPlan.ts';
 import type { PlacedGrip } from '../figureV2/heldHands.ts';
 import { gripArm3, gripInView, noseTip, openingOf, SIDE_VIEW, tiltTo, TOP_VIEW, type GripArm3 } from '../figureV2/playersGrip.ts';
-import { P, type Pt } from '../figureV2/geom.ts';
+import { hull, P, type Pt } from '../figureV2/geom.ts';
 import { sidePose, topPose, type Body3 } from './performer.ts';
 
 export const FOLEY_PERFORMER = castFor('foley.performer');
@@ -153,6 +153,30 @@ export const foleySidePlan = (b: Body3, s: FoleySpec): SidePlan => foleySide(b, 
 /** The hands that hold, closed round their things, in profile (PlayerSideV2 `grips`). */
 export const foleySideGrips = (b: Body3, s: FoleySpec): FoleyGrips => foleySide(b, s).grips;
 
+/** How far the body bends forward at the hips (radians; 0 upright). */
+export function leanOf(b: Body3): number {
+  const hx = (b.hipR.x + b.hipL.x) / 2;
+  const hy = (b.hipR.y + b.hipL.y) / 2;
+  return Math.max(0, Math.atan2(b.neck.x - hx, hy - b.neck.y));
+}
+/** A bend past this (≈ 10°) shows the back and the seat from above. */
+const LEAN_SHOWS = 0.17;
+/** A stride past this (mm, heel to heel along the walk) shows the feet past the body from above. */
+const STRIDE_SHOWS = 250;
+/** Whether the legs show from above: a body bent forward (its seat and shoes behind the shoulders) or walking
+ *  (the forward shoe ahead of the chest, the back one behind); an upright stance keeps them under the shoulders. */
+export const legsFromAbove = (b: Body3): boolean => leanOf(b) > LEAN_SHOWS || Math.abs(b.ftR.x - b.ftL.x) > STRIDE_SHOWS;
+/** The shirt from above carried back from the shoulders to the waist over the hips (a body bent forward). */
+function backToWaist(slab: readonly Pt[], b: Body3): Pt[] {
+  const B = FOLEY_PERFORMER.body;
+  const hx = (b.hipR.x + b.hipL.x) / 2;
+  const hz = (b.hipR.z + b.hipL.z) / 2;
+  const half = 132 * (B?.waist ?? 1);
+  // (the waist a little forward of the hip joints on the bent trunk; the seat behind is the thighs' own cloth)
+  const w = hx + 40;
+  return hull([...slab, P(w, hz - half), P(w - 18, hz - half * 0.7), P(w - 26, hz), P(w - 18, hz + half * 0.7), P(w, hz + half)]);
+}
+
 const topCache = new WeakMap<Body3, Map<string, { plan: TopPlan; grips: FoleyGrips }>>();
 function foleyTop(b: Body3, s: FoleySpec) {
   let m = topCache.get(b);
@@ -196,8 +220,13 @@ function foleyTop(b: Body3, s: FoleySpec) {
     return armPlan(xz(g.shoulder), xz(g.elbow), xz(g.wrist), null, false, null, tiltTo(g, TOP_VIEW.toward), null, true, armB);
   };
   const arms = { near: arm('R'), far: arm('L') };
+  // (cast sweep 2026-11-26: "the performer bent over the table wrong from above") a body bent forward at the hips
+  // shows its back from above, sloping from the shoulders down to the waist over the hips — not the upright
+  // shoulders alone: the shirt carried back to the waist (the seat and the legs behind it are the plan's legs,
+  // drawn under the body — legsFromAbove)
+  const torso = leanOf(b) > LEAN_SHOWS ? backToWaist(desk.torso, b) : desk.torso;
   // (review 2026-11-24: from above only the nose's tip shows past the brow)
-  const plan: TopPlan = noseTip({ ...desk, arms });
+  const plan: TopPlan = noseTip({ ...desk, torso, arms });
   const R = foleyGrip(b, 'R', s.R);
   const L = foleyGrip(b, 'L', s.L);
   const grips: FoleyGrips = {

@@ -44,6 +44,13 @@ import { CueMixPlan } from '../monitoring/CueMixPlan';
 import { cueCables, cueLabels } from '../monitoring/cueMix.ts';
 import { clearOfFoots, planTurn, labelPlaces, unionRect } from '../planFoot.ts';
 import { PIANIST, bowedCue, bowedFoots, bowedPlayerRect, bowedShown, type BowedPlanLayout } from './bowedPlanModel.ts';
+import { figureV2On } from '../figureV2/figureV2Config.ts';
+import { castFor } from '../figureV2/cast';
+
+/** (cast figures 2026-11-26) the pianist beside the bass (c06a/b) in the approved look: the plans' keys
+ *  player (Ruth, 'plan.keys') — never the bassist (Mei) nor the drummer at the kit beside them. */
+const PIANIST_V2 = figureV2On('familyBowed');
+const PIANIST_WHO = castFor('plan.keys');
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 
@@ -434,7 +441,7 @@ export function BowedPlan({ w, h, cfg, box, scene, wedges, items, highlight, onT
                   <GrandPiano />
                   {/* the pianist on the bench, at the keyboard's middle */}
                   <Group transform={[{ translateY: PIANIST.y }]}>
-                    <Pianist view="top" xKey={PIANIST.xKey} pedalX={PIANIST.pedalX} dim={0.8} />
+                    <Pianist view="top" xKey={PIANIST.xKey} pedalX={PIANIST.pedalX} dim={0.8} v2={PIANIST_V2} who={PIANIST_WHO} />
                   </Group>
                 </>
               ) : o.kind === 'kit' ? (

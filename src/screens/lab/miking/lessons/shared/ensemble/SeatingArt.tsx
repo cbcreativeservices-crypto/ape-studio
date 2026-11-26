@@ -49,7 +49,7 @@ import { PlayerTopV2, MarkerTopV2, type TopGrip, type TopPlayer } from '../figur
 import { castForKey, castInTurn, CAST_IN_TURN } from '../figureV2/markerPose';
 import { famFrontRegion, famPlan, FamilyFigureFrontV2, FamilyFigureV2, type FamIn, type FamPlan, type FamSkeleton, type FamView } from '../figureV2/familyV2';
 import { PersonFrontV2 } from '../figureV2/FigureV2Front';
-import { FRONT_STANDING } from '../figureV2/frontPlan.ts';
+import { FRONT_SEATED, FRONT_STANDING } from '../figureV2/frontPlan.ts';
 import { PersonSideV2 } from '../figureV2/personV2';
 import { ConductorV2 } from '../figureV2/conductorV2';
 import { ChoristerV2 } from '../figureV2/choristerV2';
@@ -57,7 +57,7 @@ import { bowNearFrog, hold2Of, KIND2, type Stick } from './ensembles2Holds';
 import { CAST, castFor } from '../figureV2/cast';
 import { SINGER_SIDE } from '../voice/voicePose.ts';
 import { poseOnTalker } from '../broadcast/talkerPose.ts';
-import type { CastMember } from '../figureV2/cast';
+import type { CastId, CastMember } from '../figureV2/cast';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -3077,12 +3077,23 @@ function clearFolder(b: Batch) {
 /** Who sits in each seat: the cast in turn by the seat's place in its seating (neighbours always two people). */
 const SEAT_WHO = new WeakMap<Seat, CastMember>();
 function castSeats(s: Seating) {
+  // (Cast figures 2026-11-26) a drum kit draws its own drummer (the kit drummer, in every view): its seat IS the
+  // drummer, and the other players take the rest of the cast in turn — never the drummer a second time beside his kit
+  const kit = s.seats.some((q) => q.kind === 'drumkit');
+  const players = (ids: readonly CastId[]) => {
+    let i = 0;
+    for (const q of s.seats) SEAT_WHO.set(q, q.kind === 'drumkit' ? CAST.drummer : CAST[ids[i++ % ids.length]]);
+  };
   if (s.conductor) {
     // (Ensembles2) the conductor's person never also plays in his seating: the players take the other four in turn
     const cond = castFor('ensemble.conductor');
     const four = CAST_IN_TURN.filter((id) => id !== cond.id);
-    s.seats.forEach((q, i) => SEAT_WHO.set(q, CAST[four[i % four.length]]));
+    players(kit ? four.filter((id) => id !== 'drummer') : four);
     SEAT_WHO.set(s.conductor, cond);
+    return;
+  }
+  if (kit) {
+    players(CAST_IN_TURN.filter((id) => id !== 'drummer'));
     return;
   }
   [...s.seats, ...(s.conductor ? [s.conductor] : [])].forEach((q, i) => SEAT_WHO.set(q, castInTurn(i)));
@@ -3286,6 +3297,22 @@ function ConductorElevV2({ q, view }: { q: Seat; view: 'front' | 'section' }) {
     </Group>
   );
 }
+/** (Cast figures 2026-11-26) the kit's drummer from the hall: the drummer seated on his throne, facing the hall
+ *  (frontPlan FRONT_SEATED: the hips on the seat, the hands resting at the thighs), the kit drawn over him. The
+ *  section view's kit (KitSide) and the plan's (KitTop) already draw him; the front view had left him out. The
+ *  picture is cut at the floor line: the seated pose's feet sit a little lower, hidden behind the kick. */
+function KitDrummerFrontV2({ q }: { q: Seat }) {
+  const o = uv('front', q.p);
+  // the pose's own floor (FRONT_STANDING's, the lips at 0) on the stage floor: the hips 470 mm up, on the throne
+  const floor = FRONT_STANDING.floor ?? 1550;
+  return (
+    <Group clip={rr(o.u - 1500, o.v - 2600, o.u + 1500, o.v, 0)}>
+      <Group transform={[{ translateX: o.u }, { translateY: o.v - floor }]}>
+        <PersonFrontV2 pose={FRONT_SEATED} who={CAST.drummer} />
+      </Group>
+    </Group>
+  );
+}
 const SINGER_SIDE_LEFT = poseOnTalker(SINGER_SIDE, { id: 'ensLeft', lip: { x: 0, y: 0, z: 0 }, facing: -1 } as never);
 
 type ElevItem = { q: Seat; d: number; base: Batch; back: Batch | null; rest: Batch; fam: { fp: FamPlan; inst: number; headFront?: boolean } | null; voice: boolean };
@@ -3391,7 +3418,7 @@ function SeatingElevV2({ seating, view, hi }: { seating: Seating; view: 'front' 
     <Group key={key}>
       <PaintBatch b={it.base} />
       {it.back ? <PaintBatch b={it.back} /> : null}
-      {it.fam ? <FamilyFigureV2 fp={it.fam.fp} /> : it.voice ? <SingerElevV2 q={it.q} view={view} who={seatWho(it.q)} /> : it.q.kind === 'conductor' ? <ConductorElevV2 q={it.q} view={view} /> : null}
+      {it.fam ? <FamilyFigureV2 fp={it.fam.fp} /> : it.voice ? <SingerElevV2 q={it.q} view={view} who={seatWho(it.q)} /> : it.q.kind === 'conductor' ? <ConductorElevV2 q={it.q} view={view} /> : it.q.kind === 'drumkit' && view === 'front' ? <KitDrummerFrontV2 q={it.q} /> : null}
       <PaintBatch b={it.rest} />
       <SticksV2 q={it.q} view={view} />
       {it.fam ? <FamilyFigureFrontV2 fp={it.fam.fp} region={famFrontRegion(it.fam.fp, it.fam.inst, it.fam.headFront ? { headFront: true } : {})} /> : null}

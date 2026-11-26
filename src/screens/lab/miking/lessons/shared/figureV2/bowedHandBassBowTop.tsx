@@ -23,11 +23,13 @@ const S = (x: number, y: number, rx: number, ry: number, rot: number, o: number)
 const BODY = pts([
   [-6, -25], [8, -28], [24, -33], [40, -36], [56, -34], [72, -25], [84, -17], [92, -10], [95, 0], [91, 10], [81, 23], [69, 35], [57, 45], [43, 48], [28, 44], [12, 36], [-6, 26],
 ]);
-const THUMB = digitOutline([P(18, -14), P(57, -35), P(71, -24), P(77, -9)], [14.5, 12.4, 11.2, 10]);
-const INDEX = digitOutline([P(78, -4), P(113, -17), P(110, -29)], [10.6, 10.2, 9.2]);
-const MIDDLE = digitOutline([P(72, 10), P(106, 0), P(99, -8)], [11, 10.6, 9.6]);
-const RING = digitOutline([P(61, 22), P(90, 30), P(84, 24)], [10.4, 10.2, 9.2]);
-const LITTLE = digitOutline([P(48, 34), P(65, 49), P(60, 46)], [9.2, 9, 8.2]);
+// (round 2, owner 2026-11-25: the thumb shows only its knuckle at the hand's upper edge — no lobe; each finger grows
+// out of the back of the hand from deep inside it and ends in its rounded middle joint where it turns down — no hook)
+const THUMB = digitOutline([P(20, -14), P(50, -30), P(64, -27), P(72, -14)], [11, 10.8, 9.8, 9.2]);
+const INDEX = digitOutline([P(64, -2), P(85, -6), P(108, -15)], [10.6, 10.6, 10.2]);
+const MIDDLE = digitOutline([P(60, 10), P(79, 10), P(101, 2)], [11, 11, 10.6]);
+const RING = digitOutline([P(52, 20), P(67, 24), P(86, 29)], [10.4, 10.4, 10.2]);
+const LITTLE = digitOutline([P(42, 30), P(53, 37), P(62, 46)], [9.2, 9.2, 9]);
 
 export const BOWED_HAND_BASS_BOW_TOP: BowedHandArt = {
   title: 'double bass bow hand (French bow), seen from above',

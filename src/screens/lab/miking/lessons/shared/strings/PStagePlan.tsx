@@ -64,6 +64,9 @@ export type StagePlanSpec = {
    *  for the AUDIENCE word); default `wide`. */
   wideStage?: (variant: VariantId) => ViewBox;
   spots: (variant: VariantId) => readonly PlanSpot[];
+  /** (figure V2, 2026-11-26) the plan's people in the approved look, and who each spot is. */
+  v2?: boolean;
+  people?: (item: string) => CastMember | undefined;
   /** Every object's footprint on a plan (the lesson's pure planModel.ts):
    *  the words keep clear of them. */
   foots: (variant: VariantId, scene: PlanScene) => readonly PlanFoot[];
@@ -433,7 +436,7 @@ export function makeStagePage(spec: StagePlanSpec) {
         layout: 'rack',
         rack: {
           render: (w, h) => (
-            <StagePlanCanvas spec={spec} w={w} h={h} variant={variant} scene="near" items={items} highlight={nearSel} onTap={pickNear} accessibilityLabel={`${C.setting.kitA11y} ${nearIt ? `Highlighted: ${nearIt.label}.` : ''}`} />
+            <StagePlanCanvas v2={spec.v2} people={spec.people} spec={spec} w={w} h={h} variant={variant} scene="near" items={items} highlight={nearSel} onTap={pickNear} accessibilityLabel={`${C.setting.kitA11y} ${nearIt ? `Highlighted: ${nearIt.label}.` : ''}`} />
           ),
           badge: spec.nearBadge,
           bezel: bezel(nearIt),
@@ -455,7 +458,7 @@ export function makeStagePage(spec: StagePlanSpec) {
         layout: 'rack',
         rack: {
           render: (w, h) => (
-            <StagePlanCanvas spec={spec} w={w} h={h} variant={variant} scene={where} items={items} highlight={wideSel} onTap={pickWide} accessibilityLabel={`${where === 'stage' ? C.setting.stageA11y : C.setting.studioA11y} ${wideIt ? `Highlighted: ${wideIt.label}.` : ''}`} />
+            <StagePlanCanvas v2={spec.v2} people={spec.people} spec={spec} w={w} h={h} variant={variant} scene={where} items={items} highlight={wideSel} onTap={pickWide} accessibilityLabel={`${where === 'stage' ? C.setting.stageA11y : C.setting.studioA11y} ${wideIt ? `Highlighted: ${wideIt.label}.` : ''}`} />
           ),
           badge: where === 'stage' ? 'From above · monitors where a stage often puts them · a typical layout' : 'From above · a typical studio room',
           bezel: bezel(wideIt, { k: 'WHERE', v: where === 'stage' ? 'LIVE' : 'STUDIO', flex: 1 }),

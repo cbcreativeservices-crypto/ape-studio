@@ -158,12 +158,13 @@ function Scene({ gs }: { gs: Group3[] }) {
   );
 }
 
-function Entry({ e, width, dbg }: { e: BowedHandEntry; width: number; dbg: boolean }) {
+function Entry({ e, width, dbg, zoom }: { e: BowedHandEntry; width: number; dbg: boolean; zoom?: boolean }) {
   const { pl, P: P0, bow } = useMemo(() => placedOf(e), [e]);
   const gs = useMemo(() => sceneGroups(P0, e.view, { bow }), [P0, e.view, bow]);
   const who = bowedPlayer(P0);
   const box = artBox(e.art);
-  const bigW = Math.min(width - 24, (box.u1 - box.u0) * 3);
+  // (`-zoom`: the drawing alone across the whole page, for looking close)
+  const bigW = zoom ? width - 24 : Math.min(width - 24, (box.u1 - box.u0) * 3);
   const L = pl ? pl.L : localLight(0);
   const sb = sceneBox(gs, P0, e.view);
   const lessonW = Math.min(330, Math.floor((width - 34) / 2));
@@ -187,6 +188,7 @@ function Entry({ e, width, dbg }: { e: BowedHandEntry; width: number; dbg: boole
       <Text style={{ color: DIM, fontSize: 11, marginTop: 4 }}>
         Top: {e.n} alone, 3 pt per mm. Below, left: at lesson size, in its figure ({e.view === 'side' ? 'side view, from the player’s right' : 'from above'}); right: the same in the lesson’s picture, 1 pt per mm.
       </Text>
+      {e.doubt ? <Text style={{ color: '#e8c26a', fontSize: 12, marginTop: 3 }}>Builder’s doubt: {e.doubt}</Text> : null}
       {/* (one canvas per drawing: a page of forty canvases runs the browser out of drawing surfaces) */}
       <OneCanvas
         width={bigW}
@@ -241,7 +243,8 @@ function OneCanvas({ width, top, left, right, topNode, sceneNode }: { width: num
 export function BowedSheetStudy({ only }: { only: string }) {
   const { width } = useWindowDimensions();
   const dbg = only.endsWith('-dbg');
-  const n = Number(only.replace(/-dbg$/, '').replace(/^sheet-bowed-?/, '')) || 0;
+  const zoom = only.endsWith('-zoom');
+  const n = Number(only.replace(/-(dbg|zoom)$/, '').replace(/^sheet-bowed-?/, '')) || 0;
   const list = n ? BOWED_HANDS.filter((e) => e.n === n) : BOWED_HANDS;
   return (
     <ScrollView style={{ flex: 1, backgroundColor: BG }} contentContainerStyle={{ padding: 12 }}>
@@ -250,7 +253,7 @@ export function BowedSheetStudy({ only }: { only: string }) {
         Violin, viola, cello and double bass (C09a, C09b, C09c, C06a, C06b). Each hand drawn alone and large, then at the lesson’s size in its figure. Please mark each number pass or fail.
       </Text>
       {list.map((e) => (
-        <Entry key={e.n} e={e} width={width} dbg={dbg} />
+        <Entry key={e.n} e={e} width={width} dbg={dbg} zoom={zoom} />
       ))}
     </ScrollView>
   );

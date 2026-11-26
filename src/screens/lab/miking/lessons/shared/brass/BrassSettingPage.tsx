@@ -37,9 +37,10 @@ import { MainPair, MusicStand, WedgeTop } from '../bowed/BowedSettingPage';
 import { KitTop } from '../kitScene/KitSceneArt';
 import { PROJ, hornGroups, sceneGroups } from './BrassArt';
 import { figureV2On } from '../figureV2/figureV2Config.ts';
-import { brassSecond } from './brassFigureV2';
+import { brassPlayer, brassSecond } from './brassFigureV2';
 import { PersonTopV2 } from '../figureV2/personV2';
-import { castFor } from '../figureV2/cast';
+import { CAST, castFor, type CastId, type CastMember } from '../figureV2/cast';
+import { planPeople } from './planPeople.ts';
 import { SINGER_TOP } from '../voice/voicePose';
 import type { HornPose } from './brassPosture.ts';
 import { brassCue, brassFoots, brassShown, slideReach, type BrassPlanLayout, type BrassPlanObject } from './brassPlanModel.ts';
@@ -68,10 +69,10 @@ export type BrassSettingConfig = BrassPlanLayout & {
 };
 
 /** A horn player and horn from above (the family's own art). */
-function BrassTop({ P, dim, second = false }: { P: HornPose; dim: number; /** a neighbor playing the lesson's own horn: another person */ second?: boolean }) {
+function BrassTop({ P, dim, who }: { P: HornPose; dim: number; /** a neighbor: the plan's person for it (planPeople) */ who?: CastMember }) {
   const groups = useMemo(
-    () => (figureV2On('familyBrass') ? sceneGroups(P, 'top', second ? { who: brassSecond() } : {}) : [...playerGroups({ player: P.player }, 'top', true), ...hornGroups(P, PROJ.top)].sort((a, b) => a.depth - b.depth)),
-    [P, second],
+    () => (figureV2On('familyBrass') ? sceneGroups(P, 'top', who ? { who } : {}) : [...playerGroups({ player: P.player }, 'top', true), ...hornGroups(P, PROJ.top)].sort((a, b) => a.depth - b.depth)),
+    [P, who],
   );
   return (
     <Group layer={<Paint opacity={dim} />}>
@@ -143,6 +144,15 @@ export function BrassPlan({ w, h, cfg, box, scene, wedges, items, highlight, onT
   const xf = useMemo(() => fitXform('top', T.rect(box), w, h, 6), [w, h, box, T]);
   const self = cfg.P;
   const shown = brassShown(cfg, scene);
+  // (cast figures 2026-11-26) the plan's neighbors: never a person already on the plan — the kit's drummer, the
+  // lesson's own player, the singer; a second player of the lesson's own horn is the plan's second person
+  const people = useMemo(() => {
+    const fixed: CastId[] = [brassPlayer(self).id];
+    if (cfg.objects.some((o) => o.kind === 'kit')) fixed.push(castFor('kit.drummer').id);
+    if (cfg.objects.some((o) => o.kind === 'singer')) fixed.push(castFor('voice.singer').id);
+    const near = cfg.objects.flatMap((o) => (o.kind === 'brass' && o.pose ? [{ id: o.id, want: (o.pose.spec.id === self.spec.id ? brassSecond() : brassPlayer(o.pose)).id }] : []));
+    return planPeople(fixed, near);
+  }, [cfg.objects, self]);
   const floor = useMemo(() => {
     const p = make();
     p.addRect(Skia.XYWHRect(box.u0, box.v0, box.u1 - box.u0, box.v1 - box.v0));
@@ -240,7 +250,7 @@ export function BrassPlan({ w, h, cfg, box, scene, wedges, items, highlight, onT
             ) : null}
             {shown.map((o) => (
               <Group key={o.id} transform={[{ translateX: o.at.x }, { translateY: o.at.z }, { rotate: (o.yaw ?? 0) * DEG }]}>
-                {o.kind === 'stand' ? <MusicStand /> : o.kind === 'kit' ? <KitTop keepOuts={false} dim={0.85} /> : o.kind === 'pair' ? <MainPair /> : o.kind === 'singer' ? <SingerTop /> : o.kind === 'brass' && o.pose ? <BrassTop P={o.pose} dim={0.7} second={o.pose.spec.id === self.spec.id} /> : null}
+                {o.kind === 'stand' ? <MusicStand /> : o.kind === 'kit' ? <KitTop keepOuts={false} dim={0.85} /> : o.kind === 'pair' ? <MainPair /> : o.kind === 'singer' ? <SingerTop /> : o.kind === 'brass' && o.pose ? <BrassTop P={o.pose} dim={0.7} who={people[o.id] ? CAST[people[o.id]] : undefined} /> : null}
               </Group>
             ))}
             {scene === 'stage' ? wedges.filter((x) => x.glyph !== 'none').map((x) => <WedgeTop key={x.id} at={{ x: x.p.x, z: x.p.z }} faces={{ x: x.faces.x, z: x.faces.z }} />) : null}

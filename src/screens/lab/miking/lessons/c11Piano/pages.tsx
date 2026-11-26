@@ -15,6 +15,8 @@ import type { LessonArt } from '../../engine/scene/sceneTypes.ts';
 import type { VariantId } from '../../engine/model/types.ts';
 import { makeStringSoundPage, type RadiateOption } from '../shared/strings/PStringSound';
 import { makeStagePage } from '../shared/strings/PStagePlan';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+import { castFor } from '../shared/figureV2/cast';
 import { GrandPlan, Pianist, PianistHandsOver, UprightPlan } from '../shared/piano/PianoArt';
 import { GB, GS, SETUP, UP, type PianoVariant } from './model.ts';
 import { pianoAudience, pianoBoxes, pianoWideStage, pianoCue, pianoOwnFoots, pianoPlanFoots, pianoRoom, pianoSpots } from './planModel.ts';
@@ -137,6 +139,8 @@ function OwnPlan({ variant, lit }: { variant: VariantId; lit: boolean }) {
 }
 
 const SETTING = makeStagePage({
+  v2: figureV2On('sidePlayers'),
+  people: (item) => (item === 'singer' ? castFor('voice.singer') : undefined),
   Own: OwnPlan,
   ownItem: 'piano',
   ownHit: (v, u, w) => {

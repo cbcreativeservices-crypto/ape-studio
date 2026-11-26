@@ -68,7 +68,9 @@ export function FootstepsArt({ view, variant, v2 = V2 }: { view: ViewId; variant
         {v2 ? (
           // (the new look from above: the shoulders and head, the swinging sleeves where they reach past the
           // shoulders — the hands hang under the cuffs, edge-on, as the old figure; the legs under the body)
-          <PlayerTopV2 plan={walkerTop()} who={FOLEY_PERFORMER} bareArms />
+          // (cast sweep 2026-11-26: "the walker wrong from above" — mid-stride the forward shoe shows ahead of
+          // the chest and the back shoe behind it, as the side view's stride; the legs drawn under the body)
+          <PlayerTopV2 plan={walkerTop()} who={FOLEY_PERFORMER} bareArms legs />
         ) : (
           <>
             <PlayerBehind pose={WALKER_TOP} />

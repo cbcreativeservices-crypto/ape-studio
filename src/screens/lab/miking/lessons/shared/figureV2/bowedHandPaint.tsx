@@ -13,7 +13,7 @@
  * them; standing alone (the review sheet) the drawing paints a stand-in for it.
  */
 import type { ReactNode } from 'react';
-import { Group, LinearGradient, Path, PathOp, Skia, vec } from '@shopify/react-native-skia';
+import { Group, LinearGradient, Paint, Path, PathOp, Skia, vec } from '@shopify/react-native-skia';
 import { Blur } from './detail';
 import { useLook } from './look';
 import { ellipsePath, op, smoothClosed, smoothOpen, unionOf, type SkPath } from './paths';
@@ -59,7 +59,28 @@ export type BowedHandArt = {
   held: BHHeld[];
   /** The skin light's span (centre and half-length along the light). */
   span: { c: Pt; R: number };
+  /** Where the held thing lies NEARER than the fingers that cross it (the stick's near half where a finger goes over
+   *  the top of it and round behind; a bow's butt end pointing at us out of the curled fingers): the held thing is
+   *  painted again over the front layer there, so each finger is seen wrapping round it. */
+  heldFront?: Poly[];
 };
+
+const frontCache = new WeakMap<BowedHandArt, SkPath | null>();
+/** The art's `heldFront` regions as one path (null: none). */
+export function heldFrontPath(art: BowedHandArt): SkPath | null {
+  if (frontCache.has(art)) return frontCache.get(art) ?? null;
+  let p: SkPath | null = null;
+  if (art.heldFront?.length) {
+    p = Skia.Path.Make();
+    for (const q of art.heldFront) {
+      p.moveTo(q[0].u, q[0].v);
+      for (let i = 1; i < q.length; i++) p.lineTo(q[i].u, q[i].v);
+      p.close();
+    }
+  }
+  frontCache.set(art, p);
+  return p;
+}
 
 const many = (es: readonly Ellipse[]): SkPath => {
   const p = Skia.Path.Make();
@@ -193,42 +214,62 @@ export function BowedHandLayer({ art, part, L = LIGHT }: { art: BowedHandArt; pa
   if (!ps.length) return null;
   const B = buildLayer(ps, part === 'behind' ? art.behindLines : art.frontLines);
   const rim = rimL(B.union, 2, L);
+  const BB = bodiesOf(art);
+  const bodies = BB.all;
+  const other = part === 'behind' ? BB.front : BB.behind;
   return (
     <Group>
-      {B.pieces.map((p, i) => (
-        <Group key={i}>
-          <Fill path={p.path} span={art.span} L={L} />
-          <Group clip={p.path}>
-            <Path path={p.lights} color={SK.rim} opacity={p.lo}>
-              <Blur mm={2} />
-            </Path>
-            <Path path={p.darks} color={SK.deep} opacity={p.dO}>
-              <Blur mm={1.8} />
-            </Path>
-            {/* (a farther digit a step deeper — only past the hand's body, fading in softly where it leaves it) */}
-            {p.dim > 0 ? (
-              <Path path={p.dimPath} color={SK.deep} opacity={p.dim}>
+      {B.pieces.map((p, i) => {
+        const digit = ps[i].id !== 'body';
+        // (a digit's own shading, its deeper tone and its edge over a neighbor are drawn apart and then ERASED, softly,
+        // inside the hand's body: a finger flows into the hand — one skin, no step of tone, no line across its root;
+        // its side edges die away toward the knuckles)
+        const marks = (
+          <Group>
+            <Group clip={p.path}>
+              <Path path={p.lights} color={SK.rim} opacity={p.lo}>
                 <Blur mm={2} />
               </Path>
-            ) : null}
-            {p.nails.map((nl, j) => (
-              <Group key={j}>
-                <Path path={nl} color={NAIL.fill} opacity={0.62}>
-                  <Blur mm={0.3} />
-                </Path>
-                <Path path={nl} style="stroke" strokeWidth={0.55} color={SK.edge} opacity={0.45} />
-              </Group>
-            ))}
-          </Group>
-          {p.over ? (
-            <Group clip={p.over}>
-              <Path path={p.path} style="stroke" strokeWidth={0.8} strokeJoin="round" color={SK.edge} opacity={0.55}>
-                <Blur mm={0.2} />
+              <Path path={p.darks} color={SK.deep} opacity={p.dO}>
+                <Blur mm={1.8} />
               </Path>
+              {p.dim > 0 ? <Path path={p.path} color={SK.deep} opacity={p.dim} /> : null}
             </Group>
-          ) : null}
-        </Group>
-      ))}
+            {p.over ? (
+              <Group clip={p.over}>
+                <Path path={p.path} style="stroke" strokeWidth={0.8} strokeJoin="round" color={SK.edge} opacity={0.55}>
+                  <Blur mm={0.2} />
+                </Path>
+              </Group>
+            ) : null}
+          </Group>
+        );
+        return (
+          <Group key={i}>
+            <Fill path={p.path} span={art.span} L={L} />
+            {digit && bodies ? (
+              <Group layer={<Paint />}>
+                {marks}
+                <Path path={bodies} color="black" blendMode="dstOut">
+                  <Blur mm={3.5} />
+                </Path>
+              </Group>
+            ) : (
+              marks
+            )}
+            <Group clip={p.path}>
+              {p.nails.map((nl, j) => (
+                <Group key={j}>
+                  <Path path={nl} color={NAIL.fill} opacity={0.5}>
+                    <Blur mm={0.35} />
+                  </Path>
+                  <Path path={nl} style="stroke" strokeWidth={0.5} color={SK.edge} opacity={0.38} />
+                </Group>
+              ))}
+            </Group>
+          </Group>
+        );
+      })}
       <Group clip={B.union}>
         {B.lines.map((l, i) => (
           <Path key={i} path={l.path} style="stroke" strokeWidth={l.w} strokeCap="round" opacity={l.o} color={SK.edge}>
@@ -240,19 +281,67 @@ export function BowedHandLayer({ art, part, L = LIGHT }: { art: BowedHandArt; pa
           <Blur mm={1} />
         </Path>
       </Group>
-      <Path path={B.union} style="stroke" strokeWidth={0.9} strokeJoin="round" color={SK.edge} opacity={0.5} />
+      {/* the thin soft outline round the layer's silhouette — never across the other layer's hand body (a finger in front
+          of the palm keeps no closed outline where it meets the hand) */}
+      {other ? (
+        <Group layer={<Paint />}>
+          <Path path={B.union} style="stroke" strokeWidth={0.9} strokeJoin="round" color={SK.edge} opacity={0.5} />
+          <Path path={other} color="black" blendMode="dstOut">
+            <Blur mm={3.5} />
+          </Path>
+        </Group>
+      ) : (
+        <Path path={B.union} style="stroke" strokeWidth={0.9} strokeJoin="round" color={SK.edge} opacity={0.5} />
+      )}
     </Group>
   );
+}
+
+const bodyCache = new WeakMap<BowedHandArt, { all: SkPath | null; behind: SkPath | null; front: SkPath | null }>();
+/** The hand's body (palm, back of the hand, wrist) in each layer, and both together. */
+function bodiesOf(art: BowedHandArt) {
+  const hit = bodyCache.get(art);
+  if (hit) return hit;
+  const one = (ps: BHPiece[]) => {
+    const b = ps.filter((p) => p.id === 'body').map((p) => smoothClosed(p.outline, p.tension ?? 0.5));
+    return b.length ? unionOf(...b) : null;
+  };
+  const behind = one(art.behind);
+  const front = one(art.front);
+  const all = behind && front ? unionOf(behind, front) : (behind ?? front);
+  const out = { all, behind, front };
+  bodyCache.set(art, out);
+  return out;
 }
 
 /** The hand's soft shadow on what it holds (drawing frame). */
 export function BowedHandCast({ art }: { art: BowedHandArt }) {
   if (!art.cast?.length) return null;
+  // (only ON what the hand holds — never a smudge on the air beside it)
+  const on = Skia.Path.Make();
+  for (const h of art.held) on.addPath(bandPath(h, 0.5));
   return (
-    <Path path={many(art.cast.map((s) => s.e))} color="#1a0d06" opacity={art.cast[0].o}>
-      <Blur mm={2.4} />
-    </Path>
+    <Group clip={on}>
+      <Path path={many(art.cast.map((s) => s.e))} color="#1a0d06" opacity={art.cast[0].o}>
+        <Blur mm={2.4} />
+      </Path>
+    </Group>
   );
+}
+
+/** The held thing's band (its axis a → b, `r` across), widened by `pad`. */
+function bandPath(h: BHHeld, pad = 0): SkPath {
+  const d = P(h.b.u - h.a.u, h.b.v - h.a.v);
+  const n = Math.hypot(d.u, d.v) || 1;
+  const r = h.r + pad;
+  const x = P((-d.v / n) * r, (d.u / n) * r);
+  const band = Skia.Path.Make();
+  band.moveTo(h.a.u + x.u, h.a.v + x.v);
+  band.lineTo(h.b.u + x.u, h.b.v + x.v);
+  band.lineTo(h.b.u - x.u, h.b.v - x.v);
+  band.lineTo(h.a.u - x.u, h.a.v - x.v);
+  band.close();
+  return band;
 }
 
 /** A stand-in for the held thing (the review sheet only: in a lesson the scene paints the real one). */
@@ -285,6 +374,7 @@ export function BowedHeld({ art }: { art: BowedHandArt }) {
 
 /** The whole drawing alone (the review sheet): behind, the held thing, the hand's shadow on it, front. */
 export function BowedHandAlone({ art, L = LIGHT, children }: { art: BowedHandArt; L?: Pt; children?: ReactNode }) {
+  const hf = heldFrontPath(art);
   return (
     <Group>
       <BowedHandLayer art={art} part="behind" L={L} />
@@ -292,6 +382,11 @@ export function BowedHandAlone({ art, L = LIGHT, children }: { art: BowedHandArt
       {children}
       <BowedHandCast art={art} />
       <BowedHandLayer art={art} part="front" L={L} />
+      {hf ? (
+        <Group clip={hf}>
+          <BowedHeld art={art} />
+        </Group>
+      ) : null}
     </Group>
   );
 }
