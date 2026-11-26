@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-26 09:27 · ccode · 92ef20a7
+changed: Must-do: row D86 (Comp B duplicate-pair verdicts back, awaits the owner's pick) [MD:D86]
+affects other side: Comp A — row D86: the medium-confidence duplicate pairs; the owner ruled to follow the recommendations; the merge package is Downloads/2026-11-26_FOR_COMP_A_DUP_MERGE_MEDIUM.zip.
+needs: nothing
+
+
 ### 2026-11-25 20:10 · ccode · b93f860a
 changed: Must-do: D85 click tempo committed (3a427f51), Pixel results for all five labs, owner ruling 'Half is enough'; D78 owner verdicts (figures session) [MD:D85] [MD:D78]
 affects other side: nothing. Docs only: must-do rows D85 (click tempo results, owner ruling "Half is enough") and D78 (figures verdicts).
