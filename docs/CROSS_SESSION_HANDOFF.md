@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-26 10:20 · ccode · 3e69dddd
+changed: Ensembles: big band rhythm section moved 500 mm to the horns, jazz guitarist 700 mm to the bassist (owner: 'there is a big gap') [MD:D78]
+affects other side: nothing (drawing positions in two ensemble seatings only; no server, no text)
+needs: nothing
+
+
 ### 2026-11-26 09:27 · ccode · 92ef20a7
 changed: Must-do: row D86 (Comp B duplicate-pair verdicts back, awaits the owner's pick) [MD:D86]
 affects other side: Comp A — row D86: the medium-confidence duplicate pairs; the owner ruled to follow the recommendations; the merge package is Downloads/2026-11-26_FOR_COMP_A_DUP_MERGE_MEDIUM.zip.
