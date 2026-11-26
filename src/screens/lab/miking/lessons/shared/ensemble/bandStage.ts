@@ -328,11 +328,19 @@ function jazzQuartet(): Seating {
   };
 }
 
+/** The jazz guitarist and the amp moved toward the bass as one (owner 2026-11-26: the spacing pass). The
+ *  guitarist stood where the quartet's piano keys are, 2.3 m from the bassist with 1.7 m of empty floor
+ *  between them; +700 mm across puts the guitarist 1.7 m from the bassist, center to center, the guitar's
+ *  neck short of the bassist's wedge and about 1 m clear of the bassist — beside the bass, as a
+ *  guitar group sets up. The amp still faces away from the drums. A drawing default. */
+export const JAZZ_GTR_DX = 700;
+
 function jazzGuitar(): Seating {
   const dr = drummer('drums.1', JAZZ_KIT.p, JAZZ_KIT.face);
-  // The amp faces down and away from the drums (toward the audience's left).
-  const gAmp = gear('amp.gtr', 'combo', v3(-3000, 0, -1900), 235, 'the guitar amp, turned away from the drums', 'GUITAR AMP', 'jgtr');
-  const gt = ampPlayer('jgtr.1', 'eguitar', 'jgtr', v3(-2300, 0, -900), 165, gAmp);
+  // The amp faces down and away from the drums (toward the audience's left). The guitarist and the amp
+  // together: JAZZ_GTR_DX toward the bass (owner 2026-11-26, the spacing pass).
+  const gAmp = gear('amp.gtr', 'combo', v3(-3000 + JAZZ_GTR_DX, 0, -1900), 235, 'the guitar amp, turned away from the drums', 'GUITAR AMP', 'jgtr');
+  const gt = ampPlayer('jgtr.1', 'eguitar', 'jgtr', v3(-2300 + JAZZ_GTR_DX, 0, -900), 165, gAmp);
   const ub = uprightBass('ub.1', 'ub', JAZZ_BASS.p, JAZZ_BASS.face);
   const tp = seat('tpt.1', 'trumpet', 'tpt', JAZZ_SOLO.p, JAZZ_SOLO.face, 'standing');
   const tps = { ...tp, src: local(tp.p, tp.face, 560, 0, 1500) };

@@ -619,6 +619,15 @@ const BB_SECS: readonly SecG5[] = [
 /** Chair spacing and rows (drawing defaults): 0.9 m chairs; trombones on a
  *  0.2 m riser, trumpets standing on a 0.4 m one. */
 export const BB_DIMS = { saxZ: -550, tbnZ: -1950, tptZ: -3250, step: 900, tbnRiser: 200, tptRiser: 400 } as const;
+/** The rhythm section moved toward the rows as ONE group (owner 2026-11-26: "there is a big gap"): +600 mm
+ *  across (was 1.06 m, 0.75 m and 0.95 m), so the kick's front head stands about 0.56 m from the trumpet
+ *  riser's end, the bass's lower bout about 0.25 m from the trombone riser's side (its player 1.5 m from the
+ *  2nd trombone, center to center) and the piano's case about 0.45 m from the trombone riser's corner (0.55 m
+ *  across from tenor 1's chair) — the drums beside the trumpets, the bass
+ *  beside the trombones, the piano beside the saxes, as big bands set up (D. Berger, On Conducting Jazz
+ *  Ensembles; E. MacDonald, Jazz Big Band Seating Placement). Every mic and stand on those players is read
+ *  from their seats, so it moves with them. A drawing default. */
+export const BB_RHYTHM_DX = 500;
 function bigBand(): Seating {
   const D = BB_DIMS;
   const seats: Seat[] = [
@@ -632,12 +641,13 @@ function bigBand(): Seating {
     ...(['tbn.2', 'tbn.1', 'tbn.3', 'tbn.4'] as const).map((id, i) => seatG5(id, 'trombone', 'tbn', (i - 1.5) * D.step, D.tbnZ, 180, { h: D.tbnRiser })),
     // Trumpets 2 – 1 – 3 – 4, standing on the riser behind them.
     ...(['tpt.2', 'tpt.1', 'tpt.3', 'tpt.4'] as const).map((id, i) => seatG5(id, 'trumpet', 'tpt', (i - 1.5) * D.step, D.tptZ, 180, { h: D.tptRiser, posture: 'standing', stand: false })),
-    // The rhythm section on the conductor's left: piano, guitar, bass, drums.
-    seatG5('pno.1', 'piano', 'pno', -5300, -1000, 90, { stand: false }),
+    // The rhythm section on the conductor's left: piano, guitar, bass, drums — the piano beside the saxes,
+    // the bass beside the trombones, the drums beside the trumpets (BB_RHYTHM_DX: tight against the rows).
+    seatG5('pno.1', 'piano', 'pno', -5300 + BB_RHYTHM_DX, -1000, 90, { stand: false }),
     // (merge g4+g5: moved from (−4600, −2900) to clear the shared kit's full footprint — its floor tom and ride at the drummer's right — with its amp clear of the piano.)
-    seatG5('gtr.1', 'guitar', 'gtr', -5000, -2800, 120, { stand: false }),
-    seatG5('cb.1', 'bass', 'cb', -3300, -2350, 130),
-    seatG5('dr.1', 'drumkit', 'dr', -4200, -3900, 100, { stand: false }),
+    seatG5('gtr.1', 'guitar', 'gtr', -5000 + BB_RHYTHM_DX, -2800, 120, { stand: false }),
+    seatG5('cb.1', 'bass', 'cb', -3300 + BB_RHYTHM_DX, -2350, 130),
+    seatG5('dr.1', 'drumkit', 'dr', -4200 + BB_RHYTHM_DX, -3900, 100, { stand: false }),
   ];
   return seatingG5(
     'bb.standard',
@@ -649,7 +659,7 @@ function bigBand(): Seating {
       { x0: -1900, x1: 1900, z0: -2500, z1: -1450, h: D.tbnRiser },
       { x0: -1900, x1: 1900, z0: -3750, z1: -2650, h: D.tptRiser },
     ],
-    { x0: -6000, x1: 2500, z0: -4900, z1: 3400 },
+    { x0: -6000 + BB_RHYTHM_DX, x1: 2500, z0: -4900, z1: 3400 },
   );
 }
 
