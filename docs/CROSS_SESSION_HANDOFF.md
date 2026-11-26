@@ -728,6 +728,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-26 14:33 · ccode · 3dd062e2
+changed: Calculator Lab: Comp A audit fixes C01-C05, C12-C16, C19-C22, C24, C25 (breaker follows the derated wire, NEC 240.4; exact counts in steps; loudness and workflow wording) [MD:D87]
+affects other side: Comp A: the 16 calculator audit fixes of the D87 brief are in 3dd062e2 (breaker rule NEC 240.4, exact counts, wording); nothing on the server
+needs: nothing
+
+
+### 2026-11-26 14:33 · ccode · 1ef52e85
+changed: Figures: duo guitar on the lap with the mic at the true 12th fret (approved); tabla player cross-legged (approved); Wurlitzer stool closer (verdict pending); E08 booms 900 mm to clear the wedge (verdict pending); must-do D87/D88 rows [MD:D78]
+affects other side: nothing (drawings only; no server, no text)
+needs: nothing
+
+
 ### 2026-11-26 13:08 · ccode · 62309222
 changed: Figures: cajon plan guitarist holds a guitar; band singer stands 0.6 m aside so the drummer shows (owner rulings 2026-11-26) [MD:D78]
 affects other side: nothing (drawings only; no server, no text)

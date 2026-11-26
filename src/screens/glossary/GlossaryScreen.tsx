@@ -90,11 +90,13 @@ import {
   OFFLINE_AVAILABLE,
   alignDefinitionTier,
   corpusStats,
+  getMeta as getStoredMeta,
   idsMissingDefinitions,
   loadDefinitions as loadStoredDefinitions,
   loadTerms as loadStoredTerms,
   saveDefinitions as saveStoredDefinitions,
   saveTerms as saveStoredTerms,
+  setMeta as setStoredMeta,
 } from '../../features/glossary/offlineCorpus';
 import {
   GLOSSARY_WARN_AT_USED,
@@ -449,7 +451,11 @@ function loadAllEntries(table: 'glossary' | 'glossary_browse_v'): Promise<Entry[
 
       const terms = await fetchCorpusTerms(table);
       // Best-effort: a failed write costs a re-download next launch, nothing more.
-      void saveStoredTerms(table, terms).catch(() => {});
+      // The fresh copy is current by definition, so it carries today's version
+      // mark (else every new install would re-download once more, D88).
+      void saveStoredTerms(table, terms)
+        .then(() => setStoredMeta(corpusRevKey(table), CORPUS_CONTENT_REV))
+        .catch(() => {});
       return terms.map((r) => ({
         id: r.id,
         term: r.term,
@@ -594,12 +600,33 @@ const EMPTY_TERMS: { id: string; term: string; achievement_id: string | null; al
  * column. Recorded rather than pretended: this catches additions and removals,
  * which is what Discovery-style batches actually are.
  */
+/**
+ * The device copy's content version (owner GO 2026-11-26, must-do D88). The
+ * count check above cannot see a change that leaves the count alone — the
+ * 2026-11-23 duplicate merge moved 2,125 names into kept cards' `also_called`,
+ * and a phone holding an older copy would keep searching without them. A
+ * stored copy whose version differs from this one is re-downloaded ONCE, then
+ * the count check takes over again.
+ *
+ * ⛔ Raise this string whenever the server changes the corpus in a way that
+ * keeps the term count (renamed headwords, alias-only edits, achievement moves).
+ */
+const CORPUS_CONTENT_REV = '2026-11-26-also-called';
+const corpusRevKey = (table: string) => `corpus_rev:${table}`;
+
 async function revalidateCorpus(table: 'glossary' | 'glossary_browse_v', haveCount: number): Promise<void> {
   try {
-    const { data, error } = await supabase.rpc('get_glossary_term_count');
-    if (error || typeof data !== 'number' || data === haveCount) return;
+    const rev = await getStoredMeta(corpusRevKey(table)).catch(() => null);
+    const revCurrent = rev === CORPUS_CONTENT_REV;
+    if (revCurrent) {
+      const { data, error } = await supabase.rpc('get_glossary_term_count');
+      if (error || typeof data !== 'number' || data === haveCount) return;
+    }
     const fresh = await fetchCorpusTerms(table);
     await saveStoredTerms(table, fresh);
+    // Only after the new copy is fully written: a failed download keeps the
+    // old version mark, so the next cold start tries again.
+    await setStoredMeta(corpusRevKey(table), CORPUS_CONTENT_REV);
   } catch {
     // Offline, or the RPC is unavailable — keep what we have. That is the point.
   }
