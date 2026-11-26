@@ -31,7 +31,7 @@ import { OVAL_SPOTS, SPEAKER_OVAL_4x8 as OV } from './keysSpec.ts';
 import { RHODES_FRONT, RHODES_TOP, WURLI_FRONT, type KeyRects, type Rect } from './keysGeometry.ts';
 import { C_BASS, C_TREBLE, FACE_TOP, OVAL_SECTION, PLAYER, W, onSpeaker } from './wurliModel.ts';
 import { figureCovers, PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
-import { WURLI_PLAYER_SIDE, WURLI_PLAYER_TOP } from './wurliPlayer.ts';
+import { WURLI_BENCH, WURLI_PLAYER_SIDE, WURLI_PLAYER_TOP, WURLI_SEAT_Y } from './wurliPlayer.ts';
 import { figureV2On } from '../figureV2/figureV2Config';
 import { WurliPlayerV2, wurliSideV2 } from './wurliPlayerV2';
 import { personShapes } from '../figureV2/personV2';
@@ -1138,10 +1138,12 @@ function buildWurli(view: ViewId, mount: WurliMount): Built {
       slots.moveTo(u0, v0);
       slots.lineTo(u1, v1);
     }
+    // (owner ruling 2026-11-26: the bench 100 mm nearer the keys, its top 490 up — wurliPlayer.ts)
+    const B = WURLI_BENCH;
     const bench = make();
-    rr(bench, 470, -480, 800, -450, 6);
-    rr(bench, 490, -450, 510, -4, 3);
-    rr(bench, 760, -450, 780, -4, 3);
+    rr(bench, B.x0, WURLI_SEAT_Y, B.x1, WURLI_SEAT_Y + 30, 6);
+    rr(bench, B.legs[0], WURLI_SEAT_Y + 30, B.legs[0] + 20, -4, 3);
+    rr(bench, B.legs[1], WURLI_SEAT_Y + 30, B.legs[1] + 20, -4, 3);
     out = { floor: rr(make(), -1500, 0, 900, 40, 0), shell, shellFill, interior, keys, keyTop, caseCut, action, legs, pedal, pedalCable, spk: [{ ...sp, bracket }], slots, bench, act: { board, parts, rails, reedBar, reed, solder, comb, combMount, shank, head: headF, ampRail, keyCap } };
   } else {
     // TOP: cut at the speakers' height (y = C_BASS.y): the lid's front panel
@@ -1218,7 +1220,7 @@ function buildWurli(view: ViewId, mount: WurliMount): Built {
         slots.moveTo(fx + 1, c.z + k * 16 - 5);
         slots.lineTo(fx + 1, c.z + k * 16 + 5);
       }
-    const bench = rr(make(), 470, -380, 800, 380, 14);
+    const bench = rr(make(), WURLI_BENCH.x0, -WURLI_BENCH.halfZ, WURLI_BENCH.x1, WURLI_BENCH.halfZ, 14);
     out = { floor: make(), shell, shellFill, interior, keys, keyTop, caseCut, action, legs, pedal, pedalCable, spk, slots, bench, act: actTop };
   }
   builtCache.set(key, out);

@@ -49,8 +49,10 @@ const TOP_VIEW = (p: V3) => ({ u: p.x, v: p.z, d: -p.y });
  * than the C11 pianist — so upright arms had to REACH, the elbows well in front of the body. A player sitting
  * back leans in from the hips: the upper body ≈ 45 mm toward the keys (≈ 16° from the hips instead of 10°), the
  * hips, legs, bench, pedal and every keep-out where the lesson has them. Drawing only.)
+ * (owner ruling 2026-11-26: the bench and the body moved 100 mm toward the keys instead — wurliPlayer.ts
+ * WURLI_SEAT_CLOSER — so the extra lean is gone: the back is the pose's own, ≈ 10° forward from the hips.)
  */
-const LEAN = P(-45, 12);
+const LEAN = P(0, 0);
 const leanUp = (q: Pt): Pt => P(q.u + LEAN.u, q.v + LEAN.v);
 const SIDE_POSE: PlayerPose = {
   ...WURLI_PLAYER_SIDE,
@@ -92,11 +94,24 @@ let arms: { R: PianoArm; L: PianoArm } | null = null;
 export function wurliArms(): { R: PianoArm; L: PianoArm } {
   if (arms) return arms;
   const S = SIDE_POSE;
-  const R = keysArm({ keyFront: W.keyFrontX, keyTop: W.keyTopY, facing: -1, side: 'R', shoulder: { x: S.shoulderL.u, y: S.shoulderL.v, z: -BODY.shoulderHalf } });
-  const L = keysArm({ keyFront: W.keyFrontX, keyTop: W.keyTopY, facing: -1, side: 'L', shoulder: { x: S.shoulderR.u, y: S.shoulderR.v, z: BODY.shoulderHalf } });
-  arms = { R, L };
+  const one = (side: 'R' | 'L', sh: Pt): PianoArm => {
+    const z = side === 'R' ? -BODY.shoulderHalf : BODY.shoulderHalf;
+    const now = keysArm({ keyFront: W.keyFrontX, keyTop: W.keyTopY, facing: -1, side, shoulder: { x: sh.u, y: sh.v, z } });
+    // (the hands are PARKED, owner 2026-11-26: each keeps the drawing it had before the seat moved — fitted
+    // from the shoulder it was fitted from then — and only the arm up to it is the new seat's)
+    const was = HAND_FIT_SHOULDER[side];
+    const kept = keysArm({ keyFront: W.keyFrontX, keyTop: W.keyTopY, facing: -1, side, shoulder: { x: was.u, y: was.v, z } });
+    const o = kept.sk.frame.o;
+    const d = { x: o.x - now.elbow.x, y: o.y - now.elbow.y, z: o.z - now.elbow.z };
+    const k = 16 / (Math.hypot(d.x, d.y, d.z) || 1);
+    return { ...now, sk: kept.sk, pads: kept.pads, cuffEnd: { x: o.x + d.x * k, y: o.y + d.y * k, z: o.z + d.z * k } };
+  };
+  arms = { R: one('R', S.shoulderL), L: one('L', S.shoulderR) };
   return arms;
 }
+/** The shoulders the hands were fitted from before the seat moved (the bench 100 mm farther back, the upper
+ *  body leaning in 45 mm): the hands keep that fit exactly. */
+export const HAND_FIT_SHOULDER = { R: P(517, -1000), L: P(504, -990) } as const;
 
 const handFrom = (a: { opening: { e: { c: Pt }; out: Pt } }) => P(a.opening.e.c.u + a.opening.out.u * 2, a.opening.e.c.v + a.opening.out.v * 2);
 

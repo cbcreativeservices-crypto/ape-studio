@@ -3106,13 +3106,13 @@ function seatSkeleton(q: Seat, hold: Hold): FamSkeleton {
   const hipY = n.y - (seated ? 495 : 505);
   const pelvis = v3l(n.x, hipY, n.z - 20);
   const kneeW = q.kind === 'cello' ? 200 : 118;
-  // (Ensembles3) the seated acoustic guitarist sits forward on the chair, the feet drawn back under it: the thighs
-  // slope down to the knees, so the lap runs across the guitar's body where the measured sound hole puts it (the
-  // guitar itself, bandStage GUITAR_POSE, does not move) — never a guitar hanging below a level lap
-  const lowLap = seated && q.kind === 'aguitar';
-  const knee = (sx: number) => (lowLap ? v3l(sx * kneeW, hipY - 165, 390) : seated ? v3l(sx * kneeW, hipY - 30, 420) : v3l(sx * 105, hipY - 420, 15));
-  const ankle = (sx: number) => (lowLap ? v3l(sx * (kneeW + 8), 90, 140) : seated ? v3l(sx * (kneeW + 8), 90, 470) : v3l(sx * 110, 90, 0));
-  const toe = (sx: number) => (lowLap ? v3l(sx * (kneeW + 12), 25, 310) : seated ? v3l(sx * (kneeW + 12), 25, 640) : v3l(sx * 115, 25, 175));
+  // (owner 2026-11-26, "Yes, move them") the seated acoustic guitarist sits as every seated player does, the thighs
+  // level: the guitar now RESTS on the right thigh (bandStage GUITAR_POSE.aguitar, set from this thigh). The old
+  // lowered lap (the thighs sloping 165 mm down to the knees, the feet drawn back) only made room for a guitar that
+  // hung too low.
+  const knee = (sx: number) => (seated ? v3l(sx * kneeW, hipY - 30, 420) : v3l(sx * 105, hipY - 420, 15));
+  const ankle = (sx: number) => (seated ? v3l(sx * (kneeW + 8), 90, 470) : v3l(sx * 110, 90, 0));
+  const toe = (sx: number) => (seated ? v3l(sx * (kneeW + 12), 25, 640) : v3l(sx * 115, 25, 175));
   return {
     head,
     headR: 110,

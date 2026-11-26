@@ -23,6 +23,7 @@ import { FloorFoldSide, FloorHeelSide, FloorLegsTop, FloorToesSide } from '../sh
 import { FigureLook } from '../shared/figureV2/look';
 import { sidePaths } from '../shared/figureV2/paths.ts';
 import { TABLA_PLAYER, tablaSide, tablaTop } from './tablaV2.ts';
+import * as SEAT from './tablaSeat.ts';
 
 /** The new look (figure V2, wave 3 set 3d): the player is Ana of the cast, cross-legged and barefoot. */
 export const V2 = figureV2On('sidePlayers');
@@ -288,54 +289,59 @@ export function tablaPose(view: ViewId): PlayerPose {
   const hit = tablaPoses[view];
   if (hit) return hit;
   let pose: PlayerPose;
+  // THE SEAT (owner 2026-11-26): cross-legged on the floor, close to the drums, the elbows bent, the
+  // forearms sloping down to the heads — ONE set of joints for both views (tablaSeat.ts).
+  const S = SEAT;
   if (view === 'side') {
-    const hip = pt(-600, -170);
+    const hip = pt(S.SEAT_HIP.x, S.SEAT_HIP.y);
+    const xy = (j: { x: number; y: number }) => pt(j.x, j.y);
     pose = {
       view: 'side',
       posture: 'floor',
       facing: 1,
-      head: { c: pt(-560, -1000), r: 100 },
-      neck: pt(-577, -845),
-      shoulderR: pt(-572, -795),
-      shoulderL: pt(-586, -805),
-      // Each hand lies ON its head (clash sweep 2026-10-10: the right hand
-      // floated ~90 mm above the dayan and the left one's fingers ran into
-      // the bayan's body): along the head's tilt (dayan 15°, bayan 10°), the
-      // fingertips over the head's middle, the heel by the player's rim; the
-      // elbows solved for the figure's 300 / 265 mm arm from each shoulder.
-      elbowR: pt(-379, -566),
-      elbowL: pt(-434, -547),
-      handR: { wrist: pt(-145, -441), dir: 0.262, kind: 'rest' },
-      handL: { wrist: pt(-182, -464), dir: 0.175, kind: 'rest' },
+      head: { c: xy(S.HEAD), r: 100 },
+      neck: xy(S.NECK),
+      shoulderR: xy(S.SHOULDER_R),
+      shoulderL: xy(S.SHOULDER_L),
+      // Each hand lies ON its head (clash sweep 2026-10-10): along the head's
+      // tilt (dayan 15°, bayan 10°), the fingertips over the head's middle,
+      // the heel by the player's rim — the wrists unchanged; the elbows
+      // solved in 3D for the figure's 300 / 265 mm arm (tablaSeat.ts).
+      elbowR: xy(S.ELBOW_R),
+      elbowL: xy(S.ELBOW_L),
+      handR: { wrist: xy(S.WRIST_R), dir: 0.262, kind: 'rest' },
+      handL: { wrist: xy(S.WRIST_L), dir: 0.175, kind: 'rest' },
       hipR: hip,
       hipL: pt(hip.u - 10, hip.v - 4),
-      kneeR: pt(-250, -120),
-      kneeL: pt(-280, -130),
-      footR: pt(-420, 0),
-      footL: pt(-400, 0),
+      kneeR: xy(S.KNEE_R),
+      kneeL: xy(S.KNEE_L),
+      footR: pt(hip.u + 180, 0),
+      footL: pt(hip.u + 200, 0),
       floor: 0,
     };
   } else {
-    const n = pt(-580, 0);
+    // From above (u = x, v = z after the turn): authored round the neck, `right` = z, `fwd` = x − the neck's x.
+    const n = pt(S.NECK.x, 0);
     const L = (right: number, fwd: number) => pt(n.u - right, n.v + fwd);
+    const at = (j: { x: number; z: number }) => L(j.z, j.x - n.u);
     pose = {
       view: 'above',
       posture: 'floor',
       facing: 0,
-      head: { c: L(0, 10), r: 96 },
+      head: { c: L(0, S.HEAD.x - n.u), r: 96 },
       neck: n,
-      shoulderR: L(188, 4),
-      shoulderL: L(-188, 4),
-      elbowR: L(230, 170),
-      elbowL: L(-230, 170),
-      handR: { wrist: L(165, 360), dir: Math.PI / 2 - 0.2, kind: 'above' },
-      handL: { wrist: L(-165, 360), dir: Math.PI / 2 + 0.2, kind: 'above' },
-      hipR: L(106, -40),
-      hipL: L(-106, -40),
-      kneeR: L(300, 230),
-      kneeL: L(-300, 230),
-      footR: L(80, 300),
-      footL: L(-80, 300),
+      shoulderR: at(S.SHOULDER_R),
+      shoulderL: at(S.SHOULDER_L),
+      elbowR: at(S.ELBOW_R),
+      elbowL: at(S.ELBOW_L),
+      handR: { wrist: at(S.WRIST_R), dir: Math.PI / 2 - 0.2, kind: 'above' },
+      handL: { wrist: at(S.WRIST_L), dir: Math.PI / 2 + 0.2, kind: 'above' },
+      hipR: L(S.HIP_Z, S.SEAT_HIP.x - n.u),
+      hipL: L(-S.HIP_Z, S.SEAT_HIP.x - n.u),
+      kneeR: at(S.KNEE_R),
+      kneeL: at(S.KNEE_L),
+      footR: L(80, S.KNEE_L.x - 50 - n.u),
+      footL: L(-80, S.KNEE_R.x - 50 - n.u),
       floor: null,
     };
   }

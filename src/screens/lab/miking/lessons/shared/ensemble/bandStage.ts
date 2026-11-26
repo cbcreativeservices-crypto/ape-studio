@@ -151,8 +151,18 @@ export const GUITAR_POSE: Record<GuitarKind, { tailR: number; tailUp: number; fw
   // (2026-11-26) the seated acoustic's and the mandolin's `neck` now reach the DRAWN instrument's nut (HELD_DRAWN
   // below: L + neck = its nut, to the millimeter), so the fretting hand (ensembleHands: L + 0.55·neck) lands in a low
   // position on the real neck — never on the nut or the headstock. Was 430 and 300 (necks drawn about 20 % and 85 %
-  // too long). The tail, the angle and L — so soundHole and every lesson spot read from them — are unchanged.
-  aguitar: { tailR: 170, tailUp: 470, fwd: 230, ang: 18, L: 500, neck: 273 },
+  // too long).
+  // (owner 2026-11-26, "Yes, move them") THE SEATED GUITAR ON THE LAP: at true size the body hung through the right
+  // thigh (tailR 170, tailUp 470: its sound hole 566 mm up). Now it RESTS on the seated figure's own right thigh
+  // (SeatingArt seatSkeleton: the hip joint 560 mm up — the 1010 mm seated shoulders less 450 — the knee 530 mm up and
+  // 420 ahead, the thigh's radius 84 → 74 mm; under the guitar's back, 112 mm ahead of the hip line, its top is about
+  // 629 mm up at 106 mm right): the dreadnought's treble rim, just below its waist (the waist 11-1/16 in, the lower
+  // bout 16 in), sits on that thigh top as a steel-string player rests it, the lower bout hanging outside the right
+  // leg. That is tailR 334 (the waist's lower edge over the thigh) and tailUp 750 (the lowest rim point over the
+  // thigh 0.6 mm clear of it), the angle and the depth ahead unchanged: the sound hole 846 mm up, 39 mm right of the
+  // seat (was 566 mm up, 125 mm left). A raise alone (tailR 170) would rest it on its lower bout with the upper bout's
+  // edge at 1056 mm, above the 1010 mm shoulders.
+  aguitar: { tailR: 334, tailUp: 750, fwd: 230, ang: 18, L: 500, neck: 273 },
   mandolin: { tailR: 170, tailUp: 760, fwd: 230, ang: 32, L: 330, neck: 115 },
 };
 /** A point `s` mm along a held guitar's axis from its tail (frame S). */

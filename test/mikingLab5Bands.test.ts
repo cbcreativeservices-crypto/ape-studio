@@ -25,7 +25,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { seatingOf, seatsOf, soundPoint, headTop, arrayClear, type Seating, type BandSeatingId } from '../src/screens/lab/miking/lessons/shared/ensemble/seating.ts';
-import { ampGeom, ampOf, ampSpeaker, BAND_KIT, GEAR_SIZE, guitarPoint, GUITAR_POSE, kitKickFront, kitOrigin, kitPoint, rightOf, soundHole } from '../src/screens/lab/miking/lessons/shared/ensemble/bandStage.ts';
+import { ampGeom, ampOf, ampSpeaker, BAND_KIT, GEAR_SIZE, guitarPoint, GUITAR_POSE, HELD_DRAWN, heldDrawnPoint, kitKickFront, kitOrigin, kitPoint, rightOf, soundHole } from '../src/screens/lab/miking/lessons/shared/ensemble/bandStage.ts';
 import { byDistanceDb, nomDb, spill, worstThreeToOne } from '../src/screens/lab/miking/lessons/shared/ensemble/stagePlot.ts';
 import { arrayCapsules } from '../src/screens/lab/miking/lessons/shared/ensemble/stereoArray.ts';
 import { dist, planDir, sub, unit, v3 } from '../src/screens/lab/miking/lessons/shared/ensemble/frameS.ts';
@@ -116,9 +116,12 @@ describe('the stage-plot presets (frame S, said from the audience)', () => {
     const ag = seatsOf(seatingOf('acoustic.duo'), 'ag')[0];
     const hole = soundHole(ag, 'aguitar');
     assert.deepEqual(soundPoint(ag), hole);
-    const fret = guitarPoint(ag, 'aguitar', GUITAR_POSE.aguitar.L + 60);
+    // (owner 2026-11-26, "Yes, move them") the drawn dreadnought's TRUE 12th fret: half its 25-1/2 in scale from the
+    // saddle, 138.85 mm up the strings from the hole's center (was L + 60 on the old pose, 250 mm from the hole)
+    const fret = heldDrawnPoint(ag, 'aguitar', HELD_DRAWN.aguitar.spec.scale.mm / 2);
     assert.ok(-fret.y > -hole.y, 'the neck rises toward the 12th fret');
-    assert.ok(dist(fret, hole) > 200 && dist(fret, hole) < 400);
+    assert.ok(Math.abs(dist(fret, hole) - (HELD_DRAWN.aguitar.spec.scale.mm / 2 - HELD_DRAWN.aguitar.spec.opening.x.mm)) < 1e-6);
+    assert.ok(-guitarPoint(ag, 'aguitar', GUITAR_POSE.aguitar.L).y > -hole.y, 'the pose axis still rises toward the neck');
   });
 });
 

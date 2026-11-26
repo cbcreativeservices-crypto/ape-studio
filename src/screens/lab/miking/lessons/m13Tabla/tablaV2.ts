@@ -3,9 +3,10 @@
  * 2026-11-24). Pure: no React, no Skia.
  *
  * Ana of the cast, sitting cross-legged on the floor, barefoot (floorSeat.ts:
- * sukhasana — each foot under the opposite knee), on the same joints as the
- * current picture (tablaPose: hips, knees, shoulders, elbows and wrists), the
- * same drums where the lesson puts them. The hands lie on the heads as the
+ * sukhasana — each foot under the opposite knee), on tablaPose's joints —
+ * since 2026-11-26 the seat of tablaSeat.ts (owner: cross-legged ON the floor,
+ * close to the drums, elbows bent, forearms sloping down; side and above from
+ * one set of joints) — the same drums where the lesson puts them. The hands lie on the heads as the
  * lesson's seating lets them reach: the right hand palm down on the dayan,
  * its fingers over the near rim (the kinar, where the index finger strikes
  * Na and Tin) onto the head toward the black patch (the syahi, whose border
@@ -26,6 +27,7 @@ import { add, P, sub, type Pt } from '../shared/figureV2/geom.ts';
 import { floorSidePlan, floorTopLegs, type FloorSide, type FloorTop } from '../shared/figureV2/floorSeat.ts';
 import { tablaPose } from './art';
 import { BAYAN, DAYAN } from './geometry.ts';
+import { HIP_Z, KNEE_L, KNEE_R } from './tablaSeat.ts';
 
 export const TABLA_PLAYER = castFor('player.tabla');
 
@@ -47,12 +49,11 @@ export function tablaSide(): FloorSide {
   return sideHit;
 }
 
-/** The hips and knees from above, in the view's own millimetres (u = x, v = z): the side pose's knees out wide. */
-function topJoints(side: PlayerPose, top: PlayerPose): { hips: [Pt, Pt]; knees: [Pt, Pt] } {
+/** The hips and knees from above, in the view's own millimetres (u = x, v = z): the side pose's own hips and
+ *  knees, the knees out wide (tablaSeat.ts, owner 2026-11-26: ≈ 64 cm apart, to either side of and behind the drums). */
+function topJoints(side: PlayerPose): { hips: [Pt, Pt]; knees: [Pt, Pt] } {
   const hipX = (side.hipR.u + side.hipL.u) / 2;
-  void top;
-  // (knees ≈ 55 cm apart, as a person sitting cross-legged; forward of the hips by the side view's own knees)
-  return { hips: [P(hipX, 106), P(hipX, -106)], knees: [P(side.kneeR.u, 275), P(side.kneeL.u, -275)] };
+  return { hips: [P(hipX, HIP_Z), P(hipX, -HIP_Z)], knees: [P(side.kneeR.u, KNEE_R.z), P(side.kneeL.u, KNEE_L.z)] };
 }
 
 let topHit: FloorTop | null = null;
@@ -74,7 +75,7 @@ export function tablaTop(): FloorTop {
   const L: PlacedHand = placeRest('restTop', P(side.handL.wrist.u, BAYAN.H.z - 6), 0, P(0, 1));
   const arm = (s: Pt, e: Pt, pl: PlacedHand) => armPlan(W(s), W(e), pl.wrist, null, false, pl, 0, null, true, armB);
   const plan: TopPlan = { ...base, arms: { near: arm(pose.shoulderR, pose.elbowR, R), far: arm(pose.shoulderL, pose.elbowL, L) } };
-  const j = topJoints(side, pose);
+  const j = topJoints(side);
   topHit = floorTopLegs(plan, j.hips, j.knees, B);
   return topHit;
 }
