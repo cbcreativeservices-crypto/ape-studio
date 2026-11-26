@@ -728,6 +728,48 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-25 13:05 · ccode · 8d7ecb63
+changed: Bass, FM, EQ, Tuning, Amp, Tube, Noise, Autotune, De-Esser, Harmonograph and Distortion follow their controls; must-do D83, D84, D78 [MD:D84]
+affects other side: nothing on the server. JS only: lab controls now drive their readouts and pictures (owner audit 2026-11-25). Store screenshots are not affected.
+needs: nothing from A. Not published; rides OTA 16 on the owner's word; Pixel look pending, iPhone not checked [MD:D84].
+
+
+### 2026-11-25 13:05 · ccode · ebc58c97
+changed: SPL Meter peak reset and labels; Signal Gen and Frequency Counter readouts; Cable Install verdicts and sag; DJ tempo and resonance; Stage Plot rename [MD:D84]
+affects other side: nothing on the server. JS only: lab controls now drive their readouts and pictures (owner audit 2026-11-25). Store screenshots are not affected.
+needs: nothing from A. Not published; rides OTA 16 on the owner's word; Pixel look pending, iPhone not checked [MD:D84].
+
+
+### 2026-11-25 13:05 · ccode · 51ba9fc5
+changed: Miking pages: live AIM numbers, F06 and F15 reachable, Mid-Side scale, fan speed, calibrator, cymbal arrivals, pattern line, rotary locks [MD:D84]
+affects other side: nothing on the server. JS only: lab controls now drive their readouts and pictures (owner audit 2026-11-25). Store screenshots are not affected.
+needs: nothing from A. Not published; rides OTA 16 on the owner's word; Pixel look pending, iPhone not checked [MD:D84].
+
+
+### 2026-11-25 13:05 · ccode · c6b7e50f
+changed: Cymatics LEVEL, DAMPING, sand and Liquid follow their controls; Digital sample RATE no longer moves the tone [MD:D84]
+affects other side: nothing on the server. JS only: lab controls now drive their readouts and pictures (owner audit 2026-11-25). Store screenshots are not affected.
+needs: nothing from A. Not published; rides OTA 16 on the owner's word; Pixel look pending, iPhone not checked [MD:D84].
+
+
+### 2026-11-25 13:05 · ccode · 8801bc4c
+changed: Room Design freestanding panel and bass trap; Foundations motion and sweep clocks; Envelope real-time sweeps [MD:D84]
+affects other side: nothing on the server. JS only: lab controls now drive their readouts and pictures (owner audit 2026-11-25). Store screenshots are not affected.
+needs: nothing from A. Not published; rides OTA 16 on the owner's word; Pixel look pending, iPhone not checked [MD:D84].
+
+
+### 2026-11-25 13:05 · ccode · 89d23122
+changed: Wave rings follow DELAY and polarity; Speaker Coverage rear delay, HEIGHT and fills; Plosives picture matches its numbers [MD:D84]
+affects other side: nothing on the server. JS only: lab controls now drive their readouts and pictures (owner audit 2026-11-25). Store screenshots are not affected.
+needs: nothing from A. Not published; rides OTA 16 on the owner's word; Pixel look pending, iPhone not checked [MD:D84].
+
+
+### 2026-11-25 13:05 · ccode · d60eb087
+changed: Calculator workflows: values carry between steps; SPL Estimate reads 99.93 dB; Treatment Plan gains an RT60 step and a labeled default (owner 2026-11-25) [MD:D84]
+affects other side: nothing on the server. JS only: lab controls now drive their readouts and pictures (owner audit 2026-11-25). Store screenshots are not affected.
+needs: nothing from A. Not published; rides OTA 16 on the owner's word; Pixel look pending, iPhone not checked [MD:D84].
+
+
 ### 2026-11-25 09:26 · ccode · b374f01e
 changed: Delay Alignment: the pulse balls and rings follow each speaker's DELAY (owner 2026-11-25) [MD:D83]
 affects other side: nothing on the server. Wave Physics lab only: the pulse visual now shows each speaker's delay (Delay Alignment, Interference, Beam Steering, Cardioid Sub, Room Builder).

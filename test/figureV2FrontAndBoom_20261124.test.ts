@@ -639,13 +639,14 @@ describe('figure V2 — the boom operator from above: the approved top hand (Boo
       for (const a of B.arms) {
         assert.ok(a.hand.topFace, `${key} ${a.hand.arm.side}: topFace`);
         if (a.hand.painter === 'poleTop') assert.ok(a.hand.topFace.fits && a.hand.poleTop, key);
+        else if (a.hand.painter === 'poleTopUnder') assert.ok(a.hand.topFace.fits, `${key} ${a.hand.arm.side}: underhand from above`);
         else assert.ok(a.hand.painter === undefined && !a.hand.topFace.fits && !!a.hand.topFace.why, `${key} ${a.hand.arm.side}`);
       }
     const by = (k: string) => plans.find((p) => p.key === k)!.B.arms.map((a: { hand: { painter?: string } }) => a.hand.painter ?? 'old');
     for (const k of ['b04', 'b11']) assert.deepEqual(by(k), ['poleTop', 'poleTop'], k);
-    // (2026-11-25) B10's left hand underhand: the top drawing's thumb is on the other side of that fist — its old hand
-    // from above (a drawing is owed); the right hand as before
-    for (const k of ['b10', 'b10live0', 'b10live2']) assert.deepEqual(by(k), ['old', 'poleTop'], k);
+    // (2026-11-25, owner "Top-under passes") B10's left hand underhand: the approved underhand drawing from above
+    // (poleHandTopUnder); the right hand as before
+    for (const k of ['b10', 'b10live0', 'b10live2']) assert.deepEqual(by(k), ['poleTopUnder', 'poleTop'], k);
     // (B04 held low: the palms are up — the drawing shows the backs of the fingers; F09: the left's upper arm would be 404 mm)
     assert.deepEqual(by('low'), ['old', 'old']);
     assert.deepEqual(by('f09'), ['old', 'poleTop']);
@@ -797,8 +798,8 @@ describe('figure V2 — the underhand overhead hold: the ruled hand supports the
   });
   it('from above and from the front, the underhand hand (findings 2026-11-25)', () => {
     const T = BV.boomPlans(rig('b10').rig, who10, 'top').arms.find((a: { hand: { arm: { side: string } } }) => a.hand.arm.side === 'L');
-    assert.equal(T.hand.painter, undefined, 'from above: no approved drawing of that view yet (the old hand)');
-    assert.match(T.hand.topFace.why, /thumb is on the other side/);
+    assert.equal(T.hand.painter, 'poleTopUnder', 'from above: the approved underhand drawing (owner 2026-11-25 "Top-under passes")');
+    assert.ok(T.hand.topFace.fits);
     const Fr = BV.boomPlans(rig('b10').rig, who10, 'front').arms.find((a: { hand: { arm: { side: string } } }) => a.hand.arm.side === 'L');
     assert.equal(Fr.hand.painter, 'poleBack', 'from the front: its back toward the camera — the approved back-of-hand drawing');
     assert.deepEqual(Fr.hand.frontFace, { drawing: 'back' });

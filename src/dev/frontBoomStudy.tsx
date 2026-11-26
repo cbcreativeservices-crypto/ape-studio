@@ -449,7 +449,7 @@ function BoomSideStudy({ width, only }: { width: number; only: string }) {
             const c = at ? { u: f.u - Math.sin(at.rot) * 30, v: f.v + Math.cos(at.rot) * 30 } : ea ? (ptmm > 5 ? f : { u: (f.u * 2 + a.arm.wrist.u) / 3, v: (f.v * 2 + a.arm.wrist.v) / 3 }) : f;
             const mm = z / ptmm;
             const lab = `${a.far ? 'far' : 'near'} ${a.hand.arm.side === 'L' ? 'left' : 'right'}`;
-            const what = view === 'top' ? (a.hand.painter === 'poleTop' ? 'from above (poleHandTop)' : `OLD KEPT: ${a.hand.topFace?.why ?? ''}`) : `${a.hand.sideFace?.drawing ?? ''} ${a.hand.sideFace ? `${a.hand.sideFace.turn.toFixed(0)}°` : ''}`;
+            const what = view === 'top' ? (a.hand.painter === 'poleTop' ? 'from above (poleHandTop)' : a.hand.painter === 'poleTopUnder' ? 'underhand from above (poleHandTopUnder)' : `OLD KEPT: ${a.hand.topFace?.why ?? ''}`) : `${a.hand.sideFace?.drawing ?? ''} ${a.hand.sideFace ? `${a.hand.sideFace.turn.toFixed(0)}°` : ''}`;
             return [
               { key: `z${r.key}${i}o`, cu: c.u, cv: c.v, mmW: mm, mmH: mm, label: `${r.key} OLD · ${lab}`, node: <BoomOperatorV2 view={view} rig={r.rig} who={r.who} dim={1} oldSide /> },
               { key: `z${r.key}${i}n`, cu: c.u, cv: c.v, mmW: mm, mmH: mm, label: `${r.key} NEW · ${lab} · ${what}`, node: <BoomOperatorV2 view={view} rig={r.rig} who={r.who} dim={1} /> },
