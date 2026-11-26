@@ -482,7 +482,7 @@ function instrumentItems(P: InstPose, view: ViewId): Item[] {
 }
 
 /** The bow: hair, stick (cambered), frog with its eye, the tip's head. */
-function bowItems(P: Pick<Posture, 'spec' | 'bow'>, view: ViewId): Item[] {
+export function bowItems(P: Pick<Posture, 'spec' | 'bow'>, view: ViewId): Item[] {
   const b = P.bow;
   const k = Math.max(1, P.spec.bow.mm / 750);
   const pt = (s: number, lift: number) => prj(view, add(add(b.tip, scale(sub(b.frog, b.tip), s)), scale(b.up, lift)));
@@ -1198,7 +1198,16 @@ export function sceneGroups(P0: Posture, view: ViewId, opts: { player?: boolean;
   const fi = opts.player !== false && D && (opts.v2 ?? figureV2On('familyBowed')) ? bowedFamIn(P, D, view, bowed, (a) => cutFor(view, a), opts.who) : null;
   if (fi) {
     // (figure roll-out wave 5: the player in the approved look; the chair as before)
-    groups.push(...bowedFigureGroups(fi, view, instDepth, { L: D ? neckHide(P, view, D.L) : undefined }));
+    // (the authored hands: a bow hand's thumb lies under the stick — the stick and frog, not the hair, repainted over it)
+    const over = bowed && P.strokes.length > 0 ? bowItems(P, view).slice(1) : [];
+    const bowOver = over.length ? (
+      <Group>
+        {over.map((it, i) => (
+          <PaintItem key={i} it={it} />
+        ))}
+      </Group>
+    ) : null;
+    groups.push(...bowedFigureGroups(fi, view, instDepth, { L: D ? neckHide(P, view, D.L) : undefined }, D ? { P, D, bowed, bowOver } : undefined));
     if (P.chair) groups.push(...playerGroups(P, view, true, {}).filter((g) => g.key === 'chair' || g.key === 'chairLegs'));
   } else if (opts.player !== false && D) {
     const L = posedHold(D.L, view, instDepth, true, neckHide(P, view, D.L));

@@ -20,7 +20,8 @@
  * Who plays (cast.ts ROLES 'metal.triangle'): Mei.
  */
 import { v3, type V3 } from '../shared/players/handModel.ts';
-import { fittedArm, frameOf, gripMetalArm, hangArm, metalFig, standing, stickBack, type MetalArm, type MetalFig, type MetalView, type RodLook } from '../shared/metal/metalFigureV2.ts';
+import { armToDrawn, fittedArm, frameOf, gripMetalArm, hangArm, metalFig, standing, stickBack, type MetalArm, type MetalFig, type MetalView, type RodLook } from '../shared/metal/metalFigureV2.ts';
+import { BEATER_BACK_DIR, drawnWrist } from '../shared/metal/metalHands.ts';
 import { CLIP, CLIP_Y } from './geometry.ts';
 import { HELD_BEATER, MOUNTED_BEATER, mirrorZ, type Beater3 } from './beaters.ts';
 
@@ -58,6 +59,26 @@ export function clipArm(view: MetalView = 'side'): MetalArm {
   return { ...arm, cutPt: view === 'top' ? v3(C.x, C.y + 80, C.z) : C };
 }
 
+/** (family batch 2026-11-25) from the player's right: the authored clip hand (figureV2/metalHandClipSide), its
+ *  anchor on the clip's center, the arm laid to its wrist. */
+export function clipSideArm(): MetalArm {
+  const at = { u: CLIP_C.x, v: CLIP_C.y };
+  const w = drawnWrist('clipSide', at, 0, false);
+  return armToDrawn(TRI_BODY, 'L', clipArm('side'), 'side', { kind: 'clipSide', at, rot: 0, mirror: false }, w.cuff, w.fore);
+}
+
+/** (family batch 2026-11-25) from the player's right: the authored beater hand (figureV2/metalHandBeaterBack), its
+ *  fulcrum where the posed grip closes (32 mm in from the grip end), turned so the beater leaves it along the
+ *  lesson's own beater; the arm laid to its wrist. */
+export function beaterSideArm(b: Beater3): MetalArm {
+  const posed = beaterArm('R', b);
+  const l = Math.hypot(b.tip.x - b.grip.x, b.tip.y - b.grip.y, b.tip.z - b.grip.z);
+  const at = { u: b.grip.x + ((b.tip.x - b.grip.x) * 32) / l, v: b.grip.y + ((b.tip.y - b.grip.y) * 32) / l };
+  const rot = Math.atan2(b.tip.y - b.grip.y, b.tip.x - b.grip.x) - Math.atan2(BEATER_BACK_DIR.v, BEATER_BACK_DIR.u);
+  const w = drawnWrist('beaterBack', at, rot, false);
+  return armToDrawn(TRI_BODY, 'R', posed, 'side', { kind: 'beaterBack', at, rot, mirror: false }, w.cuff, w.fore);
+}
+
 /** The beater held lightly near its end: the hand closes 32 mm in from the grip end (its cap just shows). */
 export function beaterArm(hand: 'R' | 'L', b: Beater3): MetalArm {
   const g = b.grip;
@@ -76,8 +97,9 @@ const BEATER_LOOK: RodLook = { d: 6, color: '#c9d0da', edge: '#555d6a' };
 export function triFig(view: MetalView, variant: string): MetalFig {
   const held = variant !== 'mounted';
   return metalFig(`tri|${variant}|${view}`, view, () => {
-    if (held) return { b: TRI_BODY, L: clipArm(view), R: beaterArm('R', HELD_BEATER) };
+    // (family batch 2026-11-25: from the player's right the clip hand and the beater hand are authored drawings)
+    if (held) return { b: TRI_BODY, L: view === 'side' ? clipSideArm() : clipArm(view), R: view === 'side' ? beaterSideArm(HELD_BEATER) : beaterArm('R', HELD_BEATER) };
     const L = view === 'top' ? hangArm(TRI_BODY, 'L', true) : beaterArm('L', { grip: mirrorZ(MOUNTED_BEATER.grip), tip: mirrorZ(MOUNTED_BEATER.tip) });
-    return { b: TRI_BODY, L, R: beaterArm('R', MOUNTED_BEATER) };
+    return { b: TRI_BODY, L, R: view === 'side' ? beaterSideArm(MOUNTED_BEATER) : beaterArm('R', MOUNTED_BEATER) };
   });
 }

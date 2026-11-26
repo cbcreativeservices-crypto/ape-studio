@@ -40,7 +40,8 @@ import { saxHands, type SaxHand, type SaxTouch } from './saxHands.ts';
 import { figureV2On } from '../figureV2/figureV2Config.ts';
 import type { CastMember } from '../figureV2/cast';
 import { FamilyFigureFrontV2, FamilyFigureV2 } from '../figureV2/familyV2';
-import { saxFigure } from './saxFigureV2';
+import { SAX_AUTHORED_HANDS, saxFigure, saxReedHands } from './saxFigureV2';
+import { ReedHandsLayer } from '../figureV2/reedHandKit';
 import { pt } from '../players/playerPose';
 import { fingering, holesOf, pathOf, radiusAt, type Fingering, type SaxRow } from './saxSpec.ts';
 import { anchorsOf, centre, onTube, tangent, tubeDir, type PlaneAxes, type SaxPosture } from './saxPosture.ts';
@@ -417,9 +418,12 @@ export function SaxScene({ P, view, f, v2: v2In, who }: { P: SaxPosture; view: V
   const hook = useMemo(() => saxHands(P).R.thumb, [P]);
   const v2 = v2In ?? figureV2On('familySax');
   const fig = useMemo(() => (v2 ? saxFigure(P, view, who) : null), [v2, P, view, who]);
+  const reed = useMemo(() => (fig && SAX_AUTHORED_HANDS ? saxReedHands(P, fig.fp) : null), [fig, P]);
   if (fig) {
     // (figure roll-out wave 5: the player in the approved look — whole behind the horn, the strap over the shirt,
     // the horn, then the person again where its parts lie over the horn)
+    // (owner 2026-11-25: the hands are the reed family's AUTHORED hands — their parts behind the horn before it, the
+    // rest over it, last)
     const strap = pg.groups.filter((g) => g.key === 'strap');
     return (
       <Group>
@@ -431,8 +435,10 @@ export function SaxScene({ P, view, f, v2: v2In, who }: { P: SaxPosture; view: V
             ))}
           </Group>
         ))}
+        {reed ? <ReedHandsLayer placed={reed} layer="back" who={fig.fp.in.who} /> : null}
         <SaxInstrument P={P} view={view} f={fing} hook={hook} table={saxHands(P).L} />
         <FamilyFigureFrontV2 fp={fig.fp} region={fig.region} />
+        {reed ? <ReedHandsLayer placed={reed} layer="front" who={fig.fp.in.who} /> : null}
       </Group>
     );
   }

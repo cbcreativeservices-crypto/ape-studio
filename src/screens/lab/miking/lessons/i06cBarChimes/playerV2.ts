@@ -38,10 +38,13 @@ export function sweepArm(): MetalArm {
   const pad = -13; // the pads' centres, the nails toward the bars
   const o = v3(-132, -1318, z0 + 4);
   const f = frameOf(o, v3(0.78, 1, 0.02), v3(1, -0.7, 0), 'L');
+  // (family batch 2026-11-25, the review: "the bar-chime arm wrong from above" — the elbow was raised out and far
+  // back, so from above the upper arm ran backward past the head. A player reaching forward to the row keeps the
+  // elbow low and a little out: from above the arm runs forward from the shoulder to the hand.)
   return fittedArm(BC_BODY, 'L', f, [v3(pad, y0 - 6, z0 + 22), v3(pad, y0, z0 + 6), v3(pad + 1, y0 + 2, z0 - 10), v3(pad + 2, y0 - 6, z0 - 25)], { yaw: 0.55, pitch: 0.5, mcp: 0.25, ip: 0.25 }, {
-    out: 200,
-    down: 40,
-    back: 170,
+    out: 110,
+    down: 300,
+    back: 10,
     maxWrist: 48,
     slide: 40,
     curl: 0.35,

@@ -22,6 +22,9 @@ import { dot, len, norm, scale, sub } from '../../../engine/geometry/vec.ts';
 import { CAST, castFor, type CastId, type CastMember } from '../figureV2/cast';
 import { famFrontRegion, famPlan, type FamIn, type FamPlan } from '../figureV2/familyV2';
 import type { SkPath } from '../figureV2/paths.ts';
+import { reedHandsForPlan, type ReedPlaced } from '../figureV2/reedHandKit';
+import { REED_HAND_BACK } from '../figureV2/reedHandBack';
+import { REED_HAND_PALM } from '../figureV2/reedHandPalm';
 import { frameAt, type Layout } from './windPosture.ts';
 import { windHands } from './windHands.ts';
 
@@ -36,7 +39,17 @@ export const windSeatPlayer = (slot: string): CastMember | undefined => (WIND_SE
 const TO_VIEWER = { side: { x: 0, y: 0, z: 1 }, top: { x: 0, y: -1, z: 0 } } as const;
 
 /** The figure's input: the engine's 'side' view of a woodwind is the player face-on. */
-export function windFamIn(L: Layout, view: ViewId, who?: CastMember): FamIn {
+/** The hands drawn as the reed family's AUTHORED hands (owner 2026-11-25, figureV2/reedHand*.tsx): the arm ends at its
+ *  cuff and WindScene paints the drawing there (false: the shared posed-hand painter, as before). */
+export const WIND_AUTHORED_HANDS = true;
+
+/** The authored hands on this figure's posed hands (the wrist, the keys and the cuffs the lesson's own). */
+export function windReedHands(L: Layout, fp: FamPlan): ReedPlaced[] {
+  const H = windHands(L);
+  return reedHandsForPlan(fp, { back: REED_HAND_BACK, palm: REED_HAND_PALM }, { L: H.L.sk, R: H.R.sk });
+}
+
+export function windFamIn(L: Layout, view: ViewId, who?: CastMember, authored = WIND_AUTHORED_HANDS): FamIn {
   const B = L.body;
   const H = windHands(L);
   const toV = TO_VIEWER[view];
@@ -74,8 +87,8 @@ export function windFamIn(L: Layout, view: ViewId, who?: CastMember): FamIn {
     seatY: L.chair ? L.chair.seat.min.y : undefined,
     lip: L.lips ?? { x: 0, y: 0, z: 0 },
     arms: {
-      L: { sk: H.L.sk, elbow: H.L.elbow, shoulder: B.shoulderL, cut: cut(H.L.s) },
-      R: { sk: H.R.sk, elbow: H.R.elbow, shoulder: B.shoulderR, cut: cut(H.R.s) },
+      L: { sk: H.L.sk, elbow: H.L.elbow, shoulder: B.shoulderL, cut: cut(H.L.s), handElsewhere: authored },
+      R: { sk: H.R.sk, elbow: H.R.elbow, shoulder: B.shoulderR, cut: cut(H.R.s), handElsewhere: authored },
     },
   };
 }

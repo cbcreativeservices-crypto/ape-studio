@@ -20,6 +20,9 @@ import { dot, scale, sub } from '../../../engine/geometry/vec.ts';
 import { castFor, type CastMember } from '../figureV2/cast';
 import { famFrontRegion, famPlan, type FamIn, type FamPlan } from '../figureV2/familyV2';
 import type { SkPath } from '../figureV2/paths.ts';
+import { reedHandsForPlan, type ReedPlaced } from '../figureV2/reedHandKit';
+import { REED_HAND_BACK } from '../figureV2/reedHandBack';
+import { REED_HAND_PALM } from '../figureV2/reedHandPalm';
 import { saxHands } from './saxHands.ts';
 import { pathOf } from './saxSpec.ts';
 import { centre, tangent, type SaxPosture } from './saxPosture.ts';
@@ -38,7 +41,11 @@ export function saxHornDepth(P: SaxPosture, view: ViewId): number {
   return Math.max(depthOf(view, centre(P, (S.tenon + S.bodyEnd) / 2)), depthOf(view, P.player.chest) + 1.5);
 }
 
-export function saxFamIn(P: SaxPosture, view: ViewId, who?: CastMember): FamIn {
+/** The hands drawn as the reed family's AUTHORED hands (owner 2026-11-25, figureV2/reedHand*.tsx): the arm ends at its
+ *  cuff and SaxScene paints the drawing there (false: the shared posed-hand painter, as before). */
+export const SAX_AUTHORED_HANDS = true;
+
+export function saxFamIn(P: SaxPosture, view: ViewId, who?: CastMember, authored = SAX_AUTHORED_HANDS): FamIn {
   const s = P.player;
   const H = saxHands(P);
   const toV = TO_VIEWER[view];
@@ -60,10 +67,16 @@ export function saxFamIn(P: SaxPosture, view: ViewId, who?: CastMember): FamIn {
     // (the reed tip is the lesson frame's origin: the mouth's front is drawn there)
     lip: { x: 0, y: 0, z: s.head.z } as Vec3,
     arms: {
-      L: { sk: H.L.sk, elbow: H.L.elbow, shoulder: s.shoulderL, cut: cut(H.L.u) },
-      R: { sk: H.R.sk, elbow: H.R.elbow, shoulder: s.shoulderR, cut: cut(H.R.u) },
+      L: { sk: H.L.sk, elbow: H.L.elbow, shoulder: s.shoulderL, cut: cut(H.L.u), handElsewhere: authored },
+      R: { sk: H.R.sk, elbow: H.R.elbow, shoulder: s.shoulderR, cut: cut(H.R.u), handElsewhere: authored },
     },
   };
+}
+
+/** The authored hands on this figure's posed hands (the wrist, the keys and the cuffs the lesson's own). */
+export function saxReedHands(P: SaxPosture, fp: FamPlan): ReedPlaced[] {
+  const H = saxHands(P);
+  return reedHandsForPlan(fp, { back: REED_HAND_BACK, palm: REED_HAND_PALM }, { L: H.L.sk, R: H.R.sk });
 }
 
 /** The figure's plan and its parts over the horn (the far forearm, seen from the player's right, behind it). */

@@ -20,7 +20,9 @@
  * Who plays (cast.ts ROLES 'metal.fingerCymbals'): the drummer.
  */
 import { v3, type V3 } from '../shared/players/handModel.ts';
-import { fittedArm, frameOf, hangArm, metalFig, standing, type Body, type MetalArm, type MetalFig, type MetalView } from '../shared/metal/metalFigureV2.ts';
+import { armToDrawn, fittedArm, frameOf, hangArm, metalFig, standing, type Body, type MetalArm, type MetalFig, type MetalView } from '../shared/metal/metalFigureV2.ts';
+import { drawnWrist, turnFor, ZILL_EDGE_MIDDLE, ZILL_PALM_MIDDLE } from '../shared/metal/metalHands.ts';
+import { P } from '../shared/figureV2/geom.ts';
 import { DROP_C, DROP_TILT, HAND_L, HAND_R } from './geometry.ts';
 import { FC, P0 } from './model.ts';
 
@@ -79,6 +81,46 @@ export function zillArm(b: Body, hand: 'R' | 'L', thumbCym: V3, fingerCym: V3, h
   return fittedArm(b, hand, f, [{ curl: 0.6, abd: -0.06 }, M, { curl: 0.75, abd: 0.06 }, { curl: 0.8, abd: 0.12 }], T, { out: 230, down: 200, back: 260, maxWrist: 30, slide: 45, curl: 0.6 });
 }
 
+/** The top of an edge-on cymbal's dome on the page (art.tsx CymbalEdge: the dome 0.7 h above the plate, turned
+ *  `deg`), where the thumb's or the finger's pad sits. */
+export function domeTop(u: number, v: number, deg: number): { u: number; v: number } {
+  const a = (deg * Math.PI) / 180;
+  const dh = FC.h.mm * 0.7;
+  return { u: u + Math.sin(a) * dh, v: v - Math.cos(a) * dh };
+}
+
+/** From the audience, the pair on one hand as art.tsx draws it (dancePair): the thumb's dome top, the finger's. */
+export function dancePairTops(hand: 'R' | 'L'): { thumb: { u: number; v: number }; finger: { u: number; v: number } } {
+  const H = hand === 'R' ? HAND_R : HAND_L;
+  const a = -H.z;
+  const b = H.y;
+  const s = a >= 0 ? 1 : -1;
+  return { thumb: domeTop(a + s * 10, b - 20, s * 80), finger: domeTop(a + s * 34, b + 10, s * 100) };
+}
+
+/** (from the audience) the authored zill hand on its pair: the thumb's tip on the upper cymbal's dome, turned so
+ *  the curled middle fingertip lands on the lower one; the arm laid to the drawing's wrist. */
+export function zillPalmArm(hand: 'R' | 'L', posed: MetalArm): MetalArm {
+  const { thumb, finger } = dancePairTops(hand);
+  const mirror = hand === 'R';
+  const rot = turnFor(P(0, 0), ZILL_PALM_MIDDLE, thumb, finger, mirror);
+  const drawn = { kind: 'zillPalm', at: thumb, rot, mirror };
+  const w = drawnWrist('zillPalm', thumb, rot, mirror);
+  return armToDrawn(DANCE_BODY, hand, posed, 'front', drawn, w.cuff, w.fore);
+}
+
+/** (from the player's right) the authored zill hand seen along its little-finger edge, on the pair art.tsx draws
+ *  for that hand (sideArt: the far hand at its own point, the near one 30 forward and 20 up). */
+export function zillEdgeArm(hand: 'R' | 'L', posed: MetalArm): MetalArm {
+  const a = hand === 'R' ? HAND_R.x + 30 : HAND_L.x;
+  const b = hand === 'R' ? HAND_R.y - 20 : HAND_L.y;
+  const thumb = domeTop(a + 8, b - 16, -70);
+  const finger = domeTop(a + 14, b + 14, -110);
+  const rot = turnFor(P(0, 0), ZILL_EDGE_MIDDLE, thumb, finger, false);
+  const w = drawnWrist('zillEdge', thumb, rot, false);
+  return armToDrawn(DANCE_BODY, hand, posed, 'side', { kind: 'zillEdge', at: thumb, rot, mirror: false }, w.cuff, w.fore);
+}
+
 /** The dance pictures' cymbals: (thumb's, finger's) centres per hand, as each view draws them. */
 function danceCyms(view: MetalView, hand: 'R' | 'L'): { t: V3; m: V3; at: V3 } {
   const H = hand === 'R' ? HAND_R : HAND_L;
@@ -112,7 +154,13 @@ export function fcFig(view: MetalView, variant: string, ghostZ?: number): MetalF
     return metalFig(`fc|dance|${view}`, view, () => {
       const l = danceCyms(view, 'L');
       const r = danceCyms(view, 'R');
-      return { b: DANCE_BODY, L: zillArm(DANCE_BODY, 'L', l.t, l.m, l.at), R: zillArm(DANCE_BODY, 'R', r.t, r.m, r.at) };
+      const L = zillArm(DANCE_BODY, 'L', l.t, l.m, l.at);
+      const R = zillArm(DANCE_BODY, 'R', r.t, r.m, r.at);
+      // (family batch 2026-11-25: from the audience each hand is the authored zill hand, palm toward the audience;
+      // from the side, the same hand seen along its little-finger edge)
+      if (view === 'front') return { b: DANCE_BODY, L: zillPalmArm('L', L), R: zillPalmArm('R', R) };
+      if (view === 'side') return { b: DANCE_BODY, L: zillEdgeArm('L', L), R: zillEdgeArm('R', R) };
+      return { b: DANCE_BODY, L, R };
     });
   }
   return metalFig(`fc|held|${view}|${FC_LEFT_PINCH_FROM_ABOVE ? 'pinch' : 'under'}`, view, () => {

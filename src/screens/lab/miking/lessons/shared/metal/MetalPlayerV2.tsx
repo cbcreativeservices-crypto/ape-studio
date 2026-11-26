@@ -35,6 +35,20 @@ import { playerFistSilhouette, plugOf } from '../figureV2/playersFist';
 import { gripSilhouette } from '../figureV2/heldHandV2';
 import type { PlacedGrip, V3 } from '../figureV2/heldHands.ts';
 import { towardOf, type MetalFig, type MetalGrip } from './metalFigureV2.ts';
+import { MetalHand, type MetalHandArt, type MetalLayer } from '../figureV2/metalHandPaint';
+import { METAL_HAND_ZILL_PALM } from '../figureV2/metalHandZillPalm';
+import { METAL_HAND_CLIP_SIDE } from '../figureV2/metalHandClipSide';
+import { METAL_HAND_ZILL_EDGE } from '../figureV2/metalHandZillEdge';
+import { METAL_HAND_BEATER_BACK } from '../figureV2/metalHandBeaterBack';
+import type { MetalHandKind } from './metalHands.ts';
+
+/** (family batch 2026-11-25) every authored metal-family hand, by kind (metalHands.ts places them). */
+export const METAL_HANDS: Record<MetalHandKind, MetalHandArt> = {
+  zillPalm: METAL_HAND_ZILL_PALM,
+  zillEdge: METAL_HAND_ZILL_EDGE,
+  beaterBack: METAL_HAND_BEATER_BACK,
+  clipSide: METAL_HAND_CLIP_SIDE,
+};
 
 /** (the study page) draw the old figure in a picture whatever the switch says: OLD beside NEW. */
 const OldCtx = createContext(false);
@@ -271,7 +285,7 @@ function frontRegion(fig: MetalFig, fp: FamPlan): SkPath | null {
   if (regionCache.has(fp)) return regionCache.get(fp) ?? null;
   const hands = famFrontRegion(fp, HANDS_ONLY);
   const cuffs = fp.arms
-    .filter((a) => (fig.arms[a.side].cut && fig.arms[a.side].sk.thumb && !a.handElsewhere && isStick(fig, a.side)) || !!fig.grips[a.side])
+    .filter((a) => (fig.arms[a.side].cut && fig.arms[a.side].sk.thumb && !a.handElsewhere && isStick(fig, a.side)) || !!fig.grips[a.side] || hasFront(fig.drawn[a.side]?.kind))
     .map((a) => armPaths(drawnArm(fp, a.side)?.arm ?? a.arm, famProj(fig.view)).cuffCloth);
   const r = cuffs.length ? unionOf(...(hands ? [hands] : []), ...cuffs) : hands;
   regionCache.set(fp, r);
@@ -286,6 +300,44 @@ const isStick = (fig: MetalFig, side: 'L' | 'R') => {
   return Math.min(...pads.map((p) => Math.hypot(p.x - c.p.x, p.y - c.p.y, p.z - c.p.z))) > 40;
 };
 
+/* ── (family batch 2026-11-25) the hands drawn as authored 2-D art ── */
+
+const HANDS: Record<string, MetalHandArt | undefined> = METAL_HANDS;
+/** The authored drawing of a kind (metalHands.ts). */
+export const drawnArt = (kind: string): MetalHandArt | undefined => HANDS[kind];
+/** Has the drawing pieces in front of what it holds (painted again over the instrument)? */
+const hasFront = (kind: string | undefined): boolean => !!kind && !!HANDS[kind]?.pieces.some((p) => p.layer === 'front');
+
+/**
+ * Each authored hand: its anchor on the held thing, turned as the pose module set it (the arm was solved to its
+ * wrist), in the player's skin, painted outside the arm's sleeve (the cuff stays over the wrist). `layer`: the
+ * pieces behind what it holds ('back', with the body) or in front of it ('front', over the instrument).
+ */
+function DrawnHands({ fig, role, fp, layer }: { fig: MetalFig; role: RoleKey; fp: FamPlan; layer: MetalLayer }) {
+  const v = useFigureScale();
+  const level = levelOf({ ptPerMm: v.ptPerMm, level: v.level });
+  const sides = (['L', 'R'] as const).filter((s) => {
+    const d = fig.drawn[s];
+    const art = d ? HANDS[d.kind] : undefined;
+    return !!art && art.pieces.some((p) => p.layer === layer);
+  });
+  if (!sides.length) return null;
+  return (
+    <FigureScale ptPerMm={v.ptPerMm} level={level}>
+      <FigureLook look={fp.in.who.look}>
+        {sides.map((s) => {
+          const d = fig.drawn[s]!;
+          return (
+            <OutsideSleeve key={s} fig={fig} role={role} side={s}>
+              <MetalHand art={HANDS[d.kind]!} x={d.at.u} y={d.at.v} rot={d.rot} mirror={d.mirror} layer={layer} />
+            </OutsideSleeve>
+          );
+        })}
+      </FigureLook>
+    </FigureScale>
+  );
+}
+
 export function MetalPlayerV2({ fig, role, part = 'back', dim = 1 }: { fig: MetalFig; role: RoleKey; part?: 'back' | 'front'; dim?: number }) {
   const fp = metalPlan(fig, role);
   const body = part === 'front' ? <FamilyFigureFrontV2 fp={fp} region={frontRegion(fig, fp)} /> : fp.front ? <FrontFigure fp={fp} /> : <FamilyFigureV2 fp={fp} />;
@@ -293,6 +345,7 @@ export function MetalPlayerV2({ fig, role, part = 'back', dim = 1 }: { fig: Meta
     <Group layer={recedeV2(dim) as never}>
       {body}
       <GripHands fig={fig} fp={fp} />
+      <DrawnHands fig={fig} role={role} fp={fp} layer={part} />
     </Group>
   );
 }

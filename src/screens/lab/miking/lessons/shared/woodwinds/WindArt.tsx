@@ -41,7 +41,8 @@ import { drawHand3, FIGURE_TONES, FigureMass, Nails, PlayerBehind, PlayerInFront
 import { figureV2On } from '../figureV2/figureV2Config.ts';
 import type { CastMember } from '../figureV2/cast';
 import { FamilyFigureFrontV2, FamilyFigureV2 } from '../figureV2/familyV2';
-import { windFigure } from './windFigureV2';
+import { WIND_AUTHORED_HANDS, windFigure, windReedHands } from './windFigureV2';
+import { ReedHandsLayer } from '../figureV2/reedHandKit';
 import type { HandView } from '../players/handModel.ts';
 import { PAD, touchAt, touchR, windHands, type Touch } from './windHands.ts';
 import type { PlayerPose, Pt } from '../players/playerPose.ts';
@@ -713,12 +714,16 @@ export function WindScene({ L, view, playerDim = 1, showJet = true, v2: v2In, wh
     // the arms and the hands' front parts lie; the chair, the peg, the strap and the jet as before)
     const fig = windFigure(L, view, who);
     const dimL = playerDim < 1 ? <SkPaint opacity={playerDim} /> : undefined;
+    // (owner 2026-11-25: the hands are the reed family's AUTHORED hands — their parts behind the instrument before it,
+    // the rest over it)
+    const reed = WIND_AUTHORED_HANDS ? windReedHands(L, fig.fp) : null;
     return (
       <Group>
         <Paints items={x.floor} />
         <Paints items={x.chairBack} />
         <Group layer={dimL}>
           <FamilyFigureV2 fp={fig.fp} />
+          {reed ? <ReedHandsLayer placed={reed} layer="back" who={fig.fp.in.who} /> : null}
         </Group>
         <Paints items={x.peg} />
         <Paints items={b.back} />
@@ -728,6 +733,7 @@ export function WindScene({ L, view, playerDim = 1, showJet = true, v2: v2In, wh
         <Paints items={b.front} />
         <Group layer={dimL}>
           <FamilyFigureFrontV2 fp={fig.fp} region={fig.region} />
+          {reed ? <ReedHandsLayer placed={reed} layer="front" who={fig.fp.in.who} /> : null}
         </Group>
         <Paints items={x.strap} />
         {showJet ? <Paints items={x.jet} /> : null}

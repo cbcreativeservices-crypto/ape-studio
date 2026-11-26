@@ -104,7 +104,69 @@ function elbowHint(b: Body, sh: V3, side: 1 | -1, o: { back?: number; down?: num
 /** One solved arm. `cutAt`: a held stick's axis; `cutPt`: the middle of a small held object (a clip, a strap):
  *  the hand's parts beyond it (from the viewer) are painted behind what it holds, the rest over it. `front`
  *  false: the hand holds nothing and lies behind the instrument. */
-export type MetalArm = { sk: HandSkeleton; elbow: V3; shoulder: V3; front?: boolean; cutAt?: { a: V3; b: V3 }; cutPt?: V3; handElsewhere?: boolean; grip?: MetalGrip };
+export type MetalArm = { sk: HandSkeleton; elbow: V3; shoulder: V3; front?: boolean; cutAt?: { a: V3; b: V3 }; cutPt?: V3; handElsewhere?: boolean; grip?: MetalGrip; drawn?: DrawnHand };
+
+/**
+ * (family batch 2026-11-25) A hand drawn as AUTHORED 2-D ART (figureV2/metalHand*.tsx) instead of the posed 3-D
+ * hand: which drawing (`kind`), where its anchor lands on the page (the picture's own mm: the held thing's point),
+ * its turn and whether it is the mirror image. The arm is solved so its sleeve ends at the drawing's wrist and its
+ * forearm runs the drawing's way; the hand is painted by MetalPlayerV2 (behind and in front of what it holds).
+ */
+export type DrawnHand = { kind: string; at: { u: number; v: number }; rot: number; mirror: boolean };
+
+/** A picture's page point of a 3-D point (u, v) and its depth toward the viewer, each view. */
+export function projectView(view: MetalView, p: V3): { u: number; v: number; d: number } {
+  if (view === 'top') return { u: p.x, v: p.z, d: -p.y };
+  if (view === 'front') return { u: -p.z, v: p.y, d: p.x };
+  return { u: p.x, v: p.y, d: p.z };
+}
+/** The 3-D point at page (u, v), depth d (the inverse of projectView). */
+export function unprojectView(view: MetalView, u: number, v: number, d: number): V3 {
+  if (view === 'top') return v3(u, -d, v);
+  if (view === 'front') return v3(d, v, -u);
+  return v3(u, v, d);
+}
+
+/**
+ * The arm re-solved for an authored hand: the wrist where the drawing's wrist is on the page (`cuff`, the depth of
+ * the posed hand's wrist kept), the elbow chosen round its circle so the forearm runs on the page as near the
+ * drawing's forearm (`fore`, a page direction from the wrist toward the elbow) as an adult arm allows — never above
+ * the shoulder, never across the chest. The posed skeleton is carried along unchanged (moved to the new wrist), so
+ * every measure of the posed hand stays as it was; the family draws the sleeve to the wrist only.
+ */
+export function armToDrawn(b: Body, hand: 'R' | 'L', a: MetalArm, view: MetalView, drawn: DrawnHand, cuff: { u: number; v: number }, fore: { u: number; v: number }): MetalArm {
+  const sh = hand === 'R' ? b.s.shoulderR : b.s.shoulderL;
+  const side = hand === 'R' ? 1 : -1;
+  const W0 = a.sk.frame.o;
+  const W = unprojectView(view, cuff.u, cuff.v, projectView(view, W0).d);
+  const n = unit(sub(W, sh));
+  const e1 = unit(Math.abs(n.y) < 0.9 ? sub(DOWN, mul(n, dot(DOWN, n))) : sub(b.fwd, mul(n, dot(b.fwd, n))));
+  const e2 = cross(n, e1);
+  const fl = Math.hypot(fore.u, fore.v) || 1;
+  let best: { elbow: V3; wrist: V3; score: number } | null = null;
+  for (let k = 0; k < 96; k++) {
+    const t = (k / 96) * Math.PI * 2;
+    const hint = add(sh, add(mul(e1, 400 * Math.cos(t)), mul(e2, 400 * Math.sin(t))));
+    const s = solveArm3(sh, W, hint);
+    const pe = projectView(view, s.elbow);
+    const pw = projectView(view, s.wrist);
+    const du = pe.u - pw.u;
+    const dv = pe.v - pw.v;
+    const dl = Math.hypot(du, dv) || 1;
+    // (how far the forearm's page direction is from the drawing's; a foreshortened forearm counts for less)
+    const cosA = (du * fore.u + dv * fore.v) / (dl * fl);
+    let score = (1 - cosA) * Math.min(1, dl / 120);
+    if (s.elbow.y < sh.y - 40) score += 2; // never an elbow above the shoulder
+    const lateral = dot(sub(s.elbow, b.s.neck), b.right) * side;
+    if (lateral < 120) score += 2; // never an elbow across the chest
+    if (dot(sub(s.elbow, sh), b.fwd) < -260) score += 1; // never far behind the back
+    if (!best || score < best.score) best = { elbow: s.elbow, wrist: s.wrist, score };
+  }
+  const d = sub(best!.wrist, W0);
+  const mv = (q: V3) => add(q, d);
+  const sk: HandSkeleton = { ...a.sk, frame: { ...a.sk.frame, o: mv(a.sk.frame.o) }, fingers: a.sk.fingers.map((g) => ({ ...g, joints: g.joints.map(mv) })), thumb: { ...a.sk.thumb, joints: a.sk.thumb.joints.map(mv) }, palm: a.sk.palm.map(mv) };
+  return { ...a, sk, elbow: best!.elbow, handElsewhere: true, drawn };
+}
 
 /** How a held rod looks where it shows between the fingers (the lesson's own beater or handle: its width, its
  *  colour and its edge). */
@@ -232,7 +294,17 @@ const mapS = (s: FamSkeleton, m: M3): FamSkeleton => {
 };
 
 /** What the family figure needs for one picture (the person is added by the drawing). */
-export type MetalFig = { key: string; view: FamView; s: FamSkeleton; arms: { L: FamArmIn; R: FamArmIn }; floorY: number; /** the hands closed round a rod, in the family figure's frame */ grips: { L?: MetalGrip; R?: MetalGrip } };
+export type MetalFig = {
+  key: string;
+  view: FamView;
+  s: FamSkeleton;
+  arms: { L: FamArmIn; R: FamArmIn };
+  floorY: number;
+  /** the hands closed round a rod, in the family figure's frame */
+  grips: { L?: MetalGrip; R?: MetalGrip };
+  /** (family batch 2026-11-25) the hands drawn as authored 2-D art (page mm; none: the posed hand) */
+  drawn: { L?: DrawnHand; R?: DrawnHand };
+};
 
 /** A grip turned into the family figure's frame (the turn is a rotation: the hand's handedness is kept). */
 function mapGrip(mg: MetalGrip | undefined, m: M3): MetalGrip | undefined {
@@ -271,7 +343,16 @@ export function metalFig(key: string, view: MetalView, build: () => { b: Body; L
   const { b, L, R, m: m0, fv: fv0 } = build();
   const m = m0 ?? (view === 'front' ? TO_FRONT : IDENT);
   const fv: FamView = fv0 ?? view;
-  const fig: MetalFig = { key, view: fv, s: mapS(b.s, m), arms: { L: famArm(L, m, fv), R: famArm(R, m, fv) }, floorY: 0, grips: { L: mapGrip(L.grip, m), R: mapGrip(R.grip, m) } };
+  // (an authored hand replaces the posed grip too: only one hand is ever drawn on an arm)
+  const fig: MetalFig = {
+    key,
+    view: fv,
+    s: mapS(b.s, m),
+    arms: { L: famArm(L, m, fv), R: famArm(R, m, fv) },
+    floorY: 0,
+    grips: { L: L.drawn ? undefined : mapGrip(L.grip, m), R: R.drawn ? undefined : mapGrip(R.grip, m) },
+    drawn: { L: L.drawn, R: R.drawn },
+  };
   figCache.set(key, fig);
   return fig;
 }

@@ -89,7 +89,8 @@ describe('the approved underhand hand from above, placed on the boom operator (B
     assert.match(b, /hp\.painter === 'poleTopUnder' && hp\.poleTopUnder\s*\? poleHandTopUnderOutline\(\{ \.\.\.hp\.poleTopUnder, s: 1, sleeve: false \}\)/);
     assert.match(b, /<PoleHandTopUnder x=\{ptu\.x\} y=\{ptu\.y\} s=\{1\} rot=\{ptu\.rot\} mirror=\{ptu\.mirror\} sleeve=\{false\} poleLook="boom" ownScale=\{false\}/);
     // (the sleeve root's fade over the shoulders never takes skin off this hand: B10's left fist lies over her shoulders)
-    assert.match(b, /const fadeOver = ap\.hand\.painter === 'poleTopUnder' \? Skia\.Path\.MakeFromOp\(torso\.body, sil, PathOp\.Difference\) \?\? torso\.body : torso\.body;/);
+    // (2026-11-25: the low underhand drawing, poleHandTopUnderLow, kept out of the fade too)
+    assert.match(b, /const fadeOver = ap\.hand\.painter === 'poleTopUnder' \|\| ap\.hand\.painter === 'poleTopUnderLow' \? Skia\.Path\.MakeFromOp\(torso\.body, sil, PathOp\.Difference\) \?\? torso\.body : torso\.body;/);
     assert.match(b, /<Group clip=\{fadeOver\}>\s*<Path path=\{root\.plane\} blendMode="dstOut">/);
     assert.equal(BV.TOP_UNDER_HANDS, true);
     assert.equal(BV.TOP_UNDER_TOL, 40);
@@ -122,9 +123,9 @@ describe('the approved underhand hand from above, placed on the boom operator (B
     assert.ok(L.hand.arm.under, 'still the underhand hold');
     assert.notEqual(L.hand.painter, 'poleTopUnder');
     assert.ok(L.hand.topFace!.underOff! > 50 && L.hand.topFace!.underOff! < 62, `${L.hand.topFace!.underOff!.toFixed(1)}° off`);
-    assert.ok(/off the underhand drawing/.test(L.hand.topFace!.underWhy ?? ''));
-    // (what it had: the overhand top drawing where that fits, else the old hand — the same rule as before)
-    assert.ok(L.hand.painter === 'poleTop' ? L.hand.topFace!.drawing === 'top' : L.hand.topFace!.drawing === 'old');
+    // (2026-11-25: there the approved LOW underhand drawing, poleHandTopUnderLow — test/figureV2BoomTopUnderLowPlaced)
+    assert.equal(L.hand.painter, 'poleTopUnderLow');
+    assert.equal(L.hand.topFace!.drawing, 'topUnderLow');
   });
 
   it('no other hand changes: B10’s right hand, every other rig’s hands, B10’s left with the rule off', () => {

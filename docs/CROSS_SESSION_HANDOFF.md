@@ -728,6 +728,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-25 17:32 · ccode · 3a427f51
+changed: Effects labs: CLICK tempo control; the picture slows with the tempo and stays locked to the sound (owner 2026-11-25) [MD:D85]
+affects other side: nothing for the backend. App only (OTA-safe JS): Compression, Limiter, Gate, Delay and Reverb labs get a CLICK tempo fader; the picture slows with the tempo. Pixel look done on Compression only. Known limit: audio output delay (Bluetooth 100-300 ms) is not subtracted; that fix is native and waits for a store build.
+needs: nothing
+
+
+### 2026-11-25 17:32 · ccode · cec5e616
+changed: Figures: study drawing of the underhand pole hand from above for B10 dragged below the mouth (NOT approved, not placed) [MD:D78]
+affects other side: nothing on the server. JS only, a study page for one hand drawing; no lesson shows it yet. The owner approved the drawing later the same day; placing it in the boom top view follows in the next commit.
+needs: nothing
+
+
 ### 2026-11-25 13:05 · ccode · 8d7ecb63
 changed: Bass, FM, EQ, Tuning, Amp, Tube, Noise, Autotune, De-Esser, Harmonograph and Distortion follow their controls; must-do D83, D84, D78 [MD:D84]
 affects other side: nothing on the server. JS only: lab controls now drive their readouts and pictures (owner audit 2026-11-25). Store screenshots are not affected.

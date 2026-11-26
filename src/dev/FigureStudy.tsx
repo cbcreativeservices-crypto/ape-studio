@@ -75,6 +75,10 @@ import { PoleHandTopUnderLowStudy } from './poleHandTopUnderLowStudy';
 import { BoomTopUnderStudy } from './boomTopUnderStudy';
 import { MalletHandStudy } from './malletHandStudy';
 import { MalletHandPalmStudy } from './malletHandPalmStudy';
+import { ReedSheetStudy } from './reedSheetStudy';
+import { BowedSheetStudy } from './bowedSheetStudy';
+import { BrassSheetStudy } from './brassSheetStudy';
+import { MetalSheetStudy } from './metalSheetStudy';
 
 const BG = '#0d0f13';
 const STAGE = '#14171d';
@@ -951,6 +955,10 @@ export function FigureStudy() {
   if (only === 'polehandendmirror') return <PoleHandEndStudy mirror />;
   if (only === 'mallethand') return <MalletHandStudy />;
   if (only === 'mallethandpalm') return <MalletHandPalmStudy />;
+  if (only.startsWith('sheet-reed')) return <ReedSheetStudy only={only} />;
+  if (only.startsWith('sheet-bowed')) return <BowedSheetStudy only={only} />;
+  if (only === 'sheet-brass') return <BrassSheetStudy />;
+  if (only.startsWith('sheet-metal')) return <MetalSheetStudy only={only} />;
   return (
     <ScrollView style={{ flex: 1, backgroundColor: BG }} contentContainerStyle={{ padding: 12 }}>
       <Text style={{ color: INK, fontSize: 18, fontWeight: '700', marginBottom: 4 }}>Figure study — the kit drummer</Text>

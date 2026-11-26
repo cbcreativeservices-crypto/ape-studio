@@ -23,9 +23,40 @@ import type { ReactElement } from 'react';
 import { Skia } from '@shopify/react-native-skia';
 import type { ViewId, Vec3 } from '../../../engine/model/types.ts';
 import { castFor, type CastMember } from '../figureV2/cast';
-import { famFrontRegion, famPlan, FamilyFigureFrontV2, FamilyFigureV2, type FamIn } from '../figureV2/familyV2';
+import { famFrontRegion, famPlan, famProj, FamilyFigureFrontV2, FamilyFigureV2, type FamIn } from '../figureV2/familyV2';
 import type { Group3, Item } from '../bowed/BowedArt';
 import type { HornPose } from './brassPosture.ts';
+import { BrassHand, brassHandRot, type BrassHandArt } from '../figureV2/brassHandPaint';
+import { BRASS_HAND_TRUMPET_VALVE_SIDE } from '../figureV2/brassHandTrumpetValveSide';
+import { BRASS_HAND_TRUMPET_VALVE_TOP } from '../figureV2/brassHandTrumpetValveTop';
+import { BRASS_HAND_TRUMPET_HOLD_SIDE } from '../figureV2/brassHandTrumpetHoldSide';
+import { BRASS_HAND_TRUMPET_HOLD_TOP } from '../figureV2/brassHandTrumpetHoldTop';
+import { BRASS_HAND_TROMBONE_SLIDE_SIDE } from '../figureV2/brassHandTromboneSlideSide';
+import { BRASS_HAND_TROMBONE_HOLD_SIDE } from '../figureV2/brassHandTromboneHoldSide';
+import { BRASS_HAND_TROMBONE_SLIDE_TOP } from '../figureV2/brassHandTromboneSlideTop';
+import { BRASS_HAND_TROMBONE_HOLD_TOP } from '../figureV2/brassHandTromboneHoldTop';
+
+/**
+ * THE AUTHORED HANDS (owner 2026-11-25, "batches by family"): each hand the learner sees in a default picture is an
+ * authored 2-D drawing (figureV2/brassHand*.tsx) placed on the figure's own cuff — the figure's arm ends at its cuff
+ * (`handElsewhere`) and the drawing grows out of it, only turned to the picture's forearm. Nothing of the pose moves.
+ * `layer`: 'front' — painted over the whole horn; 'behind' — under the horn (its `front` regions painted again over
+ * it, under the nearer arm).
+ */
+type Placed = { art: BrassHandArt; layer: 'front' | 'behind' };
+const holdOf = (P: Pick<HornPose, 'spec' | 'slide'>) => (P.slide ? 'slide' : 'valved');
+export const BRASS_HAND_ART: Record<string, Placed> = {
+  'valved.side.R': { art: BRASS_HAND_TRUMPET_VALVE_SIDE, layer: 'front' },
+  'valved.top.R': { art: BRASS_HAND_TRUMPET_VALVE_TOP, layer: 'front' },
+  'valved.side.L': { art: BRASS_HAND_TRUMPET_HOLD_SIDE, layer: 'behind' },
+  'valved.top.L': { art: BRASS_HAND_TRUMPET_HOLD_TOP, layer: 'behind' },
+  'slide.side.R': { art: BRASS_HAND_TROMBONE_SLIDE_SIDE, layer: 'front' },
+  'slide.side.L': { art: BRASS_HAND_TROMBONE_HOLD_SIDE, layer: 'behind' },
+  'slide.top.R': { art: BRASS_HAND_TROMBONE_SLIDE_TOP, layer: 'behind' },
+  'slide.top.L': { art: BRASS_HAND_TROMBONE_HOLD_TOP, layer: 'behind' },
+};
+/** The authored drawing for a hand of a hold in a view (null: the figure draws it). */
+export const brassHandArt = (P: Pick<HornPose, 'spec' | 'slide'>, view: ViewId, side: 'L' | 'R'): Placed | null => BRASS_HAND_ART[`${holdOf(P)}.${view}.${side}`] ?? null;
 
 /** The cast member who plays this horn. */
 export const brassPlayer = (P: Pick<HornPose, 'spec'>): CastMember => castFor(P.spec.id === 'trumpet' || P.spec.id === 'flugelhorn' ? 'brass.trumpet' : 'brass.trombone');
@@ -67,10 +98,32 @@ export function brassFamIn(P: HornPose, view: ViewId, who?: CastMember): FamIn {
     floorY: P.floorY,
     lip: P.lips,
     arms: {
-      L: { sk: P.hands.L.sk, elbow: P.hands.L.elbow, shoulder: shoulder('L'), front: front('L') },
-      R: { sk: P.hands.R.sk, elbow: P.hands.R.elbow, shoulder: shoulder('R'), front: front('R') },
+      L: { sk: P.hands.L.sk, elbow: P.hands.L.elbow, shoulder: shoulder('L'), front: front('L'), handElsewhere: !!brassHandArt(P, view, 'L') },
+      R: { sk: P.hands.R.sk, elbow: P.hands.R.elbow, shoulder: shoulder('R'), front: front('R'), handElsewhere: !!brassHandArt(P, view, 'R') },
     },
   };
+}
+
+/** The authored hands' paint groups for a figure plan: behind the horn, its front regions, in front of the horn. */
+export function brassHandGroups(P: HornPose, view: ViewId, fp: ReturnType<typeof famPlan>, lo: number, hi: number): Group3[] {
+  const out: Group3[] = [];
+  for (const a of fp.arms) {
+    const pl = brassHandArt(P, view, a.side);
+    if (!pl) continue;
+    const at = a.arm.opening.e.c;
+    const o = famProj(view)(fp.in.arms[a.side].sk.frame.o);
+    const fl = Math.hypot(o.u - a.elbow2.u, o.v - a.elbow2.v) || 1;
+    const rot = brassHandRot(pl.art.fore, { u: (o.u - a.elbow2.u) / fl, v: (o.v - a.elbow2.v) / fl });
+    const who = fp.in.who;
+    const hand = (part: 'all' | 'front') => <BrassHand art={pl.art} at={at} rot={rot} who={who} part={part} />;
+    // (keys under 'figureV2…': the person's own new parts)
+    if (pl.layer === 'front') out.push({ key: `figureV2Hand${a.side}`, depth: hi + 2, items: [nodeItem(hand('all'))] });
+    else {
+      out.push({ key: `figureV2Hand${a.side}`, depth: lo - 0.5, items: [nodeItem(hand('all'))] });
+      if (pl.art.front?.length) out.push({ key: `figureV2HandFront${a.side}`, depth: hi + 0.5, items: [nodeItem(hand('front'))] });
+    }
+  }
+  return out;
 }
 
 /** The player's paint groups: the person whole under the whole horn, and again over it where its parts are
@@ -85,5 +138,6 @@ export function brassFigureGroups(P: HornPose, view: ViewId, horn: Group3[], who
   return [
     { key: 'figureV2', depth: lo - 1, items: [nodeItem(<FamilyFigureV2 fp={fp} />)] },
     { key: 'figureV2Front', depth: hi + 1, items: [nodeItem(<FamilyFigureFrontV2 fp={fp} region={region} />)] },
+    ...brassHandGroups(P, view, fp, lo, hi),
   ];
 }

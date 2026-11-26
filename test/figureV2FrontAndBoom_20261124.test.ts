@@ -639,7 +639,7 @@ describe('figure V2 — the boom operator from above: the approved top hand (Boo
       for (const a of B.arms) {
         assert.ok(a.hand.topFace, `${key} ${a.hand.arm.side}: topFace`);
         if (a.hand.painter === 'poleTop') assert.ok(a.hand.topFace.fits && a.hand.poleTop, key);
-        else if (a.hand.painter === 'poleTopUnder') assert.ok(a.hand.topFace.fits, `${key} ${a.hand.arm.side}: underhand from above`);
+        else if (a.hand.painter === 'poleTopUnder' || a.hand.painter === 'poleTopUnderLow') assert.ok(a.hand.topFace.fits, `${key} ${a.hand.arm.side}: underhand from above`);
         else assert.ok(a.hand.painter === undefined && !a.hand.topFace.fits && !!a.hand.topFace.why, `${key} ${a.hand.arm.side}`);
       }
     const by = (k: string) => plans.find((p) => p.key === k)!.B.arms.map((a: { hand: { painter?: string } }) => a.hand.painter ?? 'old');
@@ -647,6 +647,9 @@ describe('figure V2 — the boom operator from above: the approved top hand (Boo
     // (2026-11-25, owner "Top-under passes") B10's left hand underhand: the approved underhand drawing from above
     // (poleHandTopUnder); the right hand as before
     for (const k of ['b10', 'b10live0', 'b10live2']) assert.deepEqual(by(k), ['poleTopUnder', 'poleTop'], k);
+    // (2026-11-25, owner approved poleHandTopUnderLow) dragged below the mouth: the left hand the LOW underhand drawing
+    // from above (its forearm 4.5° off ±150°; it was the old hand, the forearm painted over the pole)
+    assert.equal(by('b10live1')[0], 'poleTopUnderLow', 'b10live1 left');
     // (B04 held low: the palms are up — the drawing shows the backs of the fingers; F09: the left's upper arm would be 404 mm)
     assert.deepEqual(by('low'), ['old', 'old']);
     assert.deepEqual(by('f09'), ['old', 'poleTop']);

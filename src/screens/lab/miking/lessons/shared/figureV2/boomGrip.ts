@@ -150,7 +150,7 @@ export type BoomHandPlan = {
   toPage: (l: { u: number; w: number; n: number }) => Pt;
   /** (FrontBoom5, the front view) drawn by the approved mic hand's own painter (heldHandV2), not boomFist;
    *  (2026-11-24) 'poleFront': the approved authored pole hand, palm side (poleHandFront.tsx). */
-  painter?: 'held' | 'poleFront' | 'poleBack' | 'poleEnd' | 'poleEndBack' | 'poleEndLittle' | 'poleEndLittleBack' | 'poleEndUnder' | 'poleTop' | 'poleTopUnder';
+  painter?: 'held' | 'poleFront' | 'poleBack' | 'poleEnd' | 'poleEndBack' | 'poleEndLittle' | 'poleEndLittleBack' | 'poleEndUnder' | 'poleTop' | 'poleTopUnder' | 'poleTopUnderLow';
   /** ('poleFront') where the authored hand sits on the page: its pole axis's middle under the fist, its turn, mirrored for a left hand. */
   poleFront?: { x: number; y: number; rot: number; mirror: boolean };
   /** ('poleBack', the side view) the approved authored pole hand seen from its BACK (poleHandBack.tsx), placed as poleFront. */
@@ -180,6 +180,9 @@ export type BoomHandPlan = {
   /** ('poleTopUnder', from above, 2026-11-25) the approved UNDERHAND hand from directly above (poleHandTopUnder.tsx):
    *  (x, y) its grip (the pole's axis at the middle of the fist), its turn, mirrored for a left hand. */
   poleTopUnder?: { x: number; y: number; rot: number; mirror: boolean };
+  /** ('poleTopUnderLow', from above, 2026-11-25) the approved LOW underhand hand from directly above, the mic dragged below
+   *  the mouth (poleHandTopUnderLow.tsx): placed as poleTopUnder. */
+  poleTopUnderLow?: { x: number; y: number; rot: number; mirror: boolean };
   /** (the side view's authored hands) what the rig's real 3-D hand shows the camera: the face, how far (degrees) the
    *  hand's plane is turned from square to the camera, how far the forearm is from square to the pole (3-D, degrees). */
   sideFace?: {
@@ -208,12 +211,14 @@ export type BoomHandPlan = {
   topFace?: {
     fits: boolean;
     why?: string;
-    /** (2026-11-25) which drawing this hand carries from above: 'topUnder' (poleHandTopUnder), 'top' (poleHandTop) or
-     *  'old' (the old hand) */
-    drawing?: 'top' | 'topUnder' | 'old';
+    /** (2026-11-25) which drawing this hand carries from above: 'topUnder' (poleHandTopUnder), 'topUnderLow'
+     *  (poleHandTopUnderLow), 'top' (poleHandTop) or 'old' (the old hand) */
+    drawing?: 'top' | 'topUnder' | 'topUnderLow' | 'old';
     /** (2026-11-25, an underhand hand) how far (deg) the rig's forearm on the page is off the underhand drawing's ±98° */
     underOff?: number;
-    /** (2026-11-25, an underhand hand that did not take poleHandTopUnder) why not */
+    /** (2026-11-25, an underhand hand) how far (deg) it is off the LOW underhand drawing's ±150° */
+    lowOff?: number;
+    /** (2026-11-25, an underhand hand that took neither underhand drawing) why not */
     underWhy?: string;
   };
 };

@@ -26,6 +26,34 @@ import { FamilyHandV2 } from '../figureV2/familyHandV2';
 import { FigureLook } from '../figureV2/look';
 import type { BrassScene } from './lowBrassScene.ts';
 import { lowBrassHands } from './lowBrassHands';
+import { BrassHand, brassHandRot, type BrassHandArt } from '../figureV2/brassHandPaint';
+import { BRASS_HAND_TUBA_VALVE_SIDE } from '../figureV2/brassHandTubaValveSide';
+import { BRASS_HAND_TUBA_VALVE_TOP } from '../figureV2/brassHandTubaValveTop';
+import { BRASS_HAND_EUPH_VALVE_SIDE } from '../figureV2/brassHandEuphValveSide';
+import { BRASS_HAND_EUPH_VALVE_TOP } from '../figureV2/brassHandEuphValveTop';
+import { BRASS_HAND_EUPH_SIDE_VALVE_TOP } from '../figureV2/brassHandEuphSideValveTop';
+import { BRASS_HAND_HORN_LEVER_SIDE } from '../figureV2/brassHandHornLeverSide';
+import { BRASS_HAND_HORN_LEVER_TOP } from '../figureV2/brassHandHornLeverTop';
+
+/**
+ * THE AUTHORED HANDS (owner 2026-11-25, "batches by family"): each hand the learner sees in a default picture is an
+ * authored 2-D drawing (figureV2/brassHand*.tsx) placed on the figure's own cuff — the figure's arm ends at its cuff
+ * (`handElsewhere`) and the drawing grows out of it, only turned to the picture's forearm. Nothing of the scene moves.
+ * Keyed by instrument, bell orientation, view and side. `layer`: 'front' over the instrument; 'behind' under it (its
+ * `front` regions painted again over it).
+ */
+type Placed = { art: BrassHandArt; layer: 'front' | 'behind' };
+export const LOW_BRASS_HAND_ART: Record<string, Placed> = {
+  'tuba.up.side.R': { art: BRASS_HAND_TUBA_VALVE_SIDE, layer: 'front' },
+  'tuba.up.top.R': { art: BRASS_HAND_TUBA_VALVE_TOP, layer: 'front' },
+  'euph.up.side.R': { art: BRASS_HAND_EUPH_VALVE_SIDE, layer: 'front' },
+  'euph.up.top.R': { art: BRASS_HAND_EUPH_VALVE_TOP, layer: 'front' },
+  'euph.up.top.L': { art: BRASS_HAND_EUPH_SIDE_VALVE_TOP, layer: 'front' },
+  'horn.back.side.L': { art: BRASS_HAND_HORN_LEVER_SIDE, layer: 'behind' },
+  'horn.back.top.L': { art: BRASS_HAND_HORN_LEVER_TOP, layer: 'behind' },
+};
+/** The authored drawing for a hand (null: the figure draws it). */
+export const lowBrassHandArt = (s: Pick<BrassScene, 'spec' | 'orient'>, view: ViewId, side: 'L' | 'R'): Placed | null => LOW_BRASS_HAND_ART[`${s.spec.id}.${s.orient}.${view}.${side}`] ?? null;
 
 const ROLE = { horn: 'lowbrass.horn', tuba: 'lowbrass.tuba', euph: 'lowbrass.euph' } as const;
 /** The cast member who plays this instrument. */
@@ -63,8 +91,8 @@ export function lowBrassFamIn(s: BrassScene, view: ViewId, who?: CastMember): Fa
     seatY: s.chair.seat.min.y,
     lip: J.mouth,
     arms: {
-      L: { sk: H.L.sk, elbow: H.L.elbow, shoulder: H.L.shoulder, front: front('L') },
-      R: { sk: H.R.sk, elbow: H.R.elbow, shoulder: H.R.shoulder, front: front('R'), handElsewhere: !!s.bellHand },
+      L: { sk: H.L.sk, elbow: H.L.elbow, shoulder: H.L.shoulder, front: front('L'), handElsewhere: !!lowBrassHandArt(s, view, 'L') },
+      R: { sk: H.R.sk, elbow: H.R.elbow, shoulder: H.R.shoulder, front: front('R'), handElsewhere: !!s.bellHand || !!lowBrassHandArt(s, view, 'R') },
     },
   };
 }
@@ -76,11 +104,27 @@ type Item = { key: string; depth: number; node: ReactNode };
 export function lowBrassFigureItems(s: BrassScene, view: ViewId, lo: number, hi: number, who?: CastMember): { items: Item[]; fp: FamPlan } {
   const fp = famPlan(lowBrassFamIn(s, view, who));
   const region = famFrontRegion(fp, lowBrassDepth(s, view));
+  const hands: Item[] = [];
+  for (const a of fp.arms) {
+    const pl = lowBrassHandArt(s, view, a.side);
+    if (!pl) continue;
+    const at = a.arm.opening.e.c;
+    const o = famProj(view)(fp.in.arms[a.side].sk.frame.o);
+    const fl = Math.hypot(o.u - a.elbow2.u, o.v - a.elbow2.v) || 1;
+    const rot = brassHandRot(pl.art.fore, { u: (o.u - a.elbow2.u) / fl, v: (o.v - a.elbow2.v) / fl });
+    const hand = (part: 'all' | 'front', key: string) => <BrassHand key={key} art={pl.art} at={at} rot={rot} who={fp.in.who} part={part} />;
+    if (pl.layer === 'front') hands.push({ key: `figureV2Hand${a.side}`, depth: hi + 2, node: hand('all', `figureV2Hand${a.side}`) });
+    else {
+      hands.push({ key: `figureV2Hand${a.side}`, depth: lo - 0.5, node: hand('all', `figureV2Hand${a.side}`) });
+      if (pl.art.front?.length) hands.push({ key: `figureV2HandFront${a.side}`, depth: hi + 0.5, node: hand('front', `figureV2HandFront${a.side}`) });
+    }
+  }
   return {
     fp,
     items: [
       { key: 'figureV2', depth: lo - 1, node: <FamilyFigureV2 key="figureV2" fp={fp} /> },
       { key: 'figureV2Front', depth: hi + 1, node: <FamilyFigureFrontV2 key="figureV2Front" fp={fp} region={region} /> },
+      ...hands,
     ],
   };
 }
