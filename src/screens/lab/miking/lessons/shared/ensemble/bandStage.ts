@@ -399,6 +399,12 @@ function jazzGuitar(): Seating {
  *  "equal distance" idea for a main mic): centre and radius, drawing
  *  defaults; the guitarist at the same place in the duo and the trio. */
 export const TRIO_ARC = { c: v3(0, 0, 700), r: 1500, at: [-40, 0, 40] } as const;
+/** (owner 2026-11-26, "Spread the players") the TRIO's own places on the arc: the guitarist where the duo's sits
+ *  (−40°, so the shared guitar spot sits on them in either group), the fiddler and the bassist turned 5° further
+ *  round toward the bass end (0° → 5°, 40° → 45°) — so the three spots keep the lesson's 3:1 (the guitar and fiddle
+ *  mics 818 → 916 mm apart, at least 3 × 300 mm), the fiddle and bass mics as before (962 mm). Still on the arc:
+ *  every player as far from the pair at its center as before. */
+export const TRIO_AT = [-40, 5, 45] as const;
 /** A player at angle `th` on the arc, set back by how far ahead of them their
  *  instrument's sound leaves (`ahead`, mm), so the SOUND sits on the arc. */
 const onArc = (th: number, ahead = 0) => {
@@ -435,7 +441,7 @@ function acousticDuo(): Seating {
 }
 
 function acousticTrio(): Seating {
-  const [a, b, c] = TRIO_ARC.at;
+  const [a, b, c] = TRIO_AT;
   const ag = heldAcoustic('ag.1', 'aguitar', 'ag', onArc(a, AHEAD.aguitar), a + 180);
   const fd = seat('fid.1', 'violin', 'fid', onArc(b, AHEAD.violin), b + 180, 'seated');
   const ub = uprightBass('ub.1', 'ub', onArc(c, AHEAD.bass), c + 180);

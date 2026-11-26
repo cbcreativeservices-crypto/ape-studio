@@ -14,11 +14,11 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
-import { seatingOf } from '../src/screens/lab/miking/lessons/shared/ensemble/seating.ts';
+import { seatingOf, soundPoint } from '../src/screens/lab/miking/lessons/shared/ensemble/seating.ts';
 import { GUITAR_POSE, HELD_DRAWN, heldDrawnPoint, soundHole } from '../src/screens/lab/miking/lessons/shared/ensemble/bandStage.ts';
 import { SHOULDER } from '../src/screens/lab/miking/lessons/shared/ensemble/ensembleHands.ts';
 import { fretFromNut, fretX, geomOf, IN, MANDO_A, STEEL_DREAD } from '../src/screens/lab/miking/lessons/shared/guitars/guitarSpec.ts';
-import { BASS_MIC, E08_NUMBERS, FIDDLE_MIC, GUITAR_MIC, MANDOLIN_MIC } from '../src/screens/lab/miking/lessons/e08AcousticGroup/geometry.ts';
+import { BASS_MIC, E08_NUMBERS, FIDDLE_MIC, GUITAR_MIC, MANDOLIN_MIC, PAIR_C, SM4_BAND } from '../src/screens/lab/miking/lessons/e08AcousticGroup/geometry.ts';
 
 const read = (p: string) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 const ART = read('src/screens/lab/miking/lessons/shared/ensemble/SeatingArt.tsx');
@@ -162,10 +162,39 @@ describe('E08’s two-spot setups after the move', () => {
     near(d, 1562, 1, 'guitar to mandolin mic');
     assert.ok(d >= 3 * Math.max(E08_NUMBERS.guitarD, E08_NUMBERS.mandolinD));
   });
-  it('trio: the guitar mic moved away from the fiddle mic (744 → 818 mm) and the bass mic (1461 → 1629 mm)', () => {
-    near(dist(GUITAR_MIC.p, FIDDLE_MIC.p), 818, 1, 'guitar to fiddle mic');
-    near(dist(SPOTS.guitar.mic.old, FIDDLE_MIC.p), 744, 1, 'was');
-    near(dist(GUITAR_MIC.p, BASS_MIC.p), 1629, 1, 'guitar to bass mic');
+});
+
+describe('acoustic.trio spread (owner 2026-11-26, "Spread the players"): the three spots keep 3:1', () => {
+  const T = seatingOf('acoustic.trio');
+  const at = (id: string) => T.seats.find((s) => s.id === id)!;
+  it('old → new seats: the guitarist stays (as in the duo); the fiddler and the bassist 5° further round the arc', () => {
+    assert.deepEqual(at('ag.1').p, SEAT_AG.p);
+    assert.equal(at('ag.1').face, SEAT_AG.face);
+    // fiddler: (0, 0, −920) facing 180 → (141.2, 0, −913.8) facing 185
+    nearV(at('fid.1').p, { x: 141.19230325120623, y: 0, z: -913.8354109086279 }, 1e-6, 'fiddler');
+    assert.equal(at('fid.1').face, 185);
+    // bassist: (1266.3, 0, −809.1) facing 220 → (1393.0, 0, −693.0) facing 225
+    nearV(at('ub.1').p, { x: 1393.0003589374985, y: 0, z: -693.0003589374987 }, 1e-6, 'bassist');
+    assert.equal(at('ub.1').face, 225);
+    // the duo is untouched
+    const duo = seatingOf('acoustic.duo');
+    assert.deepEqual(duo.seats.find((s) => s.id === 'mdn.1')!.p, SEAT_MD.p);
+  });
+  it('the three mic-to-mic distances meet 3 × the larger mic-to-source distance', () => {
+    const gf = dist(GUITAR_MIC.p, FIDDLE_MIC.p);
+    const fb = dist(FIDDLE_MIC.p, BASS_MIC.p);
+    const gb = dist(GUITAR_MIC.p, BASS_MIC.p);
+    near(gf, 916, 1, 'guitar to fiddle mic (was 818)');
+    near(fb, 962, 1, 'fiddle to bass mic (unchanged)');
+    near(gb, 1715, 1, 'guitar to bass mic (was 1629)');
+    assert.ok(gf >= 3 * Math.max(E08_NUMBERS.guitarD, E08_NUMBERS.fiddleD), `guitar–fiddle ${gf.toFixed(0)} ≥ 900`);
+    assert.ok(fb >= 3 * Math.max(E08_NUMBERS.fiddleD, E08_NUMBERS.bassD), `fiddle–bass ${fb.toFixed(0)} ≥ 900`);
+    assert.ok(gb >= 3 * Math.max(E08_NUMBERS.guitarD, E08_NUMBERS.bassD), `guitar–bass ${gb.toFixed(0)} ≥ 675`);
+  });
+  it('every player is still about equally far from the pair, inside 30 cm–2 m', () => {
+    const ds = T.seats.map((q) => dist(soundPoint(q), PAIR_C));
+    for (const d of ds) assert.ok(d >= SM4_BAND.min && d <= SM4_BAND.max, `${d.toFixed(0)} mm`);
+    assert.ok(Math.max(...ds) - Math.min(...ds) < 150, `spread ${(Math.max(...ds) - Math.min(...ds)).toFixed(0)} mm`);
   });
 });
 
