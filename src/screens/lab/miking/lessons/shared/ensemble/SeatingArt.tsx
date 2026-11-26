@@ -55,6 +55,11 @@ import { ConductorV2 } from '../figureV2/conductorV2';
 import { ChoristerV2 } from '../figureV2/choristerV2';
 import { bowNearFrog, hold2Of, KIND2, type Stick } from './ensembles2Holds';
 import { CAST, castFor } from '../figureV2/cast';
+// (2026-11-26) the seated acoustic guitar and the mandolin: the shared guitar family's own drawings at true size
+import { GuitarEdge, GuitarFace } from '../guitars/GuitarArt';
+import { geomOf, outlinePoly } from '../guitars/guitarSpec.ts';
+import type { GuitarScene } from '../guitars/guitarModel.ts';
+import { GUITAR_POSE, HELD_DRAWN } from './bandStage.ts';
 import { SINGER_SIDE } from '../voice/voicePose.ts';
 import { poseOnTalker } from '../broadcast/talkerPose.ts';
 import type { CastId, CastMember } from '../figureV2/cast';
@@ -1378,6 +1383,145 @@ export function GrandPianoTop() {
 /** Group 4: the path builders BandArt.tsx draws with. */
 const BAND_TOOLS: BandTools = { P, capsule, taper, ellipse, rr, poly, line, flare };
 
+/* ═══════ (2026-11-26) THE SEATED ACOUSTIC GUITAR AND THE MANDOLIN, AT TRUE SIZE ═══════
+ * Owner: "the acoustic duo needs to redo the guitars they are oddly stretched". The old outline (BandArt) laid the
+ * body's width along (−sin, +cos) against an axis (−cos, +sin): not square to it — 54° apart at the guitar's 18°,
+ * only 26° at the mandolin's 32° — so the body was sheared into a narrow sliver, beside necks about 20 % (guitar)
+ * and 85 % (mandolin) too long, in one orange wood. Now each is the guitar family's own drawing — C01's steel-string
+ * dreadnought and C05b's A-style mandolin (GuitarFace and GuitarEdge, unchanged: a spruce top, dark sides and neck,
+ * the bridge, the pickguard or finger rest, the hole) — projected exactly from its frame G (x along the strings, y
+ * toward the treble edge, z out of the top) into each view, its hole's center on bandStage.soundHole (HELD_DRAWN).
+ * The tail, the angle, the seat and every measured point stay bandStage's; the hands stay the hold's.
+ */
+type HeldK = 'aguitar' | 'mandolin';
+const isHeldAcoustic = (k: string): k is HeldK => k === 'aguitar' || k === 'mandolin';
+/** The sides' and the back's wood (GuitarEdge's own ramps: the dreadnought's mahogany, the mandolin's maple). */
+const HELD_WOOD: Record<HeldK, string[]> = { aguitar: ['#7a3f1e', '#5d2e15', '#45210f', '#2c1509'], mandolin: ['#b9763c', '#8a5025', '#5a3014'] };
+const heldScenes = new Map<HeldK, GuitarScene>();
+/** The family drawing's scene: GuitarFace and GuitarEdge read only its geometry and its cache key. */
+function heldScene(k: HeldK): GuitarScene {
+  let sc = heldScenes.get(k);
+  if (!sc) {
+    const spec = HELD_DRAWN[k].spec;
+    sc = { g: geomOf(spec), variant: { id: 'ensemble', spec, posture: 'seated' } } as unknown as GuitarScene;
+    heldScenes.set(k, sc);
+  }
+  return sc;
+}
+/** Frame G in a view: the screen point of G's origin, and the screen step of one millimetre along x, y and z. */
+type HeldMap = { o: P2; x: P2; y: P2; z: P2 };
+const heldAt = (M: HeldMap, x: number, y: number, z: number): P2 => P(M.o.u + M.x.u * x + M.y.u * y + M.z.u * z, M.o.v + M.x.v * x + M.y.v * y + M.z.v * z);
+/** The matrix drawing G's (x, y) — the top: GuitarFace — or its (x, z) — the edge: GuitarEdge — into the view. */
+const heldMatrix = (M: HeldMap, second: 'y' | 'z') => Skia.Matrix([M.x.u, M[second].u, M.o.u, M.x.v, M[second].v, M.o.v, 0, 0, 1]);
+/** Frame G in the seat's own frame (right, up, forward): G's origin `off` along GUITAR_POSE's axis (−cos, sin) from
+ *  its tail; y toward the treble edge, square to the axis in the top's plane (−sin, −cos: the treble edge toward the
+ *  floor); z out of the top, forward. */
+function heldLocal(k: HeldK) {
+  const G = GUITAR_POSE[k];
+  const an = G.ang * DEG;
+  const ar = -Math.cos(an);
+  const au = Math.sin(an);
+  const off = HELD_DRAWN[k].off;
+  return { o: { r: G.tailR + ar * off, up: G.tailUp + au * off, f: G.fwd }, x: { r: ar, up: au, f: 0 }, y: { r: -au, up: ar, f: 0 }, z: { r: 0, up: 0, f: 1 } };
+}
+/** …in an elevation (elevSeat's X and Q: u = o.u + right·rightU + fwd·fwdU, v = g − up). */
+function heldMapElev(k: HeldK, o: P2, g: number, rightU: number, fwdU: number): HeldMap {
+  const L = heldLocal(k);
+  const d = (q: { r: number; up: number; f: number }) => P(q.r * rightU + q.f * fwdU, -q.up);
+  return { o: P(o.u + L.o.r * rightU + L.o.f * fwdU, g - L.o.up), x: d(L.x), y: d(L.y), z: d(L.z) };
+}
+/** …from above, in the seat's local plan (x right, y back: forward is −y). */
+function heldMapPlan(k: HeldK): HeldMap {
+  const L = heldLocal(k);
+  const d = (q: { r: number; up: number; f: number }) => P(q.r, -q.f);
+  return { o: P(L.o.r, -L.o.f), x: d(L.x), y: d(L.y), z: d(L.z) };
+}
+/** A convex hull (monotone chain). */
+function hull2(pts: readonly P2[]): P2[] {
+  const p = [...pts].sort((a, b) => a.u - b.u || a.v - b.v);
+  const cross = (o: P2, a: P2, b: P2) => (a.u - o.u) * (b.v - o.v) - (a.v - o.v) * (b.u - o.u);
+  const half = (list: P2[]) => {
+    const h: P2[] = [];
+    for (const q of list) {
+      while (h.length >= 2 && cross(h[h.length - 2], h[h.length - 1], q) <= 0) h.pop();
+      h.push(q);
+    }
+    return h.slice(0, -1);
+  };
+  return [...half(p), ...half([...p].reverse())];
+}
+/**
+ * The instrument in a view. `face`: its top toward the viewer — the sides swept back from the top's outline, then
+ * the family's face drawing. `back`: turned away — the sides, then the back and the back of the neck and head.
+ * `edge`: seen edge-on (from above; from the side when square to the viewer) — the family's edge drawing (the neck,
+ * the tilted headstock), then the body's true silhouette (the outline's front and back, joined) with the top's edge.
+ */
+function heldArt(k: HeldK, M: HeldMap, mode: 'face' | 'back' | 'edge', key: string): { el: ReactElement; foot: SkPath } {
+  const sc = heldScene(k);
+  const g = sc.g;
+  const D = g.depth;
+  const pts = outlinePoly(g, 72);
+  const ring = (z: number) => pts.map(([x, y]) => heldAt(M, x, y, z));
+  let body: SkPath;
+  if (mode === 'edge') body = poly(hull2([...ring(0), ...ring(-D)]));
+  else {
+    // the outline swept from the top to the back: copies of one winding unite
+    body = make();
+    for (let i = 0; i <= 12; i++) body.addPath(poly(ring((-D * i) / 12)));
+  }
+  const bb = body.getBounds();
+  const wood = HELD_WOOD[k];
+  const end = g.L + g.spec.neck.headLen.mm;
+  const at = (x: number, y: number, z: number) => heldAt(M, x, y, z);
+  // the neck and the headstock's footprint, in the top's plane and edge-on (the labels keep off both)
+  const foot = body.copy();
+  foot.addPath(poly([at(g.edge, -34, 0), at(end, -34, 0), at(end, 34, 0), at(g.edge, 34, 0)]));
+  foot.addPath(poly([at(g.edge, 0, 10), at(end, 0, 10), at(end, 0, -45), at(g.edge, 0, -45)]));
+  let backPart: ReactElement | null = null;
+  if (mode === 'back') {
+    const back = poly(ring(-D));
+    // the back of the neck (as wide as the board), then the headstock's plate (GuitarFace's outline: a paddle 60 mm
+    // across, the dreadnought's 86)
+    const neckBack = poly([at(g.edge, -g.boardHalf(g.edge), -22), at(g.L, -g.boardHalf(g.L), -22), at(g.L, g.boardHalf(g.L), -22), at(g.edge, g.boardHalf(g.edge), -22)]);
+    const hl = g.spec.neck.headLen.mm;
+    const hw = g.spec.neck.head === 'paddle' ? 30 : 43;
+    const headBack = poly([at(g.L, -g.boardHalf(g.L), -22), at(g.L + hl * 0.12, -hw, -22), at(g.L + hl * 0.96, -hw, -22), at(end, -hw * 0.4, -22), at(end, hw * 0.4, -22), at(g.L + hl * 0.96, hw, -22), at(g.L + hl * 0.12, hw, -22), at(g.L, g.boardHalf(g.L), -22)]);
+    backPart = (
+      <Group>
+        <Path path={back}>
+          <LinearGradient start={vec(bb.x, bb.y)} end={vec(bb.x + bb.width, bb.y + bb.height)} colors={[wood[0], wood[1], wood[2]]} />
+        </Path>
+        <Path path={back} style="stroke" strokeWidth={3} color="#120904" />
+        <Path path={neckBack} color={wood[1]} />
+        <Path path={neckBack} style="stroke" strokeWidth={2.5} color="#120904" />
+        <Path path={headBack} color={wood[wood.length - 1]} />
+        <Path path={headBack} style="stroke" strokeWidth={2.5} color="#120904" />
+      </Group>
+    );
+  }
+  const el = (
+    <Group key={key}>
+      {mode === 'edge' ? (
+        <Group matrix={heldMatrix(M, 'z')}>
+          <GuitarEdge sc={sc} />
+        </Group>
+      ) : null}
+      <Path path={body}>
+        <LinearGradient start={vec(bb.x, bb.y)} end={vec(bb.x + bb.width, bb.y + bb.height)} colors={wood} />
+      </Path>
+      <Path path={body} style="stroke" strokeWidth={3} color="#120904" />
+      {mode === 'edge' ? <Path path={poly(ring(0))} style="stroke" strokeWidth={8} strokeJoin="round" color="#e6c27f" /> : null}
+      {mode === 'face' ? (
+        <Group matrix={heldMatrix(M, 'y')}>
+          <GuitarFace sc={sc} />
+        </Group>
+      ) : null}
+      {backPart}
+    </Group>
+  );
+  return { el, foot };
+}
+
 /* ═══════════════════ PLAN (from above) ═══════════════════ */
 
 /** A SINGER from above (group 2): standing, the head forward over the
@@ -1824,6 +1968,15 @@ function planSeat(b: Batch, s: Seat, o: SeatOpts) {
       break;
     }
     default:
+      if (isHeldAcoustic(k)) {
+        // (2026-11-26) the seated acoustic guitar or the mandolin at true size, edge-on from above; the old figure's
+        // arm and hand calls stay BandArt's (its drawing goes to a scratch batch, unused)
+        const key = `held:${s.id}:plan`;
+        const art = heldArt(k, heldMapPlan(k), 'edge', key);
+        b.extra.push({ key, el: <Group key={key} transform={[{ translateX: s.p.x }, { translateY: s.p.z }, { rotate: (s.face * Math.PI) / 180 }]}>{art.el}</Group>, foot: placeOf(s)(art.foot) });
+        bandPlanInstrument(newBatch(), s, { ...BAND_TOOLS, put, arm, hand, LS, RS });
+        break;
+      }
       // Group 4: the band players' instruments (BandArt.tsx).
       if (BAND_KINDS.has(k)) bandPlanInstrument(b, s, { ...BAND_TOOLS, put, arm, hand, LS, RS });
   }
@@ -2512,6 +2665,16 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section', so: SeatOpts) {
       break;
     }
     default:
+      if (isHeldAcoustic(k)) {
+        // (2026-11-26) the seated acoustic guitar or the mandolin at true size: its top toward the viewer, its back,
+        // or edge-on (square to the view); the old figure's arm and hand calls stay BandArt's (scratch drawing)
+        const key = `held:${s.id}:${view}`;
+        const mode = Math.abs(rightU) > 0.35 ? (dF > 0 ? 'face' : 'back') : 'edge';
+        const art = heldArt(k, heldMapElev(k, o, g, rightU, fwdU), mode, key);
+        b.extra.push({ key, el: art.el, foot: art.foot });
+        bandElevInstrument(newBatch(), s, view, { ...BAND_TOOLS, Q, X, arm, hand, shL, shR, g, o, front, rightU, fwdU });
+        break;
+      }
       // Group 4: the band players' instruments (BandArt.tsx).
       if (BAND_KINDS.has(k)) bandElevInstrument(b, s, view, { ...BAND_TOOLS, Q, X, arm, hand, shL, shR, g, o, front, rightU, fwdU });
   }

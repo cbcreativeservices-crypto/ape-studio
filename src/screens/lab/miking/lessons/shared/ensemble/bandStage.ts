@@ -39,6 +39,7 @@ import { KICK_ANCHORS } from '../../m01Kick/geometry.ts';
 import { cabLayout, type CabKind } from '../speakers/speakerModel.ts';
 import { BASS_HEAD } from '../speakers/ampModel.ts';
 import { mouthOf } from './seatingVoices.ts';
+import { MANDO_A, STEEL_DREAD } from '../guitars/guitarSpec.ts';
 
 const BAND_IDS: readonly BandSeatingId[] = ['band.stage', 'band.room', 'jazz.quartet', 'jazz.guitar', 'acoustic.duo', 'acoustic.trio'];
 export const isBandSeating = (id: string): id is BandSeatingId => (BAND_IDS as readonly string[]).includes(id);
@@ -147,8 +148,12 @@ export type GuitarKind = 'eguitar' | 'ebass' | 'aguitar' | 'mandolin';
 export const GUITAR_POSE: Record<GuitarKind, { tailR: number; tailUp: number; fwd: number; ang: number; L: number; neck: number }> = {
   eguitar: { tailR: 180, tailUp: 820, fwd: 170, ang: 24, L: 450, neck: 450 },
   ebass: { tailR: 180, tailUp: 820, fwd: 170, ang: 24, L: 500, neck: 700 },
-  aguitar: { tailR: 170, tailUp: 470, fwd: 230, ang: 18, L: 500, neck: 430 },
-  mandolin: { tailR: 170, tailUp: 760, fwd: 230, ang: 32, L: 330, neck: 300 },
+  // (2026-11-26) the seated acoustic's and the mandolin's `neck` now reach the DRAWN instrument's nut (HELD_DRAWN
+  // below: L + neck = its nut, to the millimeter), so the fretting hand (ensembleHands: L + 0.55·neck) lands in a low
+  // position on the real neck — never on the nut or the headstock. Was 430 and 300 (necks drawn about 20 % and 85 %
+  // too long). The tail, the angle and L — so soundHole and every lesson spot read from them — are unchanged.
+  aguitar: { tailR: 170, tailUp: 470, fwd: 230, ang: 18, L: 500, neck: 273 },
+  mandolin: { tailR: 170, tailUp: 760, fwd: 230, ang: 32, L: 330, neck: 115 },
 };
 /** A point `s` mm along a held guitar's axis from its tail (frame S). */
 export function guitarPoint(seat: Pick<Seat, 'p' | 'face'>, k: GuitarKind, s: number): Vec3 {
@@ -158,6 +163,22 @@ export function guitarPoint(seat: Pick<Seat, 'p' | 'face'>, k: GuitarKind, s: nu
 }
 /** Where the sound leaves a held acoustic: its sound hole (about 62 % up the body). */
 export const soundHole = (seat: Pick<Seat, 'p' | 'face'>, k: 'aguitar' | 'mandolin'): Vec3 => guitarPoint(seat, k, GUITAR_POSE[k].L * 0.62);
+
+/**
+ * THE HELD ACOUSTICS AS DRAWN (2026-11-26, owner: "the acoustic duo needs to redo the guitars they are oddly
+ * stretched") — drawing constants only. SeatingArt draws the shared guitar family's own instruments at TRUE size:
+ * C01's steel-string dreadnought (guitarSpec STEEL_DREAD: its sourced 20 in body, 16 in lower bout, 11-1/16 in
+ * waist, 4-5/8 in depth, 25-1/2 in scale with the 14th fret at the body) and C05b's A-style mandolin (MANDO_A: its
+ * sourced 26 cm wide teardrop; its 350 mm body and scale and its oval hole are that lesson's drawing defaults). Each lies along GUITAR_POSE's axis with its
+ * hole's center ON soundHole: `off` is where the spec's frame-G origin (the saddle) sits, in mm along the axis
+ * from GUITAR_POSE's tail, so a spec point x lies at guitarPoint(seat, k, off + x).
+ */
+export const HELD_DRAWN = {
+  aguitar: { spec: STEEL_DREAD, off: GUITAR_POSE.aguitar.L * 0.62 - STEEL_DREAD.opening.x.mm },
+  mandolin: { spec: MANDO_A, off: GUITAR_POSE.mandolin.L * 0.62 - MANDO_A.opening.x.mm },
+} as const;
+/** A point `x` mm along a drawn held acoustic's strings from its saddle (frame G's x), in frame S. */
+export const heldDrawnPoint = (seat: Pick<Seat, 'p' | 'face'>, k: 'aguitar' | 'mandolin', x: number): Vec3 => guitarPoint(seat, k, HELD_DRAWN[k].off + x);
 
 /* ── building blocks ── */
 type SecDef = { id: string; label: string; short: string; family: Family; radiates: string };

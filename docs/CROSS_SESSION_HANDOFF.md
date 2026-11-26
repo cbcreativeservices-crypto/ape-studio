@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-26 13:08 · ccode · 62309222
+changed: Figures: cajon plan guitarist holds a guitar; band singer stands 0.6 m aside so the drummer shows (owner rulings 2026-11-26) [MD:D78]
+affects other side: nothing (drawings only; no server, no text)
+needs: nothing
+
+
 ### 2026-11-26 10:20 · ccode · 3e69dddd
 changed: Ensembles: big band rhythm section moved 500 mm to the horns, jazz guitarist 700 mm to the bassist (owner: 'there is a big gap') [MD:D78]
 affects other side: nothing (drawing positions in two ensemble seatings only; no server, no text)
