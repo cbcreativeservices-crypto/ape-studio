@@ -54,6 +54,7 @@ import { eqBandMarkHz } from './fxEqCurve';
 import { distFaintCaption } from './fxDistCaption';
 import { fmt2sig, snap2sig } from '../../features/lab/sliderMaps';
 import { PLAIN_TERMS } from '../../features/lab/plainTerms';
+import { clickPeriodMs, clickWindowScale } from './fxClickTempo';
 // Screen Guides (owner 2026-10-31): every effect lab is a CONCEPT lab (built-in
 // test sources, badged teaching models, no mic, no real-world measurement), so
 // each passes its per-tab guide and accuracy: false — the ⓘ takes the chip's spot.
@@ -101,6 +102,10 @@ const SRC_PINK_MONO = {
   monoCompare: true,
   blurb: 'The same noise in both channels: the SIDE is zero, so WIDTH has nothing to widen. Compare it with the stereo sources.',
 };
+// `bpm` is the lab's OPENING tempo: the student moves it on the SOURCE fader
+// (owner 2026-11-25, click tempo, D85; FxLabScreen + fxClickTempo), and the
+// tray label, key value and generator tempo follow (liveClickSource). The
+// screen adds the tempo sentence to this blurb with the lab's own range.
 const srcClick = (bpm: number) => ({ label: `CLICK ${bpm}`, short: `${bpm} BPM`, gen: { mode: GEN_MODES.click, clickBpm: bpm }, blurb: 'A dry click with silence between hits — echoes, tails and pumping have nowhere to hide.' });
 
 /** What a dynamics hero draws coming IN, from the selected source (fix pass
@@ -109,7 +114,12 @@ const srcClick = (bpm: number) => ({ label: `CLICK ${bpm}`, short: `${bpm} BPM`,
  *  compressor, D41 J4 — see fxAnim DynSignal). */
 function dynSignalOf(src?: FxSourceSpec, ping = false): DynSignal {
   const g = src?.gen;
-  if (g?.mode === GEN_MODES.click) return { kind: 'hits', periodMs: 60000 / (g.clickBpm ?? 120), ...(ping ? { ping: true } : null) };
+  // The LIVE tempo (the source FxLabScreen hands in carries the student's),
+  // and how far the window stretches with it (owner 2026-11-25: the picture
+  // keeps step with the sound; 1 at the lab's own tempo).
+  if (g?.mode === GEN_MODES.click) {
+    return { kind: 'hits', periodMs: clickPeriodMs(g.clickBpm), windowScale: clickWindowScale(src?.clickOpenBpm, g.clickBpm), ...(ping ? { ping: true } : null) };
+  }
   if (g?.mode === GEN_MODES.sine) return { kind: 'steady' };
   return { kind: 'noise' };
 }
@@ -133,7 +143,7 @@ function isNoiseSrc(src?: FxSourceSpec): boolean {
  *  selected SOURCE as the generator makes it (fix wave 2026-10-16). */
 function fxSrcOf(src?: FxSourceSpec): FxSrc {
   const g = src?.gen;
-  if (g?.mode === GEN_MODES.click) return { kind: 'click', periodMs: 60000 / (g.clickBpm ?? 120) };
+  if (g?.mode === GEN_MODES.click) return { kind: 'click', periodMs: clickPeriodMs(g.clickBpm), windowScale: clickWindowScale(src?.clickOpenBpm, g.clickBpm) };
   if (g?.mode === GEN_MODES.burst) return { kind: 'burst', hz: g.frequency ?? 1000 };
   if (g?.mode === GEN_MODES.sine) return { kind: 'tone', hz: g.frequency ?? 1000 };
   return { kind: 'noise', color: g?.mode === GEN_MODES.white ? 'white' : 'pink' };
@@ -341,23 +351,30 @@ function delayDampPhrase(dampHz: number, feedback: number): string {
   return ` REPEAT DAMPING: each pass after the first loses ${onePoleLossDb(dampHz, 1000).toFixed(1)} dB at 1 kHz, the CLICK’s pitch, and higher frequencies lose more, so it is easier to hear on PINK.`;
 }
 
-/** The Delay lab's one tempo (DL-02): the CLICK source, LEARN's example and
- *  the caption all use it. One beat = 60,000 ÷ 120 = 500 ms. */
+/** The Delay lab's OPENING tempo (DL-02): the CLICK source, LEARN's example
+ *  and the caption all start at it. One beat = 60,000 ÷ 120 = 500 ms. The
+ *  student can move the CLICK's tempo (owner 2026-11-25, click tempo, D85). */
 const DELAY_BPM = 120;
 
-/** The caption's tempo line for a TIME of 250 ms or more. The note values the
- *  CLICK's own tempo gives (an eighth, a dotted eighth, a quarter) are named
- *  at 120 BPM; any other TIME keeps the quarter-note law, the formula LEARN
- *  teaches. Within 2 ms counts as on the note (the fader rounds to 1 ms). */
-function delayTempoPhrase(timeMs: number): string {
-  const beatMs = 60000 / DELAY_BPM;
+/** The caption's tempo line for a TIME of 250 ms or more, at the CLICK's LIVE
+ *  tempo (`clickBpm`, the one the student set; the opening 120 BPM when
+ *  omitted). The note values the CLICK's tempo gives (an eighth, a dotted
+ *  eighth, a quarter) are named at that tempo; any other TIME keeps the
+ *  quarter-note law, the formula LEARN teaches. Within 2 ms counts as on the
+ *  note (the fader rounds to 1 ms). At the opening tempo the words are exactly
+ *  as before; once the tempo moves, an eighth or a dotted eighth also names
+ *  its quarter-note tempo, so LEARN's "TIME 500 ms names a quarter-note at
+ *  120 BPM" stays true with the CLICK at 60 or 90 BPM. */
+function delayTempoPhrase(timeMs: number, clickBpm: number = DELAY_BPM): string {
+  const beatMs = 60000 / clickBpm;
   const near = (beats: number) => Math.abs(timeMs - beats * beatMs) <= 2;
-  // "the FIRST repeat" (checker 2026-11-15): with FDBK up, repeat 2 lands ON
-  // the next click (2 × 250 ms = one beat), so only the first sits halfway.
-  if (near(0.5)) return `${timeMs} ms = an eighth note at the CLICK’s ${DELAY_BPM} BPM: the first repeat lands halfway between two clicks.`;
-  if (near(0.75)) return `${timeMs} ms = a dotted eighth at the CLICK’s ${DELAY_BPM} BPM, a classic delay rhythm.`;
   const bpm = Math.round(60000 / timeMs);
-  return bpm === DELAY_BPM
+  const quarter = clickBpm === DELAY_BPM ? '' : ` That spacing = a quarter-note at ${bpm} BPM.`;
+  // "the FIRST repeat" (checker 2026-11-15): with FDBK up, repeat 2 lands ON
+  // the next click (2 × an eighth = one beat), so only the first sits halfway.
+  if (near(0.5)) return `${timeMs} ms = an eighth note at the CLICK’s ${clickBpm} BPM: the first repeat lands halfway between two clicks.${quarter}`;
+  if (near(0.75)) return `${timeMs} ms = a dotted eighth at the CLICK’s ${clickBpm} BPM, a classic delay rhythm.${quarter}`;
+  return bpm === clickBpm
     ? `That spacing = a quarter-note at ${bpm} BPM, the CLICK’s tempo: each repeat lands on the next click.`
     : `That spacing = a quarter-note at ${bpm} BPM — match the delay to the song's tempo and repeats land ON the beat.`;
 }
@@ -468,7 +485,8 @@ const delayConfig: FxLabConfig = {
   // Phase 3 (owner's decision 3): plain sentences instead of all-caps badges.
   modelNote: 'This picture is a model of the echoes, drawn from the audio’s math, not a meter.',
   curveNote: 'Worked out from your settings: the spacing is the delay time, the shrinking is feedback.',
-  heroCaption: (v) =>
+  // `ctx.clickBpm` = the CLICK's live tempo (owner 2026-11-25, click tempo).
+  heroCaption: (v, ctx) =>
     // At FDBK 0% there is ONE repeat, so "each repeat is 0% of the last" read
     // as nonsense (lab fix round 2026-11-14, G6b Delay).
     (v[P.delayFeedback] <= 0
@@ -479,7 +497,7 @@ const delayConfig: FxLabConfig = {
     (v[P.delayFeedback] >= 0.75 ? 'High feedback — a long trail; runaway starts near 100%.'
       : v[P.timeMs] <= 150 ? 'Slapback range (about 60–150 ms) — a quick repeat just behind the source, not tied to the tempo.'
       : v[P.timeMs] < 250 ? 'A short echo — too quick to be a quarter-note at a usual song tempo.'
-      : delayTempoPhrase(v[P.timeMs])) +
+      : delayTempoPhrase(v[P.timeMs], ctx?.clickBpm)) +
     delayDampPhrase(v[P.dampHz], v[P.delayFeedback]),
   checks: [
     {
@@ -544,6 +562,9 @@ const reverbConfig: FxLabConfig = {
     'Display: level in decibels (dashed guides 30 dB apart), so a decay is a straight slope. Each click (gray) crosses the stage; after the ' +
     'pre-delay gap the reverb (amber) arrives and falls 60 dB in RT60 or sooner: HF DAMPING dulls the tail on every trip around ' +
     'the reverb, so this 1 kHz click fades fastest with DARK. A longer RT60 is a gentler slope, and the ' +
+    // True at every tempo the lab allows (owner 2026-11-25, click tempo): the
+    // sweep window is 1.5 beats and re-triggers on EVERY click (fxAnim
+    // revSweepMs), and the ruler names the real seconds.
     'tails pile up into a wash. OUT redraws from the left each time a click reaches the stage; its ruler counts seconds since then.',
   // The burst names its pitch: the generator keeps the LAST frequency any lab
   // set, so a burst with none played whatever tone the previous lab left.
@@ -1180,8 +1201,10 @@ const compConfig: FxLabConfig = {
     'gain reduction on each click: RATIO and THRESH change how deep it hangs.',
   // A steady source holds GR still, so the SPEED tray has nothing to show.
   exploreCaptionBySource: {
-    'SINE 440 Hz': 'SINE 440 Hz source: a steady tone at −20 dBFS. Push it over the threshold and GR settles at one value and stays there; the dotted outline is the signal untouched. SPEED only shows clearly on a transient: choose CLICK 120.',
-    'PINK NOISE': 'PINK NOISE source: a steady hiss peaking near −20 dBFS, with no hits, so GR hovers around one value; the dotted outline is the signal untouched. SPEED only shows clearly on a transient: choose CLICK 120.',
+    // "the CLICK", not "CLICK 120" (owner 2026-11-25, click tempo): its label
+    // follows the tempo the student sets.
+    'SINE 440 Hz': 'SINE 440 Hz source: a steady tone at −20 dBFS. Push it over the threshold and GR settles at one value and stays there; the dotted outline is the signal untouched. SPEED only shows clearly on a transient: choose the CLICK.',
+    'PINK NOISE': 'PINK NOISE source: a steady hiss peaking near −20 dBFS, with no hits, so GR hovers around one value; the dotted outline is the signal untouched. SPEED only shows clearly on a transient: choose the CLICK.',
   },
   // CLICK FIRST (owner 2026-09-11). A steady 440 Hz sine against a fixed
   // threshold produces CONSTANT gain reduction, so the GR meter lights and then
@@ -1305,7 +1328,7 @@ const compConfig: FxLabConfig = {
   heroCaption: (v) =>
     `Above ${v[P.thresholdDb]} dB, every ${v[P.ratio]} dB in becomes 1 dB out. The source peaks at −20 dBFS — ` +
     (v[P.thresholdDb] < -20
-      ? 'over the threshold, so a steady tone compresses. A short CLICK 120 is sensed lower than its peak (the attack time smooths it), so it can stay under: the live GR readout shows what really happens. On SINE 440 the curve marks the tone’s peak at SOURCE; GR reads a little less, because the level sensor rides just under the peak (further under with a slow ATTACK and fast RELEASE).'
+      ? 'over the threshold, so a steady tone compresses. A short CLICK is sensed lower than its peak (the attack time smooths it), so it can stay under: the live GR readout shows what really happens. On SINE 440 the curve marks the tone’s peak at SOURCE; GR reads a little less, because the level sensor rides just under the peak (further under with a slow ATTACK and fast RELEASE).'
       : 'below the threshold, so nothing happens (drop the threshold).'),
   pollGr: 'comp',
   // Sound off: the transfer curve's own GR for a steady tone (hard knee,
@@ -1376,7 +1399,8 @@ const gateConfig: FxLabConfig = {
     // GATE-02 (owner 2026-11-15: "build waves 1 thru 3", D62): say WHERE the three
     // keys show on the click (the drawn tail, GR between hits) instead of saying
     // they change almost nothing. Same length; PINK NOISE stays the way to hear them.
-    'CLICK source (90 BPM): the gate opens on each hit. On OUT, HOLD and RELEASE set how soon each hit’s tail is cut; ' +
+    // "to start" (owner 2026-11-25, click tempo): the student can move it.
+    'CLICK source (90 BPM to start): the gate opens on each hit. On OUT, HOLD and RELEASE set how soon each hit’s tail is cut; ' +
     'RANGE shows on GR between the hits. To hear those three, choose PINK NOISE. The sound flows ' +
     'left → right, so a hit’s start leads and its tail trails; the dotted outline is the hit untouched, the gap is what the gate took.',
   exploreCaptionBySource: {
@@ -1481,6 +1505,23 @@ const gateConfig: FxLabConfig = {
     `Below −${Math.abs(v[P.thresholdDb])} dB the output drops ${Math.abs(v[P.rangeDb])} dB toward the floor. ` +
     (v[P.rangeDb] <= -70 ? 'Full silence is abrupt — a partial floor usually sounds more natural.' : 'A partial floor keeps a little ambience.'),
   pollGr: 'gate',
+  // The drawing's CLICK is the 90 ms DRUM-HIT MODEL, not the real 5 ms click
+  // (checker 2026-11-25, item 2). At THRESH −50 dB and RLS 20 ms CHATTER the
+  // engine's gate closes fully between hits, but the drawn hit needs ~311 ms
+  // to fall below −50 dB, then HOLD, then the close. The drawn gain reaches
+  // within 1 dB of the RANGE floor (test/fxClickTempo_20261125 re-runs it at
+  // the drawing's 1–1.25 ms step):
+  //   HOLD 10 ms:  up to 139–140 BPM (−20 dB), 125–126 (−40), 109–110 (−70);
+  //   HOLD 100 ms: up to 115 (−20), 105 (−40), 94 (−70) — at 105 BPM the −70
+  //   floor is drawn at about −58 dB, both far under 1 px on OUT.
+  // So the drawn OUT shows the gate shut, as the real one is, up to 105 BPM at
+  // these settings; above it, the drawn gate starts to stay open between hits
+  // at some settings (all the way open, 0.0 dB, by 180 BPM) while the real one
+  // closes.
+  clickTempoMax: {
+    bpm: 105,
+    why: 'The fader stops at 105 BPM: faster, the drawing’s longer drum hit can keep its gate open between hits while the real gate closes.',
+  },
   checks: [
     {
       question: 'A gate and a compressor both use a threshold. What\u2019s the difference?',
@@ -1514,7 +1555,7 @@ const gateConfig: FxLabConfig = {
         1: 'More RANGE only makes each close deeper, so the flicker gets louder, not calmer.',
         2: 'A higher threshold closes the gate sooner on the tail: the note is cut short and the flicker stays.',
       },
-      wrongHint: 'Chatter is a level hovering at the threshold. On CLICK 90 at THRESH −50 dB, compare RLS 20 ms CHATTER with 500 ms: which keeps the gate from closing between hits?',
+      wrongHint: 'Chatter is a level hovering at the threshold. With the CLICK at its opening 90 BPM and THRESH at −50 dB, compare RLS 20 ms CHATTER with 500 ms: which keeps the gate from closing between hits?',
     },
   ],
 };
@@ -1540,8 +1581,8 @@ const limiterConfig: FxLabConfig = {
   // RLS cannot show on a steady source (see `sources` below). The source order
   // is a recorded decision, so the words say where to go instead.
   exploreCaptionBySource: {
-    'SINE 440 Hz': 'The source peaks at −20 dBFS — ceilings below that engage the brickwall. The dotted outline on the display is the signal before the limiter. A steady tone holds GR still, so RLS has nothing to recover from: it only shows on a transient. Choose CLICK 120.',
-    'PINK NOISE': 'PINK NOISE source: a steady hiss peaking near −20 dBFS — ceilings below that engage the brickwall. The dotted outline on the display is the signal before the limiter. With no hits, GR hovers around one value, so RLS only shows clearly on a transient: choose CLICK 120.',
+    'SINE 440 Hz': 'The source peaks at −20 dBFS — ceilings below that engage the brickwall. The dotted outline on the display is the signal before the limiter. A steady tone holds GR still, so RLS has nothing to recover from: it only shows on a transient. Choose the CLICK.',
+    'PINK NOISE': 'PINK NOISE source: a steady hiss peaking near −20 dBFS — ceilings below that engage the brickwall. The dotted outline on the display is the signal before the limiter. With no hits, GR hovers around one value, so RLS only shows clearly on a transient: choose the CLICK.',
   },
   // CLICK FIRST (LIM-05, owner 2026-11-15: "build waves 1 thru 3", D62; this
   // replaces the earlier "SINE first" decision): the lab opens on drum hits, so

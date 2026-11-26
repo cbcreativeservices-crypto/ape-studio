@@ -9,7 +9,8 @@ describe('owner decisions 2026-11-05', () => {
   it('Gate lab: Pink Noise has its own caption, CLICK keeps its words', () => {
     const c = read('fxLabConfigs.tsx');
     assert.match(c, /'PINK NOISE': 'PINK NOISE source: a steady hiss\. Set THRESH above its level and the gate shuts; below it, the gate stays open\.'/);
-    assert.match(c, /CLICK source \(90 BPM\): the gate opens on each hit/);
+    // owner 2026-11-25, click tempo: the student can move the CLICK's tempo, so 90 BPM is where it starts.
+    assert.match(c, /CLICK source \(90 BPM to start\): the gate opens on each hit/);
     assert.match(read('FxLabScreen.tsx'), /config\.exploreCaptionBySource\?\.\[sources\[sourceIdx\]\?\.label\] \?\? config\.exploreCaption/);
   });
   for (const f of ['micsRf.ts', 'speakers.ts', 'speakersAdv.ts']) {

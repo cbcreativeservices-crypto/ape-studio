@@ -70,7 +70,7 @@ export const GATE_SCREEN_GUIDES: Record<GateScreenId, ScreenGuide> = {
     control: [
       'Tap ▶ in the header, or tap the display, to play the SOURCE through the gate; ■ stops it. Drag the THRESH fader from −50 to −20 dB.',
       'RANGE: −20 dB GENTLE, −40 dB or −70 dB SILENCE. HOLD: 0, 10 or 100 ms. RLS (release): 20 ms CHATTER, 100 ms or 500 ms.',
-      'SOURCE: CLICK 90 or PINK NOISE. The click lasts only 5 ms, so RANGE, HOLD and RLS show on GR but you barely hear them. To hear them, use PINK NOISE with THRESH near its level.',
+      'SOURCE: CLICK or PINK NOISE. The click lasts only 5 ms, so RANGE, HOLD and RLS show on GR but you barely hear them. To hear them, use PINK NOISE with THRESH near its level.',
       'Long-press any key or readout for its lesson entry. Below, in LAB NOTES, read the intro, the GATE ATTENUATION meter and the DESIGNED RESPONSE curve, open THE AUDIO PATH, answer two CHECK YOURSELF questions or open the GUIDED LESSON.',
     ],
     changes: [

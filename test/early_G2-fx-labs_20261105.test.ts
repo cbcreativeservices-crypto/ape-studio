@@ -129,7 +129,8 @@ describe('3. Compression and Limiter: a steady source points at CLICK', () => {
         assert.ok(line, `${name} ${label}`);
         assert.ok(line.includes(control), line);
         assert.match(line, /transient/);
-        assert.match(line, /CLICK 120/);
+        // owner 2026-11-25, click tempo: "the CLICK" (its label follows the tempo the student sets), not "CLICK 120".
+        assert.match(line, /[Cc]hoose the CLICK\./);
       }
       // `SINE ${hz} Hz` is what the screen looks the caption up by.
       assert.match(c, /sources: \[.*srcSine\(440\)/);

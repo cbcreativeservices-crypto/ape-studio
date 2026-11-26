@@ -153,10 +153,10 @@ export const LAB_LESSONS: Record<LabId, LabLesson> = {
     ],
     steps: [
       { do: "Set SOURCE to CLICK 60 and tap ▶.", notice: "On OUT, the gray dry click comes first, then the amber wash falls as a straight slope. The dashed guides sit 30 dB apart.", why: "Reverb is one smooth wash that fades, not a set of separate repeats." },
-      { do: "Slide RT60 down to 0.40 s, then up to 6.0 s.", notice: "At 0.40 s the wash sinks to the bottom near the 0.5 s mark. At 6.0 s it falls only a little before the next click, and the tails pile up.", why: "RT60 sets how long the tail lasts; long tails run into whatever comes next." },
+      { do: "Slide RT60 down to 0.40 s, then up to 6.0 s.", notice: "At 0.40 s the wash sinks to the bottom by about 0.5 s. At 6.0 s it falls only a little before the next click, and the tails pile up.", why: "RT60 sets how long the tail lasts; long tails run into whatever comes next." },
       { do: "In LAB NOTES, watch DESIGNED RESPONSE while you slide RT60.", notice: "The dot on the dashed −60 line slides from near the left at 0.40 s to near the right at 6.0 s.", why: "RT60 is read on the time axis: the moment the decay has fallen 60 dB." },
       { do: "Open PRE-DLY and pick 60 ms, then 0 ms.", notice: "At 60 ms the GAP bracket over OUT, from the gray click to the wash, stretches to nearly one 100 ms tick: 60 ms plus the 31 ms the reverb needs for its first echo. At 0 ms, about a third of a tick.", why: "Pre-delay moves when the wash starts, not how long or loud it is." },
-      { do: "Bring RT60 back to about 1.5 s, open DAMP and pick DARK 2k.", notice: "The wash nearly reaches the bottom by the 1 s mark, while DESIGNED RESPONSE stays put.", why: "Damping makes the highs fade sooner than RT60 says, the way curtains and seats soak up highs in a real room." },
+      { do: "Bring RT60 back to about 1.5 s, open DAMP and pick DARK 2k.", notice: "The wash nearly reaches the bottom within about 1 s, while DESIGNED RESPONSE stays put.", why: "Damping makes the highs fade sooner than RT60 says, the way curtains and seats soak up highs in a real room." },
       { do: "Open MIX and pick 100% WET.", notice: "Only the wash is left on OUT.", why: "MIX sets how much reverb you hear against the dry sound, and so how far back the source seems." },
     ],
   },

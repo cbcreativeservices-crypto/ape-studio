@@ -68,7 +68,7 @@ export const COMPRESSION_SCREEN_GUIDES: Record<CompressionScreenId, ScreenGuide>
       'Tap ▶ in the header or the display to play the SOURCE through the compressor; ■ stops it. Drag the THRESH fader from −50 to −10 dB.',
       'RATIO: 2:1 GENTLE to 20:1 ALMOST A WALL. SPEED: ATTACK, how fast it grabs (0.5 ms FAST to 100 ms); RELEASE, how fast it lets go.',
       'On CLICK, the amber strip under OUT is the drawing’s GR: THRESH and RATIO change how deep it hangs. GR PEAK prints its deepest point; live GR can read lower.',
-      'Tap MAKEUP for 0 dB or +6 dB, and SOURCE for CLICK 120, SINE 440 Hz or PINK NOISE.',
+      'Tap MAKEUP for 0 dB or +6 dB, and SOURCE for CLICK, SINE 440 Hz or PINK NOISE.',
       'Long-press any key or readout for its lesson entry. Below, LAB NOTES holds the GAIN REDUCTION meter, the DESIGNED RESPONSE curve, THE AUDIO PATH, two CHECK YOURSELF questions and the GUIDED LESSON.',
     ],
     changes: [

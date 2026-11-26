@@ -56,7 +56,8 @@ describe('decision 2: the gate sends the ear to PINK NOISE', () => {
   it('the source order stays, and the guide says the same outside TRY THIS', () => {
     assert.match(gate, /sources: \[srcClick\(90\), SRC_PINK\]/);
     // 2026-11-08 (Comp B rewrite): same fact, the guide's new words.
-    assert.match(guide('gateScreenGuides.ts'), /SOURCE: CLICK 90 or PINK NOISE\. The click lasts only 5 ms, so RANGE, HOLD and RLS show on GR but you barely hear them\. To hear them, use PINK NOISE/);
+    // owner 2026-11-25, click tempo: the CLICK is named without its tempo (the student can move it).
+    assert.match(guide('gateScreenGuides.ts'), /SOURCE: CLICK or PINK NOISE\. The click lasts only 5 ms, so RANGE, HOLD and RLS show on GR but you barely hear them\. To hear them, use PINK NOISE/);
   });
 });
 

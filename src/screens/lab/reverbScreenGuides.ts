@@ -74,7 +74,7 @@ export const REVERB_SCREEN_GUIDES: Record<ReverbScreenId, ScreenGuide> = {
     control: [
       'Tap ▶ in the header, or tap the glass, to play the source through the reverb; ■ stops it. Every control works while it plays.',
       'Drag the RT60 fader, 0.40 s to 6.0 s. Tap a key for its choices: PRE-DLY (PRE-DELAY: 0, 20, 60 ms), DAMP (HF DAMPING, high-frequency damping: DARK 2k, NATURAL 5.5k, BRIGHT 12k), MIX (35%, 70%, 100% WET).',
-      'SOURCE picks CLICK 60 (a short click once a second), BURST 1 kHz or PINK NOISE. Long-press a key or readout for its lesson entry; the ⓘ after the readouts explains the display.',
+      'SOURCE picks CLICK (opens at 60 BPM, one click a second), BURST 1 kHz or PINK NOISE. Long-press a key or readout for its lesson; the ⓘ after the readouts explains the display.',
       '▴ HIDE DISPLAY and ⤢ FULL SCREEN sit under the glass. See LAB NOTES for DESIGNED RESPONSE (the decay line and its RT60 marker), THE AUDIO PATH, two CHECK YOURSELF questions and ⓘ GUIDED LESSON.',
     ],
     changes: [
@@ -91,7 +91,7 @@ export const REVERB_SCREEN_GUIDES: Record<ReverbScreenId, ScreenGuide> = {
     tryThis: [
       'With SOURCE on CLICK 60, slide RT60 down to 0.40 s: on OUT the wash sinks to the bottom near the 0.5 s mark. At 6.0 s it falls only a little before the next click, and the tails pile up.',
       'Open PRE-DLY and pick 60 ms: the GAP bracket over OUT stretches to nearly one 100 ms tick mark after the gray click (60 ms plus the reverb’s 31 ms). At 0 ms it shrinks to about a third of a tick.',
-      'Bring RT60 to about 1.5 s, open DAMP and pick DARK 2k: the wash nearly reaches the bottom by the 1 s mark. DESIGNED RESPONSE stays put, because it draws RT60 alone.',
+      'Bring RT60 to about 1.5 s, open DAMP and pick DARK 2k: the wash nearly reaches the bottom within about 1 s. DESIGNED RESPONSE stays put, because it draws RT60 alone.',
     ],
   },
 

@@ -56,10 +56,10 @@ export const LIMITER_SCREEN_GUIDES: Record<LimiterScreenId, ScreenGuide> = {
       'It is a model: CLICK is drawn as a longer DRUM-HIT MODEL; GR measures the real click.',
     ],
     control: [
-      'Tap ▶ in the header, or tap the display, to play the SOURCE through the limiter; ■ stops it. Drag the CEILING fader from −45 to −15 dB to set the level nothing should pass.',
-      'RLS (release: 30, 120 or 500 ms) sets how fast the limiter lets go after a peak. SOURCE picks SINE 440 Hz, CLICK 120 or PINK NOISE.',
-      'Long-press any key or readout for its lesson entry.',
-      'Below, LAB NOTES has the intro, the GAIN REDUCTION meter, the DESIGNED RESPONSE curve (the flat shelf), THE AUDIO PATH (ending with a note on true peak), two CHECK YOURSELF questions and the GUIDED LESSON.',
+      'Tap ▶ (header or display) to play the SOURCE through the limiter; ■ stops it. Drag the CEILING fader from −45 to −15 dB: the level nothing should pass.',
+      'RLS (release: 30, 120 or 500 ms): how fast it lets go of peaks. SOURCE picks SINE 440 Hz, CLICK or PINK NOISE.',
+      'With CLICK chosen, close the SOURCE tray with ✕ and drag the fader to set the click’s tempo, 60 to 240 BPM (double-tap: the lab’s own); a slower tempo slows the picture too, so it keeps step with what you hear.',
+      'Long-press a key or readout for its lesson. LAB NOTES below: intro, GAIN REDUCTION meter, DESIGNED RESPONSE curve (the flat shelf), THE AUDIO PATH (ends with a note on true peak), two CHECK YOURSELF questions, GUIDED LESSON.',
     ],
     changes: [
       'Over the ceiling, the level is pulled down to it almost at once: the ratio is infinite. Below it, nothing changes. A sharp click can slip a few dB past first, because this limiter can’t look ahead.',

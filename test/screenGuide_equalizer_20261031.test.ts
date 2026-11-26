@@ -235,7 +235,8 @@ describe('4. TRY THIS is what the screen prints', () => {
     const f = fq >= 1000 ? `${fq / 1000} kHz` : `${fq} Hz`;
     assert.equal(`+${6} dB at ${f}, Q ${8}.`, '+6 dB at 1 kHz, Q 8.');
     assert.ok(GUIDES.explore.tryThis.join(' ').includes('+6 dB at 1 kHz, Q 8'));
-    assert.match(FX, /<Text style=\{styles\.sectionHead\}>DESIGNED RESPONSE<\/Text>[\s\S]*?config\.heroCaption!\(values\)/);
+    // owner 2026-11-25, click tempo: the caption also gets the live source and CLICK tempo (captionCtx); EQ ignores them.
+    assert.match(FX, /<Text style=\{styles\.sectionHead\}>DESIGNED RESPONSE<\/Text>[\s\S]*?config\.heroCaption!\(values, captionCtx\)/);
   });
   it('a pass filter ignores GAIN: the caption and the drawn curve agree (the high-pass draw takes no gain or Q)', () => {
     assert.match(EQ_CFG, /GAIN and Q don't apply to the high-pass/);

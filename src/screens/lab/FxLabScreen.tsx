@@ -18,6 +18,10 @@
  *           params as STICKY option trays (A/B while the glass reacts) + the
  *           shared SOURCE tray. Configs with >4 params fold 2–3 interacting
  *           ones into a single group tray so the dock stays ≤5 keys.
+ *           While the source is a CLICK, the SOURCE key is the house
+ *           chooser-fader (owner 2026-11-25, click tempo, D85): tap = the same
+ *           source tray, closing it hands the lane to the CLICK's tempo
+ *           (30–240 BPM, − / + = 1 BPM, double-tap = the lab's own tempo).
  *   WELL  — teaching prose only: the static analytic hero (which ALWAYS
  *           renders — it is the response-curve source of truth), the dynamic
  *           caption, and the audio-path / honest engine notes.
@@ -72,6 +76,22 @@ import type { FxAnimModel } from './fxAnim';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../features/audio/useStopOnBlur';
+import {
+  clampClickBpm,
+  clickTempoBlurb,
+  clickTempoFromPos,
+  clickTempoPos,
+  clickTempoRange,
+  clickTempoReadout,
+  clickTempoShort,
+  clickTempoSteps,
+  liveClickSource,
+  clickPeriodMs,
+  anchorAtStart,
+  anchorAfterTempoWrite,
+  GEN_RETRIGGER_DIP_MS,
+  type ClickAnchor,
+} from './fxClickTempo';
 
 const GEN_LEVEL_DB = -20;
 /** A bezel value the current settings ignore (ignoredBy) — EQ Lab module 6's gray. */
@@ -250,6 +270,10 @@ export type FxSourceSpec = {
    *  engine 10): L == R, so the side is zero — the hero draws it that way
    *  ("nothing to widen") instead of the stereo test tone. */
   monoCompare?: boolean;
+  /** Set by liveClickSource on a CLICK whose tempo the student moved: the
+   *  lab's opening tempo, so a drawing scales its window by opening ÷ live
+   *  and keeps step with the sound (owner 2026-11-25). */
+  clickOpenBpm?: number;
 };
 
 /** Every generator write from an effect lab: the lab level, the stereo spread
@@ -258,6 +282,12 @@ export type FxSourceSpec = {
  *  inherit the Stereo lab's), then the source's own params. */
 function genParamsFor(src: FxSourceSpec): GenParams {
   return { levelDb: GEN_LEVEL_DB, stereoSpreadRad: 0, ...src.gen };
+}
+
+/** The lab's own tempo for a CLICK source, or undefined for any other source
+ *  (owner 2026-11-25, click tempo). */
+function clickPresetOf(src: FxSourceSpec | undefined): number | undefined {
+  return src?.gen.mode === GEN_MODES.click ? clampClickBpm(src.gen.clickBpm) : undefined;
 }
 
 export type FxLabConfig = {
@@ -320,7 +350,10 @@ export type FxLabConfig = {
   /** Phase 3: the same for the DESIGNED RESPONSE curve in the well (instead
    *  of the all-caps heroBadge there). */
   curveNote?: string;
-  heroCaption?: (values: Record<number, number>) => string;
+  /** `ctx` (owner 2026-11-25, click tempo): the selected source as it plays
+   *  now, and the live tempo of this lab's CLICK (when it has one), so a
+   *  caption that names the tempo names the one the student set. */
+  heroCaption?: (values: Record<number, number>, ctx?: { source?: FxSourceSpec; clickBpm?: number }) => string;
   /** The ANIMATED signal-flow hero: maps the CURRENT param values to a fxAnim
    *  model. Optional — labs without an authored animation (or clients without
    *  Skia) pin the static Hero on the stage, exactly as before. */
@@ -359,6 +392,10 @@ export type FxLabConfig = {
    *  caption in the states `caption` returns true for, and the wrong-answer
    *  hint of the listed check indexes. No replacement text. */
   monoCompareHides?: { badge?: boolean; caption?: (values: Record<number, number>) => boolean; wrongHintChecks?: number[] };
+  /** A lower top for the CLICK tempo than twice the opening tempo, where this
+   *  lab's drawing cannot follow the sound any faster (owner 2026-11-25, click
+   *  tempo; the Gate). `why` is the plain line the tray says. */
+  clickTempoMax?: { bpm: number; why: string };
 };
 
 /** The currently selected choice's chip label (bezel/valueLabel source). */
@@ -511,16 +548,43 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
   const engineReady = gate === 'idle';
   const fxReady = engineReady && ApeDsp.fxAvailable();
   // The source list this build can actually play (engine 10 stereo sources).
-  const sources = useMemo(
+  const presetSources = useMemo(
     () => (config.stereoSources && ApeDsp.stereoSpreadAvailable() ? config.stereoSources : config.sources),
     [config.stereoSources, config.sources],
   );
+  /** The student's CLICK tempo, by source index (owner 2026-11-25, click tempo,
+   *  D85). Screen state only, like every other dock value here: it lasts while
+   *  this lab screen is open and is never saved, so the next visit opens at
+   *  the lab's own tempo. Unset = the preset. */
+  const [clickTempo, setClickTempoState] = useState<Record<number, number>>({});
+  // The sources AS THEY PLAY NOW — the one source of truth for the sound
+  // (genParamsFor), every drawing (anim / Hero), the captions and the dock.
+  // At the lab's own tempo each is the very same object as the preset.
+  const sources = useMemo(
+    () => presetSources.map((s, i) => liveClickSource(s, clickPresetOf(s), clickTempo[i])),
+    [presetSources, clickTempo],
+  );
+  /** The live tempo of this lab's CLICK (the first, the only one any lab has). */
+  const labClickIdx = presetSources.findIndex((s) => clickPresetOf(s) != null);
+  const labClickBpm = labClickIdx >= 0 ? clampClickBpm(sources[labClickIdx].gen.clickBpm) : undefined;
 
   const [sourceIdx, setSourceIdx] = useState(0);
   const [values, setValues] = useState<Record<number, number>>(() =>
     Object.fromEntries(config.params.map((p) => [p.paramId, p.initial])),
   );
   const [running, setRunning] = useState(false);
+  /** THE CLICK ANCHOR (third pass, 2026-11-25; owner: "what you hear should
+   *  match what you see"): the heard clicks sit at t0 + k·P in wall-clock time
+   *  (performance.now()). Set when the click starts sounding (▶, or choosing
+   *  the CLICK while playing) and moved on every tempo write, at the moment of
+   *  the write (anchorAfterTempoWrite mirrors the generator's timer). Every
+   *  drawing maps it onto the wall clock each frame (fxAnim useHitGrid), so a
+   *  remount, a lost focus or a stalled frame never parts picture and sound.
+   *  While nothing sounds it still moves with the tempo, so the picture stays
+   *  continuous. */
+  const [clickAnchor, setClickAnchor] = useState<ClickAnchor>(() => anchorAtStart(clickPeriodMs(labClickBpm), performance.now()));
+  /** The tempo last written per source, ahead of the render (a drag sends many). */
+  const writtenTempoRef = useRef<Record<number, number>>({});
   // Something else can silence this lab — backgrounding, shake-to-mute, the
   // idle auto-mute. Without this the transport stayed lit over silence.
   useStopOnAudioMute(setRunning);
@@ -560,6 +624,14 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
   const wantRef = useRef(false);
   const latestRef = useRef({ sourceIdx, values });
   latestRef.current = { sourceIdx, values };
+  /** The live sources, for a CLICK tempo moved while a start is in flight. */
+  const sourcesRef = useRef(sources);
+  sourcesRef.current = sources;
+  /** The lab's own CLICK tempo while the student's differs (else null): stop
+   *  writes it back, so a slowed click never outlives this lab in the native
+   *  generator. (Every other CLICK in the app also sets its own tempo.) */
+  const clickHomeRef = useRef<number | null>(null);
+  clickHomeRef.current = labClickIdx >= 0 && sources[labClickIdx] !== presetSources[labClickIdx] ? clickPresetOf(presetSources[labClickIdx])! : null;
 
   const pushAllParams = useCallback(
     (vals: Record<number, number>) => {
@@ -594,13 +666,34 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
         isCurrent: () => gen === genRef.current,
       });
       if (fenced.status !== 'started') return;
+      /** The native start has just returned and the click plays at once from
+       *  silence (Generator.hpp applyTrigger): this is the heard click's time,
+       *  to within the start call's return (a few ms) and the output latency.
+       *  (Not taken before the fence: it may wait on a notice first.) */
+      const startedAt = performance.now();
       // A source/fader moved while the start was in flight skipped its live
       // push (running was still false) — send the newest now, so the display
       // and the audio agree (bug hunt 2026-09-30 day; Oscillator's fix).
       const latest = latestRef.current;
-      if (latest.sourceIdx !== sourceIdx) ApeDsp.genSet(genParamsFor(sources[latest.sourceIdx]));
+      let retriggered = false;
+      if (latest.sourceIdx !== sourceIdx) {
+        ApeDsp.genSet(genParamsFor(sources[latest.sourceIdx]));
+        retriggered = true;
+      }
+      // …and a CLICK tempo moved meanwhile (owner 2026-11-25, click tempo).
+      const liveNow = sourcesRef.current[latest.sourceIdx];
+      if (liveNow !== sources[latest.sourceIdx]) {
+        ApeDsp.genSet(genParamsFor(liveNow));
+        retriggered = true;
+      }
       if (latest.values !== values) pushAllParams(latest.values);
       setRunning(true);
+      // The click sounds from the start; a write with a mode now (above) re-arms
+      // it after the 10 ms dip (Generator.hpp renderInto), so it restarts then.
+      if (labClickIdx >= 0) {
+        const P = clickPeriodMs(sourcesRef.current[labClickIdx].gen.clickBpm);
+        setClickAnchor(retriggered ? anchorAtStart(P, performance.now(), GEN_RETRIGGER_DIP_MS) : anchorAtStart(P, startedAt));
+      }
       noteAudioActivity();
     } catch (e) {
       if (gen === genRef.current) setGenError(AUDIO_UNAVAILABLE_MESSAGE);
@@ -620,6 +713,9 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
     // natively, and a tool that never heard of it must get mono. Cleared
     // during the 10 ms fade — the native crossfade keeps that click-free.
     ApeDsp.genSet({ stereoSpreadRad: 0 });
+    // A moved CLICK tempo goes back to the lab's own (owner 2026-11-25, click
+    // tempo): the generator keeps its tempo natively, like the spread.
+    if (clickHomeRef.current != null) ApeDsp.genSet({ clickBpm: clickHomeRef.current });
     setRunning(false);
     setGrDb(0);
   }, []);
@@ -662,9 +758,42 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
     });
   };
   const pickSource = (i: number) => {
+    // Re-tapping the chosen source changes nothing, so nothing is sent: a
+    // write with a mode re-arms the generator (Generator.hpp setMode) and
+    // would restart the click off the drawn beat (third pass, item 3).
+    if (i === sourceIdx) return;
     setSourceIdx(i);
     if (running) {
       ApeDsp.genSet(genParamsFor(sources[i]));
+      noteAudioActivity();
+      // The new mode restarts the click after the 10 ms dip: anchor it there.
+      if (clickPresetOf(presetSources[i]) != null) {
+        setClickAnchor(anchorAtStart(clickPeriodMs(sources[i].gen.clickBpm), performance.now(), GEN_RETRIGGER_DIP_MS));
+      }
+    }
+  };
+  /** The selected CLICK's tempo (owner 2026-11-25, click tempo, D85). Live while
+   *  sounding through the same genSet path as every source write — only the
+   *  tempo changes, so the click keeps running (no restart). Sound off or
+   *  stopped, only the state moves, and the drawing follows it. */
+  const setClickTempo = (bpm: number) => {
+    const preset = clickPresetOf(presetSources[sourceIdx]);
+    if (preset == null) return;
+    const b = clampClickBpm(bpm, clickTempoRange(preset, config.clickTempoMax?.bpm));
+    // The tempo last WRITTEN (a drag sends many writes per render).
+    const was = writtenTempoRef.current[sourceIdx] ?? clampClickBpm(sources[sourceIdx].gen.clickBpm);
+    if (b === was) return;
+    writtenTempoRef.current[sourceIdx] = b;
+    setClickTempoState((prev) => (prev[sourceIdx] === b ? prev : { ...prev, [sourceIdx]: b }));
+    // Set now, not on the next render, so a stop in the same frame still
+    // gives the generator back the lab's own tempo (checker nit, item 5).
+    clickHomeRef.current = b !== preset ? preset : null;
+    // The anchor moves AT the write, from the time of the genSet below (third
+    // pass, item 2: an effect-time rebase was up to a period off the sound).
+    const writeMs = performance.now();
+    setClickAnchor((a) => anchorAfterTempoWrite(a, clickPeriodMs(b), writeMs));
+    if (running) {
+      ApeDsp.genSet({ clickBpm: b });
       noteAudioActivity();
     }
   };
@@ -805,27 +934,71 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
     }
   }
   // SOURCE tray last — swapping the test signal while listening IS a lesson.
-  dockParams.push({
-    kind: 'options',
-    id: 'src',
-    label: 'SOURCE',
-    valueLabel: sources[sourceIdx].short ?? sources[sourceIdx].label,
-    options: sources.map((s, i) => ({
+  // A CLICK's blurb ends with how to set its tempo, this lab's range, that the
+  // picture keeps step, and (Gate) why the range stops early.
+  const sourceOptions = sources.map((s, i) => {
+    const preset = clickPresetOf(presetSources[i]);
+    return {
       id: String(i),
       label: s.label,
-      blurb: s.blurb,
+      blurb:
+        preset == null
+          ? s.blurb
+          : `${s.blurb ? `${s.blurb} ` : ''}${clickTempoBlurb(clickTempoRange(preset, config.clickTempoMax?.bpm), config.clickTempoMax?.why)}`,
       onLongPress: () => openSourceHelp(s.gen),
-    })),
-    selectedId: String(sourceIdx),
-    onSelect: (id) => pickSource(Number(id)),
-    sticky: true,
-    helpKey: 'src',
+    };
   });
+  const clickPreset = clickPresetOf(presetSources[sourceIdx]);
+  if (clickPreset != null) {
+    // A CLICK is selected: the SAME key is the house chooser-fader (owner
+    // 2026-11-25, click tempo, D85: "Add a way to change BPM in the lab screens
+    // that show the waveform going by"). A tap opens the same sticky source
+    // tray; closing it with ✕ hands the lane to the click's TEMPO (rack: a
+    // chooser fader binds on close). − / + = 1 BPM (steps), hold = the lab's
+    // lowest or highest tempo, double-tap = the lab's own tempo (home). The key
+    // reads "TEMPO 45" (it names what its fader sets, visible without opening
+    // anything), the lane and the screen reader "CLICK TEMPO 45 BPM".
+    const range = clickTempoRange(clickPreset, config.clickTempoMax?.bpm);
+    const bpm = clampClickBpm(sources[sourceIdx].gen.clickBpm, range);
+    dockParams.push({
+      kind: 'fader',
+      id: 'src',
+      label: 'SOURCE',
+      value: clickTempoPos(bpm, range),
+      onChange: (pos) => setClickTempo(clickTempoFromPos(pos, range)),
+      format: (pos) => clickTempoReadout(clickTempoFromPos(pos, range)),
+      formatShort: (pos) => clickTempoShort(clickTempoFromPos(pos, range)),
+      home: clickTempoPos(clickPreset, range),
+      steps: clickTempoSteps(range),
+      helpKey: 'src',
+      chooser: {
+        title: 'SOURCE',
+        options: sourceOptions,
+        selectedId: String(sourceIdx),
+        onSelect: (id) => pickSource(Number(id)),
+        sticky: true,
+      },
+    });
+  } else {
+    dockParams.push({
+      kind: 'options',
+      id: 'src',
+      label: 'SOURCE',
+      valueLabel: sources[sourceIdx].short ?? sources[sourceIdx].label,
+      options: sourceOptions,
+      selectedId: String(sourceIdx),
+      onSelect: (id) => pickSource(Number(id)),
+      sticky: true,
+      helpKey: 'src',
+    });
+  }
 
   const faderParam = config.params.find((p) => p.fader);
   const AnimHero = animOnStage ? fxAnim!.FxAnimHero : null;
   const sourceCaption = config.exploreCaptionBySource?.[sources[sourceIdx]?.label] ?? config.exploreCaption;
   const captionExtra = config.captionExtra?.(values, sources[sourceIdx]);
+  /** What a tempo-naming caption needs: the live source and the live CLICK tempo. */
+  const captionCtx = { source: sources[sourceIdx], clickBpm: labClickBpm };
 
   return (
     <LabShell
@@ -888,7 +1061,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
               running={running}
               pollGr={config.pollGr}
               grDb={grDb}
-              anim={AnimHero ? <AnimHero model={config.anim!(values, sources[sourceIdx])} active={focused} grDb={running ? grDb : 0} /> : null}
+              anim={AnimHero ? <AnimHero model={config.anim!(values, sources[sourceIdx])} active={focused} grDb={running ? grDb : 0} clickAnchor={labClickIdx >= 0 ? clickAnchor : undefined} /> : null}
               staticHero={AnimHero ? null : config.Hero(values, sources[sourceIdx])}
             />
           ),
@@ -957,12 +1130,12 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
             config.curveNote ? <ModelNote text={config.curveNote} style={styles.curveNote} /> : <Text style={styles.badge}>{heroBadgeText}</Text>
           ) : null}
           {config.Hero(values, sources[sourceIdx])}
-          {showCaption ? <Text style={styles.caption}>{config.heroCaption!(values)}</Text> : null}
+          {showCaption ? <Text style={styles.caption}>{config.heroCaption!(values, captionCtx)}</Text> : null}
         </View>
       ) : showCaption ? (
         <View style={{ gap: 6 }}>
           <Text style={styles.sectionHead}>WHAT YOU’RE SEEING</Text>
-          <Text style={styles.caption}>{config.heroCaption!(values)}</Text>
+          <Text style={styles.caption}>{config.heroCaption!(values, captionCtx)}</Text>
         </View>
       ) : null}
 

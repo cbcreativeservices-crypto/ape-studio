@@ -168,7 +168,8 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.match(ex, /TIME fader, 80 to 500 ms/);
     assert.match(ex, /FDBK \(FEEDBACK: 0%, 25%, 50% or 75%\)/); // the dock abbreviation spelled out once, with its four choices
     assert.match(ex, /MIX \(25%, 50%, 100% WET\)/);
-    assert.match(ex, /SOURCE \(CLICK 120, PINK NOISE, SINE 220 Hz\)/);
+    // owner 2026-11-25, click tempo: the CLICK's label follows the tempo the student sets, so the guide names it CLICK.
+    assert.match(ex, /SOURCE \(CLICK, PINK NOISE, SINE 220 Hz\)\./);
     // dock keys in order: the TIME fader, FDBK, MIX, COLOR (ping-pong + damping folded), SOURCE
     assert.match(DELAY, /label: 'DELAY TIME', short: 'TIME'/);
     assert.match(DELAY, /label: 'FEEDBACK', short: 'FDBK'/);
@@ -217,8 +218,10 @@ describe('4. the TRY THIS numbers are what the screen draws', () => {
     // A BPM only from TIME 250 ms up (≤ 240 BPM); slapback / short TIMEs name no tempo.
     // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item DL-02): the tempo line moved into delayTempoPhrase,
     // which names the CLICK's own note values at 120 BPM and keeps the quarter-note law for every other TIME.
-    assert.match(DELAY, /\(v\[P\.delayFeedback\] >= 0\.75 \? 'High feedback — a long trail; runaway starts near 100%\.'\s*: v\[P\.timeMs\] <= 150 \? 'Slapback range[^']*not tied to the tempo\.'\s*: v\[P\.timeMs\] < 250 \? 'A short echo[^']*'\s*: delayTempoPhrase\(v\[P\.timeMs\]\)\)/);
-    assert.match(CONFIGS, /const bpm = Math\.round\(60000 \/ timeMs\);\s*return bpm === DELAY_BPM\s*\? `That spacing = a quarter-note at \$\{bpm\} BPM, the CLICK’s tempo: each repeat lands on the next click\.`\s*: `That spacing = a quarter-note at \$\{bpm\} BPM/);
+    // owner 2026-11-25, click tempo: the phrase takes the CLICK's LIVE tempo (DELAY_BPM when unmoved); test/fxClickTempo_20261125 runs it at 90 and 120.
+    assert.match(DELAY, /\(v\[P\.delayFeedback\] >= 0\.75 \? 'High feedback — a long trail; runaway starts near 100%\.'\s*: v\[P\.timeMs\] <= 150 \? 'Slapback range[^']*not tied to the tempo\.'\s*: v\[P\.timeMs\] < 250 \? 'A short echo[^']*'\s*: delayTempoPhrase\(v\[P\.timeMs\], ctx\?\.clickBpm\)\)/);
+    assert.match(CONFIGS, /function delayTempoPhrase\(timeMs: number, clickBpm: number = DELAY_BPM\): string \{/);
+    assert.match(CONFIGS, /return bpm === clickBpm\s*\? `That spacing = a quarter-note at \$\{bpm\} BPM, the CLICK’s tempo: each repeat lands on the next click\.`\s*: `That spacing = a quarter-note at \$\{bpm\} BPM/);
     assert.ok(60000 / 250 <= 240 && 60000 / 249 > 240, 'the 250 ms cut keeps every named BPM at 240 or under');
     assert.equal(Math.round(60000 / 500), 120);
     assert.match(DELAY_SCREEN_GUIDES.explore.tryThis[0], /slide TIME to the top: 500 ms[\s\S]*quarter-note at 120 BPM \(60,000 ÷ 500\)/);
