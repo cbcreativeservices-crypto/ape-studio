@@ -70,7 +70,42 @@ const RELOAD_WINDOW_MS = 12_000;
  * cold launch, as before.
  */
 
-export type AutoUpdateOutcome = 'disabled' | 'none' | 'waiting' | 'reloaded' | 'deferred' | 'failed';
+/*
+ * ⛔ AND NEVER IN THE MIDDLE OF A QUIZ, AN EXAM OR A PURCHASE (fresh-install update
+ * audit, 2026-11-27). Going to the background does not end those: a quiz counts a
+ * short leave as a focus loss and carries on, and Android's Play sheet sends the
+ * app to the background while the person pays. A reload there threw the attempt
+ * away. Those flows take a hold (the reload hold, autoUpdate.ts); a background visit while a hold is
+ * out is skipped ('held') and the watcher waits for a later one. If none comes
+ * free, the update applies on the next cold launch, as it always could.
+ */
+export type AutoUpdateOutcome = 'disabled' | 'none' | 'waiting' | 'held' | 'reloaded' | 'deferred' | 'failed';
+
+/**
+ * The once-per-launch diagnostic (fresh-install update audit, 2026-11-27): is this
+ * launch running the bundle inside the store build, a downloaded update, or the
+ * emergency fallback after a crash — and how old is that bundle? Enum-shaped props
+ * only (telemetry scrub.ts); no update id, no device id. A missing date is a
+ * legitimate case and is left out, never guessed.
+ */
+export function launchEventProps(l: {
+  isEmbedded: boolean;
+  isEmergency: boolean;
+  channel: string | null;
+  createdAt: Date | null;
+  nowMs: number;
+}): Record<string, string | number | boolean> {
+  const out: Record<string, string | number | boolean> = {
+    embedded: l.isEmbedded,
+    emergency: l.isEmergency,
+    channel: l.channel?.trim() || 'none',
+  };
+  const t = l.createdAt?.getTime();
+  if (t != null && Number.isFinite(t) && t <= l.nowMs) {
+    out.bundle_age_days = Math.floor((l.nowMs - t) / 86_400_000);
+  }
+  return out;
+}
 
 /**
  * Wait for the NATIVE downloader to report a pending update, then reload the
@@ -93,6 +128,8 @@ export function watchForPendingUpdate(deps: {
   settle: (cb: () => void) => void;
   reload: () => Promise<void>;
   now: () => number;
+  /** True while a quiz, exam or purchase must not be restarted (the reload hold, autoUpdate.ts). */
+  isHeld?: () => boolean;
   onOutcome?: (o: AutoUpdateOutcome) => void;
 }, windowMs: number = RELOAD_WINDOW_MS): () => void {
   if (!deps.isEnabled) {
@@ -105,8 +142,18 @@ export function watchForPendingUpdate(deps: {
   let done = false;
   let unsubscribeBg: (() => void) | null = null;
 
+  let heldReported = false;
   const reloadNow = () => {
     if (done) return;
+    // A quiz, exam or purchase is in progress: not this background visit. Keep
+    // listening — a later one may be free; if not, the next cold launch applies it.
+    if (deps.isHeld?.()) {
+      if (!heldReported) {
+        heldReported = true;
+        deps.onOutcome?.('held');
+      }
+      return;
+    }
     done = true;
     unsubscribeBg?.();
     unsubscribeBg = null;
@@ -133,9 +180,11 @@ export function watchForPendingUpdate(deps: {
     }
     if (deps.isBackground()) {
       reloadNow();
-      return;
+      // Held: wait for a later background visit like any other find.
+      if (done) return;
+    } else {
+      deps.onOutcome?.('waiting');
     }
-    deps.onOutcome?.('waiting');
     unsubscribeBg = deps.onBackground(reloadNow);
   };
 
@@ -151,4 +200,57 @@ export function watchForPendingUpdate(deps: {
     unsubscribeBg?.();
     unsubscribeBg = null;
   };
+}
+
+/*
+ * ── "NOT NOW": THE RELOAD HOLD ──
+ * "Not now" for the background OTA reload (fresh-install update audit, 2026-11-27).
+ *
+ * `watchForPendingUpdate` (below) applies an update found at startup the
+ * next time the app goes to the BACKGROUND. That is safe for the JS runtime, but
+ * it restarts the app — and a person can background the app in the middle of
+ * something a restart would destroy:
+ *  - a timed quiz or the final exam (they tolerate a short leave: QuizScreen /
+ *    FinalExamScreen count it as a focus loss, they do not end the attempt);
+ *  - a purchase or a restore (on Android the Play sheet is its own activity, so
+ *    the app reports 'background' while the person is paying).
+ *
+ * A screen in one of those states takes a HOLD. While any hold is out, the
+ * watcher skips the reload; the update stays downloaded and applies on the next
+ * cold launch, exactly as it did before the watcher existed. Never worse.
+ *
+ */
+
+const holds = new Map<number, string>();
+let nextId = 1;
+let sessionBlock: string | null = null;
+
+/** Take a hold while `reason` is in progress. Returns the release; releasing twice is harmless. */
+export function holdUpdateReload(reason: string): () => void {
+  const id = nextId++;
+  holds.set(id, reason);
+  return () => {
+    holds.delete(id);
+  };
+}
+
+/**
+ * No background reload for the rest of this run of the app. For flows whose end
+ * the app does not reliably see (a purchase result arrives by listener, maybe
+ * never). The next cold launch clears it — a module variable does not survive one.
+ */
+export function blockUpdateReloadForSession(reason: string): void {
+  if (sessionBlock == null) sessionBlock = reason;
+}
+
+/** True while any hold or the session block is out. */
+export function isUpdateReloadHeld(): boolean {
+  return sessionBlock != null || holds.size > 0;
+}
+
+/** Tests only. */
+export function clearUpdateReloadHoldsForTest(): void {
+  holds.clear();
+  sessionBlock = null;
+  nextId = 1;
 }

@@ -451,6 +451,7 @@ the disclosure unconditionally, which is what the hard rule actually requires.
 5. **Purchase events to analytics (1.0.1, D98)**: purchase started / completed / failed / restored → Aptabase. **First** add the "Analytics" purpose to Purchase history in App Store Connect (App Privacy) and Play (Data safety). Rides with the Meta SDK update, which changes those forms anyway.
 6. **Meta SDK** (install events), App Tracking Transparency prompt, App Privacy and Data safety updates. Owner 2026-10-25: paid Meta ads are held until 1.0.1.
 7. **Instructor progress view**, with a short student-data statement for schools (owner 2026-10-25).
+8. **Startup update wait (owner 2026-11-27: "5 seconds")** - in app.json `updates` add `"checkAutomatically": "ON_LOAD"`, `"fallbackToCacheTimeout": 5000`, `"useEmbeddedUpdate": true` (keep the url). Each cold launch then waits up to 5 s behind the splash for a newer update and opens straight into it; otherwise the download applies next launch. It changes the runtime fingerprint, so it goes ONLY on the store-build commit, AFTER update 16 is published for builds 23/39. Full reasoning: Downloads/2026-11-27_OTA_FIRST_LAUNCH_IMPLEMENTATION_REPORT.md section 4. Build from a consolidated commit so a fresh install opens today's app.
 
 > The single cross-cutting list (post-approval OTA, launch day, Comp A, 1.0.1) is `docs/APE_LAUNCH_MUST_DO.md` (D101). Keep both in step.
 

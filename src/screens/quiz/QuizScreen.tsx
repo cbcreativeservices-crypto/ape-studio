@@ -74,6 +74,7 @@ import { useGuestWording, useTier } from '../../features/commercial/useTier';
 import { GUEST_QUIZ_START_REFUSED, remindAsGuest } from '../../features/lab/guestReminderRules';
 import { CUSTOM_QUIZ_MIN, isCustomListId } from '../../features/commercial/studyGate';
 import { readTermList } from '../../features/flags/flaggedStore';
+import { holdUpdateReload } from '../../features/updates/autoUpdate';
 
 type Props = NativeStackScreenProps<StudyStackParamList, 'Quiz'>;
 
@@ -366,6 +367,12 @@ export function QuizScreen({ navigation, route }: Props) {
     }, 250);
     return () => clearInterval(t);
   }, [deadline, doSubmit]);
+
+  // An attempt in progress is never restarted by a background OTA reload (update audit 2026-11-27).
+  useEffect(() => {
+    if (!payload) return;
+    return holdUpdateReload('quiz');
+  }, [payload]);
 
   /* ---- focus-void handling (2s grace; 1st warn, 2nd void) ---- */
   useEffect(() => {
