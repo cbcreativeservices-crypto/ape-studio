@@ -26,7 +26,8 @@ it('a stale or missing mark re-downloads even when the count has not moved', () 
   // The count RPC is consulted ONLY inside `if (revCurrent)`.
   const gate = body.indexOf('if (revCurrent) {');
   const rpc = body.indexOf("supabase.rpc('get_glossary_term_count')");
-  const close = body.indexOf('data === haveCount) return;');
+  // (2026-11-27) the early return now also waits on the shown total (names changed).
+  const close = body.indexOf('if (!cardsChanged && !namesChanged) return;');
   const fetch = body.indexOf('const fresh = await fetchCorpusTerms(table);');
   assert.ok(body.includes('const revCurrent = rev === CORPUS_CONTENT_REV;'));
   assert.ok(gate > 0 && rpc > gate && close > rpc && fetch > close, `${gate} ${rpc} ${close} ${fetch}`);
@@ -39,7 +40,8 @@ it('the mark is written only after the new copy is saved (a failed download retr
 });
 
 it('a first download carries the mark, so a new install does not download twice', () => {
-  assert.match(src, /void saveStoredTerms\(table, terms\)\n\s*\.then\(\(\) => setStoredMeta\(corpusRevKey\(table\), CORPUS_CONTENT_REV\)\)\n\s*\.catch\(\(\) => \{\}\);/);
+  // (2026-11-27) it also records the shown total it was downloaded for.
+  assert.match(src, /void saveStoredTerms\(table, terms\)\n\s*\.then\(\(\) => setStoredMeta\(corpusRevKey\(table\), CORPUS_CONTENT_REV\)\)\n\s*\.then\(\(\) => \(shown != null \? setStoredMeta\(corpusShownKey\(table\), String\(shown\)\) : undefined\)\)\n\s*\.catch\(\(\) => \{\}\);/);
 });
 
 it('definitions stay out of the corpus select (the ⛔ note stands)', () => {

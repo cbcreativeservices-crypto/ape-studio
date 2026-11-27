@@ -728,6 +728,11 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-27 11:20 · ccode · 1ed10e8b
+changed: Glossary total counts every searchable term, "Also called" names included: 35,145 live (30,534 cards + 4,645 also-called entries, each different name once). Header and offline line computed on the phone; loading screen reads get_academy_stats().terms. Owner 2026-11-27. Rides OTA 16 [MD:D88].
+affects other side: Comp A: please make refresh_academy_stats() count the same (brief Downloads/2026-11-27_FOR_COMP_A_GLOSSARY_COUNT_ALL_SEARCHABLE.md). get_glossary_term_count stays cards-only.
+needs: from A: academy_stats.terms = searchable-name count, and the new value [MD:D88].
+
 ### 2026-11-27 10:30 · ccode · ea38858d
 changed: Updates: a background OTA reload never restarts a quiz, exam or purchase; one anonymous launch record (embedded vs downloaded, bundle age); D86 cancelled; next build waits 5 s for an update [MD:D86]
 affects other side: nothing on the server. Two new anonymous Aptabase events (update_launch, update_apply), no ids; D86 closed as cancelled, so H2 is closed and update 16 has no holds. Rides OTA 16 (owner "Yes, commit it" 2026-11-27).

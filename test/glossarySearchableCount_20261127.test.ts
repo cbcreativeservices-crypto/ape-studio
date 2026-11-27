@@ -43,8 +43,21 @@ describe('the glossary total counts every searchable name', () => {
     assert.match(src, /`\$\{searchableTotal\.toLocaleString\(\)\} term\$\{searchableTotal === 1 \? '' : 's'\}`/);
     assert.match(src, /all \$\{Math\.max\(searchableTotal, offlineStats\.terms\)\.toLocaleString\(\)\} terms work with no connection/);
     // revalidateCorpus still compares the stored card count with the cards-only RPC.
-    assert.match(src, /async function revalidateCorpus[\s\S]{0,400}supabase\.rpc\('get_glossary_term_count'\)[\s\S]{0,120}data === haveCount/);
+    assert.match(src, /async function revalidateCorpus[\s\S]{0,500}supabase\.rpc\('get_glossary_term_count'\)[\s\S]{0,160}data !== haveCount/);
     // The loading screen shows the display total, the same number as the curriculum hero.
     assert.match(src, /supabase\.rpc\('get_academy_stats'\)/);
+    assert.match(src, /const n = await readShownTotal\(\);\s*if \(alive && n != null\) setCachedCount\(n\);/);
+  });
+
+  it('not static: the copy re-downloads when the shown total moves, at most once per change', () => {
+    const src = read('src/screens/glossary/GlossaryScreen.tsx');
+    const body = src.slice(src.indexOf('async function revalidateCorpus'), src.indexOf('async function revalidateCorpus') + 1600);
+    // an "Also called" change moves academy_stats.terms but not the card count
+    assert.match(body, /const namesChanged = shown != null && String\(shown\) !== lastShown;/);
+    assert.match(body, /if \(!cardsChanged && !namesChanged\) return;/);
+    // the marker is the server total the copy was downloaded FOR, written only after a full save
+    assert.match(body, /await saveStoredTerms\(table, fresh\);[\s\S]{0,300}setStoredMeta\(corpusShownKey\(table\), String\(shown\)\)/);
+    // a first download records it too, so a new install does not download twice
+    assert.match(src, /Promise\.all\(\[fetchCorpusTerms\(table\), readShownTotal\(\)\]\)[\s\S]{0,600}setStoredMeta\(corpusShownKey\(table\), String\(shown\)\)/);
   });
 });

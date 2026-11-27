@@ -450,12 +450,14 @@ function loadAllEntries(table: 'glossary' | 'glossary_browse_v'): Promise<Entry[
         }));
       }
 
-      const terms = await fetchCorpusTerms(table);
+      const [terms, shown] = await Promise.all([fetchCorpusTerms(table), readShownTotal()]);
       // Best-effort: a failed write costs a re-download next launch, nothing more.
       // The fresh copy is current by definition, so it carries today's version
-      // mark (else every new install would re-download once more, D88).
+      // mark and the shown total it was downloaded for (else every new install
+      // would re-download once more, D88).
       void saveStoredTerms(table, terms)
         .then(() => setStoredMeta(corpusRevKey(table), CORPUS_CONTENT_REV))
+        .then(() => (shown != null ? setStoredMeta(corpusShownKey(table), String(shown)) : undefined))
         .catch(() => {});
       return terms.map((r) => ({
         id: r.id,
@@ -615,19 +617,47 @@ const EMPTY_TERMS: { id: string; term: string; achievement_id: string | null; al
 const CORPUS_CONTENT_REV = '2026-11-26-also-called';
 const corpusRevKey = (table: string) => `corpus_rev:${table}`;
 
+/**
+ * The SHOWN total the device copy was last downloaded for (owner 2026-11-27: the
+ * header "reflects current count and is not static"). `academy_stats.terms` counts
+ * every searchable name, so it moves when "Also called" names are added or removed
+ * even though the card count does not. When it moves, the copy is downloaded again
+ * and the header, counted from that copy, follows. Remembering the total we last
+ * downloaded FOR (not comparing it with our own count) means a phone re-downloads
+ * at most once per change, even if its count and the server's ever disagree.
+ */
+const corpusShownKey = (table: string) => `corpus_shown_total:${table}`;
+
+/** academy_stats.terms, or null when it cannot be read (offline, RPC error). */
+async function readShownTotal(): Promise<number | null> {
+  try {
+    const { data, error } = await supabase.rpc('get_academy_stats');
+    const row = (Array.isArray(data) ? data[0] : data) as { terms?: unknown } | null;
+    const n = row?.terms;
+    return !error && typeof n === 'number' && Number.isFinite(n) ? n : null;
+  } catch {
+    return null;
+  }
+}
+
 async function revalidateCorpus(table: 'glossary' | 'glossary_browse_v', haveCount: number): Promise<void> {
   try {
     const rev = await getStoredMeta(corpusRevKey(table)).catch(() => null);
     const revCurrent = rev === CORPUS_CONTENT_REV;
+    const shown = await readShownTotal();
     if (revCurrent) {
       const { data, error } = await supabase.rpc('get_glossary_term_count');
-      if (error || typeof data !== 'number' || data === haveCount) return;
+      const cardsChanged = !error && typeof data === 'number' && data !== haveCount;
+      const lastShown = await getStoredMeta(corpusShownKey(table)).catch(() => null);
+      const namesChanged = shown != null && String(shown) !== lastShown;
+      if (!cardsChanged && !namesChanged) return;
     }
     const fresh = await fetchCorpusTerms(table);
     await saveStoredTerms(table, fresh);
     // Only after the new copy is fully written: a failed download keeps the
     // old version mark, so the next cold start tries again.
     await setStoredMeta(corpusRevKey(table), CORPUS_CONTENT_REV);
+    if (shown != null) await setStoredMeta(corpusShownKey(table), String(shown));
   } catch {
     // Offline, or the RPC is unavailable — keep what we have. That is the point.
   }
@@ -1483,10 +1513,8 @@ export function GlossaryScreen({ route, navigation }: Props) {
         // The DISPLAY total (academy_stats.terms, the curriculum hero's number),
         // not get_glossary_term_count, which stays cards-only for the device-copy
         // check (owner 2026-11-27: the count includes every searchable name).
-        const { data, error } = await supabase.rpc('get_academy_stats');
-        const row = (Array.isArray(data) ? data[0] : data) as { terms?: unknown } | null;
-        const n = row?.terms;
-        if (alive && !error && typeof n === 'number' && Number.isFinite(n)) setCachedCount(n);
+        const n = await readShownTotal();
+        if (alive && n != null) setCachedCount(n);
       } catch {
         /* non-fatal: the header waits for the live visible.length instead */
       }
