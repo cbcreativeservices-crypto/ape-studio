@@ -728,6 +728,16 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-27 12:50 · ccode · OTA 16 PUBLISHED (owner: "then yes, develop and then deliver update 16", after the readiness check)
+changed: production OTA from ea441d2b. Android group 2927f62d-84a9-46e3-9f9e-eff011501c41 (update 01a21ebc, runtime a903813a, build 23); iOS group 9d3a19dd-a54b-4d1b-9fb1-9f80d1a50c26 (update 01a21ec5, runtime 91355451, build 39). Gate green 25,118; eol-sync 0; fingerprints MATCH both builds; sourcemaps uploaded per platform. 40 items (Downloads/2026-11-26_OTA_16_CONTENTS_CHECK.md; what goes where: Downloads/2026-11-27_UPDATE_16_AND_STORE_BUILD_WHAT_GOES_WHERE.md). Pixel PROVEN: launch 1 downloaded group 2927f62d, launch 2 "No update available". iPhone check is the owner's. Undo = republish OTA 15 (Android a9826ac9 / iOS 44db6bec).
+affects other side: Comp A: update 16 is live. It reads get_academy_stats() on glossary open (display total + one re-download per change of academy_stats.terms) and keeps get_glossary_term_count cards-only. Calculator C09 still open; check C13/C14 on a phone now possible.
+needs: owner iPhone check [MD:D88] [MD:D78] [MD:D87].
+
+### 2026-11-27 12:00 · ccode · ea441d2b
+changed: Glossary count follows the server: the phone re-downloads its copy when get_academy_stats().terms changes (alias-only changes included), at most once per change; header counted from that copy. Owner: header "reflects current count and is not static". Rides OTA 16 [MD:D88].
+affects other side: Comp A: the app now calls get_academy_stats() on each glossary open (cheap, one row). academy_stats.terms is now a download trigger as well as a display number: any change to it re-downloads the corpus once per phone. Keep it moving only when names really change (the nightly refresh is fine).
+needs: nothing [MD:D88].
+
 ### 2026-11-27 11:20 · ccode · 1ed10e8b
 changed: Glossary total counts every searchable term, "Also called" names included: 35,145 live (30,534 cards + 4,645 also-called entries, each different name once). Header and offline line computed on the phone; loading screen reads get_academy_stats().terms. Owner 2026-11-27. Rides OTA 16 [MD:D88].
 affects other side: Comp A: please make refresh_academy_stats() count the same (brief Downloads/2026-11-27_FOR_COMP_A_GLOSSARY_COUNT_ALL_SEARCHABLE.md). get_glossary_term_count stays cards-only.
