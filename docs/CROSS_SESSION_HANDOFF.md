@@ -728,6 +728,17 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-27 15:45 · ccode · OTA 17 PUBLISHED (owner: "Publish update 17")
+changed: production OTA from 7781a6df. Android group b72a3fc0-cd8e-4468-8a0c-ced93765ddd6 (update 01a21f5d, runtime a903813a, build 23); iOS group ae267bdc-68cf-4250-ab87-b933b6bb59d2 (update 01a21f63, runtime 91355451, build 39). Gate green 25,121; eol-sync 0; fingerprints MATCH both builds; sourcemaps uploaded per platform. One item: the open Glossary adopts the fresh copy the moment it is saved (header + search follow the current count, no restart). Pixel PROVEN: launch 1 downloaded 01a21f5d, launch 2 "CheckCompleteUnavailable" (running 17). iPhone/iPad check is the owner's. Undo = republish OTA 16 (Android 2927f62d / iOS 9d3a19dd).
+affects other side: nothing on the server. Comp A: the iPad's stale 35,418 header corrects itself on the first glossary open after update 17 lands.
+needs: nothing [MD:D88].
+
+### 2026-11-27 13:25 · ccode · 7781a6df
+changed: Glossary: switch to the fresh copy the moment it is saved — the header and search move to the current count with no restart (update 17) [MD:D88]
+affects other side: nothing on the server. Rides update 17 (PUBLISHED 2026-11-27 15:45, see above).
+needs: nothing [MD:D88].
+
+
 ### 2026-11-27 12:50 · ccode · OTA 16 PUBLISHED (owner: "then yes, develop and then deliver update 16", after the readiness check)
 changed: production OTA from ea441d2b. Android group 2927f62d-84a9-46e3-9f9e-eff011501c41 (update 01a21ebc, runtime a903813a, build 23); iOS group 9d3a19dd-a54b-4d1b-9fb1-9f80d1a50c26 (update 01a21ec5, runtime 91355451, build 39). Gate green 25,118; eol-sync 0; fingerprints MATCH both builds; sourcemaps uploaded per platform. 40 items (Downloads/2026-11-26_OTA_16_CONTENTS_CHECK.md; what goes where: Downloads/2026-11-27_UPDATE_16_AND_STORE_BUILD_WHAT_GOES_WHERE.md). Pixel PROVEN: launch 1 downloaded group 2927f62d, launch 2 "No update available". iPhone check is the owner's. Undo = republish OTA 15 (Android a9826ac9 / iOS 44db6bec).
 affects other side: Comp A: update 16 is live. It reads get_academy_stats() on glossary open (display total + one re-download per change of academy_stats.terms) and keeps get_glossary_term_count cards-only. Calculator C09 still open; check C13/C14 on a phone now possible.
