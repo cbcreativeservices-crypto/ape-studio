@@ -47,6 +47,7 @@ import { CoachMark } from '../../components/CoachMark';
 import { ShareIcon } from '../../components/ShareIcon';
 import { LinksToggleLabel } from './LinksToggleLabel';
 import { useGlossaryLinksPref } from '../../features/glossary/linksPref';
+import { countSearchableNames } from '../../features/glossary/searchableNames';
 import { ShareTermSheet, type NamedTerm, type ShareTermPayload } from '../../components/ShareTermSheet';
 import type { GlossaryShareTerm } from '../../features/glossary/glossaryShare';
 import { BookmarkIcon, HoldHintPressable, TermSelectIcons } from '../../features/flags/TermSelectIcons';
@@ -1479,8 +1480,13 @@ export function GlossaryScreen({ route, navigation }: Props) {
     let alive = true;
     void (async () => {
       try {
-        const { data, error } = await supabase.rpc('get_glossary_term_count');
-        if (alive && !error && typeof data === 'number') setCachedCount(data);
+        // The DISPLAY total (academy_stats.terms, the curriculum hero's number),
+        // not get_glossary_term_count, which stays cards-only for the device-copy
+        // check (owner 2026-11-27: the count includes every searchable name).
+        const { data, error } = await supabase.rpc('get_academy_stats');
+        const row = (Array.isArray(data) ? data[0] : data) as { terms?: unknown } | null;
+        const n = row?.terms;
+        if (alive && !error && typeof n === 'number' && Number.isFinite(n)) setCachedCount(n);
       } catch {
         /* non-fatal: the header waits for the live visible.length instead */
       }
@@ -3426,6 +3432,9 @@ ${COPY.glossaryFreeAllowance}`,
     }
     return list;
   }, [entries, filter, deferredSearch, selTopicId, bookmarks, starred, recent, topics, topicIdsByName, formulaById]);
+  // Every searchable term: each card's headword AND its "Also called" names,
+  // each different name once (owner 2026-11-27). Once per corpus load.
+  const searchableTotal = useMemo(() => countSearchableNames(entries), [entries]);
   // Which results were found by one of the card's OTHER names (2026-10-29):
   // the row keeps its real term and says "matches: <that name>" under it. Only
   // cards that have other names are asked, so this costs nothing today.
@@ -4435,8 +4444,8 @@ ${COPY.glossaryFreeAllowance}`,
               <View style={styles.resultHeaderRow}>
                 <Text style={styles.resultCount}>
                   {filter === 'all' && !search.trim()
-                    ? // Unfiltered: the whole corpus — "N terms" (no redundant "· All").
-                      `${visible.length.toLocaleString()} term${visible.length === 1 ? '' : 's'}`
+                    ? // Unfiltered: every searchable term, "Also called" names included (owner 2026-11-27).
+                      `${searchableTotal.toLocaleString()} term${searchableTotal === 1 ? '' : 's'}`
                     : // A filter or search is active — these are RESULTS, labeled by what narrowed them.
                       `${visible.length.toLocaleString()} result${visible.length === 1 ? '' : 's'} · ${filterLabel}`}
                 </Text>
@@ -4465,7 +4474,7 @@ ${COPY.glossaryFreeAllowance}`,
                   <>
                     <Text style={styles.offlineStat}>
                       {offlineStats.definitions >= offlineStats.terms
-                        ? `Saved on this device — all ${offlineStats.terms.toLocaleString()} terms work with no connection.`
+                        ? `Saved on this device — all ${Math.max(searchableTotal, offlineStats.terms).toLocaleString()} terms work with no connection.`
                         : `${offlineStats.definitions.toLocaleString()} of ${offlineStats.terms.toLocaleString()} definitions saved on this device.`}
                     </Text>
                     {offlineStats.definitions >= offlineStats.terms || (resolved && !isMember) ? null : (

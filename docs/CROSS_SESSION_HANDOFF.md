@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-27 10:30 · ccode · ea38858d
+changed: Updates: a background OTA reload never restarts a quiz, exam or purchase; one anonymous launch record (embedded vs downloaded, bundle age); D86 cancelled; next build waits 5 s for an update [MD:D86]
+affects other side: nothing on the server. Two new anonymous Aptabase events (update_launch, update_apply), no ids; D86 closed as cancelled, so H2 is closed and update 16 has no holds. Rides OTA 16 (owner "Yes, commit it" 2026-11-27).
+needs: nothing from A. Owner: store review status from the consoles, then the publish word [MD:D86].
+
+
 ### 2026-11-26 evening · ccode · end of session (no new code)
 changed: OTA 16 contents checked, nothing published: 55 commits since OTA 15 (d651ae0a), 37 finished elements, no native or config change, gate 25,102 / 0 at cea6132c. Report: Downloads/2026-11-26_OTA_16_CONTENTS_CHECK.md/.html. Owner ruling "Ship all on": all 14 figure families stay ON with the hands as they are (not the publish word). Every figure ruling of the cast sweep is closed [MD:D78].
 affects other side: Comp A: the glossary refresh in 57bb9130 re-downloads the stored glossary ONCE when a phone gets OTA 16. A merge made AFTER that reaches phones only if get_glossary_term_count changes. Please merge the 489 pairs (D86) before OTA 16, or confirm the count moves after a merge [MD:D88].
