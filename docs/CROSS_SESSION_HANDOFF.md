@@ -728,6 +728,18 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-26 evening · ccode · end of session (no new code)
+changed: OTA 16 contents checked, nothing published: 55 commits since OTA 15 (d651ae0a), 37 finished elements, no native or config change, gate 25,102 / 0 at cea6132c. Report: Downloads/2026-11-26_OTA_16_CONTENTS_CHECK.md/.html. Owner ruling "Ship all on": all 14 figure families stay ON with the hands as they are (not the publish word). Every figure ruling of the cast sweep is closed [MD:D78].
+affects other side: Comp A: the glossary refresh in 57bb9130 re-downloads the stored glossary ONCE when a phone gets OTA 16. A merge made AFTER that reaches phones only if get_glossary_term_count changes. Please merge the 489 pairs (D86) before OTA 16, or confirm the count moves after a merge [MD:D88].
+needs: from A: the answer on the term count, and word when the current task is finished (the owner is waiting on it before OTA 16). Open with the owner: the boom below-the-mouth hand placement from above; the band.stage line "the singer downstage center" [MD:D88] [MD:D78].
+
+
+### 2026-11-26 15:16 · ccode · cea6132c
+changed: Figures: acoustic trio spread 5 degrees so the three-spot setup meets 3:1 (guitar-fiddle mics 818 -> 916 mm); owner verdict pending [MD:D78]
+affects other side: nothing (drawing positions only; no server, no text)
+needs: nothing
+
+
 ### 2026-11-26 14:33 · ccode · 3dd062e2
 changed: Calculator Lab: Comp A audit fixes C01-C05, C12-C16, C19-C22, C24, C25 (breaker follows the derated wire, NEC 240.4; exact counts in steps; loudness and workflow wording) [MD:D87]
 affects other side: Comp A: the 16 calculator audit fixes of the D87 brief are in 3dd062e2 (breaker rule NEC 240.4, exact counts, wording); nothing on the server

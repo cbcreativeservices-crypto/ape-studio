@@ -1025,3 +1025,14 @@ process is running.
 - **Website deploy = push to audio-tools-engine.** Copy ONLY the approved files into a worktree from origin. The workbench web/ carries other unpublished pages. Read back live with a background until-loop.
 - **The must-do ratchet reads "GO" as open work.** "DONE … (owner GO …)" failed mustDoStatusHonest; write "on the owner's word".
 - **Fingerprint runtimes make OTAs safe during a store review** when the build in review has a different native fingerprint. Server-side content (bucket tiles, database text) still reaches every version, including the one in review.
+
+## 2026-11-26: cast sweep, figure rulings, calculator and glossary fixes, OTA 16 contents check
+
+- **A builder's own tests can miss a lesson-wide validator.** Raising the acoustic guitar and re-aiming its mic passed every file the builder ran, then the full gate failed in test/mikingRestructure.test.ts: the mic stand stood on the player's floor wedge. Whenever a mic, a seat or an instrument's measured point moves, the builder runs mikingRestructure too.
+- **Ensemble lessons draw every stand from one boom rule.** A single mic's stand cannot be moved alone; the choices are the lesson's boom length (`mountRule`) or the gear it hits. Say so to the owner and give both.
+- **A true-size instrument exposes points that were set for a stretched one.** The acoustic guitar's body was drawn with its width 54° off its length and a neck 20% too long; once it was drawn true, the "12th fret" mic aim sat at the 7th fret and the guitar hung through the thigh. Check the measured points against the real instrument whenever a drawing is corrected.
+- **A one-time refresh mark only covers what the server holds when the phone first runs it.** The glossary's `CORPUS_CONTENT_REV` forces one re-download; a later alias-only change needs the term count to move or the mark raised again in another update. Order server merges BEFORE the update that carries the mark.
+- **The OTA "running list" is not one file.** It is the must-do rows marked "rides OTA n" plus the handoff-log entries. Build the contents list from both, then check it against the commits; never from the commits alone.
+- **"Ship all on" answered a question about switches, not the publish word.** A button answer is the answer to the question on the button; the BUILD RULE still needs the owner's own words to publish.
+- **The browser pane drops its tabs often.** Before a batch, list the tabs; make new ones when the old ids are gone; reload a blank tab while it is in front. A reload during a full gate can take a minute.
+
