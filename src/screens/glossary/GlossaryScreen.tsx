@@ -434,20 +434,13 @@ function loadAllEntries(table: 'glossary' | 'glossary_browse_v'): Promise<Entry[
        */
       const stored = await loadStoredTerms(table).catch(() => [] as typeof EMPTY_TERMS);
       if (stored.length) {
-        // Revalidate WITHOUT blocking the reader. A changed corpus is written
-        // to the device and picked up on the next cold open; swapping 31,858
-        // rows under someone mid-scroll would be worse than a day-late term.
+        // Revalidate WITHOUT blocking the reader: the device copy opens at once.
+        // (2026-11-27, owner: the header must not stay behind Explore) When a
+        // changed corpus has been downloaded AND saved, the open Glossary switches
+        // to it straight away — header and search together — instead of waiting
+        // for the next cold start (see adoptFreshCorpus).
         void revalidateCorpus(table, stored.length);
-        return stored.map((r) => ({
-          id: r.id,
-          term: r.term,
-          termLower: r.term.toLowerCase(),
-          also_called: r.also_called,
-          aliasesLower: lowerNames(r.also_called),
-          definition: '',
-          plain_english: null,
-          achievement_id: r.achievement_id,
-        }));
+        return stored.map(corpusRowToEntry);
       }
 
       const [terms, shown] = await Promise.all([fetchCorpusTerms(table), readShownTotal()]);
@@ -459,18 +452,56 @@ function loadAllEntries(table: 'glossary' | 'glossary_browse_v'): Promise<Entry[
         .then(() => setStoredMeta(corpusRevKey(table), CORPUS_CONTENT_REV))
         .then(() => (shown != null ? setStoredMeta(corpusShownKey(table), String(shown)) : undefined))
         .catch(() => {});
-      return terms.map((r) => ({
-        id: r.id,
-        term: r.term,
-        termLower: r.term.toLowerCase(),
-        also_called: r.also_called,
-        aliasesLower: lowerNames(r.also_called),
-        definition: '',
-        plain_english: null,
-        achievement_id: r.achievement_id,
-      }));
+      return terms.map(corpusRowToEntry);
     },
   );
+}
+
+/** One stored or downloaded corpus row as a list entry (definitions arrive later, for what is on screen). */
+function corpusRowToEntry(r: { id: string; term: string; achievement_id: string | null; also_called: readonly string[] }): Entry {
+  return {
+    id: r.id,
+    term: r.term,
+    termLower: r.term.toLowerCase(),
+    also_called: r.also_called,
+    aliasesLower: lowerNames(r.also_called),
+    definition: '',
+    plain_english: null,
+    achievement_id: r.achievement_id,
+  };
+}
+
+/**
+ * The open Glossary listens here for a fresh corpus (owner 2026-11-27: the header
+ * "reflects current count and is not static", and must not stay behind Explore).
+ */
+const freshCorpusListeners = new Set<(table: 'glossary' | 'glossary_browse_v', entries: Entry[]) => void>();
+
+/**
+ * A fresh corpus has been downloaded and SAVED: make it this run's list at once.
+ * Definitions already fetched for rows on screen are carried over by id, so
+ * nothing is read twice (and no metered read is spent again). The in-memory
+ * cache is replaced only when it still belongs to the same table.
+ */
+async function adoptFreshCorpus(
+  table: 'glossary' | 'glossary_browse_v',
+  rows: { id: string; term: string; achievement_id: string | null; also_called: readonly string[] }[],
+): Promise<void> {
+  if (ENTRIES_TABLE !== table) return;
+  const old = ENTRIES_CACHE ? await ENTRIES_CACHE.catch(() => [] as Entry[]) : [];
+  const byId = new Map(old.map((e) => [e.id, e]));
+  const fresh = rows.map((r) => {
+    const e = corpusRowToEntry(r);
+    const was = byId.get(r.id);
+    if (was) {
+      e.definition = was.definition;
+      e.plain_english = was.plain_english;
+    }
+    return e;
+  });
+  if (ENTRIES_TABLE !== table) return;
+  ENTRIES_CACHE = Promise.resolve(fresh);
+  freshCorpusListeners.forEach((fn) => fn(table, fresh));
 }
 
 /** A term whose FULL definition could not be read for a share (final round B,
@@ -658,6 +689,8 @@ async function revalidateCorpus(table: 'glossary' | 'glossary_browse_v', haveCou
     // old version mark, so the next cold start tries again.
     await setStoredMeta(corpusRevKey(table), CORPUS_CONTENT_REV);
     if (shown != null) await setStoredMeta(corpusShownKey(table), String(shown));
+    // Saved: the open Glossary switches to it now, not at the next cold start.
+    await adoptFreshCorpus(table, fresh);
   } catch {
     // Offline, or the RPC is unavailable — keep what we have. That is the point.
   }
@@ -2854,6 +2887,21 @@ ${COPY.glossaryFreeAllowance}`,
     if (!OFFLINE_AVAILABLE) return;
     void corpusStats(table).then(setOfflineStats, () => {});
   }, [table]);
+
+  // A fresh corpus landed while this Glossary is open (owner 2026-11-27): show it
+  // now — the header count and the search move together, so the number shown is
+  // always one a reader can search, and it matches Explore without a restart.
+  useEffect(() => {
+    const onFresh = (t: 'glossary' | 'glossary_browse_v', list: Entry[]) => {
+      if (t !== table) return;
+      setEntries(list);
+      refreshOfflineStats();
+    };
+    freshCorpusListeners.add(onFresh);
+    return () => {
+      freshCorpusListeners.delete(onFresh);
+    };
+  }, [table, refreshOfflineStats]);
 
   // Synchronous twin of `savingOffline` (bug hunt 2026-09-30): a double tap on
   // SAVE ALL lands both taps in the same render, both read `savingOffline`

@@ -36,7 +36,9 @@ const between = (src: string, a: string, b: string) => {
 describe('1. search ranks without a per-term regex split', () => {
   it('the term is lower-cased once, when the corpus loads', () => {
     const load = between(SCREEN, 'function loadAllEntries(', 'type ShareDefinitionUnreadable');
-    assert.equal((load.match(/termLower: r\.term\.toLowerCase\(\),/g) ?? []).length, 2);
+    // (2026-11-27) one shared row → entry helper, used by the stored and the downloaded path.
+    assert.equal((load.match(/termLower: r\.term\.toLowerCase\(\),/g) ?? []).length, 1);
+    assert.equal((load.match(/\.map\(corpusRowToEntry\)/g) ?? []).length, 2);
     assert.match(SCREEN, /searchRank\(e\.termLower \?\? e\.term\.toLowerCase\(\), q\)/);
   });
 

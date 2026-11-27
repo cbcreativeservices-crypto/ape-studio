@@ -61,3 +61,23 @@ describe('the glossary total counts every searchable name', () => {
     assert.match(src, /Promise\.all\(\[fetchCorpusTerms\(table\), readShownTotal\(\)\]\)[\s\S]{0,600}setStoredMeta\(corpusShownKey\(table\), String\(shown\)\)/);
   });
 });
+
+describe('update 17: the open Glossary switches to a fresh copy the moment it is saved', () => {
+  const src = read('src/screens/glossary/GlossaryScreen.tsx');
+
+  it('the refresh hands the saved copy to the open screen (no wait for the next cold start)', () => {
+    const body = src.slice(src.indexOf('async function revalidateCorpus'), src.indexOf('async function revalidateCorpus') + 2000);
+    assert.match(body, /setStoredMeta\(corpusShownKey\(table\), String\(shown\)\);\s*\/\/[^\n]*\n\s*await adoptFreshCorpus\(table, fresh\);/);
+  });
+
+  it('definitions already fetched carry over by id, and only the same table\'s cache is replaced', () => {
+    const fn = src.slice(src.indexOf('async function adoptFreshCorpus'), src.indexOf('async function adoptFreshCorpus') + 1200);
+    assert.match(fn, /if \(ENTRIES_TABLE !== table\) return;/);
+    assert.match(fn, /e\.definition = was\.definition;\s*e\.plain_english = was\.plain_english;/);
+    assert.match(fn, /ENTRIES_CACHE = Promise\.resolve\(fresh\);\s*freshCorpusListeners\.forEach\(\(fn\) => fn\(table, fresh\)\);/);
+  });
+
+  it('the screen listens while open, takes the list for its own table, and stops listening when closed', () => {
+    assert.match(src, /const onFresh = \(t: 'glossary' \| 'glossary_browse_v', list: Entry\[\]\) => \{\s*if \(t !== table\) return;\s*setEntries\(list\);\s*refreshOfflineStats\(\);\s*\};\s*freshCorpusListeners\.add\(onFresh\);\s*return \(\) => \{\s*freshCorpusListeners\.delete\(onFresh\);/);
+  });
+});
