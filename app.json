@@ -9,7 +9,10 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "updates": {
-      "url": "https://u.expo.dev/72f69470-fe12-4ecb-a10b-e8331d53812d"
+      "url": "https://u.expo.dev/72f69470-fe12-4ecb-a10b-e8331d53812d",
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 5000,
+      "useEmbeddedUpdate": true
     },
     "runtimeVersion": {
       "policy": "fingerprint"
