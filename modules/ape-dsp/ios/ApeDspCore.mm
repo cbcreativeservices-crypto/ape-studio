@@ -375,6 +375,20 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
   for (NSNumber *n in values) v.push_back(n.doubleValue);
   _gen->setAdditive(v.data(), static_cast<uint32_t>(v.size()));
 }
+// CLIP source (engine 13): the core copies the samples (makeClip) and publishes
+// the buffer lock-free; the render thread never allocates or frees it.
+- (int)genLoadClipLeft:(const float *)left
+                 right:(const float *)right
+                frames:(uint32_t)frames
+            sampleRate:(double)sampleRate {
+  return _gen->loadClip(left, right, frames, sampleRate);
+}
+- (void)genUnloadClip {
+  _gen->unloadClip();
+}
+- (void)genSetClipLoop:(BOOL)loop gainDb:(double)gainDb {
+  _gen->setClip(loop == YES, gainDb);
+}
 - (void)genUnlockCap {
   _gen->unlockCap();
 }
@@ -388,6 +402,8 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
   _gen->stop();
 }
 - (NSDictionary<NSString *, id> *)genStatus {
+  // A bridge poll: free the clip buffers the render thread has retired.
+  _gen->reclaimClips();
   return @{
     @"running" : @(_gen->running()),
     @"capUnlocked" : @(_gen->capUnlocked()),
@@ -400,6 +416,13 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
     // v4: route-aware speaker-safety HPF state (0 Hz = bypassed) — honest display.
     @"genHpfHz" : @(_gen->hpfHz()),
     @"genHpfEngaged" : @(_gen->hpfEngaged()),
+    // v13: the loaded CLIP (0 frames = none), its file rate / channels, a
+    // one-shot that has played out, and the hot-file normalisation (< 1).
+    @"clipFrames" : @(_gen->clipFrames()),
+    @"clipSampleRate" : @(_gen->clipRate()),
+    @"clipChannels" : @(_gen->clipChannels()),
+    @"clipEnded" : @(_gen->clipEnded()),
+    @"clipNormGain" : @(_gen->clipNormGain()),
   };
 }
 - (void)genRender:(float *)buffer frames:(uint32_t)frames {

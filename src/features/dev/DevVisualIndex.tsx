@@ -99,12 +99,21 @@ const INLINE_POPUPS: ScreenEntry[] = [
   },
 ];
 
-type StandaloneKey = 'trophy' | 'share' | 'learningIntro';
+type StandaloneKey = 'trophy' | 'share' | 'learningIntro' | 'nativeClip';
 const STANDALONE: { label: string; key: StandaloneKey }[] = [
   { label: 'Trophy popup', key: 'trophy' },
   { label: 'Share term sheet', key: 'share' },
   { label: 'Learning intro sheet', key: 'learningIntro' },
+  // Engine 13 (build must-do D16 / A15): hear a published lab-audio asset
+  // through the native generator path + EQ on the dev client.
+  { label: 'Native clip check (dev, engine 13)', key: 'nativeClip' },
 ];
+
+/** The engine-13 clip check, required only when opened (never on the start path). */
+function NativeClipHost({ onClose }: { onClose: () => void }) {
+  const { NativeClipCheck } = require('../../dev/NativeClipCheck') as typeof import('../../dev/NativeClipCheck');
+  return <NativeClipCheck onClose={onClose} />;
+}
 
 /**
  * GLOBAL DIALOGS (2026-09-13). Unlike the STANDALONE entries above, these are
@@ -436,6 +445,11 @@ export function DevVisualIndex() {
           intro={MOCK_INTRO}
           onBegin={() => setStandalone(null)}
         />
+        <Modal visible={standalone === 'nativeClip'} animationType="slide" onRequestClose={() => setStandalone(null)}>
+          <View style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom, backgroundColor: colors.screenBg }}>
+            {standalone === 'nativeClip' ? <NativeClipHost onClose={() => setStandalone(null)} /> : null}
+          </View>
+        </Modal>
       </Modal>
     </>
   );

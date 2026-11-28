@@ -237,6 +237,13 @@ public class ApeDspModule: Module {
          let ratio = fm["ratio"] as? Double, let index = fm["index"] as? Double {
         self.core.genSetFm(ratio, index: index, decay: (fm["decaySec"] as? Double) ?? 0.0)
       }
+      // CLIP (engine 13, GenMode::Clip) — { loop, gainDb }: loop (default true)
+      // or one-shot; gainDb relative to the level, ≤ 0 (clamped in the core).
+      // Targets-first (before mode). Same shape on Android/JS.
+      if let c = params["clip"] as? [String: Any] {
+        self.core.genSetClipLoop((c["loop"] as? Bool) ?? true,
+                                 gainDb: (c["gainDb"] as? NSNumber)?.doubleValue ?? 0.0)
+      }
       // JS numbers bridge to Swift as Double/NSNumber, NEVER Int — `as? Int`
       // silently failed, so setMode was never called and the generator stayed at
       // its default GenMode::Off: it rendered PURE SILENCE while genStatus still
@@ -252,6 +259,20 @@ public class ApeDspModule: Module {
     }
     Function("genStatus") { () -> [String: Any] in
       return self.core.genStatus()
+    }
+    // CLIP source (engine 13, build must-do D16 / A15). Decodes a LOCAL file
+    // (the app cache — never a URL, never shared storage) with AVAudioFile on
+    // Expo's background queue for AsyncFunctions: never main, never the render
+    // thread. It touches no AVAudioEngine, so unlike genStart it does not need
+    // main. The float PCM goes to the core at the FILE's rate (the core
+    // resamples at render time) and is swapped in lock-free. Plays through
+    // genSet({ mode: 15, clip: {...} }) + genStart like every generator signal,
+    // under the same Q4 cap. Same name, shape and error codes on Android.
+    AsyncFunction("loadClip") { (uri: String) -> [String: Any] in
+      return self.decodeAndLoadClip(uri: uri)
+    }
+    Function("unloadClip") { () -> Void in
+      self.core.genUnloadClip()
     }
     // OUTPUT LATENCY (engine 12, must-do D85 (a)): the effect labs shift the
     // drawn CLICK by it so the picture meets the HEARD click. Returns the value
@@ -827,6 +848,70 @@ public class ApeDspModule: Module {
     outLatencyLock.lock()
     outLatencyMsCache = ms
     outLatencyLock.unlock()
+  }
+
+  // MARK: - Clip source (engine 13, build must-do D16 / A15)
+
+  /// apedsp::genclip::kMaxSeconds — keep in lockstep with Clip.hpp.
+  private static let clipMaxSeconds = 60.0
+
+  private func clipError(_ code: String, _ message: String) -> [String: Any] {
+    return ["ok": false, "error": code, "message": message]
+  }
+
+  /// Decode one LOCAL audio file (lab-audio AAC/M4A, or WAV) with AVAudioFile —
+  /// float32, deinterleaved, at the file's own rate (AVAudioFile applies the
+  /// AAC priming/remainder trim from the file itself) — and hand it to the core.
+  /// Background queue only (the AsyncFunction's); never main, never render.
+  private func decodeAndLoadClip(uri: String) -> [String: Any] {
+    let url: URL
+    if uri.hasPrefix("/") {
+      url = URL(fileURLWithPath: uri)
+    } else if let u = URL(string: uri), u.isFileURL {
+      url = u
+    } else {
+      return clipError("unsupported", "Only a local file can be loaded")
+    }
+    guard FileManager.default.fileExists(atPath: url.path) else {
+      return clipError("not_found", "No file at that path")
+    }
+    let file: AVAudioFile
+    do {
+      file = try AVAudioFile(forReading: url, commonFormat: .pcmFormatFloat32, interleaved: false)
+    } catch {
+      return clipError("decode", "Not a readable audio file: \(error.localizedDescription)")
+    }
+    let fmt = file.processingFormat
+    let rate = fmt.sampleRate
+    let length = file.length
+    if length <= 0 { return clipError("empty", "No audio in the file") }
+    if Double(length) > rate * Self.clipMaxSeconds { return clipError("too_long", "Longer than 60 s") }
+    guard fmt.channelCount >= 1,
+          let buf = AVAudioPCMBuffer(pcmFormat: fmt, frameCapacity: AVAudioFrameCount(length)) else {
+      return clipError("decode", "Could not allocate the clip buffer")
+    }
+    do {
+      try file.read(into: buf)
+    } catch {
+      return clipError("decode", "Could not decode the file: \(error.localizedDescription)")
+    }
+    let frames = buf.frameLength
+    guard frames > 0, let ch = buf.floatChannelData else {
+      return clipError("empty", "No audio in the file")
+    }
+    let stereo = fmt.channelCount >= 2
+    // Mono, or the first two channels (the core plays at most stereo).
+    let left = UnsafePointer<Float>(ch[0])
+    let right: UnsafePointer<Float>? = stereo ? UnsafePointer<Float>(ch[1]) : nil
+    let status = core.genLoadClipLeft(left, right: right, frames: frames, sampleRate: rate)
+    switch status {
+    case 0:
+      return ["ok": true, "frames": Double(frames), "sampleRate": rate, "channels": stereo ? 2 : 1]
+    case 1: return clipError("empty", "The engine refused the clip (empty)")
+    case 2: return clipError("bad_rate", "The engine refused the clip (sample rate)")
+    case 3: return clipError("too_long", "Longer than 60 s")
+    default: return clipError("decode", "The engine refused the clip (\(status))")
+    }
   }
 
   // MARK: - Recovery watchdog (Booth 2026-07-09, Spike-0 field finding)

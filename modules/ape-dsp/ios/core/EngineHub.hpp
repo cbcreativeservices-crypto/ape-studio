@@ -83,7 +83,15 @@ namespace apedsp {
 /// output running, no timestamp yet, OpenSL ES). Bridge-only: the core is
 /// unchanged. The effect labs shift the drawn CLICK by it so the picture meets
 /// the HEARD click (Bluetooth adds 100-300 ms). JS gates it on >= 12.
-constexpr uint32_t kEngineVersion = 12;
+/// 13 (2026-11-27, 1.0.1 store build, build must-do D16 / A15): the CLIP
+/// source — GenMode::Clip = 15 plays a preloaded recording (Clip.hpp) through
+/// the SAME speaker HPF, Q4 level cap, fades and effect chain as the generated
+/// signals. The platform decodes a local file (iOS AVAudioFile; Android
+/// MediaExtractor + MediaCodec) off the audio thread and hands float PCM to
+/// Generator::loadClip; the buffer swap is lock-free (ClipSlot) and the audio
+/// thread never frees. Bridge: loadClip(uri) / unloadClip(), genSet({ clip:
+/// { loop, gainDb } }), genStatus clip fields. JS gates it on >= 13.
+constexpr uint32_t kEngineVersion = 13;
 
 struct EngineConfig {
   uint32_t fftSize = 4096;      // ≤16384 (Q5 ruling)

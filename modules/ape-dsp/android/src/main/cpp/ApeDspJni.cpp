@@ -813,15 +813,55 @@ Java_expo_modules_apedsp_ApeDspModule_nativeGenRelockCap(JNIEnv*, jobject, jlong
 // 1/max(1, Σaₙ) peak bound is pulling levels down. v4: genHpfHz (0 = bypassed)
 // + genHpfEngaged are the route-aware speaker-safety HPF state. KEEP the writer
 // and the Kotlin index reader in lockstep — the index contract is load-bearing.
+// Engine 13 appends 5 CLIP slots: [8] clipFrames (0 = none loaded), [9]
+// clipSampleRate (the file's), [10] clipChannels, [11] clipEnded (one-shot
+// done), [12] clipNormGain (< 1 = a hot file scaled to full scale). This bridge
+// poll also frees clip buffers the audio thread has retired (never on RT).
 JNIEXPORT jdoubleArray JNICALL
 Java_expo_modules_apedsp_ApeDspModule_nativeGenStatus(JNIEnv* env, jobject, jlong h) {
-  double v[8] = {eng(h)->gen_.running() ? 1.0 : 0.0, eng(h)->gen_.capUnlocked() ? 1.0 : 0.0,
-                 eng(h)->gen_.effectiveLevelDb(), apedsp::genlevel::kDefaultDb,
-                 apedsp::genlevel::kCapDb, eng(h)->gen_.additiveNorm(),
-                 eng(h)->gen_.hpfHz(), eng(h)->gen_.hpfEngaged() ? 1.0 : 0.0};
-  jdoubleArray a = env->NewDoubleArray(8);
-  env->SetDoubleArrayRegion(a, 0, 8, v);
+  apedsp::Generator& g = eng(h)->gen_;
+  g.reclaimClips();
+  double v[13] = {g.running() ? 1.0 : 0.0, g.capUnlocked() ? 1.0 : 0.0,
+                  g.effectiveLevelDb(), apedsp::genlevel::kDefaultDb,
+                  apedsp::genlevel::kCapDb, g.additiveNorm(),
+                  g.hpfHz(), g.hpfEngaged() ? 1.0 : 0.0,
+                  static_cast<double>(g.clipFrames()), g.clipRate(),
+                  static_cast<double>(g.clipChannels()), g.clipEnded() ? 1.0 : 0.0,
+                  g.clipNormGain()};
+  jdoubleArray a = env->NewDoubleArray(13);
+  env->SetDoubleArrayRegion(a, 0, 13, v);
   return a;
+}
+
+// ---- CLIP source (engine 13, build must-do D16 / A15) ----
+// Deinterleaved float PCM at the FILE's rate, decoded by ClipDecoder.kt
+// (MediaExtractor + MediaCodec) on an Expo AsyncFunction thread — never the
+// Oboe callback. right == null → mono. The core copies the samples (makeClip)
+// and hands the buffer to the audio thread lock-free; the Java arrays are
+// released unmodified (JNI_ABORT). Returns apedsp::genclip::Status (0 = ok).
+JNIEXPORT jint JNICALL
+Java_expo_modules_apedsp_ApeDspModule_nativeGenLoadClip(JNIEnv* env, jobject, jlong h,
+                                                        jfloatArray left, jfloatArray right,
+                                                        jint frames, jdouble sampleRate) {
+  if (left == nullptr || frames <= 0 || env->GetArrayLength(left) < frames) return apedsp::genclip::Empty;
+  const bool stereo = right != nullptr && env->GetArrayLength(right) >= frames;
+  jfloat* l = env->GetFloatArrayElements(left, nullptr);
+  if (l == nullptr) return apedsp::genclip::Empty;
+  jfloat* r = stereo ? env->GetFloatArrayElements(right, nullptr) : nullptr;
+  const int status = eng(h)->gen_.loadClip(l, r, static_cast<uint32_t>(frames), sampleRate);
+  if (r != nullptr) env->ReleaseFloatArrayElements(right, r, JNI_ABORT);
+  env->ReleaseFloatArrayElements(left, l, JNI_ABORT);
+  return static_cast<jint>(status);
+}
+JNIEXPORT void JNICALL
+Java_expo_modules_apedsp_ApeDspModule_nativeGenUnloadClip(JNIEnv*, jobject, jlong h) {
+  eng(h)->gen_.unloadClip();
+}
+// Clip playback targets: loop / one-shot + gain relative to the level (≤ 0 dB).
+JNIEXPORT void JNICALL
+Java_expo_modules_apedsp_ApeDspModule_nativeGenSetClip(JNIEnv*, jobject, jlong h, jboolean loop,
+                                                       jdouble gainDb) {
+  eng(h)->gen_.setClip(loop == JNI_TRUE, gainDb);
 }
 
 // ---- Wave-2 expansion voices (engineVersion 7) ----

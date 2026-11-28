@@ -38,6 +38,7 @@ import {
   LabClipCache, LabClipError, base64ToBytes, bytesToBase64,
   type FetchedBytes, type LabClipBuffer, type LabClipDisk, type ResolveResult,
 } from './labClipCache';
+import { clipFileExt, NativeClipFetchError, type NativeClipDeps, type NativeClipResolve } from './nativeLabClipCore';
 
 export { LabClipError, isLabClipError, type LabClipBuffer, type LabClipErrorCode } from './labClipCache';
 
@@ -187,3 +188,84 @@ export function resetLabClipMemory(): void {
   labClipCache.clearMemory();
 }
 registerLocalStoreReset(resetLabClipMemory);
+
+// ————— Engine 13: the FILE side of the NATIVE clip source (nativeLabClip.ts) —————
+//
+// The native clip source (ApeDsp.loadClip, build must-do D16 / A15) decodes a
+// local file itself, so the asset is never read into JS. It reuses THIS path:
+// the same edge function and signed URL, the same timeouts, the same cache-dir
+// root (`lab-clips/`, never shared storage), the same part-file-then-move, the
+// same refresh age. The difference is the file name: it keeps the asset's own
+// extension (the published AAC is .m4a), in its own sub-folder, so the WAV
+// copies above are never handed to the native decoder under a wrong name.
+
+/** Bump to invalidate every native on-disk copy (a changed file layout). */
+const NATIVE_DISK_VERSION = 'native-v1';
+const nativeDiskDir =
+  !isWeb && FileSystem.cacheDirectory ? `${FileSystem.cacheDirectory}lab-clips/${NATIVE_DISK_VERSION}/` : null;
+
+async function resolveNativeUrl(labKey: string, assetKey: string): Promise<NativeClipResolve> {
+  const { asset, reason } = await withTimeout(fetchLabAudio(labKey, assetKey), CLIP_URL_TIMEOUT_MS, () => ({
+    asset: null,
+    reason: 'network' as const,
+  }));
+  if (asset) return { url: asset.url, ext: clipFileExt(asset.ext) };
+  return { reason: reason === 'ok' ? 'network' : reason };
+}
+
+async function nativeCopies(key: string): Promise<string[]> {
+  if (!nativeDiskDir) return [];
+  const names = await FileSystem.readDirectoryAsync(nativeDiskDir).catch(() => [] as string[]);
+  return names.filter((n) => n.startsWith(`${key}.`) && !n.endsWith('.part'));
+}
+
+async function findNativeCopy(key: string): Promise<{ uri: string; stale: boolean } | null> {
+  const name = (await nativeCopies(key))[0];
+  if (!nativeDiskDir || !name) return null;
+  const uri = `${nativeDiskDir}${name}`;
+  const info = await FileSystem.getInfoAsync(uri);
+  if (!info.exists || info.isDirectory) return null;
+  const ageMs = Date.now() - (info.modificationTime ?? 0) * 1000;
+  return { uri, stale: ageMs > DISK_REFRESH_MS };
+}
+
+async function downloadNativeCopy(url: string, key: string, ext: string): Promise<string> {
+  if (!nativeDiskDir) throw new NativeClipFetchError('offline', 'No cache directory');
+  await FileSystem.makeDirectoryAsync(nativeDiskDir, { intermediates: true }).catch(() => {});
+  const final = `${nativeDiskDir}${key}.${ext}`;
+  const tmp = `${nativeDiskDir}${key}.${Date.now().toString(36)}_${tmpNonce++}.part`;
+  const task = FileSystem.createDownloadResumable(url, tmp);
+  let res: Awaited<ReturnType<typeof task.downloadAsync>>;
+  try {
+    res = await withTimeout(task.downloadAsync(), CLIP_FETCH_TIMEOUT_MS, async () => {
+      await task.cancelAsync().catch(() => {});
+      throw new NativeClipFetchError('offline', 'Download timed out');
+    });
+  } catch (e) {
+    await FileSystem.deleteAsync(tmp, { idempotent: true }).catch(() => {});
+    if (e instanceof NativeClipFetchError) throw e;
+    throw new NativeClipFetchError('offline', (e as Error)?.message);
+  }
+  if (!res || res.status < 200 || res.status >= 300) {
+    await FileSystem.deleteAsync(tmp, { idempotent: true }).catch(() => {});
+    const typed = res ? httpError(res.status) : new LabClipError('offline', 'Download canceled');
+    throw new NativeClipFetchError(typed.code === 'unauthorized' || typed.code === 'not_found' ? typed.code : 'offline', typed.message);
+  }
+  // Complete files only: the final name never holds a partial download, and an
+  // older copy of this asset under another extension goes too.
+  for (const n of await nativeCopies(key)) {
+    await FileSystem.deleteAsync(`${nativeDiskDir}${n}`, { idempotent: true }).catch(() => {});
+  }
+  await FileSystem.moveAsync({ from: tmp, to: final });
+  return final;
+}
+
+/** The file side of the native clip source: signed URL + extension, the disk
+ *  copy, the download, the removal. Web: no disk, every download 'offline'
+ *  (the clip source is native-only, so nativeLabClip never gets here on web). */
+export const nativeClipFiles: Pick<NativeClipDeps, 'resolveUrl' | 'findCached' | 'download' | 'remove'> = {
+  resolveUrl: resolveNativeUrl,
+  findCached: findNativeCopy,
+  download: downloadNativeCopy,
+  remove: (uri) => FileSystem.deleteAsync(uri, { idempotent: true }),
+};

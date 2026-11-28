@@ -137,6 +137,11 @@ class ApeDspModule : Module() {
   private external fun nativeGenUnlockCap(h: Long)
   private external fun nativeGenRelockCap(h: Long)
   private external fun nativeGenStatus(h: Long): DoubleArray
+  // CLIP source (engine 13): float PCM at the file's rate (right = null → mono);
+  // returns apedsp::genclip::Status (0 ok · 1 empty · 2 bad rate · 3 too long).
+  private external fun nativeGenLoadClip(h: Long, left: FloatArray, right: FloatArray?, frames: Int, sampleRate: Double): Int
+  private external fun nativeGenUnloadClip(h: Long)
+  private external fun nativeGenSetClip(h: Long, loop: Boolean, gainDb: Double)
   // Wave-2 expansion voices (engineVersion 7).
   private external fun nativeGenSetFm(h: Long, ratio: Double, index: Double, decaySec: Double)
   private external fun nativeBinSetSource(
@@ -475,6 +480,12 @@ class ApeDspModule : Module() {
       // STEREO SPREAD (engine 10, Stereo Imaging lab) — radians, 0 = mono.
       // Targets-first (before mode). Same key on iOS/JS.
       (params["stereoSpreadRad"] as? Number)?.let { nativeGenSetStereoSpread(handle, it.toDouble()) }
+      // CLIP (engine 13, GenMode::Clip) — { loop, gainDb }: loop (default true)
+      // or one-shot; gainDb relative to the level, ≤ 0 (clamped in the core).
+      // Targets-first (before mode). Same shape on iOS/JS.
+      (params["clip"] as? Map<*, *>)?.let { c ->
+        nativeGenSetClip(handle, (c["loop"] as? Boolean) ?: true, (c["gainDb"] as? Number)?.toDouble() ?: 0.0)
+      }
       // FM voice (wave-2, engineVersion 7) — { ratio, index, decaySec }.
       // Targets-first like the rest (before mode). Same shape on iOS/JS.
       (params["fm"] as? Map<*, *>)?.let { fm ->
@@ -489,6 +500,33 @@ class ApeDspModule : Module() {
     Function("genUnlockCap") { if (handle != 0L) nativeGenUnlockCap(handle) }
     Function("genRelockCap") { if (handle != 0L) nativeGenRelockCap(handle) }
     Function("genStatus") { genStatusMap() }
+    // CLIP source (engine 13, build must-do D16 / A15). Decodes a LOCAL file
+    // (the app cache — never a URL, never shared storage) with MediaExtractor +
+    // MediaCodec on this AsyncFunction's background thread (never the Oboe
+    // callback, never the JS thread), then hands float PCM to the core, which
+    // swaps it in lock-free. Plays through genSet({ mode: 15, clip: {...} }) +
+    // genStart like every generator signal, under the same Q4 cap. Same name,
+    // shape and error codes on iOS.
+    AsyncFunction("loadClip") { uri: String, promise: Promise ->
+      if (handle == 0L) { promise.resolve(clipError("unavailable", "engine not created")); return@AsyncFunction }
+      val clip = try {
+        ClipDecoder.decode(uri)
+      } catch (e: ClipDecodeException) {
+        promise.resolve(clipError(e.code, e.message ?: e.code)); return@AsyncFunction
+      } catch (e: Exception) {
+        promise.resolve(clipError("decode", e.message ?: "decode failed")); return@AsyncFunction
+      }
+      val status = nativeGenLoadClip(handle, clip.left, clip.right, clip.frames, clip.sampleRate.toDouble())
+      if (status != 0) {
+        promise.resolve(clipError(clipStatusCode(status), "the engine refused the clip ($status)"))
+        return@AsyncFunction
+      }
+      promise.resolve(mapOf(
+        "ok" to true, "frames" to clip.frames, "sampleRate" to clip.sampleRate.toDouble(),
+        "channels" to (if (clip.right != null) 2 else 1),
+      ))
+    }
+    Function("unloadClip") { if (handle != 0L) nativeGenUnloadClip(handle) }
     // OUTPUT LATENCY (engine 12, must-do D85 (a)): ms from a frame rendered now
     // to the moment it is heard — Oboe calculateLatencyMillis() on the running
     // output stream (AAudio presentation timestamp vs frames written), read
@@ -671,13 +709,29 @@ class ApeDspModule : Module() {
     // 8 fixed slots (see nativeGenStatus). additiveNorm (HV-2): 1 = not
     // attenuating; <1 = the additive peak bound is pulling levels down.
     // v4: genHpfHz (0 = bypassed) + genHpfEngaged (route-aware speaker HPF).
-    val g = if (handle != 0L) nativeGenStatus(handle) else DoubleArray(8)
+    // Engine 13: + 5 CLIP slots [8..12] (see nativeGenStatus) — clipFrames
+    // (0 = none), clipSampleRate, clipChannels, clipEnded, clipNormGain.
+    val g = if (handle != 0L) nativeGenStatus(handle) else DoubleArray(13)
     return mapOf(
       "running" to (g[0] == 1.0), "capUnlocked" to (g[1] == 1.0),
       "effectiveLevelDb" to g[2], "defaultLevelDb" to g[3], "capDb" to g[4],
       "additiveNorm" to g[5],
       "genHpfHz" to g[6], "genHpfEngaged" to (g[7] == 1.0),
+      "clipFrames" to g[8], "clipSampleRate" to g[9], "clipChannels" to g[10],
+      "clipEnded" to (g[11] == 1.0), "clipNormGain" to g[12],
     )
+  }
+
+  /** loadClip's refusal shape — the same keys and codes as the iOS bridge. */
+  private fun clipError(code: String, message: String): Map<String, Any?> =
+    mapOf("ok" to false, "error" to code, "message" to message)
+
+  /** apedsp::genclip::Status → the JS error code. */
+  private fun clipStatusCode(status: Int): String = when (status) {
+    1 -> "empty"
+    2 -> "bad_rate"
+    3 -> "too_long"
+    else -> "decode"
   }
 
   private fun binStatusMap(): Map<String, Any?> {

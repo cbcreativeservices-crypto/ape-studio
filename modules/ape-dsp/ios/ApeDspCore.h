@@ -90,6 +90,19 @@ NS_ASSUME_NONNULL_BEGIN
 /// finish faster), so this is safe to call at UI rate. Short arrays are
 /// ignored.
 - (void)genSetAdditive:(NSArray<NSNumber *> *)values;
+/// CLIP source (engine 13, GenMode::Clip = 15): deinterleaved float PCM at the
+/// FILE's rate (right = NULL → mono), decoded by Swift (AVAudioFile) on a
+/// background queue — never the render thread. The core copies it, normalises
+/// a hot file to full scale and swaps it in lock-free. Returns
+/// apedsp::genclip::Status: 0 ok · 1 empty · 2 bad rate · 3 too long.
+- (int)genLoadClipLeft:(const float *)left
+                 right:(const float *_Nullable)right
+                frames:(uint32_t)frames
+            sampleRate:(double)sampleRate;
+/// Drop the loaded clip (CLIP mode then renders silence).
+- (void)genUnloadClip;
+/// Clip playback targets: loop (else one-shot) + gain relative to the level (≤ 0 dB).
+- (void)genSetClipLoop:(BOOL)loop gainDb:(double)gainDb;
 - (void)genUnlockCap;
 - (void)genRelockCap;
 - (void)genStart;

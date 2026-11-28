@@ -23,12 +23,13 @@ const SWIFT = 'modules/ape-dsp/ios/ApeDspModule.swift';
 const KT = 'modules/ape-dsp/android/src/main/java/expo/modules/apedsp/ApeDspModule.kt';
 const JNI = 'modules/ape-dsp/android/src/main/cpp/ApeDspJni.cpp';
 
-test('engine 10 is in the one version constant (engines 11 and 12, the 1.0.1 build, build on it)', () => {
+test('engine 10 is in the one version constant (engines 11, 12 and 13, the 1.0.1 build, build on it)', () => {
   const hub = read('modules/ape-dsp/ios/core/EngineHub.hpp');
   // 11 (2026-11-27, the 1.0.1 build): the LOW CUT node and the LOW CUT → GATE → EQ → COMP order
   // (test/chainRackTap_20261122.test.ts). 12 (the same build, must-do D85 (a)): the output-latency
-  // read (test/fxOutputLatency_20261127.test.ts). Everything engine 10 added is still gated on >= 10.
-  assert.match(hub, /constexpr uint32_t kEngineVersion = 12;/);
+  // read (test/fxOutputLatency_20261127.test.ts). 13 (the same build, must-do D16 / A15): the CLIP
+  // source (test/nativeClip_20261127.test.ts). Everything engine 10 added is still gated on >= 10.
+  assert.match(hub, /constexpr uint32_t kEngineVersion = 13;/);
   assert.match(hub, /\/\/\/ 10 \(2026-10-24, store-build native queue\)/);
   assert.match(hub, /\/\/\/ 11 \(2026-11-27, 1\.0\.1 store build, must-do E9\)/);
   assert.match(hub, /\/\/\/ 12 \(2026-11-27, 1\.0\.1 store build, must-do D85 \(a\)\)/);

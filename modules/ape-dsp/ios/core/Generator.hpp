@@ -18,13 +18,21 @@
 // slope-limited linear ramps on amp/gain (≤8 ms for a full 0→1 swing —
 // smaller changes finish proportionally faster) and a slewed phase offset.
 // See the GenMode::Additive block below for the full design notes.
+//
+// Engine 13 (2026-11-27, build must-do D16 / A15): CLIP mode — a preloaded
+// recording (Clip.hpp) rendered as one more unit-level source, so it rides the
+// SAME speaker-safety HPF, the SAME Q4 level cap, the SAME start/stop fades and
+// the SAME effect chain as every generated signal. See loadClip / setClip and
+// clipSample below.
 #pragma once
 
 #include <atomic>
 #include <cmath>
 #include <cstdint>
+#include <mutex>
 
 #include "Biquad.hpp"  // route-aware speaker-safety high-pass (2nd-order Butterworth)
+#include "Clip.hpp"    // engine 13: the clip buffer + its lock-free hand-off
 
 namespace apedsp {
 
@@ -85,6 +93,7 @@ enum class GenMode : int {
   Additive = 12,  // HV-2: 12-harmonic additive synth (never renumber)
   Fm = 13,        // wave-2: carrier+modulator FM voice (never renumber)
   Dual = 14,      // cymatics (engine 8): two independent sines summed MONO (never renumber)
+  Clip = 15,      // engine 13: a loaded recording (loadClip), looped or one-shot (never renumber)
 };
 
 class Generator {
@@ -212,6 +221,60 @@ class Generator {
   /// published for honest genStatus display (the app shows the exact filter).
   double hpfHz() const { return hpfHz_.load(std::memory_order_relaxed); }
   bool hpfEngaged() const { return hpfHz_.load(std::memory_order_relaxed) > 0.0; }
+  /// CLIP (engine 13). A recording decoded by the platform (off the audio
+  /// thread) and handed over as deinterleaved float PCM at the FILE's rate —
+  /// R = nullptr for mono. Bridge thread: copies, sanitises, normalises a hot
+  /// file to full scale, measures the loop seam (Clip.hpp makeClip) and
+  /// publishes it lock-free. If a clip is SOUNDING the swap rides the 10 ms
+  /// retrigger dip (the old clip fades out, the new one starts from its first
+  /// frame); otherwise it is adopted at the next block. Returns a
+  /// genclip::Status (0 = ok).
+  int loadClip(const float* L, const float* R, uint32_t frames, double rate) {
+    int status = genclip::Empty;
+    ClipBuffer* c = makeClip(L, R, frames, rate, &status);
+    if (c == nullptr) return status;
+    std::lock_guard<std::mutex> lk(clipBridgeMu_);  // bridge-only: never taken by render
+    clipInfoFrames_.store(c->frames, std::memory_order_relaxed);
+    clipInfoRate_.store(c->rate, std::memory_order_relaxed);
+    clipInfoChannels_.store(c->channels(), std::memory_order_relaxed);
+    clipInfoNorm_.store(c->normGain, std::memory_order_relaxed);
+    clip_.publish(c);
+    return genclip::Ok;
+  }
+  /// Drop the loaded clip: CLIP mode then renders silence. The buffer is freed
+  /// on a later bridge call, never on the audio thread.
+  void unloadClip() {
+    std::lock_guard<std::mutex> lk(clipBridgeMu_);
+    clipInfoFrames_.store(0, std::memory_order_relaxed);
+    clipInfoChannels_.store(0, std::memory_order_relaxed);
+    clipInfoNorm_.store(1.0, std::memory_order_relaxed);
+    clip_.publish(new ClipBuffer());  // frames 0 = "no clip"
+  }
+  /// Free the buffers the audio thread has finished with (any bridge call may).
+  void reclaimClips() {
+    std::lock_guard<std::mutex> lk(clipBridgeMu_);
+    clip_.drain();
+  }
+  /// CLIP playback targets: loop (wraps — byte-continuous if the file is cut
+  /// for looping, else a 10 ms crossfade at the seam) or one-shot (plays once,
+  /// a 5 ms tail fade, then holds silent: clipEnded()). gainDb is RELATIVE to
+  /// the generator level and can only attenuate (clamped −120..0 dB, NaN →
+  /// 0 dB; −120 = silence), so a clip can never sound above the generator's own
+  /// level — and that level is the Q4-capped one. Glides like the level (no
+  /// zipper); no retrigger; safe at UI rate.
+  void setClip(bool loop, double gainDb) {
+    const double g = !(gainDb <= 0.0) ? 0.0 : (gainDb < genclip::kMinGainDb ? genclip::kMinGainDb : gainDb);
+    clipLoop_.store(loop, std::memory_order_relaxed);
+    clipGainLin_.store(g <= genclip::kMinGainDb ? 0.0 : std::pow(10.0, g / 20.0), std::memory_order_relaxed);
+  }
+  /// The last published clip (bridge view): frames (0 = none), the file rate,
+  /// channels (0/1/2), and the hot-file normalisation applied (1 = none).
+  uint32_t clipFrames() const { return clipInfoFrames_.load(std::memory_order_relaxed); }
+  double clipRate() const { return clipInfoRate_.load(std::memory_order_relaxed); }
+  int clipChannels() const { return clipInfoChannels_.load(std::memory_order_relaxed); }
+  double clipNormGain() const { return clipInfoNorm_.load(std::memory_order_relaxed); }
+  /// A one-shot clip has played to its end (render-published; honest status).
+  bool clipEnded() const { return clipEndedPub_.load(std::memory_order_relaxed); }
   /// Q4 tap-through confirm — session-scoped unlock above the −12 dBFS cap.
   void unlockCap() { capUnlocked_.store(true); }
   void relockCap() { capUnlocked_.store(false); }
@@ -249,6 +312,15 @@ class Generator {
     const auto modeTarget = static_cast<GenMode>(mode_.load());
     const bool wantRun = running_.load() && modeTarget != GenMode::Off && fs > 0;
     const bool stereo = (R != nullptr) && stereoOn_.load();
+    // CLIP (engine 13): a newly published clip. Sounding → ride the retrigger
+    // dip (adopted in applyTrigger at the bottom, so the old clip fades out and
+    // the new one starts from frame 0 — never a step). Silent, or another mode
+    // → adopt now. adopt() never allocates or frees (Clip.hpp ClipSlot).
+    if (clip_.hasPending()) {
+      if (modeCur_ == GenMode::Clip && env_ > 0.0) trigPending_ = true;
+      else if (clip_.adopt()) resetClipPlayhead();
+    }
+    clipLoopR_ = clipLoop_.load(std::memory_order_relaxed);
     if (retrigger_.exchange(false)) {
       // A retrigger while AUDIBLE (in-place mode switch — HV-2 Build 3's solo
       // ↔ model retune idiom — sweep reprogram, stop→start overlap) must not
@@ -279,6 +351,11 @@ class Generator {
     const double gainStep = std::fabs(ampTarget - ampCur_) /
                             (gainRampSamples < 1.0 ? 1.0 : gainRampSamples);
     if (env_ <= 0.0) ampCur_ = ampTarget;
+    // CLIP gain (≤ 1): the same duration-based glide as the level, snapped while silent.
+    const double clipGainTarget = clipGainLin_.load(std::memory_order_relaxed);
+    const double clipGainStep = std::fabs(clipGainTarget - clipGainCur_) /
+                                (gainRampSamples < 1.0 ? 1.0 : gainRampSamples);
+    if (env_ <= 0.0) clipGainCur_ = clipGainTarget;
     // Prepare when EITHER side of a pending switch is additive: targets must
     // be hoisted before a mid-block applyTrigger adopts the mode.
     if ((modeCur_ == GenMode::Additive || modeTarget == GenMode::Additive) && fs > 0)
@@ -352,7 +429,17 @@ class Generator {
       // Raw signal(s): stereo = two independent sine oscillators (hard L/R);
       // mono = the selected mode, duplicated.
       double rawL, rawR;
-      if (stereo) {
+      if (modeCur_ == GenMode::Clip) {
+        // CLIP: a unit-level (|x| ≤ 1) pair; a mono caller gets (L + R) / 2.
+        // The clip gain (≤ 1) applies here, BEFORE the HPF and the Q4 level ×
+        // env below — so the cap chain bounds a clip exactly as it bounds a
+        // sine. The hard-panned stereo pair never overrides a clip.
+        double cl, cr;
+        clipSample(fs, cl, cr);
+        clipGainCur_ = ramp(clipGainCur_, clipGainTarget, clipGainStep);
+        rawL = (R ? cl : 0.5 * (cl + cr)) * clipGainCur_;
+        rawR = cr * clipGainCur_;
+      } else if (stereo) {
         rawL = stereoStep(stereoPhL_, stereoFreqL_.load(), fs);
         rawR = stereoStep(stereoPhR_, stereoFreqR_.load(), fs);
       } else {
@@ -405,6 +492,7 @@ class Generator {
       L[i] = static_cast<float>(g * sL);
       if (R) R[i] = static_cast<float>(g * sR);
     }
+    clipEndedPub_.store(clipEnded_, std::memory_order_relaxed);
   }
 
  private:
@@ -445,6 +533,10 @@ class Generator {
     stereoPhR_ = 0.0;
     dualPhB_ = 0.0;  // B rides its own accumulator; A reuses phase_ (stepSine)
     hpfMix_ = (hpfHz_.load() > 0.0) ? 1.0 : 0.0;
+    // CLIP: a (re)trigger takes a newly published clip (the swap-while-sounding
+    // path lands here, at the bottom of the dip) and starts from frame 0.
+    if (clip_.hasPending()) clip_.adopt();
+    resetClipPlayhead();
     // Open the route gate and sync the change detector: a fresh tone starts at
     // full level with the correct filter, and its initial hpfHz (set before the
     // first audible sample) is NOT treated as a mid-tone route change.
@@ -453,6 +545,94 @@ class Generator {
     envSettled_ = false;  // block the gate until this new tone's onset completes
     prevHpfHz_ = hpfHz_.load();
     trigPending_ = false;
+  }
+
+  // ---- CLIP (engine 13) -----------------------------------------------------
+  void resetClipPlayhead() {
+    clipPos_ = 0.0;
+    clipEnded_ = false;
+  }
+
+  // One frame of the playing clip at unit level (render thread only).
+  //  * RATE: the clip keeps the FILE's rate; the playhead steps rate/fs per
+  //    output sample, so an engine-rate change (route change → configure)
+  //    never needs a reload. Same rate → integer positions → the stored
+  //    samples exactly (bit for bit). Otherwise 4-point Catmull-Rom.
+  //  * LOOP: a seamless file → plain wrap (the interpolator's neighbours wrap
+  //    too and the fractional position carries over: no gap, no repeat).
+  //    Otherwise the last `xfade` frames crossfade (equal-gain, so |out| never
+  //    exceeds the louder side) into the first `xfade`, and every pass after
+  //    the first is N − xfade long. Either way the wrap never steps.
+  //  * ONE-SHOT: an `endFade` tail fade, then silence and clipEnded().
+  //  * Every result is clamped to ±1 (interpolation can overshoot a full-scale
+  //    file slightly) — the unit-level contract the Q4 cap chain relies on.
+  void clipSample(double fs, double& l, double& r) {
+    const ClipBuffer* c = clip_.current();
+    if (c == nullptr || c->frames == 0 || clipEnded_ || !(fs > 0.0)) {
+      l = r = 0.0;
+      return;
+    }
+    const double N = static_cast<double>(c->frames);
+    const bool loop = clipLoopR_;
+    const uint32_t X = (loop && !c->seamless) ? c->xfade : 0;
+    double p = clipPos_;
+    if (!(p < N)) p = 0.0;  // defensive
+    clipRead(*c, p, loop && X == 0, l, r);
+    if (X > 0 && p >= N - X) {
+      const double k = p - (N - X);
+      const double w = k / static_cast<double>(X);
+      double l2, r2;
+      clipRead(*c, k, false, l2, r2);
+      l = l * (1.0 - w) + l2 * w;
+      r = r * (1.0 - w) + r2 * w;
+    }
+    if (!loop && c->endFade > 0 && p > N - c->endFade) {
+      const double g = (N - p) / static_cast<double>(c->endFade);
+      l *= g;
+      r *= g;
+    }
+    l = l > 1.0 ? 1.0 : (l < -1.0 ? -1.0 : l);
+    r = r > 1.0 ? 1.0 : (r < -1.0 ? -1.0 : r);
+    p += c->rate / fs;
+    if (loop) {
+      const double span = N - static_cast<double>(X);
+      while (p >= N) p -= span;
+    } else if (p >= N) {
+      clipEnded_ = true;
+    }
+    clipPos_ = p;
+  }
+
+  static inline double clipAt(const std::vector<float>& v, int64_t j, int64_t n, bool wrap) {
+    if (wrap) {
+      j %= n;
+      if (j < 0) j += n;
+    } else {
+      j = j < 0 ? 0 : (j >= n ? n - 1 : j);
+    }
+    return static_cast<double>(v[static_cast<size_t>(j)]);
+  }
+  // Both channels at a (possibly fractional) playhead position.
+  static inline void clipRead(const ClipBuffer& c, double pos, bool wrap, double& l, double& r) {
+    const int64_t n = static_cast<int64_t>(c.frames);
+    const int64_t i = static_cast<int64_t>(pos);
+    const double t = pos - static_cast<double>(i);
+    const bool mono = c.r.empty();
+    if (t == 0.0) {
+      l = static_cast<double>(c.l[static_cast<size_t>(i)]);
+      r = mono ? l : static_cast<double>(c.r[static_cast<size_t>(i)]);
+      return;
+    }
+    auto cr = [&](const std::vector<float>& v) {
+      const double y0 = clipAt(v, i - 1, n, wrap), y1 = clipAt(v, i, n, wrap);
+      const double y2 = clipAt(v, i + 1, n, wrap), y3 = clipAt(v, i + 2, n, wrap);
+      const double c1 = 0.5 * (y2 - y0);
+      const double c2 = y0 - 2.5 * y1 + 2.0 * y2 - 0.5 * y3;
+      const double c3 = 0.5 * (y3 - y0) + 1.5 * (y1 - y2);
+      return ((c3 * t + c2) * t + c1) * t + y1;
+    };
+    l = cr(c.l);
+    r = mono ? l : cr(c.r);
   }
 
   // The RIGHT channel of a spread source (engine 10) — see setStereoSpread.
@@ -826,6 +1006,19 @@ class Generator {
   std::atomic<double> fmIndexT_{4.0};
   std::atomic<double> fmDecay_{0.0};
 
+  // CLIP (engine 13): the hand-off slot, its bridge-side serialisation (a load
+  // on a background queue and an unload on the JS thread must never both drain
+  // the retire ring), the published info, and the playback targets.
+  ClipSlot clip_;
+  std::mutex clipBridgeMu_;
+  std::atomic<uint32_t> clipInfoFrames_{0};
+  std::atomic<double> clipInfoRate_{48000.0};
+  std::atomic<int> clipInfoChannels_{0};
+  std::atomic<double> clipInfoNorm_{1.0};
+  std::atomic<bool> clipLoop_{true};
+  std::atomic<double> clipGainLin_{1.0};
+  std::atomic<bool> clipEndedPub_{false};
+
   // Fade length (bridge writes via configure, render reads — atomic).
   std::atomic<uint32_t> fadeSamples_{480};
 
@@ -853,6 +1046,11 @@ class Generator {
   double fmDecayEnv_ = 1.0;           // per-trigger exponential index envelope
   double fmRatioR_ = 2.0, fmIdxTR_ = 4.0, fmDecayMul_ = 1.0, fmIdxStep_ = 1.0;
   bool fmSnap_ = true;
+  // CLIP render-thread state.
+  double clipPos_ = 0.0;      // playhead in FILE frames (fractional when the rates differ)
+  bool clipEnded_ = false;    // a one-shot reached its end
+  bool clipLoopR_ = true;     // loop flag, hoisted once per render call
+  double clipGainCur_ = 1.0;  // gliding clip gain (≤ 1)
   // Speaker-safety HPF render state (audio thread). Re-designed only when the
   // cutoff or sample rate changes; default coeffs are a no-op pass-through.
   Biquad hpf_;

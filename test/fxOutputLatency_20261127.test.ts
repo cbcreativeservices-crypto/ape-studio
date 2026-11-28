@@ -148,7 +148,8 @@ describe('4. the native read, on both platforms, behind engine 12', () => {
   const JNI = code('modules/ape-dsp/android/src/main/cpp/ApeDspJni.cpp');
   it('engine 12 in the one version constant, with its changelog line', () => {
     const hub = read('modules/ape-dsp/ios/core/EngineHub.hpp');
-    assert.match(hub, /constexpr uint32_t kEngineVersion = 12;/);
+    // 13 (the same build, must-do D16 / A15) adds the clip source on top — test/nativeClip_20261127.test.ts.
+    assert.match(hub, /constexpr uint32_t kEngineVersion = 13;/);
     assert.match(hub, /\/\/\/ 12 \(2026-11-27, 1\.0\.1 store build, must-do D85 \(a\)\): the OUTPUT LATENCY/);
   });
   it('JS: an older build (engine < 12, or no native function) reads null; -1 / NaN read null', () => {

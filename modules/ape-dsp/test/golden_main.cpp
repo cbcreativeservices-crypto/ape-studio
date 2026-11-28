@@ -5,10 +5,16 @@
 // ballistics time constants, octave banding + Q2 resolvable flags, YIN pitch,
 // generator levels incl. the Q4 cap, noise spectral tilts, clip detection,
 // and the integrated EngineHub. Exit code 0 = all pass.
+// Engine 13: the clip buffer's test hooks (a live-buffer count; freed buffers
+// poisoned with NaN). Golden build only — never defined in an app build.
+#define APEDSP_CLIP_TEST_HOOKS 1
+
 #include <algorithm>
+#include <atomic>
 #include <cmath>
 #include <cstdio>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include "../ios/core/Ballistics.hpp"
@@ -1820,6 +1826,334 @@ int main() {
       truthy("Modular seq: step 1 plays +12 semitones",
              magAt(L, s1, w, 880.0) > 4.0 * magAt(L, s1, w, 440.0));
     }
+  }
+
+  // ---- 16) CLIP source (engine 13, build must-do D16 / A15) -----------------
+  // A preloaded recording through the generator's own level cap and the effect
+  // chain. Render helper: 256-frame stereo blocks, then the (bypassed or
+  // armed) chain — the bridge's own order (ApeDspCore genRenderStereo).
+  {
+    const double capLin = std::pow(10.0, genlevel::kCapDb / 20.0);
+    const uint32_t fade = static_cast<uint32_t>(fs * 0.010);  // the generator's 10 ms start fade
+    auto renderClip = [](Generator& g, EffectChain* ch, size_t n, std::vector<float>& L, std::vector<float>& R) {
+      L.assign(n, 0.0f);
+      R.assign(n, 0.0f);
+      for (size_t off = 0; off < n; off += 256) {
+        const uint32_t b = static_cast<uint32_t>(std::min<size_t>(256, n - off));
+        g.renderStereo(L.data() + off, R.data() + off, b);
+        if (ch) ch->processStereo(L.data() + off, R.data() + off, b);
+      }
+    };
+    auto maxStep = [](const std::vector<float>& v, size_t from, size_t to) {
+      double m = 0.0;
+      for (size_t i = from + 1; i < to && i < v.size(); ++i) {
+        const double s = std::fabs(static_cast<double>(v[i]) - v[i - 1]);
+        if (s > m) m = s;
+      }
+      return m;
+    };
+    uint32_t lcg = 12345u;
+    auto rnd = [&lcg]() {  // deterministic noise in [-0.9, 0.9]
+      lcg = lcg * 1664525u + 1013904223u;
+      return static_cast<float>((static_cast<double>(lcg >> 8) / 16777216.0 * 2.0 - 1.0) * 0.9);
+    };
+
+    // (a) load refusals: empty, a bad rate, longer than the 60 s limit.
+    {
+      Generator g;
+      g.configure(fs);
+      std::vector<float> one(16, 0.1f);
+      near("Clip load: null data refused (Empty)", g.loadClip(nullptr, nullptr, 16, fs), genclip::Empty, 0);
+      near("Clip load: 0 frames refused (Empty)", g.loadClip(one.data(), nullptr, 0, fs), genclip::Empty, 0);
+      near("Clip load: 4 kHz rate refused (BadRate)", g.loadClip(one.data(), nullptr, 16, 4000.0), genclip::BadRate, 0);
+      near("Clip load: NaN rate refused (BadRate)", g.loadClip(one.data(), nullptr, 16, std::nan("")), genclip::BadRate, 0);
+      std::vector<float> longer(static_cast<size_t>(8000 * 60) + 1, 0.0f);
+      near("Clip load: over 60 s refused (TooLong)",
+           g.loadClip(longer.data(), nullptr, static_cast<uint32_t>(longer.size()), 8000.0), genclip::TooLong, 0);
+      near("Clip load: nothing published after refusals (frames 0)", g.clipFrames(), 0, 0);
+      near("Clip load: a valid mono clip is Ok", g.loadClip(one.data(), nullptr, 16, fs), genclip::Ok, 0);
+      near("Clip load: info frames / channels / rate", g.clipFrames() + g.clipChannels() * 1000 + g.clipRate(),
+           16 + 1000 + fs, 0);
+    }
+
+    // (b) SAMPLE-ACCURATE through a BYPASSED chain: a stereo noise clip at the
+    //     engine rate comes out as exactly cap × sample, L and R, frame for
+    //     frame (no offset, no interpolation), once the 10 ms start fade is up.
+    {
+      const uint32_t N = 9600;
+      std::vector<float> cl(N), cr(N);
+      for (uint32_t i = 0; i < N; ++i) { cl[i] = rnd(); cr[i] = rnd(); }
+      Generator g;
+      g.configure(fs);
+      g.setLevelDb(genlevel::kCapDb);
+      g.setClip(true, 0.0);
+      near("Clip (b): stereo clip loads", g.loadClip(cl.data(), cr.data(), N, fs), genclip::Ok, 0);
+      g.setMode(GenMode::Clip);
+      g.start();
+      EffectChain ch;
+      ch.configure(fs);
+      truthy("Clip (b): the chain is bypassed (no node armed)", !ch.anyActive());
+      std::vector<float> L, R;
+      renderClip(g, &ch, N, L, R);
+      double dl = 0.0, dr = 0.0, fadeOver = 0.0;
+      for (uint32_t i = 0; i < N; ++i) {
+        const float wl = static_cast<float>(capLin * static_cast<double>(cl[i]));
+        const float wr = static_cast<float>(capLin * static_cast<double>(cr[i]));
+        if (i >= fade) {
+          dl = std::max(dl, std::fabs(static_cast<double>(L[i]) - wl));
+          dr = std::max(dr, std::fabs(static_cast<double>(R[i]) - wr));
+        } else {
+          fadeOver = std::max(fadeOver, static_cast<double>(std::fabs(L[i]) - std::fabs(wl)));
+        }
+      }
+      check(dl == 0.0, "Clip (b): L == cap x clip, sample for sample (exact)", dl, 0.0, 0.0);
+      check(dr == 0.0, "Clip (b): R == cap x clip, sample for sample (exact)", dr, 0.0, 0.0);
+      check(fadeOver <= 0.0, "Clip (b): the 10 ms start fade only ever attenuates", fadeOver, 0.0, 0.0);
+      // A mono caller (render(), R = nullptr) gets (L + R) / 2.
+      Generator m;
+      m.configure(fs);
+      m.setLevelDb(genlevel::kCapDb);
+      m.loadClip(cl.data(), cr.data(), N, fs);
+      m.setMode(GenMode::Clip);
+      m.start();
+      std::vector<float> M(N);
+      for (uint32_t off = 0; off < N; off += 256) m.render(M.data() + off, std::min<uint32_t>(256, N - off));
+      double dm = 0.0;
+      for (uint32_t i = fade; i < N; ++i)
+        dm = std::max(dm, static_cast<double>(std::fabs(M[i] - static_cast<float>(capLin * (0.5 * (static_cast<double>(cl[i]) + cr[i]))))));
+      check(dm == 0.0, "Clip (b): a mono caller hears (L + R) / 2 (exact)", dm, 0.0, 0.0);
+    }
+
+    // (c) LOOP WRAP, seamless file: 100 whole periods of 1 kHz. The output is
+    //     the continuous sine through three wraps, exactly (no gap, no repeat).
+    {
+      const uint32_t N = 4800;
+      std::vector<float> s(N);
+      for (uint32_t i = 0; i < N; ++i) s[i] = static_cast<float>(std::sin(2.0 * 3.14159265358979323846 * 1000.0 * i / fs));
+      Generator g;
+      g.configure(fs);
+      g.setLevelDb(genlevel::kCapDb);
+      g.setClip(true, 0.0);
+      g.loadClip(s.data(), nullptr, N, fs);
+      g.setMode(GenMode::Clip);
+      g.start();
+      std::vector<float> L, R;
+      renderClip(g, nullptr, 3 * N + 777, L, R);
+      double d = 0.0;
+      for (size_t i = fade; i < L.size(); ++i)
+        d = std::max(d, std::fabs(static_cast<double>(L[i]) - static_cast<float>(capLin * s[i % N])));
+      check(d == 0.0, "Clip (c): seamless loop = the continuous sine across 3 wraps (exact)", d, 0.0, 0.0);
+      const double inner = maxStep(L, fade, N - 1);
+      const double seam = std::max(maxStep(L, N - 4, N + 4), maxStep(L, 2 * N - 4, 2 * N + 4));
+      check(seam <= inner * 1.0001, "Clip (c): the wrap step is no bigger than the tone's own", seam, inner, 0.0);
+      // A 44.1 kHz file at the 48 kHz engine: 10 periods of 441 Hz. Resampled
+      // (Catmull-Rom) and still continuous through the wraps (fractional
+      // playhead carried over): it reads as the analytic 441 Hz sine.
+      const uint32_t N2 = 1000;
+      std::vector<float> s2(N2);
+      for (uint32_t i = 0; i < N2; ++i) s2[i] = static_cast<float>(std::sin(2.0 * 3.14159265358979323846 * 441.0 * i / 44100.0));
+      Generator h;
+      h.configure(fs);
+      h.setLevelDb(genlevel::kCapDb);
+      h.setClip(true, 0.0);
+      h.loadClip(s2.data(), nullptr, N2, 44100.0);
+      h.setMode(GenMode::Clip);
+      h.start();
+      renderClip(h, nullptr, 9000, L, R);  // ~8.2 passes of the 1000-frame file
+      double e = 0.0;
+      for (size_t i = fade; i < L.size(); ++i)
+        e = std::max(e, std::fabs(L[i] / capLin - std::sin(2.0 * 3.14159265358979323846 * 441.0 * i / fs)));
+      check(e < 2e-3, "Clip (c): 44.1 kHz file resampled to 48 kHz = the 441 Hz sine through wraps", e, 0.0, 2e-3);
+    }
+
+    // (d) LOOP WRAP, a file NOT cut for looping (a 0 → 0.9 ramp: its own seam
+    //     is a 0.9 step). The 10 ms crossfade removes the step.
+    {
+      const uint32_t N = 4800;
+      std::vector<float> ramp(N);
+      for (uint32_t i = 0; i < N; ++i) ramp[i] = static_cast<float>(0.9 * i / (N - 1));
+      Generator g;
+      g.configure(fs);
+      g.setLevelDb(genlevel::kCapDb);
+      g.setClip(true, 0.0);
+      g.loadClip(ramp.data(), nullptr, N, fs);
+      g.setMode(GenMode::Clip);
+      g.start();
+      std::vector<float> L, R;
+      renderClip(g, nullptr, 4 * N, L, R);
+      const double worst = maxStep(L, fade + 1, L.size()) / capLin;
+      check(worst < 0.005, "Clip (d): non-loop file - crossfaded seam, worst step < 0.005 FS (raw seam 0.9)",
+            worst, 0.005, 0.0);
+      double peak = 0.0;
+      for (float v : L) peak = std::max(peak, static_cast<double>(std::fabs(v)));
+      check(peak <= capLin * 0.9 + 1e-6, "Clip (d): the equal-gain crossfade never exceeds the file's peak", peak,
+            capLin * 0.9, 0.0);
+    }
+
+    // (e) ONE-SHOT: plays once with a tail fade, then exact silence; status ended.
+    {
+      const uint32_t N = 4800;
+      std::vector<float> dc(N, 0.5f);
+      Generator g;
+      g.configure(fs);
+      g.setLevelDb(genlevel::kCapDb);
+      g.setClip(false, 0.0);
+      g.loadClip(dc.data(), nullptr, N, fs);
+      g.setMode(GenMode::Clip);
+      g.start();
+      std::vector<float> L, R;
+      renderClip(g, nullptr, 3 * N, L, R);
+      near("Clip (e): one-shot plays the file at cap x 0.5", L[N / 2], capLin * 0.5, 1e-6);
+      double after = 0.0;
+      for (size_t i = N; i < L.size(); ++i) after = std::max(after, static_cast<double>(std::fabs(L[i]) + std::fabs(R[i])));
+      check(after == 0.0, "Clip (e): one-shot ends in exact silence", after, 0.0, 0.0);
+      check(std::fabs(L[N - 1]) < capLin * 0.5 / 200.0, "Clip (e): the last frame is faded (no end step)",
+            std::fabs(L[N - 1]), 0.0, capLin * 0.5 / 200.0);
+      check(maxStep(L, N - 400, N + 10) < capLin * 0.5 / 200.0, "Clip (e): the 5 ms tail fade has no step",
+            maxStep(L, N - 400, N + 10), 0.0, capLin * 0.5 / 200.0);
+      truthy("Clip (e): status reports the one-shot ended", g.clipEnded());
+      // A genStart retrigger plays it again from the top.
+      g.start();
+      renderClip(g, nullptr, N / 2, L, R);
+      // (10 ms dip + 10 ms rise, then the top of the file again.)
+      truthy("Clip (e): a retrigger replays it (ended clears)", !g.clipEnded() && std::fabs(L[2000]) > capLin * 0.49);
+    }
+
+    // (f) The SAFETY CEILING holds for a HOT clip: a ±4.0 square with a NaN and
+    //     an inf in it, the level asked for 0 dBFS with the cap locked, the clip
+    //     gain asked for +12 dB — out never exceeds the generator's −12 dBFS cap.
+    //     Also through the resampler (44.1 kHz full-scale square: Catmull-Rom
+    //     overshoots, the clamp holds) and through a 1.0 kHz-stepped engine rate.
+    {
+      const uint32_t N = 4410;
+      std::vector<float> hot(N);
+      for (uint32_t i = 0; i < N; ++i) hot[i] = ((i / 21) % 2) ? 4.0f : -4.0f;
+      hot[100] = std::nanf("");
+      hot[200] = INFINITY;
+      for (double rate : {48000.0, 44100.0}) {
+        Generator g;
+        g.configure(fs);
+        g.setLevelDb(0.0);       // above the cap; locked
+        g.setClip(true, 12.0);   // a boost is refused: clamped to 0 dB
+        near("Clip (f): hot file loads", g.loadClip(hot.data(), hot.data(), N, rate), genclip::Ok, 0);
+        near("Clip (f): hot file normalised to full scale (norm 0.25)", g.clipNormGain(), 0.25, 1e-6);
+        g.setMode(GenMode::Clip);
+        g.start();
+        std::vector<float> L, R;
+        renderClip(g, nullptr, 4 * N, L, R);
+        double pk = 0.0;
+        bool finite = true;
+        for (size_t i = 0; i < L.size(); ++i) {
+          finite = finite && std::isfinite(L[i]) && std::isfinite(R[i]);
+          pk = std::max(pk, static_cast<double>(std::max(std::fabs(L[i]), std::fabs(R[i]))));
+        }
+        const std::string tag = rate == fs ? " (48 kHz file)" : " (44.1 kHz file, resampled)";
+        check(pk <= capLin * (1.0 + 1e-6), "Clip (f): hot clip peak <= the -12 dBFS cap" + tag, db(pk),
+              genlevel::kCapDb, 0.0);
+        check(pk >= capLin * 0.999, "Clip (f): ...and reaches it (the cap, not silence)" + tag, db(pk),
+              genlevel::kCapDb, 0.0);
+        truthy("Clip (f): NaN / inf in the file never reach the output" + tag, finite);
+      }
+      // gainDb attenuates (−6 dB on a full-scale DC clip → cap × 0.501).
+      std::vector<float> dc(4800, 1.0f);
+      Generator g;
+      g.configure(fs);
+      g.setLevelDb(genlevel::kCapDb);
+      g.setClip(true, -6.0);
+      g.loadClip(dc.data(), nullptr, 4800, fs);
+      g.setMode(GenMode::Clip);
+      g.start();
+      std::vector<float> L, R;
+      renderClip(g, nullptr, 4800, L, R);
+      near("Clip (f): gainDb -6 attenuates relative to the level", db(L[3000]), genlevel::kCapDb - 6.0, 0.01);
+      g.setClip(true, -120.0);
+      renderClip(g, nullptr, 4800, L, R);
+      check(std::fabs(L[4700]) < capLin * 1e-3, "Clip (f): gainDb -120 glides to silence (< -60 dB re the cap)",
+            std::fabs(L[4700]), 0.0, capLin * 1e-3);
+    }
+
+    // (g) SWAP WHILE PLAYING. Ownership, deterministically (test hooks count
+    //     live buffers): the buffer the audio thread plays is never freed by the
+    //     bridge; a publish the audio thread never took is freed at once; a
+    //     retired one is freed on the next bridge call. The swap itself rides
+    //     the 10 ms dip — no step.
+    {
+      const int base = clipLiveCount().load();
+      std::vector<float> a(4800, 0.6f), b(4800, 0.1f), c(4800, -0.3f);
+      Generator g;
+      g.configure(fs);
+      g.setLevelDb(genlevel::kCapDb);
+      g.setClip(true, 0.0);
+      g.loadClip(a.data(), nullptr, 4800, fs);
+      g.setMode(GenMode::Clip);
+      g.start();
+      std::vector<float> L, R, all;
+      renderClip(g, nullptr, 2400, L, R);  // A adopted, playing
+      all.insert(all.end(), L.begin(), L.end());
+      near("Clip (g): A plays", L[2000], capLin * 0.6, 1e-6);
+      g.loadClip(b.data(), nullptr, 4800, fs);  // pending
+      g.loadClip(c.data(), nullptr, 4800, fs);  // replaces B before the audio thread took it
+      near("Clip (g): an untaken publish is freed at once (live = A + C)", clipLiveCount().load() - base, 2, 0);
+      renderClip(g, nullptr, 4800, L, R);  // dip → C adopted at the bottom → A retired (alive)
+      all.insert(all.end(), L.begin(), L.end());
+      near("Clip (g): C plays after the swap", L[4000], capLin * -0.3, 1e-6);
+      near("Clip (g): the retired A stays alive until a bridge call (live = A + C)", clipLiveCount().load() - base, 2, 0);
+      const double swapStep = maxStep(all, fade + 1, all.size());
+      check(swapStep < capLin * 0.6 / 400.0, "Clip (g): the swap rides the dip - no step", swapStep, 0.0,
+            capLin * 0.6 / 400.0);
+      g.reclaimClips();
+      near("Clip (g): a bridge call frees the retired A (live = C)", clipLiveCount().load() - base, 1, 0);
+      g.unloadClip();  // publish the empty buffer
+      renderClip(g, nullptr, 2400, L, R);
+      g.reclaimClips();
+      near("Clip (g): unload - C retired then freed (live = the empty buffer)", clipLiveCount().load() - base, 1, 0);
+      near("Clip (g): unloaded clip mode renders silence", std::fabs(L[2300]), 0.0, 0.0);
+      // Two threads: the audio thread renders non-stop while the bridge loads,
+      // swaps and unloads clips of every size as fast as it can. Freed buffers
+      // are POISONED with NaN (test hooks), so a single read of a freed buffer
+      // would put a NaN in the output; every sample must also stay under the cap.
+      {
+        Generator s;
+        s.configure(fs);
+        s.setLevelDb(genlevel::kCapDb);
+        s.setClip(true, 0.0);
+        s.setMode(GenMode::Clip);
+        s.start();
+        std::atomic<bool> done{false};
+        std::atomic<long> blocks{0};
+        bool bad = false;
+        double pk = 0.0;
+        std::thread rt([&]() {
+          std::vector<float> l(128), r(128);
+          while (!done.load(std::memory_order_acquire)) {
+            s.renderStereo(l.data(), r.data(), 128);
+            for (int i = 0; i < 128; ++i) {
+              if (!std::isfinite(l[i]) || !std::isfinite(r[i])) bad = true;
+              pk = std::max(pk, static_cast<double>(std::max(std::fabs(l[i]), std::fabs(r[i]))));
+            }
+            blocks.fetch_add(1, std::memory_order_relaxed);
+          }
+        });
+        std::vector<float> buf;
+        for (int it = 0; it < 400; ++it) {
+          const uint32_t n = 64 + (static_cast<uint32_t>(it) * 7919u) % 24000u;
+          buf.assign(n, static_cast<float>(((it % 7) - 3) / 3.0));
+          if (it % 5 == 4) s.unloadClip();
+          else s.loadClip(buf.data(), (it % 2) ? buf.data() : nullptr, n, (it % 3) ? fs : 44100.0);
+          if (it % 11 == 0) s.setClip((it % 2) == 0, -((it % 4) * 3.0));
+          if (it % 13 == 0) s.start();  // a retrigger mid-swap
+          const long target = blocks.load() + 2;
+          while (blocks.load() < target) std::this_thread::yield();  // let a couple of blocks land
+        }
+        done.store(true, std::memory_order_release);
+        rt.join();
+        truthy("Clip (g): 400 swaps under a live render - no freed buffer ever read (no NaN)", !bad);
+        check(pk <= capLin * (1.0 + 1e-6), "Clip (g): ...and every sample stayed under the cap", db(pk),
+              genlevel::kCapDb, 0.0);
+      }
+      near("Clip (g): every buffer freed once the generators are gone", clipLiveCount().load() - base, 1, 0);
+    }
+    near("Clip: no buffer leaked (live count back to 0)", clipLiveCount().load(), 0, 0);
   }
 
   std::printf("\n==== GOLDEN RESULT: %d passed, %d failed ====\n", g_pass, g_fail);

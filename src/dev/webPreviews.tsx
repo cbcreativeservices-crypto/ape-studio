@@ -178,6 +178,9 @@ import { PaywallScreen } from '../screens/commercial/PaywallScreen';
 // the sound engine's proof screen. The lab is in the Labs menu since 2026-11-13 (Game Audio subject, members only).
 import { GameAudioEngineCheckScreen } from './GameAudioEngineCheckScreen';
 import { GameAudioToolsStageCheck } from './GameAudioToolsStageCheck'; // dev check for the mix / voices / net strips and page 20's tool-window stage: `#labpreview/GameAudioToolsStageCheck`
+// Engine 13 clip source (2026-11-27, build must-do D16 / A15): `#labpreview/NativeClipCheck`
+// only says "native only" here; on the phone it opens from the dev menu (DevVisualIndex).
+import { NativeClipCheck } from './NativeClipCheck';
 import { GameAudioLabScreen } from '../screens/lab/gameaudio/GameAudioLabScreen';
 import { StagePlotLabScreen } from '../screens/lab/stageplot/StagePlotLabScreen'; // 2026-11-12, must-do D60: `#labpreview/StagePlotLab`; in the Labs menu since 2026-11-13 (Live Sound Reinforcement, members only)
 
@@ -269,6 +272,7 @@ const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   DJSystemsLab: DJSystemsLabScreen as ComponentType,
   GameAudioEngineCheck: GameAudioEngineCheckScreen as ComponentType,
   GameAudioToolsStageCheck: GameAudioToolsStageCheck as ComponentType,
+  NativeClipCheck: NativeClipCheck as ComponentType,
   GameAudioLab: GameAudioLabScreen as ComponentType,
   StagePlotLab: StagePlotLabScreen as ComponentType,
   MikingHub: MikingHubScreen as ComponentType,

@@ -175,6 +175,7 @@ export const GEN_MODES = {
   additive: 12, // engineVersion ≥ 3 — 12-harmonic additive (HV-2)
   fm: 13, // engineVersion ≥ 7 — carrier+modulator FM voice (wave-2)
   dual: 14, // engineVersion ≥ 8 — two independent sines summed MONO (Cymatics Lab)
+  clip: 15, // engineVersion ≥ 13 — a loaded recording (ApeDsp.loadClip), through the same cap + chain
 } as const;
 export type GenModeName = keyof typeof GEN_MODES;
 
@@ -221,7 +222,44 @@ export type GenParams = {
    *  clear it (0) on its other sources and on stop. Crossfaded native-side
    *  (~20 ms) — click-free at UI rate. Ignored below v10. */
   stereoSpreadRad?: number;
+  /** CLIP playback targets (engineVersion ≥ 13, GEN_MODES.clip — build
+   *  must-do D16 / A15): `loop` (default true) wraps the loaded recording —
+   *  byte-continuous when the file is cut for looping, a 10 ms crossfade at
+   *  the seam when not; false = one-shot (plays once, a 5 ms tail fade, then
+   *  silence and GenStatus.clipEnded). `gainDb` is RELATIVE to `levelDb` and
+   *  can only attenuate (clamped −120..0 native-side), so a clip never sounds
+   *  above the generator's own Q4-capped level. Glides; safe at UI rate.
+   *  PERSISTS like every generator target. Ignored below v13. */
+  clip?: { loop?: boolean; gainDb?: number };
 };
+
+/** Why ApeDsp.loadClip refused (engineVersion ≥ 13). `unavailable` = an older
+ *  binary (or web): nothing was attempted. The rest come from the native
+ *  decoder / core, with the same codes on iOS and Android. */
+export type ClipLoadErrorCode =
+  | 'unavailable'
+  | 'unsupported' // not a local file URI
+  | 'not_found' // no file at that path
+  | 'decode' // the platform decoder could not read it
+  | 'too_long' // longer than 60 s
+  | 'empty' // no audio frames
+  | 'bad_rate'; // sample rate outside 8–192 kHz
+
+export type ClipLoadResult =
+  | { ok: true; frames: number; sampleRate: number; channels: 1 | 2 }
+  | { ok: false; error: ClipLoadErrorCode; message: string };
+
+const CLIP_ERROR_CODES: readonly ClipLoadErrorCode[] = ['unavailable', 'unsupported', 'not_found', 'decode', 'too_long', 'empty', 'bad_rate'];
+
+/** Normalise whatever the bridge resolved (or threw) into a ClipLoadResult. */
+function toClipResult(r: unknown): ClipLoadResult {
+  const o = (r ?? {}) as { ok?: unknown; frames?: unknown; sampleRate?: unknown; channels?: unknown; error?: unknown; message?: unknown };
+  if (o.ok === true && typeof o.frames === 'number' && o.frames > 0 && typeof o.sampleRate === 'number') {
+    return { ok: true, frames: o.frames, sampleRate: o.sampleRate, channels: o.channels === 2 ? 2 : 1 };
+  }
+  const code = CLIP_ERROR_CODES.includes(o.error as ClipLoadErrorCode) ? (o.error as ClipLoadErrorCode) : 'decode';
+  return { ok: false, error: code, message: typeof o.message === 'string' ? o.message : code };
+}
 
 export type GenStatus = {
   running: boolean;
@@ -238,6 +276,15 @@ export type GenStatus = {
    *  honest display; the native route layer drives the value. */
   genHpfHz?: number;
   genHpfEngaged?: boolean;
+  /** engineVersion ≥ 13 only: the loaded CLIP — frames (0 = none loaded), the
+   *  file's own sample rate, channels (1/2), a one-shot that has played to its
+   *  end, and the hot-file normalisation applied at load (1 = none; < 1 = the
+   *  file peaked above full scale and was scaled to it). */
+  clipFrames?: number;
+  clipSampleRate?: number;
+  clipChannels?: number;
+  clipEnded?: boolean;
+  clipNormGain?: number;
 };
 
 /** Binaural source types (engineVersion ≥ 7 — binaural::Src). */
@@ -359,6 +406,10 @@ type NativeApeDsp = {
   fxGrStatus(): number[];
   /** Engine ≥ 12: output latency in ms, -1 = not known now. Absent below 12. */
   outputLatencyMs?(): number;
+  /** Engine ≥ 13: decode a local file into the clip source. Resolves the
+   *  ClipLoadResult shape (never rejects by contract). Absent below 13. */
+  loadClip?(uri: string): Promise<unknown>;
+  unloadClip?(): void;
   // Wave-2 expansion voices (engineVersion ≥ 7):
   binStart(): Promise<BinStatus>;
   binStop(): Promise<void>;
@@ -606,6 +657,41 @@ export const ApeDsp = {
       return typeof v === 'number' && Number.isFinite(v) && v >= 0 ? v : null;
     } catch {
       return null;
+    }
+  },
+
+  // ---- Clip source (engineVersion ≥ 13, build must-do D16 / A15) ----
+  /** True when this build can play a RECORDING through the generator path
+   *  (GEN_MODES.clip): same Q4 cap, same speaker HPF, same effect chain. An
+   *  availability check, it measures nothing. False on web and on every
+   *  binary older than engine 13 — there loadClip/unloadClip do nothing. */
+  clipAvailable(): boolean {
+    return this.engineVersion() >= 13 && typeof native?.loadClip === 'function';
+  },
+  /** Decode a LOCAL audio file (an app-cache `file://` URI: lab-audio AAC/M4A
+   *  or WAV) natively — iOS AVAudioFile, Android MediaExtractor + MediaCodec,
+   *  off the audio thread — and make it the clip source. It does NOT start
+   *  sound: play it with genSet({ mode: GEN_MODES.clip, clip: { loop, gainDb } })
+   *  and a FENCED genStart (startFenced). Loading while a clip sounds swaps it
+   *  click-free. NEVER rejects: an older build / web resolves
+   *  { ok: false, error: 'unavailable' }; a native failure resolves its code.
+   *  Use src/features/lab/nativeLabClip.ts to load a lab-audio asset by key. */
+  async loadClip(uri: string): Promise<ClipLoadResult> {
+    if (!this.clipAvailable()) return { ok: false, error: 'unavailable', message: 'clip source not in this build' };
+    try {
+      return toClipResult(await native!.loadClip!(uri));
+    } catch (e) {
+      return { ok: false, error: 'decode', message: (e as Error)?.message ?? 'loadClip failed' };
+    }
+  },
+  /** Drop the loaded clip (GEN_MODES.clip then renders silence; the memory is
+   *  freed natively off the audio thread). No-op below engine 13. */
+  unloadClip(): void {
+    if (!this.clipAvailable()) return;
+    try {
+      native!.unloadClip?.();
+    } catch {
+      /* the clip is gone either way on the next load */
     }
   },
 
