@@ -83,10 +83,15 @@ test('#18 pattern: the vertical faders follow their own finger too (laneFingerDy
   assert.match(gf, /faderDbToFrac\(grabDb\.current\) - dy \/ SLOT_H/);
 });
 
-test('#18 the Line Array tray still uses DragSlider (so it gets the fix)', () => {
+// Lab fix round 2026-11-14 (owner: "Begin fixing all bugs found and do obvious
+// (my decision is not required) fixes"): the three tray
+// sliders became the dock's BOXES / SPLAY / HEIGHT faders (ParamLane, which
+// carries the same one-finger + per-tick fix). Pinned: no tray slider is left.
+test('#18 the Line Array controls are dock faders (ParamLane has the fix)', () => {
   const s = read('src/screens/lab/wave/modules/modWaveB.tsx');
   const body = s.slice(s.indexOf('export function LineArrayModule'), s.indexOf('export function DelayAlignModule'));
-  assert.equal((body.match(/<DragSlider /g) ?? []).length, 3);
+  assert.equal((body.match(/<DragSlider /g) ?? []).length, 0);
+  for (const id of ['boxes', 'splay', 'hang']) assert.match(body, new RegExp(`kind: 'fader',\\s*id: '${id}'`));
 });
 
 // ── #5 sideways pager ────────────────────────────────────────────────────────

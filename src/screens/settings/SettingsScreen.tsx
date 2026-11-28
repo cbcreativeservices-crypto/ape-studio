@@ -89,12 +89,17 @@ import {
 import { META_CONSENT_ROW_HINT, META_CONSENT_ROW_LABEL, META_CONSENT_ROW_UNREADABLE } from '../../features/growth/metaGate';
 import { useMetaConsent } from '../../features/growth/metaConsentStore';
 import { SettingsSection } from '../../features/settings/SettingsSection';
+import { LowLightRow } from '../../features/settings/LowLightLayer';
 import { osReduceMotionOn } from '../../features/settings/a11y';
 import type { RootStackParamList } from '../../navigation/types';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../theme/readingColumn';
 import { safeGoBack } from '../../lib/safeGoBack';
+import { HomeOrBackKey } from '../../components/nav/HomeOrBackKey';
+import { ScreenCircleMenu, goHome } from '../../components/nav/CircleMenu';
+import { PlaceArt } from '../../components/nav/CircleMenuPanel';
+import { menuClearance } from '../../components/nav/circleMenuPlaces';
 import { useGlossaryLinksPref } from '../../features/glossary/linksPref';
 import { LEGAL_ASSENT_REDEEM } from '../../features/commercial/legalCopy';
 
@@ -697,7 +702,7 @@ ${LOCAL_LOSS}`
           // (evening hunt 2, 2026-10-02): say so, never a silent "on".
           notify(
             'Notifications',
-            'Weekly concepts are saved, but this phone could not be registered to receive them. Check your connection, then switch Weekly concept off and on again.',
+            'Weekly concepts are saved, but this device could not be registered to receive them. Check your connection, then switch Weekly concept off and on again.',
           );
         }
       } else {
@@ -733,14 +738,29 @@ ${LOCAL_LOSS}`
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
+      {/* The hubs' top row (owner 2026-11-20): the HOME key (‹ when deeper),
+          then the section's menu icon and the title. It was a ✕ on a modal. */}
       <View style={styles.headerBar}>
-        <Text accessibilityRole="header" style={styles.headerTitle}>SETTINGS</Text>
-        <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Close settings">
-          <Text style={styles.close}>✕</Text>
-        </Pressable>
+        <HomeOrBackKey alwaysHome onPress={() => goHome(navigation)} backStyle={styles.backGlyph} hitSlop={BACK_HIT_SLOP} />
+        <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+          <PlaceArt place="set" size={26} />
+        </View>
+        {/* Title + a small line naming what is on this screen, the Labs
+            screen's subtitle look (owner 2026-11-24). */}
+        <View style={styles.headerTitleCol}>
+          <Text accessibilityRole="header" style={styles.headerTitle}>SETTINGS</Text>
+          <Text style={styles.headerSubtitle} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>Sound · display · reminders · account</Text>
+        </View>
       </View>
 
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: insets.bottom + 20 }]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: menuClearance(insets.bottom) + 8 }]}>
+        {/* LOW-LIGHT PRODUCTION MODE: its own card, first in the list, keyed red
+            where every other card is amber (owner 2026-11-23: "low light production
+            mode should be in settings in its own container in the list - Make it
+            red instead of amber like the others"). One tap, no section to open:
+            it is the switch the mode's own notice sends people here for. */}
+        <LowLightRow />
+
         {/* NOTIFICATIONS — transport toggles (server) + the commercial content
             notifications (device-local; server prefs frozen). */}
         {/* Every section starts CLOSED (owner 2026-08-30): six collapsed
@@ -781,7 +801,7 @@ ${LOCAL_LOSS}`
             <View style={{ paddingVertical: 10 }}>
               <Text style={styles.rowHint}>
                 {tierReadFailed
-                  ? 'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.'
+                  ? 'Couldn’t confirm your membership on this device. Check your connection and reopen the app.'
                   : 'Checking your membership…'}
               </Text>
             </View>
@@ -1052,7 +1072,7 @@ ${LOCAL_LOSS}`
               this at all. */}
           <View style={styles.row}>
             <View style={{ flex: 1, paddingRight: 10 }}>
-              <Text style={styles.rowLabel}>Keep the glossary on this phone</Text>
+              <Text style={styles.rowLabel}>Keep the glossary on this device</Text>
               <Text style={styles.rowHint}>
                 {isMember ? 'Saves' : 'Academy members: saves'} all 31,858 terms in the background (about 5 MB) so the
                 glossary works with no signal — on a ship, a flight, or a tour with no wi-fi. Turn
@@ -1061,7 +1081,7 @@ ${LOCAL_LOSS}`
             </View>
             <Toggle
               on={autoOffline}
-              label="Keep the glossary on this phone"
+              label="Keep the glossary on this device"
               onChange={(v) => {
                 setAutoOfflineState(v);
                 void setAutoOffline(v);
@@ -1425,6 +1445,9 @@ ${LOCAL_LOSS}`
         </SettingsSection>
         )}
       </ScrollView>
+      {/* The circle menu's MENU button (owner 2026-11-20), lit on this place.
+          It lets every other touch through. */}
+      <ScreenCircleMenu here="set" />
 
       {/* Redeem access / promo code popup (owner 2026-08-21). */}
       <Modal accessibilityViewIsModal visible={redeemOpen} transparent animationType="fade" onRequestClose={() => { if (redeemBusy) return; setRedeemOpen(false); }}>
@@ -1534,15 +1557,18 @@ const styles = StyleSheet.create({
   headerBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    gap: 10,
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
     borderBottomColor: colors.hairlineDim,
     backgroundColor: '#121212',
   },
+  headerTitleCol: { flexShrink: 1 },
   headerTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.6, color: colors.textPrimary },
-  close: { fontSize: 18, color: colors.textSubAlt },
+  // The Labs screen's subtitle (AudioLearningScreen `subtitle`), owner 2026-11-24.
+  headerSubtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
+  backGlyph: { fontFamily: fonts.oswaldSemiBold, fontSize: 28, lineHeight: 28, color: colors.textSubAlt },
   // Sections are cards now, so the gap between them is tighter than the old
   // flat list needed (20 -> 10): the border does the separating.
   scroll: { padding: 14, gap: 10 },

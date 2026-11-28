@@ -287,6 +287,22 @@ export const crestDb = (x: number[]) => db(peakOf(x)) - db(rmsOf(x));
 
 /** One first-order VU ballistics step: the needle chases RMS with ~300 ms
  *  integration — WHY a VU can't show transients (the whole M3 lesson). */
+/**
+ * VU LINE-UP (owner 2026-11-21 on the Pixel: "pink noise ... it should be at U no?
+ * with no peak light yet"). The face is calibrated like a studio: 0 VU = −18 dBFS
+ * average, and the PEAK lamp lights at 0 dBFS — the same point as the PEAK readout.
+ * Each teaching signal is trimmed to a realistic level at GAIN +0.0 dB:
+ *  • PINK NOISE: −18 dBFS RMS — the needle sits on 0 VU, peaks ≈ −9 dBFS, lamp dark;
+ *  • ORGAN: −18 dBFS RMS — climbs and sits near 0 VU, peaks ≈ −13 dBFS;
+ *  • SPEECH: −20 dBFS RMS — swings just under 0 VU;
+ *  • SNARE: a normal tracking level (owner picked "Normal level, lamp dark"):
+ *    the needle tops near 0 VU, peaks ≈ −3 dBFS; about +4 dB of GAIN lights the lamp.
+ * Before this the face put 0 VU at −7.5 dBFS and lit the lamp on its own shifted
+ * scale (0.72 FS), so pink noise lit it below 0 VU while PEAK read −0.6 dBFS.
+ */
+export const VU_REF_DBFS = -18;
+export const VU_LINEUP_DB: Partial<Record<SignalKey, number>> = { pinknoise: -8.4, organ: -7.5, speech: -7.5, snare: -1.5 };
+
 export function vuStep(prev: number, targetRms: number, dtSec: number, tcSec = 0.3): number {
   const a = 1 - Math.exp(-dtSec / tcSec);
   return prev + (targetRms - prev) * a;
@@ -340,7 +356,7 @@ export function simulateLoudness(key: SignalKey, seed = 3): LoudnessSim {
 export type SpectrumKey = 'speech' | 'cymbal' | 'kick' | 'guitar' | 'hum' | 'feedback' | 'pinknoise';
 export const SPECTRUM_LABELS: Record<SpectrumKey, string> = {
   speech: 'Speech', cymbal: 'Cymbal', kick: 'Kick drum', guitar: 'Guitar',
-  hum: 'Mains hum', feedback: 'Feedback', pinknoise: 'Pink noise',
+  hum: 'AC hum', feedback: 'Feedback', pinknoise: 'Pink noise',
 };
 
 /** Teaching spectrum in dB (relative) at frequency f (20..20k). */
@@ -364,6 +380,47 @@ export function spectrumDb(key: SpectrumKey, f: number): number {
     }
     case 'feedback': return -44 + bump(1750, 0.015, 52);
   }
+}
+
+/**
+ * The ONE peak of a teaching spectrum (checker fix 2026-11-15, owner go "build waves 1 thru 3",
+ * D62, one number per thing): the PEAK readout and the drawing's marker used two different grids
+ * and read 219 Hz and 223 Hz for SPEECH's 220 Hz bump. Both now use this: a 2000-point log grid,
+ * then a fine search between the best point's neighbours, so it lands on the true peak
+ * (SPEECH 220 Hz, KICK DRUM 60 Hz, MAINS HUM 60 Hz, FEEDBACK 1.75 kHz, GUITAR 196 Hz).
+ */
+export function spectrumPeak(key: SpectrumKey): { f: number; db: number } {
+  const N = 2000;
+  const lo = Math.log10(20);
+  const hi = Math.log10(20000);
+  const at = (i: number) => Math.pow(10, lo + ((hi - lo) * i) / (N - 1));
+  let bi = 0;
+  let bd = Number.NEGATIVE_INFINITY;
+  for (let i = 0; i < N; i++) {
+    const v = spectrumDb(key, at(i));
+    if (v > bd) {
+      bd = v;
+      bi = i;
+    }
+  }
+  const a = Math.log10(at(Math.max(0, bi - 1)));
+  const b = Math.log10(at(Math.min(N - 1, bi + 1)));
+  let f = at(bi);
+  for (let j = 0; j <= 400; j++) {
+    const fj = Math.pow(10, a + ((b - a) * j) / 400);
+    const v = spectrumDb(key, fj);
+    if (v > bd) {
+      bd = v;
+      f = fj;
+    }
+  }
+  return { f, db: bd };
+}
+
+/** The peak's Hz in the one format the readout and the marker share ("220 Hz", "1.75 kHz"). */
+export function fmtPeakHz(f: number): string {
+  if (f < 1000) return `${Math.round(f)} Hz`;
+  return `${(f / 1000).toFixed(2).replace(/\.?0+$/, '')} kHz`;
 }
 
 // ── Spectrogram pattern painters (M6) — level 0..1 at (t01, f01 log axis) ───
@@ -784,6 +841,30 @@ export const RIDGE_CALLOUT_RATIO = 1.5;
  * True when RT60 moves by less than `tol` (relative) at every frequency on the
  * same 40 Hz–12 kHz grid the ridge detector uses.
  */
+/**
+ * Is DAMPING hidden by the chosen REVERB? (owner 2026-11-21 on the iPhone:
+ * Classroom + HALL looked the same at 0 % and 100 % damping — "extreme
+ * opposites".) An added reverb's tail is not shortened by wall treatment, and
+ * the slower decay always wins, so when the whole damping travel moves the
+ * decay by under 10 % across the speech/music band the slider looks dead. The
+ * physics is right; the lane SAYS so (owner pick: "Lane says it").
+ */
+export function waterfallDampingHidden(opts: WaterfallOpts): boolean {
+  if (opts.reverb === 'none') return false;
+  const dry = { ...opts, damping01: 0 };
+  const wet = { ...opts, damping01: 1 };
+  // At most ONE band may still move a little (Classroom's 250 Hz mode drops ~14 %
+  // under HALL — a sliver the eye cannot find on the plot); none may move a lot.
+  let moved = 0;
+  for (const f of [125, 250, 500, 1000, 2000, 4000]) {
+    const a = waterfallRt(dry, f);
+    const rel = Math.abs(waterfallRt(wet, f) - a) / a;
+    if (rel >= 0.25) return false;
+    if (rel >= 0.1) moved++;
+  }
+  return moved <= 1;
+}
+
 export function waterfallDecayUnchanged(a: WaterfallOpts, b: WaterfallOpts, tol = 0.03): boolean {
   const N = 120;
   const lgLo = Math.log10(40);
@@ -814,8 +895,8 @@ const RT_PROBE_HZ = [31.5, 63, 110, 125, 250, 500, 1000, 1200, 2000, 4000, 8000,
  *
  * Driven by the LONGEST RT60 in the band, because the window has to be long
  * enough to show the slowest part of the room finish — that is usually the low
- * end, and seeing the bass outlast the top IS the lesson. 1.25x gives the tail
- * room to be visible instead of ending exactly at the front edge. Snapped to a
+ * end, and seeing the bass outlast the top IS the lesson. No padding (owner
+ * 2026-11-21): the slowest decay ends at the front edge. Snapped to a
  * readable step so the floor marks land on round numbers.
  */
 export function waterfallTimeSpan(opts: WaterfallOpts): number {
@@ -843,9 +924,17 @@ export function waterfallTimeSpan(opts: WaterfallOpts): number {
   const untreated: WaterfallOpts = { ...opts, damping01: 0, qRing: false };
   let maxRt = 0;
   for (const f of RT_PROBE_HZ) maxRt = Math.max(maxRt, waterfallRt(untreated, f));
-  const needed = maxRt * 1.25;
-  const STEPS = [0.3, 0.5, 0.75, 1, 1.5, 2, 3, 4, 6, 8, 10, 12];
-  return STEPS.find((s) => s >= needed) ?? STEPS[STEPS.length - 1];
+  // NO PADDING, FINE STEPS (owner 2026-11-21: "why does grid got 12 sec if none
+  // of our examples go that long ... remove the unused/never used extra sec").
+  // It was maxRt × 1.25 snapped up to a coarse step, so a 9 s cathedral got a
+  // 12 s floor and every room carried ~25-50 % of floor nothing ever reached.
+  // Now the axis is the room's own longest undamped RT60, snapped up to the
+  // next readable step: that decay lands on the front edge exactly (it reaches
+  // −60 dB, the floor, at t = RT60), and the plot spends its depth on decay.
+  const needed = maxRt;
+  const STEPS = [0.3, 0.5, 0.75, 1, 1.5, 2, 2.5, 3, 4, 5, 6, 7, 8, 9, 10, 12];
+  // A hair of slack for float noise (theater's 7 s computes as 7.000000000000002).
+  return STEPS.find((s) => s >= needed - 1e-6) ?? STEPS[STEPS.length - 1];
 }
 
 /** Whole-number-ish floor division marks that fit inside `span`. */

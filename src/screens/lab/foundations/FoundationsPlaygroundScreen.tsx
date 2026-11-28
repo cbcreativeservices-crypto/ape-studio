@@ -47,6 +47,7 @@ import { guardAdditiveForEngine, guardNoiseLevelForEngine, guardToneLevelForEngi
 import { eqResponseDb } from '../../../features/lab/fxViz';
 import { LabReviewButton } from '../../../features/lab/LabReviewButton';
 import { ReviewLabEnd } from '../kit/ReviewLabEnd';
+import { useLabDone } from '../../../features/lab/labCompletion';
 import { CheckQuestion } from './bits';
 import { EngineGate } from '../../tools/EngineGate';
 import type { EngineState } from '../../../features/tools/engine/useDspEngine';
@@ -60,13 +61,17 @@ import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../../theme/tokens';
 // so the key, the hint anchor and the host are wired here by hand.
 import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
 import { PLAYGROUND_SCREEN_GUIDE } from './foundationsScreenGuides';
-import { LabChip } from '../LabShell';
-import { RackUnit } from '../rack/RackUnit';
+import { CollapsibleSection, LabChip } from '../LabShell';
+import { captionedRack } from './captionedRack';
+import { FOUNDATIONS_CAPTIONS } from './bezelCaptions';
+
+/** The playground's rack: first-visit bezel captions, and the sound-off line
+ *  (lab fix round 2026-11-14, phase 2). */
+const RackUnit = captionedRack(FOUNDATIONS_CAPTIONS, { soundOffWhenPlayable: true, modelNotes: true, drawingPlaceholder: true });
 import { useStageTextScale } from '../rack/stageAspect';
 import type { BezelItem, DockParam } from '../rack/rackTypes';
-import { ConceptBadge, DragSlider, LevelMeterBar, TracerCaption, VizUnavailableCard } from './bits';
+import { ConceptBadge, DragSlider, LevelMeterBar, PlainModelNote, TracerCaption, VizUnavailableCard } from './bits';
 import { requireViz, type VizModule } from './skiaGate';
-import { visHzFor } from './FoundationsCourseScreen';
 import { START_LEVEL_01 } from '../../../features/audio/startLevel';
 import { useStopOnAudioMute } from '../../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced';
@@ -76,6 +81,8 @@ import { fitValue } from '../../../theme/legibility';
 import { EQ_OTHER_BANDS_OFF } from '../fxLabConfigs';
 
 const ACTIVITY_MS = 500;
+/** PG-01: one line, on the page and in the intro card (foundationsScreenGuides.ts). */
+export const PLAYGROUND_AFTER_LINE = 'Best after Foundations of Sound; every control here was taught there';
 const SPEED_OF_SOUND = 343;
 
 type SourceKind = 'wave' | 'noise' | 'sweep';
@@ -103,6 +110,9 @@ const SWEEPS = [
   { key: 'slow', label: 'SLOW SWEEP', secs: 8 },
   { key: 'fast', label: 'FAST SWEEP', secs: 2 },
 ] as const;
+/** The sweep's span — the generator's and the drawing's (one place). */
+const SWEEP_START_HZ = 100;
+const SWEEP_END_HZ = 8000;
 const DELAYS = [
   { key: 0, label: 'DELAY OFF' },
   { key: 30, label: '30 ms' },
@@ -145,6 +155,9 @@ function recipe(kind: WaveKind, keep: number, phaseDeg: number, inverted: boolea
 
 export function FoundationsPlaygroundScreen() {
   const insets = useSafeAreaInsets();
+  // Phase 3, "done = work done": the review mark waits for the check.
+  const [checkPassed, setCheckPassed] = useState(false);
+  const reviewed = useLabDone('af_sound_playground');
   const { height: winH } = useWindowDimensions();
   const navigation = useNavigation();
   const { requestAudioOutput } = useAudioOutputGate();
@@ -200,6 +213,9 @@ export function FoundationsPlaygroundScreen() {
   const stopGenRef = useRef(0); // generation of the last stop() — see start()
   const stateRef = useRef({ source, wave, noise, sweepKey, freq, levelDb, amps, phases });
   stateRef.current = { source, wave, noise, sweepKey, freq, levelDb, amps, phases };
+  // Every sweep genSet restarts the sweep at 100 Hz (setSweep retriggers);
+  // the drawing's sweep clock restarts with it (owner 2026-11-25, fix-first round 2).
+  const [sweepToken, setSweepToken] = useState(0);
 
   const pushSource = useCallback(() => {
     const s = stateRef.current;
@@ -214,9 +230,10 @@ export function FoundationsPlaygroundScreen() {
       const sw = SWEEPS.find((x) => x.key === s.sweepKey)!;
       ApeDsp.genSet({
         mode: GEN_MODES.sweepLog,
-        sweep: { startHz: 100, endHz: 8000, seconds: sw.secs, repeat: true },
+        sweep: { startHz: SWEEP_START_HZ, endHz: SWEEP_END_HZ, seconds: sw.secs, repeat: true },
         levelDb: guardToneLevelForEngine(s.levelDb, 100),
       });
+      setSweepToken((n) => n + 1);
       return;
     }
     // Waves ride the additive path (phase/polarity/harmonics need it); a
@@ -329,7 +346,14 @@ export function FoundationsPlaygroundScreen() {
   // ── Display derivations (lockstep with the audio settings) ─────────────────
   const amp01 = (levelDb + 48) / 32;
   const airMode = source === 'noise' ? 'noise' : 'wave';
-  const displayVisHz = source === 'sweep' ? visHzFor(900) : visHzFor(freq);
+  // The drawn motion follows the tone (motionHz.ts, one mapping 55 Hz–8 kHz);
+  // on a sweep it follows the sweep itself, so SLOW and FAST differ (owner
+  // 2026-11-25, fix-first round 2 — it used to rock at visHzFor(900) throughout).
+  const sweepSecs = SWEEPS.find((x) => x.key === sweepKey)!.secs;
+  const displaySweep = useMemo(
+    () => (source === 'sweep' ? { startHz: SWEEP_START_HZ, endHz: SWEEP_END_HZ, secs: sweepSecs } : null),
+    [source, sweepSecs],
+  );
   const gainDbAt = useMemo(() => {
     if (eqCut <= 0) return null;
     const band = [{ type: 'lowPass' as const, freq: eqCut, q: eqQ, gainDb: 0 }];
@@ -364,19 +388,17 @@ export function FoundationsPlaygroundScreen() {
           ? 'SLOW SWEEP'
           : 'FAST SWEEP';
   const panOn = Math.abs(balance - 0.5) > 0.02;
-  const fxValue =
-    [panOn ? 'PAN' : null, delayMs > 0 ? 'DLY' : null, eqCut > 0 ? 'EQ' : null]
-      .filter(Boolean)
-      .join('·') || 'OFF';
+  /** Anything inside SOURCE's MORE CONTROLS fold in use (PG-02): the fold then opens with the tray. */
+  const moreInUse = source !== 'wave' || keep !== 12 || phase !== 0 || inverted || panOn || delayMs > 0 || eqCut > 0;
 
   // TRY THIS — guided-exploration prompts (learning pass 2026-08-31: the
   // sandbox graded D on scaffolding — free play with no hypotheses to test).
   // Predict → act → where to look; the linked views are the feedback. Filtered
   // per source so a prompt never references a control that is not on stage.
   const TRY_THIS: { when: 'wave' | 'noise' | 'sweep' | 'any'; text: string }[] = [
-    { when: 'wave', text: 'Drop a SQUARE to FIRST 3 harmonics — predict first: do the corners get sharper or rounder? Watch WAVEFORM.' },
-    { when: 'wave', text: 'LPF 500 Hz on a SAW — count the spectrum lines that should survive before you look.' },
-    { when: 'wave', text: 'Flip POLARITY while playing. The drawing flips — the sound does not. Why not? Module 10 answers.' },
+    { when: 'wave', text: 'Drop a SQUARE to FIRST 3 harmonics (MORE CONTROLS in SOURCE) — predict first: do the corners get sharper or rounder? Watch WAVEFORM.' },
+    { when: 'wave', text: 'LPF 500 Hz (MORE CONTROLS › FX) on a SAW — count the spectrum lines that should survive before you look.' },
+    { when: 'wave', text: 'Flip POLARITY while playing. The drawing flips — the sound does not. Why not? Foundations of Sound, Module 10 (Phase), answers.' },
     { when: 'wave', text: 'Double FREQ and watch the readouts: λ should halve. Does it?' },
     { when: 'noise', text: 'Step WHITE → PINK → BROWN and watch the spectrum tilt. Which end loses energy each step?' },
     { when: 'sweep', text: 'Listen for the moment the sweep passes the pitch of your speaking voice — then check where the level meter sits.' },
@@ -395,6 +417,9 @@ export function FoundationsPlaygroundScreen() {
       value: freq01,
       onChange: setFreq01,
       format: () => `${freq} Hz`,
+      // SH-64 (owner 2026-11-15, "build waves 1 thru 3", D62): noise and the sweeps
+      // ignore FREQ, so it greys out with its reason instead of looking live.
+      locked: source === 'wave' ? undefined : 'noise and sweeps have no single pitch: pick a wave shape',
       helpKey: 'frequency',
     },
     {
@@ -434,6 +459,12 @@ export function FoundationsPlaygroundScreen() {
               />
             ))}
           </View>
+          {/* PG-02 (owner 2026-11-15, "build waves 1 thru 3", D62): the tray opens
+              on the four wave shapes; noise, harmonics, phase and the effects
+              (the old FX tray) wait in one fold. It opens by itself while
+              anything inside it is in use, so a choice is never hidden. */}
+          <CollapsibleSection title="MORE CONTROLS" startOpen={moreInUse}>
+          <View style={{ gap: 10 }}>
           <Text style={styles.sectionHead}>NOISE · SWEEP</Text>
           <View style={styles.chipRow}>
             {NOISES.map((nz) => (
@@ -495,17 +526,7 @@ export function FoundationsPlaygroundScreen() {
               </View>
             </>
           ) : null}
-        </View>
-      ),
-    },
-    {
-      kind: 'group',
-      id: 'fx',
-      label: 'FX',
-      valueLabel: fxValue,
-      helpKey: 'eq',
-      render: () => (
-        <View style={{ gap: 10 }}>
+          <Text style={styles.sectionHead}>FX</Text>
           <DragSlider
             value={balance}
             onChange={setBalance}
@@ -558,8 +579,10 @@ export function FoundationsPlaygroundScreen() {
           <Text style={styles.caption}>
             EQ shapes the drawings above; BALANCE moves the L–R strip under them. DELAY changes
             what you HEAR only — it is not drawn.
-            {!fxReady && engineReady ? ' (Update the app to hear these effects.)' : ''}
+            {!fxReady && engineReady ? ' (These effects do not play on this device; EQ and BALANCE still show in the drawings.)' : ''}
           </Text>
+          </View>
+          </CollapsibleSection>
         </View>
       ),
     },
@@ -594,12 +617,21 @@ export function FoundationsPlaygroundScreen() {
           <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
-          <Text style={styles.title}>FOUNDATIONS PLAYGROUND</Text>
-          {/* Was "Every control drives every view" — an overclaim: BALANCE and
-              DELAY reach the audio but have no drawn twin (fix 2026-08-28). */}
-          <Text style={styles.subtitle}>Drive the views, hear the change — experiment freely</Text>
+          {/* The Labs menu tile's name (G1: header and tile disagreed). */}
+          <Text style={styles.title}>SOUND PLAYGROUND</Text>
+          {/* PG-01 (owner 2026-11-15, "build waves 1 thru 3", D62): the subtitle
+              (was "Drive the views, hear the change — experiment freely") says
+              where this lab sits, and is the way to that lab. */}
+          <Pressable
+            onPress={() => navigation.navigate('FoundationsCourse' as never)}
+            hitSlop={6}
+            accessibilityRole="link"
+            accessibilityLabel="Best after Foundations of Sound. Open Foundations of Sound"
+          >
+            <Text style={styles.subtitle}>{PLAYGROUND_AFTER_LINE} ›</Text>
+          </Pressable>
         </View>
-        <ScreenGuideKey title="FOUNDATIONS PLAYGROUND" guide={PLAYGROUND_SCREEN_GUIDE} />
+        <ScreenGuideKey title="SOUND PLAYGROUND" guide={PLAYGROUND_SCREEN_GUIDE} />
       </View>
       </ScreenGuideHintAnchor>
 
@@ -632,7 +664,8 @@ export function FoundationsPlaygroundScreen() {
                 viz={viz}
                 w={w}
                 h={h}
-                visHz={displayVisHz}
+                sweep={displaySweep}
+                sweepToken={sweepToken}
                 amp={0.25 + amp01 * 0.75}
                 airMode={airMode}
                 running={playing}
@@ -659,8 +692,9 @@ export function FoundationsPlaygroundScreen() {
             SILENT with the PLAY key sitting far right looking disabled — and
             hearing the change is half this screen's premise. Never autoplay
             (speaker-safety rules); invite. */}
+        {/* Silent first step (G1): a sound-off learner can do this one. */}
         {engineReady && !everPlayed && !playing ? (
-          <Text style={styles.playNudge}>Press PLAY — you are looking at a sound. Hear every change you make.</Text>
+          <Text style={styles.playNudge}>Change anything below and watch all three views answer. Press PLAY to hear it too.</Text>
         ) : null}
 
         {/* TRY THIS — one prompt at a time; ↻ advances. The views themselves
@@ -696,12 +730,12 @@ export function FoundationsPlaygroundScreen() {
           <>
             <Text style={styles.caption}>
               Phase shifts and polarity flips change the DRAWING but are inaudible on a single
-              mono source — hold that thought for Module 10, where two copies collide.
+              mono source; they matter when two copies collide (Foundations of Sound, Module 10: Phase).
             </Text>
             {!additiveReady && engineReady ? (
               <Text style={styles.caption}>
-                This version of the app plays only a pure sine here. The drawings stay exact; update the
-                app to hear the full sound.
+                On this device the sound here stays a pure sine; the drawings show the full shape
+                exactly.
               </Text>
             ) : null}
           </>
@@ -729,10 +763,7 @@ export function FoundationsPlaygroundScreen() {
         {/* Full honesty disclosures, verbatim (the stage badge is the condensed
             one-liner — these are the complete texts). */}
         <ConceptBadge />
-        <Text style={styles.badge}>
-          ANALYTIC — DRAWN FROM THE SETTINGS, NOT A MEASUREMENT (the measurement tools do the
-          real thing)
-        </Text>
+        <PlainModelNote>The waveform and spectrum are drawn from your settings, not measured: the measurement tools do the real thing.</PlainModelNote>
 
         {/* Retrieval BEFORE the self-report (learning pass 2026-08-31): one
             combined-context check — deliberately the null-result experiment,
@@ -741,23 +772,39 @@ export function FoundationsPlaygroundScreen() {
             so recall precedes the credit press. */}
         <CheckQuestion
           spec={{
-            question: 'You low-pass a 295 Hz sine with the cutoff at 2 kHz. What changes?',
+            // 290 Hz: the page's own starting FREQ (G1: the check said 295 while the page showed 290).
+            question: 'A low-pass filter (LPF) cuts what lies above its cutoff. You low-pass a 290 Hz sine with the cutoff at 2 kHz. What changes?',
             options: [
               'The tone gets duller — highs are cut',
               'Nothing — its only partial sits far below the cutoff',
               'The pitch drops toward the cutoff',
             ],
+            why: { 0: 'A sine has one line in the SPECTRUM. Is any of it above 2 kHz to be cut?', 2: 'A filter changes how strong each part is, not where it sits. Watch the one line stay put.' },
             correctIdx: 1,
             reveal:
               'A pure sine has ONE partial (one frequency ingredient). A low-pass at 2 kHz cuts mostly above 2 kHz — and your sine sits far below it. Filters change a sound only when something lives near or past the cutoff. Try the same filter on a SAW and count what survives.',
             wrongHint: 'Look at the spectrum pane: how many lines does a sine have, and where is yours relative to 2 kHz?',
           }}
+          onSolved={() => setCheckPassed(true)}
         />
 
-        {/* R6c: sandbox — no modules/challenge; explicit review records credit. */}
-        <LabReviewButton labKey="af_sound_playground" />
+        {/* R6c: sandbox — no modules/challenge; explicit review records credit.
+            "DONE = WORK DONE" (owner's decision 1, 2026-11-14): MARK AS REVIEWED
+            appears once CHECK YOURSELF is answered right (or when the lab is
+            already reviewed: stored credit is never hidden). */}
+        {checkPassed || reviewed ? (
+          <LabReviewButton labKey="af_sound_playground" />
+        ) : (
+          <Text style={styles.caption}>Answer CHECK YOURSELF right and MARK AS REVIEWED appears here.</Text>
+        )}
         {/* Every lab ends with a what's-left screen (owner ruling 2026-10-14, #21). */}
-        <ReviewLabEnd labKey="af_sound_playground" labTitle="Sound Playground" onOpen={stop} />
+        <ReviewLabEnd
+          labKey="af_sound_playground"
+          labTitle="Sound Playground"
+          onOpen={stop}
+          stepLabel={checkPassed ? 'Press MARK AS REVIEWED (your check is passed)' : 'Answer CHECK YOURSELF right, then press MARK AS REVIEWED'}
+          stepDetail="Both are at the foot of the playground, under TRY THIS."
+        />
       </RackUnit>
 
       <GuidedLessonSheet
@@ -778,7 +825,8 @@ function StageViz({
   viz,
   w,
   h,
-  visHz,
+  sweep,
+  sweepToken,
   amp,
   airMode,
   running,
@@ -795,7 +843,10 @@ function StageViz({
   viz: VizModule;
   w: number;
   h: number;
-  visHz: number;
+  /** The sweep the generator is running (null for a wave or noise). */
+  sweep: { startHz: number; endHz: number; secs: number } | null;
+  /** Bumped on every sweep (re)start, so the drawn sweep restarts with it. */
+  sweepToken: number;
   amp: number;
   airMode: 'wave' | 'noise';
   running: boolean;
@@ -810,7 +861,15 @@ function StageViz({
   /** STEREO BALANCE 0 (L) .. 1 (R) — drawn on the L–R strip (slider audit held item #17). */
   balance: number;
 }) {
-  const clock = viz.useVizClock(running);
+  // A wave or a sweep rides an INTEGRATED phase clock (owner 2026-11-25,
+  // fix-first round 2): a FREQ drag speeds the motion up or slows it, never
+  // jumps it, and a sweep's motion climbs with the sweep. Noise jitters on
+  // real seconds (its hash is quantized in time), so it keeps the plain clock.
+  const noiseClock = viz.useVizClock(running && airMode === 'noise');
+  const phaseClock = viz.useMotionPhaseClock(running && airMode === 'wave', freq, sweep, sweepToken);
+  const clock = airMode === 'wave' ? phaseClock : noiseClock;
+  // With a phase clock the views' ω·t = 2π·visHz·clock must equal the phase.
+  const visHz = viz.PHASE_CLOCK_VIS_HZ;
   const ts = useStageTextScale(); // pane names grow with the picture in FULL SCREEN
   const GAP = 3;
   // Pane names at 10.5 pt (art grading 2026-10-16: 9 pt read as tiny at 390).

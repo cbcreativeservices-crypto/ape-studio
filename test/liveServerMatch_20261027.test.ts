@@ -41,6 +41,7 @@ test('every rpc() the code calls exists on the live server', () => {
   // is live — the snapshot refresh will show it, and a stale entry fails below.
   // audio_replacement_pending went live 2026-10-29 (D28, Comp A).
   // my_employer_public_token went live 2026-11-04 (H5, Comp A).
+  // my_privacy_notice_seen / mark_privacy_notice_seen went live 2026-11-22 (D72, Comp A).
   const KNOWN_MISSING: Record<string, string> = {};
   for (const [f, row] of Object.entries(KNOWN_MISSING)) {
     assert.ok(mustDo.includes(`| ${row} |`), `${f} is excused by must-do ${row}, which is not on the list`);

@@ -34,6 +34,7 @@ import { useEntitlement } from '../../../features/commercial/EntitlementProvider
 import { cardColumn } from '../../../theme/readingColumn';
 import { useWideOnTablet } from '../../../theme/useIsTablet';
 import { TabletGrid } from '../../../components/TabletGrid';
+import { EAR_HUB_GROUPS, EAR_HUB_OPENING, EAR_START_ID, EAR_START_MARK, modulesInGroup } from './earHubGroups';
 
 export function EarTrainingLabScreen() {
   const insets = useSafeAreaInsets();
@@ -98,6 +99,7 @@ export function EarTrainingLabScreen() {
       />
       {ending ? (
         <LabEndScreen
+          labId="ear-training"
           labTitle="Ear Training Lab"
           // UNREADABLE is not "not tried" (D51): no per-row state is claimed.
           units={unreadable || !progress ? EAR_MODULES.map((m) => ({ id: m.id, label: m.title })) : earEndUnits(EAR_MODULES, progress?.modules)}
@@ -112,20 +114,24 @@ export function EarTrainingLabScreen() {
         />
       ) : (
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: insets.bottom + 24 }]}>
-        <Text style={styles.body}>
-          Every drill here makes real signals, plays them, and then shows you that same sound on the analyzers. The habit this lab builds is hearing something and knowing what the measurement will say before you look. Short focused sets beat an hour of grinding — the level adapts on your last twenty answers at the current level, so give it a full twenty before expecting it to move.
-        </Text>
+        {/* A plain picture and where to begin, not the analyzer paragraph
+            (owner 2026-11-15: "build waves 1 thru 3", D62 ET-04). */}
+        <Text style={styles.body}>{EAR_HUB_OPENING}</Text>
         <Text style={styles.noteLine}>
           🎧 Headphones suggested throughout — modules note when they truly matter.
         </Text>
-        <Text style={styles.sectionTitle}>MODULES</Text>
+        {/* Four labeled groups instead of one flat MODULES list, a START HERE
+            mark on module 1, every module still open (D62 ET-02). */}
         {/* UNREADABLE is not "not started" (owner 2026-10-03, "do 2"): a
             ladder handed out because storage could not be read shows no
             levels, no accuracy and no ✓ — said here, before the rows. The
             modules stay open to practice. */}
         {unreadable ? <ProgressUnreadableNote /> : null}
+        {EAR_HUB_GROUPS.map((g) => (
+        <View key={g.title} style={styles.group}>
+        <Text style={styles.sectionTitle}>{g.title}</Text>
         <TabletGrid minTile={360} maxCols={2} gap={8}>
-        {EAR_MODULES.map((m) => {
+        {modulesInGroup(EAR_MODULES, g.families).map((m) => {
           const p = unreadable ? undefined : progress?.modules[m.id];
           const acc = p ? recentAccuracy(p) : null;
           // Progress marks (emulator pass 2026-10-14): ✓ = the module already
@@ -134,11 +140,13 @@ export function EarTrainingLabScreen() {
           const stat = p && earModuleTried(p)
             ? `L${Math.min(p.level, m.levels)}${acc != null ? ` · ${Math.round(acc * 100)}%` : ''}${earModuleCredited(p) ? '' : ' · tried'}`
             : null;
+          // START HERE rides on module 1 until it has been tried (ET-02).
+          const start = m.id === EAR_START_ID && !stat ? `   ·  ${EAR_START_MARK}` : '';
           return (
             <ModuleAccordionRow
               key={m.id}
               num={m.num}
-              name={stat ? `${m.title}   ·  ${stat}` : m.title}
+              name={stat ? `${m.title}   ·  ${stat}` : `${m.title}${start}`}
               blurb={`${m.blurb}\n${m.phones === 'required' ? '🎧 Headphones REQUIRED. ' : m.phones === 'recommended' ? '🎧 Headphones suggested. ' : ''}${m.playbackNote}`}
               expanded={openId === m.id}
               done={earModuleCredited(p)}
@@ -148,6 +156,8 @@ export function EarTrainingLabScreen() {
           );
         })}
         </TabletGrid>
+        </View>
+        ))}
         <Text style={styles.coming}>
           All fourteen modules are open to you. Emulated processors and program beds made by the
           app are labeled as such throughout.
@@ -167,5 +177,6 @@ const styles = StyleSheet.create({
   body: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19 },
   noteLine: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12.5 },
   sectionTitle: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 2, marginTop: 8 },
+  group: { gap: 10 },
   coming: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 17, marginTop: 8 },
 });

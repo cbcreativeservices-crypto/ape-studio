@@ -99,7 +99,7 @@ export function Mod8Project({ onAnswered, onQcComplete, savedChecks, savedQc, on
         {
           key: 'problems', title: 'What can mastering address?', kind: 'PRACTICE', layout: 'read',
           body: (
-            <ScenarioDeck scenarios={PROJECT_TRACKS.map((t) => t.issue)} keepOrder onAnswered={onAnswered} intro="One question per track. Decide whether the next step is a mastering adjustment, a mix revision, or more information from the client." />
+            <ScenarioDeck scenarios={PROJECT_TRACKS.map((t) => t.issue)} keepOrder onAnswered={onAnswered} intro="One question per track. Decide whether the next step is a mastering adjustment, a mix revision, or asking the client first." />
           ),
         },
         {
@@ -109,7 +109,7 @@ export function Mod8Project({ onAnswered, onQcComplete, savedChecks, savedQc, on
               <Body>Select the checks and tools this EP needs. Then reveal the key: the point is the reasoning, not the score.</Body>
               <Checklist items={PROJECT_CHECKS} chosen={checks} onToggle={toggleCheck} reveal={revealed} />
               <Card tone="accent">
-                <Point title={revealed ? `${checkScore} of ${PROJECT_CHECKS.length} match the key` : 'Ready?'}>
+                <Point title={revealed ? (checkScore === PROJECT_CHECKS.length ? 'Every line matches the key' : `${PROJECT_CHECKS.length - checkScore} line${PROJECT_CHECKS.length - checkScore === 1 ? '' : 's'} to look at again`) : 'Ready?'}>
                   {revealed ? 'Read the lines that differ — each explains the decision the EP needed.' : 'Tap REVEAL THE KEY when your list is complete.'}
                 </Point>
                 {!revealed ? <KeyButton label="REVEAL THE KEY ›" onPress={() => setRevealed(true)} tint={colors.green} /> : null}
@@ -126,8 +126,8 @@ export function Mod8Project({ onAnswered, onQcComplete, savedChecks, savedQc, on
             badge: 'PLAN · fictional EP, loudness estimates',
             bezel: [
               { k: 'ORDER', v: seq.short, flex: 1.8 },
-              { k: 'GAP', v: crossfade ? 'XF' : `${gap.toFixed(1)} s`, tint: crossfade ? colors.cyan : colors.amber },
-              { k: 'MAX STEP', v: `${step.toFixed(1)} LU`, tint: step > 6 ? colors.amber : colors.green },
+              { k: 'GAP', caption: 'between songs', v: crossfade ? 'XF' : `${gap.toFixed(1)} s`, tint: crossfade ? colors.cyan : colors.amber },
+              { k: 'MAX STEP', caption: 'biggest jump', v: `${step.toFixed(1)} LU`, tint: step > 6 ? colors.amber : colors.green },
               { k: 'TOTAL', v: `${Math.floor(laid.totalSec / 60)}:${String(Math.round(laid.totalSec % 60)).padStart(2, '0')}` },
             ],
             params: [
@@ -168,7 +168,7 @@ export function Mod8Project({ onAnswered, onQcComplete, savedChecks, savedQc, on
                   card claimed the job done while the credit line below said
                   otherwise (toddler pass 2; pass 1 fixed only the intro). */}
               <Card tone={qcDone && openDecisions === 0 ? 'accent' : 'plain'}>
-                <Point title={!qcDone ? `${qc.size} of ${PROJECT_QC.length}` : openDecisions === 0 ? 'Delivered' : 'QC complete'}>
+                <Point title={!qcDone ? `${PROJECT_QC.length - qc.size} line${PROJECT_QC.length - qc.size === 1 ? '' : 's'} left to check` : openDecisions === 0 ? 'Delivered' : 'QC complete'}>
                   {!qcDone
                     ? 'QC happens on the files you send, not on the session that made them.'
                     : openDecisions === 0

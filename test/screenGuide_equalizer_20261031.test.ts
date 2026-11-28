@@ -215,8 +215,10 @@ describe('3. each guide quotes its screen’s real names', () => {
     // answers: narrower; high-pass; graphic fixes freq + width; another 24 dB per octave (a rate); headroom
     assert.doesNotMatch(t, /narrower|HIGH-PASS|rumble-and-mud|a rate|not a set amount|fixed frequency|headroom/i);
     assert.doesNotMatch(t, /switch Q from 0\.7 WIDE to 8 NARROW|read (HIGH-PASS|its slope)/);
-    assert.match(c.tryThis[0], /switch to LEARN and reread the Q entry under CONTROLS/);
-    assert.match(c.tryThis[1], /switch to LEARN and reread FORMULA \/ CONCEPT/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(c.tryThis[0], /switch to LEARN, open CONTROLS and reread the Q entry/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(c.tryThis[1], /switch to LEARN and open FORMULA \/ CONCEPT/);
     // the HIGH-PASS note it no longer points to does give two answers away
     assert.match(EQ_CFG, /label: 'HIGH-PASS',[^\n]*not a set amount of cut\. The rumble-and-mud eraser\./);
   });
@@ -233,7 +235,8 @@ describe('4. TRY THIS is what the screen prints', () => {
     const f = fq >= 1000 ? `${fq / 1000} kHz` : `${fq} Hz`;
     assert.equal(`+${6} dB at ${f}, Q ${8}.`, '+6 dB at 1 kHz, Q 8.');
     assert.ok(GUIDES.explore.tryThis.join(' ').includes('+6 dB at 1 kHz, Q 8'));
-    assert.match(FX, /<Text style=\{styles\.sectionHead\}>DESIGNED RESPONSE<\/Text>[\s\S]*?config\.heroCaption!\(values\)/);
+    // owner 2026-11-25, click tempo: the caption also gets the live source and CLICK tempo (captionCtx); EQ ignores them.
+    assert.match(FX, /<Text style=\{styles\.sectionHead\}>DESIGNED RESPONSE<\/Text>[\s\S]*?config\.heroCaption!\(values, captionCtx\)/);
   });
   it('a pass filter ignores GAIN: the caption and the drawn curve agree (the high-pass draw takes no gain or Q)', () => {
     assert.match(EQ_CFG, /GAIN and Q don't apply to the high-pass/);

@@ -89,7 +89,11 @@ test('R2 — a refused compute does not call consume', () => {
   // The gate: runCappedCalc (the only consumeCalc caller) refuses a refusal,
   // and the refusal's own words render BEFORE the CALCULATE button.
   const src = read('CalcWorkspaceScreen.tsx');
-  const fnBody = src.slice(src.indexOf('const runCappedCalc = async () => {'), src.indexOf('u = await consumeCalc();'));
+  // `consumeCalc(meterMode)` since the guest allowance (owner 2026-11-23: "in
+  // the calculator the guest user does get an allowance per week of use").
+  const end = src.indexOf('u = await consumeCalc(meterMode);');
+  assert.ok(end > 0, 'the one consume call');
+  const fnBody = src.slice(src.indexOf('const runCappedCalc = async () => {'), end);
   assert.match(fnBody, /if \(!values \|\| !costsACalculation\(\{ computeError, refused \}\) \|\|/);
   const refusal = src.indexOf(') : refused && (capped || tierPending) ? (');
   const gate = src.indexOf(') : capped && !resultUnlocked ? (');

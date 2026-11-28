@@ -49,13 +49,18 @@ type Strategy = 'none' | 'cut' | 'boost';
 const CHECK: CheckSpec = {
   question: 'Both strategies improved the 250 Hz BALANCE. What’s the practical difference?',
   options: [
-    'Nothing — they are identical',
-    'The boost strategy raised the overall level (eats headroom); the cut removed only the excess',
-    'The cut strategy destroyed the low end',
+    'Nothing: the two results are identical',
+    'The boost raised the whole level; the cut did not',
+    'The cut strategy wiped out the whole low end',
   ],
   correctIdx: 1,
   reveal:
     'Relative balance can end up similar — but boosting everything around a problem raises the whole signal (headroom, noise, gain staging), while a targeted cut removes only the excess. Sometimes cutting is more effective; boosting is still a legitimate tool.',
+  // A reason per wrong option (phase 2, F5's `why`): names the mix-up, never the answer.
+  why: {
+    0: 'The balance can look alike, but read the overall-shift readout under the graph for each strategy.',
+    2: 'The cut touched only the region around 250 Hz; the rest of the low end is still there on the graph.',
+  },
   wrongHint: 'Look at the overall-shift readout under the graph.',
 };
 
@@ -134,7 +139,7 @@ export function EqChallengesModule(p: EqModuleComponentProps) {
           width={Math.max(120, p.width)}
           aspect={GRAPH_ASPECT}
           title="THE PROBLEM"
-          badge="SYNTHETIC SPECTRUM · dim = healthy reference · bold = the signal"
+          badge="A made-up spectrum: dim is a healthy reference, bold is the signal."
           render={(w, h) => (
             <ResponseCurveGraph
               curves={curves}
@@ -184,7 +189,8 @@ export function EqChallengesModule(p: EqModuleComponentProps) {
         wrong. Choose deliberately.
       </Text>
 
-      <CheckQuestion spec={CHECK} />
+      {/* Work done (phase 3, owner's decision 1): this module counts when its check is answered right. */}
+      <CheckQuestion spec={CHECK} onSolved={p.onDone} />
 
       <Text style={styles.caption}>
         More challenges live inside the lab: FLAT → SMOOTH → JAGGED (in “What a Graphic EQ

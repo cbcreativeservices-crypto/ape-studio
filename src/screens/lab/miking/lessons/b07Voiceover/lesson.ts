@@ -508,7 +508,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: where does a reader’s voice leave the body?', options: ['The chest', 'The mouth (and the nose)', 'The throat'], after: 'Now STEP through (or PLAY ONCE), then look down to the script and try the stand.' },
+  sound: { prompt: 'Before you step through: where does a reader’s voice leave the body?', options: ['The chest', 'The mouth (and the nose)', 'The throat'], after: 'Now go EVENT by EVENT (or PLAY ONCE), then look down to the script and try the stand.' },
   microphone: { prompt: 'Before you move anything: which mic keeps a turning guest at one distance?', options: ['A desk mic', 'A headset', 'A boundary mic'], after: 'Now choose each TYPE and see where it starts.' },
   placement: { prompt: 'Predict: the condenser moves from 30 cm to 15 cm. What changes?', options: ['More bass and breath', 'More room', 'It depends on this voice'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The monitor is on the desk to the host’s left. Where will a supercardioid aimed at the host reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },

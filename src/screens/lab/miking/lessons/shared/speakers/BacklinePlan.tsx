@@ -36,6 +36,11 @@ import { pt } from '../players/playerPose';
 import { KitTop } from '../kitScene/KitSceneArt';
 import { WedgePlan } from '../KitPlan';
 import { SteelBodyTop } from '../electric/SteelArt';
+// (figure V2, wave 6 of D78: the plan player in the approved look, behind `v2`)
+import { PlayerTopV2 } from '../figureV2/elsewhereTop';
+import { BAND_TOP_PLAYERS } from '../figureV2/elsewhereBand';
+import { STEEL_TOP_PLAYER } from '../figureV2/markerPose';
+import { castFor, type CastMember } from '../figureV2/cast';
 
 /** An audience member's head icon, crown→chin, mm (a real head ≈ 230 mm). */
 
@@ -155,7 +160,12 @@ export function PlanHeadTop({ u0, u1, v0, v1 }: { u0: number; u1: number; v0: nu
  * at the body; seated steel player: both forearms forward to the strings and
  * the thighs under them.
  */
-export function PlanPlayerTop({ pose }: { pose: 'guitar' | 'bass' | 'steel' }) {
+export function PlanPlayerTop({ pose, v2 = false, who, part = 'all' }: { pose: 'guitar' | 'bass' | 'steel'; /** (figure V2) the approved look as `who`, head included — OFF by default */ v2?: boolean; who?: CastMember; /** (v2, the seated steel player) 'lower': the legs, under the instrument; 'upper': the rest */ part?: 'all' | 'lower' | 'upper' }) {
+  if (v2) return <PlayerTopV2 player={pose === 'steel' ? STEEL_TOP_PLAYER : BAND_TOP_PLAYERS[pose]} who={who ?? castFor(pose === 'bass' ? 'coverage.bass' : pose === 'steel' ? 'plan.steel' : 'coverage.guitar')} part={part} />;
+  return <PlanPlayerTopOld pose={pose} />;
+}
+
+function PlanPlayerTopOld({ pose }: { pose: 'guitar' | 'bass' | 'steel' }) {
   const g = useMemo(() => {
     const seated = pose === 'steel';
     const torso = limb([pt(-15, -118), pt(-15, 118)], [108, 108]);
@@ -392,7 +402,7 @@ export function ringedBox<B extends { u0: number; u1: number; v0: number; v1: nu
   };
 }
 
-export function BacklinePlan({ w, h, who, scene, wedges, highlight, onTap, shortOf, accessibilityLabel }: { w: number; h: number; who: Backline; scene: BacklineScene; wedges: readonly Wedge[]; highlight: string | null; onTap: (id: string) => void; shortOf: (id: string) => string; accessibilityLabel: string }) {
+export function BacklinePlan({ w, h, who, scene, wedges, highlight, onTap, shortOf, accessibilityLabel, v2 = false, player }: { w: number; h: number; who: Backline; scene: BacklineScene; wedges: readonly Wedge[]; highlight: string | null; onTap: (id: string) => void; shortOf: (id: string) => string; accessibilityLabel: string; /** (figure V2, wave 6) the player in the approved look, as `player` — OFF by default: the lesson switches it with its own player */ v2?: boolean; player?: CastMember }) {
   const ts = useStageTextScale();
   const items = backlineItems(who, scene, wedges);
   const box = useMemo(() => ringedBox(BACKLINE_BOX[scene], backlineItems(who, scene, wedges)), [who, scene, wedges]);
@@ -521,16 +531,20 @@ export function BacklinePlan({ w, h, who, scene, wedges, highlight, onTap, short
             ) : null}
             {/* The player and the instrument (a steel lies on its legs in front). */}
             <Group transform={[{ translateX: P.player.u }, { translateY: P.player.v }]}>
+              {/* (figure V2: the seated steel player's legs go under the instrument) */}
+              {who === 'steel' && v2 ? <PlanPlayerTop pose="steel" v2 who={player} part="lower" /> : null}
               {who === 'steel' ? (
                 <Group transform={[{ translateX: 320 }, { translateY: -450 }, { rotate: Math.PI / 2 }]}>
                   <SteelBodyTop />
                 </Group>
               ) : null}
               {who !== 'steel' ? <PlanInstrumentEdge bass={who === 'bass'} /> : null}
-              <PlanPlayerTop pose={who} />
-              <Group transform={[{ rotate: -Math.PI / 2 }]}>
-                <FigureHead fill={g.headTop} />
-              </Group>
+              <PlanPlayerTop pose={who} v2={v2} who={player} part={who === 'steel' && v2 ? 'upper' : 'all'} />
+              {v2 ? null : (
+                <Group transform={[{ rotate: -Math.PI / 2 }]}>
+                  <FigureHead fill={g.headTop} />
+                </Group>
+              )}
             </Group>
             {/* Monitors (stage), PA and the audience. */}
             {scene === 'stage' ? wedges.map((wd) => <WedgePlan key={wd.id} at={wd.p} faces={wd.faces} hi={false} />) : null}

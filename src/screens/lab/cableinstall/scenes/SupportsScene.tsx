@@ -146,7 +146,35 @@ function anchorsFor(placed: Set<number>): number[] {
   return [0, ...units, SPAN_UNITS];
 }
 
-/** Sag depth per span is quadratic in span length — the same curve the scene
+/** Room under the ½-unit limit line, in px, that the drawing uses for spans
+ *  past the spec (the ruler's ticks start ~50 px under the cable). */
+const SAG_ROOM_PX = 34;
+
+/** The drawn sag of one span, in px (round 2, 2026-11-25). Sag grows with the
+ *  square of the span (a hanging cable: sag = wL²/8T). Up to the ½-unit limit
+ *  the drawing is TO SCALE (a 4-unit span sags exactly to the limit line). A
+ *  12-unit span would truly sag 4.5 units, far below the 2-unit frame, so past
+ *  the limit the depth is compressed by ONE stated curve,
+ *    limit + room·(1 − e^(−(true − limit)/room)),
+ *  which meets the true depth smoothly at the limit and keeps every longer span
+ *  strictly deeper. (It used to stop at 27 px, so every span of 6 units or
+ *  more was drawn with the same sag.) */
+export function sagDepthPx(span: number, specEvery: number, limitPx: number, roomPx: number): number {
+  if (!(span > 0)) return 0;
+  const truePx = limitPx * Math.pow(span / specEvery, 2);
+  if (truePx <= limitPx) return truePx;
+  return limitPx + roomPx * (1 - Math.exp(-(truePx - limitPx) / roomPx));
+}
+
+/** The caption shown under the drawing while any span is past the limit. */
+const SAG_SCALE_NOTE = 'Sag past the limit is drawn compressed, not to scale.';
+/** Is any span of this layout longer than the spec allows? */
+function spanPastLimit(placed: Set<number>): boolean {
+  const a = anchorsFor(placed);
+  return a.some((b, i) => i > 0 && b - a[i - 1] > SPEC_EVERY + 1e-6);
+}
+
+/** The sampled run: each span hangs by sagDepthPx — the same curve the scene
  *  drew statically before, now sampled so it can be interpolated. */
 function sagProfile(anchors: number[]): number[] {
   const ys: number[] = [];
@@ -162,7 +190,7 @@ function sagProfile(anchors: number[]): number[] {
       }
     }
     const span = b - a;
-    const depthPx = span > 0 ? Math.min(27, SAG_LIMIT_UNITS * Math.pow(span / SPEC_EVERY, 2) * UNIT) : 0;
+    const depthPx = sagDepthPx(span, SPEC_EVERY, SAG_LIMIT_UNITS * UNIT, SAG_ROOM_PX);
     // A hook carries the cable across its saddle's width: the curve hangs
     // between the saddle EDGES and lies flat on the saddle (the walls' bushed
     // openings at 0 and the span's end hold a point).
@@ -420,19 +448,21 @@ const SpanArt = memo(function SpanArt({ w, placed }: { w: number; placed: Set<nu
       />
       {/* the guide's label sits BELOW the sag limit, tied to it by a tick:
           above the line it collided with the hooks once it grew to 11 units
-          (legibility pass 2026-09-25) */}
+          (legibility pass 2026-09-25). Two short lines hugging the right wall
+          (round 2, 2026-11-25): a long span now sags deeper than 27 px, and
+          one wide line sat where that sag passes. */}
       <Line
         x1={X1 - 2}
         y1={CABLE_Y + SAG_LIMIT_UNITS * UNIT + 2}
         x2={X1 - 2}
-        y2={CABLE_Y + SAG_LIMIT_UNITS * UNIT + 14}
+        y2={CABLE_Y + SAG_LIMIT_UNITS * UNIT + 19}
         stroke="#37d97b"
         strokeWidth={1}
         opacity={0.5}
       />
       <SvgText
         x={X1 - 2}
-        y={CABLE_Y + SAG_LIMIT_UNITS * UNIT + 24}
+        y={CABLE_Y + SAG_LIMIT_UNITS * UNIT + 29}
         textAnchor="end"
         fontFamily={fonts.oswaldSemiBold}
         fontSize={11}
@@ -440,7 +470,19 @@ const SpanArt = memo(function SpanArt({ w, placed }: { w: number; placed: Set<nu
         fill="#37d97b"
         opacity={0.85}
       >
-        MAX SAG ½ UNIT
+        MAX SAG
+      </SvgText>
+      <SvgText
+        x={X1 - 2}
+        y={CABLE_Y + SAG_LIMIT_UNITS * UNIT + 40}
+        textAnchor="end"
+        fontFamily={fonts.oswaldSemiBold}
+        fontSize={11}
+        letterSpacing={0.8}
+        fill="#37d97b"
+        opacity={0.85}
+      >
+        ½ UNIT
       </SvgText>
       {/* candidate positions: placed = J-hook, empty = dashed ghost — drawn
           BEHIND the run, so the cable lies IN each saddle (owner 2026-10-23) */}
@@ -613,6 +655,11 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
     if (on) nx.add(i);
     else nx.delete(i);
     setPlaced(nx);
+    // A new layout is unchecked (owner 2026-11-25, fix-first 15): the old pass
+    // or fail card no longer describes the drawn span, so it clears until the
+    // next CHECK SPACING — as the Ceiling stage does. Credit earned is kept.
+    setSpacingVerdict(null);
+    setSpacingMsg('');
     say(`Support ${on ? 'placed' : 'removed'} at ${POS_UNITS[i]} units.`);
   };
 
@@ -641,6 +688,9 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
     setSpacingMsg(msg);
     say(`Not to spec. ${msg}`);
   };
+
+  // MEETS SPEC ✓ only while the drawn layout is the one that passed its check.
+  const spacingShownGood = spacingPassed && spacingVerdict === 'good';
 
   const answered = idx + (pick != null ? 1 : 0);
   const finishedPass = correct >= passNeeded;
@@ -674,13 +724,13 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
         })}
       </View>
       <Pressable
-        style={[styles.checkBtn, spacingPassed && styles.checkBtnDone]}
+        style={[styles.checkBtn, spacingShownGood && styles.checkBtnDone]}
         onPress={checkSpacing}
         accessibilityRole="button"
-        accessibilityLabel={spacingPassed ? 'Spacing meets the specification. Check again' : 'Check the support spacing against the specification'}
+        accessibilityLabel={spacingShownGood ? 'Spacing meets the specification. Check again' : 'Check the support spacing against the specification'}
       >
-        <Text style={[styles.checkText, spacingPassed && { color: '#0a1a0f' }]}>
-          {spacingPassed ? 'MEETS SPEC ✓ — CHECK AGAIN' : 'CHECK SPACING'}
+        <Text style={[styles.checkText, spacingShownGood && { color: '#0a1a0f' }]}>
+          {spacingShownGood ? 'MEETS SPEC ✓ — CHECK AGAIN' : 'CHECK SPACING'}
         </Text>
       </Pressable>
     </View>
@@ -708,16 +758,16 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
       <CiSection title="B · THE SORT — WOULD YOU HANG CABLE ON THIS?">
         <Text style={styles.lead}>
           One piece of hardware at a time. Approve only purpose-built, rated cable hardware — "it happens to be there"
-          is not a support. Pass mark: {passNeeded} of {N}.
+          is not a support. Passing score: {passNeeded} right (80%).
         </Text>
         <Text style={styles.progressLine} accessibilityLiveRegion="polite">
           {sortPassed ? '✓ ' : ''}
-          {correct} correct · {Math.min(answered, N)} of {N} sorted
+          {correct} correct · {Math.max(0, N - answered)} left to sort
         </Text>
         {item ? (
           <Animated.View style={[styles.card, cardStyle]}>
             <Text style={styles.cardHead}>
-              ITEM {idx + 1} OF {N}
+              ITEM {idx + 1}
             </Text>
             <Text style={styles.itemName}>{item.name}</Text>
             <Appear key={`pic-${idx}`} delay={70}>
@@ -825,13 +875,13 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
             {finishedLive ? (
               <VerdictBanner
                 verdict={finishedPass ? 'correct' : 'wrong'}
-                text={`${correct} of ${N} sorted correctly (${Math.round((correct / N) * 100)}%). ${
-                  finishedPass ? 'Sort passed.' : `You need ${passNeeded} of ${N} (80%) — run it again.`
+                text={`${correct} sorted correctly (${Math.round((correct / N) * 100)}%). ${
+                  finishedPass ? 'Sort passed.' : `You need ${passNeeded} right (80%) — run it again.`
                 }`}
               />
             ) : (
               <Appear>
-                <Text style={styles.passedLine}>✓ Sort passed — {correctAtPassRef.current} of {N} on record.</Text>
+                <Text style={styles.passedLine}>✓ Sort passed — {correctAtPassRef.current} right on record.</Text>
               </Appear>
             )}
             <OptionChip label={sortPassed ? 'RUN THE SORT AGAIN' : 'RETRY THE SORT'} onPress={onRetrySort} action />
@@ -855,6 +905,9 @@ export function SupportsScene({ width, completed, onComplete, openSources }: CiM
           controls={<View style={{ paddingHorizontal: 12 }}>{spanDock}</View>}
         />
         <Text style={styles.tintNote}>Cable drawn in a training tint — field colors vary.</Text>
+        {/* past the ½-unit limit the drawn sag is compressed (sagDepthPx): said
+            on screen, not only in code (round 2 check, 2026-11-25) */}
+        {spanPastLimit(placed) ? <Text style={styles.tintNote}>{SAG_SCALE_NOTE}</Text> : null}
         {spanDock}
         {spacingVerdict ? (
           <Appear key={`sp-${checkNonce}`}>

@@ -27,6 +27,23 @@ import { voiceLabelObstacles } from '../shared/voice/VoiceArt';
 import { make } from '../shared/concert/paths.ts';
 import { F04_MODEL, floorOf, posesOf, TABLE, tableTop } from './geometry.ts';
 import { F04_ZONES } from './model.ts';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+import { PlayerSideV2, PlayerTopV2 } from '../shared/figureV2/playersV2';
+import { personShapes } from '../shared/figureV2/personV2';
+import { inPoly, P as P2 } from '../shared/figureV2/geom.ts';
+import { FOLEY_PERFORMER, IMPACTS_HOLD, foleySideGrips, foleySidePlan, foleyTopGrips, foleyTopPlan, legsFromAbove } from '../shared/foley/foleyV2.ts';
+import { bodyOf } from './geometry.ts';
+
+/** The new look (figure V2, wave 3 set 3b): the Foley artist is Mei of the cast. */
+export const V2 = figureV2On('sidePlayers');
+const specOf = (v: VariantId) => IMPACTS_HOLD[v] ?? IMPACTS_HOLD.impact;
+const sideOf = (v: VariantId) => foleySidePlan(bodyOf(v), specOf(v));
+const topOf = (v: VariantId) => foleyTopPlan(bodyOf(v), specOf(v));
+const v2Covers = (variant: VariantId, u: number, v: number, tol: number) => {
+  const shapes = personShapes(sideOf(variant));
+  const pts = tol > 0 ? [P2(u, v), P2(u - tol, v), P2(u + tol, v), P2(u, v - tol), P2(u, v + tol)] : [P2(u, v)];
+  return pts.some((q) => shapes.some((sh) => inPoly(q, sh)));
+};
 
 const TOP = F04_MODEL.views.top!;
 
@@ -80,14 +97,21 @@ function Jug({ view }: { view: ViewId }) {
       // A pour leaves the lip near-level and falls as a parabola: (x/2, y0) is its control.
       stream.quadTo(tip.u / 2, tip.v, 0, 0);
     } else {
-      const c = -150;
-      body.addCircle(c, 0, rBelly);
-      body.moveTo(c + rMouth - 6, -14);
-      body.quadTo(c + rMouth + lip, 0, c + rMouth - 6, 14);
+      // (review 2026-11-24: from above the jug was missing — a round body hidden under the fist.) Tipped 100° as
+      // the side view draws it, the jug lies on its side UNDER the hand: its base behind the fist (≈ x −276),
+      // its mouth ahead of it (≈ x −89), the belly 116 across, the handle on its top under the fingers, the
+      // mouth seen almost edge-on with the lip at the front, the stream running to the basin.
+      const xb = JUG.grip.u - 126;
+      const xm = JUG.grip.u + 61;
+      body.moveTo(xb, -rBase);
+      body.cubicTo(xb + 50, -rBelly - 4, xm - 70, -rBelly, xm - 8, -rMouth - 2);
+      body.quadTo(xm + lip, 0, xm - 8, rMouth + 2);
+      body.cubicTo(xm - 70, rBelly, xb + 50, rBelly + 4, xb, rBase);
+      body.quadTo(xb - 10, 0, xb, -rBase);
       body.close();
-      mouth.addCircle(c, 0, rMouth - 6);
-      handle.addRRect(Skia.RRectXY(Skia.XYWHRect(c - rBelly - 46, -8, 52, 16), 8, 8));
-      stream.moveTo(c + rMouth + lip, 0);
+      mouth.addOval(Skia.XYWHRect(xm - 12, -rMouth + 4, 14, 2 * rMouth - 8));
+      handle.addRRect(Skia.RRectXY(Skia.XYWHRect(JUG.grip.u - 80, -8, 120, 16), 8, 8));
+      stream.moveTo(xm + lip - 4, 0);
       stream.lineTo(0, 0);
     }
     return { body, handle, mouth, stream };
@@ -113,12 +137,45 @@ function LowTable({ view, floor }: { view: ViewId; floor: number }) {
   return <TableArt view={view} x0={-380} x1={380} z0={-380} z1={380} topY={BASIN.water} floorY={floor} thick={30} />;
 }
 
-export function ImpactsArt({ view, variant }: { view: ViewId; variant: VariantId }) {
+export function ImpactsArt({ view, variant, v2 = V2 }: { view: ViewId; variant: VariantId; /** (the study page compares the old look) */ v2?: boolean }) {
   const P = posesOf(variant);
   const floor = floorOf(variant);
   const live = variant === 'live';
   const booth = liveBooth(floor);
   const tt = tableTop(variant);
+  if (v2) {
+    // THE NEW LOOK: the table and props first, then the artist over them — the block and the jug through the
+    // right fist, the brush under the flat right hand
+    const block = variant === 'impact' || live;
+    if (view === 'top')
+      return (
+        <Group>
+          <StageFloorPlan u0={TOP.u0 - 200} u1={TOP.u1 + 900} v0={TOP.v0 - 200} v1={TOP.v1 + 200} />
+          {live ? <BoothArt view="top" rail={booth.rail} pa={{ x: booth.pa.p.x, y: booth.pa.p.y, z: booth.pa.p.z }} /> : null}
+          {/* (cast sweep 2026-11-26) bent over the table, the seat and the shoes show behind the back from above —
+              drawn before the table, so a toe under its edge stays under the top */}
+          {legsFromAbove(bodyOf(variant)) ? <PlayerTopV2 plan={topOf(variant)} who={FOLEY_PERFORMER} part="legs" legs /> : null}
+          {variant === 'water' ? <LowTable view="top" floor={floor} /> : <TableArt view="top" x0={TABLE.x0} x1={TABLE.x1} z0={TABLE.z0} z1={TABLE.z1} topY={tt} floorY={floor} />}
+          {variant === 'water' ? <Basin view="top" /> : null}
+          {variant === 'texture' ? <BrushBoard view="top" /> : null}
+          {variant === 'water' ? <Jug view="top" /> : null}
+          <PlayerTopV2 plan={topOf(variant)} grips={foleyTopGrips(bodyOf(variant), specOf(variant))} who={FOLEY_PERFORMER} part="upper" nearStick={block ? <PaddedBlock view="top" /> : undefined} />
+        </Group>
+      );
+    const s = F04_MODEL.viewsByVariant?.[variant]?.side ?? F04_MODEL.views.side!;
+    return (
+      <Group>
+        <PitSection surface="concrete" floorY={floor} u0={s.u0 - 200} u1={s.u1 + 200} pit={false} />
+        {live ? <BoothArt view="side" floorY={floor} rail={booth.rail} pa={{ x: booth.pa.p.x, y: booth.pa.p.y, z: booth.pa.p.z }} /> : null}
+        {variant === 'water' ? <LowTable view="side" floor={floor} /> : <TableArt view="side" x0={TABLE.x0} x1={TABLE.x1} z0={TABLE.z0} z1={TABLE.z1} topY={tt} floorY={floor} />}
+        {variant === 'water' ? <Basin view="side" /> : null}
+        <PlayerSideV2 plan={sideOf(variant)} grips={foleySideGrips(bodyOf(variant), specOf(variant))} who={FOLEY_PERFORMER} nearStick={block ? <PaddedBlock view="side" lift={200} /> : variant === 'water' ? <Jug view="side" /> : undefined} />
+        {/* (the brush on its board lies nearer the camera than the left hand on the board: drawn over it; the
+            right hand rests on the brush's top, clear of it) */}
+        {variant === 'texture' ? <BrushBoard view="side" /> : null}
+      </Group>
+    );
+  }
   if (view === 'top') {
     return (
       <Group>
@@ -161,7 +218,9 @@ export function impactsLabels(view: ViewId, variant: VariantId): ArtLabel[] {
       // pouring hand and the mic's lobe (art fix 2026-10-16: the name and its
       // leader crossed the lobe and the distance line; the mat, a part of
       // the low table, is named by a tap).
-      out.push({ id: 'basin', text: 'BASIN · WATER ONLY', short: 'BASIN', u: 60, v: -1250, align: 'center', at: { u: -70, v: -30 } });
+      // (review 2026-11-24: that leader dropped through the artist's forearm, the jug and the air before her
+      // face — it now comes from the basin's open side, away from her, to the water's far half)
+      out.push({ id: 'basin', text: 'BASIN · WATER ONLY', short: 'BASIN', u: 380, v: -420, align: 'left', at: { u: 110, v: 6 } });
     }
     if (variant === 'texture') out.push({ id: 'brush', text: 'DRY BRUSH ON FABRIC', short: 'BRUSH', u: 260, v: -300, align: 'left', at: { u: 100, v: -50 } });
     if (live) {
@@ -202,7 +261,7 @@ export function impactsHitTest(view: ViewId, variant: VariantId, u: number, v: n
     if (view === 'top' && Math.abs(u - b.pa.p.x) <= 220 + tol && Math.abs(v - b.pa.p.z) <= 300 + tol) return 'f04.pa';
     if (u >= b.rail.x - tol && u <= b.rail.x + 60 + tol) return 'f04.booth';
   }
-  if (poseCovers(view === 'side' ? P.side : P.top, u, v, tol)) return 'f04.artist';
+  if (view === 'side' && V2 ? v2Covers(variant, u, v, tol) : poseCovers(view === 'side' ? P.side : P.top, u, v, tol)) return 'f04.artist';
   return null;
 }
 
@@ -210,7 +269,7 @@ export const F04_ART: LessonArt = {
   Instrument: ImpactsArt,
   labels: impactsLabels,
   hitTest: impactsHitTest,
-  figureAt: (view, variant, u, v, tol) => poseCovers(view === 'side' ? posesOf(variant).side : posesOf(variant).top, u, v, tol),
+  figureAt: (view, variant, u, v, tol) => (view === 'side' && V2 ? v2Covers(variant, u, v, tol) : poseCovers(view === 'side' ? posesOf(variant).side : posesOf(variant).top, u, v, tol)),
   labelObstacles: voiceLabelObstacles(F04_ZONES),
   labelsYieldToMic: true,
   // ORIENT's figure: the artist head to floor at the table (art fix 2026-10-16).

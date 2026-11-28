@@ -37,10 +37,15 @@ const CHECK: CheckSpec = {
   correctIdx: 0,
   reveal:
     'Frequency = WHERE the EQ operates. Gain = HOW MUCH you boost or cut. Q/bandwidth = HOW WIDE or NARROW the affected region is. Three controls — full parametric command.',
+  // A reason per wrong option (phase 2, F5's `why`): names the mix-up, never the answer.
+  why: {
+    1: 'GAIN decides how much, not where.',
+    2: 'Q decides how wide, not where.',
+  },
   wrongHint: 'Think back to the camera: which control was PAN?',
 };
 
-export function ParametricControlsModule(_p: EqModuleComponentProps) {
+export function ParametricControlsModule(p: EqModuleComponentProps) {
   const [freq, setFreq] = useState(1000);
   const [gainDb, setGainDb] = useState(6);
   const [q, setQ] = useState(2);
@@ -98,15 +103,15 @@ export function ParametricControlsModule(_p: EqModuleComponentProps) {
         size: 'M', // response-curve teaching chart
         fullScreen: true, // legibility pass 2026-09-26 — the rack renders the dock inside
         bezel: [
-          { k: 'FREQ', v: fmtHz(freq) },
-          { k: 'GAIN', v: `${gainDb >= 0 ? '+' : ''}${gainDb.toFixed(1)} dB`, tint: gc },
+          { k: 'FREQ', caption: 'where', v: fmtHz(freq) },
+          { k: 'GAIN', caption: 'how much', v: `${gainDb >= 0 ? '+' : ''}${gainDb.toFixed(1)} dB`, tint: gc },
           // The dual readout — the two vocabularies, side by side, always.
-          { k: 'Q', v: q.toFixed(2) },
-          { k: 'BW', v: `${bwOct.toFixed(2)} oct` },
+          { k: 'Q', caption: 'how wide', v: q.toFixed(2) },
+          { k: 'BW', caption: 'width, octaves', v: `${bwOct.toFixed(2)} oct` },
         ],
         render: (w, h) => (
           <View style={{ width: w, height: h, justifyContent: 'center', paddingHorizontal: 8 }}>
-            <ResponseCurveGraph curves={curves} dbRange={GAIN_RANGE} width={w - 16} totalHeight={Math.max(94, h - 12)} mainColor={gc} focusHz={[freq]} />
+            <ResponseCurveGraph curves={curves} dbRange={GAIN_RANGE} width={w - 16} totalHeight={Math.max(94, h - 12)} mainColor={gc} band={{ f: freq, q }} focusHz={[freq]} />
           </View>
         ),
       }}
@@ -122,7 +127,8 @@ export function ParametricControlsModule(_p: EqModuleComponentProps) {
         <Text style={styles.roleLine}>Gain determines HOW MUCH you boost or cut.</Text>
         <Text style={styles.roleLine}>Q determines HOW WIDE or NARROW the affected range is.</Text>
 
-        <CheckQuestion spec={CHECK} />
+        {/* Work done (phase 3, owner's decision 1): this module counts when its check is answered right. */}
+        <CheckQuestion spec={CHECK} onSolved={p.onDone} />
       </View>
     </RackUnit>
   );

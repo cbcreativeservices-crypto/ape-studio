@@ -28,11 +28,16 @@ const CONSEQUENCES: { id: string; title: string; body: string }[] = [
   { id: 'work', title: 'PROFESSIONAL WORKMANSHIP', body: 'An installation should be organized, understandable and maintainable — by someone who has never seen it before.' },
 ];
 
-const EXAMPLES: { id: ExampleId; name: string; caption: string; verdictRule: string; verdict: 'good' | 'bad'; short: string }[] = [
+/** Before the pick each close-up shows only its letter and a plain look at
+ *  it (`blind`); the nickname and the judging caption come with the reveal
+ *  (phase 2, 2026-11-14: "THE PROFESSIONAL" and "Less photogenic …" gave the
+ *  answer away before the learner had looked). */
+const EXAMPLES: { id: ExampleId; name: string; caption: string; blind: string; verdictRule: string; verdict: 'good' | 'bad'; short: string }[] = [
   {
     id: 'a',
     name: 'A — THE SHOWPIECE',
     caption: 'Beautifully symmetrical bundle — cinched so hard the cables have gone oval.',
+    blind: 'A dead-straight, symmetrical bundle, every tie pulled snug.',
     verdict: 'bad',
     verdictRule: 'mech-restraint-tension',
     short: 'Gorgeous — and the over-tight restraints are deforming every cable in the loom.',
@@ -41,6 +46,7 @@ const EXAMPLES: { id: ExampleId; name: string; caption: string; verdictRule: str
     id: 'b',
     name: 'B — THE PROFESSIONAL',
     caption: 'Less photogenic: gentle bends, labeled ends, supported weight, reachable connectors.',
+    blind: 'Loose bends, labels on the ends, cables resting on bars across the back.',
     verdict: 'good',
     verdictRule: 'rack-not-max-tight',
     short: 'Approve it. Supported, serviceable, honest geometry — this is what correct looks like.',
@@ -49,6 +55,7 @@ const EXAMPLES: { id: ExampleId; name: string; caption: string; verdictRule: str
     id: 'c',
     name: 'C — THE PILE',
     caption: 'Unsecured cable heaped where it fell.',
+    blind: 'Cable lying loose at the bottom of the rack.',
     verdict: 'bad',
     verdictRule: 'sup-purpose-built',
     short: 'Nothing is supported, nothing is traceable — this isn\'t an installation yet.',
@@ -57,6 +64,7 @@ const EXAMPLES: { id: ExampleId; name: string; caption: string; verdictRule: str
     id: 'd',
     name: 'D — THE BLOCKADE',
     caption: 'A tidy loom dressed straight across the ventilation grille and the service panel.',
+    blind: 'A tidy, straight loom running across the back panel.',
     verdict: 'bad',
     verdictRule: 'rack-airflow',
     short: 'Neat — and it blocks cooling and service access. Tidy in the wrong place is still wrong.',
@@ -99,6 +107,101 @@ export function WhyScene({ width, completed, onComplete, openSources }: CiModule
 
   return (
     <View style={{ gap: 14 }}>
+      {/* CI-04 (owner 2026-11-15: "build waves 1 thru 3"): the stage opens on
+          the four close-ups, the task; the six consequence cards follow, and
+          MARK STAGE COMPLETE sits after them. Nothing removed, credit unchanged. */}
+      <CiSection title="WHICH INSTALLATION WOULD YOU APPROVE?">
+        <Text style={styles.lead}>
+          Four closeups from the same job site. Only one earns a professional sign-off — and it isn’t the prettiest.
+        </Text>
+        <View style={{ gap: 10 }}>
+          {EXAMPLES.map((ex) => {
+            const picked = pick === ex.id;
+            const revealed = pick != null;
+            // After a wrong reveal only the correct install stays tappable.
+            const locked = revealed && (pick === 'b' || ex.id !== 'b');
+            return (
+              <View key={ex.id} style={[styles.example, picked && styles.examplePicked]}>
+                {/* Tap the name, the drawing or the caption to approve. The
+                    FULL SCREEN button sits OUTSIDE the choosing press targets —
+                    nested inside one, its click also approved the example. */}
+                <Pressable
+                  onPress={() => choose(ex.id)}
+                  disabled={locked}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: picked, disabled: locked }}
+                  aria-pressed={picked}
+                  aria-disabled={locked}
+                  accessibilityLabel={`${revealed ? ex.name : `Close-up ${ex.id.toUpperCase()}`}. ${revealed ? ex.caption : ex.blind}${revealed ? (ex.verdict === 'good' ? '. This is the correct approval.' : '. Not approvable.') : ''}`}
+                >
+                  <Text style={styles.exampleName}>{revealed ? ex.name : ex.id.toUpperCase()}</Text>
+                </Pressable>
+                <ExpandableFigure
+                  width={artW}
+                  aspect={WHY_ASPECT}
+                  title={`CLOSE-UP ${ex.id.toUpperCase()}`}
+                  render={(fw, fh) =>
+                    fw === artW ? (
+                      <Pressable onPress={() => choose(ex.id)} disabled={locked} accessible={false}>
+                        <ExampleArt id={ex.id} w={fw} h={fh} run={artRun} revealed={revealed} />
+                      </Pressable>
+                    ) : (
+                      <ExampleArt id={ex.id} w={fw} h={fh} run={artRun} revealed={revealed} />
+                    )
+                  }
+                  controls={
+                    <Pressable
+                      onPress={() => choose(ex.id)}
+                      disabled={locked}
+                      style={[styles.fsApprove, locked && { opacity: 0.45 }]}
+                      accessibilityRole="button"
+                      accessibilityState={{ disabled: locked }}
+                      accessibilityLabel={`Approve close-up ${ex.id.toUpperCase()}`}
+                    >
+                      <Text style={styles.fsApproveText}>
+                        {picked ? (ex.verdict === 'good' ? '✓ APPROVED' : '✕ NOT APPROVABLE') : `APPROVE ${ex.id.toUpperCase()}`}
+                      </Text>
+                    </Pressable>
+                  }
+                />
+                <Pressable onPress={() => choose(ex.id)} disabled={locked} accessible={false}>
+                  <Text style={styles.exampleCaption}>{revealed ? ex.caption : ex.blind}</Text>
+                </Pressable>
+                {revealed ? (
+                  <Appear>
+                    <RuleFeedback ruleId={ex.verdictRule} verdict={ex.verdict} short={ex.short} openSources={openSources} />
+                  </Appear>
+                ) : null}
+              </View>
+            );
+          })}
+        </View>
+        {pick != null ? (
+          <Appear delay={120}>
+          <View style={styles.lessonCard}>
+            <Text style={styles.lessonHead}>NEAT ≠ CORRECT</Text>
+            <Text style={styles.lessonBody}>
+              A professional installation must simultaneously satisfy safety, performance, mechanical requirements,
+              serviceability, documentation and workmanship. Appearance is a byproduct of doing those six right — never a
+              substitute for them.
+            </Text>
+            {/* Says what it COSTS, not what it forbids. NEXT works regardless
+                (owner 2026-09-20) — the learner was getting stuck here with no
+                visible way on, which is the opposite of a lab. */}
+            {!consequencesDone ? (
+              <Text style={styles.pendingNote}>
+                Open all six consequences below to earn credit for this stage. You can move on without them and come
+                back — the completion screen tracks what is left.
+              </Text>
+            ) : null}
+            {pick != null && pick !== 'b' ? (
+              <Text style={styles.pendingNote}>Now approve the one that earns sign-off.</Text>
+            ) : null}
+          </View>
+          </Appear>
+        ) : null}
+      </CiSection>
+
       <CiSection title="SIX THINGS RIDING ON EVERY RUN — TAP EACH">
         <View style={{ gap: 8 }}>
           {CONSEQUENCES.map((c, ci) => {
@@ -129,111 +232,20 @@ export function WhyScene({ width, completed, onComplete, openSources }: CiModule
         </View>
       </CiSection>
 
-      <CiSection title="WHICH INSTALLATION WOULD YOU APPROVE?">
-        <Text style={styles.lead}>
-          Four closeups from the same job site. Only one earns a professional sign-off — and it isn’t the prettiest.
-        </Text>
-        <View style={{ gap: 10 }}>
-          {EXAMPLES.map((ex) => {
-            const picked = pick === ex.id;
-            const revealed = pick != null;
-            // After a wrong reveal only the correct install stays tappable.
-            const locked = revealed && (pick === 'b' || ex.id !== 'b');
-            return (
-              <View key={ex.id} style={[styles.example, picked && styles.examplePicked]}>
-                {/* Tap the name, the drawing or the caption to approve. The
-                    FULL SCREEN button sits OUTSIDE the choosing press targets —
-                    nested inside one, its click also approved the example. */}
-                <Pressable
-                  onPress={() => choose(ex.id)}
-                  disabled={locked}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected: picked, disabled: locked }}
-                  aria-pressed={picked}
-                  aria-disabled={locked}
-                  accessibilityLabel={`${ex.name}. ${ex.caption}${revealed ? (ex.verdict === 'good' ? '. This is the correct approval.' : '. Not approvable.') : ''}`}
-                >
-                  <Text style={styles.exampleName}>{ex.name}</Text>
-                </Pressable>
-                <ExpandableFigure
-                  width={artW}
-                  aspect={WHY_ASPECT}
-                  title={`CLOSE-UP ${ex.id.toUpperCase()}`}
-                  render={(fw, fh) =>
-                    fw === artW ? (
-                      <Pressable onPress={() => choose(ex.id)} disabled={locked} accessible={false}>
-                        <ExampleArt id={ex.id} w={fw} h={fh} run={artRun} revealed={revealed} />
-                      </Pressable>
-                    ) : (
-                      <ExampleArt id={ex.id} w={fw} h={fh} run={artRun} revealed={revealed} />
-                    )
-                  }
-                  controls={
-                    <Pressable
-                      onPress={() => choose(ex.id)}
-                      disabled={locked}
-                      style={[styles.fsApprove, locked && { opacity: 0.45 }]}
-                      accessibilityRole="button"
-                      accessibilityState={{ disabled: locked }}
-                      accessibilityLabel={`Approve ${ex.name}`}
-                    >
-                      <Text style={styles.fsApproveText}>
-                        {picked ? (ex.verdict === 'good' ? '✓ APPROVED' : '✕ NOT APPROVABLE') : `APPROVE ${ex.id.toUpperCase()}`}
-                      </Text>
-                    </Pressable>
-                  }
-                />
-                <Pressable onPress={() => choose(ex.id)} disabled={locked} accessible={false}>
-                  <Text style={styles.exampleCaption}>{ex.caption}</Text>
-                </Pressable>
-                {revealed ? (
-                  <Appear>
-                    <RuleFeedback ruleId={ex.verdictRule} verdict={ex.verdict} short={ex.short} openSources={openSources} />
-                  </Appear>
-                ) : null}
-              </View>
-            );
-          })}
-        </View>
-        {pick != null ? (
-          <Appear delay={120}>
-          <View style={styles.lessonCard}>
-            <Text style={styles.lessonHead}>NEAT ≠ CORRECT</Text>
-            <Text style={styles.lessonBody}>
-              A professional installation must simultaneously satisfy safety, performance, mechanical requirements,
-              serviceability, documentation and workmanship. Appearance is a byproduct of doing those six right — never a
-              substitute for them.
-            </Text>
-            {/* Says what it COSTS, not what it forbids. NEXT works regardless
-                (owner 2026-09-20) — the learner was getting stuck here with no
-                visible way on, which is the opposite of a lab. */}
-            {!consequencesDone ? (
-              <Text style={styles.pendingNote}>
-                Open all six consequences above to earn credit for this stage. You can move on without them and come
-                back — the completion screen tracks what is left.
-              </Text>
-            ) : null}
-            {pick != null && pick !== 'b' ? (
-              <Text style={styles.pendingNote}>Now approve the one that earns sign-off.</Text>
-            ) : null}
-          </View>
-          </Appear>
-        ) : null}
-        {pick === 'b' && consequencesDone && !fired ? (
-          <Pressable
-            style={styles.finishBtn}
-            onPress={() => {
-              setFired(true);
-              announceComplete('Stage 1 complete.');
-              onComplete({ workmanship: firstPick === 'b' ? 100 : 60, serviceability: firstPick === 'b' ? 90 : 60 });
-            }}
-            accessibilityRole="button"
-            accessibilityLabel="Complete stage one"
-          >
-            <Text style={styles.finishText}>MARK STAGE COMPLETE ✓</Text>
-          </Pressable>
-        ) : null}
-      </CiSection>
+      {pick === 'b' && consequencesDone && !fired ? (
+        <Pressable
+          style={styles.finishBtn}
+          onPress={() => {
+            setFired(true);
+            announceComplete('Stage 1 complete.');
+            onComplete({ workmanship: firstPick === 'b' ? 100 : 60, serviceability: firstPick === 'b' ? 90 : 60 });
+          }}
+          accessibilityRole="button"
+          accessibilityLabel="Complete stage one"
+        >
+          <Text style={styles.finishText}>MARK STAGE COMPLETE ✓</Text>
+        </Pressable>
+      ) : null}
     </View>
   );
 }

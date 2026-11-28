@@ -1,8 +1,9 @@
 /**
  * CymaticsHomeScreen — the Cymatics Lab's own home (spec §3 IA; Digital Lab
  * idiom). A LIVE hero — the illustrated plate with sand settling onto its
- * first figure — then the studio, the five Phase-1 modules, and the planned
- * areas as dimmed rows (no promises, no dates).
+ * first figure — then a numbered three-step path, the eight modules, and the
+ * studios below them under STUDIOS, FREE PLAY (owner 2026-11-15, D62 CY-01,
+ * CY-02, CY-04: the words live in homePath.ts).
  */
 import { useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -16,8 +17,9 @@ import { ScreenGuideHost } from '../../../features/lab/screenGuide';
 import { CYMATICS_END_GUIDE, CYMATICS_HOME_GUIDE } from './cymaticsScreenGuides';
 import type { RootStackParamList } from '../../../navigation/types';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
-import { DEFAULT_PLATE, effectiveQ, plateModes, readResonance, sampleField } from '../../../features/cymatics/plateModes';
+import { DEFAULT_PLATE, effectiveQ, plateModes, plateRefQ, readResonance, sampleField } from '../../../features/cymatics/plateModes';
 import { CYMATICS_MODULES, PLANNED_AREAS, type CymaticsModuleId } from './modules/registry';
+import { useCymaticsEnd } from './useCymaticsEnd';
 import { requireVizPlate, skiaAvailable } from './skiaGate';
 import { goToCymatics } from './goToCymatics';
 import { useLabVisits, useLabVisitsUnreadable } from '../../../features/lab/labVisits';
@@ -29,8 +31,18 @@ import { useWideOnTablet } from '../../../theme/useIsTablet';
 import { TabletGrid } from '../../../components/TabletGrid';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { LabUnderstandingBlock } from '../../../components/LabUnderstandingBlock';
+import { EXPERIMENTS, experimentRoute } from '../../../features/cymatics/presets';
+import { HOME_HERO_NOTE, HOME_PATH, HOME_PATH_HEAD, HOME_STUDIOS, STUDIOS_HEADING, type HomeStudio } from './homePath';
 
 const HERO_N = 48;
+
+/** Each studio keeps its own color (it was four inline styles). */
+const STUDIO_LOOK: Record<HomeStudio['route'], { box?: object; text?: object }> = {
+  CymaticsPlateStudio: {},
+  CymaticsLiquidStudio: { box: { borderColor: 'rgba(127,212,255,.7)', backgroundColor: '#0a1520' }, text: { color: '#7fd4ff' } },
+  CymaticsMembraneStudio: { box: { borderColor: 'rgba(226,196,138,.7)', backgroundColor: '#17130b' }, text: { color: '#e2c48a' } },
+  CymaticsGallery: { box: { borderColor: 'rgba(196,162,255,.7)', backgroundColor: '#120f1c' }, text: { color: colors.programPurple } },
+};
 
 function HeroPlate({ width }: { width: number }) {
   const viz = skiaAvailable ? requireVizPlate() : null;
@@ -47,17 +59,20 @@ function HeroPlate({ width }: { width: number }) {
   const focused = useIsFocused();
   // The classic square aluminum plate parked on its second excitable mode.
   const spec = DEFAULT_PLATE;
-  const { grid, strength } = useMemo(() => {
+  const { grid, strength, near } = useMemo(() => {
     const modes = plateModes(spec, 12);
     const Q = effectiveQ(spec.material, spec.damping);
     const ex = modes.filter((m) => m.drive > 0.05);
     const f = ex[1]?.hz ?? ex[0]?.hz ?? 300;
-    return { grid: sampleField(spec, modes, f, Q, HERO_N), strength: readResonance(f, modes, Q).strength };
+    // RESPONSE against the studio's fixed reference (plateRefQ; checker Y5); NEAR forms the figure.
+    const r = readResonance(f, modes, Q, plateRefQ(spec.material));
+    return { grid: sampleField(spec, modes, f, Q, HERO_N), strength: r.strength, near: r.near };
   }, [spec]);
   if (!viz) {
     return (
       <View style={[styles.heroFallback, { width, height: Math.round(width * 0.62) }]}>
-        <Text style={styles.heroFallbackText}>This version of the app can’t show the live plate yet; update the app to see it.</Text>
+        {/* No "update the app" line for a learner (owner 2026-11-15, D62 SH-37). */}
+        <Text style={styles.heroFallbackText}>The live plate can’t be drawn on this device.</Text>
       </View>
     );
   }
@@ -69,6 +84,7 @@ function HeroPlate({ width }: { width: number }) {
       grid={grid}
       N={HERO_N}
       strength={strength}
+      near={near}
       amplitude={0.8}
       view="particles"
       running={focused}
@@ -116,9 +132,17 @@ export function CymaticsHomeScreen() {
   // The hub's rows carry no ticks; only WHAT'S LEFT shows progress — and
   // says so when the visits could not be read (owner 2026-10-03, "do 2").
   const visitsUnreadable = useLabVisitsUnreadable();
+  // The check row + the check on the what's-left screen (useCymaticsEnd).
+  const end = useCymaticsEnd(visited, visitsUnreadable);
   const open = (id: CymaticsModuleId) => {
     setEnding(false);
     go('CymaticsModule', { id });
+  };
+  // Step 3 of the path: experiment 1 in its studio, the same as module 8's
+  // START THE SERIES (the studio's EXPERIMENT › carries on from there).
+  const startSeries = () => {
+    const r = experimentRoute(EXPERIMENTS[0]);
+    go(r.route, r.params);
   };
 
   return (
@@ -139,13 +163,17 @@ export function CymaticsHomeScreen() {
       />
       {ending ? (
         <LabEndScreen
+          labId="cymatics"
           labTitle="Cymatics Lab: Sound Made Visible"
-          units={CYMATICS_MODULES.map((m) => ({ id: m.id, label: m.title }))}
-          cleared={visited}
-          unreadable={visitsUnreadable}
+          units={end.units}
+          cleared={end.cleared}
+          unreadable={end.unreadable}
           mode="progress"
-          completeTitle="ALL MODULES OPENED"
-          onJump={(id) => open(CYMATICS_MODULES.find((m) => m.id === id)?.id ?? CYMATICS_MODULES[0].id)}
+          completeTitle="ALL MODULES DONE"
+          shownHereId={end.shownHereId}
+          extra={end.extra}
+          howItCounts={end.howItCounts}
+          onJump={(id) => { if (id !== end.shownHereId) open(CYMATICS_MODULES.find((m) => m.id === id)?.id ?? CYMATICS_MODULES[0].id); }}
           onPracticeAgain={() => open(CYMATICS_MODULES[0].id)}
           onDone={() => safeGoBack(navigation)}
           bottomInset
@@ -154,48 +182,32 @@ export function CymaticsHomeScreen() {
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: 32 + insets.bottom }]}>
         <View style={styles.hero} onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width))}>
           {width > 0 ? <HeroPlate width={width} /> : null}
-          <Text style={styles.heroBadge}>SIMULATION · 240 mm ALUMINUM · FREE EDGES · CENTER-DRIVEN</Text>
+          {/* A plain one-line note, not an all-caps badge (owner 2026-11-15, D62 CY-04). */}
+          <Text style={styles.heroNote}>{HOME_HERO_NOTE}</Text>
         </View>
-        {/* ── ONE RECOMMENDED PATH (2026-09-18, design review #11) ─────────────
-            The home offers thirteen entry points — four studio buttons ABOVE
-            eight learn modules — so the default gesture is "open an instrument"
-            before any framing, and the lab's actual designed path (the
-            seventeen-experiment series) is buried inside module 8 where nobody
-            finds it. One primary row orients the 80% and costs nothing. */}
-        <Pressable
-          style={styles.startHere}
-          onPress={() => open('intro')}
-          accessibilityRole="button"
-          accessibilityLabel="New here? Start with What Is Cymatics"
-        >
-          <Text style={styles.startHereHead}>NEW HERE? START HERE ›</Text>
-          <Text style={styles.startHereSub}>
-            What Is Cymatics first, then Change One Thing — then run the seventeen experiments.
-          </Text>
-        </Pressable>
-        <Text style={styles.body}>
-          Does 440 Hz have a shape? Play a tone into a plate and sand walks into a figure — so it is tempting to say the figure belongs to
-          the note. Every experiment in this lab lets you test that idea: keep the frequency exactly where it is and change the plate, the
-          liquid, the driver or the support, and watch what happens to the pattern. The answer is the lab’s central discovery, and you get
-          to find it yourself.
-        </Text>
-
-        <Pressable style={styles.studioBtn} onPress={() => go('CymaticsPlateStudio', {})} accessibilityRole="button" accessibilityLabel="Open the Chladni Plate Studio">
-          <Text style={styles.studioBtnText}>OPEN THE CHLADNI PLATE STUDIO ›</Text>
-          <Text style={styles.studioBtnSub}>Build a plate · drive it with a tone · seven synchronized views</Text>
-        </Pressable>
-        <Pressable style={[styles.studioBtn, styles.studioBtnLiquid]} onPress={() => go('CymaticsLiquidStudio', {})} accessibilityRole="button" accessibilityLabel="Open the Liquid Cymatics Studio">
-          <Text style={[styles.studioBtnText, { color: '#7fd4ff' }]}>OPEN THE LIQUID CYMATICS STUDIO ›</Text>
-          <Text style={styles.studioBtnSub}>A dish on a shaker · Faraday waves at half the drive frequency · eight liquids</Text>
-        </Pressable>
-        <Pressable style={[styles.studioBtn, styles.studioBtnMembrane]} onPress={() => go('CymaticsMembraneStudio', {})} accessibilityRole="button" accessibilityLabel="Open the Membrane and Loudspeaker Studio">
-          <Text style={[styles.studioBtnText, { color: '#e2c48a' }]}>OPEN THE MEMBRANE &amp; LOUDSPEAKER STUDIO ›</Text>
-          <Text style={styles.studioBtnSub}>Tune and strike a drumhead · why a timpani has a pitch · a loudspeaker cone from piston to breakup</Text>
-        </Pressable>
-        <Pressable style={[styles.studioBtn, styles.studioBtnGallery]} onPress={() => go('CymaticsGallery', {})} accessibilityRole="button" accessibilityLabel="Open the Pattern Gallery and Art Studio">
-          <Text style={[styles.studioBtnText, { color: colors.programPurple }]}>OPEN THE PATTERN GALLERY &amp; ART STUDIO ›</Text>
-          <Text style={styles.studioBtnSub}>Save a pattern from any studio · color it · compare 2 to 4 · art print or lab sheet</Text>
-        </Pressable>
+        {/* ── ONE RECOMMENDED PATH, NUMBERED (owner 2026-11-15: "build waves 1
+            thru 3", D62 CY-01 + CY-04, built once) ──────────────────────────
+            The home used to offer four studio buttons ABOVE the eight
+            modules, so a beginner opened an instrument before any framing,
+            and the seventeen-experiment series hid inside module 8. Now the
+            question and three numbered steps, each opening its own place;
+            step 3 is START THE SERIES's own spot on the home. The START HERE
+            row and the paragraph hook these replace are gone. */}
+        <View style={styles.path}>
+          <Text style={styles.pathHead}>{HOME_PATH_HEAD}</Text>
+          {HOME_PATH.map((step, i) => (
+            <Pressable
+              key={step.label}
+              style={styles.pathRow}
+              onPress={() => ('series' in step.open ? startSeries() : open(step.open.module))}
+              accessibilityRole="button"
+              accessibilityLabel={`Step ${i + 1}: ${step.label}`}
+            >
+              <Text style={styles.pathNum}>{i + 1}</Text>
+              <Text style={styles.pathLabel}>{step.label} ›</Text>
+            </Pressable>
+          ))}
+        </View>
 
         <Text style={styles.sectionTitle}>LEARN &amp; EXPERIMENT</Text>
         <TabletGrid minTile={360} maxCols={2} gap={8}>
@@ -207,6 +219,17 @@ export function CymaticsHomeScreen() {
             questions are authored for this lab (trainingLabKeys UNDERSTANDING_LAB_IDS). */}
         <LabUnderstandingBlock labId="cymatics" labTitle="Cymatics Lab" />
         <LabEndLink label="SEE WHAT’S LEFT ›" onPress={() => setEnding(true)} />
+
+        {/* The studios: free play, BELOW the modules (D62 CY-01), each saying
+            which modules it belongs to (D62 CY-02). One screen per tap: the
+            600 ms guard in `go` still applies. */}
+        <Text style={styles.sectionTitle}>{STUDIOS_HEADING}</Text>
+        {HOME_STUDIOS.map((st) => (
+          <Pressable key={st.route} style={[styles.studioBtn, STUDIO_LOOK[st.route].box]} onPress={() => go(st.route, {})} accessibilityRole="button" accessibilityLabel={st.a11y}>
+            <Text style={[styles.studioBtnText, STUDIO_LOOK[st.route].text]}>{st.title}</Text>
+            <Text style={styles.studioBtnSub}>{st.sub}</Text>
+          </Pressable>
+        ))}
 
         {PLANNED_AREAS.length > 0 ? <Text style={styles.sectionTitle}>PLANNED AREAS</Text> : null}
         {PLANNED_AREAS.map((p) => (
@@ -232,29 +255,16 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
   scroll: { padding: 16, paddingTop: 8, paddingBottom: 32, gap: 12 },
   hero: { borderRadius: 12, overflow: 'hidden', borderWidth: 1, borderColor: '#2a2a32', backgroundColor: '#0b0b10' },
-  startHere: {
-    borderRadius: 10,
-    borderWidth: 1.5,
-    borderColor: 'rgba(255,198,77,.7)',
-    backgroundColor: 'rgba(255,198,77,.12)',
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    gap: 4,
-    minHeight: 44,
-    justifyContent: 'center',
-  },
-  startHereHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.2, color: colors.amber },
-  startHereSub: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSecondary },
-  // In flow UNDER the plate (art grading 2026-10-16): absolute at the foot it
-  // wrapped to two lines on a phone and sat on the plate's lower edge.
-  heroBadge: { paddingHorizontal: 10, paddingVertical: 8, fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: 'rgba(255,255,255,0.55)' },
+  // In flow UNDER the plate (art grading 2026-10-16), now one plain sentence.
+  heroNote: { paddingHorizontal: 10, paddingVertical: 8, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: 'rgba(255,255,255,0.62)' },
+  path: { borderRadius: 10, borderWidth: 1.5, borderColor: 'rgba(255,198,77,.7)', backgroundColor: 'rgba(255,198,77,.10)', paddingHorizontal: 12, paddingVertical: 8 },
+  pathHead: { fontFamily: fonts.barlowMedium, fontSize: 15, lineHeight: 21, color: colors.textPrimary, paddingVertical: 4 },
+  pathRow: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 44 },
+  pathNum: { width: 24, height: 24, borderRadius: 12, textAlign: 'center', lineHeight: 24, fontFamily: fonts.oswaldSemiBold, fontSize: 13, color: '#1a1409', backgroundColor: colors.amber, overflow: 'hidden' },
+  pathLabel: { flex: 1, fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 0.6, color: colors.amber },
   heroFallback: { alignItems: 'center', justifyContent: 'center' },
   heroFallbackText: { fontFamily: fonts.barlowRegular, fontSize: 13, color: colors.textSub },
-  body: { fontFamily: fonts.barlowRegular, fontSize: 14.5, lineHeight: 21, color: colors.textSecondary },
   studioBtn: { borderRadius: 12, borderWidth: 1.5, borderColor: 'rgba(255,198,77,.75)', backgroundColor: '#1a1409', paddingVertical: 14, paddingHorizontal: 16, gap: 3 },
-  studioBtnLiquid: { borderColor: 'rgba(127,212,255,.7)', backgroundColor: '#0a1520' },
-  studioBtnMembrane: { borderColor: 'rgba(226,196,138,.7)', backgroundColor: '#17130b' },
-  studioBtnGallery: { borderColor: 'rgba(196,162,255,.7)', backgroundColor: '#120f1c' },
   studioBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 1.2, color: colors.amber },
   studioBtnSub: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub },
   sectionTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6, color: colors.amber, marginTop: 8 },

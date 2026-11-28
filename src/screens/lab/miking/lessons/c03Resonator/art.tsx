@@ -9,12 +9,16 @@ import { makeStringSoundPage } from '../shared/guitars/StringSound';
 import { makeStagePlanPage, STRINGS_HEARING } from '../shared/guitars/StagePlan';
 import { GUITAR_PLANS } from '../shared/guitars/stagePlanModel.ts';
 import { C03_BUILT, C03_ZONES } from './geometry.ts';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+
+/** The new look (figure V2, wave 3 set 3c): the player as a cast member, the hands as each instrument is played. */
+export const V2 = figureV2On('sidePlayers');
 
 export const C03_ART: LessonArt = {
-  ...makeGuitarArt(C03_BUILT, { zones: C03_ZONES }),
+  ...makeGuitarArt(C03_BUILT, { zones: C03_ZONES, v2: V2 }),
   pages: {
     sound: makeStringSoundPage(C03_BUILT, { variantKey: false }),
-    setting: makeStagePlanPage(C03_BUILT, { plan: GUITAR_PLANS.C03, hearing: STRINGS_HEARING }),
+    setting: makeStagePlanPage(C03_BUILT, { plan: GUITAR_PLANS.C03, hearing: STRINGS_HEARING, v2: V2 }),
   },
   stepCounts: { sound: 4, setting: 3 },
 };

@@ -38,6 +38,7 @@ import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { LabShell, LabChip, HeaderPlayButton } from './LabShell';
+import { LabCheckEnd } from './kit/LabCheckEnd';
 import { HarmonographMachine, INK_DEFAULT, drawTurns } from './HarmonographMachine';
 import { HarmonographViewer } from './HarmonographViewer';
 import { harmonographScreenGuide } from './harmonographScreenGuides';
@@ -89,6 +90,12 @@ const DAMPINGS = [
   { key: 'medium', label: 'MEDIUM', endAmp: 0.25 },
   { key: 'heavy', label: 'HEAVY', endAmp: 0.06 },
 ] as const;
+/** The SHAPE key's value in words (D62 HG-03): the phase, then only what
+ *  differs from the opening MEDIUM damping and ROTARY mode. */
+export function shapeKeyValue(phase: number, dampKey: 'light' | 'medium' | 'heavy', rotary: boolean): string {
+  return [`${phase}°`, dampKey === 'medium' ? null : dampKey, rotary ? null : 'lateral'].filter(Boolean).join(' · ');
+}
+
 const DETUNES = [
   { key: 0, label: 'LOCKED RATIO' },
   { key: 0.01, label: '+1%' },
@@ -423,6 +430,8 @@ export function HarmonographLabScreen() {
   return (
     <LabShell
       labId="harmonograph"
+      // FINISH · SEE WHAT'S LEFT under the CHECK; opening it stops the interval (fix round 2026-11-14, S2).
+      checkEnd={<LabCheckEnd labId="harmonograph" labTitle="Harmonograph Lab" onOpen={stopInterval} />}
       title="HARMONOGRAPH LAB"
       subtitle="Frequency Ratios · Intervals · Beating"
       intro={INTRO}
@@ -445,18 +454,23 @@ export function HarmonographLabScreen() {
         initialParam: 'osc1',
         onHelp: openLesson,
         stage: {
+          // The silent learner's line (fix round 2026-11-14, S3 §1): every EXPLORE step here works with sound off.
+          soundOffLine: 'Sound off? The figure still draws every ratio you pick.',
           size: 'L', // the figure IS the lab — earns the tall glass
           // The rack's ⤢ FULL SCREEN (full-screen build 2026-09-30). The
           // machine is one fixed viewBox, so it zooms whole; the share/print
           // viewer (THE DRAWING inset) stays as it is and opens from the glass.
           fullScreen: true,
           badge: 'RIGID-BODY MACHINE — DRAWN FROM THE EQUATIONS',
+          // Phase 3 (owner decision 3, 2026-11-14, S3 §2): the disclosure as one plain sentence.
+          modelNote: 'The machine is drawn from the pendulum equations, not filmed.',
           onGuide: () => openLesson('display'),
           // OSC readouts live ON the machine (each pendulum wears its own
           // tag). The bezel is READ-ONLY (owner rule 2026-10-10): the pen
           // controls — FREEZE and a fresh sheet — are in the SHAPE tray.
           bezel: [
-            { k: 'RATIO', v: ratio.label, helpKey: 'ratio_lock' },
+            // Plain-word caption on the first visit (fix round 2026-11-14, S3 §4).
+            { k: 'RATIO', v: ratio.label, helpKey: 'ratio_lock', caption: 'swing ratio' },
             { k: 'INTERVAL', v: ratio.interval, flex: 1.5, helpKey: 'ratio_lock' },
             {
               k: 'PEN',
@@ -533,23 +547,24 @@ export function HarmonographLabScreen() {
             tint: ARM_Y,
             helpKey: 'ratio_lock',
           },
-          ...(rotary
-            ? [
-                {
-                  // The paper platform's own pendulum — OSC 3 (owner
-                  // 2026-08-23: platform rotation is a separate control).
-                  kind: 'fader' as const,
-                  id: 'plat',
-                  label: 'PLAT',
-                  value: platPosFromFreq(hz3),
-                  onChange: (v: number) => setN3(platFreqFromPos(v) / BASE_F0),
-                  format: () => (hz3 > 0 ? fmtHz(hz3) : 'OFF — platform stationary'),
-                  formatShort: () => (hz3 > 0 ? fmtHz(hz3) : 'OFF'),
-                  tint: '#e0b25e',
-                  helpKey: 'mode',
-                },
-              ]
-            : []),
+          // PLAT keeps its slot in LATERAL too, dimmed with the reason (owner
+          // 2026-11-15: "build waves 1 thru 3", D62 SH-64 a control the choice
+          // ignores is greyed with a reason; SH-35 the keys keep one order).
+          // It used to vanish, so the TUNE and SHAPE keys moved under the finger.
+          {
+            // The paper platform's own pendulum — OSC 3 (owner
+            // 2026-08-23: platform rotation is a separate control).
+            kind: 'fader' as const,
+            id: 'plat',
+            locked: rotary ? undefined : 'LATERAL keeps the paper still. Pick ROTARY in SHAPE to swing it',
+            label: 'PLAT',
+            value: platPosFromFreq(hz3),
+            onChange: (v: number) => setN3(platFreqFromPos(v) / BASE_F0),
+            format: () => (hz3 > 0 ? fmtHz(hz3) : 'OFF — platform stationary'),
+            formatShort: () => (hz3 > 0 ? fmtHz(hz3) : 'OFF'),
+            tint: '#e0b25e',
+            helpKey: 'mode',
+          },
           {
             // RATIO + DETUNE share one sticky tray (both are A/B-the-interval
             // teaching collections; the tray stays open while the figure
@@ -592,9 +607,12 @@ export function HarmonographLabScreen() {
             kind: 'group',
             id: 'shape',
             label: 'SHAPE',
-            // All three states stay visible on the key (φ · damping initial ·
-            // R when rotary) — no hidden state behind a closed tray.
-            valueLabel: `${phase}°·${damping.label[0]}${rotary ? '·R' : ''}`,
+            // In words, not a code (owner 2026-11-15, D62 HG-03: "90°·M·R"
+            // could not be decoded). The key shows the phase and only the
+            // settings that differ from the opening (MEDIUM, ROTARY); the
+            // spoken label always names all three.
+            valueLabel: shapeKeyValue(phase, dampKey, rotary),
+            valueA11y: `phase ${phase} degrees, ${damping.label.toLowerCase()} damping, ${rotary ? 'rotary' : 'lateral'}`,
             helpKey: 'phase',
             render: () => (
               <View style={{ gap: 10 }}>
@@ -742,8 +760,8 @@ export function HarmonographLabScreen() {
             )
           ) : (
             <Text style={styles.caption}>
-              This version of the app can’t play the interval sound yet. The figure and lessons work
-              fully; update the app to hear the ratios.
+              {/* No "update the app" line for a learner (owner 2026-11-15, D62 SH-37). */}
+              The interval sound can’t play on this device. The figure and lessons work fully.
             </Text>
           )
         ) : null}

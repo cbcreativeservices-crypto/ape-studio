@@ -39,7 +39,7 @@ import { useStageTextScale } from '../../../../rack/stageAspect';
 import { fitXform } from '../../../engine/geometry/frame.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
 import { barPeak, barShape, NODE_FRAC, type Bar, type MalletInst, type Tube } from './malletSpec.ts';
-import { INK, LOOK } from './MalletArt';
+import { INK, LOOK, MALLET_REAL, MALLET_STROKE_DEG } from './MalletArt';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const AMBER = '#ffc64d';
@@ -50,6 +50,15 @@ const FELT = ['#ece4d0', '#c9bea4', '#8f846c'];
 export type OneBar = { bar: Bar; tube: Tube | null; inst: MalletInst; damper: boolean; caseBox: boolean };
 
 /** The display's model box around one bar and its tube. */
+/** The one-bar page's mallet: from its head back to its butt (mm, u = z
+ *  toward the audience, v = y down) — MALLET_STROKE_DEG to the bar, the
+ *  whole real mallet (MALLET_REAL less its head's radius). */
+export function oneBarMallet(inst: MalletInst, headR: number): { du: number; dv: number } {
+  const L = MALLET_REAL[inst] - headR;
+  const e = (MALLET_STROKE_DEG * Math.PI) / 180;
+  return { du: -L * Math.cos(e), dv: -L * Math.sin(e) };
+}
+
 export function boxOf(o: OneBar): { u0: number; u1: number; v0: number; v1: number } {
   const b = o.bar;
   const bottom = o.tube ? o.tube.yBot : b.yTop + b.t + 120;
@@ -193,7 +202,11 @@ export function BarStrike({ w, h, o, reveal, shown, damperUp, accessibilityLabel
     const mallet = Skia.Path.Make();
     const hx = b.z;
     const hy = b.yTop - headR;
-    mallet.moveTo(hx - 190, hy - 210);
+    // From the player's side at the keyboards' stroke angle, its real length
+    // (owner 2026-11-22, "normal stick tech. usage": it came down at 48°);
+    // the butt may run off the glass toward the player.
+    const tail = oneBarMallet(o.inst, headR);
+    mallet.moveTo(hx + tail.du, hy + tail.dv);
     mallet.lineTo(hx, hy);
     const strike = Skia.Path.Make();
     arrow(strike, hx - 70, hy - 120, hx - 12, hy - 22, 18);

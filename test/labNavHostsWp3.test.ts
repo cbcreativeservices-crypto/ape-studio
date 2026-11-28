@@ -42,7 +42,11 @@ describe('WP3 hosts use the shared lab navigation', () => {
     });
     test(`${name}: one unit per section with done from ${record}; go / finish / unEnd wired to the host's state`, () => {
       assert.match(src, new RegExp(`units: SECTIONS\\.map\\(\\(sec\\) => \\(\\{ id: sec\\.key, title: sec\\.title, done: ${record}\\.has\\(sec\\.key\\) \\}\\)\\)`));
-      assert.match(src, /index: sectionIdx,\n\s*ending,\n\s*go: openSection,\n\s*finish: \(\) => setEnding\(true\),\n\s*unEnd: \(\) => setEnding\(false\),/);
+      // Lab fix round 2026-11-14, phase 3 (owner's decision 1, "done = work done": a module counts when its own goal or check is met, not when it is opened): Microphone
+      // Principles wraps go so CAPSULE and PLOSIVES (no check) count on NEXT.
+      // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item MI-04): CAPSULE (no check) is now Microphone
+      // Principles' LAST module, so FINISH at its foot counts it the way NEXT does elsewhere; finish may be a block.
+      assert.match(src, /index: sectionIdx,\n\s*ending,\n\s*go: (?:openSection|\(i: number\) => \{[\s\S]*?openSection\(i\);\n\s*\}),\n(?:\s*\/\/.*\n)*\s*finish: (?:\(\) => setEnding\(true\)|\(\) => \{[^}]*?setEnding\(true\);\n\s*\}),\n\s*unEnd: \(\) => setEnding\(false\),/);
     });
     test(`${name}: the pinned WHAT'S LEFT chip and LabEndLink are gone (CONTENTS and the in-flow NEXT replaced them)`, () => {
       assert.doesNotMatch(src, /<LabChip label="WHAT’S LEFT"/);

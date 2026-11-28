@@ -28,10 +28,14 @@ import { StageAspectReport, useStageTextScale } from '../rack/stageAspect';
 import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../modules/ape-gesture-exclusion';
 import { fingerAt, fingerOffset, pickHandle, planTransform, touchToGlass, type Finger, type PlanTransform } from './planGeom';
 import { boxAround, CAPS_W, MONO_W, pickSpot, textBox, type Anchor, type Box } from './planLabels';
+import { modeCaptionLines } from './modeCaption';
 import {
+  basstrapOutline,
   bounds,
+  GOBO_FOOTPRINT_M,
   distToEdge,
   edgePoint,
+  FIELD_RANGE_M,
   fmtLen,
   modePressure,
   planReflections,
@@ -39,6 +43,7 @@ import {
   type Analysis,
   type Pt,
   type Reflection,
+  type Layout,
   type RoomDesign,
   type Speaker,
   type Treatment,
@@ -76,13 +81,9 @@ export const SURFACE_TINT: Record<string, string> = {
   curtain: '#9a6f8f',
   acoustictile: '#8e9a90',
 };
-/** Where the lab says each listening-distance class is heard from (metres):
- *  nearfield about 1–1.5 m, midfield about 2–4 m (modMonitoring's prose). */
-export const FIELD_RANGE_M: Record<string, [number, number] | null> = {
-  nearfield: [0.8, 1.8],
-  midfield: [1.8, 4.2],
-  other: null,
-};
+/** The listening-distance classes now live in roomModel (FIELD_RANGE_M), so
+ *  the Suggested setups search reads the same numbers the plan draws. */
+export { FIELD_RANGE_M };
 /** The floor fill by material. Still dark (the heat map and the paths read
  *  over it) but each a distinct hue: the old four near-blacks differed by 2–4
  *  levels a channel, so a FLOOR pick changed nothing a learner could see
@@ -119,6 +120,7 @@ export function RoomPlanView({
   onDragEnd,
   trace = null,
   highlight = null,
+  ghost = null,
 }: {
   w: number;
   h: number;
@@ -135,6 +137,10 @@ export function RoomPlanView({
   trace?: Trace;
   /** A just-added item (`tr_<id>` / `op_<id>`) wears a ring for a moment. */
   highlight?: string | null;
+  /** SUGGESTED SETUPS: the learner's CURRENT positions drawn faintly under
+   *  the suggested ones (and the desk where it stands now, dashed), with a
+   *  dashed line from the current seat to the suggested one. */
+  ghost?: { layout: Layout; desk?: { x: number; y: number; w: number; d: number } | null } | null;
 }) {
   const s = useStageTextScale();
   const gw = w / s;
@@ -617,6 +623,29 @@ export function RoomPlanView({
             })
           : null}
 
+        {/* Suggested setups: where everything stands NOW, faint and dashed */}
+        {ghost ? (
+          <G opacity={0.4}>
+            {ghost.desk ? (
+              <Rect
+                x={T.toPx({ x: ghost.desk.x - ghost.desk.w / 2, y: ghost.desk.y - ghost.desk.d / 2 }).x}
+                y={T.toPx({ x: ghost.desk.x - ghost.desk.w / 2, y: ghost.desk.y - ghost.desk.d / 2 }).y}
+                width={ghost.desk.w * T.k}
+                height={ghost.desk.d * T.k}
+                fill="none"
+                stroke={HEAD_LINE}
+                strokeWidth={1.2}
+                strokeDasharray="4 4"
+              />
+            ) : null}
+            {ghost.layout.speakers.map((sp) =>
+              sp.role === 'SUB' ? <SubTop key={`g_${sp.role}`} sp={sp} T={T} fs={fs} selected={false} /> : <SpeakerTop key={`g_${sp.role}`} sp={sp} T={T} fs={fs} selected={false} label="none" />,
+            )}
+            <ListenerTop p={T.toPx(ghost.layout.listener)} size={Math.max(MIN_GLYPH, 0.22 * T.k)} selected={false} />
+            <Line x1={T.toPx(ghost.layout.listener).x} y1={T.toPx(ghost.layout.listener).y} x2={lisPx.x} y2={lisPx.y} stroke={GREEN} strokeWidth={1.4} strokeDasharray="3 4" />
+          </G>
+        ) : null}
+
         {/* Speakers */}
         {lay.speakers.map((sp) =>
           sp.role === 'SUB' ? (
@@ -635,19 +664,21 @@ export function RoomPlanView({
         {/* Dimensions */}
         {layers.dims !== false ? <DimensionLabels b={b} T={T} units={units} fs={fs} rectangular={analysis.rectangular} frontAt={frontSpot ?? undefined} /> : null}
 
-        {/* Mode caption — two lines on a narrow glass so nothing is cropped */}
-        {heat && gw < 300 ? (
+        {/* Mode caption in plain words (owner 2026-11-15, "build waves 1 thru 3",
+            D62 item RO-02; modeCaption.ts): two lines on a phone-width glass so
+            nothing is cropped, one line on a wide glass. */}
+        {heat && gw < 480 ? (
           <G>
             <SvgText x={6} y={gh - fs - 8} fill={colors.textSub} fontSize={fs} fontFamily={fonts.oswaldSemiBold}>
-              {`MODE (${heat.mode.nx},${heat.mode.ny},${heat.mode.nz}) ${heat.mode.f.toFixed(1)} Hz · ${heat.mode.kind.toUpperCase()}`}
+              {modeCaptionLines(heat.mode)[0]}
             </SvgText>
             <SvgText x={6} y={gh - 6} fill={colors.textSub} fontSize={fs} fontFamily={fonts.oswaldSemiBold}>
-              PRESSURE AT EAR HEIGHT · SHAPE, NOT EXCITATION
+              {modeCaptionLines(heat.mode)[1]}
             </SvgText>
           </G>
         ) : heat ? (
           <SvgText x={6} y={gh - 6} fill={colors.textSub} fontSize={fs} fontFamily={fonts.oswaldSemiBold}>
-            {`MODE (${heat.mode.nx},${heat.mode.ny},${heat.mode.nz}) ${heat.mode.f.toFixed(1)} Hz · ${heat.mode.kind.toUpperCase()} · PRESSURE AT EAR HEIGHT · SHAPE, NOT EXCITATION`}
+            {modeCaptionLines(heat.mode).join(' · ')}
           </SvgText>
         ) : null}
       </Svg>
@@ -1044,30 +1075,31 @@ function TreatmentGlyph({ t, T, room, centroid, fs, selected }: { t: Treatment; 
     );
   }
   if (t.kind === 'basstrap') {
-    if (t.wall == null) return null;
-    const i = t.wall % v.length;
-    const corner = v[i];
-    const prev = v[(i - 1 + v.length) % v.length];
-    const next = v[(i + 1) % v.length];
-    const along = (from: Pt, to: Pt, d: number) => {
-      const len = Math.hypot(to.x - from.x, to.y - from.y) || 1;
-      return { x: from.x + ((to.x - from.x) / len) * d, y: from.y + ((to.y - from.y) / len) * d };
-    };
-    const w = Math.max(0.3, t.thickness * 1.6);
-    const p1 = T.toPx(along(corner, prev, w));
-    const p2 = T.toPx(along(corner, next, w));
-    const cq = T.toPx(corner);
+    if (t.wall == null || v.length < 3) return null;
+    // Drawn from SIZE (the face) and THICK (the porous depth): basstrapOutline
+    // (owner 2026-11-25, fix-first round 2 — SIZE never widened the drawing).
+    const o = basstrapOutline(v, t.wall, t.width, t.thickness);
+    // An outside (270 degree) corner holds no corner trap: nothing to draw.
+    if (!o) return null;
+    const pts = (ps: Pt[]) => ps.map((p) => T.toPx(p)).map((q) => `${q.x},${q.y}`).join(' ');
+    const f1 = T.toPx(o.face[0]);
+    const f2 = T.toPx(o.face[1]);
     return (
       <G>
-        <Polygon points={`${cq.x},${cq.y} ${p1.x},${p1.y} ${p2.x},${p2.y}`} fill="rgba(201,162,74,0.4)" stroke={stroke} strokeWidth={selected ? 1.6 : 1} strokeLinejoin="round" />
-        {!t.enabled ? <Line x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} stroke="#6a6a72" strokeWidth={1} /> : null}
+        {o.gap ? <Polygon points={pts(o.gap)} fill="none" stroke={stroke} strokeWidth={0.8} strokeDasharray="2 2" strokeLinejoin="round" /> : null}
+        <Polygon points={pts(o.body)} fill="rgba(201,162,74,0.4)" stroke={stroke} strokeWidth={selected ? 1.6 : 1} strokeLinejoin="round" />
+        {!t.enabled ? <Line x1={f1.x} y1={f1.y} x2={f2.x} y2={f2.y} stroke="#6a6a72" strokeWidth={1} /> : null}
       </G>
     );
   }
   if (t.x == null || t.y == null) return null;
-  const q = T.toPx({ x: t.x - t.width / 2, y: t.y - t.height / 2 });
+  // A gobo's `height` is its face's height (checker 2026-11-25: new ones are
+  // 1.6 m tall); the plan keeps drawing it as a thin panel on a stand of a
+  // fixed footprint, never as a 1.6 m-deep block.
+  const depthM = t.kind === 'gobo' ? GOBO_FOOTPRINT_M : t.height;
+  const q = T.toPx({ x: t.x - t.width / 2, y: t.y - depthM / 2 });
   const W = t.width * T.k;
-  const H = t.height * T.k;
+  const H = depthM * T.k;
   if (t.kind === 'cloud') {
     return (
       <G>

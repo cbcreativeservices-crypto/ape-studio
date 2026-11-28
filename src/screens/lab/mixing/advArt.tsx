@@ -330,8 +330,11 @@ const fmtMs = (ms: number) => (ms < 10 ? `${ms} ms` : `${Math.round(ms)} ms`);
  *  page renders with (threshold −60…0 dB, ratio 1…20 log, attack 0.1…100 ms
  *  log, release 10…2000 ms log), the value written under each knob. When
  *  `settings` is null the unit is BYPASSED (dark, the bypass button lit).
- *  `keyIn` lights the external sidechain (KEY) input and names its source. */
-export function CompFace({ x, y, w, settings, keyIn, title = 'COMPRESSOR' }: { x: number; y: number; w: number; settings: CompSettings | null; keyIn?: string | null; title?: string }) {
+ *  `keyIn` lights the external sidechain (KEY) input and names its source.
+ *  `offTitle` (AM-03, owner 2026-11-15: "build waves 1 thru 3", D62): what the
+ *  title says in plain words while the unit is off. A dark faceplate reading
+ *  "— BYPASSED" over four dashes looked broken to a learner with sound off. */
+export function CompFace({ x, y, w, settings, keyIn, title = 'COMPRESSOR', offTitle }: { x: number; y: number; w: number; settings: CompSettings | null; keyIn?: string | null; title?: string; offTitle?: string }) {
   const on = settings != null;
   const s = settings ?? { thresholdDb: 0, ratio: 1, attackMs: 10, releaseMs: 100 };
   const cells = [
@@ -375,7 +378,7 @@ export function CompFace({ x, y, w, settings, keyIn, title = 'COMPRESSOR' }: { x
         KEY
       </T>
       <T x={x + w / 2} y={y - 5} color={ART.ink} ls={1.2}>
-        {on ? title : `${title} — BYPASSED`}
+        {on ? title : offTitle ?? `${title} — BYPASSED`}
       </T>
     </G>
   );

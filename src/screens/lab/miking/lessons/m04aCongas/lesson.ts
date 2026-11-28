@@ -17,14 +17,14 @@ import type { DiagnosticItem, MikingScenario, OrderTask, LessonPages, PageConten
 import { OPPOSITE_SIDES_POLARITY, micRatingCheck } from '../../engine/model/sharedItems.ts';
 import { handCopy, type HandLesson } from '../shared/handdrums/family.ts';
 import { CONGA_MODEL, CONGA_WORDS } from './geometry.ts';
-import { CONGA, CONGA_DIMS as D, CONGA_ZONES, HEAD_Y, TUMBA } from './model.ts';
+import { AZ_BACK, CONGA, CONGA_DIMS as D, CONGA_ZONES, HEAD_Y, PAIR_B_POSE, QUINTO, TUMBA } from './model.ts';
 
 const pages: LessonPages = {
   instrument: {
     title: 'Meet the congas',
-    goal: 'Get to know a pair of congas — what they are, where you meet them, what they do in the music, and their parts — before any microphone.',
+    goal: 'Get to know a set of three congas — the quinto, the conga and the tumba: what they are, where you meet them, what they do in the music, and their parts — before any microphone.',
     credit: { scenarios: [], note: 'Credited when you move on from the last step — explore as much as you like; there is nothing to answer here.' },
-    takeaway: 'Two tall, single-headed hand drums, open at the bottom: the head gives the hand’s attack and tone, the open lower end a deeper, boomier part. Work with the drums as the player sets them up.',
+    takeaway: 'Three tall, single-headed hand drums, open at the bottom, the conga in the middle: the head gives the hand’s attack and tone, the open lower end a deeper, boomier part. Work with the drums as the player sets them up.',
   },
   sound: {
     title: 'How they make their sound',
@@ -46,7 +46,7 @@ const pages: LessonPages = {
   },
   placement: {
     title: 'Placement Studio',
-    goal: 'Start where we suggest you begin — one mic for the pair, or one per drum — measured from the head the zone names, outside the hands; then move the mic and see what changes.',
+    goal: 'Start where we suggest you begin — one mic over the set, a matched pair over it, or one per drum — measured from the head the zone names, outside the hands; then move the mic and see what changes.',
     credit: { scenarios: ['cg.place.1', 'cg.place.2', 'cg.place.3', 'cg.rec.2'], interactive: 'twoZones', note: 'Rest the mic, clear of every part, inside two different suggested starting points, and answer the four checks. The worked example alone does not count toward this page — it is there to read.' },
     takeaway: 'A suggested zone is a place to begin, measured from a named head — not a rule. Shift toward the quieter drum, raise for a blend, move closer for directness — one change at a time, and clearance first.',
   },
@@ -58,9 +58,9 @@ const pages: LessonPages = {
   },
   twoMic: {
     title: 'Two microphones',
-    goal: 'See how the arrival-time difference between two mics — one per drum, or top and bottom — places comb-filter notches, and what polarity does and does not change.',
+    goal: 'See how the arrival-time difference between two mics — a matched pair over the set, or top and bottom — places comb-filter notches, and what polarity does and does not change.',
     credit: { scenarios: ['cg.two.1', 'cg.two.2', 'cg.two.3', 'cg.two.4'], interactive: 'polarityVsDelay', note: 'Flip polarity both ways AND move a mic so the delay changes, then answer the four checks.' },
-    takeaway: 'Each mic hears both drums at different times. Polarity flips the sign; it does not remove a delay. Judge the pair in mono, at matched levels, across every stroke.',
+    takeaway: 'Each mic hears every drum, at different times. Polarity flips the sign; it does not remove a delay. Judge the pair in mono, at matched levels, across every stroke.',
   },
   troubleshoot: {
     title: 'Troubleshoot',
@@ -86,7 +86,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'cg.set.1',
     page: 'setting',
-    prompt: 'You need a stand for a mic over the conga pair. Which space must its base, boom and cable stay out of?',
+    prompt: 'You need a stand for a mic over the three congas. Which space must its base, boom and cable stay out of?',
     options: ['The player’s hands, wrists and knees, and their footing', 'The front of the drums, so the audience can see them clearly', 'The area behind the bass amp, where its cables run'],
     correct: 'The player’s hands, wrists and knees, and their footing',
     explain: 'The player’s space moves all the time. Keep every part of the rig clear of each stroke, wrist and knee, and of where they stand — and stop the player before anything moves.',
@@ -99,7 +99,7 @@ const scenarios: MikingScenario[] = [
   {
     id: 'cg.set.3',
     page: 'setting',
-    prompt: 'The player stands at two congas resting on the floor. Can you put a mic under each drum’s open end?',
+    prompt: 'The player stands at three congas resting on the floor. Can you put a mic under each drum’s open end?',
     options: ['No — the ends rest on the floor; work with the setup as it is', 'Yes — tip each drum back a little so a small mic fits under it', 'Yes — slide a thin mic under the rim where the floor is clear'],
     correct: 'No — the ends rest on the floor; work with the setup as it is',
     explain: 'On the floor, nothing goes under the drums. Don’t change the player’s floor or stand setup, or block the open end, to fit a mic: a bottom mic is an option only when the player chooses to raise the drums.',
@@ -219,12 +219,12 @@ const scenarios: MikingScenario[] = [
   {
     id: 'cg.place.2',
     page: 'placement',
-    prompt: 'In your one shared mic, the conga is buried under the tumba. What do you try first?',
-    options: ['Shift the mic toward the conga, then listen again', 'Turn the gain up until the conga can be heard', 'Ask the player to play the tumba more softly'],
-    correct: 'Shift the mic toward the conga, then listen again',
-    explain: 'Move or aim a shared mic toward the quieter drum while keeping both in its pickup. If one channel still cannot balance them, add a second mic.',
+    prompt: 'In your one mic over the set, the quinto is buried under the other two drums. What do you try first?',
+    options: ['Shift the mic toward the quinto, then listen again', 'Turn the gain up until the quinto can be heard', 'Ask the player to play the tumba more softly'],
+    correct: 'Shift the mic toward the quinto, then listen again',
+    explain: 'Move or aim a shared mic toward the quieter drum while keeping all three in its pickup. If one channel still cannot balance them, add mics: a pair over the set, or one per drum.',
     why: {
-      'Turn the gain up until the conga can be heard': 'Gain lifts both drums together; the balance between them stays the same. Move the mic.',
+      'Turn the gain up until the quinto can be heard': 'Gain lifts all three drums together; the balance between them stays the same. Move the mic.',
       'Ask the player to play the tumba more softly': 'The part is the player’s. Balance the drums with the mic’s position first.',
     },
   },
@@ -327,13 +327,13 @@ const scenarios: MikingScenario[] = [
   {
     id: 'cg.two.3',
     page: 'twoMic',
-    prompt: 'One mic per conga. Does placing them by 3:1 — each mic at least three times nearer its own drum than the other mic is — help?',
-    options: ['Yes — each hears less of the other drum; still check in mono', 'No — 3:1 applies only to two mics on the same drum', 'Yes — spaced 3:1, the pair can no longer comb at all'],
-    correct: 'Yes — each hears less of the other drum; still check in mono',
-    explain: '3:1 can reduce interacting pickup between mics on different sources — and one mic per conga is exactly that case. Each mic still hears the other drum a little, later, so judge the pair by ear, in mono, on every stroke.',
+    prompt: 'One mic per conga. Does placing them by 3:1 — each mic at least three times nearer its own drum than the next mic is — help?',
+    options: ['Yes — each hears less of the other drums; still check in mono', 'No — 3:1 applies only to two mics on the same drum', 'Yes — spaced 3:1, the mics can no longer comb at all'],
+    correct: 'Yes — each hears less of the other drums; still check in mono',
+    explain: '3:1 can reduce interacting pickup between mics on different sources — and one mic per conga is exactly that case. Each mic still hears the other drums a little, later, so judge the mics together by ear, in mono, on every stroke.',
     why: {
       'No — 3:1 applies only to two mics on the same drum': 'It is the other way around: 3:1 is about mics on DIFFERENT sources — one mic per drum is where it applies.',
-      'Yes — spaced 3:1, the pair can no longer comb at all': 'It reduces the other drum in each mic; it does not remove it. Whatever is left still arrives late and can comb — check in mono.',
+      'Yes — spaced 3:1, the mics can no longer comb at all': 'It reduces the other drums in each mic; it does not remove them. Whatever is left still arrives late and can comb — check in mono.',
     },
   },
   {
@@ -364,8 +364,8 @@ const scenarios: MikingScenario[] = [
     id: 'k.prac.3',
     page: 'practice',
     prompt: 'What would justify adding a second channel to a shared conga mic?',
-    options: ['One mic cannot balance the drums, and the pair holds up in mono', 'Two channels give the mix engineer more options to work with later', 'The congas need more level than one mic can give them'],
-    correct: 'One mic cannot balance the drums, and the pair holds up in mono',
+    options: ['One mic cannot balance the drums, and the two hold up in mono', 'Two channels give the mix engineer more options to work with later', 'The congas need more level than one mic can give them'],
+    correct: 'One mic cannot balance the drums, and the two hold up in mono',
     explain: 'Add a mic for a real balance or control problem, then check it alone, in the blend and in mono. In live sound, use the fewest open mics that give the control you need.',
     why: {
       'Two channels give the mix engineer more options to work with later': 'More channels also add spill and interactions. A second mic should earn its place.',
@@ -438,14 +438,14 @@ const symptoms: Symptom[] = [
   },
   {
     id: 's.buried',
-    observation: 'One conga is consistently buried',
+    observation: 'One drum of the set is consistently buried',
     firstChecks: 'Player dynamics, shared-mic aim, stand heights, mic pattern.',
-    options: ['The player’s dynamics, the shared mic’s aim, heights and pattern', 'Swap the two drums over so the quiet one sits nearer the shared mic', 'Turn the gain up until the quiet drum comes through'],
+    options: ['The player’s dynamics, the shared mic’s aim, heights and pattern', 'Swap the drums around so the quiet one sits under the shared mic', 'Turn the gain up until the quiet drum comes through'],
     correct: 'The player’s dynamics, the shared mic’s aim, heights and pattern',
-    explain: 'Shift the shared mic, or use separate channels when one mic cannot balance them.',
+    explain: 'Shift the shared mic, or use more channels — a pair over the set, or one per drum — when one mic cannot balance them.',
     why: {
-      'Swap the two drums over so the quiet one sits nearer the shared mic': 'The setup is the player’s. Move the mic, not the drums.',
-      'Turn the gain up until the quiet drum comes through': 'Gain lifts both drums together; the balance between them stays the same.',
+      'Swap the drums around so the quiet one sits under the shared mic': 'The setup is the player’s. Move the mic, not the drums.',
+      'Turn the gain up until the quiet drum comes through': 'Gain lifts all three drums together; the balance between them stays the same.',
     },
   },
   {
@@ -514,11 +514,11 @@ const setupTasks: SetupTask[] = [
   {
     id: 'k.prac.setup1',
     page: 'practice',
-    brief: 'BRIEF 1 · Two congas on the floor, a quiet studio, overdubbed alone. The player wants open tones, slaps and bass all heard. One or two channels; phantom power is available.',
+    brief: 'BRIEF 1 · Three congas on the floor — quinto, conga and tumba — a quiet studio, overdubbed alone. The player wants open tones, slaps and bass all heard. One to three channels; phantom power is available.',
     setups: [
-      { id: 'a', label: 'One compact dynamic between the heads, just above them, aimed down', ok: true, power: 'none', feedback: 'A suggested starting point for a pair: a full sound with good attack, on one channel.' },
+      { id: 'a', label: 'A matched pair of slim condensers over the set, each between two drums', ok: true, power: 'phantom', feedback: 'A suggested starting point for a set of three: two channels that hear all three drums — check them in mono; phantom is available.' },
       { id: 'b', label: 'A slim condenser over each drum, starting about 15–60 cm from its head', ok: true, power: 'phantom', feedback: 'A suggested starting point; in a quiet room, distance can balance the strokes, and phantom is available.' },
-      { id: 'c', label: 'A clip-on condenser at each drum’s far rim, with the player’s OK', ok: true, power: 'phantom', feedback: 'Independent control in little space; it needs the phantom power this input has.' },
+      { id: 'c', label: 'A clip-on condenser at each drum’s front rim, with the player’s OK', ok: true, power: 'phantom', feedback: 'Independent control in little space; it needs the phantom power these inputs have.' },
       { id: 'd', label: 'A mic slid under each drum’s open end, to catch the bass', ok: false, power: 'none', feedback: 'On the floor the open ends rest on it: nothing goes under, and nothing is added to block them.' },
       { id: 'e', label: 'A mic over the player’s side of the heads, where the hands land', ok: false, power: 'none', feedback: 'That is inside the hand path: the mic or stand would be struck.' },
     ],
@@ -528,12 +528,12 @@ const setupTasks: SetupTask[] = [
   {
     id: 'k.prac.setup2',
     page: 'practice',
-    brief: 'BRIEF 2 · A loud stage with a floor wedge in front of the drums, which stand on the floor. The spare inputs have NO phantom power.',
+    brief: 'BRIEF 2 · A loud stage with a floor wedge in front of the three drums, which stand on the floor. The spare inputs have NO phantom power.',
     setups: [
       { id: 'a', label: 'A compact dynamic over each drum, outside the hands, aimed at its head', ok: true, power: 'none', feedback: 'Close and directional, one per drum for control on a loud stage; a dynamic needs no phantom.' },
-      { id: 'b', label: 'One compact dynamic between the heads, just above them, aimed down', ok: true, power: 'none', feedback: 'A suggested starting point for a pair; a dynamic needs no phantom.' },
-      { id: 'c', label: 'A clip-on condenser at each drum’s far rim', ok: false, power: 'phantom', feedback: 'A fair stage idea, but these inputs have no phantom power and the clip-on mic needs it.' },
-      { id: 'd', label: 'A slim condenser a meter above both drums', ok: false, power: 'phantom', feedback: 'Too distant for a loud stage — and it needs phantom power these inputs lack.' },
+      { id: 'b', label: 'One compact dynamic over the conga, just above the heads, aimed down', ok: true, power: 'none', feedback: 'A suggested starting point for one channel over the set; a dynamic needs no phantom. Listen for the outer drums.' },
+      { id: 'c', label: 'A clip-on condenser at each drum’s front rim', ok: false, power: 'phantom', feedback: 'A fair stage idea, but these inputs have no phantom power and the clip-on mic needs it.' },
+      { id: 'd', label: 'A slim condenser a meter above all three drums', ok: false, power: 'phantom', feedback: 'Too distant for a loud stage — and it needs phantom power these inputs lack.' },
       { id: 'e', label: 'A dynamic under each drum’s open end', ok: false, power: 'none', feedback: 'On the floor the open ends rest on it: nothing goes under them.' },
     ],
     reasons: [DOC_REASON, CLEAR_REASON, POWER_REASON, { id: 'r.spill', label: 'Close, directional pickup helps against spill and feedback on stage', role: 'optional', feedback: 'A fair live reason.' }, BRAND_REASON, BASS_REASON],
@@ -542,9 +542,9 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: HandLesson['predictions'] = {
-  sound: { prompt: 'Before you step through: when the hand pushes the head down into the drum, where does the air inside go?', options: ['Down the shell, toward the open lower end', 'Up, back out through the head', 'Nowhere — the air inside the shell stays still'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the air.' },
+  sound: { prompt: 'Before you step through: when the hand pushes the head down into the drum, where does the air inside go?', options: ['Down the shell, toward the open lower end', 'Up, back out through the head', 'Nowhere — the air inside the shell stays still'], after: 'Now go EVENT by EVENT through the stroke (or PLAY ONCE) and watch the air.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
-  placement: { prompt: 'Predict: you raise the shared mic from just above the heads to higher up. What changes?', options: ['More of both drums blended, and more room', 'More slap from the nearer drum', 'Nothing until it is a meter away'], after: 'Higher and farther tends to blend the pair and bring in more of the room — a tendency to check by ear, with every stroke.' },
+  placement: { prompt: 'Predict: you raise the shared mic from just above the heads to higher up. What changes?', options: ['More of all three drums blended, and more room', 'More slap from the nearer drum', 'Nothing until it is a meter away'], after: 'Higher and farther tends to blend the three drums and bring in more of the room — a tendency to check by ear, with every stroke.' },
   context: { prompt: 'Where can this mic, aimed at the tumba, best reject the floor wedge in front of the drums?', options: ['Straight behind the mic', 'Toward its rear, off to one side', 'At the sides of the mic'], after: 'Now tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
   twoMic: { prompt: 'If you flip mic B’s polarity, what happens to the delay Δt?', options: ['It gets longer', 'It stays the same', 'It goes to zero'], after: 'Flip MIC B POLARITY both ways, then move a mic. Watch which readout each action changes.' },
 };
@@ -566,7 +566,7 @@ const diagnostic: DiagnosticItem[] = [
   {
     id: 'q.2',
     covers: 'instrument',
-    prompt: 'In a pair of congas, which is usually the larger, lower drum?',
+    prompt: 'In a set of three congas, which is usually the largest, lowest drum?',
     options: ['The tumba', 'The quinto', 'The macho'],
     correct: 'The tumba',
     explain: 'Commonly the largest drum is the tumba, the middle the conga, the smallest the quinto — names vary with tradition, so ask the player which drum is which.',
@@ -632,13 +632,14 @@ export const M04A_LESSON: HandLesson = {
   id: 'M04a',
   labId: 'drums',
   title: 'Congas',
-  subtitle: 'A pair of hand drums: one mic or one each, top or bottom',
+  subtitle: 'Quinto, conga and tumba: one mic, a pair, or one each — top or bottom',
   noun: { one: 'conga', many: 'congas' },
-  copy: handCopy(CONGA_WORDS),
+  // The 'side' view is the FRONT elevation (frame C, model.ts).
+  copy: { ...handCopy(CONGA_WORDS), viewWords: { side: 'Front view,', top: 'Top view,' } },
   model: CONGA_MODEL,
   micTypeIds: ['hdDynCard', 'hdDynHyper', 'hdSdc', 'hdClip'],
   zones: CONGA_ZONES,
-  setupPairs: [{ label: 'One mic over each drum', A: { zone: 'cg.tumba', typeId: 'hdDynCard' }, B: { zone: 'cg.conga', typeId: 'hdDynCard' } }],
+  setupPairs: [{ label: 'A matched pair over the set', A: { zone: 'cg.pair', typeId: 'hdSdc' }, B: { zone: 'cg.pair', typeId: 'hdSdc', pose: PAIR_B_POSE } }],
   pages,
   scenarios,
   symptoms,
@@ -646,10 +647,10 @@ export const M04A_LESSON: HandLesson = {
   setupTasks,
   predictions,
   orient: [
-    { title: 'WHAT IT IS', text: 'Congas are tall, single-headed hand drums, open at the bottom, played with the hands. Players use a pair or several sizes — commonly a quinto (smallest), a conga and a tumba (largest), though the names vary with tradition and setup.', src: 'RM-CONGA' },
+    { title: 'WHAT IT IS', text: 'Congas are tall, single-headed hand drums, open at the bottom, played with the hands. They are commonly grouped into a set of three: the quinto (smallest and highest), the conga (the middle drum) and the tumba (largest and lowest). Players also use one, two or more, and the names vary with tradition and setup.', src: 'RM-CONGA' },
     { title: 'WHERE YOU MEET THEM', text: 'In Latin, Afro-Cuban and popular music, on stage and in the studio. They may be played seated or standing, with the drums on the floor or mounted on stands. This lesson covers studio recording and live sound.', src: 'WP-CONGA' },
     { title: 'WHAT THEY DO IN THE MUSIC', text: 'A whole part in strokes: open tones, slaps, bass and muted strokes, across two or more drums. Which drum carries what — and which strokes matter most — decides a lot about the mics, so ask before you start.', src: 'LESSON' },
-    { title: 'THEIR SIZE', text: `Common heads run from about 11 to 12½ in across, on drums about 30 in tall. This lab draws an 11¾ in conga and a 12½ in tumba, side by side.`, src: 'LP-CLASSIC' },
+    { title: 'THEIR SIZE', text: `Common heads run from about 11 to 12½ in across, on drums about 30 in tall. This lab draws an 11 in quinto, an 11¾ in conga and a 12½ in tumba side by side, the conga in the center.`, src: 'LP-CLASSIC' },
   ],
   sound: {
     stages: [
@@ -664,8 +665,8 @@ export const M04A_LESSON: HandLesson = {
   },
   setting: {
     items: [
-      { id: 'drums', label: 'the congas', short: 'CONGAS', note: 'The conga on the player’s left, the tumba on the right, both standing on the floor here — or raised on stands.', prov: { kind: 'sourced', src: 'LP-CLASSIC', quote: '11-3/4″ Conga, 12-1/2″ Tumba, 30″ tall' }, tag: 'THE DRUMS', scene: 'all' },
-      { id: 'player', label: 'the player, standing behind the drums', short: 'PLAYER', note: 'Their hands work over the player’s side of both heads; their wrists, knees and footing move all the time. Nothing of yours goes through that space.', prov: { kind: 'illustrative', reason: 'a standing player; no source gives the reach' }, tag: 'KEEP CLEAR', scene: 'all' },
+      { id: 'drums', label: 'the congas', short: 'CONGAS', note: 'The quinto on the player’s left, the conga in the center, right in front of the player, and the tumba on the right — all three standing on the floor here, or raised on stands.', prov: { kind: 'sourced', src: 'LP-CLASSIC', quote: '11″ Quinto, 11-3/4″ Conga, 12-1/2″ Tumba, 30″ tall' }, tag: 'THE DRUMS', scene: 'all' },
+      { id: 'player', label: 'the player, standing behind the drums', short: 'PLAYER', note: 'Their hands work over the player’s side of all three heads; their wrists, knees and footing move all the time. Nothing of yours goes through that space.', prov: { kind: 'illustrative', reason: 'a standing player; no source gives the reach' }, tag: 'KEEP CLEAR', scene: 'all' },
       { id: 'kit', label: 'the drum kit', short: 'DRUM KIT', note: 'A loud neighbor. Its spill reaches an open conga mic — closer, directional mics help, and a distant mic hears more of it.', prov: { kind: 'illustrative', reason: 'a typical band layout; no source gives positions' }, tag: 'SPILL', scene: 'all' },
       { id: 'bass', label: 'the bass amp', short: 'BASS AMP', note: 'Low-frequency spill into a conga mic — especially a bottom mic or a distant one.', prov: { kind: 'illustrative', reason: 'a typical band layout; no source gives positions' }, tag: 'SPILL', scene: 'all' },
       { id: 'perc', label: 'other percussion (bongos, a bell)', short: 'PERCUSSION', note: 'The part may move between instruments: a fixed mic covers only the congas, and the player’s path between them stays clear.', prov: { kind: 'illustrative', reason: 'a typical percussion setup; no source gives positions' }, tag: 'MOVEMENT', scene: 'all' },
@@ -693,7 +694,7 @@ export const M04A_LESSON: HandLesson = {
     ],
   },
   unknowns: [
-    { text: 'The plan spacing of the two drums, the shell taper and the bottom opening’s size — drawing defaults.', dims: ['spacing', 'bottomRatio'] },
+    { text: 'Which side each drum stands on, the gap between the three drums in their row, the shell taper and belly, and the bottom opening’s size — drawing defaults; players set their drums their own way.', dims: ['gap', 'bottomRatio', 'belly'] },
     { text: 'The rim: its height above the head and how far it stands out; the number of tuning lugs — drawing defaults, never stated.', dims: ['rimRise', 'rimT', 'lugs'] },
     { text: 'How far a raised setup lifts the drums, and the stands themselves — drawing defaults.', dims: ['raise'] },
     { text: 'The player’s hands and body envelopes — ILLUSTRATIVE, for the owner to approve.', dims: ['handsUp'] },
@@ -701,20 +702,21 @@ export const M04A_LESSON: HandLesson = {
   ],
   live: {
     wedges: [
-      { id: 'wedge', label: 'the player’s floor wedge, in front of the drums, facing them', short: 'WEDGE', p: { x: 1050, y: 0, z: 0 }, lift: 150, faces: { x: -1, y: 0, z: 0 }, note: 'Below and in front of a mic aimed at the heads — where an off-axis null can help.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' } },
-      { id: 'sidefill', label: 'a side fill at the side of the stage, facing across', short: 'SIDE FILL', p: { x: -250, y: 0, z: -1900 }, lift: 1100, faces: { x: 0, y: 0, z: 1 }, note: 'Off to the side of the mic: turning one null toward the wedge leaves the side fill where the pattern still hears it. One null cannot face every monitor — distance, level and fewer open mics matter too.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' } },
+      { id: 'wedge', label: 'the player’s floor wedge, in front of the drums, facing them', short: 'WEDGE', p: { x: 0, y: 0, z: 1050 }, lift: 150, faces: { x: 0, y: 0, z: -1 }, note: 'Below and in front of a mic aimed at the heads — where an off-axis null can help.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' } },
+      { id: 'sidefill', label: 'a side fill at the side of the stage, facing across', short: 'SIDE FILL', p: { x: 1900, y: 0, z: -250 }, lift: 1100, faces: { x: -1, y: 0, z: 0 }, note: 'Off to the side of the mic: turning one null toward the wedge leaves the side fill where the pattern still hears it. One null cannot face every monitor — distance, level and fewer open mics matter too.', prov: { kind: 'illustrative', reason: 'a typical stage layout; no source gives the position' } },
     ],
   },
   accuracyDetail:
-    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every drum, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a pair of congas, mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
+    'ABOUT THESE STARTING POINTS. After our research, here is where we suggest you begin — ideas and concepts to consider, not rules. Every drum, player and room is different: move the mic, experiment, and trust your ears and the room. The lab is silent and draws a simplified picture: a set of three congas, mic patterns and the two-mic comb as textbook shapes, and head motion drawn larger so you can see it. Distances are rounded to about 5 mm and measured to the mic’s front. Place real mics with the player stopped.',
   hand: {
     drum: TUMBA,
     shellLook: 'staved',
     headLook: 'rawhide',
     tool: 'hand',
     variantKey: 'SETUP',
-    figure: { view: 'side', badge: 'A pair of congas — 11¾ and 12½ in, 30 in tall — seen from the player’s right', label: 'Side view of a pair of congas standing on the floor: the tumba in front, the conga directly behind it, each a tall staved wooden shell with a rawhide head held by a chrome rim, open at the bottom.' },
-    partsBadge: 'A pair of congas · tap a part to name it',
+    figure: { view: 'side', badge: 'A set of three congas — 11, 11¾ and 12½ in, 30 in tall — seen from the front', label: 'Front view of a set of three congas standing on the floor, seen from the audience: the tumba on the left, the conga in the middle, the quinto on the right, each a tall staved wooden shell with a rawhide head held by a chrome rim, open at the bottom.' },
+    viewNames: { side: 'Front', top: 'Top' },
+    partsBadge: 'A set of three congas · tap a part to name it',
     partsPrompt: 'Tap any part — or step through PART — to see what it is and what it does. Switch SETUP to raise the drums on stands. There is nothing to answer on this page.',
     partsNote: 'The hands strike the heads; the open lower ends let out a deeper part of the sound. The next page shows how.',
     soundBadge: 'The order of events, not their speed · head motion drawn much larger than it really is · silent',
@@ -734,6 +736,10 @@ export const M04A_LESSON: HandLesson = {
       items: [
         { id: 'open', label: 'OPEN TONE', short: 'OPEN', frac: 0.85, tool: 'fingers', text: 'Four fingers near the rim, bouncing off: a clear, ringing tone.' },
         { id: 'muted', label: 'MUTED TONE', short: 'MUTED', frac: 0.85, tool: 'fingers', text: 'Four fingers struck and held against the head: the tone is stopped short.' },
+        // Owner 2026-11-23: "Yes, add slap". Built as the djembe's SLAP: the same
+        // spot as the open tone (the head's model shows only where a stroke lands;
+        // the note below says why a slap differs), drawn as a slap (handSoundArt).
+        { id: 'slap', label: 'SLAP', short: 'SLAP', frac: 0.85, tool: 'tips', text: 'The edge of the palm on the rim, cupped fingertips whipping onto the head: a sharp, dry crack.' },
         { id: 'bass', label: 'BASS STROKE', short: 'BASS', frac: 0.3, tool: 'palm', text: 'The full palm, flat, near the center: a low, round sound.' },
       ],
       note: 'This simplified head shows WHERE the hand lands, not how it meets the head — its area and how long it stays — which is what separates an open tone from a muted one, or from a slap. Ask the player to show you every stroke.',
@@ -741,13 +747,17 @@ export const M04A_LESSON: HandLesson = {
     soundReveal: 'The head moving down pushes the air in the tall shell toward the open lower end — that is where the drum’s deeper part leaves.',
     plan: {
       box: { u0: -2600, u1: 2300, v0: -2000, v1: 1600 },
+      // The model's frame is turned a quarter from the plan's (frame C).
+      turn: 'xAcross',
       things: [
         { id: 'drums', kind: 'drums', u: 0, v: 0, scene: 'all' },
         { id: 'player', kind: 'player', u: -470, v: 0, scene: 'all' },
         { id: 'kit', kind: 'kit', u: -1550, v: -700, scene: 'all' },
         { id: 'bass', kind: 'amp', u: -1450, v: 900, face: 0, scene: 'all' },
-        { id: 'perc', kind: 'perc', u: -420, v: 700, scene: 'all' },
-        { id: 'vox', kind: 'micstand', u: 680, v: -680, scene: 'all' },
+        // Set wider for three drums (2026-11-22): the percussion and the vocal
+        // mic stand off a little farther (the plans' overlap test).
+        { id: 'perc', kind: 'perc', u: -420, v: 900, scene: 'all' },
+        { id: 'vox', kind: 'micstand', u: 680, v: -860, scene: 'all' },
         { id: 'wedge', kind: 'wedge', u: 1050, v: 0, face: Math.PI, scene: 'stage' },
         { id: 'sidefill', kind: 'sidefill', u: -250, v: -1150, face: Math.PI / 2, scene: 'stage' },
         { id: 'audience', kind: 'audience', u: 1750, v: 0, scene: 'stage' },
@@ -759,7 +769,7 @@ export const M04A_LESSON: HandLesson = {
         stations: [
           { of: 'player', at: { u: -500, v: -580 }, via: [{ u: -670, v: -580 }] },
           { of: 'kit', at: { u: -2315, v: -250 } },
-          { of: 'vox', at: { u: 230, v: -1130 }, via: [{ u: 1000, v: -1130 }] },
+          { of: 'vox', at: { u: 230, v: -1290 }, via: [{ u: 1000, v: -1290 }] },
         ],
       },
       badge: 'The band from above · a typical layout · the player at the left, the audience to the right',
@@ -775,10 +785,10 @@ export const M04A_LESSON: HandLesson = {
     worked: { default: 'cg.shared' },
     clearWords: 'Clear of every hand stroke, wrist and knee, of the rims and of the open lower ends. Clearance comes first, before any number — and the player stops before a real mic moves.',
     ideas: {
-      hdDynCard: 'Ideas to try with this kind of mic: one mic between the two heads first. If one channel cannot balance them, a mic over each drum. Shift a little toward the quieter drum, or raise it for a blend.',
+      hdDynCard: 'Ideas to try with this kind of mic: one mic over the set first, above the conga and just above the heads. If one channel cannot balance the three drums, a mic over each drum. Shift a little toward the quieter drum, or raise it for a blend.',
       hdDynHyper: 'Ideas to try with this kind of mic: close over each drum, outside the hands, aimed across the head rather than straight into one strike point. Its narrow pattern helps against spill — and it can favor one stroke if it is too close.',
-      hdSdc: 'Ideas to try with this kind of mic: in a quiet room, over each drum, starting closer and backing off until open tones, slaps and muted strokes balance — then listen to how much room comes with it.',
-      hdClip: 'Ideas to try with this kind of mic: on each drum’s far rim, the capsule just above the head and aimed across it — little stage space, independent control. Check the clamp for rattles, and keep it out of every hand stroke.',
+      hdSdc: 'Ideas to try with this kind of mic: in a quiet room, a matched pair over the set, each between two drums — or one over each drum, starting closer and backing off until open tones, slaps and muted strokes balance. Then listen to how much room comes with it.',
+      hdClip: 'Ideas to try with this kind of mic: on each drum’s front rim, the capsule just above the head and aimed across it — little stage space, independent control. Check the clamp for rattles, and keep it out of every hand stroke.',
     },
     placeLearn: [
       'What you just did, in words. After our research, each blue zone is where we suggest you begin with that kind of mic, measured from the head it names. They are starting points, not rules: move from there and listen — there is no single right answer, and every drum and player is different.',
@@ -787,11 +797,14 @@ export const M04A_LESSON: HandLesson = {
       'Closer and more direct tends to bring more hand detail and isolation — and can favor one stroke or make slaps very pronounced. Backing off in a good room tends to balance the strokes, with more of the room and the band. A separate room mic, about two meters in front, is another idea for a good studio. Move the mic before reaching for EQ.',
     ],
     context: {
-      pose: { p: { x: TUMBA.c.x + TUMBA.R + 60, y: HEAD_Y - 160, z: TUMBA.c.z }, az: 0, el: -35 },
-      looking: 'Side view · a mic at the tumba’s far edge, aimed back across the head',
+      pose: { p: { x: TUMBA.c.x, y: HEAD_Y - 160, z: TUMBA.c.z + TUMBA.R + 60 }, az: AZ_BACK, el: -35 },
+      // Drawn from above: the front view looks straight along the line from
+      // the mic to the wedge in front of the drums (frame C).
+      only: 'top',
+      looking: 'Top view · a mic at the tumba’s front edge, aimed back across the head',
       prompt: 'The wedge stays where the player needs it. Tilt the MIC (AIM) or change its PATTERN until the wedge sits in the rejection — while the mic still faces the drum.',
       learn: [
-        { title: 'HOW MUCH ROOM', text: 'Studio: one shared mic, or one per drum at a moderate distance; distance can blend the strokes, and the room becomes part of the sound. Live: close, stable directional mics, often one per drum, for direct sound against spill.' },
+        { title: 'HOW MUCH ROOM', text: 'Studio: one shared mic, a matched pair over the set, or one per drum at a moderate distance; distance can blend the strokes, and the room becomes part of the sound. Live: close, stable directional mics, often one per drum, for direct sound against spill.' },
         { title: 'HOW MANY MICS', text: 'Studio: add a bottom or room perspective only for a clear purpose. Live: use the fewest open mics that give the control you need — a distant or extra open mic raises feedback risk.' },
         { title: 'WHAT THE PART NEEDS', text: 'A quiet acoustic stage may only need a shared overhead-style position. A loud stage with wedges usually needs closer, independent control. Check the real audience coverage with the system operator.' },
         { title: 'MOUNTING', text: 'Studio: repeated trials are practical when the player stops. Live: stable stands or approved clips, cables secured away from feet, checked during the loudest passage.' },
@@ -800,12 +813,12 @@ export const M04A_LESSON: HandLesson = {
     },
     pairs: [
       {
-        id: 'perdrum',
-        label: 'One mic over each drum',
-        blurb: 'Each mic hears its own drum — and the other one, a little later. A conga stroke reaches mic B, over the conga, first; mic A, over the tumba, hears it later.',
-        A: { typeId: 'hdDynCard', pattern: 'cardioid', pose: CONGA_ZONES.find((z) => z.id === 'cg.tumba')!.start },
-        B: { typeId: 'hdDynCard', pattern: 'cardioid', pose: CONGA_ZONES.find((z) => z.id === 'cg.conga')!.start },
-        source: 'r.conga',
+        id: 'overset',
+        label: 'A matched pair over the set',
+        blurb: 'Each mic hears all three drums, at different times. A tumba stroke reaches mic A, between the tumba and the conga, first; mic B, between the conga and the quinto, hears it later.',
+        A: { typeId: 'hdSdc', pattern: 'cardioid', pose: CONGA_ZONES.find((z) => z.id === 'cg.pair')!.start },
+        B: { typeId: 'hdSdc', pattern: 'cardioid', pose: PAIR_B_POSE },
+        source: 'r.tumba',
       },
       {
         id: 'topbottom',
@@ -814,7 +827,7 @@ export const M04A_LESSON: HandLesson = {
         variant: 'raised',
         A: { typeId: 'hdDynCard', pattern: 'cardioid', pose: CONGA_ZONES.find((z) => z.id === 'cg.tumba')!.start },
         B: { typeId: 'hdDynCard', pattern: 'cardioid', pose: CONGA_ZONES.find((z) => z.id === 'cg.bottom')!.start },
-        source: 'r.heads',
+        source: 'r.tumba',
       },
     ],
     pairLearn: [
@@ -827,4 +840,4 @@ export const M04A_LESSON: HandLesson = {
 };
 
 /** The drums, for the art (kept beside the lesson). */
-export const CONGA_DRUMS = { CONGA, TUMBA } as const;
+export const CONGA_DRUMS = { QUINTO, CONGA, TUMBA } as const;

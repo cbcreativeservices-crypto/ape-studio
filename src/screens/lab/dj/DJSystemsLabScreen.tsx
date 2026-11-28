@@ -72,7 +72,7 @@ export const DJ_LAB_TITLE = 'DJ Systems Lab';
 export const DJ_ACCURACY_DETAIL =
   'This lab MODELS a DJ booth on your phone. Its music is synthesized in the app, its mixer is one generic design (real mixers differ — their manuals win), and its meters read this model in dBFS, never your ears or a room. The phone plays it through one uncalibrated output at a level you choose, behind a protective limiter — that is not a safe-listening measurement, and a phone microphone cannot measure what reaches your ears. Learn the method here; check levels with a calibrated meter and your own equipment.';
 
-const HANDS_ON = 'Counts once its practice goals, check and troubleshooting exercise are done; NEXT moves on without counting it.';
+const HANDS_ON = 'A screen counts once its practice goals, its check and its troubleshooting exercise are done; NEXT moves on without counting it.';
 
 /** A screen's what's-left row: the goals it still has to meet, by name
  *  (learning review 2026-10-18 X5) — from its last visit this session, or
@@ -108,6 +108,12 @@ export function DJSystemsLabScreen() {
       handsOnDetail={HANDS_ON}
       pageDetail={leftDetail}
       accuracyDetail={DJ_ACCURACY_DETAIL}
+      // D37 (lab fix round 2026-11-14, phase 2, F2): a modeled booth, not a
+      // measuring lab: the chip reads ABOUT and shows only this lab's own note.
+      accuracyVariant="about"
+      // Owner decision 3 (phase 3, 2026-11-14): one progress word per lab — DJ's
+      // own word, "screen", on the strip, CONTENTS and the end screen.
+      unitNoun="screen"
       optionalPage={optionalPage}
       labDoneKey={trainingKeyFor('DJSystemsLab')}
       pageGuide={pageGuide}

@@ -69,7 +69,7 @@ export const GAIN_HOME_GUIDE: ScreenGuide = {
 export const GAIN_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'A review of the lab’s core ideas: a healthy level at every stage, noise and clipping that travel downstream, and fixing a problem where it starts.',
-    start: 'Tap any module still listed to open it. Tap REVIEW ▾ to see the ones you’ve finished, or PRACTICE AGAIN FROM THE START to begin again with What Gain Staging Is.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
     'WHAT’S LEFT lists the Gain Staging modules you haven’t finished yet, each with a › to jump straight in. Once nothing is left, the title reads LAB COMPLETE.',
@@ -81,7 +81,7 @@ export const GAIN_END_GUIDE: ScreenGuide = {
     'DONE · BACK TO LABS leaves this screen.',
   ],
   changes: [
-    'Every module except the Troubleshooting Challenge counts as done as soon as you open it.',
+    'A module counts once its own task is done: its CHECK YOURSELF answered right, or its goal reached (healthy input gain, a balanced chain, a change in Free Practice). Opening it is not enough.',
     'The Troubleshooting Challenge counts only when you pass it: you find the fault and bring every stage back to healthy.',
   ],
   teaches: [
@@ -100,12 +100,12 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
   intro: {
     intro: {
       learning: 'A signal passes through stages, and each stage has a healthy range: loud enough above the hiss, with headroom left below the 0 dB overload ceiling.',
-      start: 'Raise SOURCE from −30 dB and watch PREAMP and OUTPUT climb with it. Stop when STATUS reads HOT, then keep going until it reads CLIP.',
+      start: 'Push SOURCE up until a meter turns red. Then pull it back down until PREAMP and OUTPUT are green again.',
     },
     seeing: [
-      'Your signal runs left to right: SOURCE, PREAMP, OUTPUT. Meter colors: blue TOO LOW, green HEALTHY, red from −6 dB (HOT) to the 0 dB line (OVERLOAD).',
-      'Gray at the foot of PREAMP and OUTPUT is hiss, the noise floor. The word under a meter names its zone; QUIET SOURCE is normal for a mic.',
-      'PREAMP (+18 dB) and OUTPUT (+0 dB) are FIXED. Each readout is dB below the 0 dB ceiling; STATUS reads OK, HOT or CLIP.',
+      'Signal runs left to right: SOURCE, PREAMP, OUTPUT. Meters: blue TOO LOW, green HEALTHY, amber from −6 dB (HOT), red at the 0 dB line (CLIP).',
+      'Gray at the foot of PREAMP and OUTPUT is hiss, the noise floor. The word under a meter names its zone; QUIET SOURCE is normal for mics.',
+      'PREAMP (+18 dB) and OUTPUT (+0 dB) are FIXED. Readouts are dB under the 0 dB ceiling; STATUS reads TOO LOW, HEALTHY, HOT or CLIP.',
     ],
     control: [
       'SOURCE fader (−40 to −6 dB, starts at −30 dB): how loud the signal reaching the preamp is, from a quiet mic at the bottom to a loud source at the top.',
@@ -135,15 +135,15 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
   input: {
     intro: {
       learning: 'Input gain is the first level decision in a chain: the preamp lifts a quiet source above the hiss, and headroom shrinks as the gain rises.',
-      start: 'Slide INPUT GAIN up from +0 dB and watch PREAMP leave the blue zone. Keep going until HEADROOM reads 6 dB, then 0 dB, and read STATUS each time.',
+      start: 'Slide PREAMP up from +0 dB and watch PREAMP LEVEL leave the blue zone. Keep going until HEADROOM reads 6 dB, then 0 dB, and read STATUS each time.',
     },
     seeing: [
       'The same chain, but now the SOURCE is FIXED, a quiet mic at −30 dB, and so is OUTPUT (+0 dB). The preamp is yours.',
-      'Your gain setting shows under PREAMP. Blue is TOO LOW, green HEALTHY, red HOT (from −6 dB). Raise INPUT GAIN and gray hiss appears at the meter foot.',
-      'Readouts: PREAMP (its level), HEADROOM (dB left below the 0 dB ceiling), OUTPUT, and STATUS, the preamp’s state: LOW, OK, HOT or CLIP.',
+      'Your gain setting shows under PREAMP. Blue is TOO LOW, green HEALTHY, amber HOT (from −6 dB). Raise PREAMP and gray hiss appears at the meter foot.',
+      'Readouts: PREAMP LEVEL, HEADROOM (dB left below the 0 dB ceiling), OUTPUT, and STATUS, the preamp’s state: TOO LOW, HEALTHY, HOT or CLIP.',
     ],
     control: [
-      'INPUT GAIN fader (+0 to +40 dB, starts at +0 dB): how much the preamp lifts the quiet source.',
+      'PREAMP fader (+0 to +40 dB, starts at +0 dB): the knob, the gain the preamp adds to the quiet source. PREAMP LEVEL is what comes out.',
       'It’s the only control here. The box in the notes tells you how the preamp is doing: too low, healthy, hot or clipping.',
       'FULL SCREEN enlarges the chain; HIDE DISPLAY gives the notes the whole screen.',
     ],
@@ -158,8 +158,8 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
       'Headroom is the space between the level and the overload ceiling; a loud note needs some of it.',
     ],
     tryThis: [
-      'Slide INPUT GAIN to +6 dB: PREAMP reads −24 dB, the bottom edge of healthy, and STATUS turns OK.',
-      'Push it to +24 dB: PREAMP reads −6 dB, HEADROOM 6 dB, STATUS HOT. It’s usable, but there’s little room for a loud note.',
+      'Slide PREAMP to +6 dB: PREAMP LEVEL reads −24 dB, the bottom edge of healthy, and STATUS turns HEALTHY.',
+      'Push it to +24 dB: PREAMP LEVEL reads −6 dB, HEADROOM 6 dB, STATUS HOT. It’s usable, but there’s little room for a loud note.',
       'Push it to +30 dB: HEADROOM reads 0 dB and STATUS CLIP. The preamp has run out of room.',
     ],
   },
@@ -168,21 +168,21 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
   follow: {
     intro: {
       learning: 'Each stage’s output is the next stage’s input, so the preamp setting decides how much room every later stage has, and clipping anywhere rides on to the output.',
-      start: 'Raise PREAMP from +6 dB to +18 dB and compare the PREAMP and PROC readouts. Then try +24 dB and see which stage reaches CLIP first.',
+      start: 'Raise PREAMP from +6 dB to +18 dB and compare the PREAMP and PROCESSOR readouts. Then try +24 dB and see which stage reaches CLIP first.',
     },
     seeing: [
-      'Four stages: SOURCE (FIXED, a quiet mic at −30 dB), PREAMP (yours), PROC (a FIXED processor adding +6 dB) and OUTPUT (FIXED, +0 dB).',
-      'Watch the arrows between stages: they turn red once the signal is distorted. Meters run blue TOO LOW, green HEALTHY, red from −6 dB; gray hiss shows once there’s enough gain.',
-      'Readouts: PREAMP, PROC and OUTPUT levels, and STATUS, which reports the output’s state.',
+      'Four stages: SOURCE (FIXED, quiet mic, −30 dB), PREAMP (yours), PROCESSOR (column PROC, FIXED, +6 dB) and OUTPUT (FIXED, +0 dB).',
+      'Watch the arrows between stages: they turn red once the signal is distorted. Meters run blue TOO LOW, green HEALTHY, amber from −6 dB (HOT); gray hiss shows once there’s enough gain.',
+      'Readouts: PREAMP, PROCESSOR and OUTPUT levels, and STATUS, the output’s state.',
     ],
     control: [
       'PREAMP fader (+0 to +40 dB, starts at +6 dB): the only control on this screen, so every change downstream comes from it.',
       'FULL SCREEN enlarges the chain; HIDE DISPLAY gives the notes and the check question the whole screen.',
     ],
     changes: [
-      'Each stage starts from the level the one before hands it: PROC adds its 6 dB to whatever PREAMP sends.',
-      'A weak preamp leaves later stages near the hiss: at +0 dB, PROC and OUTPUT only just reach HEALTHY’s bottom edge.',
-      'A hot preamp leaves no room for PROC’s +6 dB: PROC reaches 0 dB and clips, even though the preamp hasn’t.',
+      'Each stage starts from what the one before hands it: PROCESSOR adds 6 dB to whatever PREAMP sends.',
+      'A weak preamp leaves later stages near the hiss: at +0 dB, PROCESSOR and OUTPUT just reach HEALTHY’s bottom edge.',
+      'A hot preamp leaves no room for the PROCESSOR’s +6 dB: it reaches 0 dB and clips, even though the preamp hasn’t.',
       'Once a stage clips, the distortion is part of the signal and rides on to the OUTPUT.',
     ],
     teaches: [
@@ -191,9 +191,9 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
       'Headroom at one stage must leave room for the gain of the stages after it.',
     ],
     tryThis: [
-      'Raise PREAMP to +18 dB: PREAMP reads −12 dB (healthy), but PROC already reads −6 dB, HOT.',
-      'Raise it to +24 dB: PREAMP is only HOT (−6 dB), yet PROC clips and STATUS reads CLIP.',
-      'Drop PREAMP to +0 dB: PREAMP sinks to −30 dB, TOO LOW; PROC and OUTPUT read −24 dB, right on HEALTHY’s bottom edge.',
+      'Raise PREAMP to +18 dB: PREAMP reads −12 dB (healthy), but PROCESSOR already reads −6 dB, HOT.',
+      'Raise it to +24 dB: PREAMP is only HOT (−6 dB), yet PROCESSOR clips and STATUS reads CLIP.',
+      'Drop PREAMP to +0 dB: PREAMP sinks to −30 dB, TOO LOW; PROCESSOR and OUTPUT read −24 dB, right on HEALTHY’s bottom edge.',
     ],
   },
 
@@ -205,8 +205,8 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
     },
     seeing: [
       'Three columns: SOURCE (FIXED, −30 dB), PREAMP and OUTPUT, with each gain setting under its column.',
-      'Watch the gray hiss, the noise floor, rise from a meter’s foot once there’s enough gain to show it. Every boost lifts it; a cut lowers it.',
-      'Readouts: PREAMP and OUTPUT levels, NOISE (the noise floor at the output; amber when it intrudes) and STATUS: OK, LOW, HOT, CLIP or DIST (clipped earlier, baked in).',
+      'Watch the gray hiss, the noise floor, rise from a meter’s foot once there’s enough gain. Every boost lifts it; a cut lowers it.',
+      'Readouts: PREAMP and OUTPUT levels, NOISE (the output’s noise floor; amber when it intrudes) and STATUS, which adds DIST (clipped earlier) and NOISY (hiss close under the signal).',
     ],
     control: [
       'PREAMP fader (+0 to +40 dB, starts at +18 dB): gain early in the chain.',
@@ -225,8 +225,8 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
       'A healthy final meter doesn’t prove a healthy chain.',
     ],
     tryThis: [
-      'Pick BALANCED: PREAMP and OUTPUT both read −12 dB, NOISE reads −34 dB and STATUS OK.',
-      'Pick TOO LOW EARLY, then set OUTPUT to +16 dB: OUTPUT reads −12 dB as in BALANCED, but NOISE reads −30 dB (amber), not −34 dB. Same level, more hiss.',
+      'Pick BALANCED: PREAMP and OUTPUT both read −12 dB, NOISE reads −34 dB and STATUS HEALTHY.',
+      'Pick TOO LOW EARLY, then set OUTPUT to +16 dB: OUTPUT reads −12 dB as in BALANCED, but NOISE reads −30 dB (amber), not −34 dB, and STATUS NOISY. Same level, more hiss.',
       'Pick TOO HIGH EARLY: OUTPUT drops to −16 dB, yet STATUS reads DIST. The preamp clipped, and no later fader undoes it.',
     ],
   },
@@ -261,7 +261,7 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
     tryThis: [
       'Press OVERDRIVE: PREAMP reads 0 dB, DIST reads YES and STATUS reads CLIP.',
       'Now pull FADER to −20 dB: OUTPUT falls to −20 dB, but DIST still reads YES and STATUS reads DIST.',
-      'Lower PREAMP to +18 dB and bring FADER back to +0 dB (or press RESET): PREAMP and OUTPUT read −12 dB, DIST reads — and STATUS OK. Fixed where it happened.',
+      'Lower PREAMP to +18 dB and bring FADER back to +0 dB (or press RESET): PREAMP and OUTPUT read −12 dB, DIST reads — and STATUS HEALTHY. Fixed where it happened.',
     ],
   },
 
@@ -269,7 +269,7 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
   multistage: {
     intro: {
       learning: 'A whole channel strip is one system: each stage’s gain shifts every stage after it, and a MASTER that looks fine can hide a weak or clipping stage upstream.',
-      start: 'With X-RAY OFF, find the SIG lights that stay dark. Tap X-RAY to see every meter, then open PROCESS and set EQ GAIN to +0 dB.',
+      start: 'X-RAY starts on: EQ and COMP read TOO LOW. Tap X-RAY off: only SIG and CLIP lights stay, as on real gear, and those SIG lights are dark. Then open PROCESS and set EQ GAIN to +0 dB.',
     },
     seeing: [
       'A channel strip as seven columns: SOURCE (FIXED, a quiet mic at −30 dB), PREAMP, EQ, COMP, FADER, BUS and MASTER, each with its gain setting below.',
@@ -280,7 +280,7 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
       'PREAMP fader (+0 to +40 dB, starts at +8 dB).',
       'PROCESS key: EQ GAIN and COMPRESSOR OUTPUT (each −12 to +12 dB). EQ GAIN here moves the whole signal; a real EQ band changes only its own frequencies.',
       'LEVELS key: CHANNEL FADER (−30 to +10 dB), BUS (−12 to +12 dB) and MASTER OUTPUT (−30 to +6 dB), plus TEST YOURSELF — RANDOM, which scrambles every stage, and RESET.',
-      'X-RAY key: see inside every stage at once.',
+      'X-RAY key (on at the start): see inside every stage at once. Off, you see only the lights.',
     ],
     changes: [
       'Each stage adds its gain to what it receives, so one weak or hot stage shifts every stage after it.',
@@ -294,7 +294,7 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
       'A problem is fixed at the stage where it starts, not at the end.',
     ],
     tryThis: [
-      'With X-RAY OFF, look at the SIG lights: the SOURCE, EQ and COMP lights stay dark. Tap X-RAY: EQ and COMP read TOO LOW.',
+      'At the start X-RAY is on: EQ and COMP read TOO LOW. Tap X-RAY off: the SOURCE, EQ and COMP SIG lights stay dark.',
       'Open PROCESS and set EQ GAIN to +0 dB: every stage after the SOURCE turns healthy, MASTER reads −10 dB and BALANCE reads ✓ OK.',
       'Open LEVELS, tap TEST YOURSELF — RANDOM, then rebalance from the PREAMP forward until BALANCE reads ✓ OK.',
     ],
@@ -304,12 +304,12 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
   freeplay: {
     intro: {
       learning: 'There is no single right input gain: the right setting depends on how loud the source is, and you recover from a mistake at the stage where it started.',
-      start: 'Raise SOURCE to −10 dB and watch the PREAMP clip. Then pull PREAMP down until every stage is healthy again and STATUS reads OK.',
+      start: 'Raise SOURCE to −10 dB and watch the PREAMP clip. Then pull PREAMP down until every stage is healthy again and STATUS reads HEALTHY.',
     },
     seeing: [
       'The same seven-column channel strip, SOURCE, PREAMP, EQ, COMP, FADER, BUS, MASTER, with X-RAY on, so every meter shows.',
       'This time the SOURCE is yours too; its level shows under its column.',
-      'Readouts: SOURCE, MASTER, X-RAY and STATUS, the MASTER’s state: OK, LOW, HOT, CLIP or DIST.',
+      'Readouts: SOURCE, MASTER, X-RAY and STATUS, the MASTER’s state: HEALTHY, TOO LOW, HOT, CLIP, DIST or NOISY.',
     ],
     control: [
       'SOURCE fader (−40 to −2 dB, starts at −30 dB): a whisper at the bottom, a scream at the top.',
@@ -330,7 +330,7 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
     ],
     tryThis: [
       'Raise SOURCE to −10 dB: with PREAMP at +20 dB the preamp clips, and every stage after it shows CLIP.',
-      'Now pull PREAMP to +0 dB: every stage reads −10 dB and STATUS reads OK. A loud source needs little gain.',
+      'Now pull PREAMP to +0 dB: every stage reads −10 dB and STATUS reads HEALTHY. A loud source needs little gain.',
       'Turn X-RAY OFF, tap TEST YOURSELF — RANDOM and rebalance by the SIG and CLIP lights alone. Turn X-RAY back ON: any HOT stage the lights could not show is now visible.',
     ],
   },
@@ -347,7 +347,7 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
       'Readouts: MASTER, STATUS (the MASTER’s state), INSPECT (the stage you opened) and FOUND (✓ once you open the faulty stage).',
     ],
     control: [
-      'Tap a hidden column (marked INSPECT) to open its meter, or use the INSPECT key: Source, Preamp, EQ, Compressor, Channel Fader or Bus. One stage opens at a time.',
+      'Tap a hidden column (marked INSPECT) to open its meter, or use the INSPECT key: Source, Preamp, EQ, Compressor, Channel Fader or Bus. One stage opens at a time; one you checked keeps its word (HEALTHY, CLIP).',
       'Once FOUND reads ✓, the open stage’s fader appears in the dock (PREAMP, EQ, COMP, FADER, BUS or MASTER), and Master Output joins the INSPECT list.',
       'Fix the chain and a TRY AGAIN key appears with a new fault.',
     ],
@@ -362,8 +362,8 @@ export const GAIN_SCREEN_GUIDES: Record<GainModuleId, ScreenGuide> = {
       'The fault is fixed where it starts, not at the output.',
     ],
     tryThis: [
-      'Search from either end: forward from the Preamp, or back from the Bus as the notes suggest. The fault is the CLIP stage nearest the Source; the rest only inherit it.',
-      'Found it? Lower that stage until its meter leaves CLIP and sits in HEALTHY: STATUS turns OK and the green frame appears.',
+      'Search from either end: forward from the Preamp, or back from the Bus. The fault is the CLIP stage nearest the Source; the rest only inherit it.',
+      'Found it? Lower that stage until its meter leaves CLIP and sits in HEALTHY: STATUS turns HEALTHY and the green frame appears.',
       'Press TRY AGAIN for a new fault, picked at random from Preamp, EQ, Compressor, Channel Fader or Bus. It may be the same stage again.',
     ],
   },

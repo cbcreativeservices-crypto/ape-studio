@@ -9,7 +9,7 @@
  */
 import { useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
-import { DEFAULT_PLATE, effectiveQ, readResonance, sampleField, type PlateSpec } from '../../../../features/cymatics/plateModes';
+import { DEFAULT_PLATE, effectiveQ, plateRefQ, readResonance, sampleField, type PlateSpec } from '../../../../features/cymatics/plateModes';
 import { formatHz, formatHzPrecise, nearestNote } from '../../../../features/cymatics/music';
 import { makeFreqFader } from '../../../../features/cymatics/freqFader';
 import { bezelModeLabel } from '../../../../features/cymatics/plateBezel';
@@ -51,7 +51,8 @@ export function NodesModule({ width, focused, help }: CymaticsModuleProps) {
   const [view, setView] = useState<PlateViewMode>('nodes');
   const [silent, setSilent] = useState(false);
   const tone = useDriveTone(hz, null, START_LEVEL_01);
-  const res = useMemo(() => readResonance(hz, allModes, Q), [hz, allModes, Q]);
+  // RESPONSE against the studio's fixed reference (plateRefQ; checker Y5, fix-first 15).
+  const res = useMemo(() => readResonance(hz, allModes, Q, plateRefQ(spec.material)), [hz, allModes, Q, spec.material]);
   const grid = useMemo(() => sampleField(spec, allModes, hz, Q, N), [spec, allModes, hz, Q]);
   const viz = skiaAvailable ? requireVizPlate() : null;
   const note = nearestNote(hz);
@@ -122,16 +123,19 @@ export function NodesModule({ width, focused, help }: CymaticsModuleProps) {
       rack={{
         size: 'M',
         badge: `SIMULATION · APPROXIMATED — ${shape === 'circle' ? 'Bessel disc modes, edge-driven' : 'Ritz square-plate modes, center-driven'}`,
+        // Plain words, no "Ritz" or "Bessel" (owner 2026-11-15, D62 CY-03).
+        modelNote: shape === 'circle' ? 'An approximate simulation of a round plate, driven from the edge.' : 'An approximate simulation of a square plate, driven from the center.',
         onHelp: help,
         onGuide: () => help('display'),
         initialParam: 'freq',
         hideDragTag: true,
         bezel: [
-          { k: 'MODE', v: res.state === 'at' && res.dominant ? bezelModeLabel(res.dominant.label) : '—', helpKey: 'modes', flex: 1.5 },
-          { k: 'DRIVE', v: formatHz(hz), helpKey: 'frequency' },
-          { k: 'LINES', v: res.state === 'at' && res.dominant ? `${res.dominant.nodalLines}` : '—', helpKey: 'modes', flex: 0.8 },
+          { k: 'MODE', v: res.state === 'at' && res.dominant ? bezelModeLabel(res.dominant.label) : '—', helpKey: 'modes', flex: 1.5, caption: 'which pattern' },
+          { k: 'DRIVE', v: formatHz(hz), helpKey: 'frequency', caption: 'tone fed in' },
+          { k: 'LINES', v: res.state === 'at' && res.dominant ? `${res.dominant.nodalLines}` : '—', helpKey: 'modes', flex: 0.8, caption: 'still lines' },
           {
             k: 'RES',
+            caption: 'on a mode?',
             v: res.state.toUpperCase(),
             tint: RES_TINT[res.state],
             helpKey: 'resonance',
@@ -148,6 +152,7 @@ export function NodesModule({ width, focused, help }: CymaticsModuleProps) {
               grid={grid}
               N={N}
               strength={res.strength}
+              near={res.near}
               amplitude={0.8}
               view={view}
               // Silent drive kept simulating on a hidden page (bug hunt 2026-09-29).
@@ -162,7 +167,7 @@ export function NodesModule({ width, focused, help }: CymaticsModuleProps) {
             />
           ) : (
             <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center' }}>
-              <Text style={P.caption}>Update the app to see the live plate.</Text>
+              <Text style={P.caption}>The live plate can’t be drawn on this device.</Text>
             </View>
           ),
         params,
@@ -178,7 +183,7 @@ export function NodesModule({ width, focused, help }: CymaticsModuleProps) {
       <View style={P.bullet}><Text style={P.dot}>•</Text><Text style={[P.body, { flex: 1 }]}>Between two modes nothing organizes — the RES cell reads BETWEEN and the heat map goes dark. A pattern belongs to a resonance, not to a frequency.</Text></View>
       <View style={P.bullet}><Text style={P.dot}>•</Text><Text style={[P.body, { flex: 1 }]}>The same ideas are used to study violin and guitar plates, bells, gongs, cymbals, and engineering structures.</Text></View>
       <Text style={P.caption}>
-        {tone.engineReady ? 'PLAY drives the plate with the tone you hear; SILENT drives it without sound.' : 'Update the app to hear the tone — SILENT still drives the plate.'} Nothing moves without a drive.
+        {tone.engineReady ? 'PLAY drives the plate with the tone you hear; SILENT drives it without sound.' : 'The tone can’t play on this device; SILENT still drives the plate.'} Nothing moves without a drive.
       </Text>
       {/* A start that failed is SAID (hunt 7): PLAY just stayed off, no word. */}
       {tone.error ? <Text style={[P.caption, { color: '#ff6b5e' }]}>{tone.error}</Text> : null}

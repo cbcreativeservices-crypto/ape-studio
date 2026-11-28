@@ -6,7 +6,8 @@
  *   #4  the remembered member tier stops at the access end date + 3 days
  *       offline (lifetime / no-end grants unchanged);
  *   #5  a lapse seen while the app is open is re-checked at +5 and +30 min;
- *   #27 the upgrade surfaces tell a guest a free ACCOUNT gets 5 calculations;
+ *   #27 the upgrade surfaces tell a guest a free ACCOUNT gets 5 calculations
+ *       (reversed 2026-11-23: a known guest gets the 5 too — "Free use");
  *   #32 the lab-preview sheet stops selling once the person is a member.
  *
  * HARNESS: AsyncStorage, the supabase client and the expo-iap loader are
@@ -269,8 +270,12 @@ describe('#2 unfinished Android purchases are re-checked once per app open', () 
 describe('#27 guests are told a free ACCOUNT includes the calculations', () => {
   it('the sentence, and where it sits', () => {
     const copy = read('src/lib/copy.ts');
-    assert.match(copy, /calcFreeAllowance: 'A free account also includes 5 calculations a week\.'/);
-    assert.doesNotMatch(copy, /Free use also includes 5 calculations/);
+    // Reversed by the owner 2026-11-23: "in the calculator the guest user does
+    // get an allowance per week of use". A known guest now gets the same 5 a
+    // week on the device, so "A free account also includes…" undersold a
+    // guest's allowance and "Free use also includes…" is true again for both.
+    assert.match(copy, /calcFreeAllowance: 'Free use also includes 5 calculations a week\.'/);
+    assert.doesNotMatch(copy, /A free account also includes 5 calculations/);
     for (const f of ['src/features/commercial/UpgradeSheet.tsx', 'src/screens/commercial/PaywallScreen.tsx']) {
       assert.match(read(f), /COPY\.glossaryFreeAllowance \+ ' ' \+ COPY\.calcFreeAllowance/, f);
     }

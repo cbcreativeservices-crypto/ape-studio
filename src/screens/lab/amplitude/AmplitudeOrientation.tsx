@@ -65,6 +65,7 @@ import { AMPLITUDE_SCREEN_GUIDES } from './amplitudeScreenGuides';
 import { readingText } from '../../../theme/readingColumn';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { ReviewLabEnd } from '../kit/ReviewLabEnd';
+import { amplitudeEndStep } from './amplitudeEndStep';
 
 /** Full-scale red — top of the canonical ramp (kept SSoT, never hardcoded). */
 const LOUD_RED = LOUDNESS_STOPS[0].color;
@@ -94,8 +95,13 @@ const CONVENTION_BODY =
   'Pro Audio Training Academy uses it consistently as a learning aid so you can recognize ' +
   'level and amplitude quickly across different tools and labs.';
 
+// EQL-02 + SC-02, built once (owner 2026-11-15: "build waves 1 thru 3", D62):
+// the same one line now says this is a one-time, one-minute stop and that the
+// lab or tool the learner chose opens right after (it replaced it unannounced).
+// Checker fix: "what you chose", since this page also gates the tools (SPL
+// Meter, RTA, Signal Generator…: RootNavigator's withAmplitudeOrientation).
 const GATE_INTRO =
-  'Before using our audio visualizers, learn the color language you will see throughout the Academy.';
+  'A one-time stop, about a minute: the color language our audio visualizers use. What you chose opens right after.';
 
 const HONESTY_LINE = 'Illustrative training graphics — not live measurements.';
 
@@ -106,15 +112,23 @@ const HONESTY_LINE = 'Illustrative training graphics — not live measurements.'
 const VIZ_H = 92;
 
 /** Amplitude envelope over normalized time 0..1: attack → sustain (gentle
- *  ripple) → short full-scale burst at ~0.7 → release. */
+ *  ripple) → short burst at ~0.7 → release.
+ *  THE BURST MUST BE SEEN (lab fix round 2026-11-14, G1: "find the short
+ *  burst in WAVEFORM" failed at 390 wide — the burst rose only from 0.47 to
+ *  0.66 of full scale over ~3 bars, green into yellow-green). The sustain now
+ *  sits lower and the burst is wider, peaking at the LEVEL METER's own PEAK
+ *  (−3 dBFS = 0.708 of full scale, BURST_ENV × TRACE_PEAK): twice the
+ *  sustain's height, and yellow-orange against green. */
+const SUSTAIN_ENV = 0.5;
+const BURST_ENV = 1.075;
 function env(t: number): number {
-  if (t < 0.12) return (t / 0.12) * 0.72;
-  if (t >= 0.66 && t <= 0.74) {
-    const c = 1 - Math.abs((t - 0.7) / 0.04); // triangle peak
-    return 0.72 + 0.28 * c;
+  if (t < 0.12) return (t / 0.12) * SUSTAIN_ENV;
+  if (t >= 0.64 && t <= 0.76) {
+    const c = 1 - Math.abs((t - 0.7) / 0.06); // triangle peak
+    return SUSTAIN_ENV + (BURST_ENV - SUSTAIN_ENV) * c;
   }
-  if (t > 0.82) return Math.max(0.14, 0.72 - (t - 0.82) * 3.2);
-  return 0.72 + 0.04 * Math.sin(t * 18);
+  if (t > 0.82) return Math.max(0.1, SUSTAIN_ENV - (t - 0.82) * 2.2);
+  return SUSTAIN_ENV + 0.028 * Math.sin(t * 18);
 }
 
 /** Instantaneous two-component trace (fundamental + weaker 3rd harmonic). */
@@ -179,10 +193,10 @@ function spectroMag(t: number, fy: number): number {
   const e = env(t);
   let m = 0.03; // faint floor
   // The SAME log-frequency axis and the SAME strengths as the RTA card: at
-  // the sustain level (e = 0.72) each band paints the colour of its RTA bar
+  // the sustain level (e = SUSTAIN_ENV) each band paints the colour of its RTA bar
   // (art grading 2026-10-16: the harmonic sat at mid-height and painted as
   // hot as the fundamental). No 5th harmonic — trace() has none.
-  const k = e / 0.72;
+  const k = e / SUSTAIN_ENV;
   m += 0.95 * k * gaussian(fy, rtaFrac(3), 0.03); // fundamental (band 3)
   m += 0.44 * k * gaussian(fy, rtaFrac(3) + 1.585 / 10, 0.03); // 3rd harmonic, +1.58 oct
   m += 0.78 * gaussian(t, 0.7, 0.022) * (0.6 + 0.4 * fy); // broadband transient
@@ -233,19 +247,28 @@ function useMeasuredWidth(): [number, (w: number) => void] {
 function VizCard({
   title,
   caption,
+  lookFor,
   a11y,
   children,
 }: {
   title: string;
   caption: string;
+  /** AMP-01 (owner 2026-11-15, "build waves 1 thru 3", D62): what to notice on
+   *  this card, in the caption's own text (no new element on the card). */
+  lookFor: string;
   a11y: string;
   children: React.ReactNode;
 }) {
   return (
-    <View style={styles.card} accessible accessibilityLabel={a11y}>
+    <View style={styles.card} accessible accessibilityLabel={`${a11y}. Look for: ${lookFor}`}>
       <Text style={styles.cardTitle}>{title}</Text>
       <View style={styles.cardViz}>{children}</View>
-      <Text style={styles.cardCaption}>{caption}</Text>
+      <Text style={styles.cardCaption}>
+        {caption}
+        {'\n'}
+        <Text style={styles.cardLookFor}>Look for: </Text>
+        {lookFor}
+      </Text>
     </View>
   );
 }
@@ -809,7 +832,7 @@ function RampCheck({ onPassed, practice = false }: { onPassed?: () => void; prac
     <View style={styles.checkCard}>
       <View style={styles.checkHead}>
         <Text style={styles.checkTitle}>{practice ? 'TEST YOURSELF' : CHECK_TITLE}</Text>
-        <Text style={styles.checkProgress}>{q + 1}/3</Text>
+        <Text style={styles.checkProgress}>QUESTION {q + 1}</Text>
       </View>
       <Text style={styles.checkQ}>{CHECK_QS[q]}</Text>
 
@@ -855,8 +878,11 @@ function RampCheck({ onPassed, practice = false }: { onPassed?: () => void; prac
 export function AmplitudeColorBody({
   showHeader = true,
   alsoReviewLab = false,
+  onCheckPassed,
 }: {
   showHeader?: boolean;
+  /** Fires once the ramp check is passed (the lab's What's left step). */
+  onCheckPassed?: () => void;
   /** Standalone lab (Path A): completing here ALSO records the Audio
    *  Fundamentals R6c credit — one button instead of the two stacked
    *  completion controls that let students press the green one and never earn
@@ -907,12 +933,22 @@ export function AmplitudeColorBody({
           Every card draws the SAME example signal — a strong low tone, a weaker high harmonic (a fainter, higher tone),
           and one short burst — in the same level colors.
         </Text>
+        {/* G1 (lab fix round 2026-11-14): 78 dB SPL drawn green-yellow next to
+            PEAK −3 drawn orange looked like it broke "warmer = more". The
+            mapping is the house standard (levelColor on each display's own
+            window: SPL 40–100 dB, the meter −48–0 dBFS); the words now say so. */}
+        {/* AMP-01 (a line in, a line out): the 78-vs-PEAK example moved to the
+            SPL METER card's "Look for" line; this sentence keeps the rule. */}
+        <Text style={styles.sixViewsSub}>
+          Each display colors its OWN scale: near the top of that scale is warm, whatever the number.
+        </Text>
       </View>
 
       <View style={styles.grid}>
         <VizCard
           title="WAVEFORM"
           caption="Amplitude over time"
+          lookFor="taller = louder; the tall spot is the burst"
           a11y="Waveform example: signal amplitude drawn over time; taller bars are hotter colors"
         >
           <WaveformCard />
@@ -920,6 +956,7 @@ export function AmplitudeColorBody({
         <VizCard
           title="OSCILLOSCOPE"
           caption="Instantaneous amplitude"
+          lookFor="warmer at every crest, top and bottom"
           a11y="Oscilloscope example: the waveform trace; far from the zero line the trace turns hotter"
         >
           <OscilloscopeCard />
@@ -927,6 +964,7 @@ export function AmplitudeColorBody({
         <VizCard
           title="LEVEL METER"
           caption="Peak vs RMS (a kind of average) — same signal"
+          lookFor="PEAK sits higher and warmer than RMS"
           a11y="Level meter example: two meters for one signal — PEAK reads higher and hotter, RMS (a kind of average) reads lower and cooler"
         >
           <LevelMeterCard />
@@ -934,6 +972,7 @@ export function AmplitudeColorBody({
         <VizCard
           title="SPL METER"
           caption="Sound-pressure level (illustrative)"
+          lookFor="78 dB, yet green-yellow: its own scale"
           a11y="SPL meter example: a horizontal sound pressure level bar reading 78 dB SPL"
         >
           <SplCard />
@@ -941,6 +980,7 @@ export function AmplitudeColorBody({
         <VizCard
           title="SPECTRUM (RTA)"
           caption="Spectral magnitude across frequency"
+          lookFor="the tallest, warmest bar is the low tone"
           a11y="Spectrum analyzer example: magnitude across frequency bands; the strong band is red, the weak band green"
         >
           <RtaCard />
@@ -948,6 +988,7 @@ export function AmplitudeColorBody({
         <VizCard
           title="SPECTROGRAM"
           caption="Magnitude across frequency × time"
+          lookFor="the bright upright streak is the burst"
           a11y="Spectrogram example: frequency over time; the strong tone is a hot stripe, quiet regions are dark blue"
         >
           <SpectrogramCard />
@@ -1000,7 +1041,12 @@ export function AmplitudeColorBody({
         </>
       ) : (
         <>
-          <RampCheck onPassed={() => setCheckPassed(true)} />
+          <RampCheck
+            onPassed={() => {
+              setCheckPassed(true);
+              onCheckPassed?.();
+            }}
+          />
           <GlassButton
             label={alsoReviewLab ? 'UNDERSTOOD — MARK REVIEWED' : 'UNDERSTOOD — CONTINUE'}
             tint="green"
@@ -1033,6 +1079,9 @@ export function AmplitudeColorBody({
 export function AmplitudeLabScreen() {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
+  // What's left names the step still open (G1 page 2, lab fix round 2026-11-14).
+  const [checkPassed, setCheckPassed] = useState(false);
+  const orientationDone = useAmplitudeOrientationDone() === true;
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       {/* The screen guide (owner 2026-10-31): no Rack Unit on this page, so
@@ -1073,15 +1122,15 @@ export function AmplitudeLabScreen() {
         {/* Before a guest begins (owner 2026-10-04): this lab's review is
             credit, and a guest's is kept only if they sign in this session. */}
         <GuestStartReminder activity="lab:af_amplitude" />
-        <AmplitudeColorBody alsoReviewLab />
+        <AmplitudeColorBody alsoReviewLab onCheckPassed={() => setCheckPassed(true)} />
         {/* Every lab ends with a what's-left screen (owner ruling 2026-10-14,
             #21). The credit here is the ramp check, so the end screen points
             back to it rather than offering a bare review tap. */}
         <ReviewLabEnd
           labKey="af_amplitude"
           labTitle="Understanding Level & Amplitude"
-          stepLabel="Pass CHECK YOURSELF — THREE QUICK READS, then press UNDERSTOOD — MARK REVIEWED"
-          stepDetail="Both are at the foot of the lab, after the six views."
+          stepLabel={amplitudeEndStep({ checkPassed, orientationDone })}
+          stepDetail={checkPassed || orientationDone ? 'The button is at the foot of the lab, after the six views.' : 'Both are at the foot of the lab, after the six views.'}
           offerReview={false}
         />
       </ScrollView>
@@ -1225,6 +1274,7 @@ const styles = StyleSheet.create({
   cardTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.textSecondary },
   cardViz: { height: VIZ_H + 14 },
   cardCaption: { fontFamily: fonts.barlowRegular, fontSize: 10.5, lineHeight: 13, color: colors.textSub },
+  cardLookFor: { fontFamily: fonts.barlowSemiBold, color: colors.textSecondary },
   vizFill: { flex: 1 },
   // The axis caption is the ONE thing that differs between the six cards —
   // the discriminative feature the recognition task depends on — so it must

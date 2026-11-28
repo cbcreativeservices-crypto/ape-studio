@@ -33,6 +33,19 @@ const sign = (x: number) => `${x >= 0 ? '+' : '−'}${Math.abs(x).toFixed(1)}`;
 
 export type CalWords = { title: string; badge: string; looking: string; prompt: string; safety: string };
 
+/**
+ * A SEAT pick (round 2, audit Appendix E row 6, owner 2026-11-25): refused
+ * during the run and after it, as before; picked after READ BEFORE, it clears
+ * that reading and goes back to the first step, because the reading belonged
+ * to the OLD seat. (BEFORE kept the old number, but its tint, the result line
+ * and the label were worked out for the new seat: a failed loose reading
+ * turned green on "Seated firmly" before anything was read again.)
+ */
+export function seatPick(phase: Phase, pre: number | null | undefined): { allowed: boolean; clear: boolean } {
+  if (phase === 'after' || phase === 'run') return { allowed: false, clear: false };
+  return { allowed: true, clear: pre !== undefined };
+}
+
 export function useCalibratorStep({ words, onDone }: { words: CalWords; onDone: () => void }): MikingStep {
   const [sid, setSid] = useState<string>(CAL_SCENARIOS[0].id);
   const sc = CAL_SCENARIOS.find((s) => s.id === sid) ?? CAL_SCENARIOS[0];
@@ -73,7 +86,24 @@ export function useCalibratorStep({ words, onDone }: { words: CalWords; onDone: 
   ];
   const params: DockParam[] = [
     { kind: 'options', id: 'scenario', label: 'EXAMPLE', valueLabel: sc.label.toUpperCase(), selectedId: sc.id, onSelect: reset, options: CAL_SCENARIOS.map((s) => ({ id: s.id, label: s.label, blurb: s.brief })) },
-    { kind: 'options', id: 'seat', label: 'SEAT', valueLabel: seats.find((s) => s.id === seat)?.label.toUpperCase() ?? '—', selectedId: seat, onSelect: (id) => phase !== 'after' && phase !== 'run' && setSeat(id as Seat), sticky: true, options: seats },
+    {
+      kind: 'options',
+      id: 'seat',
+      label: 'SEAT',
+      valueLabel: seats.find((s) => s.id === seat)?.label.toUpperCase() ?? '—',
+      selectedId: seat,
+      onSelect: (id) => {
+        const s = seatPick(phase, pre);
+        if (!s.allowed || id === seat) return;
+        setSeat(id as Seat);
+        if (s.clear) {
+          setPre(undefined);
+          setPhase('seat');
+        }
+      },
+      sticky: true,
+      options: seats,
+    },
     { kind: 'action', id: 'next', label: phase === 'run' ? 'RUN, READ AFTER' : phase === 'after' ? 'START AGAIN' : 'READ BEFORE', onPress: next, tint: colors.green },
   ];
   const bezel: BezelItem[] = [

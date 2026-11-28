@@ -542,7 +542,7 @@ const setupTasks: SetupTask[] = [
 
 /** One ungraded prediction before each rack activity (try before tell). */
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: when the stick pushes a tom’s batter head down, what does its bottom head do?', options: ['It moves down too, pushed by the air', 'It moves up, toward the batter head', 'It stays still — only the struck head moves'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch both heads.' },
+  sound: { prompt: 'Before you step through: when the stick pushes a tom’s batter head down, what does its bottom head do?', options: ['It moves down too, pushed by the air', 'It moves up, toward the batter head', 'It stays still — only the struck head moves'], after: 'Now go EVENT by EVENT through the stroke (or PLAY ONCE) and watch both heads.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you swing the mic’s aim from the rim toward the center of the head. What changes?', options: ['More attack', 'More low end and body', 'It depends on this drum'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The crash hangs above the tom mic. Where will this supercardioid reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },

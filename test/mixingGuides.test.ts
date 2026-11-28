@@ -332,7 +332,10 @@ describe('wiring (Training Labs → Mixing, members only)', () => {
     assert.match(hub, /readCountLine\(readCount, total\)/);
     const host = strip(read(`${DIR}/MixingGuideScreen.tsx`));
     assert.match(host, /useLabNav\(/);
-    assert.match(host, /<LabNavBar nav=\{nav\} \/>/);
+    // Owner's decision 3, 2026-11-14 ("do your recommendations for these": one
+    // name per unit of progress) and decision 2 (no "N of total"): the strip
+    // now reads GUIDE · <style name> instead of "MODULE n / 50".
+    assert.match(host, /<LabNavBar nav=\{nav\} posLabel=\{ending \? undefined : entry\.title\.toUpperCase\(\)\} \/>/);
     assert.match(host, /<LabEndScreen\b/);
     assert.match(host, /mode="progress"/);
     assert.match(host, /noun="guide"/);

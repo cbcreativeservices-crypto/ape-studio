@@ -34,6 +34,11 @@ import { movedFromBaseline } from './physics/twoMic.ts';
 export { Body, Card, Point, SectionTitle, TakeawayCard, KeyButton } from '../../mastering/kit';
 
 const BLUE = '#6fa8ff';
+/** The zone card's label for what a mic placed there tends to pick up
+ *  (beginner waves 2026-11-15, MK-03; owner: "build waves 1 thru 3"). It read
+ *  "LISTEN FOR" in a lab where nothing makes a sound; "TENDENCY" (round 1)
+ *  did not say tendency of what (checker F9). The reveals name it the same. */
+export const ZONE_TENDENCY_LABEL = 'TENDS TO HEAR';
 
 /** A suggested starting point, in plain words (owner ruling 2026-10-04). */
 export function ZoneCard({ z }: { z: DocumentedZone }) {
@@ -42,7 +47,9 @@ export function ZoneCard({ z }: { z: DocumentedZone }) {
       <Text style={styles.zoneKey}>SUGGESTED STARTING POINT</Text>
       <Text style={styles.zoneLabel}>{z.label}</Text>
       <Text style={styles.band}>{z.band}</Text>
-      <Text style={styles.tendency}>{`LISTEN FOR · ${z.tendency}`}</Text>
+      {/* MK-03 (2026-11-15): the label no longer asks a silent learner to
+          listen; it names what the line is, a tendency in words. */}
+      <Text style={styles.tendency}>{`${ZONE_TENDENCY_LABEL} · ${z.tendency}`}</Text>
       <Text style={styles.small}>{`CHECK · ${z.checks.join(' · ')}`}</Text>
     </View>
   );
@@ -117,7 +124,9 @@ export function MikingScenarioCard({ s, onAnswered, answered }: { s: Pickable; o
         })}
       </View>
       {picked != null ? (
-        <Text style={[styles.explain, { color: correct ? colors.green : colors.gold }]}>{correct ? `✓ ${s.explain}` : `✗ ${whyOf(picked)} Choose again.`}</Text>
+        // First miss: that option's reason only; a SECOND different miss adds
+        // the explanation (the S2 check-card rule, fix round 2026-11-14, F9).
+        <Text style={[styles.explain, { color: correct ? colors.green : colors.gold }]}>{correct ? `✓ ${s.explain}` : `✗ ${whyOf(picked)} ${wrong.length >= 2 ? s.explain : 'Choose again.'}`}</Text>
       ) : null}
     </Card>
   );

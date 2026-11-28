@@ -25,7 +25,7 @@
  * so inside StageFullScreen the scene wraps itself in GestureHandlerRootView;
  * a drag that starts on a mic locks the full-screen scrollers (ScrollLock).
  */
-import { memo, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Platform, StyleSheet, Text, TextInput, View } from 'react-native';
 import { BlurMask, Canvas, Circle, DashPathEffect, Group, Line, LinearGradient, Paint, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import { Wedge2WayTop } from '../../lessons/shared/wedge2Way';
@@ -64,8 +64,37 @@ import { labelWidth } from './labelLayout.ts';
 import { bodyOf, layoutArtLabels, occupancy } from './artLabels.ts';
 import { sceneFrame, shapeBox } from '../geometry/contentFrame.ts';
 import type { LessonArt } from './sceneTypes.ts';
+import { FigureScale } from '../../lessons/shared/figureV2/detail';
+import { HeldBridge, HeldFront, HeldScope, makeHeldStore, type HeldConfig, type HeldStore } from '../../lessons/shared/figureV2/heldLive';
+
+/** (figure V2, the held arm) the lesson's held mics in scope for its scene — or nothing to add. */
+function HeldScopeIf({ cfg, store, children }: { cfg: HeldConfig | undefined; store: HeldStore | null; children: ReactNode }) {
+  if (!cfg || !store) return <>{children}</>;
+  return (
+    <HeldScope cfg={cfg} src={store}>
+      {children}
+    </HeldScope>
+  );
+}
 
 const BLUE = '#6fa8ff';
+/**
+ * PHONE-SIZE VISIBILITY (beginner waves 2026-11-15, MK-11; owner: "build
+ * waves 1 thru 3"). On the Placement Studio, the main hands-on step, the blue
+ * starting zones were barely there at phone size: an idle zone was filled at
+ * 3 % with a 32 % edge 2.5 mm wide — in drawing millimetres, so about a third
+ * of a pixel on a phone. And the mic was hard to find on the drawing.
+ *  - An idle zone: a clear tint and a solid edge at least ZONE_EDGE_PX wide on
+ *    the glass at any zoom; the zone a mic sits in is still the brightest.
+ *  - The mic you move: an amber rim on a dark halo, drawn under the mic art,
+ *    a fixed size on the glass (MIC_HALO_PX / MIC_RIM_PX).
+ */
+export const ZONE_IDLE_FILL = 0.12;
+export const ZONE_IDLE_EDGE = 0.8;
+export const ZONE_ON_FILL = 0.28;
+export const ZONE_EDGE_PX = 2;
+export const MIC_HALO_PX = 10;
+export const MIC_RIM_PX = 4;
 /** An idle zone's name on the glass: the zones' blue at 80 % (faint, still
  *  readable on the dark glass). */
 const ZONE_NAME = '#6fa8ffcc';
@@ -664,9 +693,9 @@ function zoneRect(z: DocumentedZone, view: ViewId, rig: Rig): { u0: number; u1: 
 
 /* ── the mic glyph ───────────────────────────────────────────────────── */
 
-function MicGlyph({ pose, view, typeId, blocked, focus, xf, hk = 1 }: { pose: SharedValue<MicPose>; view: ViewId; typeId: string; blocked: SharedValue<Blocked>; focus: boolean; xf: SharedValue<ViewXform>; /* lab6 group 2: hardwareScale */ hk?: number }) {
+function MicGlyph({ pose, view, typeId, blocked, focus, xf, hk = 1, drawLen }: { pose: SharedValue<MicPose>; view: ViewId; typeId: string; blocked: SharedValue<Blocked>; focus: boolean; xf: SharedValue<ViewXform>; /* lab6 group 2: hardwareScale */ hk?: number; /** (figure V2) drawn longer at the tail (LessonArt.micDrawLen): drawing only */ drawLen?: number }) {
   const t = micType(typeId);
-  const len = t.body.length.mm;
+  const len = drawLen ?? t.body.length.mm;
   const r = t.body.radius.mm;
   // lab6 group 1: a body reaching ahead of its reference point (a shotgun's tube).
   const fore = t.body.fore?.mm ?? 0;
@@ -693,6 +722,10 @@ function MicGlyph({ pose, view, typeId, blocked, focus, xf, hk = 1 }: { pose: Sh
   });
   const ringR = useDerivedValue(() => RING_R_PX / xf.value.s);
   const ringW = useDerivedValue(() => 2.5 / xf.value.s);
+  // MK-11 (2026-11-15): the halo and rim, a fixed size on the glass (the
+  // group is scaled by the fit and the hardware scale).
+  const haloW = useDerivedValue(() => MIC_HALO_PX / (xf.value.s * hk));
+  const rimW = useDerivedValue(() => MIC_RIM_PX / (xf.value.s * hk));
   // A pop screen's gooseneck leaves the hoop on its LOWER side (side view) —
   // which local side that is depends on the mic's turn on the glass.
   const popFlip = useDerivedValue(() => {
@@ -706,6 +739,13 @@ function MicGlyph({ pose, view, typeId, blocked, focus, xf, hk = 1 }: { pose: Sh
   return (
     <Group>
       <Group transform={transform}>
+        {focus ? (
+          <>
+            {/* MK-11: a dark halo, then an amber rim, under the mic art. */}
+            <Path path={outlineOf(len, cross, fore)} style="stroke" strokeWidth={haloW} color="#000000" opacity={0.6} />
+            <Path path={outlineOf(len, cross, fore)} style="stroke" strokeWidth={rimW} color={AMBER} opacity={0.95} />
+          </>
+        ) : null}
         {t.pop ? <PopGooseneck pop={t.pop} len={len} flip={popFlip} /> : null}
         <MikingMicArt art={t.art} r={r} len={len} cross={cross} fore={fore} />
         {t.pop ? <PopHoop pop={t.pop} /> : null}
@@ -1180,7 +1220,7 @@ function MountPath({ rig, slot, pose, view, hk = 1, others = [] }: { rig: Rig; s
  * hands, facing the mic. The figure is static and only MOVES with the hands
  * (a transform), so dragging the mic stays on the UI thread.
  */
-function PoleMount({ rig, slot, pose, view, Operator, hk = 1 }: { rig: Rig; slot: MicSlot; pose: SharedValue<MicPose>; view: ViewId; Operator?: LessonArt['PoleOperator']; /* lab6 group 2: hardwareScale */ hk?: number }) {
+function PoleMount({ rig, slot, pose, view, Operator, hk = 1, over = false }: { rig: Rig; slot: MicSlot; pose: SharedValue<MicPose>; view: ViewId; Operator?: LessonArt['PoleOperator']; /* lab6 group 2: hardwareScale */ hk?: number; /** (figure V2) LessonArt.poleOperatorOver */ over?: boolean }) {
   const scene = rig.scene;
   const body = rig.body[slot];
   const geo = useDerivedValue(() => {
@@ -1211,19 +1251,47 @@ function PoleMount({ rig, slot, pose, view, Operator, hk = 1 }: { rig: Rig; slot
     if (view === 'side') return [{ translateX: g.bx }, { translateY: yFloor }, { scaleX: g.ux >= 0 ? 1 : -1 }];
     return [{ translateX: g.bx }, { translateY: g.bv }, { rotate: Math.atan2(g.uz, g.ux) }];
   });
+  // (figure V2, Foley3: `over`) the operator re-solved for the pole's slope at the hands and their height —
+  // rounded to 1° and 10 mm, so a drag re-draws the figure only when the hold must change; drawn OVER the pole
+  const [shape, setShape] = useState<{ slopeDeg: number; handsH: number; flip: boolean } | null>(null);
+  useAnimatedReaction(
+    () => {
+      if (!over || body.mount !== 'pole') return 0;
+      const segs = assembly(scene, pose.value, body);
+      for (let i = 0; i < segs.length; i++) {
+        if (segs[i].piece !== 'boom') continue;
+        const a = segs[i].a;
+        const b = segs[i].b;
+        const run = view === 'side' ? Math.abs(b.x - a.x) : Math.sqrt((b.x - a.x) * (b.x - a.x) + (b.z - a.z) * (b.z - a.z));
+        const deg = Math.max(-90, Math.min(90, Math.round((Math.atan2(b.y - a.y, run) * 180) / Math.PI)));
+        const h = Math.max(0, Math.min(9999, Math.round((yFloor - b.y) / 10)));
+        // (one number: the slope, the height in cm, and whether the side view is mirrored)
+        return ((deg + 200) * 10000 + h) * 2 + (view === 'side' && b.x - a.x < 0 ? 1 : 0);
+      }
+      return 0;
+    },
+    (k, prev) => {
+      if (!over || k === prev || k === 0) return;
+      const flip = k % 2 === 1;
+      const r = (k - (flip ? 1 : 0)) / 2;
+      scheduleOnRN(setShape, { slopeDeg: Math.floor(r / 10000) - 200, handsH: (r % 10000) * 10, flip });
+    },
+  );
   if (body.mount !== 'pole') return null;
+  const op = Operator ? (
+    <Group transform={xfOp}>
+      <Operator view={view} {...(over ? { pole: shape ?? undefined, hk } : {})} />
+    </Group>
+  ) : null;
   return (
     <>
-      {Operator ? (
-        <Group transform={xfOp}>
-          <Operator view={view} />
-        </Group>
-      ) : null}
+      {over ? null : op}
       <Path path={path} style="stroke" strokeWidth={(POLE_RADIUS * 2 + 4) * hk} strokeCap="round" color="#060608" />
       <Path path={path} style="stroke" strokeWidth={POLE_RADIUS * 2 * hk} strokeCap="round" color="#2b2e35" />
       <Group transform={[{ translateX: -1.2 }, { translateY: -1.8 }]}>
         <Path path={path} style="stroke" strokeWidth={3} strokeCap="round" color="#c9ced8" opacity={0.45} />
       </Group>
+      {over ? op : null}
     </>
   );
 }
@@ -1233,7 +1301,7 @@ function PoleMount({ rig, slot, pose, view, Operator, hk = 1 }: { rig: Rig; slot
  * capsule `assembly` uses (the clamp's look is ILLUSTRATIVE: a jaw on the
  * hoop, a short swivel arm). Red when the hoop is out of the clamp's reach.
  */
-function ClampArm({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: SharedValue<MicPose>; view: ViewId }) {
+function ClampArm({ rig, slot, pose, view, v2held = false }: { rig: Rig; slot: MicSlot; pose: SharedValue<MicPose>; view: ViewId; /** (figure V2) the lesson's scene draws its held arms itself (LessonArt.heldV2) */ v2held?: boolean }) {
   const scene = rig.scene;
   const body = rig.body[slot];
   const geo = useDerivedValue(() => {
@@ -1420,6 +1488,7 @@ function ClampArm({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: Sh
   const on = useDerivedValue(() => geo.value.on);
   const red = useDerivedValue(() => geo.value.far * 0.9);
   if (body.mount !== 'clip') return null;
+  if (style === 'held' && v2held) return null;
   if (style === 'held') {
     // A long-sleeved arm (the shared figure's shirt and skin tones): a dark
     // contour, the sleeve, a rim light along its lit edge; red when the hand
@@ -1543,7 +1612,7 @@ function ClampArm({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: Sh
 
 /** Lab 7b group 1: the fist round a HELD mic's handle, drawn over the mic
  *  (the hand closes on it): skin tones, knuckles toward the viewer. */
-function HeldFistGlyph({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pose: SharedValue<MicPose>; view: ViewId }) {
+function HeldFistGlyph({ rig, slot, pose, view, v2held = false }: { rig: Rig; slot: MicSlot; pose: SharedValue<MicPose>; view: ViewId; /** (figure V2) the lesson draws the hand (LessonArt.heldV2) */ v2held?: boolean }) {
   const body = rig.body[slot];
   const scene = rig.scene;
   const geo = useDerivedValue(() => {
@@ -1557,7 +1626,7 @@ function HeldFistGlyph({ rig, slot, pose, view }: { rig: Rig; slot: MicSlot; pos
   });
   const tf = useDerivedValue(() => [{ translateX: geo.value.u }, { translateY: geo.value.v }]);
   const on = useDerivedValue(() => geo.value.on);
-  if (body.mount !== 'clip' || body.armStyle !== 'held') return null;
+  if (body.mount !== 'clip' || body.armStyle !== 'held' || v2held) return null;
   return (
     <Group layer={view === 'side' ? <Paint opacity={0.62} /> : undefined}>
     <Group opacity={on} transform={tf}>
@@ -1858,18 +1927,20 @@ function GuideLabel({ xf, u, v, nx, ny, W, H, text, scale, maxX, maxY }: { xf: S
   );
 }
 
-function ZoneBand({ z, rig, view, zoneSV }: { z: DocumentedZone; rig: Rig; view: ViewId; zoneSV: SharedValue<string | null> }) {
+function ZoneBand({ z, rig, view, zoneSV, xf }: { z: DocumentedZone; rig: Rig; view: ViewId; zoneSV: SharedValue<string | null>; xf: SharedValue<ViewXform> }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const path = useMemo(() => zonePath(z, view, rig), [z, view, rig.lesson, rig.variant]);
   // One consistent style for every suggested starting point (owner ruling
-  // 2026-10-04): the same blue band, the same solid edge.
+  // 2026-10-04): the same blue band, the same solid edge. MK-11 (2026-11-15):
+  // clear at phone size — the edge is a fixed width on the glass.
   const tone = BLUE;
-  const fill = useDerivedValue(() => (zoneSV.value === z.id ? 0.26 : 0.03));
-  const edge = useDerivedValue(() => (zoneSV.value === z.id ? 1 : 0.32));
+  const fill = useDerivedValue(() => (zoneSV.value === z.id ? ZONE_ON_FILL : ZONE_IDLE_FILL));
+  const edge = useDerivedValue(() => (zoneSV.value === z.id ? 1 : ZONE_IDLE_EDGE));
+  const edgeW = useDerivedValue(() => Math.max(2.5, ZONE_EDGE_PX / xf.value.s));
   return (
     <>
       <Path path={path} color={tone} opacity={fill} />
-      <Path path={path} style="stroke" strokeWidth={2.5} color={tone} opacity={edge} />
+      <Path path={path} style="stroke" strokeWidth={edgeW} color={tone} opacity={edge} />
     </>
   );
 }
@@ -2740,6 +2811,10 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
 
   const micsShown = rig.mics.filter((m) => live.includes(m.slot) && m.on);
   const hkView = model.hardwareScaleByView?.[view] ?? model.hardwareScale ?? 1;
+  // (figure V2, the held arm) the lesson's scene draws its people's held arms: their mics' poses, as they move.
+  const heldCfg = art.heldV2;
+  const heldStore = useMemo(() => (heldCfg ? makeHeldStore() : null), [heldCfg]);
+  const heldMics = heldCfg ? micsShown.filter((m) => rig.body[m.slot].mount === 'clip' && (rig.body[m.slot].armStyle === 'held' || !!heldCfg.carry?.includes(m.typeId))) : [];
   // The shown mics' types, for the art's own dressing (sceneTypes Instrument.micTypes).
   const micTypesKey = micsShown.map((m) => m.typeId).join(',');
   const micTypes = useMemo<readonly string[]>(() => (micTypesKey ? micTypesKey.split(',') : NO_MIC_TYPES), [micTypesKey]);
@@ -2765,11 +2840,18 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
           the system back gesture (modules/ape-gesture-exclusion; renders
           nothing on iOS, web and builds without the module). */}
       {!mini && interactive ? <GestureExclusionZone maxHeightDp={STAGE_BAND_DP} /> : null}
+      {heldCfg && heldStore
+        ? heldMics.map((m) => <HeldBridge key={`held:${m.slot}:${m.typeId}`} store={heldStore} slot={m.slot} pose={rig.pose[m.slot]} body={rig.body[m.slot]} scene={rig.scene} typeId={m.typeId} cfg={heldCfg} />)
+        : null}
       <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
+        <HeldScopeIf cfg={heldCfg} store={heldStore}>
         <Group transform={matrix}>
           {/* The art's own keep-out shapes stay off this drawing (keepOuts.ts). */}
           <KeepOutsAtRest.Provider value={false}>
-            <Instrument view={view} variant={variant} micTypes={micTypes} setup={zoneIds} />
+            {/* the figures' level of detail by drawn scale (figureV2/detail) */}
+            <FigureScale ptPerMm={base.s}>
+              <Instrument view={view} variant={variant} micTypes={micTypes} setup={zoneIds} />
+            </FigureScale>
           </KeepOutsAtRest.Provider>
           <LeaderLines labels={partLabels} xf={xf} scale={labelScale} maxX={w} yieldTo={yieldTo} view={view} />
           <LeaderLines labels={zoneLabels} xf={xf} scale={labelScale} maxX={w} color={ZONE_NAME} yieldTo={yieldTo} view={view} />
@@ -2777,7 +2859,7 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
             <EnvelopeMark key={e.id} e={e} rig={rig} slots={micsShown.map((m) => m.slot)} gate={gate} hatchPath={hatchPath} fadeMs={fadeIn} pinned={highlight === e.id} />
           ))}
           {zones.map((z) => (
-            <ZoneBand key={z.id} z={z} rig={rig} view={view} zoneSV={zoneA} />
+            <ZoneBand key={z.id} z={z} rig={rig} view={view} zoneSV={zoneA} xf={xf} />
           ))}
           {highlightMark ? <Path path={highlightMark.path} style="stroke" strokeWidth={markStroke(base.s)} color={AMBER} /> : null}
           {highlightMark ? <Path path={highlightMark.toward} color={AMBER} /> : null}
@@ -2795,10 +2877,12 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
             <MountPath key={`mount:${m.slot}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} hk={hkView} others={micsShown.map((q) => q.slot)} />
           ))}
           {micsShown.map((m) => (
-            <PoleMount key={`pole:${m.slot}:${m.typeId}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} Operator={art.PoleOperator} hk={hkView} />
+            <PoleMount key={`pole:${m.slot}:${m.typeId}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} Operator={art.PoleOperator} hk={hkView} over={!!art.poleOperatorOver} />
           ))}
+          {/* (figure V2, opt-in LessonArt.poleHandsOver) the scene's operator's fists again over the engine's boom */}
+          {art.poleHandsOver ? <FigureScale ptPerMm={base.s}>{art.poleHandsOver({ view, variant, micTypes, setup: zoneIds })}</FigureScale> : null}
           {micsShown.map((m) => (
-            <ClampArm key={`clamp:${m.slot}:${m.typeId}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} />
+            <ClampArm key={`clamp:${m.slot}:${m.typeId}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} v2held={!!heldCfg} />
           ))}
           {/* A body mic's cable to its pack (Rim.lead; art fix 2026-10-16). */}
           {micsShown.map((m) => (
@@ -2811,15 +2895,21 @@ function SceneBody({ rig, art, view, w, h, interactive = true, mini = false, bas
             <SetupGuide key={`guide:${d.slot}`} g={d.g} view={view} xf={xf} dashMm={10 / base.s} drawDim={!d.short} />
           ))}
           {micsShown.map((m) => (
-            <MicGlyph key={`mic:${m.slot}:${m.typeId}`} pose={rig.pose[m.slot]} view={view} typeId={m.typeId} blocked={rig.blocked[m.slot]} focus={interactive && !mini} xf={xf} hk={hkView} />
+            <MicGlyph key={`mic:${m.slot}:${m.typeId}`} pose={rig.pose[m.slot]} view={view} typeId={m.typeId} blocked={rig.blocked[m.slot]} focus={interactive && !mini} xf={xf} hk={hkView} drawLen={art.micDrawLen?.(m.typeId)} />
           ))}
+          {heldCfg ? (
+            <FigureScale ptPerMm={base.s}>
+              <HeldFront view={view} />
+            </FigureScale>
+          ) : null}
           {micsShown.map((m) => (
-            <HeldFistGlyph key={`fist:${m.slot}:${m.typeId}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} />
+            <HeldFistGlyph key={`fist:${m.slot}:${m.typeId}`} rig={rig} slot={m.slot} pose={rig.pose[m.slot]} view={view} v2held={!!heldCfg} />
           ))}
           {micsShown.filter((m) => m.slot === editing).map((m) => (
             <EditRing key={`edit:${m.slot}:${m.typeId}`} pose={rig.pose[m.slot]} view={view} len={micType(m.typeId).body.length.mm} hk={hkView} xf={xf} rPx={mini ? EDIT_RING_MINI_PX : EDIT_RING_PX} />
           ))}
         </Group>
+        </HeldScopeIf>
       </Canvas>
       {labels.map((l) => (
         <SceneLabel key={l.id} xf={xf} u={l.u} v={l.v} text={l.text} align={l.align} tone={isZoneLabel(l.id) ? 'zone' : l.tone} scale={labelScale} maxX={w} yieldTo={yieldTo} view={view} />

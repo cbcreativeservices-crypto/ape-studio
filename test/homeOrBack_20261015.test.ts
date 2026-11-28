@@ -100,7 +100,9 @@ describe('screens opened from Home use the shared Home-or-back key', () => {
   }
   it('the Home face is the Glossary HOME key and the press stays the caller’s back step', () => {
     const s = read('components/nav/HomeOrBackKey.tsx');
+    // The house, always (owner 2026-11-20: "Home should not have the screen title icon").
     assert.match(s, /<NavIcon icon="Home" lit \/>/);
+    assert.doesNotMatch(s, /homeArt/);
     assert.match(s, /accessibilityLabel="Home"/);
     assert.doesNotMatch(s, /popTo\(|navigate\(/, 'the key must not invent its own destination');
   });

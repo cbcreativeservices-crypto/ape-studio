@@ -76,10 +76,15 @@ export const L03_CHECKS: CheckSpec[] = [
     options: [
       'It is a stereo connection — tip left, ring right',
       'It is a balanced connection — tip +, ring −',
-      'Nothing yet — TRS serves balanced mono, unbalanced stereo AND insert duty; the equipment decides',
+      'Nothing yet — TRS has three jobs; the equipment decides',
       'It is a headphone extension',
     ],
     correctIdx: 2,
+    why: {
+      0: 'Stereo is one of TRS’s jobs, not the only one. The three contacts alone do not choose.',
+      1: 'Balanced is one of TRS’s jobs too. Look at the THREE JOBS card.',
+      3: 'Headphones are one possible use. The plug alone does not tell you which.',
+    },
     reveal:
       'One connector, three jobs: balanced mono, unbalanced stereo, or a console insert with send and return on one jack. A TRS plug means neither “stereo” nor “balanced” automatically — identify the jack’s job before patching.',
     wrongHint: 'TRS has three different jobs — can the plug alone tell you which one this connection performs?',
@@ -88,11 +93,16 @@ export const L03_CHECKS: CheckSpec[] = [
     question: 'A 3-pin XLR line drops from a stage wall plate. Is it safe to assume a microphone signal?',
     options: [
       'Yes — XLR is the microphone connector',
-      'No — the same shell also carries line-level analog and AES3 digital audio; verify what the line carries first',
+      'No — that shell also carries line level and digital audio',
       'Yes — once the latch clicks, it is a mic line',
       'No — wall-plate XLR is always AES3 digital',
     ],
     correctIdx: 1,
+    why: {
+      0: 'The same 3-pin shell also carries line level and digital audio.',
+      2: 'The latch proves the plug is in. It says nothing about what travels.',
+      3: '“Always” is the trap: the shell never names the signal, in either direction.',
+    },
     reveal:
       'The same 3-pin shell serves several different jobs — analog mic or line audio, AES3 digital audio, and some control uses. The connector alone does not identify the signal; check what the wall plate or snake line actually carries before patching.',
     wrongHint: 'The shell fitting — or latching — proves the shape, never the signal.',
@@ -104,9 +114,14 @@ export const L03_CHECKS: CheckSpec[] = [
       'Yes — the plug fits, so the cable is correct',
       'No — 1/4-inch TS jacks never carry loudspeaker signals',
       'Yes — as long as the run is short',
-      'No — instrument cable is one small shielded conductor for tiny signals; a speaker run needs the two heavier conductors of speaker cable',
+      'No — instrument cable is too thin for amplifier current',
     ],
     correctIdx: 3,
+    why: {
+      0: 'A fit only proves the shapes mate. Look at what is inside each cable.',
+      1: 'Many amplifiers and cabinets do use 1/4-inch TS jacks for speakers. The plug is not the problem.',
+      2: 'A short run still pushes amplifier current through a thin conductor built for tiny signals.',
+    },
     reveal:
       'Same plug, different cable. An instrument cable on a speaker run loses power in its small conductor and can heat at higher power — a reliability problem that can become cable failure and put the amplifier at risk. Read the jacket and the construction, not the plug.',
     wrongHint: 'The plug is identical on both cables — think about what each cable’s CONSTRUCTION was built to move.',
@@ -115,12 +130,17 @@ export const L03_CHECKS: CheckSpec[] = [
     question:
       'A coaxial S/PDIF digital output needs a cable. An analog RCA interconnect fits the jack — is it automatically appropriate?',
     options: [
-      'Not automatically — S/PDIF specifies 75-ohm coaxial cable, and ordinary analog interconnects are not impedance-controlled',
+      'Not automatically — S/PDIF needs 75-ohm coax, not any RCA lead',
       'Yes — every cable with RCA plugs is the same',
       'No — digital audio never travels on RCA connectors',
       'Yes — if both ends are RCA plugs, it will lock',
     ],
     correctIdx: 0,
+    why: {
+      1: 'Analog and digital cables can wear the same plug and still be built differently.',
+      2: 'Coaxial S/PDIF does use RCA connectors. The question is about the cable.',
+      3: 'Locking onto the jack proves the fit, not that the cable suits a digital signal.',
+    },
     reveal:
       'Identical plugs, different cable specification. A short analog cable often appears to work; longer or marginal runs drop out or the receiver fails to lock onto the signal — a reliability failure, not damage. Use a true 75-ohm cable for coaxial digital.',
     wrongHint: 'The shell does not certify the cable behind it — what does the digital interface actually specify?',

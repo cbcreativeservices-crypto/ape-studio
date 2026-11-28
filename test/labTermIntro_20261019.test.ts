@@ -108,10 +108,12 @@ describe('1. every catalog lab is mapped (wired, HOLD or none) — and nothing e
     const stale = Object.keys(L.LAB_TERM_ENTRIES).filter((k) => !keys.has(k));
     assert.deepEqual(stale, []);
   });
-  it('after the owner’s rulings (2026-10-19): 62 wired, none pending, the calculator lab has NO popup', () => {
+  it('after the owner’s rulings (2026-10-19): 62 wired, the two labs listed 2026-11-13 on HOLD, the calculator lab has NO popup', () => {
     const all = Object.entries(L.LAB_TERM_ENTRIES);
     assert.equal(all.filter(([, e]) => e.status === 'wired').length, 63); // + DJ Systems Lab (merged from dj-lab 2026-10-21)
-    assert.deepEqual(all.filter(([, e]) => e.status === 'hold').map(([k]) => k), []);
+    // [MD:D60] 2026-11-13: no live glossary row has been read for them yet, so
+    // no popup until one is copied verbatim with its id.
+    assert.deepEqual(all.filter(([, e]) => e.status === 'hold').map(([k]) => k), ['GameAudioLab', 'StagePlotLab']);
     assert.deepEqual(all.filter(([, e]) => e.status === 'none').map(([k]) => k), ['CalcLab']);
     assert.equal(L.wiredLabTerm(L.labTermKey('CalcLab')), null);
   });
@@ -156,7 +158,11 @@ describe('2. the right term — and the right meaning — per lab', () => {
       DistortionLab: 'Distortion',
       PhaseLab: 'Phase',
       OscillatorLab: 'Oscillator',
-      NoiseLab: 'Noise',
+      // 2026-11-14 (lab fix round S1, quick win 9; owner approval "Begin
+      // fixing all bugs found and do obvious ... fixes"): "Noise" (unwanted
+      // signal) contradicted a lab that plays noise on purpose; the live row
+      // "noise color" is what the lab teaches first, copied verbatim.
+      NoiseLab: 'noise color',
       HarmonicLab: 'Harmonics',
       ModularLab: 'Modular synthesizer',
       StereoLab: 'Stereo Imaging',
@@ -175,12 +181,15 @@ describe('2. the right term — and the right meaning — per lab', () => {
       RoomDesignLab: 'Acoustic Treatment',
       MeterLab: 'Audio Analyzer',
       'MeterModule:detective': 'Troubleshooting',
-      CableLab: 'Cables (audio)',
+      // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item CF-05):
+      // the lab opens on 'what travels', so its card names signal level.
+      CableLab: 'Audio levels',
       ConnectorSelectLab: 'Connector',
       PatchbayLab: 'Patch bay',
       MixingGuides: 'Mixing',
-      CompressionLab: 'Dynamic range compression',
-      GateLab: 'Downward expansion',
+      // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, items CMP-03 and GATE-01): the cards are titled for the lab tapped.
+      CompressionLab: 'Compressor',
+      GateLab: 'Noise gate',
       SmartProcessorsLab: 'De-esser',
       FmLab: 'Frequency modulation synthesis',
       EnvelopeLab: 'Envelope',
@@ -196,17 +205,21 @@ describe('2. the right term — and the right meaning — per lab', () => {
       'MikingHub:ensembles': 'miking',
       'MikingHub:field': 'miking',
       'MikingHub:broadcast': 'miking',
-      SpeechLab: 'miking',
+      // 2026-11-14 (lab fix round, checker K4; owner approval "Begin fixing
+      // all bugs found and do obvious ... fixes"): the Speech & Voice lab
+      // teaches how speech is MADE (its first screen is THE SPEECH SYSTEM),
+      // so it opens on the live row "Source-filter model", copied verbatim.
+      SpeechLab: 'Source-filter model',
     };
     for (const [key, term] of Object.entries(want)) assert.equal(L.wiredLabTerm(key)?.term, term, key);
     assert.equal(Object.keys(want).length, 63, 'every wired lab is pinned here');
   });
   it('the words are the glossary’s, not a paraphrase (spot checks, copied 2026-10-19)', () => {
-    assert.equal(wired('EqLab')?.plainEnglish, 'An equalizer boosts or cuts chosen frequencies. It shapes the tone of a sound.');
-    assert.equal(
-      wired('LimiterLab')?.plainEnglish,
-      'A limiter is an extreme compressor with a very high or infinite ratio. You set a threshold, and signal above it is held from going much higher. This protects against surprise clipping. Very fast peaks can still slip a little past unless the limiter uses lookahead. Limiters are common on the master bus and as a safety net on inputs. Used right, they are invisible. Used wrong, they squash the sound.',
-    );
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, items EQ-06 and LIM-01): the Equalizer
+    // and Limiter cards are the labs' own one- or two-sentence words; the EQ Lab home keeps the row verbatim.
+    assert.equal(wired('EqLabHome')?.plainEnglish, 'An equalizer boosts or cuts chosen frequencies. It shapes the tone of a sound.');
+    assert.equal(wired('EqLab')?.plainEnglish, 'An equalizer is the tone knobs of audio, like bass, middle and treble. In this lab you control one of those knobs, and you choose where it works.');
+    assert.equal(wired('LimiterLab')?.plainEnglish, 'A limiter is a ceiling for loudness. Peaks that reach the line you set are pulled back down to it.');
     // A real em dash, as stored — not a replacement character.
     assert.match(wired('ModularLab')?.plainEnglish ?? '', /On most hardware modulars nothing is fixed and nothing is saved \u2014 that is the appeal\.$/);
     for (const e of Object.values(L.LAB_TERM_ENTRIES)) {
@@ -218,11 +231,13 @@ describe('2. the right term — and the right meaning — per lab', () => {
   });
   it('Compression is the DYNAMICS process — never the air-pressure "Compression" or file "Audio compression"', () => {
     const c = wired('CompressionLab');
-    assert.equal(c?.term, 'Dynamic range compression');
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item CMP-03): titled "Compressor", the
+    // dynamics device, still on the dynamics row (never the air-pressure "Compression").
+    assert.equal(c?.term, 'Compressor');
     assert.equal(c?.glossaryId, '037a431c-1b1a-418f-b6c1-51e0cea14a9b');
     assert.equal(
       c?.plainEnglish,
-      'A compressor makes loud parts quieter, shrinking the gap between soft and loud. Above a set level (the threshold), it turns the signal down by a chosen ratio. Attack and release set how fast it reacts. Make-up gain restores overall loudness.',
+      'A compressor is an automatic hand on the volume knob. When a sound gets too loud, it turns it down a little.',
     );
   });
   it('miking is the ACTION: every miking lab, the Speech & Voice lab and the Voice & Ensemble tile define "miking"', () => {
@@ -230,7 +245,8 @@ describe('2. the right term — and the right meaning — per lab', () => {
     for (const lab of ['drums', 'percussion', 'winds', 'strings', 'ensembles', 'field', 'broadcast']) {
       assert.equal(wired('MikingHub', { lab })?.glossaryId, MIKING_ID, lab);
     }
-    assert.equal(wired('SpeechLab')?.glossaryId, MIKING_ID);
+    // Not the Speech & Voice lab any more (2026-11-14, see the pin above).
+    assert.equal(wired('SpeechLab')?.glossaryId, '1ae9fda0-87df-4e8a-9bf3-78a71ebd39cf');
     assert.equal(
       wired('MikingHub', { lab: 'ensembles' })?.plainEnglish,
       'Miking means choosing and placing microphones on a source. Distance and angle change the tone and room sound.',
@@ -281,10 +297,16 @@ describe('2. the right term — and the right meaning — per lab', () => {
 });
 
 describe('3. who sees it: everyone on a FREE lab, members only on a members-only lab', () => {
-  it('members-only lab — locked (guest or free), checking and unconfirmed: nothing shown, nothing owed', () => {
-    for (const gate of ['locked', 'checking', 'unconfirmed'] as const) {
+  it('members-only lab — locked (guest or free) and unconfirmed: nothing shown, nothing owed; checking: owed, nothing shown', () => {
+    for (const gate of ['locked', 'unconfirmed'] as const) {
       assert.deepEqual(state({ gate }), { owed: false, show: false }, gate);
     }
+    // CHANGED 2026-11-14 (lab fix round S1; owner approval "Begin fixing all
+    // bugs found and do obvious ... fixes", report row 1, one popup at a
+    // time): while membership is still being checked the term may be owed in
+    // a moment, so the screen's intro card waits instead of presenting first
+    // and having the term land on top of it. Still nothing shown.
+    assert.deepEqual(state({ gate: 'checking' }), { owed: true, show: false });
   });
   it('never over a members-only preview scrim', () => {
     assert.deepEqual(state({ previewActive: true }), { owed: false, show: false });
@@ -301,8 +323,14 @@ describe('3. who sees it: everyone on a FREE lab, members only on a members-only
   });
   it('the free labs are exactly the catalog’s non-members-only labs (calculator: no popup)', () => {
     const free = [...new Set(leaves.filter((l) => !isMemberOnlyLabRoute(l.route as string)).map((l) => L.labTermKey(l.route as string, l.params)))].sort();
-    assert.deepEqual(free, ['AmplitudeLab', 'CalcLab', 'FoundationsCourse', 'WaveLab']);
-    for (const k of ['AmplitudeLab', 'FoundationsCourse', 'WaveLab']) assert.ok(L.wiredLabTerm(k), k);
+    // The first lab of every Fundamentals category is free (D74, owner 2026-11-21); in Signal
+    // that is Visual Audio Analysis (MeterLab), revised the same day from Signal Chain Builder.
+    assert.deepEqual(free, ['AmplitudeLab', 'CalcLab', 'FoundationsCourse', 'MeterLab', 'WaveLab']);
+    for (const k of ['AmplitudeLab', 'FoundationsCourse', 'MeterLab', 'WaveLab']) assert.ok(L.wiredLabTerm(k), k);
+    // Its display modules are free; its module 11, Signal Detective, stays members-only.
+    assert.equal(isMemberOnlyLabRoute('MeterModule', { id: 'spectrum' }), false);
+    assert.equal(isMemberOnlyLabRoute('MeterModule', { id: 'detective' }), true);
+    assert.equal(isMemberOnlyLabRoute('MeterModule'), true, 'no params: members-only, never let through');
     assert.equal(L.wiredLabTerm('CalcLab'), null);
     // Members-only labs stay members-only, for example the miking tiles and Compression.
     assert.equal(isMemberOnlyLabRoute('MikingHub'), true);
@@ -310,7 +338,7 @@ describe('3. who sees it: everyone on a FREE lab, members only on a members-only
   });
   it('the wrapper tells the popup which kind of lab it is, from the same rule it gates on', () => {
     const gate = code('src/features/lab/withMembershipPreview.tsx');
-    assert.match(gate, /<LabTermIntroHost routeName=\{routeName\} params=\{params\} freeLab=\{!isMemberOnlyLabRoute\(routeName\)\} \/>/);
+    assert.match(gate, /<LabTermIntroHost routeName=\{routeName\} params=\{params\} freeLab=\{!isMemberOnlyLabRoute\(routeName, params\)\} \/>/);
     const host = code('src/features/intro/LabTermIntro.tsx');
     assert.match(host, /freeLab = false,/, 'members only unless told the lab is free');
     assert.match(host, /const base = \{\s*wired: true,\s*freeLab,/);
@@ -397,8 +425,11 @@ describe('5. ordering — first, and never stacked', () => {
   it('the lab shell’s entry audio prompt (the sound-safety / output popup) waits for it, and asks once', () => {
     const shell = code('src/screens/lab/LabShell.tsx');
     assert.match(shell, /const labTermFirst = useLabTermIntroOwed\(\);/);
-    assert.match(shell, /if \(labTermFirst \|\| entryAskedRef\.current\) return undefined;/);
-    assert.match(shell, /if \(isLabTermIntroOwed\(\)\) return;[^\n]*\n\s*entryAskedRef\.current = true;\s*void requestAudioOutput\(\);/);
+    // Lab fix round 1 (2026-11-14, S1's SN1; owner: "Once per session
+    // (Recommended)"): the ask still waits for the card; it is now an `auto`
+    // ask, and after a card closes it asks at once (rootModalHoldMs).
+    assert.match(shell, /if \(labTermFirst\) \{\s*waitedRef\.current = true;\s*return undefined;\s*\}\s*if \(entryAskedRef\.current\) return undefined;/);
+    assert.match(shell, /if \(isLabTermIntroOwed\(\)\) return;[^\n]*\n\s*entryAskedRef\.current = true;\s*markSoundAsk\('auto'\);[^\n]*\n\s*void requestAudioOutput\(\);/);
     assert.match(shell, /\}, \[labTermFirst\]\);/);
   });
   it('the owed flag is published before paint and cleared on unmount', () => {
@@ -440,10 +471,13 @@ describe('6. once per TERM (glossary row), on the shared safe store', () => {
     await seenStore.labTermsSeenHydrate();
     assert.deepEqual([...seenStore.seenLabTerms()], []);
     const seenOf = (k: string) => seenStore.labTermSeenOf(true, false, seenStore.seenLabTerms(), k);
-    const MIKING = ['MikingHub:drums', 'MikingHub:percussion', 'MikingHub:winds', 'MikingHub:strings', 'MikingHub:ensembles', 'MikingHub:field', 'MikingHub:broadcast', 'SpeechLab'];
+    const MIKING = ['MikingHub:drums', 'MikingHub:percussion', 'MikingHub:winds', 'MikingHub:strings', 'MikingHub:ensembles', 'MikingHub:field', 'MikingHub:broadcast'];
+    // SpeechLab left the miking term on 2026-11-14 (checker K4; see the pin above): seeing miking no longer covers it.
+    assert.equal(seenStore.labTermSeenOf(true, false, [], 'SpeechLab'), false);
     for (const k of MIKING) assert.equal(seenOf(k), false, k);
     await seenStore.markLabTermSeen('MikingHub:drums');
     for (const k of MIKING) assert.equal(seenOf(k), true, k);
+    assert.equal(seenOf('SpeechLab'), false, 'Speech has its own term since 2026-11-14');
     assert.deepEqual(state({ seen: seenOf('MikingHub:strings') }), { owed: false, show: false });
     // A different term is still owed, even a close cousin ("Mic Technique").
     assert.equal(seenOf('MicSelectLab'), false);
@@ -473,7 +507,8 @@ describe('6. once per TERM (glossary row), on the shared safe store', () => {
     assert.equal(L.isLabTermSeen([], 'MikingHub:winds'), false);
     // A HOLD lab has no term, so only its own key could ever count.
     assert.equal(L.labTermSeenFlag('CalcLab'), 'CalcLab');
-    assert.equal(L.labTermSeenFlag('SpeechLab'), 'term:a40d40b1-35b3-496c-b488-65163b445bed');
+    // 2026-11-14: SpeechLab's own row (Source-filter model), no longer miking's.
+    assert.equal(L.labTermSeenFlag('SpeechLab'), 'term:1ae9fda0-87df-4e8a-9bf3-78a71ebd39cf');
   });
   it('"Reset onboarding hints" brings every lab popup back without a relaunch', async () => {
     await seenStore.markLabTermSeen('ReverbLab');

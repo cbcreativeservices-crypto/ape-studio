@@ -18,7 +18,7 @@ import type { SourcePageId, Vec3 } from '../../engine/model/types.ts';
 import type { PageProps } from '../../pages/pageTypes';
 import { aimedAtLips, makeBroadcastSetting, makeBroadcastSound, useReflectStep, useRoutingStep, useTurnStep } from '../shared/broadcast/broadcastPages';
 import type { RoutingPlan } from '../shared/broadcast/routing.ts';
-import { B07Scene } from './scene';
+import { B07Scene, V2 } from './scene';
 import { B07_ZONES } from './model.ts';
 import { STAND_PLATE } from './geometry.ts';
 
@@ -30,6 +30,7 @@ const LDC = { art: 'vocalLdc' as const, r: 59, len: 80, pattern: 'cardioid' as c
 
 function useTools() {
   const turn = useTurnStep({
+    v2: V2,
     mics: [aimedAtLips('close', 'The close mic in front, about 10 cm', 'CLOSE MIC', zone('b7.close').start.p, DYN), aimedAtLips('over', 'The mic above the script', 'OVER SCRIPT', zone('b7.overScript').start.p, LDC)],
     oneAtATime: true,
     top: () => <B07Scene view="top" variant="booth" headless />,
@@ -69,6 +70,7 @@ function useTools() {
 }
 
 const B07Sound = makeBroadcastSound({
+  v2: V2,
   useTools,
   highs: 'The voice’s highest frequencies go out ahead of the mouth: a reader who looks down at the page drifts off a mic in front and sounds duller. In words only — the shape of that spread is not drawn.',
   silentNote: 'This lab never plays a sound and draws no frequency curve for a voice: how a real reader sounds depends on the voice, the mic, the script and the room. The pictures show where the sound comes from and where it goes.',

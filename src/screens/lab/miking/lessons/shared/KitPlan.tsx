@@ -29,7 +29,7 @@ import { useStageTextScale } from '../../../rack/stageAspect';
 import type { SettingItem, VariantId, Vec3, Wedge } from '../../engine/model/types.ts';
 import { fitXform } from '../../engine/geometry/frame.ts';
 import { StaticLabels, type StaticLabel } from '../../engine/scene/StaticLabels';
-import { KIT, KIT_CYMBALS, KIT_DRUMS, PLAN_HARDWARE, planLabelAt, type KitDrumId, type PlanId } from './kitPlanModel.ts';
+import { KIT, KIT_CYMBALS, KIT_DRUMS, PLAN_HARDWARE, hihatPedalGeom, planLabelAt, type KitDrumId, type PlanId } from './kitPlanModel.ts';
 import { AUDIENCE_MARK, KITPLAN_BOX, KITPLAN_ROOM, KITPLAN_RUG, KITPLAN_STAGE, kitCue, kitPlanFoots, kitPlanHit, planItemRect, planWedges } from './kitPlanLayout.ts';
 import { clearOfFoots, planTurn, type PlanFoot } from './planFoot.ts';
 import { CueMixPlan } from './monitoring/CueMixPlan';
@@ -115,7 +115,13 @@ function HiHatArt({ hi }: { hi: boolean }) {
   const r = h.d / 2;
   const legs = useMemo(() => legsPath(c, 30, r + 110, 3, Math.PI / 2), []); // eslint-disable-line react-hooks/exhaustive-deps
   const rings = useMemo(() => lathe(c, r), []); // eslint-disable-line react-hooks/exhaustive-deps
-  const pedal = KIT.hihatPedal;
+  const pedal = hihatPedalGeom();
+  const board = useMemo(() => {
+    const q = Skia.Path.Make();
+    pedal.corners.forEach((c, i) => (i === 0 ? q.moveTo(c.u, c.v) : q.lineTo(c.u, c.v)));
+    q.close();
+    return q;
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <Group>
       <Circle cx={c.u + 14} cy={c.v + 18} r={r + 10} color="#000" opacity={0.5}>
@@ -123,8 +129,8 @@ function HiHatArt({ hi }: { hi: boolean }) {
       </Circle>
       <Path path={legs} style="stroke" strokeWidth={9} color="#9aa0ab" strokeCap="round" />
       {/* footboard toward the throne */}
-      <Path path={rr(pedal.u0, pedal.v - pedal.halfW, pedal.u1 - pedal.u0, pedal.halfW * 2, 14)}>
-        <LinearGradient start={vec(pedal.u0, pedal.v - pedal.halfW)} end={vec(pedal.u1, pedal.v + pedal.halfW)} colors={['#c8ccd4', '#6c717c', '#2a2c32']} />
+      <Path path={board}>
+        <LinearGradient start={vec(pedal.toe.u, pedal.toe.v)} end={vec(pedal.heel.u, pedal.heel.v)} colors={['#c8ccd4', '#8a8f99', '#4a4e57']} />
       </Path>
       <Circle cx={c.u} cy={c.v} r={r}>
         <RadialGradient c={vec(c.u - r * 0.4, c.v - r * 0.45)} r={r * 1.8} colors={['#f6d58f', '#d2a04a', '#9a6a24', '#5e3e12']} />

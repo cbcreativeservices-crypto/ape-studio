@@ -98,7 +98,7 @@ export const CONNECTORS_SPEAKER: ConnectorRecord[] = [
     commonMistakes: [
       'Treating any twist-lock connector as the same thing — loudspeaker twist-locks and AC power twist-locks are unrelated jobs',
       'Confusing the two kinds of “speaker connection”: a line-level feed to a POWERED loudspeaker (typically XLR) and an amplifier output to a PASSIVE loudspeaker are different connections. An amplifier output driven into a line-level input risks damaging that input; a line-level signal into a passive loudspeaker produces almost nothing.',
-      'Building a loudspeaker lead from shielded instrument cable because the connector fits over it',
+      'Building a loudspeaker cable from shielded instrument cable because the connector fits over it',
       'Inserting without completing the twist — an unlatched connector can work loose under vibration',
     ],
     notInterchangeableWith: [
@@ -245,7 +245,7 @@ export const CONNECTORS_SPEAKER: ConnectorRecord[] = [
       'Assuming 2+/2− assignments (or assuming they are wired at all) without reading the loudspeaker documentation',
       'Sending a bi-amplified feed into a full-range cabinet, or a full-range feed into a bi-amp cabinet set to bi-amp mode — sections go missing or receive the wrong band',
       'Treating loudspeaker twist-locks and power twist-locks as one family because both twist',
-      'Building a loudspeaker lead from shielded instrument or microphone multicore because the connector fits',
+      'Building a loudspeaker cable from shielded instrument or microphone multicore because the connector fits',
     ],
     notInterchangeableWith: [
       {
@@ -406,7 +406,7 @@ export const CONNECTORS_SPEAKER: ConnectorRecord[] = [
     tier: 'core',
     carried: ['speaker_level'],
     typicalSources: [
-      'Loudspeaker leads terminated for amplifiers with binding posts',
+      'Loudspeaker cables terminated for amplifiers with binding posts',
       'Amplifier outputs fitted with binding posts',
     ],
     typicalDestinations: [
@@ -497,7 +497,7 @@ export const CONNECTORS_SPEAKER: ConnectorRecord[] = [
     relatedLessons: ['l05_loudspeaker', 'l04_same_plug', 'l09_handling'],
     sourceNotes: [
       'Dual banana nominal pin spacing 19 mm (0.75 in): long-standing test-equipment convention — VERIFIED 2026-08-15: Pomona banana plugs & jacks catalog',
-      '4 mm banana pins can physically enter some mains receptacles (region-dependent); shrouded/sheathed designs exist for this reason: test-lead safety design guidance (IEC 61010 lead requirements) — VERIFIED 2026-08-15: IEC/EN 61010-031 shrouded-lead requirements',
+      '4 mm banana pins can physically enter some AC receptacles (region-dependent); shrouded/sheathed designs exist for this reason: test-lead safety design guidance (IEC 61010 lead requirements) — VERIFIED 2026-08-15: IEC/EN 61010-031 shrouded-lead requirements',
       'Tab/ridge marking on one leg of molded dual-banana bodies denotes the ground/− side by convention: test-equipment convention — VERIFIED 2026-08-15: test-equipment vendor documentation (Pomona MDP family)',
       'High-power amplifier outputs can exceed commonly accepted touch-voltage limits: IEC touch-voltage guidance (e.g. IEC 61201) — VERIFIED 2026-08-15: IEC TS 61201',
       'Amplifier outputs can remain driven briefly after power-off (stored energy); confirm silence before handling: verify-de-energized practice (NFPA 70E principle) — EXPERT REVIEW PENDING',
@@ -672,7 +672,7 @@ export const CONNECTORS_SPEAKER: ConnectorRecord[] = [
         otherName: '1/4-inch TS instrument cable',
         why: 'The plugs are identical; the cables are not. Instrument cable is one small shielded conductor for instrument-level signal; loudspeaker cable is two heavier unshielded conductors for amplifier current.',
         consequence:
-          'An instrument cable carrying loudspeaker current can heat, lose level, and fail — reduced reliability, and with some amplifier designs a failed loudspeaker line risks equipment damage. A loudspeaker lead used for an instrument picks up hum and noise because it has no shield.',
+          'An instrument cable carrying loudspeaker current can heat, lose level, and fail — reduced reliability, and with some amplifier designs a failed loudspeaker line risks equipment damage. A loudspeaker cable used for an instrument picks up hum and noise because it has no shield.',
       },
       {
         otherId: 'trs_quarter',

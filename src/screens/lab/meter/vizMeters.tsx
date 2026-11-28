@@ -340,9 +340,11 @@ export function WaveformView(p: {
   const R = useMemo(() => {
     const raw = overview ? renderOverview(p.signal) : renderSignal(p.signal, 2048);
     const n = raw.length;
-    // The readouts keep the meter engine's reference buffer so every lesson's
-    // PK / RMS / crest numbers are unchanged (peaks match by construction).
-    const ref = overview ? renderSignal(p.signal, 2048) : raw;
+    // The picture's PK / RMS / CREST / DC line reads the SAME buffer as the
+    // module's readout frame (the engine default, renderSignal at 1024), so
+    // the two never disagree on one screen (beginner audit 2026-11-14: the
+    // picture said "DC +0.02" beside the frame's "DC +4.0%").
+    const ref = renderSignal(p.signal);
     // Per-column min/max at DEVICE-PIXEL density (owner: hero resolution).
     const cols = Math.max(96, Math.min(Math.round((w - gut) * DPR), n));
     const rMin = new Array<number>(cols);
@@ -367,7 +369,12 @@ export function WaveformView(p: {
     const sgn = inv ? -1 : 1;
     const k = sgn * gain;
     const ref = R.ref.map((v) => k * v + dc);
-    const stats = { pkDb: db(peakOf(ref)), rmsDb: db(rmsOf(ref)), crest: crestDb(ref), dc: dcOf(ref) };
+    // With the rails shown, the line reads what the file STORES (clipped at
+    // full scale), like the PEAK readout beside it; how far the wave wanted
+    // to go is the CLIP readout's "+n OVER" (beginner audit 2026-11-14: the
+    // picture said "PK 5.5" beside "PEAK +0.0").
+    const stored = showClip ? ref.map((v) => Math.max(-1, Math.min(1, v))) : ref;
+    const stats = { pkDb: db(peakOf(stored)), rmsDb: db(rmsOf(stored)), crest: crestDb(stored), dc: dcOf(stored) };
     const cols = R.cols;
     const colW = (w - gut) / cols;
     const lim = showClip ? 1 : 1.2; // showClip shears the tops at the rails
@@ -506,7 +513,7 @@ export function WaveformView(p: {
       )}
       {!p.plain && Math.abs(st.dc) > 0.004 ? (
         <Lbl x={w - 230} y={17 * ts} w={226} align="right" size={10} color={AMBER}>
-          {`DC ${st.dc >= 0 ? '+' : ''}${st.dc.toFixed(2)}`}
+          {`DC ${st.dc >= 0 ? '+' : ''}${(st.dc * 100).toFixed(1)}%`}
         </Lbl>
       ) : null}
     </View>
@@ -629,7 +636,11 @@ export function PeakMeterView(p: {
       if (L.pk[i] >= -0.05 || R.pk[i] >= -0.05) ov = 1;
       over[i] = ov;
     }
-    const crest = crestDb(renderSignal(sig, n, 1).map((v) => v * gain));
+    // CREST reads the SAME 1024-sample render as the bezel's CREST cell
+    // (modMeterA PeakModule: crestDb(processed(renderSignal(signal), gainDb))),
+    // so the picture and the readout never disagree (C3 O-1 2026-11-14: the
+    // 2048-sample render read "CREST 15.9 dB" beside the bezel's 16.1).
+    const crest = crestDb(renderSignal(sig).map((v) => v * gain));
     return { envL: L.env, envR: R.env, holdL: L.hold, holdR: R.hold, over, crest };
   }, [sig, gain]);
 
@@ -1429,15 +1440,22 @@ export function LoudnessView(p: {
    *  visibly moves the loudness face. Default 0 keeps the Visual Audio
    *  Analysis lab bit-for-bit as before. */
   gainDb?: number;
+  /** ADDITIVE (Mastering Lab fix round, F4 request 2026-11-14): the true peak
+   *  (dBTP, before `gainDb`) the host already shows on its own bezel, so the
+   *  face's TP label and its −1 dBTP lamp agree with it. Undefined keeps the
+   *  Visual Audio Analysis lab exactly as before (the simulated value). */
+  truePeakDbtp?: number;
 }) {
   const w = p.width;
   const targetLufs = p.targetLufs === undefined ? -14 : p.targetLufs;
   const gainDb = p.gainDb ?? 0;
+  const tpIn = p.truePeakDbtp;
   // Taller face + bigger fonts (owner 2026-08-05: the display was too small to
   // read). The integrated LUFS numeral is the headline, enlarged up top.
   const h = p.height ?? 300;
   const sim = useMemo(() => {
-    const s = simulateLoudness(p.signal);
+    const s0 = simulateLoudness(p.signal);
+    const s = tpIn === undefined ? s0 : { ...s0, truePeakDbtp: tpIn };
     if (!gainDb) return s;
     return {
       ...s,
@@ -1446,7 +1464,7 @@ export function LoudnessView(p: {
       integratedLufs: Math.round((s.integratedLufs + gainDb) * 10) / 10,
       truePeakDbtp: Math.round((s.truePeakDbtp + gainDb) * 10) / 10,
     };
-  }, [p.signal, gainDb]);
+  }, [p.signal, gainDb, tpIn]);
   const N = sim.momentary.length;
   // Overlay labels grow in FULL SCREEN (StageTextScale, 1 on the glass); the
   // gutters that hold them — scale column, title strip, legend strip — grow
@@ -3070,6 +3088,10 @@ export function PeakAvgMeterView(p: {
    *  (black ground), no HOLD/MONO footer. Same engine, same shared values — the
    *  readouts can never disagree with the home meter. Default off. */
   stack?: boolean;
+  /** RESET PEAK HOLD NOW (owner 2026-11-25, fix-first 15): bump this number to
+   *  drop the held peak (cap + PK readout) back to the current peak at once.
+   *  0/omitted = never reset by the parent. */
+  holdResetKey?: number;
 }) {
   const w = p.width;
   const h = p.height ?? 260;
@@ -3242,6 +3264,16 @@ export function PeakAvgMeterView(p: {
     }
     return lPk.value;
   }, [p.phase, livePeak, liveRms, holdSecs, showCap, LOOP, splOffset]);
+  // RESET PEAK HOLD NOW (owner 2026-11-25, fix-first 15): the native reset clears
+  // only the engine's number; this meter keeps its own `lHold`, so the parent
+  // bumps `holdResetKey` and the held peak drops to the current peak right away
+  // (the cap and the PK readout both read `lHold`, so both follow).
+  const holdResetKey = p.holdResetKey ?? 0;
+  useEffect(() => {
+    if (holdResetKey === 0) return;
+    lHold.value = lPk.value;
+    lHoldAge.value = 0;
+  }, [holdResetKey, lHold, lHoldAge, lPk]);
 
   // PEAK loudness fill — segments ABOVE the average level up to the peak. The
   // region below the average is left for the purple avg fill (litAvg), so the two
@@ -3599,8 +3631,10 @@ export function VuSkinView(p: { width: number; height?: number; signal?: SignalK
       let m = 0;
       for (let k = 0; k < winP; k++) m = Math.max(m, Math.abs(buf[(c0 + k) % n]));
       rmsDb[i] = 20 * Math.log10(Math.max(1e-6, Math.sqrt(s / winR)));
-      // The lamp lights at ≥ −0.1 "dBFS"; the lesson's LED lit at 0.72 FS.
-      pkDb[i] = 20 * Math.log10(Math.max(1e-6, m / 0.72)) - 0.1;
+      // TRUE dBFS (owner 2026-11-21): the lamp lights at full scale, the same point
+      // as the module's PEAK readout. It used to be scaled to 0.72 FS, so pink
+      // noise lit it while PEAK read −0.6 dBFS.
+      pkDb[i] = 20 * Math.log10(Math.max(1e-6, m));
     }
     return { rmsDb, pkDb };
   }, [sig, gain]);

@@ -17,6 +17,10 @@ import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { make } from '../shared/concert/paths.ts';
 import { Hand3, SIDE_VIEW, TOP_VIEW } from '../shared/smallperc/Hand';
+import { figureV2On } from '../shared/figureV2/figureV2Config.ts';
+import { SPHand3 } from '../shared/smallperc/smallPercV2';
+
+const SP_ON = figureV2On('familySmallPerc');
 import type { Pt } from '../shared/smallperc/hands.ts';
 import { Arm2D, PlayerSide, PlayerTop } from '../shared/smallperc/Player';
 import { Cowbell, PercStand, Stick } from '../shared/smallperc/objects';
@@ -76,7 +80,7 @@ export function CowbellArt({ view, variant }: { view: ViewId; variant: VariantId
     h && s.hands.holder ? (
       <>
         <Arm2D s={P(h.S)} e={P(h.E)} w={P(h.W)} />
-        <Hand3 sk={s.hands.holder} view={V} fore={foreIn(P, h.E, h.W)} cut={cut} part="behind" />
+        <SPHand3 on={SP_ON} sk={s.hands.holder} view={view} S={h.S} E={h.E} cut={cut} part="behind" old={<Hand3 sk={s.hands.holder} view={V} fore={foreIn(P, h.E, h.W)} cut={cut} part="behind" />} />
       </>
     ) : null;
   return (
@@ -86,11 +90,23 @@ export function CowbellArt({ view, variant }: { view: ViewId; variant: VariantId
       {mounted ? (view === 'side' ? <PercStand x={clampAt.x} top={s.c.y} to={side(add(s.c, mul(s.ax, -L / 2)))} /> : <PercStand x={clampAt.x} top={0} to={[clampAt.x, 0]} z />) : null}
       {view === 'top' ? holdHand : null}
       <Bell s={s} view={view} />
-      {h && s.hands.holder ? <Hand3 sk={s.hands.holder} view={V} fore={foreIn(P, h.E, h.W)} cut={cut} part="front" /> : null}
+      {h && s.hands.holder ? <SPHand3 on={SP_ON} sk={s.hands.holder} view={view} S={h.S} E={h.E} cut={cut} part="front" old={<Hand3 sk={s.hands.holder} view={V} fore={foreIn(P, h.E, h.W)} cut={cut} part="front" />} /> : null}
       {view === 'side' ? <Rise s={s} /> : null}
-      <Stick a={P(buttOf(s))} b={P(s.stick.tip)} w={13} />
-      <Arm2D s={P(a.S)} e={P(a.E)} w={P(a.W)} />
-      <Hand3 sk={s.hands.stick} view={V} fore={foreIn(P, a.E, a.W)} />
+      {SP_ON ? (
+        // (figure roll-out wave 5: the stick lies IN the closed hand — seen from here it enters and leaves the fist)
+        <>
+          <Arm2D s={P(a.S)} e={P(a.E)} w={P(a.W)} />
+          <SPHand3 on sk={s.hands.stick} view={view} S={a.S} E={a.E} cut={null} part="behind" old={null} />
+          <Stick a={P(buttOf(s))} b={P(s.stick.tip)} w={13} />
+          <SPHand3 on sk={s.hands.stick} view={view} S={a.S} E={a.E} cut={null} part="front" old={null} />
+        </>
+      ) : (
+        <>
+          <Stick a={P(buttOf(s))} b={P(s.stick.tip)} w={13} />
+          <Arm2D s={P(a.S)} e={P(a.E)} w={P(a.W)} />
+          <Hand3 sk={s.hands.stick} view={V} fore={foreIn(P, a.E, a.W)} />
+        </>
+      )}
     </Group>
   );
 }

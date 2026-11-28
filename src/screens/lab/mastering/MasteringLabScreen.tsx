@@ -44,10 +44,10 @@ import { MASTERING_MODULES, PROJECT_QC, masteringModuleById, scenariosForModule,
 import { carryPreLoad, emptyMasteringModule, masteringReadFailed, masteringReadFromStore, resetMasteringPractice, setMasteringSaveBlocked, updateMasteringProgress, type MasteringPreLoad, type MasteringProgressState } from './masteringProgress';
 import { MASTERING_CREDIT_STEP, MASTERING_MODULE_COMPONENTS, MASTERING_PROJECT_QC_STEP, MASTERING_STEP_COUNTS } from './modules';
 import { StepHostContext, type StepHost } from './steps';
-import { RecordedAnswersContext, TakeawayCard } from './kit';
+import { KeyButton, RecordedAnswersContext, TakeawayCard } from './kit';
 import { releaseProgramme } from './useMasterPlayback';
 import { safeGoBack } from '../../../lib/safeGoBack';
-import { ProNoteButton, ProNoteIntro } from '../../../features/lab/ProNote';
+import { ProNoteButton } from '../../../features/lab/ProNote';
 import { trainingKeyFor } from '../../../features/lab/trainingLabKeys';
 // Screen Guide (owner 2026-10-31): "this step, explained" — one guide per step.
 import { ScreenGuideHost } from '../../../features/lab/screenGuide';
@@ -59,6 +59,26 @@ const SUBTITLE = 'From Final Mix to Release';
 
 const ACCURACY_DETAIL =
   'This lab MODELS mastering on your phone. The LISTEN pages render a synthesized session through real offline DSP and measure it with BS.1770-style loudness and true-peak ESTIMATES, heard through an UNCALIBRATED output; the diagrams are models. Learn the decisions here; master with calibrated monitoring and certified metering.';
+
+/**
+ * WHAT'S LEFT, row by row (phase 2, 2026-11-14): what THIS module still
+ * needs, counted from the stored answers ("5 decisions still to answer"),
+ * never the shared rule (that is `howItCounts`, said once). A stand-in read (a
+ * guest, a failed read) cannot count, so it names the step instead.
+ */
+export function endDetail(id: MasteringModuleId, s: MasteringProgressState): string {
+  const decisions = scenariosForModule(id);
+  const fromStore = masteringReadFromStore(s);
+  const answered = s.modules[id]?.answers ?? {};
+  const left = decisions.filter((d) => !(d.id in answered)).length;
+  if (id === 'project') {
+    if (!fromStore) return 'The four track decisions, then the QC checklist.';
+    if (left > 0) return `${left} track decision${left === 1 ? '' : 's'} still to answer, then the QC checklist.`;
+    return 'The QC checklist: check every line.';
+  }
+  if (!fromStore || left === 0) return 'Answer the decisions on its PRACTICE step.';
+  return `${left} decision${left === 1 ? '' : 's'} still to answer on its PRACTICE step.`;
+}
 
 export function MasteringLabScreen() {
   const insets = useSafeAreaInsets();
@@ -469,6 +489,11 @@ export function MasteringLabScreen() {
             ? `Credit for this module: answer the ${scenarios.length} track decisions and complete the QC checklist (${answeredCount} answered so far). Credit lands the moment the last one does. NEXT still moves on; you can come back.`
             : `Credit for this module: answer its ${scenarios.length} decisions on the PRACTICE step (${answeredCount} so far). A wrong pick is fine — the explanation is the point. Credit lands the moment the last one does. NEXT still moves on; you can come back.`}
       </Text>
+      {/* The way back the credit line names (novice audit G4, 2026-11-14:
+          the review said "on the PRACTICE step" and offered no way there). */}
+      {!done && answeredCount < scenarios.length ? (
+        <KeyButton label="OPEN THE PRACTICE CARDS ›" onPress={() => setStep(MASTERING_CREDIT_STEP[mod.id])} />
+      ) : null}
     </>
   );
   const readWrap = (body: ReactNode) => (
@@ -500,8 +525,10 @@ export function MasteringLabScreen() {
     };
     end = (
       <LabEndScreen
+        labId="mastering"
         labTitle={`${MASTERING_LAB_TITLE}: ${SUBTITLE}`}
-        units={MASTERING_MODULES.map((x) => ({ id: x.id, label: x.title, detail: x.id === 'project' ? 'Four track decisions + the QC checklist' : `${scenariosForModule(x.id).length} decisions on the PRACTICE step` }))}
+        units={MASTERING_MODULES.map((x) => ({ id: x.id, label: x.title, detail: endDetail(x.id, endState) }))}
+        howItCounts="A module counts once each of its PRACTICE decisions has an answer, right or wrong; Module 8 also needs its QC checklist. NEXT moves on without counting it."
         cleared={cleared}
         unreadable={masteringReadFailed(endState)}
         mode="progress"
@@ -555,8 +582,10 @@ export function MasteringLabScreen() {
         )}
         </ScreenGuideHost>
       </View>
-      {/* First open of any Mixing-family lab (owner 2026-10-07): once per device. */}
-      <ProNoteIntro />
+      {/* BM-04 (owner 2026-11-15: "build waves 1 thru 3", D62): "Knowing When
+          to Bring In a Pro" no longer opens by itself on arrival (it read as a
+          disclaimer before the learner had done anything); the small link on
+          the first step above opens it. */}
     </LabNavProvider>
   );
 }

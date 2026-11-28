@@ -18,11 +18,12 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { type Frac, fracLabel, fracValue } from '../../../../features/tuning/tuningMath';
 import { useStageTextScale } from '../../rack/stageAspect';
 import { ROLE } from './primitives';
+import { elevatorBeyondSteps, elevatorOctave, elevatorRegion, elevatorTag } from './elevatorFloors';
 
 const REGION_H = 56;
 
 /** Which region a ratio sits in: 0 = below (r < 1), 1 = comparison octave, 2 = above (r ≥ 2). */
-const regionOf = (r: number) => (r < 1 ? 0 : r < 2 ? 1 : 2);
+const regionOf = elevatorRegion;
 
 export function OctaveElevator({
   value, history, reduceMotion, box, op = null,
@@ -46,12 +47,21 @@ export function OctaveElevator({
   const regionH = box ? box.h / 3 : REGION_H;
   const tileH = Math.max(24, regionH - 20 * scale);
   const regionY = (region: 0 | 1 | 2) => (2 - region) * regionH + (regionH - tileH) / 2; // region 2 (above) is the top row
-  const y = useRef(new Animated.Value(regionY(regionOf(v)))).current;
+  // Past the drawn floors (owner 2026-11-25, audit B16): each further octave
+  // moves the tile a step toward its floor's outer edge (elevatorFloors.ts).
+  const slack = Math.max(0, (regionH - tileH) / 2);
+  const tileY = (r: number) => {
+    const region = regionOf(r);
+    const step = (elevatorBeyondSteps(r) * slack) / 2;
+    return regionY(region) + (region === 2 ? -step : region === 0 ? step : 0);
+  };
+  const tag = elevatorTag(v);
+  const y = useRef(new Animated.Value(tileY(v))).current;
   // Keyed on the NUMBER, not the Frac object: chapters rebuild the fraction
   // every render, and re-running this on identity restarted the slide on
   // every parent re-render (each audio status tick).
   useEffect(() => {
-    const target = regionY(regionOf(v));
+    const target = tileY(v);
     if (reduceMotion) {
       y.setValue(target);
       return;
@@ -60,7 +70,9 @@ export function OctaveElevator({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [v, reduceMotion, y, regionH, tileH]);
   const inRange = v >= 1 && v < 2;
-  const a11y = `Octave elevator. Current ratio ${fracLabel(value)}, ${inRange ? 'inside the comparison octave' : v >= 2 ? 'above the comparison octave' : 'below the comparison octave'}.${op ? ` Next operation: ${op}.` : ''} ${history.map((h) => `${fracLabel(h.before)} ${h.op} = ${fracLabel(h.after)}`).join('; ')}`;
+  const oct = Math.abs(elevatorOctave(v));
+  const away = oct >= 2 ? `, ${oct} octaves ${v >= 2 ? 'above' : 'below'} it` : '';
+  const a11y = `Octave elevator. Current ratio ${fracLabel(value)}, ${inRange ? 'inside the comparison octave' : v >= 2 ? 'above the comparison octave' : 'below the comparison octave'}${away}.${op ? ` Next operation: ${op}.` : ''} ${history.map((h) => `${fracLabel(h.before)} ${h.op} = ${fracLabel(h.after)}`).join('; ')}`;
   const regionsStyle = box ? { width: box.w, height: box.h, borderRadius: 0, borderWidth: 0 } : { height: REGION_H * 3 };
   return (
     <View style={box ? undefined : styles.wrap} accessible accessibilityLabel={a11y}>
@@ -72,6 +84,7 @@ export function OctaveElevator({
         ))}
         <Animated.View style={[styles.tile, { right: 14 * scale, minWidth: 74 * scale, height: tileH, borderRadius: 8 * scale, paddingHorizontal: 10 * scale, transform: [{ translateY: y }] }, inRange ? styles.tileIn : styles.tileOut]}>
           <Text style={[styles.tileText, { fontSize: 17 * scale, color: inRange ? ROLE.exact : ROLE.operation }]}>{fracLabel(value)}</Text>
+          {tag ? <Text style={[styles.tileTag, { fontSize: 12 * scale, marginLeft: 6 * scale }]}>{tag}</Text> : null}
         </Animated.View>
         {op ? (
           <Animated.View pointerEvents="none" style={[styles.opTag, { right: (14 + 74 + 10) * scale, height: tileH, transform: [{ translateY: y }] }]}>
@@ -118,7 +131,8 @@ const styles = StyleSheet.create({
   region: { borderBottomWidth: 1, borderBottomColor: colors.hairlineDim, justifyContent: 'center' },
   regionMain: { backgroundColor: '#0f1a14' },
   regionLabel: { color: colors.textMuted, fontFamily: fonts.oswaldMedium },
-  tile: { position: 'absolute', top: 0, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center' },
+  tile: { position: 'absolute', top: 0, borderWidth: 1.5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
+  tileTag: { fontFamily: fonts.oswaldMedium, color: ROLE.operation },
   tileIn: { borderColor: ROLE.exact, backgroundColor: '#0f2416' },
   tileOut: { borderColor: ROLE.operation, backgroundColor: '#1f1a0e' },
   tileText: { fontFamily: fonts.oswaldSemiBold },

@@ -266,7 +266,7 @@ const VDROP: Workspace = {
   ],
   warnings:
     'DC or SINGLE-PHASE AC only: round-trip resistance R = ρ(T)·2L/A, drop = I·R. For a ' +
-    'THREE-PHASE feeder use √3·L·I·R per phase — this calculator will read about 15% high. ' +
+    'THREE-PHASE feeder use √3·I·R₁, with R₁ = ρ(T)·L/A the one-way resistance of one conductor (line-to-line drop) — this calculator will read about 15% high. ' +
     'Solid annealed copper (IACS: ρ = 1.7241×10⁻⁸ Ω·m at 20 °C, rising 0.393% per °C), at the ' +
     'conductor temperature you enter — use 75 °C (or the insulation rating) for a cable carrying ' +
     'its load; costed at 20 °C a loaded cable’s drop reads about 18% low. Stranded wire reads about ' +
@@ -274,7 +274,7 @@ const VDROP: Workspace = {
     'modeled (reactance matters on large AC conductors). AWG area from the ASTM B258 definition.',
   glossary: ['Voltage', 'Resistance', 'Current', 'AWG', 'Power'],
   fields: [
-    { key: 'awg', name: 'WIRE GAUGE (AWG)', quantity: 'number', signed: true, integer: true, range: [-3, 40], placeholder: '16', help: 'American Wire Gauge — smaller number = thicker wire.' },
+    { key: 'awg', name: 'WIRE GAUGE (AWG)', quantity: 'number', signed: true, integer: true, range: [-3, 40], rangeMsg: 'WIRE GAUGE must be from 40 AWG up to 4/0. Type 1/0 as 0, 2/0 as −1, 3/0 as −2 and 4/0 as −3.', placeholder: '16', help: 'American Wire Gauge — smaller number = thicker wire.' },
     { key: 'len', name: 'RUN LENGTH (one way)', quantity: 'length', placeholder: '30', help: 'One-way cable length; the calc doubles it for the return path.', positive: true, warn: { test: (x) => x <= 0, msg: 'Length must be greater than zero.' } },
     { key: 'current', name: 'CURRENT', quantity: 'current', meaning: 'current:load', nonNegative: true, placeholder: '3', help: 'Current the load draws through the cable.', positive: true, warn: { test: (x) => x <= 0, msg: 'Current must be greater than zero.' } },
     { key: 'vsrc', name: 'SUPPLY VOLTAGE', quantity: 'voltage', nonNegative: true, placeholder: '48', help: 'Source voltage, for the percentage-drop figure.', positive: true, warn: { test: (x) => x <= 0, msg: 'Voltage must be greater than zero.' } },
@@ -376,7 +376,11 @@ const VDROP: Workspace = {
                 text: `Any gauge up to ${AWG_FINEST} AWG (the finest this calculator covers) keeps the drop inside the budget — the drop does not limit this run. Size it with the ${AMPACITY_CALC_NAME}.`,
               }
             : awg >= 0 || !Number.isFinite(awg)
-            ? { label: 'DROP-LIMITED AWG (CHECK AMPACITY)', value: awg, quantity: 'number', chainable: false }
+            ? // Fix-first 15 (owner 2026-11-25): still never offered as ⤵ USE or
+              // SEND → (not a gauge to use), but its meaning lets the Long Power
+              // Run template CARRY it into the ampacity check's CONDUCTOR SIZE
+              // (AWG), the same AWG numbering.
+              { label: 'DROP-LIMITED AWG (CHECK AMPACITY)', value: awg, quantity: 'number', chainable: false, meaning: 'number:awg' }
             : {
                 label: 'DROP-LIMITED AWG (CHECK AMPACITY)',
                 text: name

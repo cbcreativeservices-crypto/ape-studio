@@ -69,8 +69,8 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'Attack, Decay and Release sliders: 0 ms up to about 2 s (Attack) or 3 s, on a log scale, so short times get more room. Sustain level: 0 to 100 %.',
       'Hold (energy still supplied): 0 to 2000 ms at the sustain level, after attack and decay, before release.',
       'ATTACK: LINEAR / SNAP and DECAY: LINEAR / NATURAL switch the curve shapes. RESET brings back the starting shape.',
-      '▶ SWEEP THE SHAPE runs a slowed playhead along the shape (the slow-down is printed). ⤢ FULL SCREEN enlarges the chart with the four sliders under it.',
-      'In the strip under the title: ⏮ goes to the first page, ‹ PREV and NEXT › step one page, and MODULE ▾ opens the list of pages.',
+      '▶ SWEEP THE SHAPE runs a playhead along the shape, slowed for a short shape and in real time for a long one (the speed is printed). ⤢ FULL SCREEN enlarges the chart with the four sliders under it.',
+      'In the strip under the title: ⏮ goes to the first module, ‹ PREV and NEXT › step one module, and MODULE ▾ opens the list of modules.',
     ],
     changes: [
       'Lengthen the attack and the climb stretches. The rise time grows with it but stays shorter, because it skips the first and last 10 %.',
@@ -163,7 +163,7 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     seeing: [
       'A log-time line from 1 ms to 20 s in five bands: IMPULSE, SHORT, MEDIUM, LONG, CONTINUOUS. Seven numbered markers are typical sounds.',
       'The chosen marker shows its name and time on the line; the card below names its band.',
-      'TYPICAL VALUES — ILLUSTRATIVE, NOT MEASURED: real sounds vary.',
+      'The note under the chart: typical values, for illustration, not measured; real sounds vary.',
     ],
     control: [
       'Tap a numbered marker on the line, or its button: 1 · Finger snap through 7 · Pink noise.',
@@ -222,15 +222,15 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       start: 'Read SOUND ENVELOPE · THIS LAB, then WAVE PROPAGATION · THE WAVE PHYSICS LAB. Then read the two lines on the classic mix-up and tap GOT IT ›.',
     },
     seeing: [
-      'Two cards: SOUND ENVELOPE · THIS LAB, and WAVE PROPAGATION · THE WAVE PHYSICS LAB, from Audio Fundamentals. No chart on this page.',
-      'Under them, two lines on the classic mix-up, and GOT IT › to finish the page.',
+      'Two cards: SOUND ENVELOPE · THIS LAB, and WAVE PROPAGATION · THE WAVE PHYSICS LAB, from Audio Fundamentals. No chart in this module.',
+      'Under them, two lines on the classic mix-up, and GOT IT › to finish the module.',
     ],
     control: [
-      'Tap GOT IT › to mark this page done; NEXT › also marks it as it moves on.',
-      'MODULE ▾ in the strip opens the list of pages, so you can jump back to any of them.',
+      'Tap GOT IT › to mark this module done; NEXT › also marks it as it moves on, because this module is for reading.',
+      'MODULE ▾ in the strip opens the list of modules, so you can jump back to any of them.',
     ],
     changes: [
-      'Nothing moves here. The page separates two subjects that are easy to blur.',
+      'Nothing moves here. The module separates two subjects that are easy to blur.',
       'Envelope: how the source changes over time. Propagation: how sound travels and meets the room.',
     ],
     teaches: [
@@ -248,15 +248,15 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   p7: {
     intro: {
       learning: 'A review of six ideas that are easy to confuse: the transient, piano sustain, rise time, peak versus average, crest factor versus dynamic range, and envelope versus propagation.',
-      start: 'Read the first UNDERSTANDING CHECK card and tap the answer you think is right. If it’s wrong, read the explanation and try again.',
+      start: 'Read the first UNDERSTANDING CHECK card and tap the answer you think is right. If it’s wrong, read why that one is not it and try again.',
     },
     seeing: [
       'Six questions, one for each idea in this lab, each in an UNDERSTANDING CHECK card.',
-      'The card at the top shows how many you’ve got right so far and whether the page is complete.',
+      'The card at the top shows how many you’ve got right so far and whether the module is complete.',
     ],
     control: [
-      'Tap an answer. A wrong pick stays open: the first miss asks you to try again; from the second miss on, the explanation shows as a hint.',
-      'All six right completes this page. NEXT › then moves on to the lab’s final check.',
+      'Tap an answer. A wrong pick says why that one is not it; from the second miss on, the explanation shows too.',
+      'All six right completes this module. NEXT › then moves on to the lab’s final check.',
     ],
     changes: [
       'A right pick turns green with a ✓ and its explanation, and the card locks.',
@@ -276,20 +276,20 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   check: {
     intro: {
       learning: 'A last look at four of the lab’s ideas: what sustain is, where rise time is measured, what crest factor is, and what a big hall does to a snare.',
-      start: 'Read each question and tap your answer. Read the explanation either way. Unsure? Go back to the page the question comes from, then return.',
+      start: 'Read each question and tap your answer. A wrong pick says what to look at again. Unsure? Go back to the module the question comes from, then return.',
     },
     seeing: [
       'CHECK YOUR UNDERSTANDING: four questions on what sustain is, where rise time is measured, what crest factor is, and a snare in a big hall.',
       'Above them you see how many are still to get right; a ✓ replaces a question’s number once it’s right.',
-      'Every answer opens its explanation: CORRECT, or NOT QUITE — TRY ANOTHER.',
+      'A right answer shows CORRECT with its explanation; a wrong one shows NOT QUITE — TRY ANOTHER with what to look at again.',
     ],
     control: [
-      'Tap an answer. A wrong one stays open: pick again straight away. Nothing is lost and there is no score.',
-      'FINISH · SEE WHAT’S LEFT › at the foot of the page (FINISH › in the strip) shows what is left in the lab, at any time.',
-      'If you leave this page before all four are right, the questions start fresh.',
+      'Tap an answer. A wrong one stays open: pick again right away.',
+      'FINISH · SEE WHAT’S LEFT › at the foot of the screen (FINISH › in the strip) shows what is left in the lab, at any time.',
+      'If you leave this screen before all four are right, the questions start fresh.',
     ],
     changes: [
-      'Each explanation gives the reason, right or wrong, so every answer teaches something.',
+      'A wrong pick names what to look at again; a second wrong pick also shows the explanation, so every answer teaches something.',
       'Get all four right and the check is passed. A pass is kept: you never need to take the check twice.',
     ],
     teaches: [
@@ -320,30 +320,30 @@ export const ENVELOPE_SCREEN_GUIDES: Record<string, ScreenGuide> = {
 export const ENVELOPE_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'The lab’s path at a glance: a sound’s envelope, its transient, how long it lasts, peak versus average level, and how the envelope differs from what the room adds.',
-    start: 'Tap any page still listed to open it. If only Check your understanding is left, open it and get all four questions right.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
-    'The title reads WHAT\'S LEFT, or LAB COMPLETE once every page and the check are done. The line under it says what’s left and whether it’s saved.',
-    'Each page not done yet is listed by name; Check your understanding sits last, marked CHECK. Pages you’ve done fold into one ✓ DONE line.',
-    'If saved progress can’t be read, the title reads YOUR PROGRESS, a note replaces the line under it, and every page still opens.',
+    'The title reads WHAT\'S LEFT, or LAB COMPLETE once every module and the check are done. The line under it says what’s left and if it’s saved.',
+    'Modules not done yet are listed with what is left; Check your understanding sits last, marked CHECK. Done ones fold into one ✓ DONE line.',
+    'If saved progress can’t be read, the title reads YOUR PROGRESS, a note replaces the line under it, and every module still opens.',
   ],
   control: [
-    'Tap any listed row to jump straight to that page.',
-    'REVIEW ▾ on the ✓ DONE line unfolds the finished pages; tap one to open it again.',
+    'Tap any listed row to jump straight to that module.',
+    'REVIEW ▾ on the ✓ DONE line unfolds the finished modules; tap one to open it again.',
     'PRACTICE AGAIN FROM THE START reopens The Envelope Explorer and clears nothing. DONE · BACK TO LABS leaves the lab.',
-    'In the strip: ⏮ opens the first page, ‹ PREV returns to the page you came from, and WHAT\'S LEFT ▾ opens the list of pages. START OVER (PRACTICE), at the foot of that list, asks first, then clears the page check marks.',
+    'In the strip: ⏮ opens the first module, ‹ PREV returns to the module you came from, and WHAT\'S LEFT ▾ opens the list of modules. START OVER (PRACTICE), at the foot of that list, asks first, then clears the module check marks.',
   ],
   changes: [
-    'Pages 1–5 count as done once you move a slider, tap a choice button or numbered marker, or tap NEXT ›. Envelope vs Propagation counts with GOT IT › or NEXT ›.',
-    'Check Yourself counts once all six are right, Check your understanding once all four are. Jumping to a page never marks it.',
-    'START OVER (PRACTICE) clears the page check marks; reviewing clears nothing. A passed check stays.',
+    'Modules 1–5 count as done once you move a slider, tap a choice button or numbered marker; NEXT › alone does not count them. Envelope vs Propagation counts with GOT IT › or NEXT ›.',
+    'Check Yourself counts once all six are right, Check your understanding once all four are. Jumping to a module never marks it.',
+    'START OVER (PRACTICE) clears the module check marks; reviewing clears nothing. A passed check stays.',
   ],
   teaches: [
     'A sound’s envelope is its level over time, in stages, and rise time puts a number on how fast it starts.',
     'Peak and average level measure different parts of a sound, and the source and the room each shape what you hear.',
   ],
   tryThis: [
-    'The Envelope Explorer still listed? Tap it and move any slider. Then tap MODULE ▾ and WHAT\'S LEFT › just under the page list: The Envelope Explorer has joined the ✓ DONE line.',
+    'The Envelope Explorer still listed? Tap it and move any slider. Then tap MODULE ▾ and WHAT\'S LEFT › just under the module list: The Envelope Explorer has joined the ✓ DONE line.',
     'Only Check your understanding left? Open it, get all four questions right, then tap FINISH ›: the title reads LAB COMPLETE.',
     'Done Peak vs Average Level? Tap REVIEW ▾, reopen it and switch between snare and trumpet again. Then tap MODULE ▾: its ✓ is still there.',
   ],

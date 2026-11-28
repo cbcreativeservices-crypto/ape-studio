@@ -113,7 +113,7 @@ export function upsellAllowed(tier: Tier, tierKnown: boolean): boolean {
 export type MemberGate = 'open' | 'locked' | 'checking' | 'unconfirmed';
 
 export const MEMBERSHIP_NOT_CONFIRMED =
-  'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.';
+  'Couldn’t confirm your membership on this device. Check your connection and reopen the app.';
 
 export function memberGateOf(tier: Tier, tierKnown: boolean, tierReadFailed: boolean): MemberGate {
   if (tier === 'member') return 'open';

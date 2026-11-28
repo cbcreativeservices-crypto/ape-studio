@@ -2,6 +2,7 @@ export { ScreenGuideHost, ScreenGuideKey, ScreenGuidePopup, ScreenGuideHintAncho
 export { markScreenGuideHintSeen, useScreenGuideHintSeen, SCREEN_GUIDE_HINT_KEY } from './screenGuideHintStore';
 export { markScreenIntroSeen, useScreenIntroSeen, useScreenIntroCardBusy, SCREEN_INTRO_CARD_KEY } from './screenIntroCardStore';
 export { useGuideRegion, measureGuideRegion, type GuideRegionKey, type GuideRect } from './guideRegions';
+export { useScreenGuideWork, introWorkAction, type IntroWorkAction } from './introHold';
 export { placeGuideStep, placeIntroCard, type GuidePlacement, type GuideLayout, type IntroCardPlacement } from './placement';
 export {
   SCREEN_GUIDE_SECTIONS,

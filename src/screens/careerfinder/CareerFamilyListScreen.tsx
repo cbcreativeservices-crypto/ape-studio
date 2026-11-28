@@ -44,7 +44,7 @@ export function CareerFamilyListScreen() {
             const meta = familyMetaOf(f.id);
             const rank = rankOf.get(f.id);
             return (
-              <Pressable key={f.id} style={styles.row} onPress={() => navigation.navigate('CareerFamily', { id: f.id, from: 'browse' })} accessibilityRole="button" accessibilityLabel={`${f.name}, ${meta?.count ?? 0} titles${rank ? `, ranked ${rank} for you` : ''}`}>
+              <Pressable key={f.id} style={styles.row} onPress={() => navigation.navigate('CareerFamily', { id: f.id, from: 'browse' })} accessibilityRole="button" accessibilityLabel={`${f.name}, ${meta?.count ?? 0} titles${rank ? `, ranked number ${rank} for you` : ''}`}>
                 <View style={{ flex: 1, gap: 2 }}>
                   <Text style={styles.name}>{f.name}</Text>
                   <Text style={styles.sub} numberOfLines={2}>{f.description}</Text>

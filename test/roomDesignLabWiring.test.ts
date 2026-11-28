@@ -21,19 +21,21 @@ const ROOT = new URL('../', import.meta.url);
 const read = (p: string) => readFileSync(new URL(p, ROOT), 'utf8').replace(/\r\n/g, '\n');
 const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '').replace(/\{\/\*[\s\S]*?\*\/\}/g, '');
 const LAB = 'src/screens/lab/roomdesign/';
-const MODULES = ['modIntro', 'modCreate', 'modMonitoring', 'modExplore', 'modTreatment', 'modReview'];
+const MODULES = ['modIntro', 'modCreate', 'modMonitoring', 'modExplore', 'modSuggest', 'modTreatment', 'modReview'];
 const labFiles = () => [...readdirSync(new URL(LAB, ROOT)).filter((f) => /\.tsx?$/.test(f)).map((f) => LAB + f), ...MODULES.map((m) => `${LAB}modules/${m}.tsx`)];
 
 describe('registration', () => {
-  it('is a members-only leaf in the Acoustics category (the Speaker Placement precedent), with no credit key', () => {
+  it('is a members-only leaf in the Production Workflow category (moved out of Acoustics 2026-11-21, D74), with no af_ key', () => {
     const cat = read('src/screens/lab/labCatalog.ts');
     const leaf = cat.match(/\{ name: 'Room Design & Monitoring'[^\n]*\}/)?.[0] ?? '';
     assert.ok(leaf, 'the catalog leaf exists');
     assert.match(leaf, /route: 'RoomDesignLab'/);
     assert.match(leaf, /member: true/);
     assert.doesNotMatch(leaf, /key:/, 'progress, not certificate credit');
-    const acoustics = cat.slice(cat.indexOf("id: 'acoustics'"), cat.indexOf("id: 'signal'"));
-    assert.ok(acoustics.includes('Room Design & Monitoring'), 'listed under Acoustics');
+    const production = cat.slice(cat.indexOf("id: 'production'"), cat.indexOf("id: 'livesound'"));
+    assert.ok(production.includes('Room Design & Monitoring'), 'listed under Production Workflow');
+    const fundamentals = cat.slice(cat.indexOf("id: 'sound'"), cat.indexOf("id: 'mixingworkflow'"));
+    assert.ok(!fundamentals.includes('Room Design & Monitoring'), 'not in Audio Fundamentals');
   });
   it('has a route type, a MemberGated registration and a Stack.Screen', () => {
     assert.match(read('src/navigation/types.ts'), /RoomDesignLab: undefined;/);
@@ -52,8 +54,11 @@ describe('registration', () => {
     assert.match(wipe, /resetRoomDesigns\(\);/);
   });
   it('the module registry is the app flow, in order', () => {
-    assert.deepEqual(ROOM_UNITS, ['intro', 'create', 'monitoring', 'explore', 'treatment', 'review']);
-    assert.deepEqual(ROOM_MODULES.map((m) => m.rack), [false, true, true, true, true, false]);
+    // SUGGESTED SETUPS joined after Explore (owner 2026-11-14).
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item RO-06): the lab opens on the floor plan
+    // (Create the room); the reading module follows it, before Monitoring setup.
+    assert.deepEqual(ROOM_UNITS, ['create', 'intro', 'monitoring', 'explore', 'suggest', 'treatment', 'review']);
+    assert.deepEqual(ROOM_MODULES.map((m) => m.rack), [true, false, true, true, true, true, false]);
   });
 });
 
@@ -76,8 +81,10 @@ describe('the shared lab navigation and the end screen', () => {
   });
   it('the guest rule waits for the entitlement to resolve and blocks the store', () => {
     assert.match(src, /setRoomDesignSaveBlocked\(!resolved \|\| guest\)/);
-    assert.match(src, /markLabVisit\(ROOM_LAB_ID, mod\.id, \{ persist: !guest \}\)/);
-    assert.match(src, /if \(!resolved \|\| ending\) return;/);
+    // Lab fix round 2026-11-14, phase 3 (owner's decision 1, "done = work done": a module counts when its own goal or check is met, not when it is opened): a
+    // hands-on module is marked on a change to the room, a reading one on NEXT.
+    assert.match(src, /markLabVisit\(ROOM_LAB_ID, id, \{ persist: !guest \}\)/);
+    assert.match(src, /if \(!resolved\) return;/);
   });
   it('the document modules draw the in-flow NEXT themselves', () => {
     for (const m of ['modIntro', 'modReview']) assert.match(strip(read(`${LAB}modules/${m}.tsx`)), /<LabNextButton \/>/, m);
@@ -91,13 +98,13 @@ describe('rack + full screen', () => {
     assert.match(w, /fullScreen: rack\.fullScreen \?\? true/);
     assert.match(w, /size: rack\.size \?\? 'L'/);
   });
-  for (const m of ['modCreate', 'modMonitoring', 'modExplore', 'modTreatment']) {
+  for (const m of ['modCreate', 'modMonitoring', 'modExplore', 'modSuggest', 'modTreatment']) {
     it(`${m} is a RoomRackLayout with a badge, a bezel, a dock and an initialParam, and never opts out of full screen`, () => {
       const s = strip(read(`${LAB}modules/${m}.tsx`));
       assert.match(s, /<RoomRackLayout/);
       assert.match(s, /badge: /);
       assert.match(s, /bezel/);
-      assert.match(s, /initialParam: (?:'|rugSel \? ')/); // TREATMENT binds SIZE for a rug (toddler pass 3)
+      assert.match(s, /initialParam: (?:'|rugSel \? '|setups\.length \? ')/); // TREATMENT binds SIZE for a rug (toddler pass 3)
       assert.doesNotMatch(s, /fullScreen:\s*false/);
     });
   }
@@ -278,7 +285,8 @@ describe('the display is a working surface (owner standards 2026-10-01)', () => 
     assert.match(plan, /\n  drywall: WALL,/);
     for (const k of ['concrete', 'glass', 'wood', 'curtain', 'acoustictile']) assert.match(plan, new RegExp(`\\b${k}: '#[0-9a-f]{6}'`), `SURFACE_TINT.${k}`);
     assert.match(plan, /stroke=\{SURFACE_TINT\[room\.walls\] \?\? WALL\} strokeWidth=\{3\}/);
-    assert.match(plan, /export const FIELD_RANGE_M/);
+    // The classes moved to roomModel (Suggested setups reads them too, 2026-11-14); the plan re-exports them.
+    assert.match(plan, /export \{ FIELD_RANGE_M \};/);
     assert.match(plan, /\$\{design\.monitoring\.field\.toUpperCase\(\)\} · \$\{fmtLen\(d, units\)\}/);
     const side = strip(read(`${LAB}RoomSideView.tsx`));
     assert.match(side, /import \{ SURFACE_TINT, type PlanHandle \} from '\.\/RoomPlanView';/);

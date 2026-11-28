@@ -179,7 +179,7 @@ export function makeUprightSound(setupOf: (v: VariantId) => UprightSetup, names:
     const wiresOn = useDerivedValue(() => (spec.wires && S.wires ? clamp01(reveal.value - 2) : 0));
 
     const labels: StaticLabel[] = [];
-    if (shown >= 1) labels.push({ id: 's1', text: '① STRIKE', u: -90, v: -96, align: 'center', tone: 'amber' });
+    if (shown >= 1) labels.push({ id: 's1', text: '① STRIKE', u: 30, v: -110, align: 'left', tone: 'amber' }); // right of the strike: the stick arm comes in from the left (stick technique fix 2026-11-22)
     if (shown >= 2) labels.push({ id: 's2', text: '② HEAD PUSHED IN', short: '② HEAD IN', u: R * 0.25, v: -28, align: 'left', tone: 'blue' });
     if (shown >= 3) labels.push({ id: 's3', text: S.reso ? `③ AIR PUSHES THE ${names.reso}` : '③ AIR OUT OF THE OPEN END', short: S.reso ? '③ AIR → HEAD' : '③ AIR OUT', u: R + 20, v: D * 0.5, align: 'left', tone: 'blue' });
     if (buzz && shown >= 4) labels.push({ id: 's4', text: '④ WIRES LOSE CONTACT, SLAP BACK', short: '④ WIRES BUZZ', u: -R, v: D + rAmpMax + 40, align: 'left', tone: 'amber' });
@@ -197,7 +197,7 @@ export function makeUprightSound(setupOf: (v: VariantId) => UprightSetup, names:
             <DrumSection spec={spec} reso={S.reso} wires={S.wires} />
             {/* the drummer's stick hand, the arm entering from the frame's edge
                 (kitScene/stickPlayer: a crop of the player, never a loose stick) */}
-            <StrikeArm tip={{ x: -6, y: -9 }} />
+            <StrikeArm tip={{ x: -6, y: -6 }} kind="drum" />
             {/* ① the stick's tip at the strike point */}
             <Group opacity={o1}>
               <Path path={o.strike} style="stroke" strokeWidth={6} color={AMBER} strokeCap="round" strokeJoin="round" />

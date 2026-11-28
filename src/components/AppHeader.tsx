@@ -13,11 +13,14 @@ import { NavIcon, type NavIconName } from './nav/NavIcon';
 import { colors, fonts } from '../theme/tokens';
 
 export function AppHeader({
+  lead,
   right,
   onLogoPress,
   logo,
   title,
 }: {
+  /** Drawn first, top-left (the Dashboard's HOME key, owner 2026-11-20). */
+  lead?: ReactNode;
   right?: ReactNode;
   /** The screen's own title in place of the app wordmark + slogan (owner
    *  2026-10-27: the Study Dashboard said the app's name, not what it is).
@@ -25,7 +28,7 @@ export function AppHeader({
   title?: readonly [string, string];
   /** Dashboard passes this to open About/Credits (Booth 2026-07-08). */
   onLogoPress?: () => void;
-  /** Override the brand logo glyph (Dashboard uses the blue Study icon, owner
+  /** Override the brand logo glyph (Dashboard uses the Study icon, orange since owner 2026-11-24; owner
    *  2026-08-01). Defaults to the company BrandLogo. */
   logo?: ReactNode;
 }) {
@@ -33,6 +36,7 @@ export function AppHeader({
   return (
     <View style={styles.row}>
       <View style={styles.left}>
+        {lead}
         {onLogoPress ? (
           <Pressable onPress={onLogoPress} hitSlop={6} accessibilityRole="button" accessibilityLabel="About this app">
             {glyph}

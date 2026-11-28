@@ -112,7 +112,7 @@ describe('3. each guide quotes its screen’s real names', () => {
   const NAMES: Record<string, string[]> = {
     explore: [
       // bezel readouts + values, the badge
-      'WAVE', 'F0', 'VIEW', 'IDEAL', 'SPEAKER', 'ANALYTIC MODEL — NOT A MEASUREMENT',
+      'WAVE', 'F0', 'VIEW', 'IDEAL', 'SPEAKER', /* Phase 3, owner 2026-11-14 (decision 3, S3 model note): the disclosure is said as one plain sentence under the display; the badge text stays only as the fallback. */
       // dock keys + options
       'SPKR', 'SINE', 'SQUARE', 'TRIANGLE', 'SAW', 'PULSE 25%', '110', '220', '440', '880',
       // the well and the rack's own controls
@@ -218,7 +218,8 @@ describe('6. review round 2026-10-31 — each fix re-proved from the code', () =
   const g = OSCILLATOR_SCREEN_GUIDES;
   it('the guide names BOTH badges (SPKR swaps it)', () => {
     assert.match(s, /\? `PHONE SPEAKER OUTPUT — \$\{SPEAKER_HPF_HZ\} Hz HPF APPLIED`\s*: 'ANALYTIC MODEL — NOT A MEASUREMENT',/);
-    assert.match(g.explore.seeing[2], /with SPKR on, PHONE SPEAKER OUTPUT — 150 Hz HPF APPLIED/);
+    // Phase 3, owner 2026-11-14 (decision 3, S3 model note): the disclosure is said as one plain sentence under the display; the badge text stays only as the fallback.
+    assert.match(g.explore.seeing[2], /drawn from the math, not measured; with SPKR on, the 150 Hz high-pass filter/);
     assert.match(code('src/features/audio/speakerSafety.ts'), /export const SPEAKER_HPF_HZ = 150;/);
   });
   it('the heard sound on the phone speaker is high-passed in any view (110 Hz ≈ −6.5 dB)', () => {
@@ -252,8 +253,10 @@ describe('6. review round 2026-10-31 — each fix re-proved from the code', () =
     assert.match(q, /correct: 'Its timbre — some harmonics drop out — but not its pitch'/);
     const t = [textOf(GUIDES.check), JSON.stringify((g.check as unknown as { intro: unknown }).intro)].join(' ');
     assert.doesNotMatch(t, /how fast the bars shrink|fall away (much )?faster|1\/n|F0 stays|pitch stays|bars go empty|cancels|aliasing|fold back|Sawtooth|harmonics fall away/);
-    assert.match(g.check.tryThis[0], /read the TRIANGLE and SQUARE entries under CONTROLS on LEARN/);
-    assert.match(g.check.tryThis[1], /read the PULSE 25% entry under CONTROLS on LEARN, or long-press PULSE 25% in the WAVE tray/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(g.check.tryThis[0], /open CONTROLS on LEARN and read the TRIANGLE and SQUARE entries/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(g.check.tryThis[1], /open CONTROLS on LEARN and read the PULSE 25% entry, or long-press PULSE 25% in the WAVE tray/);
     assert.match(s, /onLongPress: \(\) => openLesson\(w\.lessonKey\)/);
   });
 });

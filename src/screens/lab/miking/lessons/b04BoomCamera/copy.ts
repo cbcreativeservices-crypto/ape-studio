@@ -79,7 +79,7 @@ export const B04_COPY: Partial<LessonCopy> = {
     workedZone: { close: 'b4.above', wide: 'b4.above.wide', live: 'b4.above' },
     workedAim: 'Aim it at the mouth — the lab counts it while the mic points within about {tol}° of the lips. The operator re-aims it as the talker turns.',
     workedClear: 'Clear of the picture and of people: the mic, the pole and any shadow stay outside every frame; the pole and the operator stay clear of the talker, and nothing swings above anyone. Clearance comes first, before any number.',
-    reveal: 'Above tends to sound the most natural; below, more chest and floor; beside, more of the room at head height; the camera’s mic, the most room of all. Rooms vary, so “it depends on this room” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
+    reveal: 'Above tends to sound the most natural; below, more chest and floor; beside, more of the room at head height; the camera’s mic, the most room of all. Rooms vary, so “it depends on this room” is fair too. Each zone’s TENDS TO HEAR line is an idea to check by ear.',
     typeNotes: {
       locBoomSgCap: 'Ideas to try with the short shotgun: as close as the frame allows, aimed at the mouth; then compare a compact directional mic in the same place if the room is reflective.',
       locBoomHyper: 'Ideas to try with a compact hypercardioid: the same place, matched loudness — listen to the reflected speech and the room behind the talker.',

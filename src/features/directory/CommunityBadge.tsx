@@ -13,6 +13,7 @@
 import { useEffect, useSyncExternalStore } from 'react';
 import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { COMMUNITY_VISIBLE } from '../../config/communityVisible';
+import { createLocalStore } from '../storage/localStore';
 import { colors, fonts } from '../../theme/tokens';
 import {
   badgeA11y,
@@ -106,3 +107,46 @@ const st = StyleSheet.create({
   // ≥ 9 pt (house rule for value text).
   text: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, lineHeight: 14, color: colors.black },
 });
+
+/* ── The academy's message (owner 2026-11-17) [MD:D68] ────────────────────
+ * "Make this a message from the academy then and not a forum post - but it
+ * has to show on the main menu page so user click and read it" (chose "In the
+ * app, this one only"). While unread, the main menu's green New Messages opens
+ * AcademyMessageScreen (the text lives there, loaded only when opened), which
+ * marks it read. Kept HERE, in a module the main menu already loads, so the
+ * app-start graph does not grow (perfStartTrim cap). Read = a device-local
+ * flag on the shared safe store: nothing shows until the flag has been read
+ * (a failed read shows nothing). The key is in the device-level `ape:intro:*`
+ * family, so it survives the guest launch wipe and account switches: once per phone. A later message = a new id + text. */
+export const ACADEMY_MESSAGE_ID = 'welcome-2026-11';
+
+const academyRead = createLocalStore<ReadonlySet<string>>({
+  // In the device-level `ape:intro:*` "seen" family, so the guest launch wipe
+  // and account switches keep it (clearLocalAccountData isOnboardingFlag): a
+  // seen-once message, not a person's work. Without it a guest saw it every launch.
+  key: 'ape:intro:academyMessagesRead:v1',
+  empty: () => new Set<string>(),
+  parse: (parsed) => {
+    if (!Array.isArray(parsed)) throw new Error('academyMessagesRead: not a list');
+    return new Set(parsed.filter((x): x is string => typeof x === 'string'));
+  },
+  serialize: (s) => JSON.stringify([...s]),
+});
+
+/** Pure rule: show only once the record is read and lacks the id. */
+export function academyMessageUnread(hydrated: boolean, read: ReadonlySet<string>): boolean {
+  return hydrated && !read.has(ACADEMY_MESSAGE_ID);
+}
+
+/** True while the main menu should show New Messages for the academy message. */
+export function useAcademyMessageUnread(): boolean {
+  const read = academyRead.use();
+  const hydrated = academyRead.useHydrated();
+  return academyMessageUnread(hydrated, read);
+}
+
+/** Mark it read. A refused write shows the shared save-failure notice (ratchet). */
+export function markAcademyMessageRead(): void {
+  if (academyRead.get().has(ACADEMY_MESSAGE_ID)) return;
+  void academyRead.mutate((s) => (s.has(ACADEMY_MESSAGE_ID) ? s : new Set([...s, ACADEMY_MESSAGE_ID])));
+}

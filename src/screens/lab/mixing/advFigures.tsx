@@ -405,7 +405,7 @@ export function BusChainArt({ chain }: { chain: BusChain }) {
       }
     >
       <Strip {...mix} name="MIX" db={0} cap="master" pan={null} inserts={['COMP', 'DRIVE']} insertOn={[...(on ? [0] : []), ...(chain.driveDb ? [1] : [])]} />
-      <CompFace x={70} y={26} w={262} settings={chain.comp} title="BUS COMP · STEREO-LINKED · NO MAKE-UP" />
+      <CompFace x={70} y={26} w={262} settings={chain.comp} title="BUS COMP · STEREO-LINKED · NO MAKE-UP" offTitle="NO BUS CHAIN: COMPRESSOR OFF" />
       {/* the drive stage: one knob, its real setting */}
       <G>
         <Rect x={70} y={112} width={120} height={84} rx={4} fill={chain.driveDb ? '#1d1f25' : '#15161a'} stroke={chain.driveDb ? '#4a4e57' : '#2a2d33'} strokeWidth={0.8} />

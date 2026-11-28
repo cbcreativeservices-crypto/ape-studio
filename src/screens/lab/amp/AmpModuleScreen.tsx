@@ -224,7 +224,8 @@ export function AmpModuleScreen() {
     <>
       {checks.length ? (
         <>
-          <SectionTitle>CHECK YOURSELF · {answeredCount} OF {checks.length}</SectionTitle>
+          {/* What is LEFT, never "N of total" (owner's decision 2, phase 3). */}
+          <SectionTitle>CHECK YOURSELF{answeredCount < checks.length ? ` · ${checks.length - answeredCount} TO ANSWER` : ' · ✓'}</SectionTitle>
           {checks.map((c) => (
             <CheckCard key={c.id} check={c} onAnswered={(ok) => onCheck(c.id, ok)} />
           ))}
@@ -255,7 +256,7 @@ export function AmpModuleScreen() {
         <Text style={styles.requirement}>
           {needsFinal
             ? 'Submit the final assessment above to complete the lab.'
-            : `Answer the ${checks.length} check${checks.length > 1 ? 's' : ''} above to mark this module complete — a wrong pick is fine; the explanation is the point. NEXT below still moves on; you can come back.`}
+            : `Answer the ${checks.length} check${checks.length > 1 ? 's' : ''} above to mark this module complete — a wrong pick is fine: it shows a hint, then try another. NEXT below still moves on; you can come back.`}
         </Text>
       ) : null}
       {/* Labs never block navigation (owner 2026-09-20/29; bug hunt 2026-09-30):
@@ -295,6 +296,8 @@ export function AmpModuleScreen() {
     end = (
       <LabEndScreen
         labTitle={LAB_TITLE}
+        // The recap and next-lab card (labEndContent.ts, S4).
+        labId="amp"
         units={endUnits}
         cleared={cleared}
         // Either record unread = the end screen's note, never "all left" (D51).
@@ -331,7 +334,7 @@ export function AmpModuleScreen() {
             numbers, so it carries the ⓘ alone. */}
         <LabHeader
           title={endState ? LAB_TITLE.toUpperCase() : mod.title.toUpperCase()}
-          subtitle={endState ? 'What’s left' : `Module ${mod.num} of ${AMP_MODULES.length}${done ? ' · completed' : ''}`}
+          subtitle={endState ? 'What’s left' : `Module ${mod.num}${done ? ' · completed' : ''}`}
           right={
             <AccuracyNote compact detail="This lab MODELS amplifier behavior on your phone — the numbers and curves are teaching tools, not bench measurements. For real amplifier work use proper test gear." />
           }

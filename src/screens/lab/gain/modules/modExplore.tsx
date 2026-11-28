@@ -21,13 +21,15 @@
  *      (markLabUnit fires only when the chain is restored to healthy).
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import { markLabUnit } from '../../../../features/lab/labCompletion';
+import { useMetWhen } from '../../meter/moduleGoal';
 import { RackUnit } from '../../rack/RackUnit';
 import type { DockParam } from '../../rack/rackTypes';
 import { SView } from '../../stageScale';
+import { LabNavProvider, useLabNavContext } from '../../kit/LabNavBar';
 import { ChainStage, DragSlider, GainBtn, stageStatus, stageTint, type StageColSpec } from '../gainViz';
 import { ZoneLegend } from './modLearn';
 import { chainIsHealthy, computeChain, type Stage } from '../gainEngine';
@@ -61,7 +63,8 @@ const SHORT: Record<string, string> = {
 };
 
 /** Honesty badge on every gain-chain glass: simulation on a relative scale. */
-const BADGE = 'SIMULATED SIGNAL CHAIN · RELATIVE dB';
+// S3's plain model note (phase 3, owner decision 3), not an all-caps badge.
+const BADGE = 'A simulated signal chain; levels are relative dB.';
 
 const fmtDb = (v: number) => `${v >= 0 ? '+' : ''}${v} dB`;
 // The dock KEY carries the unit too (emulator pass 2026-10-14: the key read
@@ -83,10 +86,14 @@ const MULTI_START: Gains = { pre: 8, eq: -6, comp: 0, fad: 6, bus: 6, out: 0 };
 
 export function MultiStageModule(_p: GainModuleComponentProps) {
   const [g, setG] = useState<Gains>(MULTI_START);
-  const [xray, setXray] = useState(false);
+  // GN-03 (owner 2026-11-15: "build waves 1 thru 3", D62; audit G2 M6 suggestion 1): X-RAY starts ON,
+  // so the meters are understood before the small SIG / CLIP lights are needed (X-RAY off).
+  const [xray, setXray] = useState(true);
   const stages = useMemo(() => fullChain(g), [g]);
   const nodes = computeChain(-30, stages);
   const healthy = chainIsHealthy(nodes);
+  // The module counts once the chain is balanced (owner's decision 1, phase 3).
+  useMetWhen(healthy);
   const setGain = useCallback((k: string, v: number) => setG((prev) => ({ ...prev, [k]: v })), []);
 
   /** One in-tray DragSlider bound to a chain stage (the group-tray graft). */
@@ -122,7 +129,8 @@ export function MultiStageModule(_p: GainModuleComponentProps) {
       kind: 'group',
       id: 'proc',
       label: 'PROCESS',
-      valueLabel: `${g.eq}·${g.comp} dB`,
+      // GN-03 (owner 2026-11-15, D62): the key names what it opens, not "-6·0 dB".
+      valueLabel: '2 STAGES',
       render: () => (
         <View style={styles.trayCol}>
           {traySlider('eq', 'EQ GAIN')}
@@ -134,7 +142,7 @@ export function MultiStageModule(_p: GainModuleComponentProps) {
       kind: 'group',
       id: 'lvl',
       label: 'LEVELS',
-      valueLabel: `${g.fad}·${g.bus}·${g.out} dB`,
+      valueLabel: '3 STAGES',
       render: () => (
         <View style={styles.trayCol}>
           {traySlider('fad', 'CHANNEL FADER')}
@@ -173,10 +181,10 @@ export function MultiStageModule(_p: GainModuleComponentProps) {
       stage={{
         fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'L',
-        badge: BADGE,
+        modelNote: BADGE,
         bezel: [
           { k: 'MASTER', v: fmtLv(nodes[6].level), tint: stageTint(nodes[6]) },
-          { k: 'HEADROOM', v: `${Math.max(0, -Math.round(nodes[6].level))} dB` },
+          { k: 'HEADROOM', v: `${Math.max(0, -Math.round(nodes[6].level))} dB`, caption: 'until clip' },
           { k: 'X-RAY', v: xray ? 'ON' : 'OFF', tint: xray ? '#7fd4ff' : '#7a7f8a' },
           { k: 'BALANCE', v: healthy ? '✓ OK' : '—', tint: healthy ? colors.green : '#7a7f8a' },
         ],
@@ -197,7 +205,11 @@ export function MultiStageModule(_p: GainModuleComponentProps) {
           <Text style={[styles.noteText, healthy && styles.noteTextGood]}>
             {healthy
               ? '✓ Balanced — a healthy operating level at every stage, no baked-in distortion.'
-              : 'Not balanced yet — flip on the X-Ray, find the stage that is too hot or too weak, and fix it THERE.'}
+              : // GN-03 checker fix (owner 2026-11-15: "build waves 1 thru 3", D62): X-RAY now starts ON,
+                // so the note reads by its state instead of always saying "flip on".
+                xray
+                ? 'Not balanced yet — read the X-Ray meters, find the stage that is too hot or too weak, and fix it THERE.'
+                : 'Not balanced yet — turn X-RAY back on to see every meter, find the stage that is too hot or too weak, and fix it THERE.'}
           </Text>
         </View>
       </View>
@@ -214,6 +226,9 @@ export function FreePlayModule(_p: GainModuleComponentProps) {
   const [xray, setXray] = useState(true);
   const stages = useMemo(() => fullChain(g), [g]);
   const nodes = computeChain(source, stages);
+  // Nothing is graded here: the module counts once you change the source or
+  // a stage (owner's decision 1, phase 3 — practice is the work).
+  useMetWhen(source !== -30 || (Object.keys(FREE_START) as (keyof Gains)[]).some((k) => g[k] !== FREE_START[k]));
   const setGain = useCallback((k: string, v: number) => setG((prev) => ({ ...prev, [k]: v })), []);
 
   const traySlider = (key: string, label: string) => {
@@ -259,7 +274,8 @@ export function FreePlayModule(_p: GainModuleComponentProps) {
       kind: 'group',
       id: 'proc',
       label: 'PROCESS',
-      valueLabel: `${g.eq}·${g.comp} dB`,
+      // GN-03 (owner 2026-11-15, D62): the key names what it opens, not "-6·0 dB".
+      valueLabel: '2 STAGES',
       render: () => (
         <View style={styles.trayCol}>
           {traySlider('eq', 'EQ GAIN')}
@@ -271,7 +287,7 @@ export function FreePlayModule(_p: GainModuleComponentProps) {
       kind: 'group',
       id: 'lvl',
       label: 'LEVELS',
-      valueLabel: `${g.fad}·${g.bus}·${g.out} dB`,
+      valueLabel: '3 STAGES',
       render: () => (
         <View style={styles.trayCol}>
           {traySlider('fad', 'CHANNEL FADER')}
@@ -309,7 +325,7 @@ export function FreePlayModule(_p: GainModuleComponentProps) {
       stage={{
         fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'L',
-        badge: BADGE,
+        modelNote: BADGE,
         bezel: [
           { k: 'SOURCE', v: fmtLv(nodes[0].level), tint: stageTint(nodes[0]) },
           { k: 'MASTER', v: fmtLv(nodes[6].level), tint: stageTint(nodes[6]) },
@@ -349,6 +365,17 @@ const FAULT_EXPLAIN: Record<FaultKey, string> = {
 const INSPECT_NAMES: Record<string, string> = {
   source: 'Source', pre: 'Preamp', eq: 'EQ', comp: 'Compressor', fad: 'Channel Fader', bus: 'Bus', out: 'Master Output',
 };
+/** SH-76 (owner 2026-11-15: "build waves 1 thru 3", D62): one plain line per INSPECT choice, so a
+ *  beginner knows what each stage is before opening it. Says what the stage IS, never its state. */
+const INSPECT_BLURBS: Record<string, string> = {
+  source: 'The mic’s own level, before any gain is added.',
+  pre: 'The first gain stage: it lifts the quiet mic to a working level.',
+  eq: 'The tone control; here its gain moves the whole signal up or down.',
+  comp: 'Evens out loud and soft parts; its output level is what counts here.',
+  fad: 'The channel’s own volume fader.',
+  bus: 'Where channels are added together into a group.',
+  out: 'The last stage, feeding the speakers.',
+};
 
 /** A sane chain (≈ −10 at every point) with ONE stage hot enough to clip —
  *  which cascades, so the master ALWAYS shows CLIP on load (owner spec). */
@@ -366,6 +393,14 @@ export function TroubleshootModule(_p: GainModuleComponentProps) {
   const [g, setG] = useState<Gains>(round.gains);
   const [revealed, setRevealed] = useState<string | null>(null);
   const [found, setFound] = useState(false);
+  // Stages already inspected keep their verdict word under the "?" (beginner
+  // audit 2026-11-14: each went back to "?" when the next was opened).
+  const [visited, setVisited] = useState<Record<string, true>>({});
+  // FINISH in the well waits for the fix (beginner audit 2026-11-14: the big
+  // green FINISH sat under the puzzle before it was solved). Until then the
+  // well offers a quiet link to it, and the strip's FINISH stays: a lab never
+  // blocks navigation.
+  const labNav = useLabNavContext();
 
   const stages = useMemo(() => fullChain(g), [g]);
   const nodes = computeChain(-30, stages);
@@ -384,6 +419,7 @@ export function TroubleshootModule(_p: GainModuleComponentProps) {
     setG(r.gains);
     setRevealed(null);
     setFound(false);
+    setVisited({});
   }, []);
 
   // One device at a time — before AND after the fault is found (owner
@@ -391,6 +427,7 @@ export function TroubleshootModule(_p: GainModuleComponentProps) {
   // single stages, and the dock fader binds to whichever one is open.
   const inspect = (key: string) => {
     setRevealed(key);
+    setVisited((v) => (v[key] ? v : { ...v, [key]: true }));
     if (key === round.faultKey) setFound(true);
   };
 
@@ -409,6 +446,7 @@ export function TroubleshootModule(_p: GainModuleComponentProps) {
       display: revealed === 'source' ? 'meter' : 'hidden',
       onPress: () => inspect('source'),
       active: revealed === 'source',
+      checked: visited.source ? checkedWord(nodes[0]) : undefined,
     },
     ...stages.map((st, i) => {
       const isMaster = st.key === 'out';
@@ -424,6 +462,7 @@ export function TroubleshootModule(_p: GainModuleComponentProps) {
         onPress: !isMaster || found ? () => inspect(st.key) : undefined,
         active: revealed === st.key,
         readout: found && revealed === st.key ? fmtDb(st.gain) : undefined,
+        checked: visited[st.key] ? checkedWord(nodes[i + 1]) : undefined,
       };
     }),
   ];
@@ -437,9 +476,9 @@ export function TroubleshootModule(_p: GainModuleComponentProps) {
       label: 'INSPECT',
       valueLabel: revealed ? SHORT[revealed] : '—',
       options: [
-        { id: 'source', label: INSPECT_NAMES.source },
-        ...FAULT_KEYS.map((k) => ({ id: k, label: INSPECT_NAMES[k] })),
-        ...(found ? [{ id: 'out', label: INSPECT_NAMES.out }] : []),
+        { id: 'source', label: INSPECT_NAMES.source, blurb: INSPECT_BLURBS.source },
+        ...FAULT_KEYS.map((k) => ({ id: k, label: INSPECT_NAMES[k], blurb: INSPECT_BLURBS[k] })),
+        ...(found ? [{ id: 'out', label: INSPECT_NAMES.out, blurb: INSPECT_BLURBS.out }] : []),
       ],
       selectedId: revealed,
       onSelect: inspect,
@@ -464,13 +503,14 @@ export function TroubleshootModule(_p: GainModuleComponentProps) {
   ];
 
   return (
+    <LabNavProvider value={healthy ? labNav : null}>
     <RackUnit
       initialParam="fix"
       params={params}
       stage={{
         fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'L',
-        badge: BADGE,
+        modelNote: BADGE,
         bezel: [
           { k: 'MASTER', v: fmtLv(nodes[6].level), tint: stageTint(nodes[6]) },
           { k: 'STATUS', ...stageStatus(nodes[6]) },
@@ -494,8 +534,8 @@ export function TroubleshootModule(_p: GainModuleComponentProps) {
         <GlossaryText style={styles.body}>
           Real life: you do NOT get a meter at every stage. The master output is clipping — that’s
           all you know. Inspect ONE device at a time and find the FIRST stage that clips (clipping
-          cascades downstream, so work back upstream). Find it, then fix it the same way — one
-          device at a time.
+          cascades downstream, so the culprit is the clipping stage nearest the source; search
+          from either end). Find it, then fix it the same way — one device at a time.
         </GlossaryText>
         <ZoneLegend />
 
@@ -518,9 +558,30 @@ export function TroubleshootModule(_p: GainModuleComponentProps) {
             </Text>
           </View>
         ) : null}
+
+        {!healthy && labNav && !labNav.ending ? (
+          <Pressable
+            onPress={labNav.next}
+            accessibilityRole="button"
+            accessibilityLabel="Leave the puzzle unsolved and see what's left"
+            hitSlop={8}
+            style={styles.quietFinish}
+          >
+            <Text style={styles.quietFinishText}>Not solved yet. Leave anyway: SEE WHAT’S LEFT ›</Text>
+          </Pressable>
+        ) : null}
       </View>
     </RackUnit>
+    </LabNavProvider>
   );
+}
+
+/** The verdict word an inspected, still-hidden column keeps (StageColSpec.checked). */
+function checkedWord(node: Parameters<typeof stageStatus>[0]): { v: string; tint: string } {
+  // GN-02 (owner 2026-11-15, D62): the STATUS word itself (HEALTHY, was "✓ OK"), so the column says
+  // what the meters and the color key say.
+  const st = stageStatus(node);
+  return { v: st.v, tint: st.tint };
 }
 
 const styles = StyleSheet.create({
@@ -544,4 +605,6 @@ const styles = StyleSheet.create({
   noteFound: { borderColor: 'rgba(255,198,77,.45)', backgroundColor: '#17130a' },
   noteText: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: colors.textSecondary },
   noteTextGood: { color: colors.green },
+  quietFinish: { alignSelf: 'flex-start', minHeight: 44, justifyContent: 'center' },
+  quietFinishText: { fontFamily: fonts.barlowMedium, fontSize: 13, color: colors.textSub, textDecorationLine: 'underline' },
 });

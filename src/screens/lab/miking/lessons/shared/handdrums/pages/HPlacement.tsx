@@ -31,8 +31,9 @@ import { Body, Card, Landing, Note, NowLine, Point, PredictCard, ScenarioList, Z
 import { MIC_TYPES, micType } from '../../../../data/micTypes';
 import type { PageProps } from '../../../../pages/pageTypes';
 import { useWorkedMark } from '../../hand/handPages';
-import { handOf } from '../family.ts';
+import { handOf, viewKeyLabels } from '../family.ts';
 import { viewToggle } from '../../../../engine/scene/viewToggle.ts';
+import { zoneActivityLine } from '../../../../engine/progress/zoneActivity.ts';
 
 export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, interactiveDone, variant, setVariant, hidden }: PageProps) {
   const H = handOf(lesson);
@@ -65,7 +66,7 @@ export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, in
   }, [variant, exType]);
   useEffect(() => {
     if (ex.variant !== variant || ex.mics[0].typeId !== exType) return;
-    ex.jumpTo('A', exZone.start);
+    ex.jumpTo('A', exZone.start, exZone.id);
     if (ex.surfaceId !== exZone.refSurface) ex.setSurfaceId(exZone.refSurface);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ex.variant, ex.mics[0].typeId, exZone.id]);
@@ -92,18 +93,18 @@ export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       {
         kind: 'fader',
         id: 'piece',
-        label: 'STEP',
+        label: 'PIECE',
         value: exStep / (worked.length - 1),
         onChange: (v) => setExStep(Math.round(v * (worked.length - 1))),
-        format: () => `${exStep + 1} of ${worked.length} · ${wk.title.toLowerCase()}`,
-        formatShort: () => `${exStep + 1} / ${worked.length}`,
+        format: () => `${wk.title.toLowerCase()}`,
+        formatShort: () => `${exStep + 1}`,
       },
       worked.length,
       exStep,
       (i) => `${i + 1} · ${worked[i].title}`,
       setExStep,
     ),
-    ...viewToggle({ view: exView, setView: setExView, stage: 'dual' }),
+    ...viewToggle({ view: exView, setView: setExView, stage: 'dual', labels: viewKeyLabels(H) }),
   ];
 
   const r0 = rig.readouts('A');
@@ -117,7 +118,12 @@ export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, in
   const lastVersion = useRef(-1);
   useEffect(() => {
     if (rig.version === lastVersion.current) return;
+    const opening = lastVersion.current < 0;
     lastVersion.current = rig.version;
+    // ONE rule in every Placement Studio (fix round 2026-11-14, checker C4):
+    // the pose the studio opens at is GIVEN, never rested; only the learner's
+    // own moves (drag, fader, ZONE, SETUP) count.
+    if (opening) return;
     if (r.zoneId && !r.blocked) setVisited((prev) => (prev.has(r.zoneId!) ? prev : new Set([...prev, r.zoneId!])));
   }, [rig.version, r.zoneId, r.blocked]);
   useEffect(() => {
@@ -127,7 +133,7 @@ export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, in
   const available = zonesAvailable(lesson.zones, variant, mic.typeId, t.mount);
   const params: DockParam[] = [
     ...placementParams({ rig, slot: 'A', posAxis, setPosAxis, aimAxis, setAimAxis }),
-    ...viewToggle({ view: view, setView: setView, stage: 'dual' }),
+    ...viewToggle({ view: view, setView: setView, stage: 'dual', labels: viewKeyLabels(H) }),
     {
       kind: 'group',
       id: 'setup',
@@ -168,7 +174,7 @@ export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       selectedId: zone?.id ?? null,
       onSelect: (id) => {
         const z = lesson.zones.find((q) => q.id === id);
-        if (z) rig.jumpTo('A', z.start);
+        if (z) rig.jumpTo('A', z.start, z.id);
       },
       options: available.map((z) => ({ id: z.id, label: z.label, blurb: z.band })),
     },
@@ -220,7 +226,7 @@ export function HPlacement({ lesson, art, answers, onAnswered, onInteractive, in
           <NowLine text={nowText(rig, ['A'])} />
           {shown.blocked ? <Note tone="warn">{shown.blocked.partId === 'gooseneck' ? 'A clip-on mic reaches only as far as its gooseneck from the rim it clamps to — it stops there.' : `It would touch the ${shown.blocked.label} — the mic stops there.`}</Note> : null}
           {zone ? <ZoneCard z={zone} /> : <Body>{`Not at a suggested starting point. Starting points for this mic${multi ? ' and setup' : ''}: ${available.map((z) => z.label).join('; ') || 'none — try another mic type or setup'}.`}</Body>}
-          <Body>{`Activity: zones rested in, clear of every part — ${visited.size} of 2${visited.size ? ` (${[...visited].map((id) => lesson.zones.find((z) => z.id === id)?.label ?? id).join('; ')})` : ''}.`}</Body>
+          <Body>{zoneActivityLine([...visited].map((id) => lesson.zones.find((z) => z.id === id)?.label ?? id))}</Body>
           {tried && pred ? <Note tone="ok">{`You predicted “${predicted}”. ${pred.after}`}</Note> : null}
           {idea ? <Note>{idea}</Note> : null}
           <Note>Clearance comes first: stop the player before moving a real mic, and check again while they play their loudest, most animated passage.</Note>

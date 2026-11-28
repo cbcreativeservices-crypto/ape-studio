@@ -26,24 +26,25 @@ import type { EqModuleComponentProps } from './registry';
 
 const CUTOFF = 80;
 const SLOPES = [6, 12, 18, 24, 36, 48] as const;
-/** Tray blurbs: what each steepness is FOR. 6 dB/oct = one pole; every +6 is
- *  another pole and a steeper wall (owner 2026-08-28). */
+/** Tray blurbs: what each steepness is FOR (owner 2026-08-28). EQL-03 (owner
+ *  2026-11-15: "build waves 1 thru 3", D62): plain words, no "poles" (each +6
+ *  dB/oct is one more filter order; the engineering name stays in this note). */
 const SLOPE_BLURBS: Record<number, string> = {
-  6: 'One pole (each pole adds 6 dB/oct) — the gentlest tilt there is. Barely a filter: a tone control.',
-  12: 'Two poles — the workhorse. Enough to clean rumble without sounding processed.',
-  18: 'Three poles — noticeably firmer; the classic crossover slope of many PA systems.',
-  24: 'Four poles — a real wall. Common on crossovers, subwoofer crossovers included, where overlap causes trouble.',
-  36: 'Six poles — surgical. Very steep, and the phase shift near the corner grows with it.',
-  48: 'Eight poles — a cliff. Maximum separation, maximum phase cost: nothing is free.',
+  6: 'The gentlest tilt there is. Barely a filter: more like a tone control.',
+  12: 'A common choice: enough to clean up rumble without sounding processed.',
+  18: 'Noticeably firmer; a classic crossover slope on many PA systems.',
+  24: 'A real wall. Common on crossovers, subwoofer crossovers included, where overlap causes trouble.',
+  36: 'Very steep, and near the cutoff the timing shift (phase) grows with it.',
+  48: 'A cliff: the most separation, and the most timing shift (phase). Nothing is free.',
 };
 type Slope = (typeof SLOPES)[number];
 
 const CHECK: CheckSpec = {
   question: '“24 dB per octave” describes…',
   options: [
-    'How quickly attenuation increases beyond the filter’s transition region',
+    'How fast the cut deepens past the cutoff',
     'How much the filter boosts at the cutoff',
-    'How wide the filter’s Q is',
+    'How wide the filter’s bell (its Q) is',
   ],
   correctIdx: 0,
   reveal:
@@ -59,11 +60,16 @@ const CHECK: CheckSpec = {
    * The teaching point survives without the false half: slope is a RATE, Q is
    * not what "per octave" measures.
    */
+  // A reason per wrong option (phase 2, F5's `why`): names the mix-up, never the answer.
+  why: {
+    1: '“Per octave” is a rate, not a boost: it says how something changes from one octave to the next.',
+    2: 'Q shapes the corner, but “per octave” is about how fast something changes, not a width.',
+  },
   wrongHint:
     'Slope is a rate, not a width. A pass filter does have a Q — it sets how much the response peaks right at the corner — but that is not what “per octave” measures.',
 };
 
-export function FilterSlopesModule(_p: EqModuleComponentProps) {
+export function FilterSlopesModule(p: EqModuleComponentProps) {
   const [slope, setSlope] = useState<Slope>(12);
   const order = slope / 6;
 
@@ -118,10 +124,11 @@ export function FilterSlopesModule(_p: EqModuleComponentProps) {
       stage={{
         size: 'M', // teaching chart
         fullScreen: true, // legibility pass 2026-09-26 — the rack renders the dock inside
-        badge: `Butterworth response — ${order} pole${order === 1 ? '' : 's'} (slope settles at ${slope} dB/oct).`,
+        // EQL-03 (D62): one plain sentence instead of "Butterworth response — n poles".
+        badge: `Far below ${CUTOFF} Hz, each octave down is about ${slope} dB quieter.`,
         bezel: [
-          { k: 'SLOPE', v: `${slope} dB/OCT` },
-          { k: 'CUTOFF', v: `${CUTOFF} Hz` },
+          { k: 'SLOPE', caption: 'how steep', v: `${slope} dB/OCT` },
+          { k: 'CUTOFF', caption: 'cut starts', v: `${CUTOFF} Hz` },
           // Geometry proof: the REAL computed attenuation at 40 and 20 Hz.
           { k: '@40 Hz', v: `${atOctBelow.toFixed(1)} dB` },
           { k: '@20 Hz', v: `${atTwoOct.toFixed(1)} dB` },
@@ -152,7 +159,8 @@ export function FilterSlopesModule(_p: EqModuleComponentProps) {
           the −3 dB point (the cutoff) stays put while the slope beyond it swings.
         </Text>
 
-        <CheckQuestion spec={CHECK} />
+        {/* Work done (phase 3, owner's decision 1): this module counts when its check is answered right. */}
+        <CheckQuestion spec={CHECK} onSolved={p.onDone} />
       </View>
     </RackUnit>
   );

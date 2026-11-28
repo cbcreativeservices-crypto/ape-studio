@@ -51,6 +51,10 @@ import {
   Text as SvgText,
 } from 'react-native-svg';
 import { FigureHeadSvg } from '../../../features/lab/figureHeadSvg';
+// (figure V2, wave 7 of D78: the person for scale is a cast member from the front, the approved drawing in SVG)
+import { PersonFrontSvg } from '../../../features/lab/figureV2Svg';
+import { castFor } from '../miking/lessons/shared/figureV2/cast';
+import type { CastMember } from '../miking/lessons/shared/figureV2/cast';
 import { useAnimatedProps, useSharedValue, type SharedValue } from 'react-native-reanimated';
 import { fonts } from '../../../theme/tokens';
 import { CI_JACKET, lightRibbon, polyPath, ribbon, shade, spline, tint, type Pt } from './cableArt';
@@ -1180,7 +1184,13 @@ export function DuctSide({ x0, x1, y, h, m, hangTo }: { x0: number; x1: number; 
  * a body is the shared figure head — FigureHeadSvg — never an ellipse, never
  * the line-art icon).
  */
-export function PersonScale({ x, floorY, m, color = '#4a4f59' }: { x: number; floorY: number; m: number; facing?: 1 | -1; color?: string }) {
+export function PersonScale({ x, floorY, m, who }: { x: number; floorY: number; m: number; facing?: 1 | -1; color?: string; /** (figure V2) who stands here (default: the lab's person for scale) */ who?: CastMember }) {
+  // (figure V2: the cast member from the front, 1.745 m crown to floor as the old figure; m units per metre)
+  return <PersonFrontSvg cx={x} floorY={floorY} px={m / 1000} who={who ?? castFor('cable.person')} heightMm={1745} />;
+}
+
+/** (the old flat graphite figure, kept for reference; no longer drawn) */
+export function PersonScaleOld({ x, floorY, m, color = '#4a4f59' }: { x: number; floorY: number; m: number; facing?: 1 | -1; color?: string }) {
   const u = (1.75 * m) / 175; // 1 unit = 1 cm
   const X = (cm: number) => x + cm * u;
   const Y = (cm: number) => floorY - cm * u;

@@ -14,6 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import { colors, fonts } from '../../theme/tokens';
 import { QUESTIONS, QUESTION_COUNT } from '../../features/careerfinder/questions';
 import { FAMILY_COUNT, familyById } from '../../features/careerfinder/families';
+import { DIMENSION_CODES } from '../../features/careerfinder/dimensions';
 import { CAREER_COUNT } from '../../features/careerfinder/careerIndex';
 import { allAnswered, answeredCount, firstUnansweredIndex, resetCareerFinder, setQuestionIndex, useCareerFinder, useCareerFinderFace, useCareerFinderSaving } from '../../features/careerfinder/store';
 import { Body, Card, CtaButton, FinderShell, Lead, SectionLabel, TextLink } from './kit';
@@ -27,13 +28,16 @@ const fmt = (n: number) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 export const FINDER_INTRO = {
   lead: 'Which kinds of audio work would you enjoy doing?',
   body: `Rate ${QUESTION_COUNT} activities. In about five minutes you’ll have five career families worth exploring, and a place in the Academy to start on each.`,
-  trust: 'Free. No account needed. Your answers stay on this phone.',
-  howTo: 'You’ll answer for activities, not job titles. Answer for enjoyment only — whether you would be good at it, or could do it today, does not matter here. If you don’t know what an activity is like, say so: that is a useful answer, never a low score.',
+  // Comp A text review 2026-11-14 (CF-A0003, Pattern 2): "device", not "phone" — the app runs on tablets too.
+  trust: 'Free. No account needed. Your answers stay on this device.',
+  // CF-A0004 (Comp A 2026-11-14): "answer for activities" was unnatural and the second sentence too long for a phone.
+  howTo: 'You’ll rate activities, not job titles. Rate each one only by how much you would enjoy it. Whether you would be good at it, or could do it today, does not matter here. If you don’t know what an activity is like, say so. That is a useful answer, never a low score.',
   /** A KNOWN guest (owner ruling 2026-10-04: guest data is always deleted,
    *  Career Finder included — and signing in starts the account fresh, so
    *  only signing in FIRST keeps answers). */
   guestTrust: 'Free. You’re not signed in, so your answers are erased when you close the app. Sign in first to keep them.',
-  scope: 'This is a career-exploration tool. It does not measure your worth, guarantee success or determine what you are capable of learning. No percentages, no verdicts, no talent scores — possibilities to explore, with a place to start learning for each.',
+  // CF-A0006 (Comp A 2026-11-14): the "No X, no Y, no Z —" pattern ended in a fragment.
+  scope: 'This is a career-exploration tool. It does not measure your worth, guarantee success or decide what you can learn. It gives no percentages, verdicts or talent scores, only possibilities to explore, each with a place to start learning.',
 };
 
 /** Confirm-then-run, web-safe (react-native-web's Alert is a no-op). */
@@ -107,8 +111,9 @@ export function CareerFinderScreen() {
         </View>
       ) : inProgress ? (
         <View style={styles.actions}>
-          <CtaButton label={`CONTINUE · QUESTION ${Math.min(QUESTION_COUNT, resumeAt + 1)} OF ${QUESTION_COUNT}`} tone="green" onPress={start} a11y={`Continue at question ${resumeAt + 1} of ${QUESTION_COUNT}`} />
-          <Text style={styles.note}>{answered} of {QUESTION_COUNT} answered · {saving ? (guest ? 'kept until you close the app' : 'saved on this phone') : 'not saved on this phone'}{allAnswered(rec) ? ' · all answered' : ''}</Text>
+          {/* Owner decision 2026-11-14 ("Remove them"): progress never shows "N of total"; it says what is left. */}
+          <CtaButton label={`CONTINUE · QUESTION ${Math.min(QUESTION_COUNT, resumeAt + 1)}`} tone="green" onPress={start} a11y={`Continue at question ${resumeAt + 1}`} />
+          <Text style={styles.note}>{allAnswered(rec) ? 'All answered' : `${QUESTION_COUNT - answered} to go`} · {saving ? (guest ? 'kept until you close the app' : 'saved on this device') : 'not saved on this device'}</Text>
         </View>
       ) : (
         <View style={styles.actions}>
@@ -117,8 +122,8 @@ export function CareerFinderScreen() {
               nothing over it (`saving` false), so "Progress is saved as you
               go" was untrue — and answers given before may still be on the
               phone. Same wording rule as the in-progress note above. */}
-          <CtaButton label="START CAREER FINDER" tone="green" onPress={start} hint={saving ? `Begins the ${QUESTION_COUNT} questions. Progress is saved as you go.` : `Begins the ${QUESTION_COUNT} questions. Your answers can’t be saved on this phone right now.`} />
-          <Text style={styles.note}>{saving ? (guest ? FINDER_INTRO.guestTrust : upsell ? FINDER_INTRO.trust : 'Your answers stay on this phone.') : 'Your saved answers couldn’t be read on this phone, so new answers aren’t being saved. Reopen the Career Finder to retry.'}</Text>
+          <CtaButton label="START CAREER FINDER" tone="green" onPress={start} hint={saving ? `Begins the ${QUESTION_COUNT} questions. Progress is saved as you go.` : `Begins the ${QUESTION_COUNT} questions. Your answers can’t be saved on this device right now.`} />
+          <Text style={styles.note}>{saving ? (guest ? FINDER_INTRO.guestTrust : upsell ? FINDER_INTRO.trust : 'Your answers stay on this device.') : 'Your saved answers couldn’t be read on this device, so new answers aren’t being saved. Reopen the Career Finder to retry.'}</Text>
         </View>
       )}
 
@@ -126,7 +131,9 @@ export function CareerFinderScreen() {
         <SectionLabel>HOW TO ANSWER</SectionLabel>
         <Body>{FINDER_INTRO.howTo}</Body>
         <SectionLabel>WHAT YOU GET</SectionLabel>
-        <Body>Your answers become a profile across fourteen kinds of audio work. That profile is compared with {FAMILY_COUNT} career families, and the families that lean on what you enjoy come to the top — with the reason each one appeared, and the Academy topics that lead into it.</Body>
+        {/* CF-A0040/A0041 (Comp A 2026-11-14): "lean on" → "draw most on" (Pattern 1), the 45-word
+            sentence split (Pattern 7), and the count comes from the dimension list (Pattern 13). */}
+        <Body>Your answers become a profile across {DIMENSION_CODES.length} kinds of audio work. That profile is compared with {FAMILY_COUNT} career families, and the families that draw most on what you enjoy come to the top. Each one shows why it appeared and which Academy topics lead into it.</Body>
         <Body>{FINDER_INTRO.scope}</Body>
       </Card>
 
@@ -134,7 +141,7 @@ export function CareerFinderScreen() {
         <View style={{ gap: 8 }}>
           {/* Starred on an UNREADABLE record they live in memory only (hunt
               13, 2026-10-04; K2) — never listed as "saved". */}
-          <SectionLabel tone="green">{saving ? 'SAVED FAMILIES' : 'STARRED FAMILIES — NOT SAVED ON THIS PHONE'}</SectionLabel>
+          <SectionLabel tone="green">{saving ? 'SAVED FAMILIES' : 'STARRED FAMILIES — NOT SAVED ON THIS DEVICE'}</SectionLabel>
           {savedFamilies.map((f) => (
             <Pressable key={f.id} style={styles.savedRow} onPress={() => navigation.navigate('CareerFamily', { id: f.id })} accessibilityRole="button" accessibilityLabel={`Open ${f.name}`}>
               <Text style={styles.savedName} numberOfLines={2}>{f.name}</Text>

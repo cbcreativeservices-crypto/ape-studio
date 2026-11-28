@@ -24,6 +24,7 @@ import { tapsWhenFew } from '../../../engine/rack/fewStops.ts';
 import type { SettingItem, ViewBox, Wedge } from '../../../engine/model/types.ts';
 import { fitXform } from '../../../engine/geometry/frame.ts';
 import { copyOf } from '../../../engine/model/copy.ts';
+import { articleFor } from '../../../engine/journey.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
 import { PageSteps, type MikingStep } from '../../../engine/steps';
 import { Body, Card, Landing, Note, Point, ScenarioList } from '../../../engine/kit';
@@ -38,6 +39,10 @@ import { CueMixPlan } from '../monitoring/CueMixPlan';
 import { PAL, poly, rr, smooth, type SkPath } from './luteDraw';
 import { LuteSceneArt } from './LuteArt';
 import { Head } from './lutePlayers';
+// (figure V2, wave 6 of D78: the accompanists in the approved look, behind the spec's `v2`)
+import { MarkerTopV2 } from '../figureV2/elsewhereTop';
+import { castForKey } from '../figureV2/markerPose';
+import { CAST, type CastId, type CastMember } from '../figureV2/cast';
 
 const AMBER = '#ffc64d';
 const GREY = '#8a8f9c';
@@ -54,8 +59,21 @@ function Shadow({ path }: { path: SkPath }) {
   );
 }
 
+/** (cast figures 2026-11-26) who plays each accompaniment, by the object's id (castForKey: the same object, the
+ *  same person, every time) — except the tanpura, whose key falls on Mei, the veena player herself: the
+ *  tanpura is the drummer on both plans it is on (the sitar's: Ana plays, Kofi the tabla; the veena's: Mei
+ *  plays, Ruth the mridangam), so no plan shows one person twice. */
+const ACCOMPANIST_WHO: Readonly<Record<string, CastId>> = { tanpura: 'drummer' };
+export const accompanistWho = (id: string): CastMember => (ACCOMPANIST_WHO[id] ? CAST[ACCOMPANIST_WHO[id]] : castForKey(id));
+
 /** A seated accompanist from above: shoulders and a bald head, facing the audience. */
-function Seated({ x, z, w = 210 }: { x: number; z: number; w?: number }) {
+function Seated({ x, z, w = 210, v2 = false, id = '' }: { x: number; z: number; w?: number; /** (figure V2) the accompanist in the approved look (from above: shoulders, back and head; the neck 18 mm behind the old head's point, facing the audience) */ v2?: boolean; id?: string }) {
+  if (v2)
+    return (
+      <Group transform={[{ translateX: x }, { translateY: z - 18 }]}>
+        <MarkerTopV2 who={accompanistWho(id)} facing={Math.PI / 2} />
+      </Group>
+    );
   const p = smooth([
     [x - w, z + 10],
     [x - w * 0.8, z - 70],
@@ -138,13 +156,13 @@ function VocalPlan({ o, hi }: { o: LutePlanObject; hi: boolean }) {
 }
 
 /** A riq (frame drum with jingles) held by a seated percussionist. */
-function RiqPlan({ o, hi }: { o: LutePlanObject; hi: boolean }) {
+function RiqPlan({ o, hi, v2 = false }: { o: LutePlanObject; hi: boolean; v2?: boolean }) {
   const { x, z } = o.at;
   const dz = z + 190;
   const frame = poly(Array.from({ length: 40 }, (_, i) => [x + 115 * Math.cos((i / 40) * Math.PI * 2), dz + 115 * Math.sin((i / 40) * Math.PI * 2)]));
   return (
     <Group>
-      <Seated x={x + ACCOMPANIST.riq.head.dx} z={z + ACCOMPANIST.riq.head.dz} w={ACCOMPANIST.riq.w} />
+      <Seated x={x + ACCOMPANIST.riq.head.dx} z={z + ACCOMPANIST.riq.head.dz} w={ACCOMPANIST.riq.w} v2={v2} id={o.id} />
       <Shadow path={frame} />
       <Path path={frame}>
         <LinearGradient start={vec(x - 115, dz - 115)} end={vec(x + 115, dz + 115)} colors={A(PAL.walnut)} />
@@ -171,7 +189,7 @@ function RiqPlan({ o, hi }: { o: LutePlanObject; hi: boolean }) {
 }
 
 /** The tabla pair from above: the wooden dayan and the metal bayan, each with its black spot. */
-function TablaPlan({ o, hi }: { o: LutePlanObject; hi: boolean }) {
+function TablaPlan({ o, hi, v2 = false }: { o: LutePlanObject; hi: boolean; v2?: boolean }) {
   const { x, z } = o.at;
   const dayan = { x: x - 110, z: z + 60, r: 80 };
   const bayan = { x: x + 120, z: z + 50, r: 118 };
@@ -187,7 +205,7 @@ function TablaPlan({ o, hi }: { o: LutePlanObject; hi: boolean }) {
   };
   return (
     <Group>
-      <Seated x={x + ACCOMPANIST.tabla.head.dx} z={z + ACCOMPANIST.tabla.head.dz} w={ACCOMPANIST.tabla.w} />
+      <Seated x={x + ACCOMPANIST.tabla.head.dx} z={z + ACCOMPANIST.tabla.head.dz} w={ACCOMPANIST.tabla.w} v2={v2} id={o.id} />
       {[dayan, bayan].map((d, i) => (
         <Group key={`d${i}`}>
           <Circle cx={d.x + 8} cy={d.z + 12} r={d.r + 14} color="#000" opacity={0.5}>
@@ -211,14 +229,14 @@ function TablaPlan({ o, hi }: { o: LutePlanObject; hi: boolean }) {
 }
 
 /** A tanpura held upright by a seated player: from above, its gourd and the neck's top. */
-function TanpuraPlan({ o, hi }: { o: LutePlanObject; hi: boolean }) {
+function TanpuraPlan({ o, hi, v2 = false }: { o: LutePlanObject; hi: boolean; v2?: boolean }) {
   const { x, z } = o.at;
   const gx = x - 170;
   const gz = z + 60;
   const outline = rr(x - 340, z - 120, x + 230, z + 230, 80);
   return (
     <Group>
-      <Seated x={x + ACCOMPANIST.tanpura.head.dx} z={z + ACCOMPANIST.tanpura.head.dz} w={ACCOMPANIST.tanpura.w} />
+      <Seated x={x + ACCOMPANIST.tanpura.head.dx} z={z + ACCOMPANIST.tanpura.head.dz} w={ACCOMPANIST.tanpura.w} v2={v2} id={o.id} />
       <Circle cx={gx + 8} cy={gz + 12} r={150} color="#000" opacity={0.5}>
         <BlurMask blur={14} style="normal" />
       </Circle>
@@ -240,7 +258,7 @@ function TanpuraPlan({ o, hi }: { o: LutePlanObject; hi: boolean }) {
 }
 
 /** A mridangam (a two-headed barrel drum) across a seated player's lap. */
-function MridangamPlan({ o, hi }: { o: LutePlanObject; hi: boolean }) {
+function MridangamPlan({ o, hi, v2 = false }: { o: LutePlanObject; hi: boolean; v2?: boolean }) {
   const { x, z } = o.at;
   const L = 330;
   const barrel = smooth([
@@ -258,7 +276,7 @@ function MridangamPlan({ o, hi }: { o: LutePlanObject; hi: boolean }) {
   }
   return (
     <Group>
-      <Seated x={x + ACCOMPANIST.mridangam.head.dx} z={z + ACCOMPANIST.mridangam.head.dz} w={ACCOMPANIST.mridangam.w} />
+      <Seated x={x + ACCOMPANIST.mridangam.head.dx} z={z + ACCOMPANIST.mridangam.head.dz} w={ACCOMPANIST.mridangam.w} v2={v2} id={o.id} />
       <Shadow path={barrel} />
       <Path path={barrel}>
         <LinearGradient start={vec(x - L, z - 140)} end={vec(x + L, z + 140)} colors={A(PAL.jack)} />
@@ -316,7 +334,7 @@ function PaPlan({ o, hi }: { o: LutePlanObject; hi: boolean }) {
 
 /** `plan`: the lesson's close-up box (lutePlanModel LUTE_PLANS); the objects
  *  are laid out from the scene (lutePlanObjects). */
-export type LutePlanSpec = { plan: { near: ViewBox }; hearing: string };
+export type LutePlanSpec = { plan: { near: ViewBox }; hearing: string; /** (figure V2, wave 6 of D78) the accompanists in the approved look — OFF by default: the lesson switches it with its own player */ v2?: boolean };
 
 /** Where a headphone-mix word points: its mixer, or the control-room box. */
 function cuePoint(rig: CueRig, id: string): { u: number; v: number } {
@@ -440,10 +458,10 @@ export function makeLutePlanPage(built: BuiltLute, spec: LutePlanSpec) {
                 <Path path={hatch} style="stroke" strokeWidth={6} color={GREY} opacity={0.35} />
               </Group>
               <Path path={space} style="stroke" strokeWidth={6} color={GREY} opacity={0.7} />
-              {objs.filter((o) => o.kind === 'tanpura').map((o) => <TanpuraPlan key={o.id} o={o} hi={lit.has(o.id)} />)}
-              {objs.filter((o) => o.kind === 'tabla').map((o) => <TablaPlan key={o.id} o={o} hi={lit.has(o.id)} />)}
-              {objs.filter((o) => o.kind === 'mridangam').map((o) => <MridangamPlan key={o.id} o={o} hi={lit.has(o.id)} />)}
-              {objs.filter((o) => o.kind === 'riq').map((o) => <RiqPlan key={o.id} o={o} hi={lit.has(o.id)} />)}
+              {objs.filter((o) => o.kind === 'tanpura').map((o) => <TanpuraPlan key={o.id} o={o} hi={lit.has(o.id)} v2={!!spec.v2} />)}
+              {objs.filter((o) => o.kind === 'tabla').map((o) => <TablaPlan key={o.id} o={o} hi={lit.has(o.id)} v2={!!spec.v2} />)}
+              {objs.filter((o) => o.kind === 'mridangam').map((o) => <MridangamPlan key={o.id} o={o} hi={lit.has(o.id)} v2={!!spec.v2} />)}
+              {objs.filter((o) => o.kind === 'riq').map((o) => <RiqPlan key={o.id} o={o} hi={lit.has(o.id)} v2={!!spec.v2} />)}
               {objs.filter((o) => o.kind === 'sidefill').map((o) => <SideFillPlan key={o.id} o={o} hi={lit.has(o.id)} />)}
               {objs.filter((o) => o.kind === 'pa').map((o) => <PaPlan key={o.id} o={o} hi={lit.has(o.id)} />)}
               {floorWedges.map((wd) => (
@@ -491,7 +509,7 @@ export function makeLutePlanPage(built: BuiltLute, spec: LutePlanSpec) {
             if (it) pick(it.id);
           },
           format: () => (sel ? `${byId(sel)?.short ?? ''} · ${byId(sel)?.tag ?? ''}` : `step through the ${list.length} items`),
-          formatShort: () => (sel ? (byId(sel)?.short ?? '').slice(0, 9) : 'STEP'),
+          formatShort: () => (sel ? (byId(sel)?.short ?? '').slice(0, 9) : 'PICK'),
         },
         list.length,
         list.findIndex((q) => q.id === sel),
@@ -501,7 +519,7 @@ export function makeLutePlanPage(built: BuiltLute, spec: LutePlanSpec) {
     };
     const bezel = (sel: SettingItem | undefined, extra?: BezelItem): BezelItem[] => [
       { k: 'ITEM', v: sel ? sel.short : 'TAP ONE', flex: 1.4 },
-      { k: `FOR ${/^[aeiou]/i.test(lesson.noun.one) ? 'AN' : 'A'} ${lesson.noun.one.toUpperCase()} MIC`, v: sel ? sel.tag : '—', flex: 1.5 },
+      { k: `FOR ${articleFor(lesson.noun.one).toUpperCase()} ${lesson.noun.one.toUpperCase()} MIC`, v: sel ? sel.tag : '—', flex: 1.5 },
       ...(extra ? [extra] : []),
     ];
     const card = (it: SettingItem | undefined, idle: string) =>

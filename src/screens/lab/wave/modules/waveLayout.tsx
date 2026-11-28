@@ -18,11 +18,15 @@
  * guided-lesson entry at the bottom (the host's row is skipped in rack mode).
  * The layout law: reading may scroll; operating may not.
  */
-import type { ReactNode } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
-import { PanelCard } from '../../digital/bits';
-import { RackUnit } from '../../rack/RackUnit';
+import { PanelCard, ReadoutGrid } from '../../digital/bits';
+import { WAVE_CAPTIONS } from '../../foundations/bezelCaptions';
+import { captionedRack } from '../../foundations/captionedRack';
+import { GoDeeper } from '../../foundations/GoDeeper';
+
+const RackUnit = captionedRack(WAVE_CAPTIONS, { modelNotes: true, drawingPlaceholder: true });
 import type { BezelItem, DockParam, StageSize } from '../../rack/rackTypes';
 
 /** A wave module's Rack Unit declaration (see rackTypes for the grammar). */
@@ -89,6 +93,8 @@ export function WaveLayout({
           render: rack.stage,
           size: rack.size ?? 'L',
           badge: rack.badge,
+          // First-visit captions (phase 2), the plain model note and "drawing…"
+          // (phase 3): foundations/captionedRack, 2026-11-14.
           bezel: rack.bezel,
           onGuide: rack.onGuide,
           // FULL SCREEN for all 16 modules (legibility pass 2026-09-25): the
@@ -99,13 +105,24 @@ export function WaveLayout({
         initialParam={rack.initialParam}
         onHelp={rack.onHelp}
       >
+        {/* BEGINNER CORE FIRST (owner's decision 5, 2026-11-14; G1b S9: the
+            reading window opened on number tiles and a second graph). Checker
+            K3 F-2: five modules (9, 11, 13, 14, 15) have no `explain` and keep
+            their teaching prose and instructions in the readouts card, so the
+            readouts card stays OPEN; only its number table folds (each
+            module's FoldedReadoutGrid). The second graph and COMMON MISTAKES
+            fold under GO DEEPER ▾. Nothing is removed. */}
         <View style={{ gap: 12 }}>
           {explain}
           {readouts}
-          {secondary}
           {controls}
-          {mistakes}
           {check}
+          {secondary || mistakes ? (
+            <GoDeeper hint={secondary ? 'The second graph and the common mistakes.' : 'The common mistakes.'}>
+              {secondary}
+              {mistakes}
+            </GoDeeper>
+          ) : null}
           {/* Guided-lesson entry lives at the BOTTOM (owner 2026-07-29) — the
               host's row is outside the rack, so the well carries its own. */}
           <Pressable
@@ -150,3 +167,14 @@ const styles = StyleSheet.create({
   },
   lessonRowText: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.9, color: colors.textSecondary },
 });
+
+/** The module's number table, folded under GO DEEPER ▾ (owner's decision 5;
+ *  checker K3 F-2): the prose and instructions around it in the readouts card
+ *  stay open, only the tile table is one tap away. */
+export function FoldedReadoutGrid(props: ComponentProps<typeof ReadoutGrid>) {
+  return (
+    <GoDeeper hint="Every number in full.">
+      <ReadoutGrid {...props} />
+    </GoDeeper>
+  );
+}

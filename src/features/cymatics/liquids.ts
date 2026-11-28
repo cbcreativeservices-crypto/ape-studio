@@ -39,7 +39,7 @@ export const LIQUIDS: readonly Liquid[] = [
   { id: 'mineral_light', label: 'Light mineral oil', rho: 850, mu: 0.02, sigma: 0.03, consistency: 'medium', blurb: 'Twenty times water’s viscosity — you need a strong shake, and the patterns are broad, soft stripes.', tint: '#8a7a3c', gloss: 0.8 },
   { id: 'oil_thick', label: 'Thick oil', rho: 900, mu: 0.2, sigma: 0.032, consistency: 'thick', blurb: 'Two hundred times water: the surface mostly follows the platform. Faraday patterns need more acceleration than this rig provides.', tint: '#6d5a1f', gloss: 0.7 },
   { id: 'gel', label: 'Gel-like fluid', rho: 1050, mu: 1.0, sigma: 0.06, consistency: 'very thick', blurb: 'Viscous damping wins everywhere in this rig’s range — an honest “no pattern” result.', tint: '#4f6b5a', gloss: 0.5 },
-  { id: 'cornstarch', label: 'Cornstarch + water', rho: 1200, mu: 0.05, sigma: 0.06, consistency: 'shear-thickening', blurb: 'Non-Newtonian: the harder it is shaken, the stiffer it gets. Ripples damp out instead of organising; the famous “holes and fingers” appear only far above this rig’s range.', tint: '#b9b09a', gloss: 0.35, shearThickening: true },
+  { id: 'cornstarch', label: 'Cornstarch + water', rho: 1200, mu: 0.05, sigma: 0.06, consistency: 'shear-thickening', blurb: 'Non-Newtonian: the harder it is shaken, the stiffer it gets. Ripples damp out instead of organizing; the famous “holes and fingers” appear only far above this rig’s range.', tint: '#b9b09a', gloss: 0.35, shearThickening: true },
 ];
 
 export const LIQUID_BY_ID: Record<LiquidId, Liquid> = Object.fromEntries(LIQUIDS.map((l) => [l.id, l])) as Record<LiquidId, Liquid>;

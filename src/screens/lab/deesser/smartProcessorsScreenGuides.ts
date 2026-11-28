@@ -34,16 +34,16 @@ import type { ScreenGuide } from '../../../features/lab/screenGuide/types';
 export const SMART_PROCESSORS_HOME_GUIDE: ScreenGuide = {
   intro: {
     learning: 'Smart processors listen, decide, then act. The de-esser lab shows you which parts do the listening and deciding, and how they tame the harsh S sounds in a voice.',
-    start: 'Tap the De-Esser & Sibilance Control row and work through its pages in order. When you’re done, come back here and answer the five CHECK YOUR UNDERSTANDING questions.',
+    start: 'Tap START › on the De-Esser & Sibilance Control row and work through its pages in order. When you’re done, come back here and answer the five CHECK YOUR UNDERSTANDING questions.',
   },
   seeing: [
-    'This is the Smart Processors menu. Every processor here listens first, decides, then acts. Each is built from a detector, a threshold, a gain computer and a choice of what to change.',
-    'One lab is here: De-Esser & Sibilance Control, marked OPEN.',
-    'Below it, CHECK YOUR UNDERSTANDING holds five questions on the de-esser.',
+    'This is the Smart Processors menu. Every processor here listens first: a detector and a threshold decide when to turn the sound down, and by how much.',
+    'One lab is here: De-Esser & Sibilance Control. START › on its row opens it.',
+    'Below it, under AFTER THE DE-ESSER LAB, CHECK YOUR UNDERSTANDING holds five questions on the de-esser.',
   ],
   control: [
-    'Tap the De-Esser & Sibilance Control row to open the lab. ‹ goes back to the Dynamics list.',
-    'In the check, tap the answer you think is right. CORRECT explains why. NOT QUITE — TRY ANOTHER explains the miss, and you can pick again right away. Nothing is scored.',
+    'Tap START › on the De-Esser & Sibilance Control row to open the lab. ‹ goes back to the Dynamics list.',
+    'In the check, tap the answer you think is right. CORRECT explains why. NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation. Nothing is scored.',
     'Inside the de-esser lab, tap ⓘ beside any page title to have that page explained.',
   ],
   changes: [
@@ -123,7 +123,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
     ],
     control: [
       'Tap STATIC EQ CUT · −8 dB or DE-ESSER to switch between the two fixes. ⤢ FULL SCREEN enlarges the drawing with both buttons docked.',
-      'In the UNDERSTANDING CHECK below, tap an answer to see its explanation.',
+      'In the UNDERSTANDING CHECK below, tap an answer: a right one shows its explanation, a wrong one a hint.',
     ],
     changes: [
       'The EQ cut never switches off, so every frame loses 8 dB of hiss: vowels, breaths and gaps too.',
@@ -136,7 +136,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
     ],
     tryThis: [
       'Tap STATIC EQ CUT · −8 dB: the readout takes 8.0 dB from everything that is not an S. Tap DE-ESSER: 0.0 dB.',
-      'With DE-ESSER on, read the second number: the S’s drop by about 7.0 dB while the vowels keep their brightness.',
+      'With DE-ESSER on, read the second number: the S’s drop by about 6.0 dB while the vowels keep their brightness.',
       'Look at a vowel in HISS BAND ALONE. With the EQ cut, the output sits below its ghost; with DE-ESSER, the two line up.',
     ],
   },
@@ -148,28 +148,28 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
       start: 'Tap NEXT BLOCK › to step through the diagram, reading the card for each block. Then tap WALK THE SIGNAL and follow the lit block from INPUT to OUTPUT.',
     },
     seeing: [
-      'SIGNAL PATH shows two routes. The MAIN PATH carries the voice to a gain element. The SIDE CHAIN listens to a copy: BAND-PASS, DETECTOR, THRESHOLD, GAIN COMP.',
-      'In split-band mode, where the lab starts, the main path adds a BAND SPLIT and a SUM.',
+      'SIGNAL PATH shows two routes. The MAIN PATH carries the voice to a gain element. The SIDE CHAIN listens to a copy: BAND-PASS, DETECTOR, THRESHOLD, HOW MUCH.',
+      'Until you reach Broadband vs Split-Band it shows the plain BROADBAND wiring. After that page it follows your choice there: SPLIT-BAND adds a BAND SPLIT and a SUM.',
       'The card under the diagram names the lit block and tells you what it does.',
     ],
     control: [
       'Tap a block, or tap NEXT BLOCK › to step through them. WALK THE SIGNAL steps on its own; STOP halts it.',
-      '⤢ FULL SCREEN enlarges the diagram with the card docked. The diagram follows the BROADBAND / SPLIT-BAND choice you make on Broadband vs Split-Band.',
-      'In the UNDERSTANDING CHECK at the end, tap an answer to see its explanation.',
+      '⤢ FULL SCREEN enlarges the diagram with the card docked.',
+      'In the UNDERSTANDING CHECK at the end, tap an answer: a right one shows its explanation, a wrong one a hint.',
     ],
     changes: [
       'The band-pass filter sits in the side chain, not the main path. It only shapes what the detector hears.',
       'So the decision is made on the hiss alone, and the voice passes untouched until the gain moves.',
-      'In split-band, only the hiss band meets the gain element. With no reduction, the two bands add back up to the voice as it came in.',
+      'Broadband vs Split-Band adds a second wiring, where only the hiss band meets the gain element. With no reduction, the two bands add back up to the voice as it came in.',
     ],
     teaches: [
-      'A de-esser is a compressor with a filtered ear. It uses the detector, threshold and gain computer you met in Compression.',
+      'A de-esser is a compressor with a filtered ear. It uses the detector and threshold you met in Compression, then works out how much to turn down.',
       'Many de-essers listen through a high-pass filter instead of a band-pass, or offer both. Either way, the filter steers only the decision, not the sound.',
     ],
     tryThis: [
       'Tap BAND-PASS, then GAIN. The filter sits in the side chain; the voice itself never passes through it.',
-      'In split-band, tap WALK THE SIGNAL. The lit block runs INPUT, BAND SPLIT, around the side chain, then GAIN, SUM, OUTPUT.',
-      'On Broadband vs Split-Band choose BROADBAND, then walk the signal here again: no BAND SPLIT or SUM, so the whole voice meets the gain. Set it back to SPLIT-BAND after.',
+      'Tap WALK THE SIGNAL. The lit block runs INPUT, around the side chain (BAND-PASS, DETECTOR, THRESHOLD, HOW MUCH), then GAIN, OUTPUT.',
+      'After Broadband vs Split-Band, with SPLIT-BAND chosen there, walk the signal here again: a BAND SPLIT before the gain and a SUM after it join the main path.',
     ],
   },
 
@@ -187,7 +187,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
     control: [
       'Drag the Threshold slider from −40 to 0 dB. ⤢ FULL SCREEN docks the readout and slider under the enlarged trace.',
       'The lab keeps one set of de-esser settings while it’s open, so the threshold you set here carries to the other pages.',
-      'In the UNDERSTANDING CHECK at the end, tap an answer to see its explanation.',
+      'In the UNDERSTANDING CHECK at the end, tap an answer: a right one shows its explanation, a wrong one a hint.',
     ],
     changes: [
       'Above the line the de-esser turns down; below it, nothing happens at all. This de-esser has a hard knee: no gentle in-between zone.',
@@ -219,7 +219,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
       'Detector frequency slider: 2.0–10.0 kHz. Band width: Q 0.7 (wide) to Q 4.0 (narrow). The higher the Q, the narrower the band.',
       'The sibilant buttons pick the sound to look at: “s” · 6.5k, “z” · 6.0k, “sh” · 4.0k, “s” · 7.0k, “s” · 6.8k.',
       'A STARTING POINTS button moves the detector to a suggested place and shows a short note. ⤢ FULL SCREEN docks the controls under the spectrum.',
-      'In the UNDERSTANDING CHECK at the end, tap an answer to see its explanation.',
+      'In the UNDERSTANDING CHECK at the end, tap an answer: a right one shows its explanation, a wrong one a hint.',
     ],
     changes: [
       'The band hears most at its center and less on either side. Aim it too low and it hears the voice; too high and it misses the S.',
@@ -273,7 +273,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
   mode: {
     intro: {
       learning: 'Broadband and split-band de-essers make the same decision but act differently: broadband turns the whole sound down, split-band only the hiss band.',
-      start: 'Tap JUMP TO AN S, then switch between BROADBAND and SPLIT-BAND. Watch the cyan body bar: does it drop with the hiss, or stay put?',
+      start: 'The page opens on an S. Switch between BROADBAND and SPLIT-BAND and watch the cyan body bar: does it drop with the hiss, or stay put?',
     },
     seeing: [
       'Two buttons choose the mode: BROADBAND or SPLIT-BAND. The strip shows the output frame by frame, with the input as a ghost.',
@@ -284,7 +284,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
       'BROADBAND or SPLIT-BAND sets what gets turned down. Step frames with ‹ and ›; AUTO-STEP runs through them; JUMP TO AN S skips to the next sibilant.',
       '⤢ FULL SCREEN under either drawing docks the same buttons.',
       'The mode you choose here carries to The Detection Path and Over-De-Essing.',
-      'In the UNDERSTANDING CHECK at the end, tap an answer to see its explanation.',
+      'In the UNDERSTANDING CHECK at the end, tap an answer: a right one shows its explanation, a wrong one a hint.',
     ],
     changes: [
       'Same decision, different action: broadband turns the whole frame down, split-band only the hiss band.',
@@ -297,7 +297,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
       'The mode never changes when the de-esser acts, only what it turns down.',
     ],
     tryThis: [
-      'Set detector 6.5 kHz, Q 1.4, Threshold −10 dB, Range 8.0 dB. JUMP TO AN S lands on frame 3, “s”, at −7.2 dB reduction. In BROADBAND its body bar drops too; in SPLIT-BAND it stays.',
+      'Set detector 6.5 kHz, Q 1.4, Threshold −10 dB, Range 8.0 dB. The page opens on frame 3, “s”, at −7.2 dB reduction. In BROADBAND its body bar drops too; in SPLIT-BAND it stays.',
       'Step to frame 8, “a”: no reduction, so both modes pass it untouched.',
       'In BROADBAND, tap AUTO-STEP and watch the body bars dip on each S. That dip is the duck you’d hear on the whole voice.',
     ],
@@ -316,7 +316,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
     control: [
       'The How hard slider runs 0–100%. It lowers the threshold from 0 to −24 dB with the range wide open.',
       'RESET RACK TO DEFAULTS puts every de-esser setting back where the lab started. ⤢ FULL SCREEN docks the slider.',
-      'In the UNDERSTANDING CHECK at the end, tap an answer to see its explanation.',
+      'In the UNDERSTANDING CHECK at the end, tap an answer: a right one shows its explanation, a wrong one a hint.',
     ],
     changes: [
       'Pushing harder takes more off each S: first tamed, then softened, then blurred, then gone.',
@@ -329,7 +329,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
     ],
     tryThis: [
       'Slide How hard to 25% (threshold −6 dB): Transparent. Then 45%: Controlled. Then 75%: Lisping.',
-      'At 100% (threshold −24 dB) the card reads Dull and lifeless, about 16 dB off the S’s. Tap RESET RACK TO DEFAULTS when you’re done.',
+      'At 100% (threshold −24 dB) the card reads Dull and lifeless: about 16 dB of gain reduction, with the S’s down about 12 dB. Tap RESET RACK TO DEFAULTS when you’re done.',
     ],
   },
 
@@ -345,10 +345,10 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
     ],
     control: [
       'Tap OPEN › on a row to open that lab. Going back returns you here.',
-      'Tap an answer to the closing question to see its explanation. FINISH · SEE WHAT’S LEFT lists any page you haven’t done yet.',
+      'Tap an answer to the closing question: a right one shows its explanation, a wrong one a hint. FINISH · SEE WHAT’S LEFT lists any page you haven’t done yet.',
     ],
     changes: [
-      'Each link shows the same idea from another side. Compression has the same detector, threshold and gain computer; Gate / Expander uses the threshold the other way around.',
+      'Each link shows the same idea from another side. Compression has the same detector, threshold and how-much step; Gate / Expander uses the threshold the other way around.',
     ],
     teaches: [
       'Every part of a de-esser comes from tools you already know, so one sentence can sum it up.',
@@ -370,7 +370,7 @@ export const DEESSER_SCREEN_GUIDES: Record<DeEsserPageId, ScreenGuide> = {
 export const DEESSER_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'A review of the de-esser: where sibilance sits, how the detector hears it, and how threshold, frequency, range and mode decide what gets turned down.',
-    start: 'Tap the first page still listed under WHAT\'S LEFT and work down in order. Then tap the CHECK row and answer the five questions.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
     'WHAT\'S LEFT lists each page you haven’t done, then a CHECK row: the five Smart Processors questions. LAB COMPLETE shows once every page is done and the check is passed.',
@@ -385,8 +385,8 @@ export const DEESSER_END_GUIDE: ScreenGuide = {
     'In the strip above, ‹ PREV returns to the page you came from. WHAT\'S LEFT ▾ lists every page, with START OVER (PRACTICE) at its foot. START OVER asks first, then clears the page ✓ marks; a passed check stays.',
   ],
   changes: [
-    'A page counts as done when you use one of its controls (not FULL SCREEN or RESET RACK TO DEFAULTS), answer its check right, or press NEXT.',
-    'Connections & Check counts when you answer its closing question right, or tap FINISH. Opening a page from a list doesn’t count it.',
+    'A page with a check counts when you answer its check right. What Sibilance Is and Reading Gain Reduction have none: they count when you press NEXT.',
+    'Connections & Check counts when you answer its closing question right; FINISH alone doesn’t. Opening a page, or using its controls, doesn’t count it.',
     'You can pass the five-question check here or on the Smart Processors Lab page; either one counts.',
   ],
   teaches: [

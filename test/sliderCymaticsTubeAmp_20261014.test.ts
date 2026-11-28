@@ -156,7 +156,11 @@ test('LEVEL (amp M4) is locked with a reason while class A SIGNAL is off', () =>
 
 // ── 11 · Tube lanes lead with a moving number ───────────────────────────────
 test('Tube GRID V / BIAS / DRIVE lanes show a percentage before the word', () => {
-  assert.match(TUBE, /format: \(x\) => `\$\{pct\(x\)\} · \$\{word\(x\)\}`/);
-  assert.match(TUBE, /format: \(x\) => `\$\{pct\(x\)\} · \$\{x < 0\.22 \? 'too negative'/);
+  // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item TB-02): GRID V's %
+  // now says what it measures ("open"), still before the word; at cutoff the owner's
+  // words (hold #10) stand, and the other words are the bezel's (SH-27: never cut at 390).
+  assert.match(TUBE, /format: \(x\) => \(x <= GRID_CUTOFF \? `\$\{pct\(x\)\} · \$\{CUTOFF_WORDS\}` : `\$\{pct\(x\)\} open · \$\{gridState\(x\)\.toLowerCase\(\)\}`\),/);
+  // owner 2026-11-25, fix-first 15 (round 2, audit B7): the zone comes from biasZone (same 22 % / 80 %).
+  assert.match(TUBE, /format: \(x\) => `\$\{pct\(x\)\} · \$\{biasZone\(x\) === 'cutoff' \? 'too negative'/);
   assert.match(TUBE, /format: \(x\) => `\$\{pct\(x\)\} · \$\{x < 0\.3 \? 'clean/);
 });

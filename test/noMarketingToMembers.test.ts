@@ -14,11 +14,13 @@ test('Home card eyebrows: plain labels for members', () => {
   // Tier sweep 2026-10-03: the free copy needs a KNOWN non-member
   // (useUpsellAllowed), not merely `!isMember` — a failed read is not a sale.
   const s = src('src/screens/courses/CourseSelectionScreen.tsx');
-  assert.match(s, /upsell \? 'FREE TO BEGIN AND EXPLORE' : 'TRAINING LABS'/);
-  assert.match(s, /upsell \? 'FREE · NEW TO AUDIO\? \(BEG LEVEL\)' : 'NEW TO AUDIO\? \(BEG LEVEL\)'/);
-  assert.match(s, /upsell \? 'FREE · CAREER DISCOVERY' : 'CAREER DISCOVERY'/);
-  assert.match(s, /upsell \? 'INCLUDED FOR EVERYONE' : 'MEASUREMENT TOOLS'/);
-  assert.match(s, /upsell \? 'INCLUDED FOR EVERYONE' : 'REFERENCE'/);
+  assert.match(s, /upsell \? 'FREE: TRAINING LABS' : 'TRAINING LABS'/);
+  assert.match(s, /upsell \? 'FREE: NEW TO AUDIO\? \(BEG LEVEL\)' : 'NEW TO AUDIO\? \(BEG LEVEL\)'/);
+  assert.match(s, /upsell \? 'FREE: CAREER DISCOVERY' : 'CAREER DISCOVERY'/);
+  assert.match(s, /upsell \? 'FREE: MEASUREMENT TOOLS' : 'MEASUREMENT TOOLS'/);
+  assert.match(s, /upsell \? 'FREE: AUDIO CALCULATORS' : 'AUDIO CALCULATORS'/);
+  assert.match(s, /upsell \? 'FREE: SET UP WHAT YOU STUDY' : 'SET UP WHAT YOU STUDY'/);
+  assert.match(s, /upsell \? 'FREE: INCLUDED FOR EVERYONE' : 'REFERENCE'/);
   // The two always-on topics: FREE TOPIC for known non-members; members get the
   // reason they sit on Home instead (owner 2026-10-27, freeTopicMemberEyebrow).
   assert.match(s, /\? upsell\s*\? 'FREE TOPIC'/);

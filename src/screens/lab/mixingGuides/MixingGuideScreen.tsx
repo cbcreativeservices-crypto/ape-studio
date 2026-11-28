@@ -16,8 +16,8 @@
  * the CONTENTS footer open the what's-left screen (LabEndScreen). The header
  * ‹ always leaves. Never blocked.
  *
- * READ: NEXT › and FINISH mark the guide being left as read; MARK AS READ at
- * the foot does it in place. ✓ READ shows only from the record (a write
+ * READ: MARK AS READ at the foot of a guide is the one thing that counts it
+ * (owner 2026-11-14, "done = work done"; NEXT › used to count it too). ✓ READ shows only from the record (a write
  * result or this session's held reading for a guest), never optimistically.
  */
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -35,7 +35,7 @@ import { useLabPreview } from '../../../features/lab/labPreviewStore';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { useLatchedPress } from '../../../lib/latch';
 import { LabEndScreen } from '../kit/LabEndScreen';
-import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
+import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, LabNounProvider, useLabNav } from '../kit/LabNavBar';
 import { ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { MIXING_GUIDE_INDEX } from './data/index';
 import { loadGuide } from './data/load';
@@ -44,7 +44,9 @@ import {
   GUIDE_SECTIONS,
   STARTING_POINTS_LINE,
   TABLE_COLUMNS,
+  TABLE_KEYS,
   WHO_LIVE_LEVEL_NOTE,
+  type Glance,
   type GuideSectionKey,
   type GuideText,
   type MixingGuide,
@@ -61,6 +63,27 @@ const ACCURACY_DETAIL =
   'The SPL and loudness figures are typical ranges, for learning. Always follow venue limits and local rules, and measure with a calibrated SPL meter and certified loudness metering.';
 
 const UNITS = MIXING_GUIDE_INDEX.map((g) => ({ id: g.id, title: g.title }));
+
+/**
+ * MG-01 (owner 2026-11-15: "build waves 1 thru 3", D62): the first numbers a
+ * beginner met were "dBA LAeq,15min" and "LUFS-I", right under the two plain
+ * top lines. AT A GLANCE now keeps origin, tempo and ensemble on top; the two
+ * level rows open at the head of the guide's own SPL & loudness section,
+ * folded with it. The WHO hearing note stays VISIBLE in AT A GLANCE, as its
+ * last line (checker follow-up 2026-11-15: hearing-safety text is out of this
+ * round, so it is never folded). Layout only: every value shown as written.
+ */
+type GlanceKey = keyof Glance;
+export const LEVEL_GLANCE_KEYS: readonly GlanceKey[] = ['liveSpl', 'studioLoudness'];
+/**
+ * MG-02 (same go): which sections a beginner starts with, and which are the
+ * reference tables. A small tag in the section's header; nothing else moves.
+ */
+export const START_HERE_SECTIONS: readonly GuideSectionKey[] = ['balance', 'notes', 'references'];
+export const REFERENCE_SECTIONS: readonly GuideSectionKey[] = TABLE_KEYS;
+type SectionTag = 'start' | 'reference' | undefined;
+const tagFor = (k: GuideSectionKey): SectionTag => (START_HERE_SECTIONS.includes(k) ? 'start' : REFERENCE_SECTIONS.includes(k) ? 'reference' : undefined);
+const TAG_TEXT = { start: 'START HERE', reference: 'REFERENCE' } as const;
 
 export function MixingGuideScreen() {
   const insets = useSafeAreaInsets();
@@ -105,10 +128,10 @@ export function MixingGuideScreen() {
     index,
     ending,
     go,
-    // Leaving a guide forward with NEXT › / FINISH counts it as read.
-    beforeAdvance: (from) => {
-      void markGuideRead(MIXING_GUIDE_INDEX[from].id);
-    },
+    // "DONE = WORK DONE" (owner's decision 1, 2026-11-14): NEXT › and FINISH
+    // no longer mark the guide being left as read. A reading guide's work is
+    // reading it to its end, and MARK AS READ sits at that end, so it is the
+    // one thing that counts a guide. Reads already stored stay read.
     finish: () => setEnding(true),
     unEnd: () => setEnding(false),
   });
@@ -132,6 +155,7 @@ export function MixingGuideScreen() {
   const setAll = () => setOpen(allOpen ? new Set<GuideSectionKey>() : new Set(sections.map((s) => s.key)));
 
   return (
+    <LabNounProvider value="guide">
     <LabNavProvider value={nav}>
       <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
         {/* Screen Guide host: no Rack Unit here (a reading page), so every
@@ -143,20 +167,25 @@ export function MixingGuideScreen() {
             opens the what's-left guide (WHERE YOU ARE). */}
         <LabHeader
           title={ending ? 'MIXING GUIDES' : entry.title.toUpperCase()}
-          subtitle={ending ? 'What’s left' : `Mixing guide ${entry.num} of ${MIXING_GUIDE_INDEX.length}${isRead ? ' · read' : ''}`}
+          subtitle={ending ? 'What’s left' : `Mixing guide${isRead ? ' · read' : ''}`}
           right={<AccuracyNote compact detail={ACCURACY_DETAIL} />}
           guide={ending ? MIXING_GUIDES_END_GUIDE : MIXING_GUIDE_READER_GUIDE}
           guideTitle={ending ? 'WHERE YOU ARE' : undefined}
         />
-        <LabNavBar nav={nav} />
+        {/* One noun (S2 phase 3): the strip reads GUIDE and names the style, never "n / 50". */}
+        <LabNavBar nav={nav} posLabel={ending ? undefined : entry.title.toUpperCase()} />
         {ending ? (
           <LabEndScreen
+            labId="mixing-guides"
             labTitle="Mixing Guides"
             units={MIXING_GUIDE_INDEX.map((g) => ({ id: g.id, label: g.title }))}
             cleared={readIds}
             unreadable={unreadable}
             mode="progress"
             noun="guide"
+            // Said ONCE above the list (phase 2, 2026-11-14): every row would
+            // repeat it, so no row carries a line of its own.
+            howItCounts="A guide counts as read when you reach its end and tap MARK AS READ. Opening it, or moving on with NEXT ›, ‹ PREV or the list, does not count."
             onJump={(id) => go(MIXING_GUIDE_INDEX.findIndex((g) => g.id === id))}
             onPracticeAgain={() => go(0)}
             onDone={() => safeGoBack(navigation)}
@@ -184,16 +213,12 @@ export function MixingGuideScreen() {
                 <Text style={styles.startingPoints}>{STARTING_POINTS_LINE}</Text>
 
                 <Text style={styles.blockHead} accessibilityRole="header">AT A GLANCE</Text>
-                <View style={styles.glance}>
-                  {GLANCE_ROWS.filter((r) => r.key !== 'priority').map((r, i) => (
-                    <View key={r.key} style={[styles.glanceRow, i > 0 && styles.rowRule]}>
-                      <Text style={styles.glanceLabel}>{r.label}</Text>
-                      <Text style={styles.glanceValue}>{guide.glance[r.key]}</Text>
-                      {/* The shared WHO hearing note sits once, under the live level (owner ruling 2026-10-22). */}
-                      {r.key === 'liveSpl' ? <Text style={styles.glanceNote}>{WHO_LIVE_LEVEL_NOTE}</Text> : null}
-                    </View>
-                  ))}
-                </View>
+                {/* MG-01: the level rows open with SPL & loudness (a guide that
+                    had no such section would keep them here). */}
+                {(() => {
+                  const levelsMove = sections.some((s) => s.key === 'loudness');
+                  return <GlanceRows guide={guide} keys={GLANCE_ROWS.filter((r) => r.key !== 'priority' && (!levelsMove || !LEVEL_GLANCE_KEYS.includes(r.key))).map((r) => r.key)} whoNote={levelsMove ? 'end' : 'underLive'} />;
+                })()}
 
                 <View style={styles.sectionsHead}>
                   <Text style={styles.blockHead} accessibilityRole="header">THE GUIDE</Text>
@@ -202,7 +227,7 @@ export function MixingGuideScreen() {
                   </Pressable>
                 </View>
                 {sections.map((s, i) => (
-                  <Section key={s.key} k={s.key} n={i + 1} title={s.title} open={open.has(s.key)} onToggle={toggle} guide={guide} />
+                  <Section key={s.key} k={s.key} n={i + 1} title={s.title} tag={tagFor(s.key)} open={open.has(s.key)} onToggle={toggle} guide={guide} />
                 ))}
 
                 <View style={styles.footer}>
@@ -226,6 +251,37 @@ export function MixingGuideScreen() {
         </ScreenGuideHost>
       </View>
     </LabNavProvider>
+    </LabNounProvider>
+  );
+}
+
+/** Glance rows, in GLANCE_ROWS order. The shared WHO hearing note sits once,
+ *  under the live level (owner ruling 2026-10-22), wherever that row is drawn. */
+/** `whoNote`: where the WHO hearing note is drawn. 'underLive' (the shared
+ *  note under the live level, owner ruling 2026-10-22) when the live level is
+ *  in this box; 'end' (the last line of the box) for the top AT A GLANCE once
+ *  the level rows have moved; 'none' for the folded section. CHECKER
+ *  FOLLOW-UP (2026-11-15): hearing-safety text is out of this round, so the
+ *  note stays VISIBLE at the top of every guide, where it was; it is never
+ *  folded away with the level rows. */
+function GlanceRows({ guide, keys, whoNote }: { guide: MixingGuide; keys: readonly GlanceKey[]; whoNote: 'underLive' | 'end' | 'none' }) {
+  const rows = GLANCE_ROWS.filter((r) => keys.includes(r.key));
+  if (!rows.length) return null;
+  return (
+    <View style={styles.glance}>
+      {rows.map((r, i) => (
+        <View key={r.key} style={[styles.glanceRow, i > 0 && styles.rowRule]}>
+          <Text style={styles.glanceLabel}>{r.label}</Text>
+          <Text style={styles.glanceValue}>{guide.glance[r.key]}</Text>
+          {r.key === 'liveSpl' && whoNote === 'underLive' ? <Text style={styles.glanceNote}>{WHO_LIVE_LEVEL_NOTE}</Text> : null}
+        </View>
+      ))}
+      {whoNote === 'end' ? (
+        <View style={[styles.glanceRow, styles.rowRule]}>
+          <Text style={styles.glanceNote}>{WHO_LIVE_LEVEL_NOTE}</Text>
+        </View>
+      ) : null}
+    </View>
   );
 }
 
@@ -233,6 +289,7 @@ const Section = memo(function Section({
   k,
   n,
   title,
+  tag,
   open,
   onToggle,
   guide,
@@ -240,6 +297,7 @@ const Section = memo(function Section({
   k: GuideSectionKey;
   n: number;
   title: string;
+  tag?: SectionTag;
   open: boolean;
   onToggle: (k: GuideSectionKey) => void;
   guide: MixingGuide;
@@ -252,10 +310,11 @@ const Section = memo(function Section({
         accessibilityRole="button"
         accessibilityState={{ expanded: open }}
         aria-expanded={open}
-        accessibilityLabel={`${n}. ${title}. ${open ? 'Close' : 'Open'} this section`}
+        accessibilityLabel={`${n}. ${title}.${tag ? ` ${tag === 'start' ? 'Start here' : 'Reference table'}.` : ''} ${open ? 'Close' : 'Open'} this section`}
       >
         <Text style={styles.sectionNum}>{String(n).padStart(2, '0')}</Text>
         <Text style={styles.sectionTitle}>{title}</Text>
+        {tag ? <Text style={[styles.tag, tag === 'start' ? styles.tagStart : styles.tagRef]}>{TAG_TEXT[tag]}</Text> : null}
         <Text style={styles.chev}>{open ? '▴' : '▾'}</Text>
       </Pressable>
       {open ? (
@@ -282,6 +341,14 @@ function SectionBody({ guide, k }: { guide: MixingGuide; k: GuideSectionKey }) {
     );
   }
   if (k === 'eq' || k === 'compression' || k === 'fx' || k === 'liveStudio') return <TableBody guide={guide} k={k} />;
+  if (k === 'loudness') {
+    return (
+      <View style={styles.items}>
+        <GlanceRows guide={guide} keys={LEVEL_GLANCE_KEYS} whoNote="none" />
+        <Prose items={guide[k]} />
+      </View>
+    );
+  }
   return <Prose items={guide[k]} />;
 }
 
@@ -358,6 +425,9 @@ const styles = StyleSheet.create({
   sectionNum: { fontFamily: fonts.mono, fontSize: 12, color: colors.textSub },
   sectionTitle: { flex: 1, fontFamily: fonts.oswaldSemiBold, fontSize: 15, letterSpacing: 0.5, color: colors.textPrimary },
   chev: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, color: colors.amber },
+  tag: { fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 1, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 999, borderWidth: 1, overflow: 'hidden' },
+  tagStart: { color: colors.amberLabel, borderColor: 'rgba(255,198,77,.45)' },
+  tagRef: { color: colors.textSub, borderColor: colors.hairline },
   sectionBody: { paddingHorizontal: 12, paddingBottom: 14, borderTopWidth: 1, borderTopColor: colors.hairlineDim, paddingTop: 10 },
   items: { gap: 9 },
   para: { fontFamily: fonts.barlowRegular, fontSize: 15, lineHeight: 22, color: colors.textSecondary },

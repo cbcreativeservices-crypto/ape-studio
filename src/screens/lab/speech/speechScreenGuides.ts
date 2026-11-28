@@ -56,13 +56,13 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     control: [
       'Tap a numbered disc on the drawing, or its button under the card. That part lights up in cyan and the card explains its job in speech.',
       'Tap ⤢ FULL SCREEN under the drawing to enlarge it; zoom in and drag to pan. The same buttons and a two-line readout stay at the bottom.',
-      'Use the strip under the title to move through the lab: ⏮ goes to the first page, ‹ PREV and NEXT › step one page, and the MODULE readout with ▾ lists every page.',
-      'Tap ⓘ beside any page’s title to have that page explained.',
+      'Use the strip under the title to move through the lab: ⏮ goes to the first module, ‹ PREV and NEXT › step one module, and the MODULE readout with ▾ lists every module.',
+      'Tap ⓘ beside any module’s title to have that module explained.',
     ],
     changes: [
       'When you pick a part, it lights cyan and the card’s color key changes to show that part’s role.',
       'The numbers follow the air on purpose: the power (lungs), the pipe (trachea), the source (larynx), the resonators and their valve (throat, soft palate, nose), then the parts that shape the sound.',
-      'The next page, How a Voice Is Made, sets these parts working in the same order.',
+      'The next module, How a Voice Is Made, sets these parts working in the same order.',
     ],
     teaches: [
       'Speech is air, a buzz, resonating cavities and a few fast-moving parts.',
@@ -79,7 +79,8 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   // ── 2 · How a Voice Is Made ───────────────────────────────────────────────
   p2: {
     intro: {
-      learning: 'How a voice is built from four jobs in a fixed order: breath powers it, the folds buzz, the cavities shape the buzz, and the mouth cuts it into words.',
+      // The page draws FIVE stages (speechPagesA.tsx:149); "four jobs" clashed (novice audit 2026-11-14).
+      learning: 'How a voice is built in five stages, always in order: breath powers it, the folds buzz, the cavities shape it, the mouth cuts words, and speech comes out.',
       start: 'Tap ▶ PLAY THE SEQUENCE and watch which parts light at each stage. Then tap RESONANCE on the strip and read the card.',
     },
     seeing: [
@@ -105,7 +106,7 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     tryThis: [
       'Tap ▶ PLAY THE SEQUENCE and watch the lit parts climb the body, from the lungs to the lips.',
       'Tap RESONANCE on the strip: the card reads 3 · RESONANCE, and the pharynx, soft palate and nasal cavity light up.',
-      'Tap disc 1 on the drawing: the page jumps back to BREATH, the stage the lungs power.',
+      'Tap disc 1 on the drawing: the drawing jumps back to BREATH, the stage the lungs power.',
     ],
   },
 
@@ -242,7 +243,7 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   p7: {
     intro: {
       learning: 'Why an S hisses: air squeezed past the teeth makes noise at 4 to 10 kHz, far above the vowel, and that gap is what lets you tame it.',
-      start: 'The page opens on "S": find the orange S LIVES HERE band and the gray vowel outline. Then tap VOWEL · AH and see which bars disappear.',
+      start: 'It opens on "S": find the orange S LIVES HERE band and the gray vowel outline. Then tap VOWEL · AH and see which bars disappear.',
     },
     seeing: [
       'Two keys, VOWEL · AH and "S", sit over a spectrum: bars run from low to high frequency, 100 to 10k across the bottom; the corner note reads 0 dB = loudest band.',
@@ -250,7 +251,7 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'On "S" the vowel shows as a gray outline, for comparison. Below: three cards, WHY IT EXISTS, WHY IT GETS WORSE and WHAT TO DO.',
     ],
     control: [
-      'VOWEL · AH and "S" swap the spectrum. The page opens on "S".',
+      'VOWEL · AH and "S" swap the spectrum. It opens on "S".',
       '⤢ FULL SCREEN enlarges the spectrum with the two keys under it.',
     ],
     changes: [
@@ -273,7 +274,7 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   p8: {
     intro: {
       learning: 'How mic distance changes a voice: closer gives more direct sound over the room and noise, but also stronger pops and bass boom, so every distance is a trade-off.',
-      start: 'The page opens on 6". Tap 12", then 1", and watch the five bars. Compare how fast Plosive air climbs against Direct voice.',
+      start: 'It opens on 6". Tap 12", then 1", and watch the five bars. Compare how fast Plosive air climbs against Direct voice.',
     },
     seeing: [
       'A scene drawn to scale: the talker, a microphone on a ruler (lips, 1", 6", 12"), cyan sound fronts, and gray dashes for the room’s reflections.',
@@ -281,7 +282,7 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'A card for the distance you chose, then an UNDERSTANDING CHECK.',
     ],
     control: [
-      'Three keys move the microphone: 1", 6" and 12". The page opens on 6".',
+      'Three keys move the microphone: 1", 6" and 12". It opens on 6".',
       'The microphone slides to its new spot and the bars glide to their new lengths.',
       'Both drawings have ⤢ FULL SCREEN; the bars’ full screen keeps the keys and a short readout of all five numbers.',
       'In the UNDERSTANDING CHECK at the foot, tap an answer. A wrong pick explains why, and you try again.',
@@ -315,8 +316,8 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'The legend ends “typical, not fixed”. Below the chart: TYPICAL, NOT FIXED, and a card for each voice.',
     ],
     control: [
-      'There’s nothing to switch: this page is for reading. Tap ⤢ FULL SCREEN to enlarge the chart and read its numbers.',
-      'GOT IT › at the end marks the page as done; NEXT does too.',
+      'There’s nothing to switch: this module is for reading. Tap ⤢ FULL SCREEN to enlarge the chart and read its numbers.',
+      'GOT IT › at the end marks the module as done; NEXT does too.',
     ],
     changes: [
       'Pitch comes from the folds: longer, heavier folds vibrate more slowly. Formant height comes from the vocal tract: a longer tract puts the formants lower.',
@@ -346,7 +347,7 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'Below: a cue line, then CAUSE, WHAT YOU HEAR and FIX.',
     ],
     control: [
-      'Tap a problem key: the drawing, the cue and the card change. The page opens on SIBILANCE.',
+      'Tap a problem key: the drawing, the cue and the card change. It opens on SIBILANCE.',
       '⤢ FULL SCREEN stays open when a key swaps a spectrum for a waveform, with the keys under it, so you can step through every problem enlarged.',
     ],
     changes: [
@@ -370,16 +371,16 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   p11: {
     intro: {
       learning: 'A review of seven ideas from this lab: voicing, formants, pop filters, the soft palate, sibilance, voice ranges and why a voice turns boomy up close.',
-      start: 'Read each question and tap your answer. If it’s wrong, read the explanation before you pick again. Five right completes the page.',
+      start: 'Read each question and tap your answer. If it’s wrong, read why that one is not it before you pick again. Five right completes the module.',
     },
     seeing: [
       'Seven questions, one per idea, each in an UNDERSTANDING CHECK card. The answers come in a fresh order each visit, so you can’t go by position.',
-      'A line on top counts how many are correct this visit and says whether the page is complete.',
+      'A line on top counts how many are correct this visit and says whether the module is complete.',
     ],
     control: [
-      'Tap an answer. A wrong pick explains itself: read it, then try again.',
-      'Five right completes the page; NEXT › moves on to the lab’s final check at any time.',
-      'If you leave, the questions start fresh; a page already complete stays complete.',
+      'Tap an answer. A wrong pick says why that one is not it: read it, then try again. From the second miss on, the explanation shows too.',
+      'Five right completes the module; NEXT › moves on to the lab’s final check at any time.',
+      'If you leave, the questions start fresh; a module already complete stays complete.',
     ],
     changes: [
       'A right pick turns green with its explanation, and the card locks.',
@@ -404,15 +405,15 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     seeing: [
       'CHECK YOUR UNDERSTANDING for the Speech & Voice Lab: four questions on where the hiss of an S comes from, a talker who keeps turning toward their notes, mouth clicks, and breath noise.',
       'Above them you see how many are still to get right; a ✓ replaces a question’s number once it’s right.',
-      'Every answer opens its explanation: CORRECT, or NOT QUITE — TRY ANOTHER.',
+      'A right answer shows CORRECT with its explanation; a wrong one shows NOT QUITE — TRY ANOTHER with what to look at again.',
     ],
     control: [
-      'Tap an answer. A wrong one stays open: pick again straight away. Nothing is lost and there is no score.',
-      'FINISH · SEE WHAT’S LEFT › at the foot of the page (FINISH › in the strip) shows what is left in the lab, at any time.',
-      'If you leave this page before all four are right, the questions start fresh.',
+      'Tap an answer. A wrong one stays open: pick again right away.',
+      'FINISH · SEE WHAT’S LEFT › at the foot of the screen (FINISH › in the strip) shows what is left in the lab, at any time.',
+      'If you leave this screen before all four are right, the questions start fresh.',
     ],
     changes: [
-      'Each explanation gives the reason, right or wrong, so every answer teaches something.',
+      'A wrong pick names what to look at again; a second wrong pick also shows the explanation, so every answer teaches something.',
       'Get all four right and the check is passed. A pass is kept: you never need to take the check twice.',
     ],
     teaches: [
@@ -443,32 +444,32 @@ export const SPEECH_SCREEN_GUIDES: Record<string, ScreenGuide> = {
 export const SPEECH_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'The lab’s path at a glance: how speech is made from the lungs to the lips, and how voicing, formants, consonants, distance and voice type shape what a mic hears.',
-    start: 'Tap the first page still listed to open it. If only Check your understanding is left, open it and get all four questions right.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
-    'The big title reads WHAT’S LEFT, or LAB COMPLETE once every page and the check are done. The line under it says what is left and whether your work is saved on this device.',
-    'Each page not done yet is a row, by name; the check’s row, Check your understanding, is marked CHECK.',
-    'Pages you’ve done, and the check once passed, fold into one ✓ DONE line. If saved progress can’t be read, the title reads YOUR PROGRESS.',
+    'The big title reads WHAT’S LEFT, or LAB COMPLETE once every module and the check are done. The line under it says what is left and if your work is saved on this device.',
+    'Each module not done yet is a row, by name; the check’s row, Check your understanding, is marked CHECK.',
+    'Done modules, and the check once passed, fold into one ✓ DONE line. If saved progress can’t be read, the title reads YOUR PROGRESS.',
   ],
   control: [
-    'Tap a row to jump straight to that page, or to the check.',
+    'Tap a row to jump straight to that module, or to the check.',
     'REVIEW ▾ on the ✓ DONE line unfolds what you’ve done; tap any row to open it again. HIDE ▴ folds them away.',
     'PRACTICE AGAIN FROM THE START opens The Speech System and clears nothing. DONE · BACK TO LABS leaves the lab, back to the screen you opened it from.',
-    'On the strip, ‹ PREV returns to the page you came from, ⏮ opens the first page, and WHAT’S LEFT ▾ lists every page.',
+    'On the strip, ‹ PREV returns to the module you came from, ⏮ opens the first module, and WHAT’S LEFT ▾ lists every module.',
   ],
   changes: [
-    'A page counts once you leave it with NEXT ›, or sooner when you tap one of its main keys (GOT IT › on Voices Differ). Opening it from a list counts nothing.',
+    'A module counts once you tap one of its main keys; NEXT › alone moves on without counting it. Voices Differ, a module for reading, counts with GOT IT › or NEXT ›. Opening a module from a list counts nothing.',
     'Check Yourself counts only at five right in one visit; the check, only once all four are right.',
-    'START OVER (PRACTICE), in the strip’s list, clears the page marks; a passed check stays done.',
+    'START OVER (PRACTICE), in the strip’s list, clears the module marks; a passed check stays done.',
   ],
   teaches: [
     'How speech works, in order: the parts of the voice, how a voice is made, voicing, vowels, consonants, plosives, sibilance, distance, how voices differ, and common problems.',
     'Together they follow speech from the lungs to the microphone, so any voice problem can be traced back to where it starts.',
   ],
   tryThis: [
-    'If any row is still listed, open the first one straight from here and try its keys or answers; on any page before Check Yourself, NEXT › then counts it.',
-    'If the CHECK row is still listed, open it: a wrong answer explains itself, so read it and pick again.',
-    'Open the Speech Problem Simulator, from its row or from REVIEW ▾, and tap each problem key: name the earlier page each problem comes from.',
+    'If any row is still listed, open the first one straight from here and try its keys or answers; its row says what is still to do.',
+    'If the CHECK row is still listed, open it: a wrong answer says what to look at again, so read it and pick again.',
+    'Open the Speech Problem Simulator, from its row or from REVIEW ▾, and tap each problem key: name the earlier module each problem comes from.',
   ],
 };
 

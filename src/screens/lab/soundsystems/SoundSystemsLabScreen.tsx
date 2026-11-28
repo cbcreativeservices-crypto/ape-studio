@@ -43,6 +43,7 @@ import { safeGoBack } from '../../../lib/safeGoBack';
 // Screen Guide (owner 2026-10-31): the header ⓘ + "this screen, explained".
 import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
 import { SS_HUB_GUIDE } from './soundsystemsScreenGuides';
+import { leftWord, SS_CHAIN, SS_START_LINE } from './fixHelpers';
 
 const MODE_GLYPH: Record<SsModeId, GlyphKind> = {
   learn: 'console',
@@ -161,9 +162,14 @@ export function SoundSystemsLabScreen() {
       </View>
       </ScreenGuideHintAnchor>
       <ScrollView contentContainerStyle={[styles.scroll, readingColumn, { paddingBottom: insets.bottom + 28 }]}>
-        <Text style={styles.lead}>
-          Begin with an empty venue. Finish having designed, wired, routed, tested, tuned and troubleshot a complete live sound reinforcement system. Five modes, in any order — LEARN teaches, the other four make you do it.
-        </Text>
+        {/* SS-04 (owner 2026-11-15: "build waves 1 thru 3", D62 adoption plan):
+            the whole chain in one line and "start with LEARN" on the page
+            itself (they were only in the intro popup). It replaces the lead
+            paragraph, which listed skills rather than the one idea. */}
+        <View style={styles.chainCard} accessible accessibilityLabel={`The signal chain: ${SS_CHAIN.join(', then ')}. ${SS_START_LINE}`}>
+          <Text style={styles.chain}>{SS_CHAIN.join(' → ')}</Text>
+          <Text style={styles.lead}>{SS_START_LINE}</Text>
+        </View>
 
         {unreadable ? <ProgressUnreadableNote /> : pagesRead === 'pending' ? <ProgressLoadingNote /> : null}
         {SS_MODES.map((m) => {
@@ -177,7 +183,7 @@ export function SoundSystemsLabScreen() {
                 <View style={styles.cardHead}>
                   <Text style={styles.cardTitle}>{m.title}</Text>
                   <Text style={[styles.cardCount, known && row.done >= row.total && { color: colors.green }]}>
-                    {known ? `${row.done}/${row.total}` : '—'}
+                    {known ? leftWord(row.done, row.total, '✓ DONE') : '—'}
                   </Text>
                 </View>
                 <Text style={styles.cardBlurb}>{m.blurb}</Text>
@@ -226,7 +232,7 @@ export function SoundSystemsLabScreen() {
                     <Text style={styles.leftHint}>{r.hint}</Text>
                   </View>
                   <Text style={styles.leftCount}>
-                    {r.done}/{r.total}
+                    {leftWord(r.done, r.total, '✓ DONE')}
                   </Text>
                   <Text style={styles.cardGo}>›</Text>
                 </Pressable>
@@ -261,6 +267,8 @@ const styles = StyleSheet.create({
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
   scroll: { padding: 16, paddingTop: 10, gap: 12 },
   lead: { color: colors.textSecondary, fontFamily: fonts.barlowMedium, fontSize: 15, lineHeight: 22 },
+  chainCard: { borderRadius: 12, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#101013', padding: 12, gap: 6 },
+  chain: { color: colors.cyanBright, fontFamily: fonts.oswaldMedium, fontSize: 12.5, letterSpacing: 0.8, lineHeight: 19 },
   card: { flexDirection: 'row', alignItems: 'center', gap: 10, borderRadius: 12, borderWidth: 1, borderColor: '#232329', borderTopColor: '#34343c', backgroundColor: '#101014', padding: 10, minHeight: 84 },
   cardGlyph: { width: 60, alignItems: 'center' },
   cardHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },

@@ -12,6 +12,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { LabChip } from '../LabShell';
 import type { DockParam } from '../rack/rackTypes';
 import type { BoothAudio } from './booth/useBoothAudio';
+import { xfIgnoredWhy } from './goalWords';
 import { getBooth, setPerspective, updateBooth } from './booth/boothStore';
 import { alignPhase, playPause, playWantsSound, setPitch, setPlaying } from './model/djDeck';
 import { PITCH_RANGE_PCT } from './model/djTime';
@@ -111,6 +112,9 @@ export const xfaderKey = (booth: Booth): DockParam => ({
   kind: 'fader',
   id: 'xf',
   label: 'X-FADER',
+  // SH-64 (owner 2026-11-15: "build waves 1 thru 3"): greyed out with the
+  // reason while both channels are on THRU (the crossfader reaches neither)
+  locked: xfIgnoredWhy(booth.ch[1].xf, booth.ch[2].xf),
   value: booth.mixer.xf,
   home: 0.5,
   onChange: (v) => updateBooth((b) => ({ ...b, mixer: { ...b.mixer, xf: v } })),

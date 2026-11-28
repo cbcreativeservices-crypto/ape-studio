@@ -118,7 +118,7 @@ export function CalcWorkflowsScreen() {
       notify(
         tierReadFailed ? 'Membership not confirmed' : 'One moment',
         tierReadFailed
-          ? 'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.'
+          ? 'Couldn’t confirm your membership on this device. Check your connection and reopen the app.'
           : 'Still checking your account. Try again in a moment.',
       );
       return false;
@@ -324,7 +324,7 @@ export function CalcWorkflowsScreen() {
               ? 'Loading your workflows…'
               : tierUnconfirmed
               ? tierReadFailed
-                ? 'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.'
+                ? 'Couldn’t confirm your membership on this device. Check your connection and reopen the app.'
                 : 'Checking your account…'
               : limits.savedWorkflows === 0
               ? 'Workflows (templates and your own) are part of Academy membership.'

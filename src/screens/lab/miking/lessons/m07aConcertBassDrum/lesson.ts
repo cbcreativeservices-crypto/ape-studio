@@ -413,7 +413,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: when the mallet pushes the playing head in, what does the FAR head do?', options: ['It moves outward, away from the player', 'It moves inward, toward the playing head', 'It stays still — only the struck head moves'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch both heads.' },
+  sound: { prompt: 'Before you step through: when the mallet pushes the playing head in, what does the FAR head do?', options: ['It moves outward, away from the player', 'It moves inward, toward the playing head', 'It stays still — only the struck head moves'], after: 'Now go EVENT by EVENT through the stroke (or PLAY ONCE) and watch both heads.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the spot from about 45 cm to closer and steeper. What changes?', options: ['More of the room', 'More of the mallet and the head', 'It depends on this drum and room'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits off to the side of a mic looking down at the drum. Which pattern can turn a null toward it?', options: ['Only a cardioid', 'A supercardioid or hypercardioid', 'None of them'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },

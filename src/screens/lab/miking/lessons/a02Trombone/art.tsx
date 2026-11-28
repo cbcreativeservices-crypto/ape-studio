@@ -20,7 +20,8 @@ const SLIDE_LABELS = [
   { id: 'bell', text: 'BELL', at: (P: typeof TB) => P.H({ x: -60, y: -P.spec.bell.mm / 2 + 6, z: 0 }), du: 20, dv: -100 },
   { id: 'slide', text: 'SLIDE', at: (P: typeof TB) => ({ x: P.slide!.crook.x - 220, y: P.slide!.legs[1], z: P.slide!.z }), du: 0, dv: 110 },
   { id: 'crook', text: 'CROOK', at: (P: typeof TB) => P.slide!.crook, du: 40, dv: 100 },
-  { id: 'mp', text: 'MOUTHPIECE', short: 'MOUTHPC', at: (P: typeof TB) => P.mouthpiece.cup, du: -20, dv: 120, align: 'left' as const },
+  // (the leader comes to the cup from below and in front of it — the face is behind the cup, never crossed)
+  { id: 'mp', text: 'MOUTHPIECE', short: 'MOUTHPC', at: (P: typeof TB) => P.mouthpiece.cup, du: 70, dv: 150, align: 'left' as const },
   { id: 'tune', text: 'TUNING SLIDE', short: 'TUNING', at: (P: typeof TB) => P.tubes.find((t) => t.id === 'tuning')!.pts[6], du: -20, dv: -100 },
 ];
 

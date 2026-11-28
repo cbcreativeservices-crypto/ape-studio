@@ -29,7 +29,7 @@ export const CELLO_COPY: Partial<LessonCopy> = {
     workedAim: 'Aim it at the bridge and the top around it — the lab counts it while the mic points within about 25° of the bridge. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of every part — the bow’s full sweep on both sides, the bow arm, the cellist, the endpin and the feet. Clearance comes first, before any number, and the cellist stops before a real mic moves.',
     blocked: {},
-    reveal: 'Moving away tends to bring in more of the whole cello — and of the room and the neighbors — and cellos vary, so “it depends on this cello” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',
+    reveal: 'Moving away tends to bring in more of the whole cello — and of the room and the neighbors — and cellos vary, so “it depends on this cello” is fair too. Each zone’s TENDS TO HEAR line is an idea to check by ear, not a promised result.',
     typeNotes: {
       sdcCard: 'Ideas to try: start about a foot from the bridge, aimed at it; then move one thing at a time — the distance, the height, the angle across the top — and play both the low C and the high A each time.',
       strMini: 'Ideas to try with a miniature: keep the clip on the two outer strings below the bridge, then change only the capsule’s angle — toward the bridge for a natural sound, toward an f-hole for more level.',

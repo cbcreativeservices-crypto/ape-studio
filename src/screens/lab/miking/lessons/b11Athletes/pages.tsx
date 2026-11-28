@@ -20,13 +20,15 @@ import type { SourcePageId } from '../../engine/model/types.ts';
 import type { PageProps } from '../../pages/pageTypes';
 import { aimedAtLips, makeBroadcastSetting, makeBroadcastSound, useTurnStep } from '../shared/broadcast/broadcastPages';
 import { useBodyStep, useFeedsStep } from '../shared/broadcast/sportPages';
-import { B11Scene } from './scene';
+import { B11Scene, V2 } from './scene';
 import { LAV_P } from './geometry.ts';
 
 type PageFn = (p: PageProps) => ReactNode;
 
 function useTools(): ReturnType<typeof useTurnStep>[] {
   const body = useBodyStep({
+    v2: V2,
+    who: 'talker.wearer',
     wearers: ['coach', 'official', 'athlete'],
     words: {
       looking: 'Front or side · a body mic on the wearer · hatched = never mount here',
@@ -40,6 +42,8 @@ function useTools(): ReturnType<typeof useTurnStep>[] {
     },
   });
   const turn = useTurnStep({
+    v2: V2,
+    turnWho: 'talker.wearer',
     mics: [aimedAtLips('lav', 'The chest mic at the breastbone', 'CHEST MIC', LAV_P, { art: 'lavalier', r: 3, len: 12, pattern: 'omni' })],
     top: () => <B11Scene view="top" variant="coach" headless />,
     side: () => <B11Scene view="side" variant="coach" headless />,
@@ -57,6 +61,8 @@ function useTools(): ReturnType<typeof useTurnStep>[] {
 }
 
 const B11Sound = makeBroadcastSound({
+  v2: V2,
+  who: 'talker.wearer',
   useTools: () => useTools(),
   highs: 'The voice’s highest frequencies go out ahead of the mouth: a chest mic below the chin hears a duller, chestier voice than a mic in front, and the head’s turns change it. In words only — the shape of that spread is not drawn.',
   silentNote: 'This lab never plays a sound and draws no frequency curve for a voice: how a real body mic sounds depends on the voice, the mic, the kit and the movement. The pictures show where the sound comes from and where it goes.',

@@ -198,7 +198,7 @@ export function isMissingRpc(err: { code?: string | null; message?: string | nul
 export const COMMUNITY_COPY = {
   section: 'MESSAGES & REQUESTS',
   intro: 'Alerts when another member messages you or asks to contact you.',
-  masterLabel: 'Alert me on this phone',
+  masterLabel: 'Alert me on this device',
   masterHint: 'Off until you switch it on. Your phone asks for permission first.',
   messagesLabel: 'New messages',
   messagesHint: 'Someone in an open conversation writes to you.',
@@ -218,7 +218,7 @@ export const COMMUNITY_COPY = {
   askedNotTo:
     'You chose not to be asked about alerts. To be asked again, use “Ask about permissions again” under ONBOARDING HINTS.',
   registerFailed:
-    'This phone couldn’t be registered for alerts. Nothing was changed — check your connection and try again.',
+    'This device couldn’t be registered for alerts. Nothing was changed — check your connection and try again.',
   onFailed: 'Alerts couldn’t be switched on. Nothing was changed — check your connection and try again.',
   offFailed: 'Alerts couldn’t be switched off. Check your connection and try again.',
   changeFailed: 'That change couldn’t be saved. Check your connection and try again.',

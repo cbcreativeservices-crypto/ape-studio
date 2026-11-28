@@ -41,7 +41,9 @@ describe('lab-credit units (af_foundations)', () => {
     // Format-TOLERANT on purpose: this reads production source, so anchoring on
     // exact indentation or a trailing comma turns any reformat into a false
     // failure (the first version did exactly that and flaked once).
-    assert.match(screen, /markLabUnit\(\s*FOUNDATIONS_LAB_KEY\s*,\s*String\(step\)\s*\)/);
+    // Lab fix round 2026-11-14, phase 3 (owner's decision 1, "done = work done": a module counts when its own goal or check is met, not when it is opened): the
+    // unit id is still String(index), now marked when the module's goal is met.
+    assert.match(screen, /markLabUnit\(\s*FOUNDATIONS_LAB_KEY\s*,\s*String\(i\)\s*\)/);
     // One `key: 'mN'` per step in the STEPS array.
     const stepKeys = screen.match(/\bkey:\s*'m\d+'/g) ?? [];
     assert.equal(stepKeys.length, 14);
@@ -59,7 +61,7 @@ describe('lab-credit units (af_mic_principles / af_speaker_coverage)', () => {
     assert.equal(MIC_PRINCIPLES_LAB_KEY, 'af_mic_principles');
     assert.equal(SPEAKER_COVERAGE_LAB_KEY, 'af_speaker_coverage');
     assert.deepEqual(MIC_PRINCIPLES_UNITS, [
-      'capsule',
+      // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item MI-04): the lab opens on POLAR; CAPSULE moves to the end.
       'polar',
       'distance',
       'proximity',
@@ -69,6 +71,7 @@ describe('lab-credit units (af_mic_principles / af_speaker_coverage)', () => {
       'shock',
       'hand',
       'mistakes',
+      'capsule',
     ]);
     assert.deepEqual(SPEAKER_COVERAGE_UNITS, ['top', 'side', 'read']);
     assert.equal(new Set(MIC_PRINCIPLES_UNITS).size, MIC_PRINCIPLES_UNITS.length);
@@ -85,7 +88,7 @@ describe('lab-credit units (af_mic_principles / af_speaker_coverage)', () => {
         (m) => m[1],
       );
     assert.deepEqual(keysOf('screens/lab/micspeaker/MicPrinciplesLabScreen.tsx'), [
-      'capsule',
+      // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item MI-04): the lab opens on POLAR; CAPSULE moves to the end.
       'polar',
       'distance',
       'proximity',
@@ -95,6 +98,7 @@ describe('lab-credit units (af_mic_principles / af_speaker_coverage)', () => {
       'shock',
       'hand',
       'mistakes',
+      'capsule',
     ]);
     assert.deepEqual(keysOf('screens/lab/micspeaker/SpeakerCoverageLabScreen.tsx'), [
       'top',

@@ -210,15 +210,90 @@ export function endLead(
  * behind "practicing never clears"); in a credit lab a credited page keeps
  * its ✓ (PagedLab's endCleared reads the banked unit). Credit never goes.
  */
-export function endNote(mode: 'credit' | 'progress', startOver: boolean): string {
+export function endNote(mode: 'credit' | 'progress', startOver: boolean, noun = 'page'): string {
   if (mode === 'credit') {
     return startOver
-      ? 'Practicing again or reviewing never removes credit you have already earned. START OVER (PRACTICE) starts a fresh run; credited pages keep their ✓.'
+      ? `Practicing again or reviewing never removes credit you have already earned. START OVER (PRACTICE) starts a fresh run; credited ${noun}s keep their ✓.`
       : 'Practicing again or reviewing never removes credit you have already earned.';
   }
   return startOver
     ? 'PRACTICE AGAIN and reviewing clear nothing. START OVER (PRACTICE) clears the check marks for a fresh run.'
     : 'Practicing again or reviewing never clears what you have already done.';
+}
+
+// ── Lab fix round 2026-11-14 (S2; report section 3 row 5, quick win 17,
+// pattern 12). Owner approval: "Begin fixing all bugs found and do obvious
+// ... fixes as you suggested in the report", then the suggested order, item
+// 6 "The end screen recap". All ADDITIVE: a host that supplies none of the
+// new inputs draws exactly what it drew before, plus WHERE TO START.
+
+/** The recap's heading. "What you learned" is only true once the lab is
+ *  done; before that the same lines say what the lab covers. */
+export function recapHeading(w: WhatsLeft): 'WHAT YOU LEARNED' | 'WHAT THIS LAB COVERS' {
+  return w.complete ? 'WHAT YOU LEARNED' : 'WHAT THIS LAB COVERS';
+}
+
+/** The next-lab card's heading. */
+export function nextHeading(w: WhatsLeft): 'UP NEXT' | 'AFTER THIS LAB' {
+  return w.complete ? 'UP NEXT' : 'AFTER THIS LAB';
+}
+
+/** The heading over the ONE shared "how a unit counts" sentence (quick win
+ *  17: Beginning Mixing printed its rule under all 13 rows). */
+export function howItCountsHeading(noun: string): string {
+  return `HOW A ${noun.toUpperCase()} COUNTS`;
+}
+
+/** PagedLab's rule for a reading page (a function of the lab's noun since 2026-11-14) (useLabNav's beforeAdvance marks the
+ *  page NEXT / FINISH leaves; a CONTENTS jump marks nothing). G7: Envelope
+ *  and Speech read "not done" after pages were opened from CONTENTS, with no
+ *  line saying why. */
+export function pageReadRule(noun = 'module'): string {
+  // In the lab's own unit noun (owner decision 3, 2026-11-14). For a page
+  // declared `reading: true`, or not yet declared (PagedLab, decision 1).
+  return `A reading ${noun} counts once you press NEXT (or FINISH) at its foot. Jumping to it from CONTENTS does not count it.`;
+}
+
+/** PagedLab's rule for a self-marking (hands-on) page, said once above the
+ *  list when the lab gives no `handsOnDetail` of its own. A row names its
+ *  own missing piece only through the lab's `pageDetail` line — never one
+ *  shared sentence repeated under every row (quick win 17; seen on screen
+ *  2026-11-14: even a short shared line read 16 times on Beginning Mixing). */
+export function pageTaskRule(noun = 'module'): string {
+  // Owner decision 1, 2026-11-14: "done = work done" — a unit with a goal or
+  // check counts when that goal or check is MET, never on opening or NEXT.
+  return `A ${noun} with its own goal or check counts once that goal or check is met; NEXT moves on without counting it.`;
+}
+
+export type WhereToStart = {
+  kind: 'start' | 'resume' | 'check' | 'done';
+  text: string;
+  /** The row the card opens (absent for 'done'). */
+  jumpId?: string;
+};
+
+/**
+ * A STATE-AWARE "where to start" (report section 3 row 5; G5c: a fixed
+ * "tap the first page still listed" was shown with nothing listed; G6: EQ
+ * Lab said "open the first module" when only the check was left). Null when
+ * the progress could not be read: the screen never claims what is done then.
+ */
+export function whereToStart(w: WhatsLeft, opts: { noun: string; unreadable?: boolean; hasNext?: boolean }): WhereToStart | null {
+  if (opts.unreadable) return null;
+  if (w.complete) {
+    return {
+      kind: 'done',
+      text: `Everything here is done. Tap REVIEW below to look back at any part${opts.hasNext ? ', or try the lab UP NEXT' : ', or practice the whole lab again'}.`,
+    };
+  }
+  const first = w.left[0];
+  if (!first) return null;
+  if (first.kind === 'check' && w.left.every((r) => r.kind === 'check')) {
+    return { kind: 'check', text: w.credited.length > 0 ? 'Only the check is left. Tap here to go to it.' : 'Start with the check. Tap here to go to it.', jumpId: first.id };
+  }
+  return w.credited.length === 0
+    ? { kind: 'start', text: `Start with the first ${opts.noun}: ${first.label}. Tap here to open it.`, jumpId: first.id }
+    : { kind: 'resume', text: `Pick up at ${first.label}, the first one still listed. Tap here to open it.`, jumpId: first.id };
 }
 
 /** The one unit of a MARK AS REVIEWED lab (owner ruling 2026-10-14, #21:

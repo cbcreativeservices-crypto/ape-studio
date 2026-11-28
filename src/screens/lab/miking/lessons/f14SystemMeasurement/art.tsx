@@ -20,6 +20,10 @@ import { VenueArt } from '../shared/measure/VenueArt';
 import { hitTestOf, labelsOf, type SceneHits } from '../shared/measure/sceneHits.ts';
 import { VENUE } from '../shared/measure/venue.ts';
 import { DESK, F14_OP_SIDE, F14_OP_TOP, F14_VIEWS, LISTEN, MAIN_L_GEOM, MON, monGeom, OP14, SPK14, STUDIO_ROOM } from './geometry.ts';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+
+/** The new look (figure V2, wave 3 set 3b): the operator is the cast's (figureV2/cast 'operator.measure'). */
+export const V2 = figureV2On('sidePlayers');
 import { F14_PAGES, F14_STEP_COUNTS } from './pages';
 
 const EDGE = '#07080a';
@@ -54,12 +58,15 @@ function Floor({ view, box }: { view: ViewId; box: { u0: number; u1: number; v0:
   );
 }
 
-function Bench({ view }: { view: ViewId }) {
+export function Bench({ view, v2 = V2 }: { view: ViewId; /** (the study page compares the old look) */ v2?: boolean }) {
   return (
     <Group>
       <Floor view={view} box={F14_VIEWS.bench[view]} />
       <TestSpeaker g={SPK14} view={view} />
-      <ReadingOperator pose={view === 'side' ? F14_OP_SIDE : F14_OP_TOP} />
+      {/* (review 2026-11-24: the mic's stand and boom drawn across her — true depth: you stand 1.1 m BEHIND the
+          mic's line, its stand between you and the camera; you recede a step further, so the stand reads in
+          front of you, not in your hands) */}
+      <ReadingOperator pose={view === 'side' ? F14_OP_SIDE : F14_OP_TOP} dim={view === 'side' ? 0.7 : 0.9} v2={v2} pair={{ side: F14_OP_SIDE, top: F14_OP_TOP }} />
     </Group>
   );
 }

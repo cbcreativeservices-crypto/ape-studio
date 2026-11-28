@@ -93,6 +93,7 @@ describe('why the storage pair can go: nothing on Android needs it', () => {
       'src/features/credentials/certificatePdf.ts',
       'src/features/ear/earPlayer.ts',
       'src/features/lab/labClipBuffer.ts',
+      'src/features/stageplot/spExport.ts', // app cache only (cacheDirectory/stageplot/), merged 2026-11-27
       'src/screens/lab/cymatics/galleryExport.ts',
     ]);
     for (const f of fsUsers) {

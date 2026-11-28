@@ -15,8 +15,8 @@
  * (anonymous) users always start at step 1 and never resume (owner
  * 2026-08-12 guest rule — same as Foundations).
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Canvas, Line as SkLine, Path as SkPath, Skia, vec } from '@shopify/react-native-skia';
@@ -25,9 +25,9 @@ import { useEntitlement } from '../../../features/commercial/EntitlementProvider
 import { markLabVisit, useLabVisits, useLabVisitsUnreadable } from '../../../features/lab/labVisits';
 import { createLocalStore } from '../../../features/storage/localStore';
 import { LabEndScreen } from '../kit/LabEndScreen';
-import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
+import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, LabNounProvider, useLabNav } from '../kit/LabNavBar';
 import { colors, fonts } from '../../../theme/tokens';
-import { CheckQuestion } from '../foundations/bits';
+import { MicCheck } from './micCheck';
 import { MicPhotoLightbox, MicVisual } from './micArt';
 import { PolarStage } from './polarStage';
 // Screen Guide (2026-10-31): "this screen, explained" per step + the end screen.
@@ -39,15 +39,18 @@ import {
   CHALLENGE_LESSON,
   CHALLENGE_MICS,
   CHALLENGE_VARIANTS,
+  CHAR_GROUPS,
   CHAR_INTRO,
   CHARACTERISTICS,
   CLASS_NOTE,
+  MIC_CLASS_NAMES,
   CURVE_LESSON,
   CURVES,
   ENV_LESSON,
   ENV_SCENARIOS,
   FORM_FACTORS,
   FORM_LESSON,
+  JOB_FIT,
   JOB_GROUPS,
   JOBS_LESSON,
   LOCKER_JOBS,
@@ -65,6 +68,8 @@ import {
   SOURCE_TIERS,
   SPL_LESSON,
   SPL_MATCH,
+  TYPES_TAP_LINE,
+  type MicTypeCard,
   type PatternKey,
 } from './micSelectData';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
@@ -75,6 +80,8 @@ import { LabUnderstandingBlock } from '../../../components/LabUnderstandingBlock
 import { useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
 import { UNDERSTANDING_UNIT, understandingFor } from '../../../features/lab/understanding';
 import type { LabEndUnit } from '../kit/labEnd';
+import { runSoon } from '../../../lib/afterInteractions';
+import { revealDelta } from './reveal.ts';
 
 const STEP_KEY = 'ape:micSelStep';
 /** The resume point, on the shared safe store (pattern catalog 2026-10-02,
@@ -91,6 +98,70 @@ const stepStore = createLocalStore<number | null>({
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Small shared pieces
+
+/**
+ * WORK DONE (owner decision 1, 2026-11-14: "Done" = work done). A module
+ * counts when its own goal is met, never when it is opened. Each module's
+ * body reports its goal here; the host records it (labVisits, the same
+ * store, so every module already counted stays counted).
+ */
+const GoalCtx = createContext<(key: string) => void>(() => {});
+const useGoal = () => useContext(GoalCtx);
+/** Calls the goal once `value` has taken `need` different values. */
+function useSeenGoal(key: string, value: string | null, need: number) {
+  const meet = useGoal();
+  const seen = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    if (value == null) return;
+    seen.current.add(value);
+    if (seen.current.size >= need) meet(key);
+  }, [value, key, need, meet]);
+}
+/** The goal each module asks for (the end screen's "still to do" line). */
+export const MICSEL_GOALS: Readonly<Record<string, string>> = {
+  types: 'open a second mic card, or compare two',
+  chars: 'open three characteristic cards',
+  patterns: 'pick a pattern and a reason that fits it',
+  curves: 'answer its CHECK YOURSELF question',
+  spl: 'try all three microphones against the sources',
+  power: 'open all three power cases',
+  form: 'read it to the end and press NEXT',
+  env: 'open all three places (A, B and C)',
+  jobs: 'answer its CHECK YOURSELF question',
+  challenge: 'choose a mic and press CHECK MY REASONING',
+  locker: 'cover all ten jobs',
+};
+/** Reading modules count on NEXT at their foot. */
+const MICSEL_READING: ReadonlySet<string> = new Set(['form']);
+
+/**
+ * BRING THE CHANGED CARD INTO VIEW (beginner waves 2026-11-15, MS-02; owner:
+ * "build waves 1 thru 3", D62 adoption plan). A mic photo, a characteristic
+ * chip or CHECK MY REASONING changed a card below the fold with no scroll. A
+ * <Reveal> around that card asks the lab's scroll to show it whenever `on`
+ * changes (not when the module first opens) or, with `onMount`, as soon as it
+ * appears. It only ever scrolls down, and only as far as needed (reveal.ts).
+ */
+const RevealCtx = createContext<(node: View | null) => void>(() => {});
+function Reveal({ on, onMount = false, style, children }: { on: string | null; onMount?: boolean; style?: StyleProp<ViewStyle>; children: ReactNode }) {
+  const ref = useRef<View>(null);
+  const reveal = useContext(RevealCtx);
+  const first = useRef(true);
+  useEffect(() => {
+    const skip = first.current && !onMount;
+    first.current = false;
+    if (skip || on == null) return;
+    // After this commit's layout, so the card is measured as it now is.
+    const h = runSoon(() => reveal(ref.current));
+    return () => h.cancel();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- keyed by what the card shows
+  }, [on]);
+  return (
+    <View ref={ref} collapsable={false} style={style}>
+      {children}
+    </View>
+  );
+}
 
 function LessonBanner({ text }: { text: string }) {
   return (
@@ -156,7 +227,19 @@ function TypesStep() {
   const [sel, setSel] = useState<string | null>('dynamic');
   const [compare, setCompare] = useState(false);
   const [pair, setPair] = useState<string[]>([]);
+  useSeenGoal('types', sel, 2);
+  useSeenGoal('types', pair.length === 2 ? 'pair' : null, 1);
 
+  const toggleCompare = () => {
+    if (!compare) {
+      setPair(sel ? [sel] : []);
+      setCompare(true);
+      return;
+    }
+    if (pair.length) setSel(pair[pair.length - 1]);
+    setPair([]);
+    setCompare(false);
+  };
   const tap = (key: string) => {
     if (!compare) {
       setSel(key);
@@ -178,7 +261,7 @@ function TypesStep() {
           <MicVisual kind={t.kind} w={64} h={96} />
         </View>
         <Text style={styles.detailName}>{t.name}</Text>
-        <Text style={styles.detailKlass}>{t.klass === 'transducer' ? 'TRANSDUCER PRINCIPLE' : 'DESIGN / FORM FACTOR'}</Text>
+        <Text style={styles.detailKlass}>{MIC_CLASS_NAMES[t.klass]}</Text>
         <Text style={styles.detailHead}>WHAT IT IS</Text>
         <Text style={styles.body}>{t.what}</Text>
         <Text style={styles.detailHead}>MAJOR CHARACTERISTICS</Text>
@@ -193,15 +276,13 @@ function TypesStep() {
     );
   };
 
-  return (
-    <View style={styles.stepGap}>
-      <LessonBanner text={CLASS_NOTE} />
-      <View style={styles.rowBetween}>
-        <Text accessibilityRole="header" style={styles.panelEyebrow}>TAP A MICROPHONE</Text>
-        <Chip label={compare ? 'COMPARING' : 'COMPARE'} active={compare} onPress={() => { setCompare((c) => !c); setPair([]); }} />
-      </View>
+  // MS-04 (2026-11-15): the photo grid comes first, in its two groups, under
+  // one plain line; the "not equivalent categories" note follows the card.
+  const group = (klass: MicTypeCard['klass']) => (
+    <View key={klass} style={styles.stepGapTight}>
+      <Text accessibilityRole="header" style={styles.panelEyebrow}>{MIC_CLASS_NAMES[klass]}</Text>
       <View style={styles.micGrid}>
-        {MIC_TYPES.map((m) => {
+        {MIC_TYPES.filter((m) => m.klass === klass).map((m) => {
           const active = compare ? pair.includes(m.key) : sel === m.key;
           return (
             <Pressable
@@ -214,28 +295,48 @@ function TypesStep() {
               style={[styles.micCell, active && styles.micCellActive]}
             >
               <MicVisual kind={m.kind} w={44} h={66} zoomable={false} />
-              <Text style={styles.micCellName} numberOfLines={2}>
+              {/* SH-49 / SH-27 (2026-11-15): three lines, so "Large-Diaphragm
+                  Condenser" and "Shotgun / Interference-Tube" are never cut. */}
+              <Text style={styles.micCellName} numberOfLines={3}>
                 {m.name}
               </Text>
             </Pressable>
           );
         })}
       </View>
-      {compare ? (
-        pair.length === 2 ? (
-          <View style={styles.compareRow}>
-            <Detail k={pair[0]} />
-            <View style={styles.compareDivider} />
-            <Detail k={pair[1]} />
+    </View>
+  );
+
+  return (
+    <View style={styles.stepGap}>
+      <View style={styles.rowBetween}>
+        <Text style={[styles.body, styles.rowLead]}>{TYPES_TAP_LINE}</Text>
+        {/* COMPARE keeps the mic on show as the first pick, and COMPARING
+            goes back to the last one picked (fix round 2026-11-14, F9 item 6:
+            it used to empty the card and drop the current mic). */}
+        <Chip label={compare ? 'COMPARING' : 'COMPARE'} active={compare} onPress={() => toggleCompare()} />
+      </View>
+      {group('transducer')}
+      {group('form')}
+      {/* MS-02 (2026-11-15): the card a tap changes scrolls into view. */}
+      <Reveal on={compare ? `pair:${pair.join('|')}` : sel}>
+        {compare ? (
+          pair.length === 2 ? (
+            <View style={styles.compareRow}>
+              <Detail k={pair[0]} />
+              <View style={styles.compareDivider} />
+              <Detail k={pair[1]} />
+            </View>
+          ) : (
+            <Text style={styles.hint}>{pair.length === 1 ? `Pick one more microphone to place beside ${MIC_TYPES.find((m) => m.key === pair[0])?.name ?? 'it'}.` : 'Pick two microphones to place them side by side.'}</Text>
+          )
+        ) : sel ? (
+          <View style={styles.detailCard}>
+            <Detail k={sel} />
           </View>
-        ) : (
-          <Text style={styles.hint}>Pick two microphones to place them side by side.</Text>
-        )
-      ) : sel ? (
-        <View style={styles.detailCard}>
-          <Detail k={sel} />
-        </View>
-      ) : null}
+        ) : null}
+      </Reveal>
+      <LessonBanner text={CLASS_NOTE} />
     </View>
   );
 }
@@ -245,6 +346,7 @@ function TypesStep() {
 
 function CharsStep() {
   const [sel, setSel] = useState(CHARACTERISTICS[0].key);
+  useSeenGoal('chars', sel, 3);
   const c = CHARACTERISTICS.find((x) => x.key === sel)!;
   return (
     <View style={styles.stepGap}>
@@ -252,14 +354,24 @@ function CharsStep() {
       <View style={styles.charHub}>
         <MicVisual kind="condenser" w={48} h={72} />
         {/* flex:1 (P0 fix 2026-08-31): without it this wrap laid all 16 chips
-            on ONE unwrapped row — five rendered off-screen, unreachable. */}
-        <View style={[styles.chipWrap, { flex: 1 }]}>
-          {CHARACTERISTICS.map((x) => (
-            <Chip key={x.key} label={x.name} active={sel === x.key} onPress={() => setSel(x.key)} />
+            on ONE unwrapped row — five rendered off-screen, unreachable.
+            MS-01 (2026-11-15): the chips sit in four small labeled groups. */}
+        <View style={[styles.stepGapTight, { flex: 1 }]}>
+          {CHAR_GROUPS.map((g) => (
+            <View key={g.title} style={styles.stepGapTight}>
+              <Text accessibilityRole="header" style={styles.groupEyebrow}>{g.title}</Text>
+              <View style={styles.chipWrap}>
+                {/* In the group's own order: its first chips are the ones the next modules cover. */}
+                {g.keys.flatMap((k) => CHARACTERISTICS.filter((x) => x.key === k)).map((x) => (
+                  <Chip key={x.key} label={x.name} active={sel === x.key} onPress={() => setSel(x.key)} />
+                ))}
+              </View>
+            </View>
           ))}
         </View>
       </View>
-      <View style={styles.detailCard}>
+      {/* MS-01 + MS-02 (2026-11-15): a chip's card scrolls into view. */}
+      <Reveal on={sel} style={styles.detailCard}>
         <Text style={styles.detailName}>{c.name}</Text>
         {c.why.map((wl) => (
           <Text key={wl} style={styles.body}>
@@ -267,7 +379,7 @@ function CharsStep() {
           </Text>
         ))}
         {c.flag ? <LessonBanner text={c.flag} /> : null}
-      </View>
+      </Reveal>
     </View>
   );
 }
@@ -298,6 +410,7 @@ function PatternsStep() {
   const reasonRows = useShuffledRows(PATTERN_REASONS);
   const chosenReason = PATTERN_REASONS.find((r) => r.key === reason);
   const reasonGood = chosenReason?.goodFor.includes(pattern) ?? false;
+  useSeenGoal('patterns', reasonGood ? 'good' : null, 1);
   const reasonAlt = chosenReason ? PATTERNS.find((p) => chosenReason.goodFor.includes(p.key))?.name : null;
 
   return (
@@ -346,6 +459,7 @@ function PatternsStep() {
 // Lesson 4 — Frequency response
 
 function CurvesStep() {
+  const meetGoal = useGoal();
   const [sel, setSel] = useState('a');
   const [w, onLayout] = useWidth();
   const H = 150;
@@ -410,18 +524,21 @@ function CurvesStep() {
         <Text style={styles.body}>{c.useful}</Text>
       </View>
       {/* Retrieval (learning pass 2026-08-31) — NEW COPY, owner review. */}
-      <CheckQuestion
+      {/* Per-option reasons and balanced options (fix round 2026-11-14, F9
+          phase 2): the right answer was the longest and said why. */}
+      <MicCheck
+        onSolved={() => meetGoal('curves')}
         spec={{
           question: 'A lectern mic keeps picking up stage rumble under the speech. Which response curve helps?',
-          options: [
-            'A low-frequency rolloff — the rumble lives below the voice',
-            'A presence peak around 5 kHz',
-            'A perfectly flat curve — flat is always best',
-          ],
+          options: ['A low-frequency rolloff', 'A presence peak around 5 kHz', 'A perfectly flat curve, since flat is best'],
           correctIdx: 0,
           reveal:
             'The rumble sits below the useful voice band, so a curve that rolls off the lows removes the problem without touching the speech. Flat is not "best" — it is a CHOICE, and here it faithfully reproduces the rumble too.',
-          wrongHint: 'Look at where rumble lives on the frequency axis versus where speech does.',
+          why: {
+            1: 'A presence peak lifts the band where speech is understood. Look at where the rumble sits on the axis: far below it.',
+            2: 'A flat curve passes everything as it is, the rumble included. Flat is a choice, not a fix.',
+          },
+          hint: 'Look at where rumble lives on the frequency axis versus where speech does.',
         }}
       />
       <LessonBanner text={CURVE_LESSON} />
@@ -434,6 +551,7 @@ function CurvesStep() {
 
 function SplStep() {
   const [mic, setMic] = useState('cond');
+  useSeenGoal('spl', mic, 3);
   const [tier, setTier] = useState<string | null>(null);
   const profile = MIC_PROFILES.find((m) => m.key === mic)!;
   return (
@@ -490,6 +608,7 @@ function SplStep() {
 
 function PowerStep() {
   const [sel, setSel] = useState('dyn');
+  useSeenGoal('power', sel, 3);
   const pc = POWER_CASES.find((p) => p.key === sel)!;
   return (
     <View style={styles.stepGap}>
@@ -549,13 +668,14 @@ function FormStep() {
 
 function EnvStep() {
   const [sel, setSel] = useState('studio');
+  useSeenGoal('env', sel, 3);
   const sc = ENV_SCENARIOS.find((s) => s.key === sel)!;
   return (
     <View style={styles.stepGap}>
       <Text style={styles.body}>The SAME human voice, three different worlds. Watch the priorities move.</Text>
       <View style={styles.chipWrap}>
         {ENV_SCENARIOS.map((s) => (
-          <Chip key={s.key} label={s.title.split('·')[0].trim()} active={sel === s.key} onPress={() => setSel(s.key)} />
+          <Chip key={s.key} label={s.chip} active={sel === s.key} onPress={() => setSel(s.key)} />
         ))}
       </View>
       <View style={styles.detailCard}>
@@ -575,6 +695,7 @@ function EnvStep() {
 // Lesson 9 — Application explorer
 
 function JobsStep() {
+  const meetGoal = useGoal();
   const [group, setGroup] = useState('voice');
   const [job, setJob] = useState('livevocal');
   const g = JOB_GROUPS.find((x) => x.key === group)!;
@@ -609,23 +730,49 @@ function JobsStep() {
         ))}
         <Text style={[styles.body, { marginTop: 6 }]}>{j.note}</Text>
         <Text style={[styles.detailHead, { marginTop: 4 }]}>WHICH MICROPHONE CHARACTERISTICS SATISFY THESE REQUIREMENTS?</Text>
+        {/* The question now has its follow-up (fix round 2026-11-14, F9
+            item 6): think first, then SHOW WHAT FITS lists, per requirement,
+            the characteristic and the lesson that shows it. */}
+        <JobFit key={j.key} ratings={j.ratings} />
       </View>
       {/* Retrieval (learning pass 2026-08-31) — NEW COPY, owner review. */}
-      <CheckQuestion
+      <MicCheck
+        onSolved={() => meetGoal('jobs')}
         spec={{
           question: 'Two mics: one labeled "vocal", one labeled "instrument". Which is right for a loud guitar cab?',
-          options: [
-            'Whichever mic’s SPECS handle the SPL and the tone — the label doesn’t decide',
-            'The "instrument" mic, because the label says so',
-            'The "vocal" mic never works on instruments',
-          ],
+          options: ['Whichever one’s specs handle the level and the tone', 'The "instrument" one, because its label says instruments', 'Not the "vocal" one: vocal mics never work on instruments'],
           correctIdx: 0,
           reveal:
             'Marketing labels describe common use, not capability. The spec sheet decides: max SPL, pattern, response. Plenty of "vocal" mics are studio staples on cabs — read the numbers, not the box.',
-          wrongHint: 'The card above rates CHARACTERISTICS, not labels — which characteristics does a loud cab need?',
+          why: {
+            1: 'A label describes common use, not what a mic can take. Which characteristics does a loud cab need?',
+            2: 'Plenty of mics sold for vocals sit on loud cabs every day. What on the card above decides it?',
+          },
+          hint: 'The card above rates CHARACTERISTICS, not labels — which characteristics does a loud cab need?',
         }}
       />
       <LessonBanner text={JOBS_LESSON} />
+    </View>
+  );
+}
+
+/** Lesson 9's answer, behind one tap so the learner thinks first. */
+function JobFit({ ratings }: { ratings: [string, number][] }) {
+  const [open, setOpen] = useState(false);
+  if (!open) {
+    return (
+      <View style={styles.stepGap}>
+        <Text style={styles.body}>Think of one for each line, then check.</Text>
+        <Chip label="SHOW WHAT FITS ▾" active={false} onPress={() => setOpen(true)} />
+      </View>
+    );
+  }
+  return (
+    <View style={{ gap: 4 }}>
+      {ratings.map(([name, n]) => (
+        <Text key={name} style={styles.bullet}>{n <= 2 ? `•  ${name} (rated low) → it matters little for this job, or is not wanted` : `•  ${name} → ${JOB_FIT[name] ?? 'see Module 2’s list of characteristics'}`}</Text>
+      ))}
+      <Text style={[styles.body, { marginTop: 4 }]}>Several microphones can meet the same list. Next, the challenge asks you to choose one and defend it.</Text>
     </View>
   );
 }
@@ -642,6 +789,7 @@ function ChallengeStep() {
   // The variants stay hidden until the base brief has been answered once —
   // they rendered before the first pick and invited skipping it (2026-08-31).
   const [baseTried, setBaseTried] = useState(false);
+  useSeenGoal('challenge', checked && pick ? 'checked' : null, 1);
 
   const variant = CHALLENGE_VARIANTS.find((v) => v.key === scenario);
   const spec = variant ?? CHALLENGE_BASE;
@@ -748,7 +896,8 @@ function ChallengeStep() {
       ) : null}
 
       {checked && pick != null ? (
-        <View style={styles.detailCard}>
+        // MS-02 (2026-11-15): the verdict scrolls into view as it appears.
+        <Reveal on={`${scenario}:${pick}`} onMount style={styles.detailCard}>
           <Text style={[styles.detailName, { color: correctPick ? colors.green : acceptedPick ? colors.amber : '#ff8a6b' }]}>
             {correctPick
               ? '✓ A defensible professional choice.'
@@ -758,15 +907,14 @@ function ChallengeStep() {
           </Text>
           {!variant && (correctPick || acceptedPick) ? (
             <Text style={styles.body}>
-              {`Reasoning: ${factorScore}/3 key factors selected${factorWrong > 0 ? `, ${factorWrong} that ${factorWrong === 1 ? 'doesn’t' : 'don’t'} bear on this job` : ''}. The ones that matter: directionality, working distance, wind protection.`}
+              {`Reasoning: ${factorScore === 3 ? 'every key factor picked' : factorScore === 0 ? 'no key factor picked yet' : `key factors still missing: ${3 - factorScore}`}${factorWrong > 0 ? `, ${factorWrong} that ${factorWrong === 1 ? 'doesn’t' : 'don’t'} bear on this job` : ''}. The ones that matter: directionality, working distance, wind protection.`}
             </Text>
           ) : null}
           {/* The full rationale names the right mic — printing it on a WRONG
               pick spoiled the retry (learning pass 2026-08-31). It now waits
               for a defensible answer. */}
           {correctPick || acceptedPick ? <Text style={styles.body}>{spec.explain}</Text> : null}
-
-        </View>
+        </Reveal>
       ) : null}
 
       {baseTried || variantsDone.size > 0 ? (
@@ -803,6 +951,7 @@ function LockerStep() {
     }
     return s;
   }, [chosen]);
+  useSeenGoal('locker', covered.size >= LOCKER_JOBS.length ? 'all' : null, 1);
   return (
     <View style={styles.stepGap}>
       <Text style={styles.body}>
@@ -878,63 +1027,63 @@ type StepDef = { key: string; tag: string; title: string; intro: string; Body: (
 const STEPS: StepDef[] = [
   {
     key: 'types',
-    tag: 'LESSON 1',
+    tag: 'MODULE 1',
     title: 'MEET THE MICROPHONE TYPES',
     intro: 'What choices exist? Recognize the major categories and their broad practical differences.',
     Body: TypesStep,
   },
   {
     key: 'chars',
-    tag: 'LESSON 2',
+    tag: 'MODULE 2',
     title: 'CHARACTERISTICS THAT MATTER',
     intro: 'What makes microphones different — the foundation every later decision stands on.',
     Body: CharsStep,
   },
   {
     key: 'patterns',
-    tag: 'LESSON 3',
+    tag: 'MODULE 3',
     title: 'POLAR PATTERN SELECTION',
     intro: 'Where should the microphone listen — and what should it refuse to hear?',
     Body: PatternsStep,
   },
   {
     key: 'curves',
-    tag: 'LESSON 4',
+    tag: 'MODULE 4',
     title: 'FREQUENCY RESPONSE & TONAL CHARACTER',
     intro: 'Learn to read a response curve the way you would read a spec sheet.',
     Body: CurvesStep,
   },
   {
     key: 'spl',
-    tag: 'LESSON 5',
+    tag: 'MODULE 5',
     title: 'SENSITIVITY, NOISE & SPL',
     intro: 'Can this microphone appropriately capture this source?',
     Body: SplStep,
   },
   {
     key: 'power',
-    tag: 'LESSON 6',
+    tag: 'MODULE 6',
     title: 'ACTIVE VS. PASSIVE / POWER',
     intro: 'What does the microphone require from the rig?',
     Body: PowerStep,
   },
   {
     key: 'form',
-    tag: 'LESSON 7',
+    tag: 'MODULE 7',
     title: 'FORM FACTOR MATTERS',
     intro: 'What physical design fits the job? Selection is not just electrical.',
     Body: FormStep,
   },
   {
     key: 'env',
-    tag: 'LESSON 8',
+    tag: 'MODULE 8',
     title: 'SELECTING FOR THE ENVIRONMENT',
     intro: 'How the surroundings change the decision before any spec is read.',
     Body: EnvStep,
   },
   {
     key: 'jobs',
-    tag: 'LESSON 9',
+    tag: 'MODULE 9',
     title: 'APPLICATION EXPLORER',
     intro: 'Organized by JOB, not by microphone: priorities first, characteristics second.',
     Body: JobsStep,
@@ -960,6 +1109,20 @@ export function MicSelectLabScreen() {
   const navigation = useNavigation();
   const [step, setStep] = useState(0);
   const scrollRef = useRef<ScrollView>(null);
+  // MS-02 (2026-11-15): the scroll's window box and offset, so a changed card
+  // can be brought into view (Reveal, reveal.ts).
+  const viewportRef = useRef<View>(null);
+  const scrollY = useRef(0);
+  const reveal = useCallback((node: View | null) => {
+    const vp = viewportRef.current;
+    if (!node || !vp) return;
+    vp.measureInWindow((_vx, vy, _vw, vh) => {
+      node.measureInWindow((_nx, ny, _nw, nh) => {
+        const d = revealDelta({ y: ny, h: nh }, { y: vy, h: vh });
+        if (d > 0) scrollRef.current?.scrollTo({ y: scrollY.current + d, animated: true });
+      });
+    });
+  }, []);
 
   // Guest rule (owner 2026-08-12): anonymous users neither restore nor persist
   // their place — every open starts at the first lesson.
@@ -994,6 +1157,7 @@ export function MicSelectLabScreen() {
     setEnding(false);
     setStep(n);
     scrollRef.current?.scrollTo({ y: 0, animated: false });
+    scrollY.current = 0;
     if (!noAccountRef.current) void stepStore.set(n);
   }, []);
 
@@ -1007,6 +1171,8 @@ export function MicSelectLabScreen() {
    * Lesson 1 (clears nothing) and DONE.
    */
   const [ending, setEnding] = useState(false);
+  const [met, setMet] = useState<ReadonlySet<string>>(() => new Set());
+  const meetGoal = useCallback((key: string) => setMet((m) => (m.has(key) ? m : new Set([...m, key]))), []);
   const finish = useCallback(() => setEnding(true), []);
   const unEnd = useCallback(() => setEnding(false), []);
   const visited = useLabVisits('micselect');
@@ -1030,9 +1196,11 @@ export function MicSelectLabScreen() {
     // provider boots at 'anonymous'-but-unresolved, so a cold-start guest's
     // first lesson was PERSISTED before the guest rule could apply. Re-runs
     // when the tier lands, so that lesson is still recorded.
+    // WORK DONE (owner decision 1, 2026-11-14): a module is recorded when its
+    // goal is met (MICSEL_GOALS), no longer when it is opened.
     if (!resolved) return;
-    markLabVisit('micselect', STEPS[step].key, { persist: !noAccountRef.current });
-  }, [step, resolved, entitlement]);
+    for (const key of met) markLabVisit('micselect', key, { persist: !noAccountRef.current });
+  }, [met, resolved, entitlement]);
 
   const s = STEPS[step];
 
@@ -1046,11 +1214,17 @@ export function MicSelectLabScreen() {
     go: goTo,
     finish,
     unEnd,
+    // A reading module counts on NEXT (or FINISH) at its foot.
+    beforeAdvance: () => {
+      if (MICSEL_READING.has(STEPS[step].key)) meetGoal(STEPS[step].key);
+    },
     reset: { label: 'START OVER (PRACTICE)', run: () => goTo(0) },
   });
 
   return (
     <MicPhotoLightbox>
+    {/* ONE unit noun, said once (owner decision 3, 2026-11-14; S2's API): module. */}
+    <LabNounProvider value="module">
     <LabNavProvider value={nav}>
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       {/* The guide overlay is the root's last child; a step change closes an
@@ -1069,16 +1243,17 @@ export function MicSelectLabScreen() {
 
       {ending ? (
         <LabEndScreen
+          labId="micselect"
           labTitle="Microphone Selection Lab"
           units={endUnits}
           cleared={endCleared}
           unreadable={progressUnreadable}
           mode="progress"
-          noun="lesson"
           // The CHECK row stays here: the check is drawn on this screen (extra).
           onJump={(id) => { if (id !== UNDERSTANDING_UNIT) goTo(Math.max(0, STEPS.findIndex((st) => st.key === id))); }}
           // D41 K6: the CHECK row moves the screen to the check drawn here (extra).
           shownHereId={UNDERSTANDING_UNIT}
+          howItCounts={MICSEL_HOW_IT_COUNTS}
           onPracticeAgain={() => goTo(0)}
           onDone={() => safeGoBack(navigation)}
           bottomInset
@@ -1087,18 +1262,32 @@ export function MicSelectLabScreen() {
           extra={<LabUnderstandingBlock labId="micselect" labTitle="Microphone Selection Lab" />}
         />
       ) : (
-      <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: 30 + insets.bottom }]}>
+      <View ref={viewportRef} collapsable={false} style={styles.viewport}>
+      <ScrollView
+        ref={scrollRef}
+        contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: 30 + insets.bottom }]}
+        scrollEventThrottle={32}
+        onScroll={(e) => {
+          scrollY.current = e.nativeEvent.contentOffset.y;
+        }}
+      >
         <Text style={styles.coreQ}>What microphone should I choose for this job — and why?</Text>
-        <Text style={styles.tag}>{`${s.tag} · ${step + 1} OF ${STEPS.length}`}</Text>
+        <Text style={styles.tag}>{s.tag}</Text>
         <Text style={styles.stepTitle}>{s.title}</Text>
         <Text style={styles.body}>{s.intro}</Text>
-        <s.Body key={s.key} />
+        <GoalCtx.Provider value={meetGoal}>
+          <RevealCtx.Provider value={reveal}>
+            <s.Body key={s.key} />
+          </RevealCtx.Provider>
+        </GoalCtx.Provider>
         <LabNextButton nav={nav} />
       </ScrollView>
+      </View>
       )}
       </ScreenGuideHost>
     </View>
     </LabNavProvider>
+    </LabNounProvider>
     </MicPhotoLightbox>
   );
 }
@@ -1107,10 +1296,18 @@ export function MicSelectLabScreen() {
  *  Optional but still counted — owner 2026-10-31), then the understanding
  *  check as a CHECK row when questions are authored for this lab. */
 export function micSelEndUnits(hasCheck: boolean): LabEndUnit[] {
-  const units: LabEndUnit[] = STEPS.map((st) => ({ id: st.key, label: st.title, detail: st.tag === 'OPTIONAL' ? 'Optional' : undefined }));
+  const units: LabEndUnit[] = STEPS.map((st) => ({ id: st.key, label: st.title, detail: MICSEL_MISSING[st.key] }));
   if (hasCheck) units.push({ id: UNDERSTANDING_UNIT, label: 'Check your understanding', kind: 'check', detail: 'Every answer correct — retry until you are.' });
   return units;
 }
+
+/** Each unfinished row's own line: what that lesson asks of you (fix round
+ *  2026-11-14, F9 phase 2, the S2 end-screen rule). The rule every row
+ *  shares is said once, in MICSEL_HOW_IT_COUNTS. */
+export const MICSEL_MISSING: Readonly<Record<string, string>> = Object.fromEntries(
+  Object.entries(MICSEL_GOALS).map(([k, g]) => [k, `${k === 'locker' ? 'Optional, still counts. ' : ''}Still to do: ${g}.`]),
+);
+export const MICSEL_HOW_IT_COUNTS = 'A module counts once its own goal is met (a reading module, once you press NEXT at its foot). Opening it does not count it. The check counts once every answer is right.';
 
 /** Lessons opened (device progress) plus the check once it is banked. */
 export function micSelEndCleared(visited: ReadonlySet<string>, banked: ReadonlySet<string>): ReadonlySet<string> {
@@ -1123,6 +1320,7 @@ export function micSelEndCleared(visited: ReadonlySet<string>, banked: ReadonlyS
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.screenBg },
+  viewport: { flex: 1 },
   coreQ: {
     fontFamily: fonts.barlowMediumItalic,
     fontSize: 13,
@@ -1133,11 +1331,16 @@ const styles = StyleSheet.create({
   tag: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.6, color: colors.amberLabel },
   stepTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, letterSpacing: 1, color: colors.textPrimary },
   stepGap: { gap: 10 },
+  stepGapTight: { gap: 6 },
+  /** The line that shares a row with a chip: takes the room, wraps. */
+  rowLead: { flex: 1, paddingRight: 10 },
 
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   bullet: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
   hint: { fontFamily: fonts.barlowItalic, fontSize: 12.5, color: colors.textSub },
   panelEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.4, color: colors.textSecondary },
+  /** A chip group's small label (MS-01): quieter than a panel heading. */
+  groupEyebrow: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.3, color: colors.amberLabel },
   rowBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
 
   banner: {
@@ -1176,9 +1379,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   micCellActive: { borderColor: 'rgba(255,198,77,.7)', backgroundColor: '#17140c' },
+  // 11 pt (fix round 2026-11-14, F9 item 6): the photo names were 9 px, the
+  // floor itself; lab text at 390 wide reads at 9 pt or more, with room.
   micCellName: {
     fontFamily: fonts.oswaldSemiBold,
-    fontSize: 9,
+    fontSize: 11,
     letterSpacing: 0.4,
     color: colors.textSecondary,
     textAlign: 'center',

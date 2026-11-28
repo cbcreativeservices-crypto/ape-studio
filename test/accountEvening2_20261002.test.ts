@@ -1,3 +1,4 @@
+// 2026-11-21 owner (tester on a tablet): learner text says "this device", never "this phone".
 /**
  * ACCOUNT + COMMERCE — evening toddler hunt, PASS 2 (2026-10-02).
  *
@@ -83,7 +84,7 @@ test('entitlement: a refresh that applies a tier arms the expires_at recheck, as
   assert.match(refresh, /setEntitlementState\(tier\);\s*armExpiryRef\.current\(tier === 'academy' \? accessEndsAt\(rows\) : null\);/);
 });
 
-test('push: the token save result is reported, and Weekly says when this phone was not registered', () => {
+test('push: the token save result is reported, and Weekly says when this device was not registered', () => {
   const p = read('src/features/notifications/push.ts');
   const once = p.slice(p.indexOf('async function registerAndSavePushTokenOnce'), p.indexOf('function payloadFromResponse'));
   assert.match(once, /if \(!uid\) return \{ token, saved: false \};/);

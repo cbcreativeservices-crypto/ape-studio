@@ -556,7 +556,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: when the cone moves forward, what does the air BEHIND it do?', options: ['It is pulled toward the cone', 'It is pushed away too', 'Nothing — only the front air moves'], after: 'Now STEP through (or PLAY ONCE), with the back open and closed.' },
+  sound: { prompt: 'Before you step through: when the cone moves forward, what does the air BEHIND it do?', options: ['It is pulled toward the cone', 'It is pushed away too', 'Nothing — only the front air moves'], after: 'Now go EVENT by EVENT (or PLAY ONCE), with the back open and closed.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Toward the rear, off to one side'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: keeping the distance, you slide the mic from the center toward the edge. What changes?', options: ['Brighter', 'Mellower', 'It depends on this speaker'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will this cardioid reject the guitarist’s wedge best?', options: ['Straight behind the mic', 'At the sides of the mic', 'In front of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
@@ -649,7 +649,7 @@ const d = ROTORS.drum;
 export const SPK_LESSON: Lesson = {
   id: 'SPK',
   labId: 'drums',
-  title: 'Amplified speakers & Leslie',
+  title: 'Amplified Speakers and Leslie',
   subtitle: 'Guitar and bass cabinets, and the rotary cabinet — from outside',
   noun: { one: 'speaker cabinet', many: 'speaker cabinets' },
   model: CAB.model,

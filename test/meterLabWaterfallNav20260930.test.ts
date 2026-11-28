@@ -83,15 +83,16 @@ describe('waterfall module wiring', () => {
     assert.match(b, /reverbHidden\[reverb\]/);
     assert.match(b, /qRing && qRingHidden/);
   });
-  it('the RT60 accuracy badge is kept', () => {
-    assert.match(b, /SYNTHETIC CSD — DRAWN FROM THE RT60 MODEL, NOT A MEASUREMENT/);
+  it('the RT60 disclosure is kept (S3’s plain model note since phase 3, 2026-11-14)', () => {
+    assert.match(b, /modelNote: 'Drawn from the room-decay \(RT60\) model, not a measurement of a real room\.'/);
   });
   it('Signal Detective: each case gets a fresh clock and the waterfall runs at its real-time rate', () => {
     const c = src('src/screens/lab/meter/modules/modMeterC.tsx');
     assert.match(c, /<CaseHero key=\{idx\}/);
     assert.match(c, /kase\.kind === 'ring' \? vs\.waterfallRealtimeHz\(RING_OPTS\) : kase\.visHz/);
-    // The frozen 0.1333 was WF_GROW_END / 3 s; the ring scene's window is 6 s.
-    assert.equal(waterfallTimeSpan(scene()), 6);
+    // The frozen 0.1333 was WF_GROW_END / 3 s; the ring scene's window is 4 s since
+    // 2026-11-21 (owner: the axis is the room's own longest decay, no padding; was 6 s).
+    assert.equal(waterfallTimeSpan(scene()), 4);
   });
 });
 
@@ -104,7 +105,8 @@ describe('Visual Audio Analysis Lab — PREV / NEXT between modules', () => {
     // The strip's own words, from the pure layer: 11 modules read MODULE 1 / 11.
     const v = navView(0, METER_COUNT, false);
     assert.equal(v.noun, 'MODULE');
-    assert.equal(v.pos, `1 / ${METER_COUNT}`);
+    // Owner decision 2 (quick pick, 2026-11-14): "N of total" progress counters: remove them — the strip reads MODULE 3, not MODULE / 3 / 8.
+    assert.equal(v.pos, '1');
     assert.equal(v.nextLabel, 'NEXT ›');
     assert.equal(v.prevOn, false);
     assert.equal(navView(1, METER_COUNT, false).prevOn, true);

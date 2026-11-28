@@ -18,6 +18,21 @@ const POINTS: Record<TuningSystemId, string[]> = {
   equal: ['Uses twelve identical ratios per octave', 'Keeps interval patterns consistent in every key', 'Keeps the octave exact', 'Slightly tempers fifths (−1.96 ¢) and major thirds (+13.69 ¢)'],
 };
 
+/** The same cards in BASIC: words, no formulas (owner 2026-11-15: "build
+ *  waves 1 thru 3", D62 TU-01). MATH keeps the rule and points above. */
+const BASIC_RULE: Record<TuningSystemId, string> = {
+  pythagorean: 'Stack pure fifths, then fold each new note back into one octave.',
+  just: 'Pick small whole-number ratios so the main chords sound pure.',
+  meantone: 'Narrow every fifth a little, so the main major thirds come out pure.',
+  equal: 'Split the octave into twelve identical steps.',
+};
+const BASIC_POINTS: Record<TuningSystemId, string[]> = {
+  pythagorean: ['Built from pure fifths and octaves', 'Prioritizes pure 3:2 fifths', 'Produces wide major thirds', 'Twelve fifths do not close against seven octaves'],
+  just: POINTS.just,
+  meantone: ['Narrows every ordinary fifth a little', 'Creates selected pure 5:4 major thirds', 'Produces unequal key behavior', 'Contains a wolf interval in the selected twelve-note chain'],
+  equal: ['Uses twelve identical ratios per octave', 'Keeps interval patterns consistent in every key', 'Keeps the octave exact', 'Slightly tempers fifths and major thirds'],
+};
+
 const MYTHS: { statement: string; correction: string }[] = [
   { statement: 'A note name always has one frequency.', correction: 'Frequency depends on octave, reference pitch, tuning system, and sometimes musical context.' },
   { statement: 'Equal semitones mean equal Hz differences.', correction: 'They use equal frequency ratios and equal 100-cent steps.' },
@@ -71,20 +86,22 @@ export function Ch12Tradeoffs({ ctx }: ChapterProps) {
       {(Object.keys(TUNING_SYSTEMS) as TuningSystemId[]).map((id) => (
         <Card key={id}>
           <Eyebrow>{TUNING_SYSTEMS[id].name.toUpperCase()}</Eyebrow>
-          <Text style={styles.rule}>{TUNING_SYSTEMS[id].rule}</Text>
-          {POINTS[id].map((p) => <Text key={p} style={styles.point}>• {p}</Text>)}
+          <Text style={styles.rule}>{ctx.mathView ? TUNING_SYSTEMS[id].rule : BASIC_RULE[id]}</Text>
+          {(ctx.mathView ? POINTS : BASIC_POINTS)[id].map((p) => <Text key={p} style={styles.point}>• {p}</Text>)}
         </Card>
       ))}
       <Eyebrow>MISCONCEPTIONS</Eyebrow>
       {/* NEW COPY — instruction stated up front, not hidden inside the cards. */}
-      <Body>Nine claims people make about tuning. Decide whether each is true before you open it — then tap to read the correction. Open at least {MIN_OPENED} to finish this chapter.</Body>
+      {/* "Open 3 to finish" is said once, by the To finish line above (checker fix,
+          owner 2026-11-15, D62 TU-03); the count below only counts. */}
+      <Body>Nine claims people make about tuning. Decide whether each is true before you open it — then tap to read the correction.</Body>
       {MYTHS.map((m, i) => (
         <Pressable key={i} onPress={() => toggle(i)} style={[styles.myth, opened.has(i) && styles.mythSeen]} accessibilityRole="button" accessibilityState={{ expanded: open === i }} aria-expanded={open === i} accessibilityLabel={`Misconception: ${m.statement}`} accessibilityHint={open === i ? 'Collapses the correction' : 'Reveals the correction'}>
           <Text style={styles.mythStatement}>“{m.statement}”</Text>
           {open === i ? <Text style={styles.mythFix}>{m.correction}</Text> : <Text style={styles.tap}>{opened.has(i) ? 'seen · tap to reread ▸' : 'tap for the correction ▸'}</Text>}
         </Pressable>
       ))}
-      <Text style={styles.count} accessibilityLiveRegion="polite">{opened.size} corrections opened{enough ? '' : ` · open ${MIN_OPENED - opened.size} more to finish`}</Text>
+      <Text style={styles.count} accessibilityLiveRegion="polite">{opened.size} corrections opened{enough ? ' · UNDERSTOOD › is ready' : ''}</Text>
       <Eyebrow>WHERE THIS MEETS PROFESSIONAL AUDIO</Eyebrow>
       <Card>
         {PRO.map(([t, d]) => (

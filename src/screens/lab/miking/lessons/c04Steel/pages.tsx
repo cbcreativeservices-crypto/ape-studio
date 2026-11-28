@@ -14,7 +14,7 @@ const SIDE = ['steelSide'] as const;
 export const C04_SPEC: AmpPagesSpec = {
   rig: 'combo',
   who: 'steel',
-  intro: 'This lesson is about putting a microphone on the amp of a pedal steel or a lap steel. First the instruments: the bar, the pedals and knee levers, the pickup, and how a string’s pitch and signal are made; then the amp, and where the player sits — with their feet and knees busy. Then the microphones, a worked example and your own placements on the amp. Nothing here makes a sound: the lab is silent and shows the physics instead. (The speaker itself is covered in full in the Amplified speakers & Leslie module.)',
+  intro: 'This lesson is about putting a microphone on the amp of a pedal steel or a lap steel. First the instruments: the bar, the pedals and knee levers, the pickup, and how a string’s pitch and signal are made; then the amp, and where the player sits — with their feet and knees busy. Then the microphones, a worked example and your own placements on the amp. Nothing here makes a sound: the lab is silent and shows the physics instead. (The speaker itself is covered in full in the Amplified Speakers and Leslie module.)',
   shows: [
     { id: 'steelSide', label: 'PEDAL STEEL, FROM THE SEAT', blurb: 'The pedal steel on its legs, seen from the player’s seat (the player left out): the changer, the keyhead, the knee levers, the pedal rods and pedals, and the volume pedal.' },
     { id: 'steelTop', label: 'PEDAL STEEL, FROM ABOVE', blurb: 'From above: the strings from the keyhead to the changer, the fret markers, the pickup near the changer, the bar on the strings — and the player’s seat and keep-clear zone.' },

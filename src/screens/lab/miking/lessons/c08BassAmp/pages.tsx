@@ -10,7 +10,7 @@ import { C08_PLACE_START, C08_WORKED } from './model.ts';
 export const C08_SPEC: AmpPagesSpec = {
   rig: 'bass',
   who: 'bass',
-  intro: 'This lesson is about putting a microphone on an electric bass’s cabinet — and about the DI that so often sits beside it. First the bass and its rig: how a string becomes a signal and the signal becomes moving air, the DI’s separate path, and where the rig sits. Then the microphones, a worked example, your own placements, and the mic blended with a DI. Nothing here makes a sound: the lab is silent and shows the physics instead. (The speaker itself is covered in full in the Amplified speakers & Leslie module.)',
+  intro: 'This lesson is about putting a microphone on an electric bass’s cabinet — and about the DI that so often sits beside it. First the bass and its rig: how a string becomes a signal and the signal becomes moving air, the DI’s separate path, and where the rig sits. Then the microphones, a worked example, your own placements, and the mic blended with a DI. Nothing here makes a sound: the lab is silent and shows the physics instead. (The speaker itself is covered in full in the Amplified Speakers and Leslie module.)',
   shows: [
     { id: 'bass', label: 'FRETTED BASS, FACE-ON', blurb: 'A four-string electric bass with frets. The pickups turn the strings’ motion into a small signal for the head.' },
     { id: 'bassFretless', label: 'FRETLESS BASS, FACE-ON', blurb: 'The same bass with a smooth fingerboard: the player stops the string with a fingertip, so notes can slide. Position markers sit along the edge.' },

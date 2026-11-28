@@ -43,20 +43,23 @@ export const LIMITER_SCREEN_GUIDES: Record<LimiterScreenId, ScreenGuide> = {
   // ── EXPLORE — the rack ────────────────────────────────────────────────────
   explore: {
     intro: {
-      learning: 'How a limiter sets a ceiling: peaks over it are pulled down to it, anything under passes untouched, and GR shows how far over the ceiling the input sits.',
-      start: 'Set SOURCE to SINE 440 Hz, tap ▶ and drag CEILING to −25 dB: GR reads about 5 dB. Then switch to CLICK 120 and watch GR jump and recover.',
+      learning: 'How a limiter sets a ceiling: peaks over it are pulled down to it, and anything under passes untouched.',
+      // LIM-05 (the lab opens on CLICK 120) + LIM-02 (the Compression pointer);
+      // owner 2026-11-15: "build waves 1 thru 3", D62. The learning line gave up
+      // its GR clause (SEEING says it) for the one new sentence.
+      start: 'Drag CEILING down and watch OUT: the tops of the hits flatten at the dashed ceiling. Then pick SINE 440 Hz, tap ▶ and set CEILING −25 dB: GR reads about 5 dB. New to this? Do Compression first.',
     },
     seeing: [
       'Sound flows left → right: IN ▸, through the green LIMIT bar, ▸ OUT. Amber dashed lines on OUT mark the ceiling; the faint gray outline is the signal before limiting.',
       'The GR (gain reduction) ladder on the right grows down as the level is held down.',
       'CEIL and RLS show your settings. GR is measured live (— dB while stopped).',
-      'TEACHING MODEL: CLICK is drawn as a longer DRUM-HIT MODEL; GR measures the real click.',
+      'It is a model: CLICK is drawn as a longer DRUM-HIT MODEL; GR measures the real click.',
     ],
     control: [
-      'Tap ▶ in the header, or tap the display, to play the SOURCE through the limiter; ■ stops it. Drag the CEILING fader from −45 to −15 dB to set the level nothing should pass.',
-      'RLS (release: 30, 120 or 500 ms) sets how fast the limiter lets go after a peak. SOURCE picks SINE 440 Hz, CLICK 120 or PINK NOISE.',
-      'Long-press any key or readout for its lesson entry.',
-      'Below, LAB NOTES has the intro, the GAIN REDUCTION meter, the DESIGNED RESPONSE curve (the flat shelf), THE AUDIO PATH (ending with a note on true peak), two CHECK YOURSELF questions and the GUIDED LESSON.',
+      'Tap ▶ (header or display) to play the SOURCE through the limiter; ■ stops it. Drag the CEILING fader from −45 to −15 dB: the level nothing should pass.',
+      'RLS (release: 30, 120 or 500 ms): how fast it lets go of peaks. SOURCE picks SINE 440 Hz, CLICK or PINK NOISE.',
+      'With CLICK chosen, close the SOURCE tray with ✕ and drag the fader to set the click’s tempo, 60 to 240 BPM (double-tap: the lab’s own); a slower tempo slows the picture too, so it keeps step with what you hear.',
+      'Long-press a key or readout for its lesson. LAB NOTES below: intro, GAIN REDUCTION meter, DESIGNED RESPONSE curve (the flat shelf), THE AUDIO PATH (ends with a note on true peak), two CHECK YOURSELF questions, GUIDED LESSON.',
     ],
     changes: [
       'Over the ceiling, the level is pulled down to it almost at once: the ratio is infinite. Below it, nothing changes. A sharp click can slip a few dB past first, because this limiter can’t look ahead.',
@@ -80,11 +83,11 @@ export const LIMITER_SCREEN_GUIDES: Record<LimiterScreenId, ScreenGuide> = {
   learn: {
     intro: {
       learning: 'The vocabulary of limiting (ceiling, drive, release, lookahead, true peak) and why a master’s ceiling sits near −1 dBTP while this lab’s sit far lower.',
-      start: 'Scroll to the CEILING and RLS entries. Then switch to EXPLORE and play SINE 440 Hz at CEILING −35 dB to check the GR sum the lesson works out.',
+      start: 'Open CONTROLS and read the CEILING and RLS entries. Then switch to EXPLORE and play SINE 440 Hz at CEILING −35 dB to check the GR sum the lesson works out.',
     },
     seeing: [
       'This is the lab’s guided lesson as one page to read. Nothing on it moves, but ▶ in the header still plays or stops the sound.',
-      'First what a limiter is. Then CONTROLS: CEILING, Threshold / Input Gain (Drive), RLS, Attack, Lookahead, True-Peak and more. EXPLORE has CEILING and RLS; the rest are on real limiters.',
+      'First what a limiter is. Then CONTROLS: CEILING, RLS and GR, all on EXPLORE. The last row, On real limiters (for later), sums up Drive, Lookahead, true peak and the rest.',
       'Then COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT.',
     ],
     control: [
@@ -103,7 +106,7 @@ export const LIMITER_SCREEN_GUIDES: Record<LimiterScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'Work the sum: a source peaking at −20 dBFS under a −35 dB ceiling is held down 15 dB. On EXPLORE, play SINE 440 Hz at CEILING −35 dB: GR reads about 15.',
-      'Read the COMMON MISTAKES line on release, then on EXPLORE play CLICK 120 at CEILING −45 dB and compare RLS 30 ms with 500 ms on the GR ladder.',
+      'Open COMMON MISTAKES and read the line on release, then on EXPLORE play CLICK 120 at CEILING −45 dB and compare RLS 30 ms with 500 ms on the GR ladder.',
     ],
   },
 
@@ -118,11 +121,12 @@ export const LIMITER_SCREEN_GUIDES: Record<LimiterScreenId, ScreenGuide> = {
       'A ✓ replaces a question’s number once it is right. The line under the title says how many you still need to get right.',
     ],
     control: [
-      'Tap an option. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER explains, and you pick again straight away.',
+      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
       'Nothing is scored. Use the tabs to switch to LEARN or EXPLORE at any time to look something up.',
     ],
     changes: [
-      'Each answer shows its explanation at once, right or wrong, so a wrong pick still teaches.',
+      'A first wrong pick gets a pointer, not the answer, so you still work it out.',
+      'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: what is left in this lab.',
       'Get all four right and the check is passed. A pass is kept: you never need to take the check twice.',
     ],
     teaches: [
@@ -131,7 +135,7 @@ export const LIMITER_SCREEN_GUIDES: Record<LimiterScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'Unsure about the GR sum? On EXPLORE, play SINE 440 Hz at CEILING −30 dB: GR reads about 10 dB, as the tone peaks at −20 dBFS. Work the question’s numbers the same way.',
-      'Unsure about true peak? Read LEARN’s True-Peak entry: it explains what the real wave does between samples.',
+      'Unsure about true peak? On LEARN, open COMMON MISTAKES and read the line on 0 dBFS: it explains what the real wave does between samples.',
     ],
   },
 };

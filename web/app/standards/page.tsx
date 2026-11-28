@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { PageHero, Section, List } from "@/components/content";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
+  path: "/standards",
   title: "Educational Standards",
   description:
     "Pro Audio Training Academy’s approach to technical accuracy, editorial independence, sourcing, corrections, and credential standards.",
-};
+});
 
 export default function Page() {
   return (

@@ -77,9 +77,14 @@ describe('#21 the one-page review labs end on the what’s-left screen', () => {
   });
   it('wired in all three labs', () => {
     assert.match(read('src/screens/lab/SignalChainLabScreen.tsx'), /<ReviewLabEnd labKey="af_signal_chain" labTitle="Signal Chain Builder" onOpen=\{stop\} \/>/);
-    assert.match(read('src/screens/lab/foundations/FoundationsPlaygroundScreen.tsx'), /<ReviewLabEnd labKey="af_sound_playground" labTitle="Sound Playground" onOpen=\{stop\} \/>/);
+    // Lab fix round 2026-11-14, phase 3 (owner's decision 1, "done = work done"): the
+    // end step names what is still open (the check, then the review mark).
+    assert.match(read('src/screens/lab/foundations/FoundationsPlaygroundScreen.tsx'), /<ReviewLabEnd\s+labKey="af_sound_playground"\s+labTitle="Sound Playground"\s+onOpen=\{stop\}\s+stepLabel=/);
     // Amplitude's credit is its ramp check — the end screen points back to it.
-    assert.match(read('src/screens/lab/amplitude/AmplitudeOrientation.tsx'), /<AmplitudeColorBody alsoReviewLab \/>\s*\{\/\*[\s\S]*?\*\/\}\s*<ReviewLabEnd\s+labKey="af_amplitude"[\s\S]*?offerReview=\{false\}/);
+    // Lab fix round 2026-11-14 (owner: "Begin fixing all bugs found and do obvious
+    // (my decision is not required) fixes"): the step names what is still open
+    // once the check is passed (amplitudeEndStep).
+    assert.match(read('src/screens/lab/amplitude/AmplitudeOrientation.tsx'), /<AmplitudeColorBody alsoReviewLab onCheckPassed=\{\(\) => setCheckPassed\(true\)\} \/>\s*\{\/\*[\s\S]*?\*\/\}\s*<ReviewLabEnd\s+labKey="af_amplitude"[\s\S]*?stepLabel=\{amplitudeEndStep\(\{ checkPassed, orientationDone \}\)\}[\s\S]*?offerReview=\{false\}/);
   });
 });
 

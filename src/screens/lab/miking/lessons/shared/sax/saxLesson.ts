@@ -501,7 +501,7 @@ export function buildSaxLesson(c: SaxLessonCfg): Lesson {
   };
 
   const predictions: Lesson['predictions'] = {
-    sound: { prompt: 'Before you step through: the player opens more holes from the bell end. Where will most of the note leave the horn?', options: ['At the bell', 'At the first open hole', 'Evenly along the body'], after: 'Now STEP through it (or PLAY ONCE), then walk the scale on the next step.' },
+    sound: { prompt: 'Before you step through: the player opens more holes from the bell end. Where will most of the note leave the horn?', options: ['At the bell', 'At the first open hole', 'Evenly along the body'], after: 'Now go EVENT by EVENT (or PLAY ONCE), then walk the scale on the next step.' },
     microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
     placement: { prompt: 'Predict: you move the mic from above the bell toward the middle of the key stack. What changes?', options: ['Brighter', 'Warmer, with more key noise', 'It depends on this horn'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
     context: { prompt: 'Where will this supercardioid reject the player’s wedge best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },

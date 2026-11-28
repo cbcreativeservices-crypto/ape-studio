@@ -42,7 +42,10 @@ import { ToolsHubScreen } from '../screens/tools/ToolsHubScreen';
 import { ToolDemoPreview } from '../screens/tools/ToolDemoPreview';
 import { CalcWorkspaceScreen } from '../screens/lab/calc/CalcWorkspaceScreen';
 import { EqModuleScreen } from '../screens/lab/eq/EqModuleScreen';
-import { CompressionLabScreen, GateLabScreen, StereoLabScreen } from '../screens/lab/fxLabConfigs';
+import { CompressionLabScreen, GateLabScreen, LimiterLabScreen, StereoLabScreen } from '../screens/lab/fxLabConfigs';
+// Beginner waves (F7a, 2026-11-15): the Smart Processors hub and the EQ Lab menu at 390.
+import { SmartProcessorsLabScreen } from '../screens/lab/deesser/SmartProcessorsLabScreen';
+import { EqLabHomeScreen } from '../screens/lab/eq/EqLabHomeScreen';
 import { GrLadderPreview } from '../screens/lab/GrLadderPreview';
 import { CalcLabScreen } from '../screens/lab/calc/CalcLabScreen';
 import { CableInstallLabScreen } from '../screens/lab/cableinstall/CableInstallLabScreen';
@@ -81,10 +84,16 @@ import { PlateStudioScreen } from '../screens/lab/cymatics/PlateStudioScreen';
 import { TuningLabScreen } from '../screens/lab/tuning/TuningLabScreen';
 import { DigitalModuleScreen } from '../screens/lab/digital/DigitalModuleScreen';
 import { GainModuleScreen } from '../screens/lab/gain/GainModuleScreen';
+// Beginner waves 2026-11-15 (F6a): the Digital and Gain lab homes and the Signal Chain Builder by
+// name, so their first screens can be checked at 390 (`#labpreview/DigitalLab`, `/GainLabHome`, `/SignalChainLab`).
+import { DigitalLabHomeScreen } from '../screens/lab/digital/DigitalLabHomeScreen';
+import { GainLabHomeScreen } from '../screens/lab/gain/GainLabHomeScreen';
+import { SignalChainLabScreen } from '../screens/lab/SignalChainLabScreen';
 import { CymaticsModuleScreen } from '../screens/lab/cymatics/CymaticsModuleScreen';
 import { LiquidStudioScreen } from '../screens/lab/cymatics/LiquidStudioScreen';
 import { MembraneStudioScreen } from '../screens/lab/cymatics/MembraneStudioScreen';
 import { GalleryScreen as CymaticsGalleryScreen } from '../screens/lab/cymatics/GalleryScreen';
+import { CymaticsHomeScreen } from '../screens/lab/cymatics/CymaticsHomeScreen';
 // `#labpreview/<Screen>/<id>` (2026-09-25 legibility pass): any lab screen in
 // the browser harness by name, so a display can be measured without walking
 // Home → OPEN LABS (the app root sometimes rendered blank in the preview).
@@ -133,6 +142,12 @@ import { MikingLessonScreen } from '../screens/lab/miking/MikingLessonScreen';
 // Miking hands redesign (2026-10-24): `#labpreview/MikingHands/<id>[~u~v~w]`
 // draws one lesson's art large, cropped round its hands.
 import { MikingHandStudio } from './MikingHandStudio';
+// Figure realism pass (2026-11-22, must-do D78): `#labpreview/FigureStudy`, the
+// owner's example figure (the kit drummer) CURRENT beside NEW.
+import { FigureStudy } from './FigureStudy';
+// Figure realism pass, second wave (2026-11-23): `#labpreview/HandDrumHands`, the
+// hand-drum "How it sounds" hands large, beside the approved drummer hand.
+import { HandDrumHandStudy } from './HandDrumHandStudy';
 // Mixing Guides (2026-10-07): `#labpreview/MixingGuides`, `#labpreview/MixingGuide/pop`.
 import { MixingGuidesHubScreen } from '../screens/lab/mixingGuides/MixingGuidesHubScreen';
 import { MixingGuideScreen } from '../screens/lab/mixingGuides/MixingGuideScreen';
@@ -159,6 +174,12 @@ import { OnboardingLandingScreen } from '../screens/onboarding/OnboardingLanding
 // `#labpreview/Paywall/sample` for store-shaped sample prices (src/dev/paywallSample.ts).
 // Also the sibling the landing's SEE MEMBERSHIP PLANS opens inside the harness.
 import { PaywallScreen } from '../screens/commercial/PaywallScreen';
+// Game Audio lab (2026-11-12, must-do D60): `#labpreview/GameAudioEngineCheck` is
+// the sound engine's proof screen. The lab is in the Labs menu since 2026-11-13 (Game Audio subject, members only).
+import { GameAudioEngineCheckScreen } from './GameAudioEngineCheckScreen';
+import { GameAudioToolsStageCheck } from './GameAudioToolsStageCheck'; // dev check for the mix / voices / net strips and page 20's tool-window stage: `#labpreview/GameAudioToolsStageCheck`
+import { GameAudioLabScreen } from '../screens/lab/gameaudio/GameAudioLabScreen';
+import { StagePlotLabScreen } from '../screens/lab/stageplot/StagePlotLabScreen'; // 2026-11-12, must-do D60: `#labpreview/StagePlotLab`; in the Labs menu since 2026-11-13 (Live Sound Reinforcement, members only)
 
 const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   OnboardingLanding: OnboardingLandingScreen as ComponentType,
@@ -213,6 +234,9 @@ const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   CompressionLab: CompressionLabScreen as ComponentType,
   GateLab: GateLabScreen as ComponentType,
   StereoLab: StereoLabScreen as ComponentType,
+  LimiterLab: LimiterLabScreen as ComponentType,
+  SmartProcessorsLab: SmartProcessorsLabScreen as ComponentType,
+  EqLabHome: EqLabHomeScreen as ComponentType,
   // Start Here (2026-09-29): the free beginner experience + its words.
   StartHere: StartHereScreen as ComponentType,
   StartHereTerms: StartHereTermsScreen as ComponentType,
@@ -229,18 +253,30 @@ const LAB_PREVIEW_SCREENS: Record<string, ComponentType> = {
   CymaticsLiquidStudio: LiquidStudioScreen as ComponentType,
   CymaticsMembraneStudio: MembraneStudioScreen as ComponentType,
   CymaticsGallery: CymaticsGalleryScreen as ComponentType,
+  // The Cymatics HOME (lab fix round 2026-11-14): the beginner audit could not
+  // open it here ("route not registered") and judged it from source.
+  CymaticsLab: CymaticsHomeScreen as ComponentType,
   // Full-screen build, group 3 (2026-09-30): Digital Audio + Gain Staging
   // module pages (`/<id>`). The Digital Skia scenes need CanvasKit (native
   // only); the rack chrome and the Gain chain columns measure here.
   DigitalModule: DigitalModuleScreen as ComponentType,
   GainModule: GainModuleScreen as ComponentType,
+  DigitalLab: DigitalLabHomeScreen as ComponentType,
+  GainLabHome: GainLabHomeScreen as ComponentType,
+  SignalChainLab: SignalChainLabScreen as ComponentType,
   MasteringLab: MasteringLabScreen as ComponentType,
   DrumTuningLab: DrumTuningLabScreen as ComponentType,
   DJSystemsLab: DJSystemsLabScreen as ComponentType,
+  GameAudioEngineCheck: GameAudioEngineCheckScreen as ComponentType,
+  GameAudioToolsStageCheck: GameAudioToolsStageCheck as ComponentType,
+  GameAudioLab: GameAudioLabScreen as ComponentType,
+  StagePlotLab: StagePlotLabScreen as ComponentType,
   MikingHub: MikingHubScreen as ComponentType,
   EarLab: EarLabScreen as ComponentType,
   MikingLesson: MikingLessonScreen as ComponentType,
   MikingHands: MikingHandStudio as ComponentType,
+  FigureStudy: FigureStudy as ComponentType,
+  HandDrumHands: HandDrumHandStudy as ComponentType,
   MixingGuides: MixingGuidesHubScreen as ComponentType,
   MixingGuide: MixingGuideScreen as ComponentType,
 };
@@ -262,7 +298,7 @@ function withLabTermPopup(Screen: ComponentType): ComponentType {
     return (
       <>
         <Screen {...props} />
-        <LabTermIntroHost routeName={route.name} params={route.params} freeLab={!isMemberOnlyLabRoute(route.name)} />
+        <LabTermIntroHost routeName={route.name} params={route.params} freeLab={!isMemberOnlyLabRoute(route.name, route.params)} />
       </>
     );
   }

@@ -98,8 +98,8 @@ export function Lesson05Body() {
 
       <Eyebrow text="THE FOUR DIFFERENT CONNECTIONS" />
       <Text style={s.body}>
-        “Hooking up a loudspeaker” is not one connection. Around loudspeakers there are four — different things
-        traveling, different connectors serving them, and none of them interchangeable.
+        “Hooking up a loudspeaker” is four different connections, none interchangeable. Powered = the amplifier is
+        inside the box; passive = the amplifier is a separate box.
       </Text>
       {FOUR_CONNECTIONS.map((c) => (
         <DetailCard key={c.id}>
@@ -123,7 +123,8 @@ export function Lesson05Body() {
         ))}
       </View>
       <InkLegend inks={['speakerPos', 'speakerNeg']} />
-      {rec ? <ConnectorCard rec={rec} /> : null}
+      {/* Folded on its photo, name and cautions (CF-01, owner 2026-11-15: "build waves 1 thru 3"). */}
+      {rec ? <ConnectorCard rec={rec} folded /> : null}
       {nl8 ? <RecognitionStrip rec={[nl8]} title="ALSO RECOGNIZE" /> : null}
 
       <Eyebrow text="INSTRUMENT CABLE VS LOUDSPEAKER CABLE" />
@@ -159,7 +160,7 @@ export function Lesson05Body() {
         <Text style={s.hint}>{CABLE_COMPARE_NOTE}</Text>
       </DetailCard>
 
-      <Eyebrow text={`ROUTING PICKS · ${Math.min(idx + 1, ROUTING_SCENARIOS.length)} OF ${ROUTING_SCENARIOS.length}`} />
+      <Eyebrow text={`ROUTING PICKS · SCENARIO ${Math.min(idx + 1, ROUTING_SCENARIOS.length)}`} />
       {!allDone ? (
         <>
           <DetailCard>

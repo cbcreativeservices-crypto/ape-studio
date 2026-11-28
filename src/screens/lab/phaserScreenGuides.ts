@@ -46,7 +46,7 @@ export const PHASER_SCREEN_GUIDES: Record<PhaserScreenId, ScreenGuide> = {
   explore: {
     intro: {
       learning: 'How a phaser makes its swirl: all-pass stages shift phase without any delay, and mixing that with the dry sound cancels a few unevenly spaced dips.',
-      start: 'Tap ▶ and watch the amber dips sweep across OUT. Then open SWEEP, set DEPTH (SWEEP) to STATIC, and drag CENTER to move the dips by hand.',
+      start: 'Open SWEEP, set DEPTH (SWEEP) to STATIC, and drag CENTER to move the amber dips on OUT by hand. Then tap ▶ to hear them sweep.',
     },
     seeing: [
       'Left (IN ▸) is your source on a spectrum analyzer: PINK NOISE draws flat, WHITE NOISE rises to the right. Right, past the green PHASER bar (SPECTRUM (dB), to ▸ OUT), is the same noise after the phaser.',
@@ -72,7 +72,7 @@ export const PHASER_SCREEN_GUIDES: Record<PhaserScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'Open SWEEP and set DEPTH (SWEEP) to STATIC. Drag CENTER from 400 Hz to 2000 Hz: the two dips slide up OUT together, one on either side of CENTER.',
-      'Tap STAGES through 2, 4, 6 and 8: the caption under DESIGNED RESPONSE says 1, 2, 3, then 4 notches, and OUT shows that many dips.',
+      'With DEPTH (SWEEP) still on STATIC, tap STAGES through 2, 4, 6 and 8: the caption under DESIGNED RESPONSE says 1, 2, 3, then 4 notches, and OUT shows that many dips.',
       'Step RES from 0% to 60%: the peaks between the dips rise above the dotted input line — listen for the sweep starting to ring.',
     ],
   },
@@ -81,7 +81,7 @@ export const PHASER_SCREEN_GUIDES: Record<PhaserScreenId, ScreenGuide> = {
   learn: {
     intro: {
       learning: 'The vocabulary of the phaser (all-pass filter, stage, notch, resonance, LFO) and why two stages make one notch without any delay.',
-      start: 'Scroll to the STAGES entry and read how many notches each stage count gives. Then switch to EXPLORE, step STAGES to 8 and count the dips on OUT.',
+      start: 'Open CONTROLS: the STAGES entry says how many dips each stage count gives. Then on EXPLORE, open SWEEP and set DEPTH (SWEEP) to STATIC so the dips hold still, step STAGES to 8 and count them on OUT.',
     },
     seeing: [
       'This is the Phaser guided lesson as one page to read. Nothing on it moves, but ▶ in the header still plays or stops the sound.',
@@ -93,7 +93,7 @@ export const PHASER_SCREEN_GUIDES: Record<PhaserScreenId, ScreenGuide> = {
       'On EXPLORE, ⓘ GUIDED LESSON at the end of LAB NOTES opens this same lesson as a sheet. Long-press a key or readout there to open just its entry.',
     ],
     changes: [
-      'Read this beside EXPLORE: each entry is something you can hear or see on OUT.',
+      'Open CONTROLS and read it beside EXPLORE: each entry is something you can hear or see on OUT.',
       'On EXPLORE, CENTER is the CENTER fader, STAGES and RES are keys of their own, and RATE and DEPTH share the SWEEP key.',
       'Mix, LFO Waveform and Stereo spread are on many phasers but not in this dock. The lab holds the mix at 50%, near where the notches are deepest. Their entries give the ranges found on many phasers.',
     ],
@@ -104,7 +104,7 @@ export const PHASER_SCREEN_GUIDES: Record<PhaserScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'Read the PRO TIP on setting DEPTH (SWEEP) to STATIC first. Then on EXPLORE set DEPTH (SWEEP) to STATIC and drag CENTER: the dips hold still until you move them.',
-      'Read the STAGES entry (one notch for every two stages), then on EXPLORE step STAGES to 8 and count the dips on OUT: four.',
+      'Open CONTROLS and read the STAGES entry (one notch for every two stages), then on EXPLORE, with DEPTH (SWEEP) on STATIC, step STAGES to 8 and count the dips on OUT: four.',
     ],
   },
 
@@ -119,8 +119,9 @@ export const PHASER_SCREEN_GUIDES: Record<PhaserScreenId, ScreenGuide> = {
       'A line under the heading says how many are still to get right. A ✓ replaces a question’s number once you answer it right.',
     ],
     control: [
-      'Tap an answer. Right: it turns green and CORRECT shows why. Wrong: NOT QUITE — TRY ANOTHER shows why, and you pick again straight away.',
-      'There is no score, and a wrong answer costs nothing. A right answer stays right.',
+      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
+      'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: what is left in this lab.',
+      'A right answer stays right.',
       'Use the tabs under the title to go to LEARN or EXPLORE at any time; answers already right stay right. If you leave the lab before the last one, the check starts over.',
     ],
     changes: [
@@ -132,8 +133,8 @@ export const PHASER_SCREEN_GUIDES: Record<PhaserScreenId, ScreenGuide> = {
       'Feeding a phaser’s output back into it (RES) changes the character of the sweep.',
     ],
     tryThis: [
-      'Unsure how stages set the dips? On EXPLORE, set STAGES to 4 and count the dips on OUT.',
-      'For the RES question, long-press the RES key on EXPLORE to open its lesson entry, or find it under CONTROLS on LEARN.',
+      'Unsure how stages set the dips? On EXPLORE, set DEPTH (SWEEP) to STATIC, then STAGES to 4, and count the dips on OUT.',
+      'For the RES question, long-press the RES key on EXPLORE to open its lesson entry, or open CONTROLS on LEARN and find it.',
     ],
   },
 };

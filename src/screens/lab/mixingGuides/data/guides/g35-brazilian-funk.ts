@@ -22,7 +22,7 @@ export const GUIDE: MixingGuide = {
   },
   "purpose": [
     {
-      "text": "Baile funk (funk from Rio’s dance parties) is party music for the body: rebolar (hip-rolling), passinho footwork and all-night dancing at favela (hillside neighborhood) bailes (dance parties), the biggest of which have drawn 20,000–40,000 people. For residents it is release, pride and a counter to stigma. The crowd expects to feel the grave (bass) in the chest and to shout the MC’s hook back. They will call it wrong if the low end is soft, polite or wobbly, if the beat loses its syncopated swing, if the MC’s words get buried, or if the mix is washed in reverb like EDM. Grit, saturation and “too loud” are features; weak bass is the worst mistake."
+      "text": "Baile funk (funk from Rio’s dance parties) is party music for the body: rebolar (hip-rolling), passinho footwork and all-night dancing at favela (hillside neighborhood) bailes (dance parties), the biggest of which have drawn 20,000–40,000 people. For residents it is release, pride and a counter to stigma. The crowd expects to feel the grave (bass) in the chest and to shout the MC’s hook back. They will call it wrong if the low end is soft, timid or wobbly, if the beat loses its syncopated swing, if the MC’s words get buried, or if the mix is washed in reverb like EDM. Grit, saturation and “too loud” are features; weak bass is the worst mistake."
     }
   ],
   "instruments": [

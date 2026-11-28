@@ -77,7 +77,11 @@ describe('X3 — short dock words, full words read aloud', () => {
     assert.match(rack, /valueA11y: p\.valueA11y \?\? p\.valueLabel/);
     const unit = readFileSync(join(import.meta.dirname, '../src/screens/lab/rack/RackUnit.tsx'), 'utf8');
     assert.match(unit, /p\.valueA11y \?\? p\.valueLabel/);
-    const bezel = readFileSync(join(import.meta.dirname, '../src/screens/lab/rack/BezelReadouts.tsx'), 'utf8');
+    // Lab fix round 1 (2026-11-14; owner: "Begin fixing all bugs found and do
+    // obvious ... fixes as you suggested in the report"): the bezel's spoken
+    // label moved to rack/bezelRules.ts (bezelCellSaid, the "dBFS dBFS" fix);
+    // it still reads the full value.
+    const bezel = readFileSync(join(import.meta.dirname, '../src/screens/lab/rack/bezelRules.ts'), 'utf8');
     assert.match(bezel, /it\.vA11y \?\? it\.v/);
   });
 });

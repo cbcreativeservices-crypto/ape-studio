@@ -116,24 +116,25 @@ describe('B · the landing', () => {
     assert.doesNotMatch(landing, /The free beginner lab is the place to start/);
   });
 
-  it('order: offer → free path → browse grid → footer links', () => {
+  // 2026-11-22 (owner): the OR JUMP RIGHT IN grid and Skip to Home are replaced by the
+  // standard MENU button, which opens the half-screen circle to every place.
+  it('order: offer → free path → footer links; MENU instead of the jump-in grid', () => {
     const offerAt = landing.indexOf('COPY.seeMembershipPlans');
     const free = landing.indexOf("choose('startHere')");
-    const grid = landing.indexOf("choose('glossary')");
-    const skip = landing.indexOf('{COPY.skipToHome}');
-    assert.ok(offerAt > 0 && offerAt < free && free < grid && grid < skip);
+    const watch = landing.indexOf("choose('watchAgain')");
+    assert.ok(offerAt > 0 && offerAt < free && free < watch);
+    assert.doesNotMatch(landing, /OR JUMP RIGHT IN|choose\('glossary'\)|\{COPY\.skipToHome\}/);
+    assert.match(landing, /<ScreenCircleMenu here=\{null\} firstRun \/>/);
+    assert.match(landing, /paddingBottom: menuClearance\(insets\.bottom\) \+ 12/);
   });
 
-  it('H1: HOME is a footer link, not a big button', () => {
+  it('H1: no big HOME button (MENU goes Home)', () => {
     assert.doesNotMatch(landing, /TAKE ME TO THE HOME SCREEN/);
-    const link = landing.slice(landing.lastIndexOf('<Pressable', landing.indexOf('{COPY.skipToHome}')), landing.indexOf('{COPY.skipToHome}'));
-    assert.match(link, /onPress=\{\(\) => choose\('home'\)\}/);
-    assert.doesNotMatch(link, /GlassButton/);
   });
 
   it('H2: Explore Topics + Enroll are ONE "TOPICS & CERTIFICATES" button on the Awards curriculum', () => {
     assert.doesNotMatch(landing, /ENROLL IN TOPICS|EXPLORE TOPICS|'explore'|'enroll'/);
-    assert.match(landing, /label=\{COPY\.topicsAndCertificates\}/);
+    // 2026-11-22: the TOPICS & CERTIFICATES key went with the jump-in grid; MENU reaches it.
     assert.match(landing, /case 'topics':[\s\S]*?nav\.navigate\('Awards', \{ category: 'curriculum', focus: 'topics' \}\)/);
     assert.equal((landing.match(/nav\.navigate\('Awards'/g) ?? []).length, 1);
   });

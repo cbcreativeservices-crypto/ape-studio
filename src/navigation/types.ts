@@ -160,6 +160,7 @@ export type RootStackParamList = {
     why_it_matters?: string;
     confidence?: string;
   };
+  AcademyMessage: undefined; // the academy's message from the main menu's New Messages (owner 2026-11-17) [MD:D68]
   About: undefined; // Credits/About/Contact — Dashboard logo tap (Booth 2026-07-08)
   /** Awards + Curriculum pager (Curriculum · Specialization · Program ·
    *  Directory · Enrollment), five side-by-side pages. `category` is the landing
@@ -314,7 +315,8 @@ export type RootStackParamList = {
   TubeCard: { id: string };
   /** Audio Calculator Laboratory (owner 2026-07-29) — unified calc workspaces. */
   CalcLab: undefined;
-  CalcWorkspace: { id: string };
+  /** `fn` (optional, CA-04 2026-11-15): open on that calculator of the page, not its first. */
+  CalcWorkspace: { id: string; fn?: string };
   CalcSymbolsKey: undefined;
   CalcWorkflows: undefined;
   CalcWorkflowEdit: { id?: string } | undefined;
@@ -416,6 +418,12 @@ export type RootStackParamList = {
   DrumTuningLab: undefined;
   // DJ Systems Lab (2026-10-18): members-only, Stage 1 (twelve screens).
   DJSystemsLab: undefined;
+  /** Game Audio Lab (owner plan 2026-11-12, listed 2026-11-13 [MD:D60]):
+   *  members-only, its own Game Audio subject; 24 pages on the PagedLab shell. */
+  GameAudioLab: undefined;
+  /** Stage Plot and Channel Designer (owner GO 2026-11-12, listed 2026-11-13
+   *  [MD:D60]): members-only, under Live Sound Reinforcement; a working tool. */
+  StagePlotLab: undefined;
   /** Miking Labs (owner GO 2026-10-04): the hub lists the ready lessons of a
    *  lab; the lesson host runs one lesson's eight pages. Silent labs — the
    *  route names do not end in `Lab` (blueprint D9: kept out of the audio

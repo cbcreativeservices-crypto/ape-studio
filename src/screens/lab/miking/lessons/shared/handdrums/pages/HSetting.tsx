@@ -22,7 +22,11 @@ import { Body, Card, Landing, Note, Point, ScenarioList } from '../../../../engi
 import type { PageProps } from '../../../../pages/pageTypes';
 import { handOf } from '../family.ts';
 import { HandPlan } from '../HandPlan';
-import { modelArtPlan } from '../handPlanModel.ts';
+import { modelArtPlan, turnArtPlan } from '../handPlanModel.ts';
+
+/** (figure V2, wave 6 of D78) the hand-drum lessons whose only drawn person is this plan's player (their hands
+ *  are the approved hand pages): switched on whole. The cajón (I02) is another builder's lesson: off until it switches. */
+const HAND_PLAN_V2: ReadonlySet<string> = new Set(['M04a', 'M04b', 'M04c', 'M05']);
 
 export function HSetting({ lesson, art, answers, onAnswered, variant }: PageProps) {
   const H = handOf(lesson);
@@ -36,7 +40,7 @@ export function HSetting({ lesson, art, answers, onAnswered, variant }: PageProp
   const shortOf = (id: string) => byId(id)?.short ?? id.toUpperCase();
   const things = H.plan.things;
   // The drums' own footprint on the plan (the player is the plan's own figure).
-  const artPlan = useMemo(() => modelArtPlan(lesson.model, variant, false), [lesson, variant]);
+  const artPlan = useMemo(() => turnArtPlan(modelArtPlan(lesson.model, variant, false), H.plan.turn), [lesson, variant, H.plan.turn]);
 
   const pickBand = (id: string) => {
     if (!bandItems.some((i) => i.id === id)) return;
@@ -46,7 +50,7 @@ export function HSetting({ lesson, art, answers, onAnswered, variant }: PageProp
     if (wideItems.some((i) => i.id === id)) setWideSel(id);
   };
   const render = (scene: 'kit' | 'stage' | 'studio', sel: string | null, onTap: (id: string) => void, label: string) => (w: number, h: number) => (
-    <HandPlan w={w} h={h} scene={scene} variant={variant} Drums={art.Instrument as never} things={things} box={H.plan.box} art={artPlan} cue={H.plan.cue} shortOf={shortOf} highlight={sel} onTap={onTap} accessibilityLabel={label} />
+    <HandPlan w={w} h={h} scene={scene} variant={variant} Drums={art.Instrument as never} turnDrums={H.plan.turn != null} things={things} box={H.plan.box} art={artPlan} cue={H.plan.cue} shortOf={shortOf} highlight={sel} onTap={onTap} accessibilityLabel={label} v2={HAND_PLAN_V2.has(lesson.id)} />
   );
   const itemFader = (list: readonly SettingItem[], sel: string | null, pick: (id: string) => void): DockParam => {
     const idx = Math.max(0, list.findIndex((i) => i.id === sel));
@@ -61,7 +65,7 @@ export function HSetting({ lesson, art, answers, onAnswered, variant }: PageProp
           if (it) pick(it.id);
         },
         format: () => (sel ? `${shortOf(sel)} · ${byId(sel)?.tag ?? ''}` : `step through the ${list.length} items`),
-        formatShort: () => (sel ? shortOf(sel).slice(0, 9) : 'STEP'),
+        formatShort: () => (sel ? shortOf(sel).slice(0, 9) : 'PICK'),
       },
       list.length,
       list.findIndex((q) => q.id === sel),

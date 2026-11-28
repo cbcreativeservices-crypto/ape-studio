@@ -115,8 +115,11 @@ describe('2. each guide quotes its screen’s real names', () => {
   const NAMES: Record<string, [string, string[]]> = {
     home: [HOME, ['SOURCE', 'PREAMP', 'PROCESSING', 'FADER', 'OUTPUT', 'LEARN', 'EXPLORE', 'CHALLENGE', 'OPEN', 'SEE WHAT’S LEFT', 'RELATED', 'LEVELS & DECIBELS CALC', 'SIGNAL CHAIN BUILDER', 'SPL METER', 'What Gain Staging Is', 'Troubleshooting Challenge']],
     end: [END, ['WHAT\'S LEFT', 'LAB COMPLETE', 'REVIEW ▾', 'PRACTICE AGAIN FROM THE START', 'DONE · BACK TO LABS']],
-    intro: [learn, ['SOURCE', 'PREAMP', 'OUTPUT', 'STATUS', 'FIXED', 'TOO LOW', 'HEALTHY', 'OVERLOAD', 'QUIET SOURCE', 'CLIP', 'HOT', 'FULL SCREEN', 'HIDE DISPLAY']],
-    input: [learn, ['INPUT GAIN', 'PREAMP', 'HEADROOM', 'OUTPUT', 'STATUS', 'FIXED', 'LOW', 'OK', 'HOT', 'CLIP']],
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, items GN-01 and GN-02): one name for
+    // the preamp control (PREAMP, never INPUT GAIN), its output named PREAMP LEVEL, and STATUS in the
+    // meters' and the color key's words (TOO LOW, HEALTHY, HOT, CLIP; OVERLOAD → CLIP), plus NOISY.
+    intro: [learn, ['SOURCE', 'PREAMP', 'OUTPUT', 'STATUS', 'FIXED', 'TOO LOW', 'HEALTHY', 'QUIET SOURCE', 'CLIP', 'HOT', 'FULL SCREEN', 'HIDE DISPLAY']],
+    input: [learn, ['PREAMP', 'PREAMP LEVEL', 'HEADROOM', 'OUTPUT', 'STATUS', 'FIXED', 'TOO LOW', 'HEALTHY', 'HOT', 'CLIP']],
     follow: [learn, ['PREAMP', 'PROC', 'OUTPUT', 'STATUS', 'FIXED', 'TOO LOW', 'HEALTHY', 'HOT', 'CLIP']],
     lowhigh: [learn, ['PREAMP', 'OUTPUT', 'NOISE', 'STATUS', 'SCENARIO', 'TOO LOW EARLY', 'TOO HIGH EARLY', 'BALANCED', 'DIST']],
     fadervsgain: [learn, ['PREAMP', 'FADER', 'OUTPUT', 'DIST', 'YES', 'STATUS', 'OVERDRIVE', 'RESET', 'CLIP']],
@@ -155,17 +158,20 @@ describe('3. the TRY THIS numbers are what the engine prints', () => {
   type N = { key: string; level: number; region: string; stageClipped: boolean; distorted: boolean; noise: number };
   const mk = (key: string, kind: string, gain: number) => ({ key, name: key, kind, gain, min: -40, max: 40, adjustable: true });
   const lv = (n: N) => Math.round(n.level);
-  const status = (n: N) => (n.stageClipped ? 'CLIP' : n.distorted ? 'DIST' : n.region === 'low' ? 'LOW' : n.region === 'hot' ? 'HOT' : 'OK');
+  // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, items GN-01 and GN-02): one name for
+  // the preamp control (PREAMP, never INPUT GAIN), its output named PREAMP LEVEL, and STATUS in the
+  // meters' and the color key's words (TOO LOW, HEALTHY, HOT, CLIP; OVERLOAD → CLIP), plus NOISY.
+  const status = (n: N) => E.statusWord(n as Parameters<typeof E.statusWord>[0]) as string;
   const chain = (src: number, ...st: [string, string, number][]): N[] => E.computeChain(src, st.map(([k, kind, g]) => mk(k, kind, g)));
   it('intro', () => {
     const at = (s: number) => chain(s, ['pre', 'preamp', 18], ['out', 'output', 0]);
     assert.equal(lv(at(-24)[1]), -6); assert.equal(status(at(-24)[2]), 'HOT');
     assert.equal(lv(at(-18)[1]), 0); assert.equal(status(at(-18)[2]), 'CLIP');
-    assert.equal(lv(at(-40)[1]), -22); assert.equal(status(at(-40)[1]), 'OK');
+    assert.equal(lv(at(-40)[1]), -22); assert.equal(status(at(-40)[1]), 'HEALTHY');
   });
   it('input', () => {
     const at = (p: number) => chain(-30, ['pre', 'preamp', p], ['out', 'output', 0]);
-    assert.equal(lv(at(6)[1]), -24); assert.equal(status(at(6)[1]), 'OK');
+    assert.equal(lv(at(6)[1]), -24); assert.equal(status(at(6)[1]), 'HEALTHY');
     assert.equal(lv(at(24)[1]), -6); assert.equal(status(at(24)[1]), 'HOT');
     assert.equal(lv(at(30)[1]), 0); assert.equal(status(at(30)[1]), 'CLIP');
   });
@@ -173,9 +179,9 @@ describe('3. the TRY THIS numbers are what the engine prints', () => {
     const at = (p: number) => chain(-30, ['pre', 'preamp', p], ['proc', 'processor', 6], ['out', 'output', 0]);
     assert.equal(lv(at(18)[1]), -12); assert.equal(lv(at(18)[2]), -6); assert.equal(status(at(18)[2]), 'HOT');
     assert.equal(status(at(24)[1]), 'HOT'); assert.equal(status(at(24)[2]), 'CLIP'); assert.equal(status(at(24)[3]), 'CLIP');
-    assert.equal(lv(at(0)[1]), -30); assert.equal(status(at(0)[1]), 'LOW'); assert.equal(lv(at(0)[3]), -24);
+    assert.equal(lv(at(0)[1]), -30); assert.equal(status(at(0)[1]), 'TOO LOW'); assert.equal(lv(at(0)[3]), -24);
     // −24 dB is the bottom edge of HEALTHY, not starved: PROC and OUTPUT read OK
-    assert.equal(status(at(0)[2]), 'OK'); assert.equal(status(at(0)[3]), 'OK');
+    assert.equal(status(at(0)[2]), 'HEALTHY'); assert.equal(status(at(0)[3]), 'HEALTHY');
   });
   it('meter drawing facts the guides state (hiss shows only on the meter scale; red starts at HOT)', () => {
     const VIZ = read('src/screens/lab/gain/gainViz.tsx');
@@ -194,12 +200,13 @@ describe('3. the TRY THIS numbers are what the engine prints', () => {
   it('lowhigh', () => {
     const at = (p: number, o: number) => chain(-30, ['pre', 'preamp', p], ['out', 'output', o]);
     const bal = at(18, 0), low = at(2, 24), high = at(36, -16);
-    assert.deepEqual([lv(bal[1]), lv(bal[2]), Math.round(bal[2].noise), status(bal[2])], [-12, -12, -34, 'OK']);
+    assert.deepEqual([lv(bal[1]), lv(bal[2]), Math.round(bal[2].noise), status(bal[2])], [-12, -12, -34, 'HEALTHY']);
     assert.deepEqual([lv(low[2]), Math.round(low[2].noise)], [-4, -22]);
     // TOO LOW EARLY, OUTPUT moved to +16 dB: same level as BALANCED, more hiss
     const lowMatched = at(2, 16);
     assert.deepEqual([lv(lowMatched[2]), Math.round(lowMatched[2].noise)], [-12, -30]);
     assert.ok(lowMatched[2].noise > -30, 'NOISE turns amber above −30');
+    assert.equal(status(lowMatched[2]), 'NOISY', 'GN-02: the hiss problem has its own STATUS word');
     // the gap is lost at the starved preamp; the late gain only carries it
     const gapPre = low[1].level - low[1].noise, gapOut = low[2].level - low[2].noise;
     assert.ok(Math.abs(gapPre - gapOut) < 0.1 && gapOut < bal[2].level - bal[2].noise - 3);
@@ -213,7 +220,7 @@ describe('3. the TRY THIS numbers are what the engine prints', () => {
     assert.ok(at(36, 0)[2].stageClipped && at(36, 0)[3].stageClipped);
     // the fix: PREAMP +18, FADER +0 — both healthy at −12 dB, no distortion
     const fixed = at(18, 0);
-    assert.deepEqual([lv(fixed[1]), lv(fixed[3]), fixed[3].distorted, status(fixed[1]), status(fixed[3])], [-12, -12, false, 'OK', 'OK']);
+    assert.deepEqual([lv(fixed[1]), lv(fixed[3]), fixed[3].distorted, status(fixed[1]), status(fixed[3])], [-12, -12, false, 'HEALTHY', 'HEALTHY']);
   });
   const full = (src: number, g: Record<string, number>) =>
     chain(src, ['pre', 'preamp', g.pre], ['eq', 'eq', g.eq], ['comp', 'comp', g.comp], ['fad', 'fader', g.fad], ['bus', 'bus', g.bus], ['out', 'output', g.out]);
@@ -231,7 +238,7 @@ describe('3. the TRY THIS numbers are what the engine prints', () => {
     const loud = full(-10, { pre: 20, eq: 0, comp: 0, fad: 0, bus: 0, out: 0 });
     assert.ok(loud.slice(1).every((n) => n.stageClipped));
     const ok = full(-10, { pre: 0, eq: 0, comp: 0, fad: 0, bus: 0, out: 0 });
-    assert.ok(ok.slice(1).every((n) => lv(n) === -10)); assert.equal(status(ok[6]), 'OK');
+    assert.ok(ok.slice(1).every((n) => lv(n) === -10)); assert.equal(status(ok[6]), 'HEALTHY');
   });
   it('troubleshoot: back to +0 dB (+20 dB preamp) restores −10 dB everywhere', () => {
     const base = { pre: 20, eq: 0, comp: 0, fad: 0, bus: 0, out: 0 };
@@ -282,7 +289,7 @@ describe('5. accuracy chip decision: KEPT beside the ⓘ (gain/level readouts �
   });
   it('the readouts are still badged as a simulation, and the guide never retells the chip', () => {
     const src = code('src/screens/lab/gain/modules/modLearn.tsx') + code('src/screens/lab/gain/modules/modExplore.tsx');
-    assert.match(src, /const BADGE = 'SIMULATED SIGNAL CHAIN · RELATIVE dB';/);
+    assert.match(src, /const BADGE = 'A simulated signal chain; levels are relative dB\.';/);
     for (const [id, gd] of allGuides) assert.doesNotMatch(textOf(gd), /MEASURE WITH THE RIGHT TOOL|LEARN HERE/, `${id}: still describes the chip`);
   });
 });

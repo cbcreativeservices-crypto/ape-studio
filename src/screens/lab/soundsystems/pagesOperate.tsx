@@ -26,6 +26,8 @@ import { gainBezel, gainReading, gainReadingCopy, gainStageParam, HEADROOM_GOOD_
 import { flipFader, SoundSystemsRackLayout, StageBox, type SsPageDef } from './rackLayout';
 import { StageFit } from '../rack/StageFit';
 import { usePageMemory } from './pageMemory';
+// The rack's spoken label from the drawing's own test (lab fix round 2026-11-14, F2).
+import { rackA11y, rackLit, leftWord } from './fixHelpers';
 
 function useOperateCredit(id: string, done: boolean, ctx: PageCtx) {
   useEffect(() => {
@@ -58,7 +60,7 @@ function useSequence(steps: readonly PowerStep[], onCorrect: () => void) {
       kind: 'options',
       id: 'step',
       label: 'STEP',
-      valueLabel: `${order.length}/${steps.length}`,
+      valueLabel: leftWord(order.length, steps.length, 'ALL'),
       options: bin.map((s) => ({
         id: s.id,
         label: `${order.includes(s.id) ? `${order.indexOf(s.id) + 1} · ` : ''}${s.short}`,
@@ -113,9 +115,9 @@ function PowerRack({ on, direction, w, h }: { on: ReadonlySet<string>; direction
   const size = Math.round(Math.min(64, Math.max(36, Math.min(h * 0.4, (w - 40) / 5 - 8))));
   return (
     <StageBox w={w} h={h}>
-      <View style={styles.glyphRow} accessible accessibilityLabel={`The rack: ${RACK.map((r) => `${r.label} ${on.has(r.step) ? 'on' : 'off'}`).join(', ')}`}>
+      <View style={styles.glyphRow} accessible accessibilityLabel={rackA11y(RACK, on, direction)}>
         {RACK.map((r, i) => {
-          const lit = direction === 'up' ? on.has(r.step) : !on.has(r.step);
+          const lit = rackLit(on, direction, r.step);
           return (
             <View key={i} style={styles.rackItem}>
               <GearGlyph kind={r.kind} size={size} label={r.label} power={lit ? 'on' : 'off'} dim={!lit} legends={false} />
@@ -143,13 +145,13 @@ function PagePowerUp({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'S',
-        badge: 'POWER SEQUENCE — ILLUSTRATIVE · devices light in the order you choose',
+        modelNote: 'A drawing: the devices light in the order you choose.',
         initialParam: 'step',
         bezel: [
-          { k: 'STEPS', v: `${seq.order.length}/${POWER_UP.length}`, flex: 0.9 },
+          { k: 'STEPS', v: leftWord(seq.order.length, POWER_UP.length, 'ALL'), flex: 0.9 },
           { k: 'LAST', v: seq.last ? seq.byId(seq.last).short.toUpperCase() : '—', tint: colors.cyanBright, flex: 2 },
           { k: 'ORDER', v: seq.err ? 'WRONG' : seq.complete ? 'CORRECT' : 'SO FAR OK', tint: seq.err ? colors.red : seq.complete ? colors.green : colors.amber, flex: 1.1 },
-          { k: 'LIT', v: `${lit}/${RACK.length}`, tint: lit ? colors.greenBright : undefined, flex: 0.7 },
+          { k: 'LIT', v: `${lit} ON`, tint: lit ? colors.greenBright : undefined, flex: 0.7 },
         ],
         stage: (w, h) => <PowerRack on={on} direction="up" w={w} h={h} />,
         params: seq.params,
@@ -272,14 +274,14 @@ function PageLineCheck({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
-        badge: 'LINE CHECK — ILLUSTRATIVE · readings revealed by each probe',
+        modelNote: 'A teaching model: each probe shows a sample reading.',
         initialParam: 'line',
         hideDragTag: true,
         bezel: [
           { k: 'LINE', v: it.short, tint: colors.cyanBright, flex: 1.2 },
           { k: isOut ? 'PROC OUT' : 'STAGEBOX LED', v: probed ? (it.led ? (isOut ? 'SIGNAL' : 'LIT') : (isOut ? 'NONE' : 'DARK')) : '?', tint: probed ? (it.led ? colors.greenBright : colors.orange) : undefined, flex: 1.3 },
           { k: isOut ? 'RIGHT FEED' : 'CH METER', v: probed ? (it.meter ? (isOut ? 'YES' : 'MOVING') : (isOut ? 'NO' : 'FLAT')) : '?', tint: probed ? (it.meter ? colors.greenBright : colors.orange) : undefined, flex: 1.1 },
-          { k: 'MARKED', v: `${correct}/${ALL_LINES.length}`, tint: done ? colors.green : undefined },
+          { k: 'MARKED', v: leftWord(correct, ALL_LINES.length, 'ALL'), tint: done ? colors.green : undefined },
         ],
         stage: (w, h) => (
           <StageFit w={w} h={h} aspect={STRIP_W / (STRIP_H * 2 + 8)}>
@@ -291,7 +293,7 @@ function PageLineCheck({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Ride LINE across the outputs, then the inputs. PROBE each one, read the LED against the meter, and MARK it honestly — three of these are faults."
+      caption="Slide LINE across the outputs, then the inputs. PROBE each one, read the LED against the meter, and MARK it honestly — three of these are faults."
       wellTop={
         <Card tone={m ? (right ? 'ok' : 'warn') : probed && !it.healthy ? 'warn' : 'math'}>
           <View style={styles.lineHead}>
@@ -338,20 +340,22 @@ function PageGainStructure({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
-        badge: 'GAIN CHAIN — ILLUSTRATIVE MODEL · teaching values, not a specification',
+        modelNote: 'A teaching model of the gain chain: example values, not a specification.',
         initialParam: 'stage',
         hideDragTag: true,
         bezel: gainBezel(chain, reading),
         stage: (w, h) => <ChainMeterStage chain={chain} settings={settings} w={w} h={h} highlight={stage} />,
         params,
       }}
-      caption="The lane is the PREAMP: ride it down until its bracket shows headroom. Then tap the key, pick each later stage, return it to unity (double-tap), and attenuate the AMP so it is the last thing to clip."
+      caption="The slider is the PREAMP: slide it down until its bracket shows headroom. Then tap the key, pick each later stage, return it to unity (double-tap), and attenuate the AMP so it is the last thing to clip."
       wellTop={<VerdictLine ok={reading === 'ok'} warn={reading === 'quiet' || reading === 'noisy' || reading === 'tight'}>{gainReadingCopy(reading, chain)}</VerdictLine>}
     >
       <ChapterTag n={10}>OPERATE · ESTABLISH GAIN STRUCTURE</ChapterTag>
       <Body>The opposite fault from the LEARN chapter: the preamp is cranked and every later stage is pulling it back down. The first CLIP indicator is lit at the preamp, and every meter after it carries the ↑ — the distortion is inherited.</Body>
       <Prompt>Bring the preamp down until its bracket shows headroom, return the faders and trims to unity, and attenuate the amplifier so it is the last thing to clip.</Prompt>
-      <GoalChips goals={goals} latched={latched} />
+      {/* A met goal that is no longer true NOW says so (lab fix round
+          2026-11-14, F2: "✓ No stage clipping" beside VERDICT CLIPPING). */}
+      <GoalChips goals={goals} latched={latched} now={goals.map((g) => g.hit)} />
       <ChainMeterKey />
       <Card>
         <Eyebrow>THE PROCEDURE</Eyebrow>
@@ -428,7 +432,7 @@ function PageSoundcheck({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'M',
-        badge: 'RING-OUT — ILLUSTRATIVE MODEL · placement buys 12 dB, a notch 4',
+        modelNote: 'A teaching model: here placement buys 12 dB and a notch 4 dB.',
         initialParam: 'send',
         hideDragTag: true,
         bezel: wedges.map((x) => {
@@ -443,7 +447,7 @@ function PageSoundcheck({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Pick a WEDGE, then ride SEND up to what its performer will need. If it rings: POSITION into the null first, NOTCH only the frequency that rings, and only then level. Every wedge to −6 dB or louder."
+      caption="Pick a WEDGE, then slide SEND up to what its performer will need. If it rings: POSITION into the null first, NOTCH only the frequency that rings, and only then level. Every wedge to −6 dB or louder."
       wellTop={
         <>
           <Text style={[styles.wedgeState, ring && { color: colors.red }]}>{w.name.toUpperCase()} · {ring ? `RINGING at ~2.5 kHz — ${-margin} dB over` : `${margin} dB of margin`}</Text>
@@ -454,7 +458,7 @@ function PageSoundcheck({ ctx }: { ctx: PageCtx }) {
       <ChapterTag n={13}>OPERATE · RING-OUT, THEN SOUNDCHECK</ChapterTag>
       <Body>Four wedges, one for each performer. The stage draws the one you pick under WEDGE, with its microphone’s pattern; all four are listed below and on the readout strip. Three start off to the side, inside the live angle. The ring-out comes BEFORE the band plays: bring each send up to what its performer will need, without a ring.</Body>
       <Prompt>Reposition first, notch only the frequency that rings, and only then level. Every wedge to −6 dB or louder.</Prompt>
-      <GoalChips goals={goals} latched={latched} />
+      <GoalChips goals={goals} latched={latched} now={goals.map((g) => g.hit)} />
       <Card tone="math">
         <Eyebrow>THE FOUR WEDGES</Eyebrow>
         {wedges.map((x) => (
@@ -512,19 +516,19 @@ function PageShutdown({ ctx }: { ctx: PageCtx }) {
   );
   const params: DockParam[] = [
     ...seq.params,
-    { kind: 'group', id: 'docs', label: 'DOCUMENT', valueLabel: `${docs.size}/${DOCS.length}`, render: () => docsCard },
+    { kind: 'group', id: 'docs', label: 'DOCUMENT', valueLabel: leftWord(docs.size, DOCS.length, 'ALL'), render: () => docsCard },
   ];
   return (
     <SoundSystemsRackLayout
       rack={{
         size: 'S',
-        badge: 'POWER SEQUENCE — ILLUSTRATIVE · devices go dark in the order you choose',
+        modelNote: 'A drawing: the devices go dark in the order you choose.',
         initialParam: 'step',
         bezel: [
-          { k: 'STEPS', v: `${seq.order.length}/${POWER_DOWN.length}`, flex: 0.9 },
+          { k: 'STEPS', v: leftWord(seq.order.length, POWER_DOWN.length, 'ALL'), flex: 0.9 },
           { k: 'LAST', v: seq.last ? seq.byId(seq.last).short.toUpperCase() : '—', tint: colors.cyanBright, flex: 2 },
           { k: 'ORDER', v: seq.err ? 'WRONG' : seq.complete ? 'CORRECT' : 'SO FAR OK', tint: seq.err ? colors.red : seq.complete ? colors.green : colors.amber, flex: 1.1 },
-          { k: 'DARK', v: `${dark}/${RACK.length}`, flex: 0.7 },
+          { k: 'DARK', v: `${dark} OFF`, flex: 0.7 },
         ],
         stage: (w, h) => <PowerRack on={off} direction="down" w={w} h={h} />,
         params,

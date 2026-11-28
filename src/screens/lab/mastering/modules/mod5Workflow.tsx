@@ -10,7 +10,7 @@ import { Text } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { faderParam } from '../MasteringRack';
 import { ModuleSteps } from '../steps';
-import { Body, Card, FieldRows, KeyTerms, PlaybackStatus, Point, ScenarioDeck, SectionTitle, lufsTint, matchBezel, measureBezel, unmatchedWarning } from '../kit';
+import { Body, Card, FieldRows, GoDeeper, KeyTerms, PlaybackStatus, Point, ScenarioDeck, SectionTitle, lufsTint, matchBezel, measureBezel, unmatchedWarning } from '../kit';
 import { INSPECTION_SHEET, KEY_TERMS, WORKFLOW_SCENARIOS } from '../masteringContent';
 import { FLOW_ASPECT, WORKFLOW_STEPS, WAVE_ASPECT, WaveOverviewStage, WorkflowStage } from '../stages';
 import { SAFETY_CEILING_DB, useMasterPlayback, type MasterVariant } from '../useMasterPlayback';
@@ -118,11 +118,24 @@ export function Mod5Workflow({ onAnswered }: ModuleProps) {
               { kind: 'action', id: 'stop', label: '■ STOP', onPress: pb.stop, tint: colors.green },
             ],
             initialParam: 'tilt',
+            soundOffLine: 'Sound off? Move TILT and watch the faceplate and the readouts change; the comparison by ear needs sound.',
           },
           well: (
             <>
               <PlaybackStatus versions={variants} active={pb.active} pending={pb.pending} failed={pb.failed} rendering={pb.status === 'rendering'} matched={matched} matchDb={m?.matchDb} labels="▶ BYPASS or ▶ WITH EQ" loud="WITH EQ" />
-              <Body>Set a TILT (a broad brighten or warm; "+4 dB end to end" is ±2 dB at the extremes), then compare WITH EQ against BYPASS. WITH EQ also carries a +{EQ_TRIM_DB} dB output trim, the way a "better" setting usually sneaks in louder (the lab's ceiling at {SAFETY_CEILING_DB} dBFS keeps its peaks safe). A tilt changes the loudness estimate as well as the tone — up or down depending on where the program's energy sits — so watch which way the LUFS readout moves. With MATCH LEVEL on, whichever version reads louder is turned down by the difference between the two loudness estimates, in LU (1 LU = 1 dB), and the tonal decision is the only thing you judge. Keep a change only if it still wins at matched level. With MATCH on, moving a fader updates the version you are hearing and plays it again.</Body>
+              {/* MA-01 (owner 2026-11-15: "build waves 1 thru 3", D62): the
+                  habit and what to do lead; the mechanics, the measured numbers
+                  and the faceplate note fold under GO DEEPER (Module 1 step 3's
+                  pattern). Every word is kept; only the order and the fold change. */}
+              <Card tone="accent">
+                <Point title="The habit">Make the change for a reason you can name. Bypass. Match. Listen again. Keep it only if it serves the goal.</Point>
+              </Card>
+              <Body>Set a TILT (a broad brighten or warm; "+4 dB end to end" is ±2 dB at the extremes), then compare WITH EQ against BYPASS. Keep a change only if it still wins at matched level.</Body>
+              <Card tone="warn">
+                <Point title="Before you switch MATCH off">{unmatchedWarning(current ? mix?.lufs : undefined, current ? eq?.lufs : undefined, 'WITH EQ', '2–3')} Unmatched, nothing replays by itself after a change — you press ▶ each time.</Point>
+              </Card>
+              <GoDeeper title="HOW THIS COMPARISON WORKS">
+              <Body>WITH EQ also carries a +{EQ_TRIM_DB} dB output trim, the way a "better" setting usually sneaks in louder (the lab's ceiling at {SAFETY_CEILING_DB} dBFS keeps its peaks safe). A tilt changes the loudness estimate as well as the tone — up or down depending on where the program's energy sits — so watch which way the LUFS readout moves. With MATCH LEVEL on, whichever version reads louder is turned down by the difference between the two loudness estimates, in LU (1 LU = 1 dB), and the tonal decision is the only thing you judge. With MATCH on, moving a fader updates the version you are hearing and plays it again.</Body>
               {fresh && mix && eq ? (
                 <Card tone="accent">
                   <Text style={{ color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 13.5, lineHeight: 18 }}>
@@ -131,13 +144,10 @@ export function Mod5Workflow({ onAnswered }: ModuleProps) {
                   </Text>
                 </Card>
               ) : null}
-              <Card tone="warn">
-                <Point title="Before you switch MATCH off">{unmatchedWarning(current ? mix?.lufs : undefined, current ? eq?.lufs : undefined, 'WITH EQ', '2–3')} Unmatched, nothing replays by itself after a change — you press ▶ each time.</Point>
-              </Card>
               <Card>
                 <Point title="The faceplate on the glass">The EQ at the settings WITH EQ uses: TILT split between the 200 Hz and 2.5 kHz shelves, the +2 dB OUTPUT trim, and the SAFETY ceiling that holds the trim's peaks. BYPASS shows it bypassed (BYP lit).</Point>
-                <Point title="The habit">Make the change for a reason you can name. Bypass. Match. Listen again. Keep it only if it serves the goal.</Point>
               </Card>
+              </GoDeeper>
             </>
           ),
         },

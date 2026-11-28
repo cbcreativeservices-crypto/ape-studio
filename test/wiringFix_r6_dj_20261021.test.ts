@@ -51,7 +51,8 @@ describe('R4-DJ-01 — Screen 21 LOOK follows the tap', () => {
     const booth = arm('BOOTH');
     assert.match(rec, /two RCA plugs \(white and red\) in the mixer’s REC OUT/);
     assert.doesNotMatch(rec, /jack/);
-    assert.match(booth, /two ¼-inch \(6\.35 mm\) jack plugs in the mixer’s BOOTH OUT/);
+    // owner 2026-11-21: American English in learner text (jack plugs -> plugs)
+    assert.match(booth, /two ¼-inch \(6\.35 mm\) plugs in the mixer’s BOOTH OUT/);
     assert.doesNotMatch(booth, /RCA/);
     for (const t of [rec, booth]) assert.match(t, /into one small stereo plug \(3\.5 mm\) in the recorder’s LINE IN/);
     assert.match(arm('LOOPBACK'), /a laptop\. No lead joins them/);

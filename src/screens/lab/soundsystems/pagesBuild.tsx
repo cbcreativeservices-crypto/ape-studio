@@ -28,14 +28,14 @@
  * into a line input) renders as a warning, not a shrug.
  */
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import type { PageCtx } from '../kit/PagedLab';
 import { Body, Btn, Card, Eyebrow, Prompt, Row } from '../tuning/components/primitives';
 import { GEAR, gearSpec, isSource, LEVEL_LABEL } from '../../../features/soundsystems/gear';
 import { carriesOutputs, connect, consoleWalk, disconnect, EMPTY_SYSTEM, feedLinks, linkCarries, outChoices, pairIndex, place, removePlaced, setLinkOut, SLOTS, slotAccepts, slotDef, trace, upstream, downstream, type ConsoleWalk } from '../../../features/soundsystems/system';
 import { isIemPair, OUT_UNSET, outLabel, outName, outTag, outUse } from '../../../features/soundsystems/outputs';
-import { CAPSTONES_IN_ORDER, capstoneConsole, CONSOLE_PRESET_NOTE, gradeCapstone, type Capstone } from '../../../features/soundsystems/capstones';
+import { CAPSTONES_IN_ORDER, capstoneConsole, CONSOLE_PRESET_NOTE, gradeCapstone, linkWarning, type Capstone } from '../../../features/soundsystems/capstones';
 import type { ConsoleState } from '../../../features/soundsystems/console';
 import { markCapstonePassed } from '../../../features/soundsystems/progress';
 import type { ConsoleOut, GearKind, Link, SlotId, SoundSystem } from '../../../features/soundsystems/types';
@@ -43,18 +43,19 @@ import type { BezelItem, DockParam } from '../rack/rackTypes';
 import { ChapterTag, GoalChips, KeyFact, ReqRow, useVisitGoals, VerdictLine } from './bits';
 import { GearGlyph } from './art/gearArt';
 import { CableLegend, PLOT_H, PLOT_W, VenueView } from './art/VenueView';
-import { placedToBeams, PLOT_BADGE, twinCableTag } from './plot';
+import { placedToBeams, twinCableTag } from './plot';
 import { BusHears, ConsolePanel, DcaStrip, MatrixStrip, matrixHears, auxHears, mainHears, subgroupHears, SubgroupStrip, type ConsoleColumn } from './art/ConsolePanel';
 import { flipFader, SoundSystemsRackLayout, type SsPageDef, type SsRack } from './rackLayout';
 import { StageFit } from '../rack/StageFit';
 import { TitledStage } from '../rack/TitledStage';
-import { usePageMemory } from './pageMemory';
+import { goalsScopeOf, setGoalsLeft, usePageMemory } from './pageMemory';
+import { venueSentence, leftWord, CONSOLE_STEPS, consoleStepHeader, openConsoleStep } from './fixHelpers';
 
 /* ── the builder ─────────────────────────────────────────────────────────── */
 
 type Msg = { text: string; unsafe?: boolean; ok?: boolean };
 
-export function useBuilder(initial: SoundSystem = EMPTY_SYSTEM) {
+export function useBuilder(initial: SoundSystem = EMPTY_SYSTEM, capstoneId: string | null = null) {
   // The plot survives BACK / CONTINUE for the session (bug hunt 2026-09-29).
   const [system, setSystem] = usePageMemory<SoundSystem>('system', initial);
   const [part, setPart] = useState<GearKind | null>(null);
@@ -94,7 +95,11 @@ export function useBuilder(initial: SoundSystem = EMPTY_SYSTEM) {
           const b = system.placed.find((p) => p.id === id)!;
           const nth = pairIndex(v.system, v.link);
           const pick = nth > 0 ? ` A second cable — tap OUTPUT ${nth + 1} to choose the console output it carries.` : gearSpec(b.kind).radiates && carriesOutputs(v.system, v.link) ? ' Tap OUTPUT to choose the console output it carries.' : '';
-          setMsg({ text: `${gearSpec(a.kind).name} → ${gearSpec(b.kind).name}, at ${LEVEL_LABEL[v.link.level]}.${pick}`, ok: true });
+          // A cable the engine accepts but the brief does not (around the
+          // mix, past the stagebox or the processor, a second cable from one
+          // mic) reads △ with the reason, not a green ✓ (lab fix 2026-11-14, F2).
+          const warn = linkWarning(capstoneId ? { id: capstoneId } : null, system, v.system, selected, id);
+          setMsg(warn ? { text: `${gearSpec(a.kind).name} → ${gearSpec(b.kind).name}, at ${LEVEL_LABEL[v.link.level]}. ${warn}` } : { text: `${gearSpec(a.kind).name} → ${gearSpec(b.kind).name}, at ${LEVEL_LABEL[v.link.level]}.${pick}`, ok: true });
           setSelected(id);
         } else {
           setMsg({ text: v.reason, unsafe: v.unsafe });
@@ -109,7 +114,7 @@ export function useBuilder(initial: SoundSystem = EMPTY_SYSTEM) {
       const p = system.placed.find((x) => x.id === id);
       if (p) setMsg({ text: `${gearSpec(p.kind).name} selected. Tap another device to connect from it; tap REMOVE to take it off the plot.` });
     },
-    [selected, system],
+    [selected, system, capstoneId],
   );
 
   // Only the tapped cable goes — its twin between the same pair stays.
@@ -162,6 +167,7 @@ function useBuilderRack(b: ReturnType<typeof useBuilder>, kinds: readonly GearKi
   const carried = selLink ? carriedWord(linkCarries(b.system, selLink, b.walk)) : '';
   const fedByEach = selLinks.length > 1 ? selLinks.map((l) => `${gearSpec(b.system.placed.find((p) => p.id === l.from)!.kind).name} · ${carriedWord(linkCarries(b.system, l, b.walk)) || OUT_UNSET}`).join(', ') : '';
   const inHand = b.part ? gearSpec(b.part) : null;
+  const freeTargets = b.targets.filter((t) => !b.system.placed.some((p) => p.slot === t));
   const items = kinds.map((k) => ({ id: k }));
   const exhausted = (k: GearKind) => !gearSpec(k).many && b.system.placed.some((p) => p.kind === k);
   const params: DockParam[] = [
@@ -211,6 +217,19 @@ function useBuilderRack(b: ReturnType<typeof useBuilder>, kinds: readonly GearKi
           </View>
         </View>
       ) : null}
+      {/* The free positions as buttons too (lab fix round 2026-11-14, F2):
+          on the plot two needed positions can sit closer than a finger
+          (Center cluster over Sub · center, capstone 2), so every position
+          the part may take is also one plain tap here. */}
+      {inHand && freeTargets.length ? (
+        <View style={styles.slotRow} accessibilityRole="list" accessibilityLabel={`Positions for the ${inHand.name.toLowerCase()}`}>
+          {freeTargets.map((t) => (
+            <Pressable key={t} onPress={() => b.tapSlot(t)} style={styles.slotChip} accessibilityRole="button" accessibilityLabel={`Place at ${slotDef(t).label}`}>
+              <Text style={styles.slotText}>{slotDef(t).label}</Text>
+            </Pressable>
+          ))}
+        </View>
+      ) : null}
       {b.msg ? <VerdictLine ok={!!b.msg.ok} warn={!b.msg.ok && !b.msg.unsafe}>{b.msg.unsafe ? '⚠ ' : ''}{b.msg.text}</VerdictLine> : null}
       {sel ? (
         <Card tone="math">
@@ -239,7 +258,7 @@ function useBuilderRack(b: ReturnType<typeof useBuilder>, kinds: readonly GearKi
   );
   const rack: SsRack = {
     size: 'L',
-    badge: PLOT_BADGE,
+    modelNote: 'A teaching picture of coverage, not a measurement of a real room.',
     initialParam: 'part',
     hideDragTag: true,
     bezel,
@@ -475,8 +494,13 @@ function hearsList(cs: ConsoleState, h: RouteUi['hears'][number]) {
   }
 }
 
+const SEND_NAMES: Record<string, string> = { aux1: 'SINGER', aux2: 'GUITAR', aux3: 'BASS', aux4: 'DRUMS', aux5: 'REVERB', aux6: 'SUBS', aux7: 'LOBBY', aux8: 'MONO', aux9: 'STEREO L', aux10: 'STEREO R' };
+
+/** Capstone 6's beginner core: the channels a first monitor mix needs. */
+export const MONITOR_CORE_CHANNELS: readonly string[] = ['vox', 'gtr', 'bass', 'kick', 'keys'];
+
 function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
-  const built = useBuilder();
+  const built = useBuilder(EMPTY_SYSTEM, capstone.id);
   // A capstone that never opens the console starts it with its sub buses
   // preset (SS-R2-04, capstoneConsole) — the page says so below the brief.
   const [cs, setCs] = usePageMemory<ConsoleState>('console', () => capstoneConsole(capstone));
@@ -484,6 +508,13 @@ function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
   // (bug hunt 2026-09-29: it used to leave the console as routed).
   const b = { ...built, reset: () => { built.reset(); setCs(capstoneConsole(capstone)); } };
   const grade = useMemo(() => gradeCapstone(capstone, b.system, cs), [capstone, b.system, cs]);
+  // The end screen names this capstone's unmet requirements (lab fix round
+  // 2026-11-14, phase 2, F2; pageMemory.goalsLeftLine).
+  const scope = goalsScopeOf(ctx);
+  const unmetKey = grade.unmet.join('|');
+  useEffect(() => {
+    setGoalsLeft(scope, unmetKey ? unmetKey.split('|').map((id) => capstone.requirements.find((r) => r.id === id)?.text ?? id) : []);
+  }, [scope, unmetKey, capstone]);
   useEffect(() => {
     if (grade.pass) {
       markCapstonePassed(capstone.id);
@@ -492,6 +523,18 @@ function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [grade.pass]);
   const ui = ROUTE_UI[capstone.id];
+  // Owner decision 5, 2026-11-14 (long pages: beginner core first): capstone
+  // 6's desk was ten channels × four wedges, about 160 tap targets in one
+  // tray. The five channels a first monitor mix needs come first; the rest
+  // fold under MORE CHANNELS. Nothing is removed.
+  const core = ui && !ui.channels && capstone.id === 'monitors' ? MONITOR_CORE_CHANNELS : null;
+  const [moreChannels, setMoreChannels] = useState(false);
+  // SS-10 (owner 2026-11-15: "build waves 1 thru 3"): capstones 7, 8 and 10
+  // open the desk one step at a time (fixHelpers CONSOLE_STEPS); the first
+  // unmet step is open, the others are one-line headers.
+  const steps = ui ? CONSOLE_STEPS[capstone.id] : undefined;
+  const [pickedStep, setPickedStep] = useState<number | null>(null);
+  const openStep = steps ? openConsoleStep(steps, grade.met, pickedStep) : -1;
   const buildReqs = capstone.requirements.filter((r) => r.kind === 'build');
   const routeReqs = capstone.requirements.filter((r) => r.kind === 'route');
   const routeMet = routeReqs.filter((r) => grade.met.includes(r.id)).length;
@@ -501,22 +544,57 @@ function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
         id: 'console',
         hideLane: true,
         label: 'CONSOLE',
-        valueLabel: routeReqs.length ? `${routeMet}/${routeReqs.length}` : 'Open',
+        valueLabel: routeReqs.length ? leftWord(routeMet, routeReqs.length, 'ALL MET') : 'Open',
         render: () => (
           <View style={{ gap: 10 }}>
             <Body>▲/▼ step a level; PRE lights the pre-fader tap. Check the buses below for who hears what — worked out from your settings. The plot above stays live.</Body>
-            <ConsolePanel cs={cs} onChange={setCs} channels={ui.channels} columns={ui.columns} sendNames={{ aux1: 'SINGER', aux2: 'GUITAR', aux3: 'BASS', aux4: 'DRUMS', aux5: 'REVERB', aux6: 'SUBS', aux7: 'LOBBY', aux8: 'MONO', aux9: 'STEREO L', aux10: 'STEREO R' }} />
-            {ui.subgroups ? <SubgroupStrip cs={cs} onChange={setCs} /> : null}
-            {ui.dcas ? <DcaStrip cs={cs} onChange={setCs} /> : null}
-            {ui.matrices?.map((m) => (
+            {core ? <Body>Start with WEDGE 1 · SINGER: tap ▲ on Lead vocal, then give each musician their own instrument.</Body> : null}
+            {steps ? (
+              steps.map((st, i) => {
+                const isOpen = i === openStep;
+                return (
+                  <View key={st.label} style={{ gap: 10 }}>
+                    <Pressable onPress={() => setPickedStep(isOpen ? -1 : i)} style={styles.moreKey} accessibilityRole="button" accessibilityState={{ expanded: isOpen }} accessibilityLabel={`${consoleStepHeader(st, grade.met, isOpen)}. ${isOpen ? 'Open' : 'Tap to open'}`}>
+                      <Text style={styles.moreText}>{consoleStepHeader(st, grade.met, isOpen)}</Text>
+                    </Pressable>
+                    {isOpen ? (
+                      <>
+                        {st.columns.length ? <ConsolePanel cs={cs} onChange={setCs} channels={ui.channels} columns={st.columns as readonly ConsoleColumn[]} sendNames={SEND_NAMES} /> : null}
+                        {st.subgroups ? <SubgroupStrip cs={cs} onChange={setCs} /> : null}
+                        {st.dcas ? <DcaStrip cs={cs} onChange={setCs} /> : null}
+                        {ui.matrices?.filter((m) => st.matrices?.includes(m.id)).map((m) => (
+                          <MatrixStrip key={m.id} cs={cs} onChange={setCs} matrixId={m.id} sources={m.sources} />
+                        ))}
+                        {hearsShown(ui.hears, b.system, b.walk).filter((h) => st.hears.includes(h.title)).map((h) => (
+                          <BusHears key={h.title} title={h.title} list={hearsList(cs, h)} />
+                        ))}
+                      </>
+                    ) : null}
+                  </View>
+                );
+              })
+            ) : (
+              <ConsolePanel cs={cs} onChange={setCs} channels={core ?? ui.channels} columns={ui.columns} sendNames={SEND_NAMES} />
+            )}
+            {core ? (
+              <>
+                <Pressable onPress={() => setMoreChannels((o) => !o)} style={styles.moreKey} accessibilityRole="button" accessibilityState={{ expanded: moreChannels }} accessibilityLabel={moreChannels ? 'Hide the other channels' : 'Show the other channels: snare, overheads, backing vox, announce and playback'}>
+                  <Text style={styles.moreText}>{moreChannels ? 'MORE CHANNELS ▴' : 'MORE CHANNELS ▾ · snare, overheads, backing vox, announce, playback'}</Text>
+                </Pressable>
+                {moreChannels ? <ConsolePanel cs={cs} onChange={setCs} channels={cs.channels.map((c) => c.id).filter((id) => !core.includes(id))} columns={ui.columns} sendNames={SEND_NAMES} /> : null}
+              </>
+            ) : null}
+            {!steps && ui.subgroups ? <SubgroupStrip cs={cs} onChange={setCs} /> : null}
+            {!steps && ui.dcas ? <DcaStrip cs={cs} onChange={setCs} /> : null}
+            {steps ? null : ui.matrices?.map((m) => (
               <MatrixStrip key={m.id} cs={cs} onChange={setCs} matrixId={m.id} sources={m.sources} />
             ))}
-            {hearsShown(ui.hears, b.system, b.walk).map((h) => (
+            {steps ? null : hearsShown(ui.hears, b.system, b.walk).map((h) => (
               <BusHears key={h.title} title={h.title} list={hearsList(cs, h)} />
             ))}
             {routeReqs.length ? (
               <Card tone={routeMet >= routeReqs.length ? 'ok' : 'plain'}>
-                <Eyebrow>ON THE CONSOLE · {routeMet} OF {routeReqs.length}</Eyebrow>
+                <Eyebrow>ON THE CONSOLE · {leftWord(routeMet, routeReqs.length, '✓ ALL')}</Eyebrow>
                 {routeReqs.map((r) => (
                   <ReqRow key={r.id} met={grade.met.includes(r.id)} text={r.text} />
                 ))}
@@ -528,7 +606,7 @@ function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
     : undefined;
   const requirements = (
     <Card tone={grade.pass ? 'ok' : 'plain'}>
-      <Eyebrow>{grade.pass ? 'REQUIREMENTS MET — CAPSTONE PASSED' : `REQUIREMENTS · ${grade.met.length} OF ${capstone.requirements.length}`}</Eyebrow>
+      <Eyebrow>{grade.pass ? 'REQUIREMENTS MET — CAPSTONE PASSED' : `REQUIREMENTS · ${capstone.requirements.length - grade.met.length} LEFT`}</Eyebrow>
       {buildReqs.map((r) => {
         const met = grade.met.includes(r.id);
         const why = met ? null : r.why?.(b.system, cs);
@@ -551,13 +629,13 @@ function CapstonePage({ capstone, ctx }: { capstone: Capstone; ctx: PageCtx }) {
   );
   const r = useBuilderRack(b, capstone.bin, {
     console: consoleParam,
-    bezel: { k: 'REQS', v: grade.pass ? 'PASS' : `${grade.met.length}/${capstone.requirements.length}`, tint: grade.pass ? colors.green : colors.amber, flex: 1 },
+    bezel: { k: 'REQS', caption: 'checklist', v: grade.pass ? 'PASS' : leftWord(grade.met.length, capstone.requirements.length, 'PASS'), tint: grade.pass ? colors.green : colors.amber, flex: 1 },
     wellTop: requirements,
-    title: { title: capstone.title, subtitle: `Capstone ${capstone.n} of 10 · ${capstone.venue}` },
+    title: { title: capstone.title, subtitle: `Capstone ${capstone.n} · ${capstone.venue}` },
   });
   return (
-    <SoundSystemsRackLayout rack={r.rack} caption={`Capstone ${capstone.n} of 10 · ${capstone.venue}. Build it on the plot from the bin in PART${ui ? ', then open CONSOLE to route it' : ''} — the checklist below fills itself in as you go.`} wellTop={r.wellTop}>
-      <ChapterTag n={capstone.n}>{`CAPSTONE ${capstone.n} OF 10 · ${capstone.venue.toUpperCase()}`}</ChapterTag>
+    <SoundSystemsRackLayout rack={r.rack} caption={`Capstone ${capstone.n} · ${venueSentence(capstone.venue)} Build it on the plot from the bin in PART${ui ? ', then open CONSOLE to route it' : ''} — the checklist below fills itself in as you go.`} wellTop={r.wellTop}>
+      <ChapterTag n={capstone.n}>{`CAPSTONE ${capstone.n} · ${capstone.venue.toUpperCase()}`}</ChapterTag>
       <Body>{capstone.brief}</Body>
       {!capstone.routing && capstone.bin.some((k) => k === 'poweredSub' || k === 'passiveSub') ? <Text style={styles.small}>{CONSOLE_PRESET_NOTE}</Text> : null}
       <Prompt>{r.prompt}</Prompt>
@@ -581,6 +659,11 @@ export const SS_BUILD_PAGES: SsPageDef[] = [
 const styles = StyleSheet.create({
   hand: { flexDirection: 'row', gap: 10, alignItems: 'center', borderRadius: 10, borderWidth: 1, borderColor: 'rgba(255,198,77,.45)', backgroundColor: '#1a1409', padding: 8 },
   inspect: { flexDirection: 'row', gap: 10, alignItems: 'center' },
+  slotRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  moreKey: { minHeight: 40, justifyContent: 'center', borderRadius: 8, borderWidth: 1, borderColor: colors.hairline, paddingHorizontal: 10, paddingVertical: 6 },
+  moreText: { color: colors.amber, fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 0.5 },
+  slotChip: { minHeight: 36, justifyContent: 'center', borderRadius: 8, borderWidth: 1, borderColor: 'rgba(255,198,77,.55)', backgroundColor: '#1a1409', paddingHorizontal: 10, paddingVertical: 6 },
+  slotText: { color: colors.amber, fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 0.5 },
   small: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },
   why: { color: colors.orange, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16, marginLeft: 30 },
   status: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 0.8 },

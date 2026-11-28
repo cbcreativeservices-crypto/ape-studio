@@ -13,7 +13,9 @@
  *   MountStack     tilter, felts, sleeve and wing nut for a stack of plates.
  *   AirRing        the hi-hats' air burst: a dashed band round the pair.
  *   SwingFan       the ± swing at a plate's edge (side view).
- *   PlanStick      the stick from the player's side to a strike point.
+ *   (The stick is always the drawn drummer's: kitScene/stickPlayer. The loose
+ *   StickTo / stickFigureAt of the ride and splash lessons were removed in
+ *   the stick technique fix of 2026-11-22.)
  *
  * Nothing moves (D8); static paths are built once per argument set. All
  * coordinates are millimetres of the view's (u, v): side u = x, v = y; top
@@ -23,12 +25,13 @@ import { useMemo, type ReactNode } from 'react';
 import { BlurMask, Circle, DashPathEffect, FillType, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../../engine/model/types.ts';
 import { KIT, KIT_DRUMS, KIT_FLOOR_Y, yAt, type KitDrumId } from '../kitPlanModel.ts';
-import { DrumExterior, DrumPlan, FloorTomLegsSide, KickFromAbove, KickSideNeighbour, SnareStandSide, Stick, sideTransform, topTransform } from '../drums/DrumArt';
+import { DrumExterior, DrumPlan, FloorTomLegsSide, KickFromAbove, KickSideNeighbour, SnareStandSide, sideTransform, topTransform } from '../drums/DrumArt';
 import { KICK_22x18, frameOf, pointOn } from '../drums/drumSpec.ts';
 import { BoomStandSide, BoomStandTop, CymbalSide, CymbalTop, HiHatSide, HiHatTop, swingPaths } from './CymbalArt';
 import { CYMBAL_HARDWARE as HW, CYMBAL_SWING, KIT_PLACED_CYMBALS, type CymbalSpec } from './cymbalSpec.ts';
 import { DrummerKeepOut } from '../kitScene/KitSceneArt';
 import { StickDrummerArt, StickHandOver } from '../kitScene/stickPlayer';
+import type { DrummerSpec } from '../kitScene/stickPose.ts';
 import { KICK_GEOM } from '../../m01Kick/geometry.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
@@ -202,7 +205,7 @@ const TOP_ORDER: KitPiece[] = ['kick', 'floor', 'snare', 'holder', 'tom1', 'tom2
  * (0–1). `own`: the lesson's cymbal drawing and its depth (side) — drawn
  * between the pieces behind and in front of it.
  */
-export function KitAround({ view, show, own, ownZ, player }: { view: ViewId; show: Partial<Record<KitPiece, number>>; own?: ReactNode; ownZ?: number; player?: { x: number; y: number; z: number } }) {
+export function KitAround({ view, show, own, ownZ, player }: { view: ViewId; show: Partial<Record<KitPiece, number>>; own?: ReactNode; ownZ?: number; player?: DrummerSpec }) {
   const ids = (Object.keys(show) as KitPiece[]).filter((k) => (show[k] ?? 0) > 0);
   if (view === 'side') {
     const items: { z: number; node: ReactNode; key: string }[] = ids.map((k) => ({ z: DEPTH[k], key: k, node: <Group key={k} opacity={show[k]}><SidePiece id={k} /></Group> }));
@@ -214,8 +217,8 @@ export function KitAround({ view, show, own, ownZ, player }: { view: ViewId; sho
     // everything, so the hand that strikes is never hidden and always closes
     // over its stick.
     if (player) {
-      items.push({ z: -Infinity, key: 'player', node: <StickDrummerArt key="player" view="side" tip={player} dim={0.34} /> });
-      items.push({ z: Infinity, key: 'hand', node: <StickHandOver key="hand" view="side" tip={player} dim={0.5} /> });
+      items.push({ z: -Infinity, key: 'player', node: <StickDrummerArt key="player" view="side" spec={player} dim={0.34} /> });
+      items.push({ z: Infinity, key: 'hand', node: <StickHandOver key="hand" view="side" spec={player} dim={0.5} /> });
     }
     items.sort((a, b) => a.z - b.z);
     return <Group>{items.map((i) => i.node)}</Group>;
@@ -413,27 +416,6 @@ export function AirRing({ view, cx, cy, cz, R, width, above, below }: { view: Vi
       <Path path={g.arrows} style="stroke" strokeWidth={3} strokeCap="round" strokeJoin="round" color="#bcd8ff" opacity={0.85} />
     </Group>
   );
-}
-
-/** The stick, from the player's side to a strike point (side or top view). */
-type Pt2 = { x: number; y: number };
-/** A lesson's drawn stick (its from → to in the view, or null), as label
- *  occupancy (LessonArt.figureAt): the part labels keep off the stick — they
- *  sat on it and its leaders ran through it (clash sweep 2026-10-10). Taps are
- *  unchanged. */
-export function stickFigureAt(seg: (view: ViewId, variant: VariantId) => { from: Pt2; to: Pt2 } | null) {
-  return (view: ViewId, variant: VariantId, u: number, v: number, tol: number): boolean => {
-    const s = seg(view, variant);
-    if (!s) return false;
-    const dx = s.to.x - s.from.x;
-    const dy = s.to.y - s.from.y;
-    const t = Math.max(0, Math.min(1, ((u - s.from.x) * dx + (v - s.from.y) * dy) / (dx * dx + dy * dy || 1)));
-    return Math.hypot(u - (s.from.x + t * dx), v - (s.from.y + t * dy)) <= 10 + tol;
-  };
-}
-
-export function StickTo({ to, from, dim = 1 }: { to: { x: number; y: number }; from: { x: number; y: number }; dim?: number }) {
-  return <Stick from={from} to={to} dim={dim} />;
 }
 
 /** A soft amber ring round a cymbal seen from above (its plan ellipse). */

@@ -85,7 +85,7 @@ export type TrackDef = {
 
 export const TRACKS: Record<TrackId, TrackDef> = {
   nightFerry: { id: 'nightFerry', title: 'Night Ferry', artist: 'Pro Audio Training Academy practice track', style: 'House', bpm: 122, key: 'A minor', leadInSec: 0.12, peakDb: -6, drive: 0 },
-  glassHarbour: { id: 'glassHarbour', title: 'Glass Harbour', artist: 'Pro Audio Training Academy practice track', style: 'Deep house', bpm: 126, key: 'D minor', leadInSec: 0.38, peakDb: -0.3, drive: 1.4 },
+  glassHarbour: { id: 'glassHarbour', title: 'Glass Harbor', artist: 'Pro Audio Training Academy practice track', style: 'Deep house', bpm: 126, key: 'D minor', leadInSec: 0.38, peakDb: -0.3, drive: 1.4 },
   slowOrbit: { id: 'slowOrbit', title: 'Slow Orbit', artist: 'Pro Audio Training Academy practice track', style: 'Downtempo', bpm: 100, key: 'E minor', leadInSec: 0.05, peakDb: -3, drive: 0 },
 };
 

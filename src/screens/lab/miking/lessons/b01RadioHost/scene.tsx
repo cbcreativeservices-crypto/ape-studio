@@ -13,12 +13,16 @@ import { ArmClamp, Desk, DeskNearLegs, Laptop, PaSpeaker, Script, SeatedTalker, 
 import { DESK_TOP_Y, SEATED_FLOOR, SEATED_SOLIDS } from '../shared/broadcast/talkerPose.ts';
 import { HEAD_C, HEAD_R } from '../shared/voice/voiceSpec.ts';
 import { DESK, GRIP_A, GRIP_B, HOST_A, HOST_B, LAPTOP_A, LAPTOP_B, PA_C, SCRIPT_A } from './geometry.ts';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+
+/** (figure V2, wave 3a kind C: both hosts in the new look in every picture of this lesson) */
+export const V2 = figureV2On('sideDeskTalker');
 
 const studio = (v: VariantId) => v === 'twoHosts';
 
 /** Everything in the room. `headless`: the host drawn without a head (a step
  *  that draws the head turned); `hostB`: draw the second host (studio). */
-export function B01Scene({ view, variant, headless = false, phones }: { view: ViewId; variant: VariantId; headless?: boolean; phones?: boolean }): ReactElement {
+export function B01Scene({ view, variant, headless = false, phones, v2 = V2 }: { view: ViewId; variant: VariantId; headless?: boolean; phones?: boolean; /** (the study page compares the old look) */ v2?: boolean }): ReactElement {
   const two = studio(variant);
   const ph = phones ?? variant !== 'live';
   if (view === 'side') {
@@ -28,12 +32,12 @@ export function B01Scene({ view, variant, headless = false, phones }: { view: Vi
         <ArmClamp view="side" grip={GRIP_A} deskTop={DESK_TOP_Y} on="side" />
         <StudioChair view="side" t={HOST_A} />
         {two ? <StudioChair view="side" t={HOST_B} /> : null}
-        {two ? <SeatedTalker view="side" t={HOST_B} phones={ph} /> : null}
+        {two ? <SeatedTalker view="side" t={HOST_B} phones={ph} v2={v2} /> : null}
         <Laptop view="side" at={LAPTOP_A} toward={1} />
         {two ? <Laptop view="side" at={LAPTOP_B} toward={-1} /> : null}
         <Desk view="side" box={DESK} floor={SEATED_FLOOR} />
         <Script view="side" at={SCRIPT_A} />
-        <SeatedTalker view="side" t={HOST_A} phones={ph} headless={headless} />
+        <SeatedTalker view="side" t={HOST_A} phones={ph} headless={headless} v2={v2} />
         {/* Nearest the viewer: the desk's near legs, and the second host's
             clamp on the near side edge (over the desk's edge). */}
         <DeskNearLegs box={DESK} floor={SEATED_FLOOR} />
@@ -46,16 +50,16 @@ export function B01Scene({ view, variant, headless = false, phones }: { view: Vi
       {variant === 'live' ? <PaSpeaker view="top" c={PA_C} faces={1} floor={SEATED_FLOOR} /> : null}
       <StudioChair view="top" t={HOST_A} />
       {two ? <StudioChair view="top" t={HOST_B} /> : null}
-      <SeatedTalker view="top" t={HOST_A} part="lower" />
-      {two ? <SeatedTalker view="top" t={HOST_B} part="lower" /> : null}
+      <SeatedTalker view="top" t={HOST_A} part="lower" v2={v2} />
+      {two ? <SeatedTalker view="top" t={HOST_B} part="lower" v2={v2} /> : null}
       <Desk view="top" box={DESK} floor={SEATED_FLOOR} />
       <Script view="top" at={SCRIPT_A} turn={-0.08} />
       <Laptop view="top" at={LAPTOP_A} toward={1} />
       {two ? <Laptop view="top" at={LAPTOP_B} toward={-1} /> : null}
       <ArmClamp view="top" grip={GRIP_A} deskTop={DESK_TOP_Y} on="side" />
       {two ? <ArmClamp view="top" grip={GRIP_B} deskTop={DESK_TOP_Y} edge={1} on="side" /> : null}
-      {two ? <SeatedTalker view="top" t={HOST_B} part="upper" phones={ph} /> : null}
-      <SeatedTalker view="top" t={HOST_A} part="upper" phones={ph} headless={headless} />
+      {two ? <SeatedTalker view="top" t={HOST_B} part="upper" phones={ph} v2={v2} /> : null}
+      <SeatedTalker view="top" t={HOST_A} part="upper" phones={ph} headless={headless} v2={v2} />
     </Group>
   );
 }
@@ -119,6 +123,6 @@ export function b01HitTest(view: ViewId, variant: VariantId, u: number, v: numbe
 }
 
 export function b01FigureAt(view: ViewId, variant: VariantId, u: number, v: number, tol: number): boolean {
-  if (talkerCovers(view, HOST_A, u, v, tol)) return true;
-  return studio(variant) && talkerCovers(view, HOST_B, u, v, tol);
+  if (talkerCovers(view, HOST_A, u, v, tol, V2)) return true;
+  return studio(variant) && talkerCovers(view, HOST_B, u, v, tol, V2);
 }

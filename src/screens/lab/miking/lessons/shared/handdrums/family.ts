@@ -56,6 +56,10 @@ export type PlanThing = {
   /** Facing (plan radians from +x) for wedges / fills / amps. */
   face?: number;
   scene: 'all' | 'stage' | 'studio';
+  /** (cast figures 2026-11-26, owner ruling) a 'player' who holds an instrument instead of reaching for the
+   *  lesson's drums: 'aguitar' — the acoustic guitarist beside I02's cajón (HandPlan draws the guitar family's
+   *  own seated player with the guitar, from above). Absent: the hand-drum marker, as before. */
+  holds?: 'aguitar';
 };
 
 /** A two-mic preset on the TWO MICROPHONES page. */
@@ -83,6 +87,10 @@ export type HandExtra = {
   variantKey: string;
   /** ORIENT: the large figure on "What it is". */
   figure: { view: ViewId; badge: string; label: string };
+  /** What the two views are called on the dock's view key and in the landing
+   *  lines (default Side / Top). M04a (owner 2026-11-22, a set of three): its
+   *  'side' view is the FRONT elevation, so it is called "Front". */
+  viewNames?: Readonly<Record<ViewId, string>>;
   partsBadge: string;
   partsPrompt: string;
   partsNote: string;
@@ -101,15 +109,31 @@ export type HandExtra = {
   /** HOW IT SOUNDS, step 4's prediction-reveal line (after the strike sequence). */
   soundReveal: string;
   /** THE SETTING. */
-  plan: { box: { u0: number; u1: number; v0: number; v1: number }; things: readonly PlanThing[]; /** The studio's headphone mix (handPlanModel). */ cue?: PlanCueSpec; badge: string; looking: string; prompt: string; intro: string; label: string };
+  plan: {
+    box: { u0: number; u1: number; v0: number; v1: number };
+    things: readonly PlanThing[];
+    /** The studio's headphone mix (handPlanModel). */ cue?: PlanCueSpec;
+    /** The lesson's model frame is turned a quarter from the plan's (M04a,
+     *  2026-11-22: its drums lie along x, the audience at +z): the plan draws
+     *  the model's (x, z) at (u, v) = (z, −x) — handPlanModel turnArtPlan;
+     *  the art's top view is asked for with `planTurn`. Absent: u = x, v = z. */
+    turn?: 'xAcross';
+    badge: string;
+    looking: string;
+    prompt: string;
+    intro: string;
+    label: string;
+  };
   before: { ask: string; asIs: string };
   /** PLACEMENT: the worked example's zone per variant, the free step's start zone. */
   worked: Partial<Record<VariantId, string>> & { default: string };
   clearWords: string;
   ideas: Partial<Record<string, string>>;
   placeLearn: readonly string[];
-  /** STUDIO OR LIVE: the mic's start, the drum it faces. */
-  context: { pose: MicPose; looking: string; prompt: string; learn: readonly { title: string; text: string }[]; closing: string };
+  /** STUDIO OR LIVE: the mic's start, the drum it faces. `only`: the one
+   *  view the page draws (no view key) — M04a's front view looks along the
+   *  mic-to-wedge line, so its page is drawn from above. */
+  context: { pose: MicPose; looking: string; prompt: string; learn: readonly { title: string; text: string }[]; closing: string; only?: ViewId };
   /** TWO MICROPHONES. */
   pairs: readonly PairSpec[];
   pairLearn: readonly string[];
@@ -117,6 +141,15 @@ export type HandExtra = {
 };
 
 export type HandLesson = Lesson & { hand: HandExtra };
+
+/** A view's name ("Side", "Front", "Top") and the dock's view-key words. */
+export function viewName(h: Pick<HandExtra, 'viewNames'>, view: ViewId): string {
+  return h.viewNames?.[view] ?? (view === 'side' ? 'Side' : 'Top');
+}
+/** The view key's [side, top] words, or undefined for the engine's default. */
+export function viewKeyLabels(h: Pick<HandExtra, 'viewNames'>): readonly [string, string] | undefined {
+  return h.viewNames ? [`${viewName(h, 'side').toUpperCase()} VIEW`, `${viewName(h, 'top').toUpperCase()} VIEW`] : undefined;
+}
 
 export function handOf(lesson: Lesson): HandExtra {
   const h = (lesson as Partial<HandLesson>).hand;

@@ -158,7 +158,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
     relatedLessons: ['l02_anatomy', 'l07_power', 'l09_handling'],
     sourceNotes: [
       'NEMA 5-15: 15 A / 125 V straight-blade configuration; narrow blade line, wide blade neutral, round pin equipment ground: NEMA WD 6 — VERIFIED 2026-08-15: NEMA WD 6 configuration chart',
-      'NA flexible-cord color convention black=line, white=neutral, green=earth: NEC / UL flexible-cord standards — VERIFIED 2026-08-15: NEC 200.6/250.119 + UL cordset convention (EC&M flexible-cord code basics)',
+      'NA flexible-cord color convention black=line, white=neutral, green=ground: NEC / UL flexible-cord standards — VERIFIED 2026-08-15: NEC 200.6/250.119 + UL cordset convention (EC&M flexible-cord code basics)',
       '5-20R T-slot accepts 5-15P and 5-20P; 5-20P does not enter 5-15R: NEMA WD 6 — VERIFIED 2026-08-15: NEMA WD 6 configuration chart',
       'GFCI protection for outdoor/damp use: NEC / OSHA construction-power guidance — VERIFIED 2026-08-15: NEC 210.8/406.9 + OSHA 1926.404',
       'Coiled cable reels must be fully uncoiled under significant load (heat build-up): manufacturer reel derating guidance — VERIFIED 2026-08-15: Brennenstuhl reel-safety guidance',
@@ -236,7 +236,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
       'Not weatherproof — an indoor-class connection unless a specifically rated assembly is used',
     ],
     commonMistakes: [
-      'Grabbing “any IEC lead” without reading the printed cord rating — the coupler fits, but the conductor gauge may not match the load',
+      'Grabbing “any IEC cord” without reading the printed cord rating — the coupler fits, but the conductor gauge may not match the load',
       'Treating a cord that fits as proof the equipment accepts the local voltage — the device’s rated input range governs, not the coupler',
       'Keeping a cord with a cracked coupler, heat marks or loose strain relief in service — damaged power cords leave service immediately',
       'Feeding a chain of power strips through one light-duty cordset',
@@ -468,7 +468,7 @@ export const CONNECTORS_POWER: ConnectorRecord[] = [
     relatedLessons: ['l07_power', 'l09_handling'],
     sourceNotes: [
       'C5/C6 coupler rated 2.5 A / 250 V under IEC 60320-1 — VERIFIED 2026-08-15: Interpower IEC 60320 C5–C8 guide',
-      'C5/C6 is the earthed low-current coupler (three contacts incl. protective earth), distinct from two-pole C7/C8: IEC 60320 — VERIFIED 2026-08-15: Interpower IEC 60320 C5–C8 guide',
+      'C5/C6 is the grounded low-current coupler (three contacts incl. protective earth), distinct from two-pole C7/C8: IEC 60320 — VERIFIED 2026-08-15: Interpower IEC 60320 C5–C8 guide',
     ],
   },
 

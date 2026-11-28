@@ -170,7 +170,7 @@ describe('RATCHET A: no literal font size under 9 pt without a fit-scale reason'
  * {...fitValue(fontSize)}. May only shrink.
  */
 const ONE_LINE_ALLOWED: Record<string, { n: number; why: string }> = {
-  'components/nav/TabBar.tsx': { n: 1, why: 'tab footnote label' },
+  'components/nav/CircleMenu.tsx': { n: 1, why: 'footnote strip beside the MENU button (was the tab bar footnote)' },
   'components/ProgressRing.tsx': { n: 1, why: 'centre label (caller-supplied word)' },
   'components/ShareTermSheet.tsx': { n: 2, why: 'glossary term headings' },
   'components/tooldemos/SignalGenDemo.tsx': { n: 3, why: 'fixed caption words' },
@@ -223,8 +223,7 @@ const ONE_LINE_ALLOWED: Record<string, { n: number; why: string }> = {
     n: 4,
     why: 'the house idiom itself: key label (dropped when cropped), unit, and two values drawn smaller by numFs() to the 9 pt floor',
   },
-  'screens/lab/rack/DockButton.tsx': { n: 1, why: 'key label (the value uses fitValue)' },
-  'screens/lab/rack/DockTray.tsx': { n: 1, why: 'param label' },
+  // DockButton.tsx: removed 2026-11-14 (lab fix round 1, row 8): its label is now 1 or 2 lines, never a fixed one-line "…".
   'screens/lab/rack/ParamLane.tsx': { n: 1, why: 'lane label (the readout uses fitValue)' },
   'screens/lab/soundsystems/art/ChainMeter.tsx': { n: 1, why: 'stage short label (the value uses fitValue)' },
   'screens/lab/soundsystems/art/ConsolePanel.tsx': { n: 4, why: 'channel labels and names' },

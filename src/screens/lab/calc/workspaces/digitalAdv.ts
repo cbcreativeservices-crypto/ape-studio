@@ -4,7 +4,7 @@
  * Convolution Resources. Section 'digital'. Same pattern as wave.ts.
  */
 import type { Workspace } from '../calcTypes';
-import { DB_PER_BIT, FULL_SCALE_SINE_DB, fmt, fmtCount, snapWhole } from '../calcUnits';
+import { DB_PER_BIT, FULL_SCALE_SINE_DB, fmt, fmtCount, fmtSamples, snapWhole } from '../calcUnits';
 
 /** 0 ppm is two clocks that match exactly (audit R2, 2026-10-23): it printed
  *  "TIME PER 1-SAMPLE SLIP — ms" beside "must be greater than zero". */
@@ -23,6 +23,13 @@ const tcRateRefusal = (fps: number): string | null =>
 /** TPDF dither (the standard choice) adds twice the quantization noise power:
  *  10·log10(3) = 4.77 dB more noise (Lipshitz, Wannamaker & Vanderkooy, JAES
  *  1992). A properly dithered converter's ideal SNR is therefore 6.02·N − 3.01. */
+/** A level count of 10 million or more, written out for a reader: "16,777,216 levels (about 16.8 million)". Null below 1e7 or past exact integers. */
+function levelsInWords(x: number): string | null {
+  if (!(x >= 1e7) || x > Number.MAX_SAFE_INTEGER) return null;
+  const grouped = String(x).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  const approx = x >= 1e9 ? `about ${(x / 1e9).toFixed(1)} billion` : `about ${(x / 1e6).toFixed(1)} million`;
+  return `${grouped} levels (${approx})`;
+}
 const TPDF_NOISE_DB = 10 * Math.log10(3);
 
 /** Audio bytes one standard Ethernet packet can carry: a 1500-byte MTU less
@@ -48,6 +55,20 @@ const firTransitionTooWide = (sr: number, trans: number): string | null =>
     : null;
 
 const n = (v: number | number[]) => (typeof v === 'number' ? v : v[0] ?? NaN);
+
+/** HH:MM:SS:FF non-drop label of a frame count at a whole frame rate (the same
+ *  arithmetic as the timecode table). */
+function tcLabel(frames: number, fpsInt: number): string {
+  if (!(fpsInt > 0) || !Number.isFinite(frames)) return '—';
+  // Whole-number arithmetic with %, so no rounding call is needed (P17 ratchet).
+  const ff = frames % fpsInt;
+  const totS = (frames - ff) / fpsInt;
+  const ss = totS % 60;
+  const mm = ((totS % 3600) - ss) / 60;
+  const hh = (totS - (totS % 3600)) / 3600;
+  const p2 = (x: number) => String(x).padStart(2, '0');
+  return `${p2(hh)}:${p2(mm)}:${p2(ss)}:${p2(ff)}`;
+}
 
 const CLOCKDRIFT: Workspace = {
   id: 'clockdrift',
@@ -76,7 +97,7 @@ const CLOCKDRIFT: Workspace = {
     '(ppm×10⁻⁶) × time. Real clocks also jitter and wander; this is the steady-state drift only.',
   glossary: ['Sample Rate', 'Word Clock', 'Jitter', 'Synchronization'],
   fields: [
-    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Sample rate of the digital link.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
+    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', defaultUnit: 'srkhz', placeholder: '48', help: 'Sample rate of the digital link.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
     // 0 ppm is a real answer ("never slips"), so no zero warning (audit R2).
     { key: 'ppm', name: 'CLOCK ERROR (ppm)', quantity: 'number', nonNegative: true, placeholder: '50', help: 'Frequency error in parts per million between the two clocks (0 = locked to the same clock).' },
     { key: 'dur', name: 'DURATION', quantity: 'time', meaning: 'time:duration', defaultUnit: 'min', placeholder: '60', help: 'How long the two devices run unsynced.', positive: true, warn: { test: (x) => x <= 0, msg: 'Duration must be greater than zero.' } },
@@ -173,7 +194,7 @@ const NETAUDIO: Workspace = {
   glossary: ['Sample Rate', 'Bit Depth', 'Bandwidth', 'Latency', 'Packet'],
   fields: [
     { key: 'channels', name: 'CHANNELS', quantity: 'number', nonNegative: true, integer: true, placeholder: '64', help: 'Number of audio channels in one direction.', positive: true, warn: { test: (x) => x <= 0, msg: 'Channels must be greater than zero.' } },
-    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Sample rate of each channel.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
+    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', defaultUnit: 'srkhz', placeholder: '48', help: 'Sample rate of each channel.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
     { key: 'bitdepth', name: 'BIT DEPTH', quantity: 'bitdepth', integer: true, placeholder: '24', help: 'Bits per sample carried on the wire.', positive: true, warn: { test: (x) => x <= 0, msg: 'Bit depth must be greater than zero.' } },
     { key: 'packetms', name: 'PACKET TIME', quantity: 'time', defaultUnit: 'ms', placeholder: '1', help: 'Audio time carried per packet — smaller = lower latency, more overhead.', positive: true, warn: { test: (x) => x <= 0, msg: 'Packet time must be greater than zero.' } },
   ],
@@ -313,7 +334,12 @@ const TIMECODE: Workspace = {
         const totS = n(v.frames) / n(v.fps);
         return [
           `Time = ${fmtCount(n(v.frames))} frames ÷ ${fmt(n(v.fps), 6)} fps = ${fmt(totS)} s.`,
-          `Broken out into HH:MM:SS:FF in the table below (leftover frames are counted at the whole-number frame rate).`,
+          // Comp A audit C12 (2026-11-26): the table is the non-drop LABEL, not a
+          // breakdown of the real time above — at 29.97 they differ by 3.6 s/hour.
+          Number.isInteger(snapWhole(n(v.fps)))
+            ? `Broken out into HH:MM:SS:FF in the table below.`
+            : `The table below is the non-drop timecode label: it counts ${fmtCount(Math.round(n(v.fps)))} frames per timecode second, so at ${fmt(n(v.fps), 6)} fps it reads behind the real time above ` +
+              `(${fmtCount(Math.round(n(v.frames)))} frames = ${fmt(totS)} s real, labeled ${tcLabel(Math.round(n(v.frames)), Math.round(n(v.fps)))} non-drop).`,
         ];
       },
     },
@@ -409,7 +435,7 @@ const FIRLEN: Workspace = {
     '(N−1)/2 samples, exactly. A transition band wider than half the sample rate is refused.',
   glossary: ['FIR Filter', 'Linear Phase', 'Latency', 'Sample Rate', 'Transition Band'],
   fields: [
-    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Processing sample rate.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
+    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', defaultUnit: 'srkhz', placeholder: '48', help: 'Processing sample rate.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
     { key: 'trans', name: 'TRANSITION WIDTH', quantity: 'frequency', placeholder: '100', help: 'Hz between passband edge and stopband edge.', positive: true, warn: { test: (x) => x <= 0, msg: 'Transition width must be greater than zero.' } },
     { key: 'atten', name: 'STOPBAND ATTENUATION', quantity: 'db', nonNegative: true, placeholder: '60', help: 'How deep the stopband rejection must be, in dB.', positive: true, warn: { test: (x) => x <= 0, msg: 'Attenuation must be greater than zero.' } },
     { key: 'taps', name: 'TAP COUNT', quantity: 'number', meaning: 'number:taps', nonNegative: true, integer: true, placeholder: '1024', help: 'Filter length in taps, for “Latency from a tap count”.', positive: true, warn: { test: (x) => x <= 0, msg: 'Tap count must be greater than zero.' } },
@@ -437,6 +463,10 @@ const FIRLEN: Workspace = {
           { label: 'FILTER TAPS (N)', value: N, quantity: 'number', meaning: 'number:taps' },
           { label: 'LATENCY', value: latS / n(v.sr), quantity: 'time', meaning: 'time:latency:processing', unit: 'ms' },
           { label: 'LATENCY IN SAMPLES', value: latS, quantity: 'samples', chainable: false },
+          // A half sample is real here, not a rounding slip (beginner audit
+          // 2026-11-14: "654.5 samples" puzzled a learner who thinks samples are
+          // whole): an even tap count puts the filter's center between two taps.
+          ...(Number.isInteger(snapWhole(latS)) ? [] : [{ label: 'WHY HALF A SAMPLE', text: 'With an even number of taps the filter’s center falls halfway between two taps, so its delay really is a whole number of samples plus one half.' }]),
         ];
       },
       steps: (v) => {
@@ -446,7 +476,7 @@ const FIRLEN: Workspace = {
         const latS = (N - 1) / 2;
         return [
           `N ≈ (${fmt(n(v.sr))} ÷ ${fmt(n(v.trans))}) × (${fmt(n(v.atten))} ÷ 22) = ${fmtCount(N)} taps.`,
-          `Linear-phase latency = (N−1)/2 = ${fmt(latS)} samples = ${fmt((latS / n(v.sr)) * 1000)} ms.`,
+          `Linear-phase latency = (N−1)/2 = ${fmtSamples(latS)} samples = ${fmt((latS / n(v.sr)) * 1000)} ms.`,
         ];
       },
     },
@@ -467,12 +497,16 @@ const FIRLEN: Workspace = {
         return [
           { label: 'LATENCY', value: latS / n(v.sr), quantity: 'time', meaning: 'time:latency:processing', unit: 'ms' },
           { label: 'LATENCY IN SAMPLES', value: latS, quantity: 'samples', chainable: false },
+          // A half sample is real here, not a rounding slip (beginner audit
+          // 2026-11-14: "654.5 samples" puzzled a learner who thinks samples are
+          // whole): an even tap count puts the filter's center between two taps.
+          ...(Number.isInteger(snapWhole(latS)) ? [] : [{ label: 'WHY HALF A SAMPLE', text: 'With an even number of taps the filter’s center falls halfway between two taps, so its delay really is a whole number of samples plus one half.' }]),
         ];
       },
       steps: (v) => {
         const latS = (n(v.taps) - 1) / 2;
         return [
-          `Latency = (${fmtCount(n(v.taps))} − 1) ÷ 2 = ${fmt(latS)} samples.`,
+          `Latency = (${fmtCount(n(v.taps))} − 1) ÷ 2 = ${fmtSamples(latS)} samples.`,
           `At ${fmt(n(v.sr))} Hz that is ${fmt((latS / n(v.sr)) * 1000)} ms of delay.`,
         ];
       },
@@ -510,7 +544,7 @@ const CONVOLUTION: Workspace = {
   glossary: ['Convolution', 'Impulse Response', 'Latency', 'Sample Rate', 'FFT'],
   fields: [
     { key: 'irSec', name: 'IR LENGTH', quantity: 'time', defaultUnit: 's', placeholder: '2', help: 'Duration of the impulse response.', positive: true, warn: { test: (x) => x <= 0, msg: 'IR length must be greater than zero.' } },
-    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', placeholder: '48000', help: 'Processing sample rate.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
+    { key: 'sr', name: 'SAMPLE RATE', quantity: 'samplerate', defaultUnit: 'srkhz', placeholder: '48', help: 'Processing sample rate.', positive: true, warn: { test: (x) => x <= 0, msg: 'Sample rate must be greater than zero.' } },
     { key: 'channels', name: 'CHANNELS', quantity: 'number', nonNegative: true, integer: true, placeholder: '2', help: 'Number of channels processed.', positive: true, warn: { test: (x) => x <= 0, msg: 'Channels must be greater than zero.' } },
     { key: 'block', name: 'BLOCK SIZE', quantity: 'samples', integer: true, placeholder: '512', help: 'Processing block / FFT partition size, for the latency figure.', positive: true, warn: { test: (x) => x <= 0, msg: 'Block size must be greater than zero.' } },
   ],
@@ -640,6 +674,9 @@ const BITDEPTH: Workspace = {
           { label: 'DYNAMIC RANGE', value: DB_PER_BIT * N, quantity: 'db', chainable: false },
           { label: 'SNR WITH TPDF DITHER', value: DB_PER_BIT * N + FULL_SCALE_SINE_DB - TPDF_NOISE_DB, quantity: 'db', chainable: false },
           { label: 'QUANTIZATION LEVELS 2^N', value: Math.pow(2, N), quantity: 'number', chainable: false },
+          // Past 10 million the number above prints in calculator notation
+          // ("1.678e7"); it is also written out (beginner audit 2026-11-14).
+          ...(levelsInWords(Math.pow(2, N)) ? [{ label: 'THAT IS', text: levelsInWords(Math.pow(2, N))! }] : []),
         ];
       },
       steps: (v) => {

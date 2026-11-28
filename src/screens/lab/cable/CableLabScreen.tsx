@@ -31,7 +31,7 @@ import { colors, fonts } from '../../../theme/tokens';
 // one guide per lesson step (cableScreenGuides.ts).
 import { ScreenGuideHost } from '../../../features/lab/screenGuide';
 import { CABLE_SCREEN_GUIDES } from './cableScreenGuides';
-import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
+import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, LabNounProvider, useLabNav } from '../kit/LabNavBar';
 import { CABLE_LESSONS, CABLE_UNITS, CORE_QUESTION, LESSON_UNITS } from './data/lessons';
 import { CableShellStateCtx, CableStepNavCtx } from './lessons/bits';
 import { LESSON_BODIES } from './lessons';
@@ -62,7 +62,7 @@ export function CableLabScreen() {
   useEffect(() => {
     registerLabUnits('af_cables', CABLE_UNITS);
   }, []);
-  const { cleared, total } = useLabCompletion('af_cables');
+  const { total } = useLabCompletion('af_cables');
   const clearedUnits = useLabClearedUnits('af_cables');
   // UNREADABLE is not "not started" (owner 2026-10-03, "do 2"; D51): when
   // the banked units could not be read, "0/N UNITS" and the strip's empty
@@ -121,6 +121,7 @@ export function CableLabScreen() {
       }),
     [clearedUnits, last],
   );
+  const lessonsDone = navUnits.filter((u) => u.done).length;
   const finish = useCallback(() => goTo(last), [goTo, last]);
   const unEnd = useCallback(() => goTo(last - 1), [goTo, last]);
   const nav = useLabNav({
@@ -143,6 +144,8 @@ export function CableLabScreen() {
   );
 
   return (
+    // One word for the unit everywhere in this lab: LESSON (owner's decision 3, phase 3).
+    <LabNounProvider value="lesson">
     <LabNavProvider value={nav}>
       <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
         {/* Screen Guide host: the overlay is this root's last child; a lesson
@@ -166,10 +169,14 @@ export function CableLabScreen() {
         <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, cardColumn, { paddingBottom: 30 + insets.bottom }]}>
           <Text style={styles.coreQ}>{CORE_QUESTION}</Text>
           <View style={styles.tagRow}>
-            <Text style={styles.tag}>{`${s.tag} · ${step + 1} OF ${CABLE_LESSONS.length}`}</Text>
+            {/* The lesson's tag alone (beginner audit 2026-11-14): its own "n OF 12"
+                disagreed with the strip's "MODULE n / 11" (lesson 12 is the
+                what's-left end state, not a module). The strip is the one count. */}
+            <Text style={styles.tag}>{s.tag}</Text>
             {total > 0 && !unreadable ? (
               // Progress shows what is DONE, never "n of N" (owner D117; D41 C2 2026-11-01).
-              <Text style={styles.progressText} accessibilityLabel={`${cleared} lab ${cleared === 1 ? 'unit' : 'units'} cleared`}>{`${cleared} ${cleared === 1 ? 'UNIT' : 'UNITS'} CLEARED`}</Text>
+              // The lab's one word, LESSON (K3 F-5, phase 3): lessons done, never 'units'.
+              <Text style={styles.progressText} accessibilityLabel={`${lessonsDone} ${lessonsDone === 1 ? 'lesson' : 'lessons'} done`}>{`${lessonsDone} ${lessonsDone === 1 ? 'LESSON' : 'LESSONS'} DONE`}</Text>
             ) : null}
           </View>
           {unreadable ? <ProgressUnreadableNote /> : null}
@@ -188,6 +195,7 @@ export function CableLabScreen() {
         </ScreenGuideHost>
       </View>
     </LabNavProvider>
+    </LabNounProvider>
   );
 }
 

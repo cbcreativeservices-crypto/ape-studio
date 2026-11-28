@@ -1,3 +1,4 @@
+// 2026-11-21 owner (tester on a tablet): learner text says "this device", never "this phone".
 /**
  * LAB GUEST WORDING (2026-10-03) — the tier sweep carried into the labs' own
  * in-lab save wording.
@@ -34,7 +35,7 @@ const cc = (await import('../src/screens/lab/cableinstall/completeCopy.ts')) as 
 const rd = (await import('../src/screens/lab/roomdesign/labCtx.ts')) as unknown as Record<string, Fn>;
 
 const read = (p: string) => readFileSync(join(process.cwd(), p), 'utf8').replace(/\r\n/g, '\n');
-const NC = 'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.';
+const NC = 'Couldn’t confirm your membership on this device. Check your connection and reopen the app.';
 const NOT_SIGNED_IN = /not signed in|sign in/i;
 
 describe('the shared sentence (labEnd.accountWhy)', () => {

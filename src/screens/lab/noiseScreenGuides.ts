@@ -38,13 +38,15 @@ export const NOISE_SCREEN_GUIDES: Record<NoiseScreenId, ScreenGuide> = {
   // ── EXPLORE — the rack ────────────────────────────────────────────────────
   explore: {
     intro: {
-      learning: 'Unlike Oscillators’ pitched tones, noise has no pitch: its color is a slope in dB per octave, which decides whether it sounds like rumble, an even wash or hiss.',
-      start: 'Tap COLOR, pick PINK and tap ▶. Tap WHITE while it plays and hear the hiss rise. Then step through BROWN, BLUE and VIOLET and watch SLOPE change.',
+      // NOI-04 (owner 2026-11-15, "build waves 1 thru 3"): a hiss with no note, used on purpose; no dB per octave first.
+      learning: 'Noise here is a hiss with no note; engineers use it on purpose to test speakers and rooms. Its color is its tilt, from rumble to bright hiss.',
+      // A first step that needs no sound (novice audit 2026-11-14), then the sound.
+      start: 'Tap COLOR and step through BROWN, PINK, WHITE, BLUE and VIOLET: watch the line tilt and SLOPE change. Then pick PINK, tap ▶, and tap WHITE while it plays to hear the hiss rise.',
     },
     seeing: [
-      'Level per hertz against frequency: 20 Hz at the left, 20k at the right. Five straight lines, one per color, cross at the dot at 1 kHz.',
+      'Level per hertz against frequency: 20 Hz at the left, 20k at the right, rumble to hiss; up is louder. Five straight lines, one per color, cross at the dot at 1 kHz.',
       'The selected line is bright; a faint trace on it shimmers while noise plays.',
-      'Readouts: COLOR, SLOPE (tilt, dB per octave), OUT (level sent, dBFS). Badge: IDEALIZED SPECTRAL SLOPES — ANALYTIC, NOT A MEASUREMENT; with SPKR, PHONE SPEAKER OUTPUT — 150 Hz HPF ON plus the color.',
+      'Readouts: COLOR, SLOPE (tilt, dB per octave), OUT (level sent, dBFS). Under the display: idealized slopes, not measured; with SPKR, the 150 Hz high-pass filter.',
     ],
     control: [
       '▶ in the header plays the selected noise; ■ stops it. A tap on the chart does the same.',
@@ -75,7 +77,7 @@ export const NOISE_SCREEN_GUIDES: Record<NoiseScreenId, ScreenGuide> = {
   learn: {
     intro: {
       learning: 'The names and slopes of the five noise colors, plus three ideas you’ll meet again in other labs: the noise floor, signal-to-noise ratio (SNR) and masking.',
-      start: 'Read the first COMMON MISTAKES line and the BROWN entry. Then open EXPLORE, play WHITE, switch to PINK and hear which sounds more even.',
+      start: 'Open COMMON MISTAKES and CONTROLS: read the first mistake and the BROWN entry. Then open EXPLORE, play WHITE, switch to PINK and hear which sounds more even.',
     },
     seeing: [
       'You’re on the LEARN tab: this lab’s guided lesson as one page to read. Nothing here plays.',
@@ -98,8 +100,8 @@ export const NOISE_SCREEN_GUIDES: Record<NoiseScreenId, ScreenGuide> = {
       'Real noises such as HVAC, hum and buzz each have their own spectrum, and SNR says how far a signal sits above the noise.',
     ],
     tryThis: [
-      'Read the first COMMON MISTAKES line, then on EXPLORE play WHITE and switch to PINK: pink sounds the more even of the two.',
-      'Read the BROWN entry, then on EXPLORE play BROWN: SLOPE reads −6 dB/OCT and the sound is a low rumble.',
+      'Open COMMON MISTAKES and read its first line, then on EXPLORE play WHITE and switch to PINK: pink sounds the more even of the two.',
+      'Open CONTROLS and read the BROWN entry, then on EXPLORE play BROWN: SLOPE reads −6 dB/OCT and the sound is a low rumble.',
     ],
   },
 
@@ -114,8 +116,8 @@ export const NOISE_SCREEN_GUIDES: Record<NoiseScreenId, ScreenGuide> = {
       'They ask why white noise sounds bright, how fast pink falls, which color is the rumble, and why pink is the standard test noise.',
     ],
     control: [
-      'Tap an answer. Right: CORRECT and the reason, and its number turns to ✓. Wrong: NOT QUITE — TRY ANOTHER, with the reason — pick again.',
-      'There is no score, and a wrong answer costs nothing. The tabs under the title go to LEARN or EXPLORE.',
+      'Tap an answer. Right: it turns green, its number turns to ✓ and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
+      'The tabs under the title go to LEARN or EXPLORE.',
     ],
     changes: [
       'Answers already right stay right if you switch to LEARN or EXPLORE and come back; leaving the lab before the last one starts the check over.',

@@ -45,8 +45,13 @@ export function HomeOrBackKey({
   backLabel = 'Back',
   hitSlop = BACK_HIT_SLOP,
   style,
+  alwaysHome = false,
 }: {
   onPress: () => void;
+  /** The house + HOME always, never the ‹ (owner 2026-11-20: on every screen
+   *  that carries the circle menu the HOME key is always top-left). The
+   *  caller's press then goes Home (CircleMenu's goHome). */
+  alwaysHome?: boolean;
   /** The screen's own ‹ glyph style — the arrow looks exactly as before. */
   backStyle?: StyleProp<TextStyle>;
   backLabel?: string;
@@ -54,8 +59,8 @@ export function HomeOrBackKey({
   /** Applied to the Pressable in BOTH faces (layout slot of the old arrow). */
   style?: StyleProp<ViewStyle>;
 }) {
-  const home = useBackLeadsHome();
-  if (home) {
+  const leadsHome = useBackLeadsHome();
+  if (alwaysHome || leadsHome) {
     return (
       <Pressable onPress={onPress} hitSlop={10} accessibilityRole="button" accessibilityLabel="Home" style={[NEVER_SHRINK, style]}>
         <NavIcon icon="Home" lit />

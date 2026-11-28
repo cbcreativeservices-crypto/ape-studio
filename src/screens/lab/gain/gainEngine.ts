@@ -163,6 +163,29 @@ export function verdictFor(node: ChainNode): string {
   }
 }
 
+/** NOISY (GN-02, owner 2026-11-15: "build waves 1 thru 3", D62): the hiss a stage hands on is
+ *  loud (above −30 dB, where the NOISE readout turns amber) AND close to the signal (less than
+ *  20 dB under it). Late gain on a starved early stage does this; a healthy chain never does. */
+export const NOISY_FLOOR = -30;
+export const NOISY_GAP = 20;
+export function isNoisy(node: Pick<ChainNode, 'level' | 'noise'>): boolean {
+  return node.noise > NOISY_FLOOR && node.level - node.noise < NOISY_GAP;
+}
+
+/** The STATUS word for a node (GN-02): the SAME words as the meters and the color key (TOO LOW,
+ *  HEALTHY, HOT, CLIP), plus DIST (clipped upstream) and NOISY (the hiss problem). Pure, so the
+ *  guide tests print exactly what the screen prints. */
+export type StatusWord = 'CLIP' | 'DIST' | 'NOISY' | 'TOO LOW' | 'HOT' | 'HEALTHY';
+export function statusWord(node: ChainNode): StatusWord {
+  if (node.stageClipped) return 'CLIP';
+  if (node.distorted) return 'DIST';
+  if (isNoisy(node)) return 'NOISY';
+  if (node.region === 'low') return 'TOO LOW';
+  if (node.region === 'hot') return 'HOT';
+  // 'clip' without stageClipped cannot happen (raw ≥ ceiling clips the stage); healthy otherwise.
+  return node.region === 'clip' ? 'CLIP' : 'HEALTHY';
+}
+
 /** True when every STAGE sits in the healthy band with no distortion — the
  *  goal state for the balance exercises. The raw source is exempt: a quiet
  *  source is exactly why the chain has gain stages. */

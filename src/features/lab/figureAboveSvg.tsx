@@ -41,6 +41,22 @@ const BODY: XY[] = mirror([
   [92, 104],
   [0, 110],
 ]);
+/** A NARROWER BUILD, for singers standing close in a choir (stage plot,
+ *  owner 2026-11-13: "build the remaining held items too"): the same one
+ *  silhouette, the shoulders and the tops of the hanging arms 400 mm across
+ *  instead of 476 (the FAA Technical Operations survey, HFDS Appendix B,
+ *  item 24: clothed bideltoid breadth, women's 5th percentile 40.0 cm), so
+ *  neighbours on a choral riser at 0.44 m a singer stand clear of each
+ *  other. The head and the chest-to-back depth are unchanged. A slimmer
+ *  person differs mostly across the chest and shoulders, not in the arms
+ *  (visual review): the band of each arm outside the armhole seam (x > 165
+ *  mm) keeps its width, and only the part between the seams is narrowed. */
+const SEAM_X = 165;
+const NARROW_K = (200 - (238 - SEAM_X)) / SEAM_X;
+const narrowX = (x: number): number => Math.sign(x) * (Math.abs(x) <= SEAM_X ? Math.abs(x) * NARROW_K : Math.abs(x) - SEAM_X * (1 - NARROW_K));
+const BODY_NARROW: XY[] = BODY.map(([x, y]) => [narrowX(x), y] as XY);
+/** The narrow build's width across the arms, mm. */
+export const FIGURE_ABOVE_NARROW_W_MM = 400;
 /** The head from above (PlayerFigure headAbove, r = 96 mm), nose +y. */
 const HK = 96 / 110;
 const HY = 14; // the head sits a little forward of the shoulder line
@@ -55,20 +71,41 @@ function closedD(pts: readonly XY[], tension = 0.55): string {
   return p.d();
 }
 
-export function FigureAboveSvg({ x, y, pxPerMm, facingDeg = 0, dim = 1, halo }: { x: number; y: number; pxPerMm: number; facingDeg?: number; dim?: number; /** A light rim round the whole figure, for plans where it is only a few px across (true scale on a venue plot). */ halo?: string }) {
+export function FigureAboveSvg({
+  x,
+  y,
+  pxPerMm,
+  facingDeg = 0,
+  dim = 1,
+  halo,
+  build = 'standard',
+}: {
+  x: number;
+  y: number;
+  pxPerMm: number;
+  facingDeg?: number;
+  dim?: number;
+  /** A light rim round the whole figure, for plans where it is only a few px across (true scale on a venue plot). */ halo?: string;
+  /** 'narrow' = the narrower build (400 mm across), for singers standing close in a choir. */
+  build?: 'standard' | 'narrow';
+}) {
   const uid = useId().replace(/[^a-zA-Z0-9_-]/g, '');
+  const narrow = build === 'narrow';
   const d = useMemo(() => {
+    const k = narrow ? narrowX : (x: number) => x;
     const seams = [-1, 1]
       .map((s) => {
         const p = svgPathSink();
-        catmullInto(p, [[s * 170, -94], [s * 160, -30], [s * 164, 40], [s * 176, 88]], 1, false, 0.5);
+        catmullInto(p, [[k(s * 170), -94], [k(s * 160), -30], [k(s * 164), 40], [k(s * 176), 88]], 1, false, 0.5);
         return p.d();
       })
       .join('');
-    return { body: closedD(BODY, 0.5), skull: closedD(SKULL), ears: EARS.map((e) => closedD(e, 0.6)), nose: closedD(NOSE, 0.5), seams };
-  }, []);
+    return { body: closedD(narrow ? BODY_NARROW : BODY, 0.5), skull: closedD(SKULL), ears: EARS.map((e) => closedD(e, 0.6)), nose: closedD(NOSE, 0.5), seams };
+  }, [narrow]);
   // Contours stay about 0.6 px whatever the scale.
   const line = 0.6 / pxPerMm;
+  // (the narrow build's rim is thinner, so close neighbours' rims stay apart)
+  const haloW = (narrow ? 1.0 : 1.4) / pxPerMm;
   return (
     <G transform={`translate(${x} ${y}) rotate(${facingDeg}) scale(${pxPerMm})`} opacity={dim}>
       <Defs>
@@ -85,7 +122,7 @@ export function FigureAboveSvg({ x, y, pxPerMm, facingDeg = 0, dim = 1, halo }: 
       </Defs>
       {/* contact shadow, offset down-right (light from the upper left) */}
       <Path d={d.body} fill="#000" opacity={0.4} transform="translate(22 30)" />
-      {halo ? <Path d={d.body} fill="none" stroke={halo} strokeWidth={1.4 / pxPerMm} strokeLinejoin="round" opacity={0.85} /> : null}
+      {halo ? <Path d={d.body} fill="none" stroke={halo} strokeWidth={haloW} strokeLinejoin="round" opacity={0.85} /> : null}
       <Path d={d.body} fill={`url(#fas${uid})`} stroke={SHIRT.edge} strokeWidth={line} strokeLinejoin="round" />
       {/* the armhole seams: the sleeves are part of the same shirt */}
       <Path d={d.seams} fill="none" stroke={SHIRT.seam} strokeWidth={line * 0.8} opacity={0.55} />

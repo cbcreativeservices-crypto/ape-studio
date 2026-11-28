@@ -4,7 +4,7 @@
  * joined by arrows: no module or signal drawing; the glass is mostly blank
  * with the chain empty; the interaction shows only as three GR numbers").
  *
- * Nine half-rack processors in this rack's fixed order, three to
+ * Ten half-rack processors (LOW CUT first, 2026-11-22) in this rack's fixed order, three to
  * a row, each a lit front panel with ITS controls set where the lab's
  * teaching defaults put them (the EQ's gain knob at +9 dB, the compressor's
  * threshold at −30 dB and ratio at 4:1 …), and a power/active LED. One patch
@@ -23,7 +23,7 @@
  * LEDs, which follow the measured readout (no decorative motion).
  */
 import { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Canvas, Circle, Group, Line, LinearGradient, Path, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
 import { colors, fonts } from '../../theme/tokens';
 
@@ -32,6 +32,10 @@ export type ChainUnit = {
   label: string;
   /** The teaching default, as printed under the unit. */
   setting: string;
+  /** SC-03 (owner 2026-11-15: "build waves 1 thru 3", D62): a few plain words for what the unit is
+   *  ("distortion", "loudness ceiling"), printed in the bypassed word's place while the unit is dark,
+   *  so a first look at the rack reads in words, not codes. Lit, it shows `setting` as before. */
+  plain?: string;
   /** Knob pointer positions 0..1 (the default settings on this unit's
    *  teaching range), left to right. */
   knobs: number[];
@@ -114,6 +118,8 @@ export function ChainRack({
   live,
   gr,
   hotPatches,
+  onToggle,
+  onLongPressUnit,
 }: {
   w: number;
   h: number;
@@ -123,6 +129,14 @@ export function ChainRack({
   gr: { comp: number; gate: number; limiter: number };
   /** Patches to light (index i = the patch INTO units[i]; units.length = into OUT). */
   hotPatches: readonly number[];
+  /** Tap a unit (its panel or the words under it) to put it in the chain or
+   *  bypass it. Owner 2026-11-22: the page says "Tap modules in or out of the
+   *  chain", so the rack does it ("Make the rack tappable": an exception, for
+   *  this lab, to the 2026-10-10 rule that a display carries no controls). The
+   *  MODULES dock key does the same job. */
+  onToggle?: (id: number) => void;
+  /** A long press on a unit (the same lesson the rest of the display opens). */
+  onLongPressUnit?: () => void;
 }) {
   const cols = 3;
   const rows = Math.ceil(units.length / cols);
@@ -132,7 +146,8 @@ export function ChainRack({
   const rowH = h / rows;
   const labelH = 13;
   const uw = Math.min(colW - 18, 96);
-  const uh = Math.max(22, Math.min(uw / 2.5, rowH - labelH - 16));
+  // Four rows (ten units) on a short phone: the panel may go down to 18 pt so the lane clears the words.
+  const uh = Math.max(rows > 3 ? 18 : 22, Math.min(uw / 2.5, rowH - labelH - 16));
   const cell = (i: number) => {
     const r = Math.floor(i / cols);
     const c = i % cols;
@@ -247,11 +262,33 @@ export function ChainRack({
               {u.label}
             </Text>
             <Text style={[st.setting, showGr && st.grLive]}>
-              {showGr ? (grv >= 0.05 ? `GR −${grv.toFixed(1)} dB` : 'GR 0.0 dB') : on ? u.setting : 'bypassed'}
+              {showGr ? (grv >= 0.05 ? `GR −${grv.toFixed(1)} dB` : 'GR 0.0 dB') : on ? u.setting : (u.plain ?? 'bypassed')}
             </Text>
           </View>
         );
       })}
+      {/* One tap target per unit, over its panel and the words under it (the
+          drawing and the words stay as they are; nothing is drawn here but a
+          faint outline while a finger is down). */}
+      {onToggle
+        ? units.map((u, i) => {
+            const c = cell(i);
+            const on = !!enabled[u.id];
+            return (
+              <Pressable
+                key={`t${u.id}`}
+                onPress={() => onToggle(u.id)}
+                onLongPress={onLongPressUnit}
+                delayLongPress={350}
+                accessibilityRole="switch"
+                accessibilityState={{ checked: on }}
+                accessibilityLabel={`${u.label}${u.plain ? `, ${u.plain}` : ''}: ${on ? 'in the chain' : 'bypassed'}`}
+                accessibilityHint="Switches this unit in or out of the chain"
+                style={({ pressed }) => [st.tap, { left: g + c.c * colW + 2, top: Math.max(0, c.y - 3), width: colW - 4, height: uh + labelH + 8 }, pressed && st.tapDown]}
+              />
+            );
+          })
+        : null}
     </View>
   );
 }
@@ -263,4 +300,6 @@ const st = StyleSheet.create({
   nameOn: { color: colors.amber },
   setting: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 0.3, color: '#8d8f99' },
   grLive: { color: '#ffd35e' },
+  tap: { position: 'absolute', borderRadius: 6, borderWidth: 1, borderColor: 'transparent' },
+  tapDown: { borderColor: 'rgba(255,198,77,0.7)', backgroundColor: 'rgba(255,198,77,0.08)' },
 });

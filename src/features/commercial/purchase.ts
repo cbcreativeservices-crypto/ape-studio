@@ -21,6 +21,7 @@ import { safeSession } from '../../lib/getSessionSafe';
 import { isRealAccount } from './realAccount';
 import { optionalModule } from '../tools/capture/optionalModule';
 import { trackEvent } from '../telemetry/telemetry';
+import { blockUpdateReloadForSession } from '../updates/autoUpdate';
 import {
   INAPP_SKUS,
   PLANS,
@@ -607,6 +608,10 @@ async function runUnfinishedRecheck(): Promise<number | 'no-session'> {
 export async function buyPlan(planId: PlanId): Promise<void> {
   const iap = getIap();
   if (!iap) throw new Error('In-app purchases are not available in this build.');
+  // The store sheet can send the app to the background (Android Play) and the
+  // result arrives by listener, maybe much later: no background OTA reload for
+  // the rest of this run (update audit 2026-11-27, the reload hold in autoUpdate.ts).
+  blockUpdateReloadForSession('purchase');
   const plan = PLANS[planId];
   // Tag the purchase with the buyer's account id (Comp A #3, live 2026-10-23:
   // validate-purchase v18 refuses a purchase tagged with a DIFFERENT existing
@@ -666,6 +671,7 @@ export async function restorePurchases(): Promise<RestoreResult> {
 async function runRestore(): Promise<RestoreResult> {
   const iap = getIap();
   if (!iap) return 'unavailable';
+  blockUpdateReloadForSession('restore'); // see buyPlan
   try {
     // BOUNDED (night bug pass 1, 2026-10-01). Restore is the Apple-required
     // control and its spinner hides the link: a store query that never answers

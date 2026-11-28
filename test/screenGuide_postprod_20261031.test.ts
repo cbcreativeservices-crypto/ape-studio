@@ -18,6 +18,8 @@
  * The shared checks live in test/_productionScreenGuides.ts; this file is the
  * lab's own experiments.
  */
+// owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item SH-71): gap findings are
+// asked as questions ("… Is that intended?"), so the titles pinned here carry the question.
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import {
@@ -137,10 +139,10 @@ runProductionGuideSuite({
     {
       guide: 'edit', at: 1,
       pathways: ['podcast', 'live'],
-      steps: [{ set: { 'edit.room_tone_available': 'none' }, stage: 'edit', in: ['Speech edited with no room tone to fill the gaps'] }],
+      steps: [{ set: { 'edit.room_tone_available': 'none' }, stage: 'edit', in: ['Speech edited with no room tone to fill the gaps. Is that intended?'] }],
       labels: [['edit', 'room_tone_available']],
       options: [['edit', 'room_tone_available', 'none']],
-      says: ['Speech edited with no room tone to fill the gaps'],
+      says: ['Speech edited with no room tone to fill the gaps. Is that intended?'],
     },
     {
       guide: 'edit', at: 2,
@@ -153,8 +155,8 @@ runProductionGuideSuite({
     {
       guide: 'build', at: 0,
       steps: [
-        { set: { 'build.correction_decision': 'not_discussed', 'build.correction_scope': ['pitch'] }, stage: 'build', in: ['A performance is being altered without an agreement to do it'] },
-        { set: { 'build.correction_decision': 'agreed' }, stage: 'build', out: ['A performance is being altered without an agreement to do it'] },
+        { set: { 'build.correction_decision': 'not_discussed', 'build.correction_scope': ['pitch'] }, stage: 'build', in: ['A performance is being altered without an agreement to do it. Is that intended?'] },
+        { set: { 'build.correction_decision': 'agreed' }, stage: 'build', out: ['A performance is being altered without an agreement to do it. Is that intended?'] },
       ],
       labels: [['build', 'correction_decision'], ['build', 'correction_scope']],
       options: [['build', 'correction_decision', 'not_discussed'], ['build', 'correction_scope', 'pitch'], ['build', 'correction_decision', 'agreed']],
@@ -248,10 +250,10 @@ runProductionGuideSuite({
     },
     {
       guide: 'deliver', at: 2,
-      steps: [{ set: { 'deliver.archive_contents': ['session', 'originals'], 'deliver.restore_tested': 'listed' }, stage: 'deliver', in: ['The archive has never been restored'] }],
+      steps: [{ set: { 'deliver.archive_contents': ['session', 'originals'], 'deliver.restore_tested': 'listed' }, stage: 'deliver', in: ['The archive has never been restored. Is that intended?'] }],
       labels: [['deliver', 'archive_contents'], ['deliver', 'restore_tested']],
       options: [['deliver', 'restore_tested', 'listed']],
-      says: ['The archive has never been restored'],
+      says: ['The archive has never been restored. Is that intended?'],
     },
   ],
   activityExperiments: [

@@ -439,7 +439,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: a tam-tam is struck once. What happens just after the stroke?', options: ['The sound can swell', 'It only fades', 'It goes silent'], after: 'Now STEP through the stroke (or PLAY ONCE), then try the face’s shapes — and switch GONG.' },
+  sound: { prompt: 'Before you step through: a tam-tam is struck once. What happens just after the stroke?', options: ['The sound can swell', 'It only fades', 'It goes silent'], after: 'Now go EVENT by EVENT through the stroke (or PLAY ONCE), then try the face’s shapes — and switch GONG.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you back the mic away from 60 cm to 120 cm. What changes most?', options: ['More bloom and room', 'More presence', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits downstage, behind the mic. Can a cardioid’s null reach it?', options: ['Yes — its back can face the wedge', 'No — only an omni can', 'It is already at the side'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },

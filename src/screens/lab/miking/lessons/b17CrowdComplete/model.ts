@@ -25,7 +25,7 @@ import { aimRel } from '../shared/sports/venuePlan.ts';
 
 const ill = (reason: string): Provenance => ({ kind: 'illustrative', reason });
 const pose = (at: P2, h: number, to: P2, hTo: number): MicPose => ({ p: toEngine(at, h), ...engineAim(at, h, to, hTo) });
-const box = (c: P2, dx: number, dz: number, h0: number, h1: number) => ({ min: { x: (c.x - dx) * 1000, y: -h1 * 1000, z: (-c.y - dz) * 1000 }, max: { x: (c.x + dx) * 1000, y: -h0 * 1000, z: (-c.y + dz) * 1000 }, prov: ill('round the mark in its footprint (the lab’s box)') });
+const box = (c: P2, dx: number, dz: number, h0: number, h1: number) => ({ min: { x: (c.x - dx) * 1000, y: -h1 * 1000, z: (-c.y - dz) * 1000 }, max: { x: (c.x + dx) * 1000, y: -h0 * 1000, z: (-c.y + dz) * 1000 }, prov: ill('around the mark in its footprint (the lab’s box)') });
 
 export const B17_ZONES: DocumentedZone[] = [
   {

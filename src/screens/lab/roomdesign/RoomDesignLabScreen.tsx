@@ -6,14 +6,15 @@
  * adjust treatment, review — every result labelled CALCULATED, ESTIMATED or
  * MEASURED. Observations and next steps; never a room score.
  *
- * Six modules on the SHARED LAB NAVIGATION strip (kit/LabNavBar): the four
- * live ones are Rack Units with FULL SCREEN (rackLayout.tsx); the intro and
+ * Seven modules on the SHARED LAB NAVIGATION strip (kit/LabNavBar): the five
+ * live ones (SUGGESTED SETUPS added 2026-11-14) are Rack Units with FULL SCREEN (rackLayout.tsx); the intro and
  * the review are document pages. FINISH › opens the shared what's-left end
  * screen; the header ‹ always leaves.
  *
- * PROGRESS, NOT CREDIT: a member lab in Acoustics, so it banks no
- * certificate credit — it remembers which modules were opened (labVisits,
- * device-local, never removed by a practice run). GUEST RULE (owner
+ * PROGRESS, plus ONE CREDIT: module visits are progress only (labVisits,
+ * device-local, never removed by a practice run). The certificate credit
+ * (tr_room_design, owner 2026-11-19 [MD:D70]) is the understanding check on
+ * the end screen, like the EQ Lab — opening modules never earns it. GUEST RULE (owner
  * 2026-08-12): a signed-out guest or a members-only preview designs freely,
  * but nothing is saved — visits stay in memory for the session, the design
  * store is save-blocked, and the lab says so plainly. The host decides only
@@ -38,6 +39,7 @@ import { ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { useLabPreview } from '../../../features/lab/labPreviewStore';
 import { deleteRoomDesign, holdRoomDesignForSession, isRoomDesignStoreUnreadable, MAX_SAVED_DESIGNS, saveRoomDesign, setRoomDesignSaveBlocked, useRoomDesigns } from '../../../features/roomdesign/roomDesignStore';
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
+import { LabUnderstandingBlock } from '../../../components/LabUnderstandingBlock';
 import { LabHeader, LabNavBar, LabNavProvider, useLabNav } from '../kit/LabNavBar';
 import type { RoomLabCtx } from './labCtx';
 import { ROOM_LAB_ID, ROOM_MODULES, type RoomModuleId } from './registry';
@@ -46,11 +48,13 @@ import { IntroModule } from './modules/modIntro';
 import { CreateModule } from './modules/modCreate';
 import { MonitoringModule } from './modules/modMonitoring';
 import { ExploreModule } from './modules/modExplore';
+import { SuggestModule } from './modules/modSuggest';
 import { TreatmentModule } from './modules/modTreatment';
 import { ReviewModule } from './modules/modReview';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { ScreenGuideHost } from '../../../features/lab/screenGuide';
 import { ROOM_END_GUIDE, ROOM_SCREEN_GUIDES } from './roomdesignScreenGuides';
+import { moduleGoalDetail, roomCounts } from '../foundations/endRows';
 
 const TITLE = 'ROOM DESIGN & MONITORING LAB';
 
@@ -93,7 +97,17 @@ export function RoomDesignLabScreen() {
   const [design, setDesign] = useState<RoomDesign>(() => defaultDesign());
   // Judged on the store's own list, which is what the store trims.
   const evicts = useMemo(() => evictedBySave(rawSaved, design, MAX_SAVED_DESIGNS), [rawSaved, design]);
-  const update = useCallback((fn: (d: RoomDesign) => RoomDesign) => setDesign((d) => ({ ...fn(d), updatedAt: Date.now() })), []);
+  // "DONE = WORK DONE" (owner's decision 1, 2026-11-14): a HANDS-ON module
+  // (create, monitoring, explore, treatment) counts once the learner changes
+  // the room on it; a READING module (intro, review) when they move on from it
+  // with NEXT. Opening a module no longer counts it. Progress already stored
+  // stays. markWorkRef is filled in below, once the module and guest state
+  // are known.
+  const markWorkRef = useRef<() => void>(() => {});
+  const update = useCallback((fn: (d: RoomDesign) => RoomDesign) => {
+    markWorkRef.current();
+    setDesign((d) => ({ ...fn(d), updatedAt: Date.now() }));
+  }, []);
   const analysis = useMemo(() => analyze(design), [design]);
 
   // Guest rule: decide only once the entitlement is known.
@@ -101,18 +115,25 @@ export function RoomDesignLabScreen() {
     setRoomDesignSaveBlocked(!resolved || guest);
   }, [resolved, guest]);
 
-  // Record the module as opened (progress, never credit). A guest's visits
-  // live for this session only.
+  // Record a module's progress when its work is done (progress, never
+  // credit). A guest's progress lives for this session only.
   const mod = ROOM_MODULES[idx] ?? ROOM_MODULES[0];
-  useEffect(() => {
-    if (!resolved || ending) return;
-    markLabVisit(ROOM_LAB_ID, mod.id, { persist: !guest });
-  }, [mod.id, resolved, guest, ending]);
+  const markDone = useCallback(
+    (id: string) => {
+      if (!resolved) return;
+      markLabVisit(ROOM_LAB_ID, id, { persist: !guest });
+    },
+    [resolved, guest],
+  );
+  markWorkRef.current = () => {
+    if (!ending && mod.rack) markDone(mod.id);
+  };
 
   const ctx: RoomLabCtx = useMemo(
     () => ({
       design,
       update,
+      markWork: () => markWorkRef.current(),
       analysis,
       units: design.room.units,
       guest: !resolved ? false : guest,
@@ -157,12 +178,24 @@ export function RoomDesignLabScreen() {
     setEnding(false);
     setIdx(Math.max(0, Math.min(ROOM_MODULES.length - 1, i)));
   }, []);
+  // NEXT from a reading module counts it (a jump elsewhere does not).
+  const goNext = useCallback(
+    (i: number) => {
+      if (!ending && i === idx + 1 && !mod.rack) markDone(mod.id);
+      go(i);
+    },
+    [ending, idx, mod, markDone, go],
+  );
   const nav = useLabNav({
     units: ROOM_MODULES.map((m) => ({ id: m.id, title: m.title, done: visited.has(m.id) })),
     index: idx,
     ending,
-    go,
-    finish: () => setEnding(true),
+    go: goNext,
+    finish: () => {
+      // FINISH from the last module (Review, a reading module) counts it.
+      if (!ending && !mod.rack) markDone(mod.id);
+      setEnding(true);
+    },
     unEnd: () => setEnding(false),
     reset: { label: 'START OVER (PRACTICE)', run: () => go(0) },
   });
@@ -177,6 +210,8 @@ export function RoomDesignLabScreen() {
         return <MonitoringModule ctx={ctx} />;
       case 'explore':
         return <ExploreModule ctx={ctx} />;
+      case 'suggest':
+        return <SuggestModule ctx={ctx} />;
       case 'treatment':
         return <TreatmentModule ctx={ctx} />;
       case 'review':
@@ -204,7 +239,9 @@ export function RoomDesignLabScreen() {
         {ending ? (
           <LabEndScreen
             labTitle="Room Design & Monitoring Lab"
-            units={ROOM_MODULES.map((m) => ({ id: m.id, label: m.title }))}
+            labId="room-design"
+            units={ROOM_MODULES.map((m) => ({ id: m.id, label: m.title, detail: moduleGoalDetail(m.id === 'suggest' ? 'report' : m.rack ? 'work' : 'next', ROOM_SCREEN_GUIDES[m.id]?.intro?.learning) }))}
+            howItCounts={roomCounts()}
             cleared={visited}
             unreadable={visitsUnreadable}
             mode="progress"
@@ -213,6 +250,7 @@ export function RoomDesignLabScreen() {
             onPracticeAgain={() => go(0)}
             onDone={() => safeGoBack(navigation)}
             bottomInset
+            extra={<LabUnderstandingBlock labId="roomdesign" labTitle="Room Design & Monitoring Lab" />}
           />
         ) : mod.rack ? (
           // The rack takes the rest of the height; its well scrolls and ends

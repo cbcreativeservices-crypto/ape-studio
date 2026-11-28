@@ -1689,7 +1689,11 @@ describe('Post-Production — the authored content', () => {
     assert.equal(POSTPROD_STAGES.length, 8, 'eight stages carry the spec’s twenty-eight');
     assert.equal(fields.length, 187);
     // 136 since 2026-10-04: the access-services advisory (owner ruling 1).
-    assert.equal(rules.length, 136);
+    // 137 since 2026-11-14 (owner: "Begin fixing all bugs found and do obvious
+    // (my decision is not required) fixes as you suggestted in the report"):
+    // finish-true-peak-over-zero-no-ceiling, a measured true peak above 0 dBTP
+    // with no ceiling in the brief (novice audit G4: it raised nothing).
+    assert.equal(rules.length, 137);
     assert.equal(rules.filter((r) => r.severity === 'blocker').length, 17);
     assert.equal(POSTPROD_STAGES.filter((s) => s.activity).length, 8, 'one exercise per stage');
   });

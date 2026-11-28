@@ -128,14 +128,18 @@ export function HarmonicsModule({ help }: CymaticsModuleProps) {
       rack={{
         size: 'L',
         badge: 'CALCULATED — RATIOS OF NATURAL FREQUENCIES · PLATE: THIS LAB’S MODEL, APPROXIMATED',
+        modelNote: 'The frequency ratios are calculated; the plate is this lab’s model, approximated.',
         onHelp: help,
         onGuide: () => help('harmonics'),
         initialParam: 'mode',
         bezel: [
-          { k: 'LADDER', v: (LADDER_SHORT[ladder.id] ?? ladder.name).toUpperCase(), helpKey: 'harmonics' },
-          { k: 'RATIO', v: sel ? `${sel.ratio.toFixed(2)}×` : '—', helpKey: 'harmonics' },
-          { k: 'FREQ', v: sel ? formatHz(hz) : '—', helpKey: 'harmonics' },
-          { k: 'FAMILY', v: ladder.harmonic ? 'HARMONIC' : 'INHARM.', tint: ladder.harmonic ? '#37e05f' : '#ff6b5e', helpKey: 'harmonics', flex: 1.2 },
+          { k: 'LADDER', v: (LADDER_SHORT[ladder.id] ?? ladder.name).toUpperCase(), helpKey: 'harmonics', caption: 'which object' },
+          // RATIO and FREQ describe a mode of the SHOWN ladder, as the MODE key
+          // does (audit row 24: after a switch they read the old ladder's
+          // 1.73× under STRING · HARMONIC). The card below still names what plays.
+          { k: 'RATIO', v: sel && sel.ladder === ladder.id ? `${sel.ratio.toFixed(2)}×` : '—', helpKey: 'harmonics', caption: 'times the base' },
+          { k: 'FREQ', v: sel && sel.ladder === ladder.id ? formatHz(hz) : '—', helpKey: 'harmonics' },
+          { k: 'FAMILY', v: ladder.harmonic ? 'HARMONIC' : 'INHARM.', tint: ladder.harmonic ? '#37e05f' : '#ff6b5e', helpKey: 'harmonics', flex: 1.2, caption: 'evenly spaced?' },
         ],
         stage: (w, h) => <LadderStage w={w} h={h} ladders={ladders} active={ladder.id} sel={sel} />,
         params,
@@ -154,7 +158,7 @@ export function HarmonicsModule({ help }: CymaticsModuleProps) {
           {sel ? `${tone.running ? 'Playing ' : ''}${formatHz(hz)} — ${selLadder?.name}, ratio ${sel.ratio.toFixed(2)}` : 'Pick a MODE to hear it.'}
         </Text>
         {tone.error ? <Text style={styles.err}>{tone.error}</Text> : null}
-        {!tone.engineReady ? <Text style={P.caption}>This version of the app can’t play this sound; update the app.</Text> : null}
+        {!tone.engineReady ? <Text style={P.caption}>This sound can’t play on this device.</Text> : null}
       </View>
       {ladders.map((l) => (
         <View key={l.id} style={{ gap: 2 }}>

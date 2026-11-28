@@ -68,9 +68,13 @@ import Animated, {
 } from 'react-native-reanimated';
 import { colors, fonts } from '../../../theme/tokens';
 import { useStageTextScale } from '../rack/stageAspect';
-import { FigureStandingAt, STANDING_H_MM } from '../../../features/lab/figureHead';
+import { STANDING_H_MM } from '../../../features/lab/figureHead';
+// (figure V2, wave 7 of D78: the person for scale is a cast member from the front, the same height)
+import { PersonStandingFrontAt } from '../../../features/lab/figureV2Front';
+import { castFor } from '../miking/lessons/shared/figureV2/cast';
 import { levelColor, WAVE_LEVEL_STOPS } from '../../../features/tools/levelColor';
 import { TRACER_COLOR, TRACER_MARK_COLOR } from './tracer';
+import { motionHzFor, sweepHzAt } from './motionHz';
 
 /** Amplitude ramp for SPECTRUM STICKS / recipe bars, ordered TOP (full scale,
  *  red) → BASE (silence, blue). A stick's height already encodes amplitude, so
@@ -246,6 +250,59 @@ export function usePhaseClock(
   const cb = useFrameCallback((info) => {
     if (info.timeSincePreviousFrame != null) {
       phase.value += 2 * Math.PI * rate.value * (Math.min(info.timeSincePreviousFrame, 64) / 1000);
+    }
+  }, false);
+  useEffect(() => {
+    cb.setActive(running);
+  }, [running, cb]);
+  return phase;
+}
+
+/** Passed as `visHz` with a PHASE clock (radians) to the views that compute
+ *  ω·t = 2π·visHz·clock: then ω·t is the integrated phase itself. */
+export const PHASE_CLOCK_VIS_HZ = 1 / (2 * Math.PI);
+
+/** The Sound Playground's phase clock (radians; owner 2026-11-25, fix-first
+ *  round 2). Integrated like usePhaseClock, so a FREQ drag only speeds up or
+ *  slows the motion (the plain seconds clock jumped about 20 cycles on a
+ *  290 → 667 Hz drag a minute after PLAY). With `sweep` set it follows the
+ *  generator's log sweep frame by frame: the drawn rate is
+ *  motionHzFor(sweepHzAt(t)), t counted from the last (re)start — the sweep
+ *  restarts on every reprogram (Generator.hpp setSweep retriggers), so the
+ *  screen bumps `sweepToken` each time it reprograms it. SLOW and FAST then
+ *  climb at their own pace. */
+export function useMotionPhaseClock(
+  running: boolean,
+  freqHz: number,
+  sweep: { startHz: number; endHz: number; secs: number } | null,
+  sweepToken: number,
+): SharedValue<number> {
+  const phase = useSharedValue(0);
+  const rate = useSharedValue(motionHzFor(freqHz));
+  const sw0 = useSharedValue(sweep ? sweep.startHz : 0);
+  const sw1 = useSharedValue(sweep ? sweep.endHz : 0);
+  const swSecs = useSharedValue(sweep ? sweep.secs : 0);
+  const swT = useSharedValue(0);
+  useEffect(() => {
+    rate.value = motionHzFor(freqHz);
+  }, [freqHz, rate]);
+  useEffect(() => {
+    sw0.value = sweep ? sweep.startHz : 0;
+    sw1.value = sweep ? sweep.endHz : 0;
+    swSecs.value = sweep ? sweep.secs : 0;
+  }, [sweep?.startHz, sweep?.endHz, sweep?.secs, sw0, sw1, swSecs]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    swT.value = 0;
+  }, [sweepToken, swT]);
+  const cb = useFrameCallback((info) => {
+    if (info.timeSincePreviousFrame != null) {
+      const dt = Math.min(info.timeSincePreviousFrame, 64) / 1000;
+      let r = rate.value;
+      if (swSecs.value > 0) {
+        r = motionHzFor(sweepHzAt(swT.value, sw0.value, sw1.value, swSecs.value));
+        swT.value += dt;
+      }
+      phase.value += 2 * Math.PI * r * dt;
     }
   }, false);
   useEffect(() => {
@@ -1022,8 +1079,14 @@ export function PressureGraphView({
       if (x < originX) {
         y = mid; // atmospheric — the wave hasn't been created here yet
       } else if (mode === 'noise') {
-        const tq = Math.floor(t * 22);
-        y = mid - a * 0.8 * (hash(i * 91.3 + tq * 57.1) - 0.5) * 2;
+        // Noise keyed to SIGNAL time (the phase that reaches x), interpolated,
+        // so it travels with the wave instead of being re-rolled 22×/s per
+        // screen sample (owner 2026-11-22: "Once a wave form has happend, it
+        // should not become some other waveform later in time").
+        const g = (om * t - k * (x - originX)) * 1.6;
+        const g0 = Math.floor(g);
+        const n0 = hash(g0 * 91.3);
+        y = mid - a * 0.8 * (n0 + (hash((g0 + 1) * 91.3) - n0) * (g - g0) - 0.5) * 2;
       } else {
         // p ∝ cos(ωt − k(x−x0)): born at the speaker mouth, travels right, and
         // its peaks sit under the compression bands.
@@ -1051,8 +1114,10 @@ export function PressureGraphView({
       if (x < originX) {
         y = mid;
       } else if (mode === 'noise') {
-        const tq = Math.floor(t * 22);
-        y = mid - a * 0.8 * (hash(i * 91.3 + tq * 57.1) - 0.5) * 2;
+        const g = (om * t - k * (x - originX)) * 1.6;
+        const g0 = Math.floor(g);
+        const n0 = hash(g0 * 91.3);
+        y = mid - a * 0.8 * (n0 + (hash((g0 + 1) * 91.3) - n0) * (g - g0) - 0.5) * 2;
       } else {
         y = mid - a * Math.cos(om * t - k * (x - originX));
       }
@@ -1896,7 +1961,7 @@ export function WavelengthRulerView({
         <Path path={room} color="#46474f" style="stroke" strokeWidth={1.6} />
         {/* λ bracket — glowing amber measure (still EXACTLY 343/f, to scale). */}
         <GlowStroke path={bracket} color={WAVE} width={2.2} />
-        <FigureStandingAt cx={personX} floorY={floorY} pxPerMm={personPx} />
+        <PersonStandingFrontAt cx={personX} floorY={floorY} pxPerMm={personPx} who={castFor('foundations.person')} heightMm={STANDING_H_MM} />
         <Vignette w={w} h={h} />
         </Group>
       </Canvas>
@@ -2011,6 +2076,7 @@ export function DualDomainView({
   running,
   frozen = false,
   scale = 1,
+  showRoom = true,
 }: {
   width: number;
   visHz: number;
@@ -2026,6 +2092,10 @@ export function DualDomainView({
    *  laid out at width ÷ scale and painted through a Skia Group scaled by
    *  it, so FULL SCREEN zooms the drawing crisply; overlay labels move with it. */
   scale?: number;
+  /** false = THE MIC'S OUTPUT alone (the recording view), before the learner
+   *  taps for the room (owner 2026-11-15, "build waves 1 thru 3", D62 item
+   *  FO-01: the answer shows in two steps). The physics is unchanged. */
+  showRoom?: boolean;
 }) {
   // Phase clock: continuous through the 110/220 chip switches.
   const phase = usePhaseClock(running, visHz);
@@ -2252,6 +2322,8 @@ export function DualDomainView({
 
   return (
     <View style={{ gap: 3 * k }}>
+      {showRoom ? (
+      <>
       <View style={ddStyles.labelRow}>
         <OText style={twStyles.winLabel}>THE ROOM — CAMERA FLASH</OText>
         <OText style={[ddStyles.measured, { color: '#7fd4ff' }]}>MEASURED: every point · one instant</OText>
@@ -2363,6 +2435,8 @@ export function DualDomainView({
           </View>
         </View>
       </View>
+      </>
+      ) : null}
       <View style={ddStyles.labelRow}>
         <OText style={twStyles.winLabel}>THE MIC&#8217;S OUTPUT</OText>
         <OText style={[ddStyles.measured, { color: WAVE }]}>MEASURED: at the mic only · over time</OText>
@@ -2858,7 +2932,10 @@ export function EqualLoudnessView({
           {t.label}
         </OText>
       ))}
-      <OText style={[tickText, { left: AX * ts, top: 0, width: 30 * ts, color: '#c8ccd4' }]}>40Hz</OText>
+      {/* The axis's left end, on the axis with the other ticks (lab fix round
+          2026-11-14, G1 module 9: at the top-left corner "40Hz" ran into the
+          colour scale's "0dB"). */}
+      <OText style={[tickText, { left: (AX + 4) * ts, top: (gh - 12) * ts, width: 30 * ts, color: '#c8ccd4' }]}>40Hz</OText>
       {/* Named lines — SEND (amber, flat) vs HEAR (ramp-coloured curve). SEND's
           name sits at the LEFT end of its line (2026-09-25): at the right end it
           sat on the curve's high-frequency fall; at the left the curve is 20–40 dB
@@ -2866,7 +2943,7 @@ export function EqualLoudnessView({
       <OText style={[tickText, { left: (AX + 2) * ts, top: Math.max(0, ySend - 12) * ts, color: WAVE }]} numberOfLines={1}>
         YOU SEND — same at every Hz
       </OText>
-      <OText style={[tickText, { left: (AX + 2) * ts, top: Math.min(gh - 22, yDb(heard(fLo)) - 12) * ts, color: stops[0] }]} numberOfLines={1}>
+      <OText style={[tickText, { left: (AX + 2) * ts, top: Math.min(gh - 26, yDb(heard(fLo)) - 12) * ts, color: stops[0] }]} numberOfLines={1}>
         YOU HEAR
       </OText>
       {/* The ear's cut at the tone — solid ground so it's always legible. */}
@@ -3038,6 +3115,12 @@ export function PhaseOverlayView({
       </Canvas>
       <OText style={[tickText, { left: 4 * ts, top: 2 * ts }]}>INPUTS</OText>
       <OText style={[tickText, { left: 4 * ts, top: h * 0.52 + 3 * ts }]}>SUM = A + B</OText>
+      {/* The red flat line is the owner's "bad, they cancelled" signal
+          (2026-08-05), but the Amplitude lab taught red = MORE. The word on
+          the line says what it is (lab fix round 2026-11-14, G1 module 10). */}
+      {cancelled ? (
+        <OText style={[tickText, { right: 6 * ts, top: midBot - 17 * ts, color: '#ff8d7a' }]}>CANCELED — SILENT</OText>
+      ) : null}
     </View>
   );
 }

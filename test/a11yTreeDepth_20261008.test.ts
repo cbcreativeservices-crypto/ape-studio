@@ -188,9 +188,10 @@ describe('APE-STUDIO-W/R/S — the accessibility tree stays small', () => {
     assert.doesNotMatch(frame, /SPECKS\.map\(\(d, i\) => \(\s*<Circle/, 'PanelFace must not draw one <Circle> per speck');
     assert.match(frame, /<View pointerEvents="none" style=\{styles\.absFill\} \{\.\.\.A11Y_HIDDEN\}>/, 'PanelFace root is hidden from the accessibility tree');
 
-    const dash = read('src/screens/dashboard/DashboardScreen.tsx');
-    assert.doesNotMatch(dash, /GRIT_SPECKS\.map\(\(g, i\) => \(\s*<Circle/, 'BlackFaceBg must not draw one <Circle> per speck');
-    assert.match(dash, /specksToPaths\(\s*GRIT_SPECKS\.map/);
+    // BlackFaceBg moved from the Dashboard into ElevatedFrame (2026-11-20) so the
+    // circle menu's panel can wear the same rack face.
+    assert.doesNotMatch(frame, /GRIT_SPECKS\.map\(\(g, i\) => \(\s*<Circle/, 'BlackFaceBg must not draw one <Circle> per speck');
+    assert.match(frame, /specksToPaths\(\s*\(menu \? menuGrit\(\) : GRIT_SPECKS\)\.map/);
   });
 
   it('the Dashboard hides its hardware and says each divider once', () => {
@@ -203,7 +204,9 @@ describe('APE-STUDIO-W/R/S — the accessibility tree stays small', () => {
     assert.equal((fnBody('CornerScrews').match(/\{\.\.\.A11Y_HIDDEN\}/g) ?? []).length, 4, 'all four corner screws hidden');
     assert.match(fnBody('VentHoles'), /<View style=\{styles\.ventField\} \{\.\.\.A11Y_HIDDEN\}>/);
     assert.match(fnBody('GlassCover'), /\{\.\.\.A11Y_HIDDEN\}/);
-    assert.match(fnBody('BlackFaceBg'), /\{\.\.\.A11Y_HIDDEN\}/);
+    const frame = read('src/components/ElevatedFrame.tsx');
+    const face = frame.slice(frame.indexOf('export function BlackFaceBg('), frame.indexOf('export function PanelScrew('));
+    assert.match(face, /\{\.\.\.A11Y_HIDDEN\}/);
     assert.match(fnBody('SectionRackPanel'), /accessible accessibilityRole="header" accessibilityLabel=\{label\}/);
   });
 

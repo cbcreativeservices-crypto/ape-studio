@@ -17,6 +17,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { RackUnit } from '../rack/RackUnit';
 import { StageFit } from '../rack/StageFit';
 import type { BezelItem, DockParam, StageSize } from '../rack/rackTypes';
+import { DRUM_MODEL_NOTES } from './modules/shared';
 
 export { faderParam, optionsParam } from '../amp/AmpRack';
 export { flipFader } from '../soundsystems/rackLayout';
@@ -42,6 +43,9 @@ export type DrumRackSpec = {
 
 const FIT_PAD = 6;
 
+/** D62 SH-12: the drum rack's sound-off line. */
+export const DRUM_SOUND_OFF_LINE = 'Sound off? The readouts still show every change. Steps marked NEEDS SOUND need it.';
+
 export function DrumRack({ spec, children }: { spec: DrumRackSpec; children: ReactNode }) {
   const size: StageSize = spec.size ?? 'M';
   return (
@@ -52,6 +56,11 @@ export function DrumRack({ spec, children }: { spec: DrumRackSpec; children: Rea
         size,
         fullScreen: true,
         badge: spec.badge,
+        // The plain sentence (S3 §2, Phase 3): wins over the badge when known.
+        modelNote: DRUM_MODEL_NOTES[spec.badge],
+        // The sound-off line (owner 2026-11-15: "build waves 1 thru 3", D62 SH-12): shown only while sound is off.
+        // Its own words: a few steps are by ear and already carry NEEDS SOUND.
+        soundOffLine: DRUM_SOUND_OFF_LINE,
         bezel: spec.bezel,
         hideDragTag: spec.hideDragTag,
         render: (w, h) => {

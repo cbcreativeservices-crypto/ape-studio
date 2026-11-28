@@ -59,7 +59,8 @@ export const ANSWERS: readonly { value: Response; label: string; short: string }
   { value: 2, label: 'Neutral', short: 'Neutral' },
   { value: 3, label: 'Like', short: 'Like' },
   { value: 4, label: 'Strongly like', short: 'Strongly like' },
-  { value: null, label: 'I don’t know enough about this', short: 'Not sure' },
+  // Career Finder decisions (owner, 2026-11-14): CF-A0309, the short form says the same words as the button.
+  { value: null, label: 'I don’t know enough about this', short: 'I don’t know enough about this' },
 ];
 
 export const QUESTION_COUNT = QUESTIONS.length;

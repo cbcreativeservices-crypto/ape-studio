@@ -402,7 +402,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: the mallet strikes near the opening. What rings?', options: ['The wall over the slot, and the air in it', 'Only the spot the mallet touched', 'The table under the block'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the wall over the slot.' },
+  sound: { prompt: 'Before you step through: the mallet strikes near the opening. What rings?', options: ['The wall over the slot, and the air in it', 'Only the spot the mallet touched', 'The table under the block'], after: 'Now go EVENT by EVENT through the stroke (or PLAY ONCE) and watch the wall over the slot.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: toward the opening, or toward the playing surface — which sounds fuller?', options: ['The opening', 'The surface', 'It depends on this block'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits behind the mic and off to one side. Can a cardioid’s null reach it?', options: ['Yes — with a tilt of the mic', 'No — only a tighter pattern’s null can', 'It is already in the null'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },

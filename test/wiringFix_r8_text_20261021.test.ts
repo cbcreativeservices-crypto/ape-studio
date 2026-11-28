@@ -200,7 +200,9 @@ describe('S3 — signal chain', () => {
   });
 
   it('R7-SC-03: the catalog order lists every rack unit, STEREO included', () => {
-    assert.match(CAT, /Generator → EQ → Comp → Gate → Dist → Mod → Delay → Reverb → Stereo → Limiter → Output\./);
+    // Owner 2026-11-22: "the gate is usually before any eq and compression. Low Cut as well (not shown currently)";
+    // LOW CUT joined the rack as its first unit, so the order now starts Generator → Low Cut → EQ and counts ten units.
+    assert.match(CAT, /Generator → Low Cut → EQ → Comp → Gate → Dist → Mod → Delay → Reverb → Stereo → Limiter → Output\./);
     assert.doesNotMatch(CAT, /Gate → FX → Reverb/);
   });
 });
@@ -252,10 +254,11 @@ describe('S3 — calculator', () => {
 });
 
 describe('S3 — FX', () => {
-  it('R7-FX-03: the hint names the ATK/REL tray', () => {
+  // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item CMP-02): the key and the hint say SPEED.
+  it('R7-FX-03: the hint names the SPEED tray', () => {
     assert.doesNotMatch(FX, /Open the ENV tray/);
-    assert.match(FX, /id: 'env', label: 'ATK\/REL'/);
-    assert.match(FX, /Open the ATK\/REL tray/);
+    assert.match(FX, /id: 'env', label: 'SPEED'/);
+    assert.match(FX, /Open the SPEED tray/);
   });
 
   it('R7-FX-04: the flanger caption says no deep notches at 100% MIX', () => {

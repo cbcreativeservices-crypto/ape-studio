@@ -104,8 +104,10 @@ describe('2. each guide quotes its screen’s real names', () => {
   const SPK_SRC = [SPK_SCREEN, VIZ, 'src/features/lab/guidedLessons/toolHelp.tsx'].map(code).join('\n');
   const END_SRC = ['src/screens/lab/kit/LabEndScreen.tsx', 'src/screens/lab/kit/labEnd.ts'].map(code).join('\n');
   const NAMES: Record<string, [string, string[]]> = {
-    'mic.capsule': [MIC_SRC, ['e = B · l · v', 'VELOCITY', '⊗/⊙', 'FULL SCREEN', 'WHAT THE DISPLAY SHOWS', '‹ PREV', 'NEXT ›']],
-    'mic.polar': [MIC_SRC, ['PATTERN', 'SOURCE', 'PICKUP', 'NULL ≤−26 dB', 'DRAG THE SPEAKER — ANYWHERE', 'OMNI', 'CARDIOID', 'SUPER', 'HYPER', 'FIGURE-8']],
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item MI-04): POLAR opens the lab (the strip is explained
+    // there); CAPSULE is the last module, ended by FINISH ›.
+    'mic.capsule': [MIC_SRC, ['e = B · l · v', 'VELOCITY', '⊗/⊙', 'FULL SCREEN', 'WHAT THE DISPLAY SHOWS', 'FINISH ›']],
+    'mic.polar': [MIC_SRC, ['‹ PREV', 'NEXT ›', 'PATTERN', 'SOURCE', 'PICKUP', 'NULL ≤−26 dB', 'DRAG THE SPEAKER — ANYWHERE', 'OMNI', 'CARDIOID', 'SUPER', 'HYPER', 'FIGURE-8']],
     'mic.distance': [MIC_SRC, ['DIST', 'LEVEL', 'DIRECT', 'ROOM', 'DISTANCE']],
     'mic.proximity': [MIC_SRC, ['DIST', 'BOOST', 'MIC', 'DISTANCE', 'CARDIOID', 'OMNI', 'FLAT', 'NONE', 'GAP']],
     'mic.offaxis': [MIC_SRC, ['ANGLE', '@100 Hz', '@8 kHz', 'PRESET']],
@@ -166,7 +168,10 @@ describe('3. every TRY THIS number is what the screen prints', () => {
   });
   it('PROXIMITY: 1 in → +10 dB, 12 in → NONE, OMNI → FLAT', () => {
     assert.match(M, /const t = Math\.max\(0, Math\.min\(1, \(12 - inches\) \/ 11\)\);\s*return Math\.round\(10 \* Math\.pow\(t, 1\.4\) \* 10\) \/ 10;/);
-    assert.match(M, /const inches = Math\.round\(\(12 - d01 \* 11\) \* 10\) \/ 10;/);
+    // Lab fix round 2026-11-14 (owner: "Begin fixing all bugs found and do obvious
+    // (my decision is not required) fixes"): DISTANCE runs the same way as
+    // Module 3 (right = farther), still 1–12 in, still starting at 12 in.
+    assert.match(M, /const \[d01, setD01\] = useState\(1\);[\s\S]{0,80}const inches = Math\.round\(\(1 \+ d01 \* 11\) \* 10\) \/ 10;/);
     assert.match(M, /v: directional \? \(boostDb > 0 \? `\+\$\{boostDb\} dB` : 'NONE'\) : 'FLAT'/);
     const t = MIC.proximity.tryThis.join('\n');
     for (const s of ['DIST reads 1 in', 'BOOST reads +10 dB', 'BOOST reads FLAT', '12 in: BOOST reads NONE']) assert.ok(t.includes(s), s);
@@ -224,10 +229,15 @@ describe('3. every TRY THIS number is what the screen prints', () => {
     assert.ok(t.includes(`LOW HANDLE: PATTERN stays ${word(0)}`));
   });
   it('audit fixes 2026-10-31: claims the screen can actually show', () => {
-    // CAPSULE: the coil never moves on screen (only waves, current, glow).
-    assert.match(code('src/screens/lab/micspeaker/MicCutaway.tsx'), /return \{ opacity: 0\.25 \+ 0\.75 \* Math\.abs\(s\) \};/);
-    const cap = textOf(MIC.capsule);
-    assert.doesNotMatch(cap, /1,000×|mid-swing|ends of its travel/);
+    // CAPSULE — pin changed 2026-11-22. Owner on the iPhone screenshot: "needs
+    // animation showing coil moving around magnet". The coil and diaphragm now
+    // DO travel on screen (dx = X·cos φ), and the glow fades to nothing at each
+    // end of the travel (it used to floor at 0.25 while nothing moved), so the
+    // guide may now speak of the coil's travel, mid-swing and its ends. The
+    // motion itself is pinned in test/micCutawayCoilMotion_20261122.test.ts.
+    const cut = code('src/screens/lab/micspeaker/MicCutaway.tsx');
+    assert.match(cut, /return \{ opacity: Math\.abs\(s\) \};/);
+    assert.match(cut, /translateX: X \* Math\.cos\(TAU \* phase\.value\) \* k/);
     // DISTANCE: 50/50 only at exactly 12 in (whole-inch steps) → the guide asks for DIST 12 in.
     const share = (inches: number) => Math.round(((4 / inches) ** 2 / ((4 / inches) ** 2 + (4 / 12) ** 2)) * 100);
     assert.deepEqual([share(11), share(12), share(13)], [54, 50, 46]);
@@ -312,7 +322,9 @@ describe('5. the accuracy chip: Speaker Coverage keeps it beside the ⓘ; Mic Pr
     assert.doesNotMatch(c, /<LabHeader[^>]*\bright=/, `${MIC_SCREEN}: nothing else in the header's right group`);
   });
   it('the reason holds: both screens say on the glass that they are models, not measurements', () => {
-    assert.match(code(MIC_SCREEN), /'ILLUSTRATIVE MODEL — DRAWN FROM THE EQUATIONS, NOT A MEASUREMENT'/);
+    // Owner's decision 3 (2026-11-14, checkers K1/K3): the same disclosure in one
+    // plain sentence-case line.
+    assert.match(code(MIC_SCREEN), /'An illustrative model drawn from the equations\. It is not a measurement\.'/);
     assert.match(code(SPK_SCREEN), /const TOP_BADGE = 'CONCEPTUAL LEVEL MAP — ILLUSTRATIVE MODEL, NOT AN SPL PREDICTION';/);
     // No live input anywhere in either lab.
     for (const p of [MIC_SCREEN, SPK_SCREEN]) assert.doesNotMatch(code(p), /useMicrophone|getUserMedia|AudioRecorder|requestRecordingPermissions/);

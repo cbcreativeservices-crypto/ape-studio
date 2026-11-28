@@ -25,12 +25,17 @@ import { goToCymatics } from '../goToCymatics';
 
 const STOPS = WAVE_LEVEL_STOPS.map((s) => ({ offset: `${Math.round(s.offset * 100)}%`, color: s.color }));
 
-/** A strobe clock local to a drawing: 10 Hz phase ticks stay inside the stage. */
+/** A strobe clock local to a drawing: 10 Hz phase ticks stay inside the stage.
+ *  It wraps at 4π, not 2π (audit row 13): the water's surface runs at HALF
+ *  the shake, cos(phase / 2), and a 2π wrap snapped it from trough back to
+ *  crest once per shake. Every other drawing uses whole multiples of phase,
+ *  so a 4π wrap leaves them exactly as they were. */
+const PHASE_WRAP = 4 * Math.PI;
 function usePhase(running: boolean) {
   const [phase, setPhase] = useState(0);
   useEffect(() => {
     if (!running) return;
-    const id = setInterval(() => setPhase((p) => (p + 0.35) % (2 * Math.PI)), 100);
+    const id = setInterval(() => setPhase((p) => (p + 0.35) % PHASE_WRAP), 100);
     return () => clearInterval(id);
   }, [running]);
   return phase;
@@ -485,15 +490,15 @@ export function SystemsModule({ focused, help }: CymaticsModuleProps) {
         onGuide: () => help('systems'),
         initialParam: 'harmonic',
         bezel: [
-          { k: 'SYSTEM', v: s.short.toUpperCase(), helpKey: 'systems' },
+          { k: 'SYSTEM', v: s.short.toUpperCase(), helpKey: 'systems', caption: 'what vibrates' },
           // ── NO MORE EM-DASHES (2026-09-18, design review #6) ────────────────
           // These two cells read "—" for the three systems that now have a
           // drawing on the stage. A live picture beside two blank readouts
           // looks like the readouts are broken; each drawing states the mode
           // it is actually showing.
-          { k: 'MODE', v: hasHarmonic ? (n === 1 ? 'fund.' : `${n}f`) : (s.modeLabel ?? '—'), helpKey: 'systems' },
-          { k: 'NODES', v: hasHarmonic ? `${n + 1}` : (s.nodesLabel ?? '—'), helpKey: 'systems' },
-          { k: 'FAMILY', v: s.harmonic === null ? '1-D wave' : s.harmonic ? 'HARMONIC' : 'INHARM.', tint: s.harmonic === null ? undefined : s.harmonic ? '#37e05f' : '#ff6b5e', helpKey: 'harmonics', flex: 1.2 },
+          { k: 'MODE', v: hasHarmonic ? (n === 1 ? 'fund.' : `${n}f`) : (s.modeLabel ?? '—'), helpKey: 'systems', caption: 'which pattern' },
+          { k: 'NODES', v: hasHarmonic ? `${n + 1}` : (s.nodesLabel ?? '—'), helpKey: 'systems', caption: 'still points' },
+          { k: 'FAMILY', v: s.harmonic === null ? '1-D wave' : s.harmonic ? 'HARMONIC' : 'INHARM.', tint: s.harmonic === null ? undefined : s.harmonic ? '#37e05f' : '#ff6b5e', helpKey: 'harmonics', flex: 1.2, caption: 'evenly spaced?' },
         ],
         stage: (w, h) => {
           // FULL SCREEN (house rule D35, 2026-09-30): the full-screen body is

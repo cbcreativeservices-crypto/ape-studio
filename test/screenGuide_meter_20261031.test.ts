@@ -126,7 +126,8 @@ describe('2. each guide quotes its screen’s real names', () => {
     peak: { exact: ['SAMPLE PEAK', 'OVER', 'dBFS', 'PEAK', 'PK HOLD', 'OVERS', 'RMS', 'CREST', 'GAIN', 'SIGNAL', 'RESET HOLD', 'OVR'], upper: ['KICK DRUM', 'SNARE', 'SPEECH', 'ORGAN'] },
     vu: { exact: ['PEAK', 'RMS', 'CREST', 'NDL MAX', 'GAIN', 'SIGNAL', 'FULL SCREEN'], upper: ['SNARE', 'ORGAN', 'PINK NOISE', 'SPEECH'] },
     loudness: { exact: ['LOUDNESS · LUFS', 'LUFS INTEGRATED', 'INTEGRATED', 'LRA', 'SAMPLE PK', 'TRUE PK', 'TP GAP', 'MOMENTARY RANGE', 'SHORT-TERM', 'STREAMING', 'SIGNAL'], upper: ['SPEECH', 'MUSIC MIX', 'ORGAN', 'KICK DRUM'] },
-    spectrum: { exact: ['PATTERN', 'PEAK', 'LEVEL', 'TILT', 'dB rel'], upper: ['SPEECH', 'CYMBAL', 'KICK DRUM', 'GUITAR', 'MAINS HUM', 'FEEDBACK', 'PINK NOISE'] },
+    // owner 2026-11-21: American English in learner text (MAINS HUM -> AC HUM)
+    spectrum: { exact: ['PATTERN', 'PEAK', 'LEVEL', 'TILT', 'dB rel'], upper: ['SPEECH', 'CYMBAL', 'KICK DRUM', 'GUITAR', 'AC HUM', 'FEEDBACK', 'PINK NOISE'] },
     spectrogram: { exact: ['NOW', 'FREQUENCY ↑', 'LEVEL', 'HI', 'LO', 'TIME', 'new → right', 'FREQ', '↑ up', '= color', 'MODE', 'SCROLL', 'SNAP', 'PATTERN', 'VIEW', 'ELAPSED TIME', 'SNAPSHOT — FULL 5 s'], upper: ['BIRDSONG', 'CYMBAL DECAY', 'WHISTLE', 'WHITE NOISE'] },
     waterfall: { exact: ['TIME', '0s', 'RINGS', 'RT·125', 'RT·4k', 'RIDGE', 'VS NEARBY', 'DAMPING', 'CONCRETE', 'CURTAINS', 'CARPET', 'PANELS', 'EQ', '220 Hz · Q6', '440 Hz · Q1', '1 kHz shelf', 'FLATTEN ALL BANDS', 'ROOM', 'REVERB', 'Q RING', 'REPLAY', 'RT60 · 250 Hz'], upper: ['CATHEDRAL', 'CLASSROOM', 'STUDIO', 'THEATER', 'LIVING ROOM', 'NONE', 'PLATE', 'HALL', 'SPRING'] },
     phase: { exact: ['CORRELATION', 'ρ', 'CORR', 'WIDTH', 'PHASE', 'MONO FOLD', 'MONO-SAFE', 'WIDE / UNRELATED', 'MONO-DEATH', 'MONO-FOLD VERDICT', 'SAFE', 'CANCELLATION', 'RISKY', 'R vs L'] },
@@ -245,8 +246,11 @@ describe('3. every TRY THIS number is what the screen prints', () => {
   });
 
   it('VU / RMS Meter', () => {
-    const vu = (s: string) => {
-      const p = E.renderSignal(s);
+    // Recalibrated 2026-11-21 (owner): the module reads each signal at its line-up
+    // trim (VU_LINEUP_DB), 0 VU = −18 dBFS, and the PEAK lamp is true 0 dBFS.
+    const vu = (s: string, g = 0) => {
+      const k = gl((E.VU_LINEUP_DB[s] ?? 0) + g);
+      const p = E.renderSignal(s).map((v: number) => v * k);
       const dt = 1.5 / p.length;
       let n = 0;
       let top = 0;
@@ -265,13 +269,17 @@ describe('3. every TRY THIS number is what the screen prints', () => {
     // GAIN cancels out of CREST on this (unclipped) path.
     for (const g of [-12, 0, 12]) assert.equal(f1(E.crestDb(E.renderSignal('snare').map((v: number) => v * gl(g)))), f1(E.crestDb(E.renderSignal('snare'))));
     assert.ok(textOf(GUIDES.vu).includes('CREST stays put'));
-    // ORGAN never lights the PEAK lamp (it needs |x| ≥ 0.72 of full scale).
-    assert.ok(E.peakOf(E.renderSignal('organ')) < 0.72 && E.peakOf(E.renderSignal('snare')) >= 0.72);
-    assert.match(code('src/screens/lab/meter/vizMeters.tsx'), /m \/ 0\.72/);
+    // Lamp = true 0 dBFS: dark for ORGAN, PINK and SNARE at +0.0 dB; SNARE lights with about +4 dB.
+    assert.ok(o.peak < 0 && vu('pinknoise').peak < 0 && s.peak < 0);
+    assert.ok(vu('snare', 4).peak >= 0, '"raise GAIN about +4 dB"');
+    assert.match(code('src/screens/lab/meter/vizMeters.tsx'), /pkDb\[i\] = 20 \* Math\.log10\(Math\.max\(1e-6, m\)\);/);
     assert.ok(t.includes('the PEAK lamp stays dark'));
     assert.ok(t.includes(`PEAK ${m(f1(o.peak))}, NDL MAX ${m(f1(o.ndl))}`));
     const lift = Number(f1(o.ndl)) - Number(f1(s.ndl));
-    assert.ok(lift > 11 && lift < 12, `"almost 12 dB higher" (${lift})`);
+    assert.ok(lift > 5 && lift < 6, `"almost 6 dB higher" (${lift})`);
+    // Pink noise sits on 0 VU: its RMS is the −18 dBFS reference.
+    const pn = E.renderSignal('pinknoise').map((v: number) => v * gl(E.VU_LINEUP_DB.pinknoise ?? 0));
+    assert.ok(Math.abs(E.db(E.rmsOf(pn)) - E.VU_REF_DBFS) < 0.3);
   });
 
   it('Loudness Meter', () => {
@@ -308,10 +316,17 @@ describe('3. every TRY THIS number is what the screen prints', () => {
     const hz = (f: number) => (f >= 1000 ? `${(f / 1000).toFixed(f >= 10000 ? 0 : 1)} kHz` : `${Math.round(f)} Hz`);
     const t = tryOf('spectrum');
     assert.match(B, /function scanSpectrum\(key: SpectrumKey\)[\s\S]*?const N = 480;/);
-    assert.ok(t.includes(`PEAK jumps from ${hz(scan('hum').pf)} to ${hz(scan('feedback').pf)} (the plot’s marker says 1.75 kHz)`));
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, F6a checker fix, one number per
+    // thing): PEAK and the plot's marker now share meterEngine.spectrumPeak + fmtPeakHz (they read
+    // 219 vs 223 Hz on SPEECH, and 1.7 vs 1.75 kHz on FEEDBACK).
+    const pk = (k: string) => E.fmtPeakHz(E.spectrumPeak(k).f);
+    assert.equal(pk('speech'), '220 Hz');
+    assert.ok(t.includes(`PEAK jumps from ${pk('hum')} to ${pk('feedback')}, the same number the plot’s marker shows`));
+    assert.match(B, /v: fmtPeakHz\(scan\.peakF\)/);
     assert.ok(t.includes(`TILT reads ${m(sgn(scan('pinknoise').tilt))}/oct`));
     assert.ok(t.includes(`TILT flips to ${sgn(scan('cymbal').tilt)}/oct`));
-    assert.ok(t.includes(`PEAK reads ${hz(scan('kick').pf)} for the thump`));
+    assert.ok(t.includes(`PEAK reads ${pk('kick')} for the thump`));
+    void hz;
   });
 
   it('Waterfall (CSD)', () => {
@@ -422,10 +437,13 @@ describe('5. the accuracy chip: a concept lab', () => {
     const A = code('src/screens/lab/meter/modules/modMeterA.tsx');
     const B = code('src/screens/lab/meter/modules/modMeterB.tsx');
     const C = code('src/screens/lab/meter/modules/modMeterC.tsx');
-    assert.equal((A.match(/badge: 'SYNTHESIZED TEACHING SIGNAL/g) ?? []).length, 3, 'Waveform, Peak, VU');
-    assert.match(A, /SIMPLIFIED BS\.1770-STYLE TEACHING MODEL — not a compliance meter/);
-    assert.equal((B.match(/badge: 'SYNTHETIC/g) ?? []).length, 3, 'Spectrum, Spectrogram, Waterfall');
-    assert.match(C, /const HONESTY = 'SYNTHESIZED TEACHING SIGNAL — NOTHING HERE MEASURES REAL AUDIO';/);
-    assert.equal((C.match(/badge: HONESTY/g) ?? []).length, 4, 'Phase, Stereo, Scope, Detective');
+    // S3's plain model note replaced the all-caps badges (owner's decision 3, phase 3, 2026-11-14);
+    // the disclosure stays on every stage.
+    assert.equal((A.match(/modelNote: (SIGNAL_NOTE|VU_NOTE|LOUDNESS_MODEL_NOTE),/g) ?? []).length, 4, 'Waveform, Peak, VU, Loudness');
+    assert.match(A, /const LOUDNESS_MODEL_NOTE = 'A simplified BS\.1770-style teaching model, not a compliance loudness meter\.';/);
+    assert.equal((B.match(/modelNote: '(Built-in teaching patterns|Drawn from the room-decay)/g) ?? []).length, 3, 'Spectrum, Spectrogram, Waterfall');
+    assert.match(C, /const HONESTY = 'A built-in teaching signal: nothing here measures real audio\.';/);
+    assert.equal((C.match(/modelNote: HONESTY/g) ?? []).length, 4, 'Phase, Stereo, Scope, Detective');
+    for (const f of [A, B, C]) assert.doesNotMatch(f, /^\s*badge: /m);
   });
 });

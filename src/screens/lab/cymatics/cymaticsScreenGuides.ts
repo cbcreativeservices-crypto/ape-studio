@@ -48,24 +48,26 @@ import type { CymaticsModuleId } from './modules/registry';
 
 // ── THE LAB HOME ─────────────────────────────────────────────────────────────
 export const CYMATICS_HOME_GUIDE: ScreenGuide = {
+  // The home's path and studio order, owner 2026-11-15: "build waves 1 thru 3"
+  // (D62 CY-01, CY-02, CY-04). Words from homePath.ts.
   intro: {
     learning: 'Why sand gathers on a vibrating plate’s still lines, and why a frequency has no shape of its own: the object, not the tone, decides the figure.',
-    start: 'Watch the plate at the top: sand leaves the moving regions and settles on the still lines. Then tap NEW HERE? START HERE › to open What Is Cymatics?',
+    start: 'Watch the plate at the top: sand leaves the moving regions and settles on the still lines. Then tap 1, Watch sand find the still lines ›.',
   },
   seeing: [
-    'At the top, sand settles onto one figure of a live plate, labeled SIMULATION · 240 mm ALUMINUM · FREE EDGES · CENTER-DRIVEN.',
-    'NEW HERE? START HERE › opens module 1. Then four studios: Chladni Plate, Liquid Cymatics, Membrane & Loudspeaker, and the Pattern Gallery & Art Studio.',
-    'LEARN & EXPERIMENT holds the eight modules; below them, CHECK YOUR UNDERSTANDING, SEE WHAT’S LEFT › and GUIDED LESSON.',
+    'At the top, sand settles onto one figure of a live plate. The line under it says what the picture is: a simulated square aluminum plate.',
+    'Under it, Does a note have a shape? and three numbered steps. Then LEARN & EXPERIMENT holds the eight modules.',
+    'Below them: CHECK YOUR UNDERSTANDING, SEE WHAT’S LEFT ›, then STUDIOS, FREE PLAY with four studios, and GUIDED LESSON.',
   ],
   control: [
-    'Tap NEW HERE? START HERE › for What Is Cymatics?, or an OPEN THE … STUDIO › button for a free-play instrument.',
+    'Step 1, Watch sand find the still lines, opens What Is Cymatics?; step 2 opens Change One Thing, and step 3 starts the seventeen experiments in the studio.',
     'Tap a module’s name to read its one-line description; tap OPEN to start it.',
     'In CHECK YOUR UNDERSTANDING, answer every question correctly to complete the lab. You can try a wrong answer again right away.',
-    'SEE WHAT’S LEFT › lists the modules you haven’t opened yet. ‹ leaves the lab; ⓘ on any module or studio explains that screen.',
+    'SEE WHAT’S LEFT › lists the modules you haven’t finished yet. A studio button opens free play. ‹ leaves the lab; ⓘ on any module or studio explains that screen.',
   ],
   changes: [
     'Modules 1–3 build the central idea: a plate answers only at its own resonances, and the plate, not the tone, decides which.',
-    'Modules 4–6 set it beside harmonic series, musical ratios and other vibrating things. Module 7 sorts evidence from myth. Module 8 runs seventeen experiments in the studios.',
+    'Modules 4–6 set it beside harmonic series, musical ratios and other vibrating things. Module 7 sorts evidence from myth. Module 8 lists the seventeen experiments.',
     'Every pattern is a simulation from a physics model, labeled with how exact it is.',
   ],
   teaches: [
@@ -74,7 +76,7 @@ export const CYMATICS_HOME_GUIDE: ScreenGuide = {
     'How plates, liquids, drumheads and loudspeaker cones vibrate, and what is actually moving in each.',
   ],
   tryThis: [
-    'New here? Tap NEW HERE? START HERE › and take the modules in order. Module 3, Change One Thing, is the lab’s central test.',
+    'New here? Take the three numbered steps in order. Step 2, Change One Thing, is the lab’s central test.',
     'Watch the plate on top: sand walks off the moving regions and settles on the still lines of one mode.',
     'Open the Chladni Plate Studio and press ▶. At its opening 240 Hz the sand only shivers. Tap a mode in FREQ › JUMP TO A MODE and a figure forms.',
   ],
@@ -84,11 +86,11 @@ export const CYMATICS_HOME_GUIDE: ScreenGuide = {
 export const CYMATICS_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'Which parts of the lab’s story are still ahead: plates and their modes, harmonic series, musical ratios, other vibrating systems, and evidence versus myth.',
-    start: 'Tap any row to open that module, or tap REVIEW ▾ to see the ones you’ve opened. PRACTICE AGAIN FROM THE START reopens What Is Cymatics? and clears nothing.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are. PRACTICE AGAIN FROM THE START reopens What Is Cymatics? and clears nothing.',
   },
   seeing: [
-    'WHAT’S LEFT lists the Cymatics modules you haven’t opened yet. Each row has a › to jump straight in.',
-    'Modules you’ve opened fold into one ✓ DONE line; REVIEW ▾ shows them. Once you’ve opened every module, the title reads ALL MODULES OPENED.',
+    'WHAT’S LEFT lists the modules you haven’t finished yet, then the check. Each module row has a › to jump in.',
+    'Finished modules fold into one ✓ DONE line; REVIEW ▾ shows them. With every module finished and the check passed, the title reads ALL MODULES DONE.',
   ],
   control: [
     'Tap a row to open that module.',
@@ -96,15 +98,15 @@ export const CYMATICS_END_GUIDE: ScreenGuide = {
     'DONE · BACK TO LABS leaves this screen.',
   ],
   changes: [
-    'A module counts as done once you open it. Nothing here is graded or timed.',
-    'The studios aren’t rows here. To complete the lab, answer CHECK YOUR UNDERSTANDING, on the lab home or on any studio’s CHECK tab.',
+    'A module counts as done once you work through it and move on with NEXT › (FINISH › on the last); opening it alone does not count. Modules already counted stay counted. Nothing here is graded or timed.',
+    'The studios aren’t rows here. To complete the lab, answer CHECK YOUR UNDERSTANDING, drawn on this screen below the list.',
   ],
   teaches: [
     'What decides the figure a vibrating object makes? The object, not the tone: a frequency has no shape of its own.',
   ],
   tryThis: [
     'Is Change One Thing still listed? Open it first: it is where you test whether the plate or the tone decides the figure.',
-    'Every module opened? Answer CHECK YOUR UNDERSTANDING on the lab home to complete the lab.',
+    'Every module finished? Answer CHECK YOUR UNDERSTANDING below the list to complete the lab.',
   ],
 };
 
@@ -194,7 +196,7 @@ export const CYMATICS_SCREEN_GUIDES: Record<CymaticsModuleId, ScreenGuide> = {
       'Once B has changed, CHANGE B FIRST — THEN READ IT becomes REVEAL HOW TO READ IT ›.',
     ],
     changes: [
-      'The tone stays put. Each plate either has a mode there (AT, bright map, sand on lines) or doesn’t (BETWEEN, dark map).',
+      'The tone stays put. Each plate either has a mode there (AT, sand on lines, a bright map unless damping lowers it) or doesn’t (BETWEEN, dark map).',
       'Double the size and every mode drops to a quarter; double the thickness and every mode doubles. A new material moves them too (Solid wood also re-orders them), so the tone stops matching.',
       'Damping doesn’t move a resonance. It widens it and lowers its peak.',
     ],
@@ -247,12 +249,12 @@ export const CYMATICS_SCREEN_GUIDES: Record<CymaticsModuleId, ScreenGuide> = {
   harmony: {
     intro: {
       learning: 'Musical harmony comes from ratios between frequencies, not from any one frequency, and pulling a ratio slightly off makes beats.',
-      start: 'Press PLAY to hear the fifth. Ride BASE and watch INTERVAL stay put. Then set VIEW to Lissajous figure and ride DETUNE up from locked.',
+      start: 'Slide BASE and watch INTERVAL stay put on fifth. Set VIEW to Lissajous figure and slide DETUNE up from locked. Then press PLAY to hear it.',
     },
     seeing: [
       'VIEW draws the two tones three ways: Wave addition (A, B and A + B stacked), Lissajous figure (B drawn against A) or Spectrum (two lines).',
       'It opens on a perfect fifth: A 220 Hz, B 330 Hz, a 2 : 3 ratio.',
-      'A and B give each tone in Hz and its nearest note. INTERVAL names the interval, such as P5. BEAT shows beats per second, only when detuned.',
+      'A and B give each tone in Hz and its nearest note. INTERVAL names the interval, such as fifth. BEAT shows beats per second, only when detuned.',
     ],
     control: [
       'BASE (55–440 Hz) moves both tones together and keeps their ratio.',
@@ -272,7 +274,7 @@ export const CYMATICS_SCREEN_GUIDES: Record<CymaticsModuleId, ScreenGuide> = {
       'Plate modes aren’t in simple ratios, so ratios are a separate subject from Chladni figures.',
     ],
     tryThis: [
-      'Ride BASE from 110 to 220 Hz: A goes from 220 to 440 Hz, B from 330 to 660 Hz, and INTERVAL is still P5. The figure doesn’t change.',
+      'Ride BASE from 110 to 220 Hz: A goes from 220 to 440 Hz, B from 330 to 660 Hz, and INTERVAL is still fifth. The figure doesn’t change.',
       'Set VIEW to Lissajous figure, then ride DETUNE to about +1.00 %. At BASE 220 Hz, BEAT reads about 13.2 Hz and the figure starts to turn.',
       'Ride DETUNE back to locked, then pick RATIO 1 : 2 — octave. The figure closes and holds still: simple ratios close, detuned ones drift.',
     ],
@@ -392,7 +394,7 @@ export const CYMATICS_STUDIO_GUIDES: Record<CymaticsStudioId, ScreenGuide> = {
       'SAVE in the header sends this exact setup to the Pattern Gallery. ▶ plays the drive tone.',
       'FREQ (30 Hz–3 kHz) moves in finer steps near each mode, and ‹ −0.1% / +0.1% › creep onto a sharp one. JUMP TO A MODE lands on a mode; off a mode, LAND ON jumps to the next one up.',
       'PLATE: shape (and the SOLVED SHAPES), material, size, damping, thickness, edges. DRIVE: driver position, clamp, Sweep the modes, Slow motion, Silent drive, SECOND TONE.',
-      'VIEW: Particles, Heat map, Particles + heat, Phase, Node lines, 3D plate, Cross-section. LEVEL sets the drive strength. SAND: amount, grain size, ⟲ Reset sand, friction.',
+      'VIEW: Sand, Heat map, Sand + heat, Phase, Node lines, 3D plate, Cross-section. LEVEL sets the drive strength. SAND: amount, grain size, ⟲ Reset sand, friction.',
     ],
     changes: [
       'On a mode the plate moves a lot for a little push: RESPONSE climbs, RES reads AT and sand gathers on the still lines.',
@@ -407,7 +409,7 @@ export const CYMATICS_STUDIO_GUIDES: Record<CymaticsStudioId, ScreenGuide> = {
     tryThis: [
       'It opens on 240 Hz: RES BETWEEN, RESPONSE 0%. Open FREQ and tap 191 Hz · (2,2) in JUMP TO A MODE: RES AT, RESPONSE 98%.',
       'Stay there and switch PLATE › MATERIAL to Steel. RESPONSE falls to 6% and RES reads BETWEEN: the plate changed, not the tone.',
-      'Switch MATERIAL back to Aluminum, then press ▶ (or DRIVE › Silent drive). With VIEW on Particles, the sand settles onto the (2,2) figure.',
+      'Switch MATERIAL back to Aluminum, then press ▶ (or DRIVE › Silent drive). With VIEW on Sand, the sand settles onto the (2,2) figure.',
     ],
   },
 
@@ -419,7 +421,7 @@ export const CYMATICS_STUDIO_GUIDES: Record<CymaticsStudioId, ScreenGuide> = {
     },
     seeing: [
       'A dish of liquid on a shaker, drawn the way VIEW sets (Liquid surface to start): water, 4 mm deep, in a 100 mm round dish.',
-      'DRIVE is the shake frequency. RESP is the rate the surface moves at, marked f/2 once patterns form. SHAKE is in g, and a/a꜀ is your shake divided by the threshold.',
+      'DRIVE is the shake frequency. RESP is the rate the surface moves at, marked f/2 once patterns form. SHAKE is in g; ENOUGH is your shake over the shake needed.',
       'LAB NOTES holds the stage ladder from FLAT SURFACE up to SPLASHING, the THRESHOLD line, WHAT THIS RIG IS and RIG SAFETY.',
     ],
     control: [
@@ -430,7 +432,7 @@ export const CYMATICS_STUDIO_GUIDES: Record<CymaticsStudioId, ScreenGuide> = {
     ],
     changes: [
       'Below the threshold the liquid rides the platform, with small ripples at the drive rate.',
-      'Past it (a/a꜀ above 1) the surface breaks into standing Faraday waves at HALF the drive frequency. More shake climbs the ladder toward chaos.',
+      'Past it (ENOUGH above 1×) the surface breaks into standing Faraday waves at HALF the drive frequency. More shake climbs the ladder toward chaos.',
       'Thicker liquid, a shallower layer or a wetted rim damps the waves, so the threshold rises. A higher drive frequency gives shorter waves and a higher threshold.',
     ],
     teaches: [
@@ -439,7 +441,7 @@ export const CYMATICS_STUDIO_GUIDES: Record<CymaticsStudioId, ScreenGuide> = {
       'The pattern depends on the liquid, the depth and the dish, not on the frequency alone.',
     ],
     tryThis: [
-      'It opens at 40.0 Hz and 0.25 g: STABLE STANDING PATTERN, a/a꜀ 1.59×, RESP 20.0 Hz f/2, half the drive.',
+      'It opens at 40.0 Hz and 0.25 g: STABLE STANDING PATTERN, ENOUGH 1.59×, RESP 20.0 Hz f/2, half the drive.',
       'Lower SHAKE to about 0.15 g: SMALL RIPPLES, and RESP reads 40.0 Hz f. Raise it to about 0.60 g: UNSTABLE MOTION.',
       'Back at 0.25 g, switch LIQUID to Glycerin–water 50/50: SMALL RIPPLES. Its threshold, about 0.53 g, is now above your shake.',
     ],
@@ -484,7 +486,7 @@ export const CYMATICS_STUDIO_GUIDES: Record<CymaticsStudioId, ScreenGuide> = {
 export const CYMATICS_LEARN_GUIDE: ScreenGuide = {
   intro: {
     learning: 'The lab’s vocabulary (node, antinode, mode, resonance, damping, Faraday wave, breakup) and why level and frequency, or frequency and figure, are easy to mix up.',
-    start: 'Scroll to the LEVEL entry and read it. Then tap EXPLORE, raise LEVEL on a mode, and check that the figure stays the same.',
+    start: 'Open CONTROLS and read the LEVEL entry. Then tap EXPLORE, raise LEVEL on a mode, and check that the figure stays the same.',
   },
   seeing: [
     'The LEARN tab is the Cymatics guided lesson as one page to read. Nothing here plays or moves.',
@@ -496,7 +498,7 @@ export const CYMATICS_LEARN_GUIDE: ScreenGuide = {
     'On EXPLORE, ⓘ GUIDED LESSON at the end of LAB NOTES opens this lesson as a sheet. Long-press a dock key or a readout to see just its entry.',
   ],
   changes: [
-    'Nothing on this page moves. When something on EXPLORE surprises you, find its CONTROLS entry here: it says what that part changes and why.',
+    'Nothing on this page moves. When something on EXPLORE surprises you, open CONTROLS here and find its entry: it says what that part changes and why.',
     'FORMULA / CONCEPT shows why a thicker plate rings higher and a bigger one lower: frequency follows h/L² · √(E/ρ), for thickness h, size L, stiffness E and density ρ.',
   ],
   teaches: [
@@ -504,8 +506,8 @@ export const CYMATICS_LEARN_GUIDE: ScreenGuide = {
     'The common mix-ups, level versus frequency and frequency versus figure, and why each happens.',
   ],
   tryThis: [
-    'In the Plate Studio, read the LEVEL entry. Then on EXPLORE raise LEVEL on a mode: the plate moves more, but the figure stays the same.',
-    'Read the MATERIAL entry. Then on EXPLORE switch PLATE › MATERIAL and watch the same frequency stop being a resonance.',
+    'In the Plate Studio, open CONTROLS and read the LEVEL entry. Then on EXPLORE raise LEVEL on a mode: the plate moves more, but the figure stays the same.',
+    'Open CONTROLS and read the MATERIAL entry. Then on EXPLORE switch PLATE › MATERIAL and watch the same frequency stop being a resonance.',
   ],
 };
 
@@ -519,29 +521,29 @@ export const CYMATICS_LEARN_GUIDES: Record<CymaticsStudioId, ScreenGuide> = {
     ...CYMATICS_LEARN_GUIDE,
     intro: {
       learning: 'The lab’s vocabulary, and why size, thickness and material, not the drive level, decide where a plate’s modes sit and which figure a tone draws.',
-      start: 'Read the LEVEL entry, then the MATERIAL entry. Tap EXPLORE, raise LEVEL on a mode, then switch PLATE › MATERIAL and watch the resonance go.',
+      start: 'Open CONTROLS and read the LEVEL entry, then the MATERIAL entry. Tap EXPLORE, raise LEVEL on a mode, then switch PLATE › MATERIAL and watch the resonance go.',
     },
   },
   liquid: {
     ...CYMATICS_LEARN_GUIDE,
     intro: {
       learning: 'The lab’s vocabulary, and why a shaken liquid answers at half the drive frequency only once the shake passes a threshold that the liquid itself sets.',
-      start: 'Read the Faraday waves entry. Then tap EXPLORE and lower SHAKE to about 0.15 g: the half-frequency pattern gives way to SMALL RIPPLES.',
+      start: 'Open CONTROLS and read the Faraday waves entry. Then tap EXPLORE and lower SHAKE to about 0.15 g: the half-frequency pattern gives way to SMALL RIPPLES.',
     },
     tryThis: [
-      'In the Liquid Studio, read the Faraday waves entry. Then on EXPLORE lower SHAKE to about 0.15 g: the half-frequency pattern gives way to SMALL RIPPLES.',
-      'Read the LIQUID entry. Then at 0.25 g switch LIQUID to Glycerin–water 50/50: the thicker liquid raises the threshold, so only SMALL RIPPLES remain.',
+      'In the Liquid Studio, open CONTROLS and read the Faraday waves entry. Then on EXPLORE lower SHAKE to about 0.15 g: the half-frequency pattern gives way to SMALL RIPPLES.',
+      'Open CONTROLS and read the LIQUID entry. Then at 0.25 g switch LIQUID to Glycerin–water 50/50: the thicker liquid raises the threshold, so only SMALL RIPPLES remain.',
     ],
   },
   membrane: {
     ...CYMATICS_LEARN_GUIDE,
     intro: {
       learning: 'The lab’s vocabulary, and why a drumhead’s pitch follows its tension and size: double the tension raises every mode by about 1.41×.',
-      start: 'Read the Tension and size entry. Then tap EXPLORE and set HEAD › TENSION to 6 kN/m: FUNDAMENTAL rises from 200 Hz to 282 Hz.',
+      start: 'Open CONTROLS and read the Tension and size entry. Then tap EXPLORE and set HEAD › TENSION to 6 kN/m: FUNDAMENTAL rises from 200 Hz to 282 Hz.',
     },
     tryThis: [
-      'In the Membrane Studio, read the LEVEL entry. Then on EXPLORE raise LEVEL on a mode: the head moves more, but the figure stays the same.',
-      'Read the Tension and size entry. Then set HEAD › TENSION to 6 kN/m: FUNDAMENTAL rises from 200 Hz to 282 Hz. Double the tension gives about 1.41× the pitch.',
+      'In the Membrane Studio, open CONTROLS and read the LEVEL entry. Then on EXPLORE raise LEVEL on a mode: the head moves more, but the figure stays the same.',
+      'Open CONTROLS and read the Tension and size entry. Then set HEAD › TENSION to 6 kN/m: FUNDAMENTAL rises from 200 Hz to 282 Hz. Double the tension gives about 1.41× the pitch.',
     ],
   },
 };
@@ -549,17 +551,17 @@ export const CYMATICS_LEARN_GUIDES: Record<CymaticsStudioId, ScreenGuide> = {
 export const CYMATICS_CHECK_GUIDE: ScreenGuide = {
   intro: {
     learning: 'How the lab’s five core ideas fit together: what sets a figure, where sand settles, what drive level changes, how a shaken liquid answers, and what damping does.',
-    start: 'Read the first question and settle on your answer before you tap. If you see NOT QUITE — TRY ANOTHER, read the explanation, then pick again.',
+    start: 'Read the first question and settle on your answer before you tap. If you see NOT QUITE — TRY ANOTHER, look again where it points, then pick again.',
   },
   seeing: [
     'You’re at CHECK YOUR UNDERSTANDING: five questions on what sets a figure, where sand gathers, what drive level changes, the liquid’s half-frequency waves, and damping.',
     'Each question turns to ✓ once you get it right. The same check sits on the lab home.',
   ],
   control: [
-    'Tap the answer you think is right. If it’s wrong, you see NOT QUITE — TRY ANOTHER with the explanation: read it, then pick again. If it’s right, you see CORRECT with the same explanation.',
+    'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
   ],
   changes: [
-    'Each explanation points back to something you can see in the studios, so a wrong pick shows you where to look. Answer every question correctly and the check is passed. A wrong answer costs nothing, and there is no score.',
+    'A wrong pick points back to something you can see in the studios. Answer every question correctly and the check is passed.',
   ],
   teaches: [
     'What decides which figure appears on a plate at a given tone.',
@@ -568,7 +570,7 @@ export const CYMATICS_CHECK_GUIDE: ScreenGuide = {
   ],
   tryThis: [
     'Unsure about one? Switch to EXPLORE, test that exact idea in the studio, then come back to CHECK and answer from what you saw.',
-    'A wrong pick shows the explanation. Read it before you try again: it names the clue you missed.',
+    'A wrong pick says what to look at again. Look there before you try again; a second wrong pick also shows the explanation.',
   ],
 };
 
@@ -588,7 +590,9 @@ export const CYMATICS_GALLERY_GUIDES: Record<CymaticsGalleryMode, ScreenGuide> =
   browse: {
     intro: {
       learning: 'Why a saved pattern is a repeatable experiment: each card is redrawn from the exact settings it came from, so two saves can be compared fairly.',
-      start: 'Tap a card to open it, or long-press it to make it a favorite. To compare, tap Compare…, pick two to four cards, then tap COMPARE ›.',
+      // An empty gallery opens on NOTHING SAVED YET; the card no longer names
+      // cards that are not there yet (novice audit 2026-11-14).
+      start: 'No cards yet? Open a studio from NOTHING SAVED YET and press SAVE with a figure on show. With cards: tap one to open it, long-press for a favorite, or tap Compare… and pick two to four.',
     },
     seeing: [
       'This is the PATTERN GALLERY & ART STUDIO: every pattern you’ve saved from the three studios, each as a card of line art.',

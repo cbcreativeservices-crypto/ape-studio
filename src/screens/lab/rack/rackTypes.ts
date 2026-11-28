@@ -19,13 +19,21 @@ export const STAGE_HEIGHTS: Record<StageSize, number> = { S: 160, M: 200, L: 250
  *  {k,v,helpKey} contract, rendered as the glass's bezel strip). */
 export type BezelItem = {
   k: string;
+  /** ADDITIVE (held frame item 4, 2026-11-13): a shorter key drawn when `k`
+   *  does not fit its cell whole ("DIST." for DISTANCE). Without it, or when
+   *  it does not fit either, the key line is dropped and the value stays
+   *  whole: a key is never cut to "…" (dockFit bezelKeyFit). Read aloud is
+   *  always `k`. */
+  kNarrow?: string;
   v: string;
   /** The value in full for the accessibility label when `v` is a short form
    *  (Miking owner decision X3, 2026-10-08). Defaults to `v`. */
   vA11y?: string;
   /** Optional second value line in the unit style (e.g. the imperial
    *  "(9.8 in)" under "≈ 25 cm"), so a dual-unit value fits its cell and the
-   *  cell keeps its key (D36 drops the key of a value too wide to fit). */
+   *  cell keeps its key (D36 drops the key of a value too wide to fit). Read
+   *  aloud after the value unless `vA11y` already says it (the "−8.4 dBFS
+   *  dBFS" fix, 2026-11-14). */
   sub?: string;
   /** Value tint (e.g. levelColor ramp); default amber. */
   tint?: string;
@@ -43,6 +51,17 @@ export type BezelItem = {
   leavesFull?: boolean;
   /** Relative width of this cell (default 1). */
   flex?: number;
+  /** ADDITIVE (lab fix round 1, 2026-11-14, row 7): 1-3 plain words under the
+   *  value saying what the number MEANS ("where", "how much", "how wide"),
+   *  shown on the learner's FIRST visit to this stage only (RackStage
+   *  `captionsId`; BezelReadouts). At most 14 characters. */
+  caption?: string;
+  /** ADDITIVE (2026-11-14, row 3, the silent learner): what this cell reads
+   *  while SOUND IS OFF — a stored, last-heard or modelled value instead of a
+   *  bare "—". Swapped in automatically while the app's sound output is off;
+   *  read aloud with "(not heard: sound is off)". `sub` = an optional short
+   *  tag (MODEL, LAST). */
+  silent?: { v: string; sub?: string; vA11y?: string };
 };
 
 /** The pinned display. `render` receives the glass's inner width/height —
@@ -88,6 +107,25 @@ export type RackStage = {
    *  that do not set it look exactly as before. `onEnlarge` still works for
    *  a host that wants its own modal. */
   fullScreen?: boolean;
+  /** ADDITIVE (lab fix round 1, 2026-11-14, row 3): while SOUND IS OFF the
+   *  rack prints a line at the top of its well. `true` = the shared words
+   *  (silentPath SOUND_OFF_LINE: "Sound off? You can still do every step. The
+   *  readouts show what you would hear."); a string = the lab's own. Only for
+   *  a stage where that is true. Omitted = nothing, as before. */
+  soundOffLine?: boolean | string;
+  /** ADDITIVE (phase 3, 2026-11-14, owner's decision 3): the honesty note as
+   *  ONE plain sentence in sentence case ("This picture is a model of the
+   *  EQ, not a meter."), drawn where `badge` is, inline and in full screen.
+   *  Wins over `badge` when both are set. Never empty: it is a disclosure. */
+  modelNote?: string;
+  /** ADDITIVE (phase 3): true while the lab's own drawing is not painted yet
+   *  (a scene still loading): the glass shows "drawing…" instead of an empty
+   *  black box. The glass also shows it before its first measure. */
+  drawing?: boolean;
+  /** ADDITIVE (2026-11-14, row 7): the id under which this stage's bezel
+   *  captions (BezelItem.caption) count as seen. Default: the captions
+   *  joined. Two stages that teach the same strip may share one id. */
+  captionsId?: string;
 };
 
 /** One option inside an options tray. LabChip semantics preserved
@@ -179,6 +217,11 @@ export type DockParam =
        *  WITH a `chooser` still opens its chooser on a tap (2026-10-18), so
        *  the learner can pick an option that is not locked. */
       locked?: string;
+      /** ADDITIVE (beginner waves 2026-11-15, SN-1 from F8b TU-04 / SH-64):
+       *  what a `locked` key reads instead of LOCKED, for a key that is only
+       *  "not yet" (e.g. 'after 2 notes'). Set, the spoken label and the
+       *  tapped reason say "not yet" instead of "locked". Unset: unchanged. */
+      lockedValue?: string;
       /** Bind the lane to this fader the moment it APPEARS in the dock (opt-in,
        *  slider pass 2026-10-14). For a fader that a flip-through key reveals
        *  (Tuning: PART → Part C shows FIFTH): without it the lane stayed on
@@ -186,6 +229,10 @@ export type DockParam =
        *  "the slider didn't change anything". Never rebinds mid-drag: the
        *  switch waits for the finger to lift. */
       autoBind?: boolean;
+      /** ADDITIVE (2026-11-14, checker C4): how many positions the lane has
+       *  (a 12-fret FRET lane: 12). The lane's + / − keys then move exactly
+       *  one position per tap. Without it they step 5 % (laneStep.ts). */
+      steps?: number;
       helpKey?: string;
     }
   | {
@@ -216,6 +263,11 @@ export type DockParam =
        *  nothing in this state — the key shows LOCKED, dimmed, does not open,
        *  and a tap prints this reason under the keys (as a locked fader). */
       locked?: string;
+      /** ADDITIVE (beginner waves 2026-11-15, SN-1 from F8b TU-04 / SH-64):
+       *  what a `locked` key reads instead of LOCKED, for a key that is only
+       *  "not yet" (e.g. 'after 2 notes'). Set, the spoken label and the
+       *  tapped reason say "not yet" instead of "locked". Unset: unchanged. */
+      lockedValue?: string;
     }
   | {
       kind: 'group';
@@ -259,6 +311,11 @@ export type DockParam =
        *  under the keys (as a locked options key). Foundations M7 before the
        *  TIME / SPACE call, Room Design's item key with no item. */
       locked?: string;
+      /** ADDITIVE (beginner waves 2026-11-15, SN-1 from F8b TU-04 / SH-64):
+       *  what a `locked` key reads instead of LOCKED, for a key that is only
+       *  "not yet" (e.g. 'after 2 notes'). Set, the spoken label and the
+       *  tapped reason say "not yet" instead of "locked". Unset: unchanged. */
+      lockedValue?: string;
     }
   | {
       kind: 'action';

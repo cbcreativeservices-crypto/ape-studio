@@ -412,7 +412,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: the mallet strikes the head a third of the way in from the hoop. What does the far side of the head do?', options: ['It moves up while the struck side goes down', 'It moves down with the struck side', 'It stays still — only the struck side moves'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the whole head.' },
+  sound: { prompt: 'Before you step through: the mallet strikes the head a third of the way in from the hoop. What does the far side of the head do?', options: ['It moves up while the struck side goes down', 'It moves down with the struck side', 'It stays still — only the struck side moves'], after: 'Now go EVENT by EVENT through the stroke (or PLAY ONCE) and watch the whole head.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move from the shared spot high between the drums to a closer spot on one drum. What changes?', options: ['More of both drums', 'More attack from one drum', 'It depends on the hall and the passage'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits off to the side of a mic looking down at a drum. Which pattern can turn a null toward it?', options: ['Only a cardioid', 'A supercardioid or hypercardioid', 'None of them'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },

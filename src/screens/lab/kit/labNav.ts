@@ -9,7 +9,9 @@
  * useLabNav.ts only wires the taps. Kept React-free so every edge case is
  * unit-tested without Metro (test/labNav.test.ts), exactly like labEnd.ts.
  *
- * The strip, left to right:   [⏮] [‹ PREV]  MODULE / 3 / 8 ▾  [NEXT ›]
+ * The strip, left to right:   [⏮] [‹ PREV]  MODULE 3 ▾  [NEXT ›]
+ *   (owner decision 2, 2026-11-14: "N of total" progress counters removed —
+ *   it read "MODULE / 3 / 8"; the screen-reader label drops "of 8" too)
  *   • ⏮ and ‹ PREV dim on the first unit (never hidden, never removed);
  *   • the readout is a BUTTON that opens CONTENTS; it reads INTRO before the
  *     first unit and WHAT'S LEFT on the end screen;
@@ -18,7 +20,7 @@
  *
  * Positions: `i` is the 0-based unit index. `i === -1` is the INTRO (a host
  * that has one passes `intro: true` so PREV can return to it from unit 1).
- * Sub-step mode (`sub`) reads "MODULE 3 · STEP 2 / 4".
+ * Sub-step mode (`sub`) reads "MODULE 3 · STEP 2".
  */
 
 export const NAV = {
@@ -29,9 +31,17 @@ export const NAV = {
   intro: 'INTRO',
 } as const;
 
-/** The noun for a lab's top-level unit is ALWAYS "MODULE"; a unit's own
- *  sub-units are "STEP". Nothing else (no PAGE, SECTION, PART…). */
+/** The noun for a lab's top-level unit is "MODULE" unless the lab names its
+ *  own (owner decision 3, 2026-11-14: "one name per unit of progress in each
+ *  lab … used everywhere": module / lesson / chapter / step — see UnitNoun and
+ *  relabelView); a unit's own sub-units are "STEP". Never PAGE, SECTION, PART. */
 export type NavNoun = 'MODULE' | 'STEP';
+
+/** A lab's ONE unit noun (owner decision 3, 2026-11-14). Default 'module'.
+ *  'page' (Game Audio, De-Esser, both Mixing labs), 'screen' (DJ Systems),
+ *  'guide' (Mixing Guides) and 'stage' (Production labs) per the coordinator. */
+export type UnitNoun = 'module' | 'lesson' | 'chapter' | 'step' | 'page' | 'screen' | 'guide' | 'stage';
+export const UNIT_NOUNS: readonly UnitNoun[] = ['module', 'lesson', 'chapter', 'step', 'page', 'screen', 'guide', 'stage'];
 
 export type NavView = {
   /** ⏮ is live (not dimmed). */
@@ -42,7 +52,7 @@ export type NavView = {
   nextLabel: typeof NAV.next | typeof NAV.finish | null;
   /** The readout's top line ("MODULE", "MODULE 3 · STEP"); '' on the end screen. */
   noun: string;
-  /** The readout's bottom line ("3 / 8", "INTRO", "WHAT'S LEFT"). */
+  /** The readout's bottom line ("3", "INTRO", "WHAT'S LEFT") — never "3 / 8". */
   pos: string;
   /** Screen-reader labels. */
   a11y: { start: string; prev: string; next: string; pos: string };
@@ -90,7 +100,7 @@ export function navView(i: number, count: number, ending: boolean, sub?: NavSub,
         start: 'Back to the first module',
         prev: 'Previous module',
         next: count > 0 ? 'Next module' : "Finish the lab and see what's left",
-        pos: `Introduction, before module 1 of ${count}. Opens the contents`,
+        pos: 'Introduction, before module 1. Opens the contents',
       },
     };
   }
@@ -111,12 +121,12 @@ export function navView(i: number, count: number, ending: boolean, sub?: NavSub,
       prevOn,
       nextLabel,
       noun: `MODULE ${i + 1} · STEP`,
-      pos: `${sub.i + 1} / ${sub.count}`,
+      pos: `${sub.i + 1}`,
       a11y: {
         start: 'Back to the first module',
         prev: prevA11y,
         next: nextA11y,
-        pos: `Module ${i + 1} of ${count}, step ${sub.i + 1} of ${sub.count}. Opens the contents`,
+        pos: `Module ${i + 1}, step ${sub.i + 1}. Opens the contents`,
       },
     };
   }
@@ -126,13 +136,32 @@ export function navView(i: number, count: number, ending: boolean, sub?: NavSub,
     prevOn,
     nextLabel,
     noun: 'MODULE',
-    pos: `${i + 1} / ${count}`,
+    pos: `${i + 1}`,
     a11y: {
       start: 'Back to the first module',
       prev: prevA11y,
       next: nextA11y,
-      pos: `Module ${i + 1} of ${count}. Opens the contents`,
+      pos: `Module ${i + 1}. Opens the contents`,
     },
+  };
+}
+
+/**
+ * The strip in the lab's OWN unit noun (owner decision 3, 2026-11-14).
+ * navView speaks "module" (useLabNav builds it and is not changed here);
+ * LabNavBar passes the lab's noun through this, so every word the strip and
+ * its screen-reader labels say uses it: MODULE → CHAPTER, "Next module" →
+ * "Next chapter". 'module' returns the view unchanged.
+ */
+export function relabelView(view: NavView, noun: UnitNoun = 'module'): NavView {
+  if (noun === 'module') return view;
+  const up = noun.toUpperCase();
+  const cap = noun[0].toUpperCase() + noun.slice(1);
+  const swap = (t: string) => t.replace(/\bMODULE\b/g, up).replace(/\bModule\b/g, cap).replace(/\bmodule\b/g, noun);
+  return {
+    ...view,
+    noun: swap(view.noun),
+    a11y: { start: swap(view.a11y.start), prev: swap(view.a11y.prev), next: swap(view.a11y.next), pos: swap(view.a11y.pos) },
   };
 }
 

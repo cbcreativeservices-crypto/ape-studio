@@ -187,7 +187,7 @@ export function canConnect(system: SoundSystem, fromId: string, toId: string, ou
   const from = gearSpec(a.kind);
   const to = gearSpec(b.kind);
   if (from.emits.length === 0) {
-    return { ok: false, reason: `${from.name} has no signal output${from.kind === 'powerDistro' ? ' — it carries mains power, not audio' : ' — the sound leaves it as air'}.` };
+    return { ok: false, reason: `${from.name} has no signal output${from.kind === 'powerDistro' ? ' — it carries AC power, not audio' : ' — the sound leaves it as air'}.` };
   }
   if (to.accepts.length === 0 || to.accepts.every((l) => l === 'acoustic')) {
     return { ok: false, reason: `${to.name} is a source — signal starts there and cannot be fed into it.` };
@@ -430,6 +430,10 @@ export type ConsoleWalk = {
   /** In-ear packs fed a stereo pair at their transmitter → the pair, in
    *  console order (their feed is the in-ear aux of the pair). */
   pairs: ReadonlyMap<string, readonly [ConsoleOut, ConsoleOut]>;
+  /** ADDITIVE (lab fix round 2026-11-14, F2): the radiating sinks some
+   *  source reaches on a path that skips the console — the ones that make
+   *  `viaConsole` false. BUILD names them when a new cable creates one. */
+  bypassed: ReadonlySet<string>;
 };
 
 const isMulticore = (k: GearKind | undefined) => k === 'stagebox' || k === 'snake';
@@ -547,6 +551,7 @@ export function consoleWalk(system: SoundSystem): ConsoleWalk {
     feeds,
     arriving,
     pairs,
+    bypassed: new Set(sinks.filter((p) => bypass.has(p.id)).map((p) => p.id)),
   };
 }
 

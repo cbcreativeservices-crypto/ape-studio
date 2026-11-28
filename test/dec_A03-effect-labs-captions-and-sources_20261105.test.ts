@@ -40,8 +40,11 @@ describe('decision 2: the gate sends the ear to PINK NOISE', () => {
   const gate = configOf('gateConfig');
   it('the CLICK caption no longer promises chatter it cannot play', () => {
     assert.doesNotMatch(gate, /stops chattering/);
-    assert.match(gate, /only a 5 ms click, so RANGE, HOLD and RELEASE barely change/);
-    assert.match(gate, /to hear those three, choose PINK NOISE/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item GATE-02): the caption now says where the
+    // three keys show on the click, instead of that they barely change anything.
+    assert.match(gate, /On OUT, HOLD and RELEASE set how soon each hit’s tail is cut; ' \+\s*'RANGE shows on GR between the hits\./);
+    assert.doesNotMatch(gate, /barely change/);
+    assert.match(gate, /[Tt]o hear those three, choose PINK NOISE/);
   });
   it('choosing PINK NOISE says where those three can be heard', () => {
     const body = gate.match(/captionExtra: \(_v, src\) =>\n([\s\S]*?),\n {2}sources:/)?.[1];
@@ -53,7 +56,8 @@ describe('decision 2: the gate sends the ear to PINK NOISE', () => {
   it('the source order stays, and the guide says the same outside TRY THIS', () => {
     assert.match(gate, /sources: \[srcClick\(90\), SRC_PINK\]/);
     // 2026-11-08 (Comp B rewrite): same fact, the guide's new words.
-    assert.match(guide('gateScreenGuides.ts'), /SOURCE: CLICK 90 or PINK NOISE\. The click lasts only 5 ms, so RANGE, HOLD and RLS show on GR but you barely hear them\. To hear them, use PINK NOISE/);
+    // owner 2026-11-25, click tempo: the CLICK is named without its tempo (the student can move it).
+    assert.match(guide('gateScreenGuides.ts'), /SOURCE: CLICK or PINK NOISE\. The click lasts only 5 ms, so RANGE, HOLD and RLS show on GR but you barely hear them\. To hear them, use PINK NOISE/);
   });
 });
 
@@ -136,8 +140,9 @@ describe('decision 4: OVERSAMPLING has a source that reveals it', () => {
     const hi = { gen: { frequency: 5000 } };
     assert.match(caption({ 1: 1 }, { gen: { frequency: 220 } }), /barely shows on this source: choose SINE 5 kHz/);
     assert.match(caption({ 1: 1 }, { gen: {} }), /choose SINE 5 kHz/);
-    assert.match(caption({ 1: 1 }, hi), /^OS ON \(CLEAN\):.*try OS OFF \(ALIASING\)/);
-    assert.match(caption({ 1: 0 }, hi), /^OS OFF \(ALIASING\):.*not harmonics of 5 kHz, so this should sound rougher/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item DS-03): the key reads OVERSAMPLING, not OS.
+    assert.match(caption({ 1: 1 }, hi), /^OVERSAMPLING ON \(CLEAN\):.*try OFF \(ALIASING\)/);
+    assert.match(caption({ 1: 0 }, hi), /^OVERSAMPLING OFF \(ALIASING\):.*not harmonics of 5 kHz, so this should sound rougher/);
     assert.notEqual(caption({ 1: 1 }, hi), caption({ 1: 0 }, hi));
     assert.match(dist, /captionExtra: distOsCaption,/);
   });
@@ -153,8 +158,9 @@ describe('decision 4: OVERSAMPLING has a source that reveals it', () => {
     const g = guide('distortionScreenGuides.ts');
     // 2026-11-08 (Comp B rewrite): same facts, the guide's new words ("it isn’t drawn" = sound only).
     assert.match(g, /SOURCE picks SINE 220 Hz, 5 kHz or PINK NOISE\./);
-    assert.match(g, /OS \(oversampling\) picks ON \(CLEAN\) or OFF \(ALIASING\): heard on SINE 5 kHz,/);
-    assert.match(g, /OS \(oversampling\) picks [^.]*, not drawn\./);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item DS-03): the key reads OVERSAMPLING, not OS.
+    assert.match(g, /OVERSAMPLING: ON \(CLEAN\) or OFF \(ALIASING\), heard on SINE 5 kHz,/);
+    assert.match(g, /OVERSAMPLING: [^.]*, not drawn\./);
     assert.match(g, /takes it\), so no TRY THIS asks the learner to SEE it/);
   });
 });

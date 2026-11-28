@@ -18,6 +18,7 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
 import { GAIN_MODULES, GAIN_SECTION_META, type GainModuleId } from './modules/registry';
 import { LabEndLink, LabEndScreen } from '../kit/LabEndScreen';
+import { GAIN_HOW_IT_COUNTS, GAIN_LEFT } from './modules/registry';
 import { ScreenGuideHost } from '../../../features/lab/screenGuide';
 import { GAIN_END_GUIDE, GAIN_HOME_GUIDE } from './gainScreenGuides';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
@@ -71,8 +72,12 @@ export function GainLabHomeScreen() {
       />
       {ending ? (
         <LabEndScreen
+          // The recap and next-lab card (labEndContent.ts, S4).
+          labId="af_gain_staging"
           labTitle="Gain Staging Lab"
-          units={GAIN_MODULES.map((m) => ({ id: m.id, label: m.title }))}
+          units={GAIN_MODULES.map((m) => ({ id: m.id, label: m.title, detail: GAIN_LEFT[m.id] }))}
+          // Phase 2 end screen (2026-11-14): the rule every row shares, said once.
+          howItCounts={GAIN_HOW_IT_COUNTS}
           cleared={clearedUnits}
           unreadable={unreadable}
           mode="credit"
@@ -91,11 +96,11 @@ export function GainLabHomeScreen() {
             </View>
           ))}
         </View>
+        {/* GN-04 (owner 2026-11-15: "build waves 1 thru 3", D62): a picture a beginner can feel, in
+            place of the textbook paragraph about operating levels and headroom. */}
         <Text style={styles.body}>
-          Gain staging is not about making everything as loud as possible — it’s about maintaining
-          an appropriate operating level from one stage to the next: enough signal to stay above
-          the noise, enough headroom to avoid overload. Adjust each stage and watch the signal
-          propagate through the system.
+          Sound travels through several boxes before it reaches a speaker. Each box needs the right
+          amount: too little and you hear hiss, too much and it crunches.
         </Text>
 
         {/* UNREADABLE is not "not started" (owner 2026-10-03, "do 2"; D51):

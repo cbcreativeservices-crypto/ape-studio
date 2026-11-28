@@ -50,6 +50,7 @@ import { C20, EQUAL_PATH_MM, deltaTms, notchDepthDb, notchesHz } from '../../eng
 import { fmtAngle, fmtDb, fmtHz, fmtIdealPickup, fmtLen, fmtMs, isDeepNull } from '../../engine/model/units.ts';
 import { MIC_TYPES, micType } from '../../data/micTypes';
 import { PTroubleshoot } from '../../pages/PReadPages';
+import { SteadyScene, useAimRide } from '../../pages/PContext';
 import { lineFoot, workedMark, type WorkedMark } from '../../pages/PPlacement';
 import type { PageProps } from '../../pages/pageTypes';
 import { Chip, GMicrophone, GPractice, factsStep, micSentence, posParams, startStep, type AimAxis, type AxisWords, type PosAxis } from '../shared/journeyPages';
@@ -65,6 +66,7 @@ import { CAB_ORDER, SPK_CABS } from './geometry.ts';
 import { cabArt } from './art';
 import type { Back } from '../shared/speakers/cabGeometry.ts';
 import { viewToggle } from '../../engine/scene/viewToggle.ts';
+import { zoneActivityLine } from '../../engine/progress/zoneActivity.ts';
 
 const G = GRILLE_X.mm;
 
@@ -187,7 +189,7 @@ export function SpkInstrument({ lesson, journey, hidden }: PageProps) {
                 if (p) pick(p.id);
               },
               format: () => (shown ? shown.short.toUpperCase() : 'step through the parts'),
-              formatShort: () => (shown ? shown.short.toUpperCase().slice(0, 9) : 'STEP'),
+              formatShort: () => (shown ? shown.short.toUpperCase().slice(0, 9) : 'PICK'),
             },
             parts.length,
             parts.findIndex((p) => p.id === livePart),
@@ -251,7 +253,7 @@ export function SpkInstrument({ lesson, journey, hidden }: PageProps) {
               setLView(p.view);
             },
             format: () => (lp ? lp.title : 'step through the parts'),
-            formatShort: () => (lp ? lp.title.split(' ')[0].slice(0, 9) : 'STEP'),
+            formatShort: () => (lp ? lp.title.split(' ')[0].slice(0, 9) : 'PICK'),
           },
           {
             kind: 'options',
@@ -376,7 +378,7 @@ export function SpkSound({ lesson, answers, onAnswered, onInteractive, interacti
         render: (w, h) => <ConeSequence w={w} h={h} back={back} reveal={reveal} shown={shown} accessibilityLabel={`The 1 by 12 cabinet cut open from the side, ${back} back. Event ${shown} of ${n}: ${stage.title}. ${stageText(shown - 1)}`} />,
         badge: 'The order of events, not their speed · cone motion drawn much larger · silent',
         bezel: [
-          { k: 'EVENT', v: `${shown} / ${n}`, flex: 0.8 },
+          { k: 'EVENT', v: `${shown}`, flex: 0.8 },
           { k: 'CONE', v: shown >= 2 ? 'FORWARD' : 'AT REST', flex: 1.1 },
           { k: 'FRONT AIR', v: shown >= 3 ? 'PUSHED' : '—', flex: 1.1 },
           { k: 'BACK AIR', v: shown >= 3 ? (back === 'open' ? 'PULLED · OUT' : 'PULLED · IN BOX') : '—', flex: 1.4 },
@@ -386,18 +388,18 @@ export function SpkSound({ lesson, answers, onAnswered, onInteractive, interacti
             {
               kind: 'fader',
               id: 'step',
-              label: 'STEP',
+              label: 'EVENT',
               value: (shown - 1) / Math.max(1, n - 1),
               onChange: (v) => goTo(1 + Math.round(v * (n - 1))),
-              format: () => `${shown} of ${n} · ${stage.title.toLowerCase()}`,
-              formatShort: () => `${shown} / ${n}`,
+              format: () => `${stage.title.toLowerCase()}`,
+              formatShort: () => `${shown}`,
             },
             n,
             shown - 1,
             (i) => `${i + 1} · ${S.stages[i].title}`,
             (i) => goTo(i + 1),
           ),
-          { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: play, tint: colors.green },
+          { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT EVENT', onPress: play, tint: colors.green },
           {
             kind: 'options',
             id: 'back',
@@ -416,7 +418,7 @@ export function SpkSound({ lesson, answers, onAnswered, onInteractive, interacti
       well: (
         <>
           {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
-          <Landing looking={`Side view · the 1 × 12 cut open · ${back} back`} prompt="STEP through the four events, or PLAY ONCE — it stops at the end. Nothing here makes a sound." />
+          <Landing looking={`Side view · the 1 × 12 cut open · ${back} back`} prompt="Go EVENT by EVENT through the four events, or PLAY ONCE — it stops at the end. Nothing here makes a sound." />
           <Card>
             <Point title={`${shown} · ${stage.title.toUpperCase()}`}>{stageText(shown - 1)}</Point>
           </Card>
@@ -622,7 +624,7 @@ export function SpkSetting({ lesson, answers, onAnswered }: PageProps) {
                 if (it) pickChain(it.id);
               },
               format: () => (cs ? `${cs.short} · ${cs.tag}` : `step through the ${chainItems.length} items`),
-              formatShort: () => (cs ? cs.short.slice(0, 9) : 'STEP'),
+              formatShort: () => (cs ? cs.short.slice(0, 9) : 'PICK'),
             },
             chainItems.length,
             chainItems.findIndex((q) => q.id === chainSel),
@@ -681,7 +683,7 @@ export function SpkSetting({ lesson, answers, onAnswered }: PageProps) {
                 if (it) setSel(it.id);
               },
               format: () => (ps ? `${ps.short} · ${ps.tag}` : `step through the ${planItems.length} items`),
-              formatShort: () => (ps ? ps.short.slice(0, 9) : 'STEP'),
+              formatShort: () => (ps ? ps.short.slice(0, 9) : 'PICK'),
             },
             planItems.length,
             planItems.findIndex((q) => q.id === sel),
@@ -849,7 +851,12 @@ export function SpkPlacement({ lesson, answers, onAnswered, onInteractive, inter
   const lastVersion = useRef(-1);
   useEffect(() => {
     if (rig.version === lastVersion.current) return;
+    const opening = lastVersion.current < 0;
     lastVersion.current = rig.version;
+    // ONE rule in every Placement Studio (fix round 2026-11-14, checker C4):
+    // the pose the studio opens at is GIVEN, never rested; only the learner's
+    // own moves (drag, fader, ZONE, SETUP) count.
+    if (opening) return;
     if (r0.zoneId && !r0.blocked) setVisited((prev) => (prev.has(r0.zoneId!) ? prev : new Set([...prev, r0.zoneId!])));
   }, [rig.version, r0.zoneId, r0.blocked]);
   const available = zonesAvailable(rig.lesson.zones, rig.variant, mic.typeId, t.mount);
@@ -895,7 +902,7 @@ export function SpkPlacement({ lesson, answers, onAnswered, onInteractive, inter
       selectedId: zone?.id ?? null,
       onSelect: (id) => {
         const z = rig.lesson.zones.find((q) => q.id === id);
-        if (z) rig.jumpTo('A', z.start);
+        if (z) rig.jumpTo('A', z.start, z.id);
       },
       options: available.map((z) => ({ id: z.id, label: z.label, blurb: z.band })),
     },
@@ -975,8 +982,11 @@ export function SpkPlacement({ lesson, answers, onAnswered, onInteractive, inter
       },
       format: () => (power ? 'switch the cabinet OFF to move a mic' : `${fmtLen(dClose)} outside the cabinet`),
       formatShort: () => lenCell(dClose).v.replace('≈ ', ''),
+      // A pair farther back stands at its own ≈ 2 m (leslieMics 'room'): DISTANCE
+      // moves only the close mics (round 2, audit Appendix E row 12, owner 2026-11-25).
+      locked: rotaryLocks(arr, hasLower).dist,
     },
-    { kind: 'options', id: 'lower', label: 'LOWER AT', valueLabel: lowerFace === 'front' ? 'FRONT' : 'BACK', selectedId: lowerFace, onSelect: (id) => !power && setLowerFace(id as 'front' | 'back'), options: [{ id: 'front', label: 'FRONT LOWER OPENING', blurb: 'The usual starting place for the lower mic.' }, { id: 'back', label: 'BACK LOWER OPENING', blurb: 'An organist’s variation: the lower mic about 7.5 cm (3 in) outside the back opening.' }] },
+    { kind: 'options', id: 'lower', label: 'LOWER AT', valueLabel: lowerFace === 'front' ? 'FRONT' : 'BACK', selectedId: lowerFace, onSelect: (id) => !power && setLowerFace(id as 'front' | 'back'), locked: rotaryLocks(arr, hasLower).lower, options: [{ id: 'front', label: 'FRONT LOWER OPENING', blurb: 'The usual starting place for the lower mic.' }, { id: 'back', label: 'BACK LOWER OPENING', blurb: 'An organist’s variation: the lower mic about 7.5 cm (3 in) outside the back opening.' }] },
     { kind: 'toggle', id: 'power', label: 'CABINET OFF', value: false, onToggle: () => setPower(true) },
     { kind: 'options', id: 'view', label: 'VIEW', valueLabel: lView === 'plan' ? 'ABOVE' : 'FRONT', selectedId: lView, onSelect: (id) => setLView(id as LeslieView), options: [{ id: 'plan', label: 'FROM ABOVE', blurb: 'Both rotor levels, and the mics around them.' }, { id: 'front', label: 'FROM THE FRONT', blurb: 'The mics at their heights.' }] },
   ];
@@ -995,7 +1005,7 @@ export function SpkPlacement({ lesson, answers, onAnswered, onInteractive, inter
         badge: 'WORKED EXAMPLE · placed for you · blue = suggested starting point · dashed lobe = pattern shape',
         bezel: exBezel,
         params: [
-          tapsWhenFew({ kind: 'fader', id: 'piece', label: 'STEP', value: exStep / (worked.length - 1), onChange: (v) => setExStep(Math.round(v * (worked.length - 1))), format: () => `${exStep + 1} of ${worked.length} · ${wk.title.toLowerCase()}`, formatShort: () => `${exStep + 1} / ${worked.length}` }, worked.length, exStep, (i) => `${i + 1} · ${worked[i].title}`, setExStep),
+          tapsWhenFew({ kind: 'fader', id: 'piece', label: 'PIECE', value: exStep / (worked.length - 1), onChange: (v) => setExStep(Math.round(v * (worked.length - 1))), format: () => `${wk.title.toLowerCase()}`, formatShort: () => `${exStep + 1}` }, worked.length, exStep, (i) => `${i + 1} · ${worked[i].title}`, setExStep),
           ...viewToggle({ view: exView, setView: setExView, stage: 'dual' }),
         ],
         initialParam: 'piece',
@@ -1029,7 +1039,7 @@ export function SpkPlacement({ lesson, answers, onAnswered, onInteractive, inter
           <NowLine text={cabNow(rig, ['A'])} />
           {shown.blocked ? <Note tone="warn">{`It would touch the ${shown.blocked.label} — the mic stops there. Keep it off the grille cloth.`}</Note> : null}
           {zone ? <ZoneCard z={zone} /> : <Body>{`Not at a suggested starting point. Starting points for this mic: ${available.map((z) => z.label).join('; ')}.`}</Body>}
-          <Body>{`Activity: zones rested in, clear of every part — ${visited.size} of 2${visited.size ? ` (${[...visited].map((id) => rig.lesson.zones.find((z) => z.id === id)?.label ?? id).join('; ')})` : ''}.`}</Body>
+          <Body>{zoneActivityLine([...visited].map((id) => rig.lesson.zones.find((z) => z.id === id)?.label ?? id))}</Body>
           {tried ? <Note tone="ok">{`You predicted “${predicted}”. Across the cone at the same distance, the edge most often sounds mellower — and speakers vary, so “it depends on this speaker” is fair too.`}</Note> : null}
           {cab.kind !== '1x12' ? <Note>The zones sit on the miked speaker (ringed on page 1). Placing a mic between two speakers can give strong phase effects — start on one.</Note> : null}
           {cab.kind === 'bass410' ? <Note>A bass cabinet: a low-frequency-capable mic with enough headroom, and listen for what the horn adds — one cone may not represent the whole cabinet.</Note> : null}
@@ -1121,6 +1131,14 @@ export function SpkContext({ lesson, answers, onAnswered, onInteractive, interac
   const db = gainDb(pattern, theta);
   const inNull = nearNull(pattern, theta, NULL_TOL);
   const nulls = nullAngles(pattern);
+  // While AIM rides: the inset's dot and the OFF AXIS / PICKUP / REJECTION
+  // cells follow the mic (fix-first 15 item 4, pages/PContext useAimRide).
+  // The credit and the read-aloud label keep the saved pose, as before.
+  const aimLive = useAimRide(rig);
+  const thetaNow = arrivalAngle(aimLive.pose, src);
+  const dbNow = gainDb(pattern, thetaNow);
+  const inNullNow = nearNull(pattern, thetaNow, NULL_TOL);
+  const wedgeArt = useMemo(() => (live ? { at: wedge.p, faces: wedge.faces, src } : null), [live, wedge, src]);
   const tried = predicted != null && aimed;
   useEffect(() => {
     if (live && wedge.id === 'guitarWedge' && inNull && aimed && !interactiveDone.has('wedgeInNull')) onInteractive('wedgeInNull');
@@ -1132,8 +1150,8 @@ export function SpkContext({ lesson, answers, onAnswered, onInteractive, interac
   const lim = aimAxis === 'az' ? AZ_MAX : EL_MAX;
   const aimHeld = previewMemo();
   const FLOOR = L['1x12'].model.yFloor.mm;
-  const PLAN: ViewBox = wedge.id === 'sideFill' ? { u0: -500, u1: 2250, v0: -1850, v1: 650 } : { u0: -500, u1: 2250, v0: -800, v1: 800 };
-  const SIDE: ViewBox = { u0: -500, u1: 2250, v0: -520, v1: FLOOR + 40 };
+  const PLAN: ViewBox = useMemo(() => (wedge.id === 'sideFill' ? { u0: -500, u1: 2250, v0: -1850, v1: 650 } : { u0: -500, u1: 2250, v0: -800, v1: 800 }), [wedge.id]);
+  const SIDE: ViewBox = useMemo(() => ({ u0: -500, u1: 2250, v0: -520, v1: FLOOR + 40 }), [FLOOR]);
   const params: DockParam[] = [
     {
       kind: 'fader',
@@ -1145,9 +1163,11 @@ export function SpkContext({ lesson, answers, onAnswered, onInteractive, interac
       // engine's fader contract, 2026-10-06: no page re-render per move).
       onChange: (v) => {
         const ang = Math.round((v * 2 - 1) * lim);
+        aimLive.ride();
         aimHeld.note(v, rig.preview('A', aimAxis === 'az' ? { ...pose, az: ang } : { ...pose, el: ang }));
       },
       onCommit: () => {
+        aimLive.rest();
         rig.commit('A');
         setAimed(true);
       },
@@ -1188,10 +1208,10 @@ export function SpkContext({ lesson, answers, onAnswered, onInteractive, interac
   ];
   const bezel: BezelItem[] = live
     ? [
-        { k: 'OFF AXIS', v: `≈ ${Math.round(theta / 5) * 5}°`, sub: 'monitor', flex: 1 },
-        isDeepNull(db) ? { k: 'PICKUP', v: 'DEEP NULL', flex: 1.15 } : { k: 'PICKUP', v: fmtDb(db), flex: 1.15 },
+        { k: 'OFF AXIS', v: `≈ ${Math.round(thetaNow / 5) * 5}°`, sub: 'monitor', flex: 1 },
+        isDeepNull(dbNow) ? { k: 'PICKUP', v: 'DEEP NULL', flex: 1.15 } : { k: 'PICKUP', v: fmtDb(dbNow), flex: 1.15 },
         { k: 'NULL', v: tried ? `≈ ${Math.round(nulls[0])}°` : '?', flex: 0.8 },
-        { k: 'REJECTION', v: inNull ? 'IN NULL' : 'NO', tint: inNull ? '#5bff85' : undefined, flex: 1.15 },
+        { k: 'REJECTION', v: inNullNow ? 'IN NULL' : 'NO', tint: inNullNow ? '#5bff85' : undefined, flex: 1.15 },
       ]
     : [
         { k: 'SCENARIO', v: 'STUDIO' },
@@ -1208,8 +1228,8 @@ export function SpkContext({ lesson, answers, onAnswered, onInteractive, interac
       layout: 'rack',
       rack: {
         render: (w, h) => (
-          <PatternInset w={w} h={h} typeId={rig.mics[0].typeId} pattern={pattern} view={view} box={view === 'top' ? PLAN : SIDE} avoid={live ? [pose.p, CAB_AT, wedge.p] : [pose.p, CAB_AT]} angle={live ? theta : 0} source={live ? 'MONITOR' : null}>
-            {(sceneW) => <PlacementScene rig={rig} art={cabArt('1x12')} view={view} w={sceneW} h={h} slots={['A']} showZones={false} interactive={false} boxOverride={view === 'top' ? PLAN : SIDE} wedge={live ? { at: wedge.p, faces: wedge.faces, src } : null} showLabels={false} accessibilityLabel={label} />}
+          <PatternInset w={w} h={h} typeId={rig.mics[0].typeId} pattern={pattern} view={view} box={view === 'top' ? PLAN : SIDE} avoid={live ? [pose.p, CAB_AT, wedge.p] : [pose.p, CAB_AT]} angle={live ? thetaNow : 0} source={live ? 'MONITOR' : null}>
+            {(sceneW) => <SteadyScene rig={rig} art={cabArt('1x12')} view={view} w={sceneW} h={h} slots={['A']} showZones={false} interactive={false} boxOverride={view === 'top' ? PLAN : SIDE} wedge={wedgeArt} showLabels={false} accessibilityLabel={label} />}
           </PatternInset>
         ),
         badge: live ? `${patternInsetBadge(true)} · counts as done within ±${NULL_TOL}° of a null · monitors where a stage often puts them` : patternInsetBadge(false),
@@ -1264,6 +1284,69 @@ export function SpkContext({ lesson, answers, onAnswered, onInteractive, interac
 }
 
 /* ═══════════════ 6b · TWO MICROPHONES ═══════════════ */
+/**
+ * Why a rotary pickup control is locked, or undefined where it moves a mic
+ * (round 2, audit Appendix E row 12, owner 2026-11-25). DISTANCE set the close
+ * mics only, so with "A pair farther back" it changed its number and nothing
+ * moved; LOWER AT moved nothing without a lower mic (one upper mic, or the
+ * room pair). Locked, as PTwoOverheads locks X/Y ANGLE, and the tap says why.
+ */
+export function rotaryLocks(arr: LeslieArrangement, hasLower: boolean): { dist: string | undefined; lower: string | undefined } {
+  return {
+    dist: arr === 'room' ? 'the pair farther back stands about 2 m away — DISTANCE moves the close mics; choose a close pickup under PICKUP.' : undefined,
+    lower: hasLower ? undefined : 'this pickup has no lower mic — choose one with LOWER under PICKUP.',
+  };
+}
+
+/** A mic's pickup of its own side of the cone (the front/rear pair): a
+ *  cardioid's ideal pickup toward `s`, over the distance in meters (a
+ *  simplified picture). One function for the saved poses and the live ones. */
+export function pairGain(pose: MicPose, s: Vec3, p: MicPattern): number {
+  'worklet';
+  const r = Math.max(1, dist(pose.p, s)) / 1000;
+  return Math.max(0.001, Math.abs(p === 'cardioid' ? 0.5 + 0.5 * Math.cos((arrivalAngle(pose, s) * Math.PI) / 180) : 1)) / r;
+}
+
+type PairNow = { dMm: number; gA: number; gB: number };
+
+/** The front/rear pair at poses a, b: the rear's extra path and both pickups. */
+export function pairNow(a: MicPose, b: MicPose, sFront: Vec3, sBack: Vec3, patA: MicPattern, patB: MicPattern): PairNow {
+  'worklet';
+  return { dMm: dist(b.p, sBack) - dist(a.p, sFront), gA: pairGain(a, sFront, patA), gB: pairGain(b, sBack, patB) };
+}
+
+/** Two pair states the comb would draw alike (whole mm of path, 0.1 % of level). */
+export function samePairShown(x: PairNow, y: PairNow): boolean {
+  'worklet';
+  return Math.round(x.dMm) === Math.round(y.dMm) && Math.round(x.gA * 1000) === Math.round(y.gA * 1000) && Math.round(x.gB * 1000) === Math.round(y.gB * 1000);
+}
+
+/**
+ * The front/rear pair's comb in the well, following a drag or a POSITION /
+ * AIM ride (round 2, audit Appendix E row 14, owner 2026-11-25): it waited
+ * for the finger to lift, while the shared two-mic page's CombPanel follows
+ * the live poses. CombPanel sums ONE source; this pair hears two (the cone's
+ * front for A, its back for B), so the same reaction-from-the-shared-poses
+ * feeds PairComb here. Only this small panel re-renders, and only when what
+ * it draws changes; at rest the shared poses ARE the saved ones, so the
+ * graph is exactly the one drawn before.
+ */
+function LivePairComb({ rig, sFront, sBack, patA, patB, sEff, w, h, labelFor }: { rig: Rig; sFront: Vec3; sBack: Vec3; patA: MicPattern; patB: MicPattern; sEff: 1 | -1; w: number; h: number; labelFor: (dMm: number) => string }) {
+  const a = rig.pose.A;
+  const b = rig.pose.B;
+  const A = rig.mics.find((m) => m.slot === 'A')!;
+  const B = rig.mics.find((m) => m.slot === 'B')!;
+  const [now, setNow] = useState<PairNow>(() => pairNow(A.pose, B.pose, sFront, sBack, patA, patB));
+  useAnimatedReaction(
+    () => pairNow(a.value, b.value, sFront, sBack, patA, patB),
+    (v, prev) => {
+      if (!prev || !samePairShown(v, prev)) scheduleOnRN(setNow, v);
+    },
+    [a, b, sFront, sBack, patA, patB],
+  );
+  return <PairComb w={w} h={h} dtMs={deltaTms(now.dMm)} gA={now.gA} gB={now.gB} sEff={sEff} label={labelFor(now.dMm)} />;
+}
+
 export function SpkTwoMic({ lesson, answers, onAnswered, onInteractive, interactiveDone, hidden }: PageProps) {
   const L = cabLessons(lesson);
   const zl = L['1x12'].zones;
@@ -1290,12 +1373,8 @@ export function SpkTwoMic({ lesson, answers, onAnswered, onInteractive, interact
   const dMm = dist(B.pose.p, sBack) - dist(A.pose.p, sFront);
   const dt = deltaTms(dMm);
   const equal = Math.abs(dMm) < EQUAL_PATH_MM;
-  const gainOf = (pose: MicPose, s: Vec3, p: MicPattern) => {
-    const r = Math.max(1, dist(pose.p, s)) / 1000;
-    return Math.max(0.001, Math.abs(p === 'cardioid' ? 0.5 + 0.5 * Math.cos((arrivalAngle(pose, s) * Math.PI) / 180) : 1)) / r;
-  };
-  const gA = gainOf(A.pose, sFront, A.pattern);
-  const gB = gainOf(B.pose, sBack, B.pattern);
+  const gA = pairGain(A.pose, sFront, A.pattern);
+  const gB = pairGain(B.pose, sBack, B.pattern);
   // The back of the cone is the same motion, opposite in sign: the sum's
   // EFFECTIVE polarity is the switch times −1.
   const sEff = (B.polarity * -1) as 1 | -1;
@@ -1334,7 +1413,13 @@ export function SpkTwoMic({ lesson, answers, onAnswered, onInteractive, interact
     { k: 'REAR', v: B.polarity === 1 ? 'SWITCH +' : 'SWITCH −', sub: sEff === 1 ? 'in step' : 'opposed', tint: sEff === 1 ? '#5bff85' : '#ff6b5e', flex: 1.2 },
   ];
   const [wellW, setWellW] = useState(0);
-  const combLabel = `Simplified sum of the front and rear mics: ${equal ? 'no path difference' : `path difference ${fmtLen(Math.abs(dMm))}, delay ${fmtMs(dt)}`}; the rear polarity switch is ${B.polarity === 1 ? 'normal, so the sum is opposed' : 'inverted, so the sum is in step'}${first ? `; first notch about ${fmtHz(first)}` : ''}.`;
+  // The comb's words for the pair as it is drawn (live during a drag).
+  const combLabelFor = (dm: number) => {
+    const t = deltaTms(dm);
+    const eq = Math.abs(dm) < EQUAL_PATH_MM;
+    const f1 = eq ? null : notchesHz(t, sEff, 20000, 4)[sEff === 1 ? 0 : 1] ?? null;
+    return `Simplified sum of the front and rear mics: ${eq ? 'no path difference' : `path difference ${fmtLen(Math.abs(dm))}, delay ${fmtMs(t)}`}; the rear polarity switch is ${B.polarity === 1 ? 'normal, so the sum is opposed' : 'inverted, so the sum is in step'}${f1 ? `; first notch about ${fmtHz(f1)}` : ''}.`;
+  };
   const pred = lesson.predictions.twoMic;
   const tick = (on: boolean) => (on ? '✓' : '○');
   const steps: MikingStep[] = [
@@ -1358,7 +1443,7 @@ export function SpkTwoMic({ lesson, answers, onAnswered, onInteractive, interact
             {`Activity: polarity → − ${tick(flips.toInv)} · back to + ${tick(flips.toNorm)} · mic moved ${tick(moved)}`}
           </Text>
           <NowLine text={cabNow(rig, ['A', 'B'])} />
-          <View onLayout={(e) => setWellW(Math.round(e.nativeEvent.layout.width))}>{wellW > 0 ? <PairComb w={wellW} h={150} dtMs={dt} gA={gA} gB={gB} sEff={sEff} label={combLabel} /> : null}</View>
+          <View onLayout={(e) => setWellW(Math.round(e.nativeEvent.layout.width))}>{wellW > 0 ? <LivePairComb rig={rig} sFront={sFront} sBack={sBack} patA={A.pattern} patB={B.pattern} sEff={sEff} w={wellW} h={150} labelFor={combLabelFor} /> : null}</View>
           <Body>{B.polarity === 1 ? 'With the rear switch at +, the two arrive OPPOSED: the back of the cone is the same motion, inverted. The lows cancel most — thin.' : 'With the rear switch at −, the inversion is undone: the two arrive in step, and only the delay is left — its notches sit higher up.'}</Body>
           {predicted != null && (flips.toInv || flips.toNorm) ? <Note tone="ok">{`You predicted “${predicted}”. Δt did not change when you flipped polarity — only moving a mic changes it. Polarity flips the sign: the notches and peaks swap places, but the delay stays.`}</Note> : null}
           <Note tone="warn">Each mic really hears its own side of the cone AND the room, so this graph shows only the shared part, not what the pair will sound like. Judge it by ear, in mono, at matched levels.</Note>

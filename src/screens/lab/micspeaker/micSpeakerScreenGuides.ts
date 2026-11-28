@@ -36,14 +36,14 @@ export const MIC_SCREEN_GUIDES: Record<MicSectionId, ScreenGuide> = {
       start: 'Watch the waves push the diaphragm, then follow one ⊗/⊙ mark as it flips. Read e = B · l · v under the drawing, then open WHAT’S HAPPENING.',
     },
     seeing: [
-      'Inside a moving-coil (dynamic) mic: the diaphragm, the coil behind it, and the magnet’s gap. The coil’s real motion is too small to draw, so it stays still in the picture; watch the waves, the current and its glow.',
+      'Inside a moving-coil (dynamic) mic: the diaphragm, the coil behind it, and the magnet’s gap. The coil’s real motion is too small to see, so it is drawn about 1,000× larger: watch the diaphragm and coil slide in the gap.',
       'The amber glow is the current the coil makes. The ⊗/⊙ marks show which way it flows, and they flip each time it reverses.',
       'Under it, e = B · l · v: the voltage follows the coil’s VELOCITY.',
     ],
     control: [
       'There’s nothing to set here. The drawing moves on its own, so watch it and read the notes below it.',
       'Tap ⤢ FULL SCREEN, under the drawing, to see the coil and the magnet larger. Tap ⓘ WHAT THE DISPLAY SHOWS for a short explanation of the cutaway.',
-      'Use ‹ PREV and NEXT › in the strip under the title to move between the lab’s sections; the strip calls each one a MODULE. Tap the middle of the strip to see the full list.',
+      'This is the lab’s last module, for the curious. FINISH › at its foot counts it and shows what’s left.',
     ],
     changes: [
       'Sound pressure pushes the diaphragm, and the diaphragm drags the coil through the magnet’s gap.',
@@ -56,15 +56,15 @@ export const MIC_SCREEN_GUIDES: Record<MicSectionId, ScreenGuide> = {
       'The coil moves back and forth, so the voltage swings positive and negative: a mic’s output is AC (alternating current), a copy of the sound wave’s motion.',
     ],
     tryThis: [
-      'Watch one ⊗/⊙ marker: it swaps twice per cycle. Each swap is the current reversing, because the coil has turned back (AC).',
-      'Watch the amber glow pulse: brightest when the current is strongest (the coil moving fastest), dim as the current passes through zero and reverses.',
+      'Watch one ⊗/⊙ marker: it swaps at each end of the coil’s travel, twice per cycle. Each swap is the current reversing, because the coil has turned back (AC).',
+      'Watch the amber glow pulse: brightest as the coil passes the middle of its travel (moving fastest), gone at each end, where the coil stops and turns back.',
     ],
   },
 
   // ── 2 · POLAR ─────────────────────────────────────────────────────────────
   polar: {
     intro: {
-      learning: 'A mic hears some directions better than others. Its polar pattern maps that sensitivity, and a null is a deaf direction you can aim at unwanted sound.',
+      learning: 'A microphone hears some directions better than others. Its polar pattern maps that sensitivity, and a null is a deaf direction you can aim at unwanted sound.',
       start: 'On CARDIOID, drag the speaker behind the mic until PICKUP reads NULL. Then open PATTERN and try FIGURE-8 and OMNI with the speaker in the same spot.',
     },
     seeing: [
@@ -73,6 +73,8 @@ export const MIC_SCREEN_GUIDES: Record<MicSectionId, ScreenGuide> = {
       'SOURCE is the speaker’s angle from the mic’s front. PICKUP is the level in dB compared with straight ahead, or NULL ≤−26 dB. PATTERN names the pattern in use.',
     ],
     control: [
+      // MI-04 (owner 2026-11-15, "build waves 1 thru 3", D62): POLAR opens the lab, so the strip is explained here.
+      'Use ‹ PREV and NEXT › in the strip under the title to move between the lab’s sections; the strip calls each one a MODULE. Tap the middle of the strip to see the full list.',
       'Drag the speaker anywhere on the display (DRAG THE SPEAKER — ANYWHERE). It can touch the mic but can’t sit on top of it.',
       'Open PATTERN and choose OMNI, CARDIOID (where you start), SUPER, HYPER or FIGURE-8. The tray stays open, so you can flip between them while the field redraws. Each option has a one-line description.',
       'Tap ⤢ FULL SCREEN for a bigger field. You can still drag the speaker there.',
@@ -108,7 +110,7 @@ export const MIC_SCREEN_GUIDES: Record<MicSectionId, ScreenGuide> = {
     ],
     control: [
       'Move the DISTANCE fader to place the mic 4 in to 48 in from the mouth. You start at 17 in.',
-      'As you move it, the mic slides through the field, and the fader lane shows the distance and the level compared with 4 in.',
+      'As you move it, the mic slides through the field, and the slider shows the distance and the level compared with 4 in.',
       'Tap ⤢ FULL SCREEN to see the talker, the mic and the room’s glow larger.',
     ],
     changes: [
@@ -328,7 +330,7 @@ export const MIC_SCREEN_GUIDES: Record<MicSectionId, ScreenGuide> = {
   mistakes: {
     intro: {
       learning: 'The six handheld-mic habits that hurt the sound or the show, and which principle each one breaks: the pattern, the angle, the distance, or stagecraft.',
-      start: 'Swipe through the seven cards and guess each habit before you read its title. Then play SPOT THE MISTAKE — 3 ROUNDS.',
+      start: 'Swipe through the seven cards: look at each picture first and guess the habit, then read its title. Then play SPOT THE MISTAKE — 3 ROUNDS.',
     },
     seeing: [
       'Swipe through a field guide of seven handheld-mic pictures: one ✅ Correct grip and six ❌ habits.',
@@ -361,19 +363,19 @@ export const MIC_SCREEN_GUIDES: Record<MicSectionId, ScreenGuide> = {
 export const MIC_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'A review of the whole lab: how a mic turns sound into voltage, where it listens, and what distance, angle, air, vibration and a hand do to it.',
-    start: 'Tap any row under WHAT’S LEFT to open a section you missed. Already complete? Open REVIEW ▾, go back to POLAR and HAND GRIP, and compare the cardioid null.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
-    'You’ve reached the end of Microphone Principles. LAB COMPLETE means you’ve opened every section; otherwise WHAT’S LEFT lists the ones you haven’t opened yet.',
-    'REVIEW ▾ opens the mic sections you’ve already seen.',
+    'You’ve reached the end of Microphone Principles. LAB COMPLETE means every module is done; otherwise WHAT’S LEFT lists the ones still to do.',
+    'REVIEW ▾ opens the mic modules you’ve already done.',
   ],
   control: [
-    'Tap a row to jump straight to that section.',
-    'Tap PRACTICE AGAIN FROM THE START to go back to CAPSULE, or DONE · BACK TO LABS to leave the lab.',
+    'Tap a row to jump straight to that module.',
+    'Tap PRACTICE AGAIN FROM THE START to go back to PICKUP PATTERNS, or DONE · BACK TO LABS to leave the lab.',
   ],
   changes: [
-    'Each of the ten sections counts as done as soon as you open it. Once all ten are open, the lab is complete.',
-    'Practicing again or reviewing never takes away a section you’ve already opened, so you can repeat any mic experiment freely.',
+    'A module counts once its CHECK YOURSELF is answered right; PLOSIVES and CAPSULE, which have none, count when you move on with NEXT (or FINISH).',
+    'Practicing again or reviewing never takes away a module you’ve already done, so you can repeat any mic experiment freely.',
   ],
   teaches: [
     'A mic is a small generator with a direction: its pattern decides what it hears, and its null decides what it ignores.',
@@ -381,7 +383,7 @@ export const MIC_END_GUIDE: ScreenGuide = {
   ],
   tryThis: [
     'Jump to POLAR and find the CARDIOID null again — then HAND GRIP, and watch FULL CUP erase it.',
-    'Reopen a section whose check question you missed; nothing you have earned is lost.',
+    'Reopen a module whose check question you missed; nothing you have earned is lost.',
   ],
 };
 
@@ -393,8 +395,9 @@ export const SPEAKER_SCREEN_GUIDES: Record<SpeakerSectionId, ScreenGuide> = {
   // ── 1 · TOP VIEW ──────────────────────────────────────────────────────────
   top: {
     intro: {
-      learning: 'A loudspeaker works like a flashlight for sound: where it sits, where it aims and how wide its pattern is decide which seats it covers.',
-      start: 'Tap SPKR 2 and find the hot ridge where the two wedges cross. Then open PATTERN and switch from 90°×60° to 60°×40°.',
+      // SPK-04 (owner 2026-11-15, "build waves 1 thru 3", D62): the card gives the plain job.
+      learning: 'A speaker is a flashlight for sound: where it sits, where it aims and how wide its pattern is decide which seats it lights. Dark seats can’t hear well.',
+      start: 'Your job: light up every seat. Tap SPKR 2 and find the hot ridge where the two wedges cross. Then open PATTERN and switch from 90°×60° to 60°×40°.',
     },
     seeing: [
       'You’re looking down on the room, drawn to scale (the 5 m bar): stage at the top, audience below. Stage right is the left of your screen.',
@@ -497,19 +500,19 @@ export const SPEAKER_SCREEN_GUIDES: Record<SpeakerSectionId, ScreenGuide> = {
 export const SPEAKER_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'A review of the lab: how dispersion, position, aim, height and tilt decide who hears a loudspeaker, and how fills and delays reach the rest.',
-    start: 'Tap any row under WHAT’S LEFT to open a section you missed. Already complete? Open REVIEW ▾, go back to TOP VIEW or SIDE VIEW, and try a new layout.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
-    'You’ve reached the end of Speaker Placement & Coverage. LAB COMPLETE means you’ve opened every section; otherwise WHAT’S LEFT lists the ones you haven’t opened yet.',
-    'REVIEW ▾ opens the coverage sections you’ve already seen.',
+    'You’ve reached the end of Speaker Placement & Coverage. LAB COMPLETE means every module is done; otherwise WHAT’S LEFT lists the ones still to do.',
+    'REVIEW ▾ opens the coverage modules you’ve already done.',
   ],
   control: [
-    'Tap a row to jump straight to that section.',
+    'Tap a row to jump straight to that module.',
     'Tap PRACTICE AGAIN FROM THE START to go back to TOP VIEW, or DONE · BACK TO LABS to leave the lab.',
   ],
   changes: [
-    'Each of the three sections counts as done as soon as you open it. Once all three are open, the lab is complete.',
-    'Practicing again or reviewing never takes away a section you’ve already opened, so you can try new speaker layouts freely.',
+    'Each of the three modules counts once its CHECK YOURSELF is answered right. Once all three are done, the lab is complete.',
+    'Practicing again or reviewing never takes away a module you’ve already done, so you can try new speaker layouts freely.',
   ],
   teaches: [
     'Pattern, position and aim decide which seats sit in a speaker’s beam; height and tilt decide how evenly it reaches front to back.',

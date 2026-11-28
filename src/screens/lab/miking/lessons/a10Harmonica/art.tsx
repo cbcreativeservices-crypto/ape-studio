@@ -35,7 +35,12 @@ import { hmHands, type PosedArm } from '../shared/freereed/freeReedHands.ts';
 import type { PlayerPose } from '../shared/players/playerPose.ts';
 import { Hand3Art, MassArt, ProfileBehind, ProfileFront, SHIRT, SHIRT_RIM, type Pt } from '../shared/freereed/PlayerProfile';
 import { BULLET, HARMONICA } from '../shared/freereed/freeReedSpec.ts';
-import { AMP, BODY, BREATH, FLOOR_Y, H0, HD, HH, HL, profilePose, type HandState } from './model.ts';
+import { AMP, BODY, BREATH, FLOOR_Y, H0, HD, HH, HL, HEAD_C, profilePose, type HandState } from './model.ts';
+import { figureV2On } from '../shared/figureV2/figureV2Config.ts';
+import { HarmonicaPlayerV2 } from '../shared/freereed/harmonicaFigureV2';
+
+/** (figure roll-out wave 5) the player in the approved look. */
+const FR_V2 = figureV2On('familyFreeReeds');
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -304,6 +309,24 @@ function Floor({ u0, u1 }: { u0: number; u1: number }): ReactElement {
 const STATE_IN_SCENE: HandState = 'half';
 
 function SceneSide({ hi }: { hi: string | null }): ReactElement {
+  if (FR_V2) {
+    // (figure roll-out wave 5: the player in the approved look — whole behind the harmonica, again over it where
+    // the near arm and the hands' front parts lie)
+    const at = { u: H0.x, v: H0.y };
+    const fv = FLOOR_Y - H0.y;
+    return (
+      <Group>
+        <Floor u0={AMP.box.x0 - 900} u1={H0.x + 3000} />
+        {AMP_ART.Instrument({ view: 'side', variant: 'open' })}
+        <HarmonicaPlayerV2 at={at} state={STATE_IN_SCENE} view="side" part="back" floorV={fv} head={HEAD_C} />
+        <BreathCone view="side" />
+        <HarpProfile u={at.u} v={at.v} />
+        <HarmonicaPlayerV2 at={at} state={STATE_IN_SCENE} view="side" part="front" floorV={fv} head={HEAD_C} />
+        {hi === 'hm.hands' ? <Path path={rr(at.u - 40, at.v - 110, at.u + 170, at.v + 150, 30)} style="stroke" strokeWidth={MARK_W} color={HIGHLIGHT} /> : null}
+        {hi === 'hm.harp' ? <Path path={rr(H0.x - 6, H0.y - HH / 2 - 6, H0.x + HD + 7, H0.y + HH / 2 + 6, 4)} style="stroke" strokeWidth={4} color={HIGHLIGHT} /> : null}
+      </Group>
+    );
+  }
   return (
     <Group>
       <Floor u0={AMP.box.x0 - 900} u1={H0.x + 3000} />
@@ -318,6 +341,20 @@ function SceneSide({ hi }: { hi: string | null }): ReactElement {
 }
 
 function SceneTop({ hi }: { hi: string | null }): ReactElement {
+  if (FR_V2) {
+    const at = { u: H0.x, v: H0.z };
+    const fv = FLOOR_Y - H0.y;
+    return (
+      <Group>
+        {AMP_ART.Instrument({ view: 'top', variant: 'open' })}
+        <HarmonicaPlayerV2 at={at} state={STATE_IN_SCENE} view="top" part="back" floorV={fv} head={HEAD_C} />
+        <BreathCone view="top" />
+        <HarpTop u={H0.x} z={H0.z} hi={hi === 'hm.harp'} />
+        <HarmonicaPlayerV2 at={at} state={STATE_IN_SCENE} view="top" part="front" floorV={fv} head={HEAD_C} />
+        {hi === 'hm.hands' ? <Path path={rr(H0.x - 40, H0.z - 170, H0.x + 170, H0.z + 170, 30)} style="stroke" strokeWidth={4} color={HIGHLIGHT} /> : null}
+      </Group>
+    );
+  }
   return (
     <Group>
       {AMP_ART.Instrument({ view: 'top', variant: 'open' })}
@@ -375,6 +412,18 @@ export const A10_ART: LessonArt = {
  */
 export function PlayerClose({ at, state, crop, hi = null, showHarp = true }: { at: Pt; state: HandState; crop: SkPath; hi?: string | null; showHarp?: boolean }): ReactElement {
   const pose = profilePose(at, state);
+  if (FR_V2) {
+    const fv = pose.floor - at.v;
+    return (
+      <Group clip={crop}>
+        <HarmonicaPlayerV2 at={at} state={state} view="side" part="back" floorV={fv} head={HEAD_C} />
+        {state === 'mic' ? <Bullet u={at.u + HD + 2} v={at.v} /> : null}
+        {showHarp ? <HarpProfile u={at.u} v={at.v} /> : null}
+        <HarmonicaPlayerV2 at={at} state={state} view="side" part="front" floorV={fv} head={HEAD_C} />
+        {hi === 'hm.hands' ? <Path path={rr(at.u - 40, at.v - 110, at.u + 170, at.v + 150, 30)} style="stroke" strokeWidth={MARK_W} color={HIGHLIGHT} /> : null}
+      </Group>
+    );
+  }
   // Close up, the shared head's own line-art detail (the ear, the brow, the
   // jaw) over its skin mass, above the collar.
   const head = headProfile(pose.head.c, pose.head.r, pose.neck.v - 10, 1);

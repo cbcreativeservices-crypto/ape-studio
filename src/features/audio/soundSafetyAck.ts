@@ -253,6 +253,148 @@ export function resetSoundSafetyAck(): void {
   loaded = false;
   loading = null;
   readFailed = false;
+  // A new person is asked again (the safe direction): the departing one's
+  // KEEP SOUND OFF was their choice, not the next person's.
+  clearSoundSafetySession();
+}
+
+// ── WHEN THE SHEET IS ASKED (owner 2026-11-14) ─────────────────────────────
+//
+// The owner's choice, 2026-11-14: "Once per session (Recommended)". The sheet
+// is asked on the first sound lab of a session; KEEP SOUND OFF is honoured
+// until the app is closed; a new app launch asks again. Before this, every
+// request re-asked: the audit saw it on 13 of 13 sound labs and on almost
+// every DJ screen, twice in a row on several (G6, G5b, G5c).
+//
+// Session = this JS run. Module memory, never saved: a relaunch starts with
+// nothing declined, so it asks again (the owner's "a new app launch asks
+// again"). The account wipe clears it too (resetSoundSafetyAck).
+//
+// ⚙ THE SWITCH. `SOUND_SAFETY_ASK_AFTER_DECLINE` lists the kinds of request
+// that may still show the sheet after a KEEP SOUND OFF in this session:
+//   'auto'       — an ask nobody tapped for (a lab's arrival ask);
+//   'play'       — a ▶ or any sound a tap started (every unmarked request);
+//   'deliberate' — an explicit "turn sound on" act (Profile › AUDIO OUTPUT).
+// Owner's choice = deliberate only. To make ▶ re-ask after a decline, add
+// 'play'. To restore the old "every request asks", list all three.
+
+export type SoundAskKind = 'auto' | 'play' | 'deliberate';
+
+export const SOUND_SAFETY_ASK_AFTER_DECLINE: readonly SoundAskKind[] = ['deliberate'];
+
+const ASK_RANK: Record<SoundAskKind, number> = { auto: 0, play: 1, deliberate: 2 };
+/**
+ * A mark only names the request made right after it: one that never reached
+ * the sheet (sound was already on, so the gate answered at once) must not
+ * re-label a ▶ tapped minutes later. The sheet reads it within a frame or two
+ * of the request (or after the gate's 450 ms re-present wait at most).
+ */
+export const SOUND_ASK_MARK_MS = 1500;
+
+const askSession: {
+  declined: boolean;
+  /** The mark for the request now asking (null = unmarked = 'play'). */
+  mark: { kind: SoundAskKind; at: number } | null;
+  /** The sheet decided to SHOW for the request now open: kept until it
+   *  settles, so a re-render (hosting switch, the gate's re-present) never
+   *  re-decides a sheet the learner is already reading. */
+  shown: boolean;
+} = { declined: false, mark: null, shown: false };
+
+/** Name the kind of the NEXT requestAudioOutput() (call it right before).
+ *  Unmarked requests are 'play'. Two marks before the sheet settles (a joined
+ *  tap) keep the stronger one, so 'deliberate' is never downgraded. */
+export function markSoundAsk(kind: SoundAskKind, now = Date.now()): void {
+  const cur = askSession.mark && now - askSession.mark.at <= SOUND_ASK_MARK_MS ? askSession.mark.kind : null;
+  askSession.mark = { kind: cur == null || ASK_RANK[kind] > ASK_RANK[cur] ? kind : cur, at: now };
+}
+
+/** The kind of the request now waiting on the sheet. */
+export function pendingSoundAskKind(now = Date.now()): SoundAskKind {
+  const m = askSession.mark;
+  return m && now - m.at <= SOUND_ASK_MARK_MS ? m.kind : 'play';
+}
+
+/**
+ * Decide once per open request what the sheet does (soundSafetyDecision),
+ * then keep 'show' until it settles. Called by SoundSafetyWarning while the
+ * gate holds it visible.
+ */
+export function decideSoundSafetyOpen(env: { workUnderway: boolean; cardOwed: boolean }, now = Date.now()): 'show' | 'refuse' | 'drop' {
+  if (askSession.shown) return 'show';
+  const d = soundSafetyDecision({
+    kind: pendingSoundAskKind(now),
+    declined: askSession.declined,
+    workUnderway: env.workUnderway,
+    cardOwed: env.cardOwed,
+  });
+  if (d === 'show') askSession.shown = true;
+  return d;
+}
+
+/** The sheet settled (either way): the next request starts unmarked. */
+export function clearSoundAsk(): void {
+  askSession.mark = null;
+  askSession.shown = false;
+  askOpenGen += 1;
+}
+let askOpenGen = 0;
+/** Changes every time a request settles: the sheet's checkbox resets on a NEW
+ *  request, never on the gate's close-and-reopen of the same one. */
+export function soundAskOpenId(): number {
+  return askOpenGen;
+}
+
+/** KEEP SOUND OFF (or BACK) was chosen: honoured for this app session. */
+export function noteSoundSafetyDeclined(): void {
+  askSession.declined = true;
+  clearSoundAsk();
+}
+
+export function isSoundSafetyDeclinedThisSession(): boolean {
+  return askSession.declined;
+}
+
+/**
+ * Pure: may the sheet be SHOWN for this request? `declined` = KEEP SOUND OFF
+ * was chosen earlier in this session. Before any decline every kind may ask
+ * (the first sound lab of a session asks); after one, only the listed kinds.
+ */
+export function soundSafetyMayAsk(
+  kind: SoundAskKind,
+  declined: boolean,
+  allowed: readonly SoundAskKind[] = SOUND_SAFETY_ASK_AFTER_DECLINE,
+): boolean {
+  return !declined || allowed.includes(kind);
+}
+
+/**
+ * Pure: what the sheet does with a request that wants it.
+ *   'show'   — present it;
+ *   'refuse' — answer "sound off" at once with no sheet: KEEP SOUND OFF was
+ *              chosen this session (the owner's once-per-session rule);
+ *   'drop'   — an ARRIVAL ask ('auto') while the learner is already working
+ *              (a tray open, a drag) or while a first-open card is still to
+ *              come or on screen: answer "sound off" quietly and do NOT count
+ *              it as a decline, so the next ▶ asks. Never over an open tray,
+ *              never on top of a card (audit 2026-11-14, rows 1 and 2).
+ */
+export function soundSafetyDecision(i: {
+  kind: SoundAskKind;
+  declined: boolean;
+  workUnderway: boolean;
+  cardOwed: boolean;
+  allowed?: readonly SoundAskKind[];
+}): 'show' | 'refuse' | 'drop' {
+  if (!soundSafetyMayAsk(i.kind, i.declined, i.allowed)) return 'refuse';
+  if (i.kind === 'auto' && (i.workUnderway || i.cardOwed)) return 'drop';
+  return 'show';
+}
+
+/** Forget this session's decline (account wipe, tests). */
+export function clearSoundSafetySession(): void {
+  askSession.declined = false;
+  clearSoundAsk();
 }
 
 /** Test seam, kept as the name the existing tests import. */

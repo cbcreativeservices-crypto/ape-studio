@@ -128,13 +128,15 @@ describe('3. each guide quotes its screen’s real names', () => {
       // bezel keys + the stopped GR value
       'THRESH', 'RATIO', '— dB',
       // dock keys and their choices (compConfig)
-      'ATK/REL', 'MAKEUP', 'SOURCE', '2:1 GLUE', '4:1', '8:1', '20:1 LIMIT', '0.5 ms FAST', '25 ms PUNCH', '100 ms', '+6 dB',
+      // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item CMP-02): plain ratio words and a SPEED key.
+      'SPEED', 'MAKEUP', 'SOURCE', '2:1 GENTLE', '4:1', '8:1', '20:1 ALMOST A WALL', 'how fast it grabs', 'how fast it lets go', '0.5 ms FAST', '25 ms PUNCH', '100 ms', '+6 dB',
       'CLICK 120', 'SINE 440 Hz', 'PINK NOISE', 'ATTACK', 'RELEASE',
       // the well
       'LAB NOTES', 'GAIN REDUCTION', 'DESIGNED RESPONSE', 'GUIDED LESSON', 'THE AUDIO PATH',
       // the stage badge + the CLICK drawing's note (fxAnim)
       // the CLICK is drawn as the real 5 ms ping since D41 J4 (was 'DRUM-HIT MODEL')
-      'TEACHING MODEL', '5 ms CLICK',
+      // Phase 3, lab fix round (owner 2026-11-14, decision 3: a plain one-line model note instead of all-caps badges).
+      'is a model', '5 ms CLICK',
     ],
     learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'THRESH', 'RATIO', 'ATTACK', 'RELEASE', 'MAKEUP', 'CLICK 120', '0.5 ms FAST', '25 ms PUNCH'],
     check: ['CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', '✓', 'LEARN', 'EXPLORE', 'SINE 440 Hz', 'THRESH'],
@@ -157,9 +159,11 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.match(COMP, /fader: \{ min: -50, max: -10,/);
     assert.match(GUIDES.explore.control.join(' '), /THRESH fader from −50 to −10 dB/);
     assert.match(COMP, /label: 'RELEASE', paramId: P\.releaseMs[\s\S]*?\[\s*\{ label: '30 ms', value: 30 \},\s*\{ label: '120 ms', value: 120 \},\s*\{ label: '500 ms', value: 500 \},/);
-    assert.match(COMP, /id: 'env', label: 'ATK\/REL', paramIds: \[P\.attackMs, P\.releaseMs\]/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item CMP-02)
+    assert.match(COMP, /id: 'env', label: 'SPEED', paramIds: \[P\.attackMs, P\.releaseMs\]/);
     assert.match(COMP, /sources: \[srcClick\(120\), srcSine\(440\), SRC_PINK\]/);
-    assert.match(COMP, /bezel: \[\s*\{ k: 'THRESH', paramId: P\.thresholdDb \},\s*\{ k: 'RATIO', paramId: P\.ratio \},\s*\]/);
+    // Phase 2, lab fix round (owner 2026-11-14: "Begin fixing all bugs found and do obvious ... fixes"): a bezel cell may carry its first-visit caption.
+    assert.match(COMP, /bezel: \[\s*\{ k: 'THRESH', paramId: P\.thresholdDb(?:, caption: '[^']*')? \},\s*\{ k: 'RATIO', paramId: P\.ratio(?:, caption: '[^']*')? \},\s*\]/);
     assert.match(COMP, /pollGr: 'comp'/);
     // the lab's own two well questions — "two quick questions"
     assert.equal((COMP.match(/^\s{6}question: '/gm) ?? []).length, 2);
@@ -269,19 +273,20 @@ describe('4. the TRY THIS numbers follow from the lab and the engine', () => {
   it('the guide states exactly those readings', () => {
     const t = GUIDES.explore.tryThis;
     assert.match(t[0], /THRESH at −30 dB: GR holds at about 7 dB\. Ride THRESH up to −20 dB: GR falls to 0\.0/);
-    assert.match(t[1], /2:1 GLUE about 5 dB, 4:1 about 7, 8:1 about 8, 20:1 LIMIT about 9/);
+    assert.match(t[1], /2:1 GENTLE about 5 dB, 4:1 about 7, 8:1 about 8, 20:1 about 9/);
     assert.match(t[2], /On CLICK 120 at THRESH −40 dB, GR kicks on each hit, then falls to 0\.0\. Pick ATTACK 25 ms PUNCH: GR stays 0\.0/);
     assert.match(GUIDES.learn.tryThis[0], /12 × \(1 − 1\/4\) = 9 dB of gain reduction, so the output sits 3 dB over the threshold/);
     // …the same kind of sum as the check's first question (8 dB over at 4:1 →
     // '2 dB'), with other numbers, so no guide step hands over that answer
     assert.match(CHECKS, /input rises 8 dB above the threshold[\s\S]*?correct: '2 dB'/);
     for (const gd of Object.values(GUIDES)) assert.doesNotMatch(textOf(gd), /8 ÷ 4|8 dB over at 4:1|8 dB over leaves 2/);
-    assert.match(GUIDES.check.tryThis[0], /SINE 440 Hz at THRESH −30 dB and step RATIO from 2:1 GLUE to 20:1 LIMIT: GR grows from about 5 to 9 dB/);
+    assert.match(GUIDES.check.tryThis[0], /SINE 440 Hz at THRESH −30 dB and step RATIO from 2:1 GENTLE to 20:1 ALMOST A WALL: GR grows from about 5 to 9 dB/);
     assert.match(GUIDES.explore.changes.join(' '), /At the start \(CLICK 120, THRESH −40 dB, ATTACK 5 ms\) GR kicks about 3–5 dB on each hit, then falls back to 0\.0/);
     assert.doesNotMatch(textOf(GUIDES.explore), /at the start GR reads 0\.0/);
     assert.match(COMP, /label: 'THRESHOLD', short: 'THRESH'[\s\S]*?initial: -40,/);
     assert.match(COMP, /sources: \[srcClick\(120\)/);
-    assert.match(GUIDES.check.tryThis[1], /Read FORMULA \/ CONCEPT on LEARN, or long-press THRESH on EXPLORE/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(GUIDES.check.tryThis[1], /Open FORMULA \/ CONCEPT on LEARN, or long-press THRESH on EXPLORE/);
     assert.match(COMP, /short: 'THRESH', paramId: P\.thresholdDb, lessonKey: 'threshold',/);
     const checkText = [...SECTION_KEYS.map((k: string) => GUIDES.check[k].join(' ')), JSON.stringify((GUIDES.check as unknown as { intro: unknown }).intro)].join(' ');
     assert.doesNotMatch(checkText, /THRESH −10 dB|GR reads 0\.0|only acts above|nothing changes|2 dB over|slower attack|25 ms PUNCH|brings? the (whole )?(signal|level) back/);
@@ -430,7 +435,7 @@ describe('6. the compressor drawing and the GR meter run the same click (D41 J4)
     assert.equal(+drawn(-40, 25, true).drop.toFixed(1), 0, '25 ms PUNCH leaves it untouched');
     assert.match(GUIDES.explore.tryThis[2], /so the spike passes untouched/);
     assert.match(GUIDES.learn.tryThis[1], /0\.5 ms FAST kicks GR deeper and squeezes the drawn spike; 25 ms PUNCH leaves GR at 0\.0/);
-    assert.match(GUIDES.explore.seeing.join(' '), /Drawn as a TEACHING MODEL, but its 5 ms CLICK is the real click. At ATTACK 5 ms its spike passes almost whole \(about 1 dB lower\): GR peaks as each click ends/);
+    assert.match(GUIDES.explore.seeing.join(' '), /The drawing is a model, but its 5 ms CLICK is the real click. At ATTACK 5 ms its spike passes almost whole \(about 1 dB lower\): GR peaks as each click ends/);
     for (const gd of Object.values(GUIDES)) assert.doesNotMatch(textOf(gd), /DRUM-HIT|drawn hit still clamps|longer drawn hit/);
     assert.doesNotMatch(COMP, /its tail trails behind/);
   });

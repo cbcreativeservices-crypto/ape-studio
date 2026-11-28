@@ -18,6 +18,7 @@ import { StyleSheet, View } from 'react-native';
 import { RackUnit } from '../rack/RackUnit';
 import { StageFit } from '../rack/StageFit';
 import type { BezelItem, DockParam, StageSize } from '../rack/rackTypes';
+import { PLAIN_MODEL_NOTE } from './modules/shared';
 
 export { faderParam, optionsParam } from '../amp/AmpRack';
 export { flipFader } from '../soundsystems/rackLayout';
@@ -34,6 +35,11 @@ export type MasteringRackSpec = {
   /** The fader the lane binds on mount — the page's teaching parameter. */
   initialParam: string;
   hideDragTag?: boolean;
+  /** The silent learner's line at the top of the well (S3, phase 2,
+   *  2026-11-14): true = the shared words, a string = this step's own. */
+  soundOffLine?: boolean | string;
+  /** A stable id for the first-visit bezel captions (S3). */
+  captionsId?: string;
 };
 
 const FIT_PAD = 6;
@@ -50,6 +56,10 @@ export function MasteringRack({ spec, children }: { spec: MasteringRackSpec; chi
         badge: spec.badge,
         bezel: spec.bezel,
         hideDragTag: spec.hideDragTag,
+        // Phase 3: the plain sentence wins over the all-caps badge (S3).
+        modelNote: PLAIN_MODEL_NOTE[spec.badge],
+        soundOffLine: spec.soundOffLine,
+        captionsId: spec.captionsId,
         render: (w, h) => {
           const fitW = Math.max(40, Math.min(Math.max(40, w - FIT_PAD * 2), Math.max(40, h - FIT_PAD * 2) * spec.aspect));
           const fitH = fitW / spec.aspect;

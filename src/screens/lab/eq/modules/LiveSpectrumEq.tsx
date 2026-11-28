@@ -21,7 +21,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Defs, G, Line, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 import type { BandsFrame, EngineConfig } from '../../../../../modules/ape-dsp';
-import { useDspEngine, useToolAutoStart } from '../../../../features/tools/engine/useDspEngine';
+import { useDspEngine, useReleaseMicOnBackground } from '../../../../features/tools/engine/useDspEngine';
 import { LOUDNESS_STOPS } from '../../../../features/tools/levelColor';
 import { eqResponseDb } from '../../../../features/lab/fxViz';
 import { colors, fonts } from '../../../../theme/tokens';
@@ -284,7 +284,7 @@ function SpectrumGlass({
   );
 }
 
-export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
+export function LiveSpectrumEqModule(p: EqModuleComponentProps) {
   const cfg = useRef<EngineConfig>({
     fftSize: FFT_SIZE,
     fraction: 3,
@@ -300,6 +300,12 @@ export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
   const [bellF, setBellF] = useState(1000);
   const [bellG, setBellG] = useState(6);
   const [bellQ, setBellQ] = useState(2);
+  // Work done (phase 3, owner's decision 1): the module counts once a LOW CUT
+  // is set AND a band is shaped — its WHERE TO START, done (no mic needed).
+  const { onDone } = p;
+  useEffect(() => {
+    if (hpfHz != null && bellOn) onDone?.();
+  }, [hpfHz, bellOn, onDone]);
 
   const [micPaused, setMicPaused] = useState(false);
   useEffect(() => {
@@ -310,9 +316,12 @@ export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
     setMicPaused(true);
     stop();
   }, [stop]);
-  // `stop` opts into the tools' background release + resume (pattern hunt
-  // P20, 2026-10-02): without it Home left the mic open behind the app.
-  useToolAutoStart(state, onStart, stop);
+  // ⛔ THE MIC OPENS ONLY ON A TAP (lab fix round 2026-11-14, F7 item 1) —
+  // see SeeingFrequency: useToolAutoStart (the tools' auto-start rule) opened
+  // the microphone the moment this lesson mounted. Now only the MIC button
+  // in the VIEW tray or a tap on the display starts it. Home still releases
+  // a running mic (pattern hunt P20, 2026-10-02) and nothing reopens it.
+  useReleaseMicOnBackground(state, stop);
 
   const bands = frames.bands;
   const anyUnresolvable = bands != null && bands.resolvable.some((r) => !r);
@@ -384,14 +393,15 @@ export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
       kind: 'group',
       id: 'view',
       label: 'VIEW',
-      valueLabel: `${mode === 'spectrum' ? 'SPECT' : mode === 'eq' ? 'EQ' : 'COMB'}${bellOn ? '·B' : ''}`,
+      // EQL-03 (D62): BOTH, not COMB (which reads like a comb filter).
+      valueLabel: `${mode === 'spectrum' ? 'SPECT' : mode === 'eq' ? 'EQ' : 'BOTH'}${bellOn ? '·B' : ''}`,
       render: () => (
         <View style={{ gap: 10 }}>
           <Text style={styles.trayHead}>VIEW</Text>
           <View style={styles.btnRow}>
             <MiniBtn label="SPECTRUM ONLY" active={mode === 'spectrum'} onPress={() => setMode('spectrum')} />
             <MiniBtn label="EQ ONLY" active={mode === 'eq'} onPress={() => setMode('eq')} />
-            <MiniBtn label="COMBINED" active={mode === 'combined'} onPress={() => setMode('combined')} />
+            <MiniBtn label="BOTH" active={mode === 'combined'} onPress={() => setMode('combined')} />
           </View>
           <Text style={styles.trayHead}>PARAMETRIC BAND</Text>
           <View style={styles.btnRow}>
@@ -403,7 +413,11 @@ export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
               still toggles it too (standing rule 2026-07-31). */}
           <Text style={styles.trayHead}>MICROPHONE</Text>
           <View style={styles.btnRow}>
-            <MiniBtn label={state === 'running' ? 'MIC LIVE — PAUSE' : 'MIC PAUSED — RESUME'} active={state === 'running'} onPress={state === 'running' ? onStop : onStart} />
+            <MiniBtn
+              label={state === 'running' ? 'MIC LIVE — PAUSE' : micPaused ? 'MIC PAUSED — RESUME' : 'MIC OFF — START'}
+              active={state === 'running'}
+              onPress={state === 'running' ? onStop : onStart}
+            />
           </View>
         </View>
       ),
@@ -426,13 +440,20 @@ export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
             : designed && mode === 'eq'
               ? 'AMBER = DESIGNED RESPONSE — ANALYTIC'
               : 'dBFS · UNCALIBRATED APPROXIMATE',
+        // Phase 3 (owner's decision 3): one plain sentence instead of an all-caps badge.
+        modelNote:
+          designed && mode === 'combined'
+            ? 'Amber is the EQ’s designed curve; the bars are drawn as if EQ’d. The mic is never filtered.'
+            : designed && mode === 'eq'
+              ? 'Amber is the EQ’s designed curve, worked out from its math.'
+              : 'Levels from an uncalibrated phone mic: compare them, don’t read them as true levels.',
         bezel: [
-          { k: 'VIEW', v: mode === 'spectrum' ? 'SPECT' : mode === 'eq' ? 'EQ' : 'COMB' },
+          { k: 'VIEW', caption: 'what is drawn', v: mode === 'spectrum' ? 'SPECT' : mode === 'eq' ? 'EQ' : 'BOTH' },
           { k: 'LOW CUT', v: hpfHz != null ? `${hpfHz}Hz·${slope}` : 'OFF' },
-          { k: 'BAND', v: bellOn ? fmtHz(bellF) : 'OFF' },
+          { k: 'BAND', caption: 'bell at', v: bellOn ? fmtHz(bellF) : 'OFF' },
           {
             k: 'MIC',
-            v: state === 'running' ? 'LIVE' : micPaused ? 'PAUSED' : '—',
+            v: state === 'running' ? 'LIVE' : micPaused ? 'PAUSED' : 'OFF',
             tint: state === 'running' ? undefined : '#7a7f8a',
           },
         ],
@@ -467,9 +488,11 @@ export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
         </GlossaryText>
 
         <EngineGate state={state} lastError={lastError} onRetry={onStart} />
-        {!micPaused && (state === 'idle' || state === 'starting') && (
-          <Text style={styles.starting}>Starting the analyzer…</Text>
+        {/* Mic OFF until a tap (F7 item 1). */}
+        {!micPaused && state === 'idle' && (
+          <Text style={styles.starting}>The microphone is off. Tap the display, or VIEW › MIC OFF — START, to let it listen to your room.</Text>
         )}
+        {!micPaused && state === 'starting' && <Text style={styles.starting}>Starting the analyzer…</Text>}
         {anyUnresolvable && <Text style={styles.grayNote}>grayed bands: insufficient resolution at this setting</Text>}
 
         <Text style={styles.sectionTitle}>GUIDED CHALLENGES</Text>
@@ -482,7 +505,7 @@ export function LiveSpectrumEqModule(_p: EqModuleComponentProps) {
 
         <Text style={styles.caveat}>
           A phone microphone is an educational measurement source, not a calibrated reference. 1/3-octave
-          bands · FFT size {FFT_SIZE}.
+          bands.
         </Text>
       </View>
     </RackUnit>

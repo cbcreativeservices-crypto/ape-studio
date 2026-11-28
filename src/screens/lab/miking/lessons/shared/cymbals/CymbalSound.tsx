@@ -22,7 +22,7 @@ import { useCallback, useEffect, useMemo, useState, type ReactElement } from 're
 import { colors } from '../../../../../../theme/tokens';
 import type { BezelItem, DockParam } from '../../../../rack/rackTypes';
 import { tapsWhenFew } from '../../../engine/rack/fewStops.ts';
-import type { ViewId } from '../../../engine/model/types.ts';
+import type { InstrumentModel, VariantId, ViewId } from '../../../engine/model/types.ts';
 import { PageSteps, type MikingStep } from '../../../engine/steps';
 import { Card, Landing, Note, Point, PredictCard, ScenarioList } from '../../../engine/kit';
 import type { PageProps } from '../../../pages/pageTypes';
@@ -32,6 +32,29 @@ import { CymbalModeFace } from './CymbalArt';
 import { CYMBAL_SHAPES, cymbalStrikeShare, edgeToBow } from './cymbalModes.ts';
 import { CymbalStrikeFx } from './CymbalStrikeFx';
 import { cymOf } from './cymbalLesson.ts';
+
+/**
+ * The setup the "Who hears it" step draws (round 2, audit Appendix E row 7,
+ * owner 2026-11-25). Its sources, points and frame (copy.ts `arrivals`) are
+ * laid out on the lesson's default setup. A setup with a frame of its own
+ * (viewsByVariant: the instrument sits ELSEWHERE — I01c's 18 in crash over
+ * the 12 in tom, I01d's splash on top of the crash) was drawn there while
+ * every ring and time still came from the default setup's cymbal and tom, so
+ * this step draws the default setup the numbers belong to. A setup in the
+ * same place (the hats open, the China turned over) is drawn as chosen.
+ */
+export function arrivalsVariant(model: Pick<InstrumentModel, 'viewsByVariant' | 'defaultVariant'>, variant: VariantId): VariantId {
+  return model.viewsByVariant?.[variant] ? model.defaultVariant : variant;
+}
+
+/** The arrivals step's looking line: when it draws another setup than the one
+ *  chosen (arrivalsVariant), it says so, and that the times belong to it. */
+export function arrivalsLooking(model: Pick<InstrumentModel, 'variants' | 'defaultVariant'>, looking: string, chosen: VariantId, drawn: VariantId): string {
+  if (drawn === chosen) return looking;
+  const d = model.variants.find((v) => v.id === drawn);
+  const name = d?.phrase ?? `the ${(d?.label ?? drawn).toLowerCase()} setup`;
+  return `${looking} · drawn with ${name}: the times belong to it`;
+}
 
 export function CymbalSoundPage({ lesson, art, answers, onAnswered, onInteractive, interactiveDone, variant, setVariant, hidden }: PageProps) {
   const X = cymOf(lesson);
@@ -58,18 +81,18 @@ export function CymbalSoundPage({ lesson, art, answers, onAnswered, onInteractiv
       {
         kind: 'fader',
         id: 'step',
-        label: 'STEP',
+        label: 'EVENT',
         value: (s.shown - 1) / Math.max(1, n - 1),
         onChange: (v) => s.goTo(1 + Math.round(v * (n - 1))),
-        format: () => `${s.shown} of ${n} · ${stage.title.toLowerCase()}`,
-        formatShort: () => `${s.shown} / ${n}`,
+        format: () => `${stage.title.toLowerCase()}`,
+        formatShort: () => `${s.shown}`,
       },
       n,
       s.shown - 1,
       (i) => `${i + 1} · ${W.stages[i].title}`,
       (i) => s.goTo(i + 1),
     ),
-    { kind: 'action', id: 'play', label: s.playing ? 'PAUSE' : reached ? 'REPLAY ONCE' : s.motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: s.play, tint: colors.green },
+    { kind: 'action', id: 'play', label: s.playing ? 'PAUSE' : reached ? 'REPLAY ONCE' : s.motion ? 'PLAY ONCE' : 'NEXT EVENT', onPress: s.play, tint: colors.green },
     ...(variants.length > 1
       ? [
           {
@@ -84,7 +107,7 @@ export function CymbalSoundPage({ lesson, art, answers, onAnswered, onInteractiv
         ]
       : []),
   ];
-  const strikeBezel: BezelItem[] = [{ k: 'EVENT', v: `${s.shown} / ${n}`, flex: 0.8 }, ...W.cells.map((c) => ({ k: c.k, v: c.at[Math.min(c.at.length - 1, s.shown - 1)] ?? '—', flex: c.flex ?? 1 }))];
+  const strikeBezel: BezelItem[] = [{ k: 'EVENT', v: `${s.shown}`, flex: 0.8 }, ...W.cells.map((c) => ({ k: c.k, v: c.at[Math.min(c.at.length - 1, s.shown - 1)] ?? '—', flex: c.flex ?? 1 }))];
 
   /* ── 2 · the plate's shapes ── */
   const areas = X.shapes.areas;
@@ -139,9 +162,11 @@ export function CymbalSoundPage({ lesson, art, answers, onAnswered, onInteractiv
   /* ── 3 · who hears it ── */
   const A = X.arrivals;
   const Instrument = art.Instrument;
-  const Background = useCallback((p: { view: ViewId }): ReactElement => <Instrument view={p.view} variant={variant} />, [Instrument, variant]);
+  const arrivalsOn = arrivalsVariant(lesson.model, variant);
+  const Background = useCallback((p: { view: ViewId }): ReactElement => <Instrument view={p.view} variant={arrivalsOn} />, [Instrument, arrivalsOn]);
   const box = useMemo(() => ({ side: A.box.side, top: A.box.top }), [A.box]);
-  const arrivals = useArrivalsStep({ words: A, box, Background, sources: A.sources, points: A.points, maxMs: A.maxMs });
+  const arrivalsWords = useMemo(() => (arrivalsOn === variant ? A : { ...A, looking: arrivalsLooking(lesson.model, A.looking, variant, arrivalsOn) }), [A, arrivalsOn, variant, lesson.model]);
+  const arrivals = useArrivalsStep({ words: arrivalsWords, box, Background, sources: A.sources, points: A.points, maxMs: A.maxMs });
 
   const pred = lesson.predictions.sound;
   const steps: MikingStep[] = [

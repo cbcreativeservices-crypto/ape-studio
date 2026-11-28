@@ -42,6 +42,7 @@ import { nextClockMs } from '../../features/assess/clockTick';
 import { AccessibilityInfo } from 'react-native';
 import { noteHighValueEvent } from '../../features/review/reviewPrompt';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { menuClearance } from '../../components/nav/circleMenuPlaces';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AnswerCell, type AnswerCellState } from '../../components/AnswerCell';
 import { StudioButton } from '../../components/StudioButton';
@@ -73,6 +74,7 @@ import { useGuestWording, useTier } from '../../features/commercial/useTier';
 import { GUEST_QUIZ_START_REFUSED, remindAsGuest } from '../../features/lab/guestReminderRules';
 import { CUSTOM_QUIZ_MIN, isCustomListId } from '../../features/commercial/studyGate';
 import { readTermList } from '../../features/flags/flaggedStore';
+import { holdUpdateReload } from '../../features/updates/autoUpdate';
 
 type Props = NativeStackScreenProps<StudyStackParamList, 'Quiz'>;
 
@@ -89,6 +91,9 @@ export function QuizScreen({ navigation, route }: Props) {
   // MY CUSTOM LIST (D12): the list's own practice quiz, never a topic RPC.
   const customMode = isCustomListId(achievementId);
   const insets = useSafeAreaInsets();
+  // The circle menu's MENU button floats over the bottom-left corner (owner
+  // 2026-11-20): the content ends above it (circleMenuPlaces.menuClearance).
+  const menuClear = menuClearance(insets.bottom);
   // A KNOWN guest only (D52): see GUEST_QUIZ_START_REFUSED.
   const quizAsGuest = remindAsGuest(useTier(), useGuestWording().guest);
 
@@ -362,6 +367,12 @@ export function QuizScreen({ navigation, route }: Props) {
     }, 250);
     return () => clearInterval(t);
   }, [deadline, doSubmit]);
+
+  // An attempt in progress is never restarted by a background OTA reload (update audit 2026-11-27).
+  useEffect(() => {
+    if (!payload) return;
+    return holdUpdateReload('quiz');
+  }, [payload]);
 
   /* ---- focus-void handling (2s grace; 1st warn, 2nd void) ---- */
   useEffect(() => {
@@ -696,7 +707,7 @@ export function QuizScreen({ navigation, route }: Props) {
         <Text style={[styles.timer, msLeft < 60_000 && styles.timerLow]}>{fmtClock(msLeft)}</Text>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: menuClear }]}>
         {/* M1 (2026-09-07): this quiz auto-advances on selection and cannot go
             back — say so plainly rather than leave the learner hunting for a
             Previous control. */}

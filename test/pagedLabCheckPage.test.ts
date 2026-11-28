@@ -33,7 +33,8 @@ test('the navigation units (CONTENTS) and the end screen iterate pagesWithCheck,
 });
 
 test('the shell navigates through the shared strip only (kit/LabNavBar)', () => {
-  assert.match(SRC, /import \{ LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav, type LabNavUnit \} from '\.\/LabNavBar';/);
+  // Owner decision 3 (quick pick, 2026-11-14): "One name per unit of progress in each lab … used everywhere" — PagedLab's end screen takes the lab's unitNoun (default module), never a fixed "page".
+  assert.match(SRC, /import \{ LabHeader, LabNavBar, LabNavProvider, LabNextButton, LabNounProvider, useLabNav, type LabNavUnit \} from '\.\/LabNavBar';/);
   assert.match(SRC, /<LabHeader /);
   assert.match(SRC, /<LabNavBar nav=\{nav\} \/>/);
   assert.match(SRC, /<LabNextButton nav=\{nav\} \/>/, 'the in-flow NEXT sits at the end of the reading');

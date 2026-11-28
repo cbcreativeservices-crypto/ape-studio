@@ -11,7 +11,10 @@ import type { ReactElement } from 'react';
 import { Group } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel } from '../../engine/scene/sceneTypes.ts';
-import { VoiceFigure, voiceFigureAt, voiceHitTest } from '../shared/voice/VoiceArt';
+import { VoiceFigure, voiceFigureAtFor, voiceHitTest, type VoiceArtOpts } from '../shared/voice/VoiceArt';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+import { castFor, talkerRole } from '../shared/figureV2/cast';
+import { PersonSideV2, PersonTopV2, personCovers, personTopCovers } from '../shared/figureV2/personV2';
 import { PlayerBehind, PlayerInFront, figureCovers } from '../shared/players/PlayerFigure';
 import { SINGER_SIDE, SINGER_TOP } from '../shared/voice/voicePose.ts';
 import { Desk, DeskNearLegs, GooseBase, Lectern, PaSpeaker, Script, SeatedTalker, StudioChair, chairCovers, talkerCovers } from '../shared/broadcast/BroadcastArt';
@@ -20,13 +23,20 @@ import { HEAD_C, HEAD_R } from '../shared/voice/voiceSpec.ts';
 import { ASKER, FOCUS, LECTERN, P1, P3, P4, PA_C, STAND_FLOOR, TABLE, gooseBase } from './geometry.ts';
 
 const PANEL = [P1, FOCUS, P3, P4];
+/** (figure V2, wave 3: every person in this lesson in the new look — the panel, the presenter, the asker) */
+export const V2 = figureV2On('sideDeskTalker') && figureV2On('sideStanding');
+const LECTERN_OPTS: VoiceArtOpts = { v2: V2, who: 'lectern.presenter' };
+const ASK_WHO = castFor(talkerRole(ASKER.id));
+const ASK_OPTS = { lip: { u: ASKER.lip.x, v: ASKER.lip.y }, rest: 'restSide' as const };
+const PRESENTER = castFor('lectern.presenter');
 const ASK_SIDE = poseOnTalker(SINGER_SIDE, ASKER);
 const ASK_TOP = poseOnTalker(SINGER_TOP, ASKER);
 const SIDE_HEADLESS = { ...SINGER_SIDE, head: { ...SINGER_SIDE.head, r: 1 } };
 const TOP_HEADLESS = { ...SINGER_TOP, head: { ...SINGER_TOP.head, r: 1 } };
 
-function Asker({ view }: { view: ViewId }) {
+function Asker({ view, v2 = V2 }: { view: ViewId; v2?: boolean }) {
   const pose = view === 'side' ? ASK_SIDE : ASK_TOP;
+  if (v2) return view === 'side' ? <PersonSideV2 pose={pose} who={ASK_WHO} opts={ASK_OPTS} /> : <PersonTopV2 pose={pose} who={ASK_WHO} />;
   return (
     <Group>
       <PlayerBehind pose={pose} />
@@ -37,22 +47,30 @@ function Asker({ view }: { view: ViewId }) {
 
 /** `headless`: the focus talker drawn without a head (a step draws it
  *  turned); `bases`: the gooseneck bases (off where a step draws its own). */
-export function B06Scene({ view, variant, headless = false, bases = true }: { view: ViewId; variant: VariantId; headless?: boolean; bases?: boolean }): ReactElement {
+export function B06Scene({ view, variant, headless = false, bases = true, v2 = V2 }: { view: ViewId; variant: VariantId; headless?: boolean; bases?: boolean; /** (the study page compares the old look) */ v2?: boolean }): ReactElement {
   if (variant === 'lectern') {
     const pres = headless ? (
-      <Group>
-        <PlayerBehind pose={view === 'side' ? SIDE_HEADLESS : TOP_HEADLESS} />
-        <PlayerInFront pose={view === 'side' ? SIDE_HEADLESS : TOP_HEADLESS} hands={view === 'side'} />
-      </Group>
+      v2 ? (
+        view === 'side' ? (
+          <PersonSideV2 pose={SINGER_SIDE} who={PRESENTER} opts={{ lip: { u: 0, v: 0 }, rest: 'restSide' }} part="headless" />
+        ) : (
+          <PersonTopV2 pose={SINGER_TOP} who={PRESENTER} head="none" />
+        )
+      ) : (
+        <Group>
+          <PlayerBehind pose={view === 'side' ? SIDE_HEADLESS : TOP_HEADLESS} />
+          <PlayerInFront pose={view === 'side' ? SIDE_HEADLESS : TOP_HEADLESS} hands={view === 'side'} />
+        </Group>
+      )
     ) : (
-      <VoiceFigure view={view} variant="lectern" />
+      <VoiceFigure view={view} variant="lectern" opts={{ ...LECTERN_OPTS, v2 }} />
     );
     return (
       <Group>
         <PaSpeaker view={view} c={PA_C} faces={1} floor={STAND_FLOOR} />
         {pres}
         <Lectern view={view} s={LECTERN} />
-        <Asker view={view} />
+        <Asker view={view} v2={v2} />
       </Group>
     );
   }
@@ -63,7 +81,7 @@ export function B06Scene({ view, variant, headless = false, bases = true }: { vi
         <Desk view="side" box={TABLE} floor={SEATED_FLOOR} skirt />
         {bases ? <GooseBase view="side" at={gooseBase(FOCUS)} /> : null}
         <Script view="side" at={{ x: 330, y: DESK_TOP_Y, z: 150 }} />
-        <SeatedTalker view="side" t={FOCUS} headless={headless} />
+        <SeatedTalker view="side" t={FOCUS} headless={headless} v2={v2} />
         <DeskNearLegs box={TABLE} floor={SEATED_FLOOR} skirt />
       </Group>
     );
@@ -74,7 +92,7 @@ export function B06Scene({ view, variant, headless = false, bases = true }: { vi
         <StudioChair key={`c${t.id}`} view="top" t={t} />
       ))}
       {PANEL.map((t) => (
-        <SeatedTalker key={`l${t.id}`} view="top" t={t} part="lower" />
+        <SeatedTalker key={`l${t.id}`} view="top" t={t} part="lower" v2={v2} />
       ))}
       <Desk view="top" box={TABLE} floor={SEATED_FLOOR} skirt />
       {PANEL.map((t) => (
@@ -82,7 +100,7 @@ export function B06Scene({ view, variant, headless = false, bases = true }: { vi
       ))}
       {bases ? PANEL.map((t) => <GooseBase key={`b${t.id}`} view="top" at={gooseBase(t)} />) : null}
       {PANEL.map((t) => (
-        <SeatedTalker key={`u${t.id}`} view="top" t={t} part="upper" headless={headless && t.id === FOCUS.id} />
+        <SeatedTalker key={`u${t.id}`} view="top" t={t} part="upper" headless={headless && t.id === FOCUS.id} v2={v2} />
       ))}
     </Group>
   );
@@ -146,7 +164,11 @@ export function b06HitTest(view: ViewId, variant: VariantId, u: number, v: numbe
 }
 
 export function b06FigureAt(view: ViewId, variant: VariantId, u: number, v: number, tol: number): boolean {
-  if (variant === 'lectern') return voiceFigureAt(view, variant, u, v, tol) || figureCovers(view === 'side' ? ASK_SIDE : ASK_TOP, u, v, tol);
-  if (view === 'side') return talkerCovers(view, FOCUS, u, v, tol) || chairCovers(view, FOCUS, u, v, tol);
-  return PANEL.some((t) => talkerCovers(view, t, u, v, tol) || chairCovers(view, t, u, v, tol));
+  if (variant === 'lectern') {
+    // (drawn new: the new outlines AND the old envelopes)
+    const askNew = V2 && (view === 'side' ? personCovers(ASK_SIDE, ASK_WHO, ASK_OPTS, u, v, tol) : personTopCovers(ASK_TOP, ASK_WHO, {}, u, v, tol));
+    return voiceFigureAtFor(LECTERN_OPTS)(view, variant, u, v, tol) || figureCovers(view === 'side' ? ASK_SIDE : ASK_TOP, u, v, tol) || askNew;
+  }
+  if (view === 'side') return talkerCovers(view, FOCUS, u, v, tol, V2) || chairCovers(view, FOCUS, u, v, tol);
+  return PANEL.some((t) => talkerCovers(view, t, u, v, tol, V2) || chairCovers(view, t, u, v, tol));
 }

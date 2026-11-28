@@ -447,7 +447,11 @@ describe('guest rules, persistence and credit', () => {
     assert.match(ch6, /useState\(160\)/);
     assert.equal(engine.tomInterval(140, 160).kind, 'unbalanced', 'Chapter 6 starts clearly outside DISTINCT');
     const ch7 = strip(read(`${DIR}/modules/ch7Trouble.tsx`));
-    assert.match(ch7, /const investigated = struck && tappedEnough;/, 'Chapter 7: strike (and tap) before a hypothesis');
+    // Owner-approved fix round 2026-11-14 ("Begin fixing all bugs found and do
+    // obvious … fixes"): a sound-off learner may work a case from the readouts
+    // (CAN'T LISTEN NOW → sim.silent); such a case never counts toward credit.
+    assert.match(ch7, /const investigated = \(struck && tappedEnough\) \|\| sim\.silent;/, 'Chapter 7: strike (and tap) before a hypothesis, or the silent path');
+    assert.match(ch7, /if \(!present && !sim\.silent && !cleared\.has\(caseId\)/, 'a case worked silently never counts as cleared');
     assert.match(ch7, /!investigated\s*\?[\s\S]*?: !hypothesised\s*\?[\s\S]*?optionsParam\(\{ id: 'where'/, 'then WHERE, then FIX');
     assert.match(ch7, /label: !struck \? 'HIT 1ST'/, 'the FIX slot is locked until the drum has been struck');
     assert.match(ch7, /optionsParam\(\{ id: 'view', label: 'VIEW'/, 'VIEW is chosen on the dock (the bezel is read-only)');

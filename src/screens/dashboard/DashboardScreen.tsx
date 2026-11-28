@@ -39,13 +39,14 @@ import { useSharedValue } from 'react-native-reanimated';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { menuClearance } from '../../components/nav/circleMenuPlaces';
+import { goHome } from '../../components/nav/CircleMenu';
 import { useFocusEffect, useIsFocused, useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { StudyStackParamList } from '../../navigation/types';
 import { slugify } from '../../navigation/linkPaths';
 import { navigationRef } from '../../navigation/navigationRef';
 import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
-import Svg, { Circle, Rect, Defs, LinearGradient as SvgLinearGradient, Stop, Line, Path } from 'react-native-svg';
 import { A11Y_HIDDEN } from '../../features/settings/a11y';
 import { AppHeader } from '../../components/AppHeader';
 import { MyTopicsIcon } from '../../components/MyTopicsIcon';
@@ -63,7 +64,9 @@ import {
   useDeckPrefs,
   type DeckPrefs,
 } from '../../features/dashboard/deckOrderStore';
-import { ElevatedFrame, specksToPaths } from '../../components/ElevatedFrame';
+// The rack faces and screws live with the rack frame (shared with the circle
+// menu's panel since 2026-11-20).
+import { BlackFaceBg, ElevatedFrame, PanelScrew } from '../../components/ElevatedFrame';
 import { GlassButton } from '../../components/GlassButton';
 import { LedMeter, segmentsForPct } from '../../components/LedMeter';
 import { MethodIcon, METHOD_COLORS, type MethodKey } from '../../components/MethodIcon';
@@ -75,7 +78,7 @@ import { JogDial, JogOverlay } from '../../components/JogWheel';
 import { TrophyModal } from '../../components/TrophyModal';
 import { TopicAboutPanel, hasTopicAbout } from '../../components/TopicAboutPanel';
 import { useTopicTrophies, trophyForTopicName } from '../../features/profile/topicTrophies';
-import { BRAND_MAX_FONT_SCALE, colors, fonts, spacing } from '../../theme/tokens';
+import { BRAND_MAX_FONT_SCALE, colors, fonts, spacing, studyRgba } from '../../theme/tokens';
 import {
   fetchEnrollmentDashboard,
   getLastTopic,
@@ -301,167 +304,11 @@ function VentHoles() {
  *  lab activities, not term study — so it is never placed in the Dashboard deck. */
 const AUDIO_FUNDAMENTALS_LAB_GS = 3081;
 
-// LA-2A-inspired panel textures (owner request 2026-07-25). Pure react-native-svg
-// gradients + fine vertical striations — NO image assets. Both fill their
-// container absolutely BEHIND the content; the parent ElevatedFrame already
-// clips to its rounded corners (own overflow:hidden wrapper as a second clip).
-// viewBox 0..100 with preserveAspectRatio="none" stretches to any panel size.
-
-/** BLACK FACE — the LA-2A near-black matte control panel with a subtle vertical
- *  brushed grain (for the study-method panels; existing light-on-black content
- *  stays legible). */
-// Bead-blast GRIT — randomly-scattered particulate specks (owner 2026-08-01).
-// The old version tiled a fixed 5×5 speck motif and stretched it with the panel,
-// which turned the dots into regular horizontal streaks (the "wavy" look). This
-// is a one-time RANDOM point cloud (deterministic xorshift, so it's stable),
-// stored as fractions of the panel and multiplied into PIXEL space at render so
-// every speck stays a round particulate at any panel size — no tiling, no grain
-// direction.
-const GRIT_SPECKS = (() => {
-  let s = 0x2545f491 >>> 0;
-  const rnd = () => {
-    s ^= s << 13;
-    s ^= s >>> 17;
-    s ^= s << 5;
-    return ((s >>> 0) % 1_000_000) / 1_000_000;
-  };
-  const out: { fx: number; fy: number; r: number; light: boolean; a: number }[] = [];
-  for (let i = 0; i < 130; i++) {
-    out.push({
-      fx: rnd(),
-      fy: rnd(),
-      r: 0.45 + rnd() * 0.7, // px radius — tiny round particulate
-      light: rnd() > 0.5,
-      a: 0.05 + rnd() * 0.09,
-    });
-  }
-  return out;
-})();
-
-// GRAY textured rack-blank face (owner 2026-08-01) — modeled on the SPL 500-rack
-// blank panels: a medium-gray vertical gradient (lighter upper-mid, darker top &
-// bottom edges) with random bead-blasted particulate grit. The debossed titles
-// were already tuned for a gray floor, so they read correctly here. Drawn in
-// measured PIXEL space so the specks are round dots, not stretched streaks.
-function BlackFaceBg({
-  dark = false,
-  light = false,
-  lighter = false,
-  gold = false,
-}: {
-  dark?: boolean;
-  light?: boolean;
-  lighter?: boolean;
-  gold?: boolean;
-}) {
-  const [size, setSize] = useState({ w: 0, h: 0 });
-  // Face coats: default method gray · `dark` = the darker section-filler gray ·
-  // `light` = the MID gray (halfway to LA-2A, the QUIZ face) · `lighter` = the
-  // Flashcards face, halfway again from mid toward the full LA-2A light gray ·
-  // `gold` = a reflective brushed-silver panel (unused). (owner 2026-08-11)
-  const gradId = gold
-    ? 'apeSilverFace'
-    : lighter
-      ? 'apeGrayFaceLighter'
-      : light
-        ? 'apeGrayFaceMid'
-        : dark
-          ? 'apeGrayFaceDark'
-          : 'apeGrayFace';
-  const gradStops: { o: number; c: string }[] = gold
-    ? [
-        { o: 0, c: '#6f7376' },
-        { o: 0.16, c: '#b9bec2' },
-        { o: 0.4, c: '#f4f6f8' },
-        { o: 0.56, c: '#cdd2d6' },
-        { o: 0.8, c: '#9aa0a4' },
-        { o: 1, c: '#63686b' },
-      ]
-    : lighter
-      ? [{ o: 0, c: '#a6a7a8' }, { o: 0.42, c: '#b6b8b9' }, { o: 1, c: '#9c9e9f' }]
-      : light
-        ? [{ o: 0, c: '#828385' }, { o: 0.42, c: '#919294' }, { o: 1, c: '#77787a' }]
-        : dark
-          ? [{ o: 0, c: '#17171b' }, { o: 0.42, c: '#232327' }, { o: 1, c: '#0d0d11' }]
-          : [{ o: 0, c: '#3a3a3e' }, { o: 0.42, c: '#46464b' }, { o: 1, c: '#2c2c30' }];
-  // The 130 grit specks as ≤ 20 paths (one per colour × alpha step) instead of
-  // 130 <Circle> native views per panel — Sentry APE-STUDIO-W/R/S: the
-  // Dashboard's texture views were what an accessibility client choked on.
-  // Alpha is kept to the hundredth, so the grain is unchanged.
-  const gritPaths = useMemo(
-    () =>
-      size.w > 0 && size.h > 0
-        ? specksToPaths(
-            GRIT_SPECKS.map((g) => ({
-              cx: g.fx * size.w,
-              cy: g.fy * size.h,
-              r: g.r,
-              fill: g.light ? '#ffffff' : '#000000',
-              opacity: g.light ? g.a : g.a + 0.03,
-            })),
-            0.01,
-          )
-        : [],
-    [size.w, size.h],
-  );
-  return (
-    <View
-      pointerEvents="none"
-      style={styles.textureFill}
-      {...A11Y_HIDDEN}
-      onLayout={(e) => {
-        const { width, height } = e.nativeEvent.layout;
-        setSize({ w: Math.round(width), h: Math.round(height) });
-      }}
-    >
-      {size.w > 0 && size.h > 0 ? (
-        <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size.w} height={size.h}>
-          <Defs>
-            {/* objectBoundingBox gradient (default units) — size-independent, so
-                the shared id is safe across every panel instance. */}
-            <SvgLinearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-              {gradStops.map((s) => (
-                <Stop key={s.o} offset={String(s.o)} stopColor={s.c} />
-              ))}
-            </SvgLinearGradient>
-          </Defs>
-          <Rect x={0} y={0} width={size.w} height={size.h} fill={`url(#${gradId})`} />
-          {/* Random particulate specks — round dots at pixel radius. */}
-          {gritPaths.map((g, i) => (
-            <Path key={i} d={g.d} fill={g.fill} fillOpacity={g.opacity} />
-          ))}
-          {/* Top lit lip + bottom shadow so each blank reads as its own mounted panel. */}
-          <Line x1={0} y1={0.6} x2={size.w} y2={0.6} stroke="rgba(255,255,255,0.16)" strokeWidth={0.7} />
-          <Line x1={0} y1={size.h - 0.6} x2={size.w} y2={size.h - 0.6} stroke="rgba(0,0,0,0.4)" strokeWidth={0.9} />
-        </Svg>
-      ) : null}
-    </View>
-  );
-}
 
 /** BRUSHED METAL — the LA-2A brushed-aluminum chassis (for the quiz panel). A
  *  MID-tone metallic vertical gradient with a lighter top edge, a darker bottom,
  *  and fine vertical striations alternating light/dark. Mid-tone keeps the quiz's
  *  dark engraved title + dark LED boxes legible. */
-/** Panel mounting screw (Booth 2026-07-10) — BLACK phillips head. `angle`
- *  rotates the slots: mostly cardinal, a few a hair off-true like a real rack
- *  (#4). */
-function PanelScrew({ angle = 0, size = 15 }: { angle?: number; size?: number }) {
-  return (
-    <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={size} height={size} viewBox="0 0 14 14" style={{ transform: [{ rotate: `${angle}deg` }] }}>
-      <Circle cx={7} cy={7} r={6.4} fill="#131416" stroke="#000000" strokeWidth={0.9} />
-      <Circle cx={7} cy={7} r={5} fill="#1e1f22" />
-      <Circle cx={5.2} cy={5} r={1.8} fill="rgba(255,255,255,0.10)" />
-      {/* Phillips cross — black recess + a hair of light on the lower/right
-          edge so the engraved slot (the "teeth") is barely noticeable, and the
-          head reads a touch larger (Booth 2026-07-11 #4). */}
-      <Rect x={2.8} y={6.2} width={8.4} height={1.6} rx={0.8} fill="#000000" />
-      <Rect x={6.2} y={2.8} width={1.6} height={8.4} rx={0.8} fill="#000000" />
-      <Rect x={2.8} y={7.7} width={8.4} height={0.5} rx={0.25} fill="rgba(255,255,255,0.08)" />
-      <Rect x={7.7} y={2.8} width={0.5} height={8.4} rx={0.25} fill="rgba(255,255,255,0.08)" />
-    </Svg>
-  );
-}
 
 /**
  * GlassScreen — the study-method / quiz readout as an LED instrument screen
@@ -824,6 +671,9 @@ function resetToLogin(): void {
 
 export function DashboardScreen() {
   const insets = useSafeAreaInsets();
+  // The circle menu's MENU button floats over the bottom-left corner (owner
+  // 2026-11-20): the content ends above it (circleMenuPlaces.menuClearance).
+  const menuClear = menuClearance(insets.bottom);
   // CELEBRATIONS (owner 2026-09-17). Called HERE, at the very top, because this
   // component has two early returns (loading, and error/no-topic) before the
   // method percentages are computed — a hook placed down there runs on some
@@ -1047,7 +897,7 @@ export function DashboardScreen() {
   // The custom-list quiz length popup (owner 2026-10-19: 30 … all terms).
   const [customQuizOpen, setCustomQuizOpen] = useState(false);
   // Topic-deck ordering (owner 2026-08-01): default alphabetical; the Topic-Deck
-  // sheet (blue Study icon) lets the user engage a custom order, remove topics,
+  // sheet (the Study icon) lets the user engage a custom order, remove topics,
   // and jump to one.
   const deckPrefs = useDeckPrefs();
   const deckPrefsRef = useRef<DeckPrefs>(deckPrefs);
@@ -2187,7 +2037,7 @@ export function DashboardScreen() {
           while it is showing, so a retired hint costs no dead space. */}
       <ScrollView
         ref={scrollRef}
-        contentContainerStyle={[styles.scroll, jogCoachShowing && styles.scrollUnderCoach]}
+        contentContainerStyle={[styles.scroll, { paddingBottom: menuClear + (jogCoachShowing ? COACH_ROOM : 0) }]}
         onLayout={(e) => setFitView({ w: e.nativeEvent.layout.width, h: e.nativeEvent.layout.height })}
       >
         {/* iPad fill (owner 2026-10-09: "it takes up less than 1/2 of the
@@ -2204,7 +2054,15 @@ export function DashboardScreen() {
         <AppHeader
           // The screen says what it is (owner 2026-10-27): one name everywhere.
           title={['Study', 'Dashboard']}
-          // The blue Study icon opens the Topic-Deck manager (owner 2026-08-01);
+          // HOME, always, top-left (owner 2026-11-20), as on every menu screen.
+          // (The house drawn here, not HomeOrBackKey: that module is not in the
+          // app-start graph, a ratchet — see test/perfStartTrim.)
+          lead={
+            <Pressable onPress={() => goHome(navigation)} hitSlop={10} accessibilityRole="button" accessibilityLabel="Home">
+              <NavIcon icon="Home" lit />
+            </Pressable>
+          }
+          // The Study icon opens the Topic-Deck manager (owner 2026-08-01);
           // About moved to Settings.
           onLogoPress={() => setDeckOpen(true)}
           logo={
@@ -3138,7 +2996,7 @@ export function DashboardScreen() {
         onBegin={beginCustomQuiz}
       />
 
-      {/* Topic-deck manager (blue Study icon) — reorder / remove / jump / mode. */}
+      {/* Topic-deck manager (the Study icon) — reorder / remove / jump / mode. */}
       <TopicDeckSheet
         visible={deckOpen}
         onClose={() => setDeckOpen(false)}
@@ -3168,7 +3026,7 @@ export function DashboardScreen() {
       {/* Jog-dial reveal (Pillar B, plan §3) — only meaningful with somewhere
           to spin to; hidden while the big wheel is open (it teaches itself). */}
       {jogCoachShowing ? (
-        <CoachMark text="Tap the rotary dial to jump straight to any topic" bottom={18} />
+        <CoachMark text="Tap the rotary dial to jump straight to any topic" bottom={menuClear} />
       ) : null}
 
       {/* Method-cards intro (Booth 2026-07-18) — owned by this screen so its
@@ -3188,6 +3046,11 @@ export function DashboardScreen() {
     </View>
   );
 }
+
+/** Clears the floating coach pill (~37 pt + breathing room), which now sits
+ *  above the MENU button. Applied only while the hint shows — see the note at
+ *  the ScrollView. */
+const COACH_ROOM = 50;
 
 const styles = StyleSheet.create({
   /** Breathing room around the inline celebration notice. */
@@ -3216,9 +3079,6 @@ const styles = StyleSheet.create({
   // the screen (iPad fill, owner 2026-10-09) — stretching only its rows wider
   // would leave the black below it.
   scroll: { padding: 14, paddingBottom: 10, gap: 8, width: '100%', maxWidth: 760, alignSelf: 'center' },
-  /* Clears the floating coach pill: bottom 18 + ~37 pill height + breathing
-     room. Applied only while the hint shows — see the note at the ScrollView. */
-  scrollUnderCoach: { paddingBottom: 72 },
   // Stranded-session self-heal banner.
   strandedBanner: {
     borderRadius: 10,
@@ -3336,11 +3196,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(55,224,95,.1)',
   },
   myEnrollBtnText: { fontFamily: fonts.oswaldSemiBold, fontSize: 9.5, letterSpacing: 0.2, color: '#37e05f' },
-  // Blue Study icon standing in for the company logo (owner 2026-08-01) — the
+  // The Study icon standing in for the company logo (owner 2026-08-01) — the
   // NavIcon Study glyph scaled up to the logo footprint.
   // Bordered so it reads as a pressable BUTTON (owner 2026-08-06) — the study
-  // headphones sit in a subtly-lit rounded key that opens the Topic Deck.
+  // glyph sits in a subtly-lit rounded key that opens the Topic Deck.
   // Sized down (owner 2026-08-06) — the 47px key crowded the header title.
+  // Frame and fill in the Study orange, no longer blue (owner 2026-11-24).
   studyLogo: {
     width: 40,
     height: 40,
@@ -3348,8 +3209,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 9,
     borderWidth: 1,
-    borderColor: 'rgba(120,155,190,0.55)',
-    backgroundColor: 'rgba(47,155,255,0.08)',
+    borderColor: studyRgba(0.45),
+    backgroundColor: studyRgba(0.08),
   },
   pilotDot: {
     position: 'absolute',
@@ -3615,10 +3476,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.17)',
   },
-  // LA-2A texture layer (BlackFaceBg / BrushedMetalBg): absolutely fills the
-  // panel behind its content. overflow:hidden + matching radius is a second clip
-  // on top of the parent ElevatedFrame's own rounded-corner clip.
-  textureFill: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: 2, overflow: 'hidden' },
   // Empty custom list: what it is and how to fill it (owner 2026-10-14), above
   // its rack (owner 2026-10-19: the list now has the full rack of methods).
   customEmpty: {

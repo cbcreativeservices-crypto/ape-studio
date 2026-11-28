@@ -17,12 +17,20 @@ import { colors, fonts } from '../../../theme/tokens';
 import type { PageCtx, PageDef } from '../kit/PagedLab';
 import { Body, Card, Eyebrow, Lead, Prompt } from '../tuning/components/primitives';
 import { UnderstandingCheck } from '../tuning/components/check';
+import { PredictCheck } from './predictCheck';
 import { useRef, useState } from 'react';
 import { PATCH_PAIR_GLASS_ASPECT, PairStatus, PatchPairDrawing, PatchPairView } from './art/PatchPairView';
 import { JACK_ASPECT, JACK_BADGE, JackCutawayDrawing, useContactAnnounce } from './art/JackCutaway';
 import { contactsOpen, resolvePair } from './engine/patchbay';
 import { GoalChips, MantraCard, useStationState, useVisitGoals } from './bits';
 import { PatchbayRack, cutawayBezel, insertionFader, jackKeys, pairBezel } from './rackLayout';
+import { StudioBayView } from './art/StudioBayView';
+import { STUDIO_PAIRS } from './engine/scenariosB';
+import { CollapsibleSection } from '../LabShell';
+
+/** Page 1's lead (PB-01, PB-04): what a patchbay is, the one convention, and the two parts. */
+export const PB_PAGE1_LEAD =
+  'This is a patchbay: every cable in a studio ends here. On most bays, and on every bay in this lab, the top row is OUT and the bottom row is IN; some bays are wired the other way, so check the label. The lab has two parts, and part one ends on page 13: a good place to stop.';
 
 /** The single pair most pages teach on. */
 const SRC = 'CONSOLE OUT 1';
@@ -30,22 +38,25 @@ const DST = 'INTERFACE IN 1';
 
 /* ── 1 · Signal falls downhill ──────────────────────────────────────────── */
 
-function PageDirection(_: { ctx: PageCtx }) {
+function PageDirection({ ctx }: { ctx: PageCtx }) {
+  // PB-01 + PB-04 (owner 2026-11-15: "build waves 1 thru 3", D62), built as one change: page 1 opens
+  // on the bay itself, rows marked OUT and IN, with the plain line and the two-parts line in the lead
+  // it replaces (same length). The two row-lists the picture now shows fold away (a line in, a line
+  // out); their ratified words are kept, unchanged, inside the fold.
   return (
     <View style={{ gap: 12 }}>
-      <Lead>
-        A patchbay puts every important input and output of the studio on one panel. Before any routing tricks, learn the one
-        convention everything else stands on — on most bays, and on every bay in this lab. Some bays are wired the other way:
-        check the label.
-      </Lead>
-      <Card>
-        <Eyebrow>TOP ROW = SOURCES · OUTPUTS</Eyebrow>
-        <Body>Console direct outs · mic preamp outs · interface outs · playback outs · processor outs. Signal LEAVES equipment here.</Body>
-      </Card>
-      <Card>
-        <Eyebrow>BOTTOM ROW = DESTINATIONS · INPUTS</Eyebrow>
-        <Body>Console inputs · interface inputs · recorder inputs · processor inputs · amplifier inputs. Signal ENTERS equipment here.</Body>
-      </Card>
+      <StudioBayView pairs={STUDIO_PAIRS} rowMarks reduceMotion={ctx.reduceMotion} />
+      <Lead>{PB_PAGE1_LEAD}</Lead>
+      <CollapsibleSection title="WHAT PLUGS INTO EACH ROW" startOpen={false}>
+        <Card>
+          <Eyebrow>TOP ROW = SOURCES · OUTPUTS</Eyebrow>
+          <Body>Console direct outs · mic preamp outs · interface outs · playback outs · processor outs. Signal LEAVES equipment here.</Body>
+        </Card>
+        <Card>
+          <Eyebrow>BOTTOM ROW = DESTINATIONS · INPUTS</Eyebrow>
+          <Body>Console inputs · interface inputs · recorder inputs · processor inputs · amplifier inputs. Signal ENTERS equipment here.</Body>
+        </Card>
+      </CollapsibleSection>
       <Card tone="math">
         <Text style={local.hill}>Signal falls downhill. Top → Bottom.</Text>
         <Body>
@@ -308,7 +319,7 @@ function PageHalfSurprise({ ctx }: { ctx: PageCtx }) {
   const flow = resolvePair(state);
   const [predicted, setPredicted] = useState(false);
   const goals = [
-    { label: 'PREDICT IT (answer below)', hit: predicted },
+    { label: 'PREDICT IT (answer above)', hit: predicted },
     { label: 'THEN DO IT (patch the top)', hit: flow.isSplit },
   ];
   const latched = useVisitGoals(ctx, goals);
@@ -328,7 +339,8 @@ function PageHalfSurprise({ ctx }: { ctx: PageCtx }) {
             bottomPatchLabel="DRUM MACHINE"
             // The jacks stay INERT until the prediction is committed — the whole
             // point of predict-first is that the commitment precedes the evidence
-            // (cognition pass 2026-09-10).
+            // (cognition pass 2026-09-10). ANY committed pick unlocks them, right
+            // or wrong, so a wrong guess can be tested (beginner audit 2026-11-14).
             onToggleJack={predicted ? toggle : undefined}
             reduceMotion={ctx.reduceMotion}
           />
@@ -343,7 +355,7 @@ function PageHalfSurprise({ ctx }: { ctx: PageCtx }) {
         Same untouched starting picture as full-normal: source flowing to destination through the normal. But this bay is
         HALF-NORMALLED. So — what’s different? Commit to a prediction before you touch anything.
       </Lead>
-      <UnderstandingCheck
+      <PredictCheck
         eyebrow="PREDICT BEFORE PATCHING"
         question="You plug a cable into the TOP front jack of this half-normal pair. What happens to the destination?"
         options={[
@@ -354,11 +366,11 @@ function PageHalfSurprise({ ctx }: { ctx: PageCtx }) {
         correct={1}
         explain="That is the half-normal difference: the TOP insertion does NOT break the normal. The top jack becomes a tap of the source."
         wrong={[
-          'Reasonable guess — that is exactly what full-normal would do. Try the top jack below and watch the normal.',
+          'Reasonable guess — that is exactly what full-normal would do. The jacks are unlocked: patch the TOP jack and watch the normal.',
           undefined,
-          'Cables patched into the TOP carry signal OUT. It is the BOTTOM jack that feeds this destination from a cable.',
+          'Cables patched into the TOP carry signal OUT; it is the BOTTOM jack that feeds this destination from a cable. The jacks are unlocked: patch the TOP jack and see.',
         ]}
-        onCorrect={() => setPredicted(true)}
+        onCommit={() => setPredicted(true)}
       />
       <PairStatus
         state={state}
@@ -389,8 +401,8 @@ function PageHalfSurprise({ ctx }: { ctx: PageCtx }) {
 }
 
 export const PATCHBAY_PAGES_A: PageDef[] = [
-  { title: 'Signal falls downhill', short: 'TOP↓BTM', Component: PageDirection },
-  { title: 'One pair, two pictures', short: 'PAIR', Component: PagePair, rack: true },
+  { title: 'Signal falls downhill', short: 'TOP↓BTM', Component: PageDirection, reading: true },
+  { title: 'One pair, two pictures', short: 'PAIR', Component: PagePair, reading: true, rack: true },
   { title: 'Thru: nothing is connected yet', short: 'THRU', Component: PageThru, manualDone: true, rack: true },
   { title: 'What “normal” means', short: 'NORMAL', Component: PageNormal, manualDone: true },
   { title: 'The switching contact', short: 'CONTACT', Component: PageContact, manualDone: true, rack: true },

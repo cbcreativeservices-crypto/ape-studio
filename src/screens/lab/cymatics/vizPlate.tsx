@@ -31,9 +31,10 @@ import { useEffect, useMemo, useRef } from 'react';
 import { PanResponder, StyleSheet, View } from 'react-native';
 import { Canvas, Circle, FillType, Group, Line as SkLine, LinearGradient, Oval, Path, Points, RadialGradient, Rect, Skia, Vertices, vec } from '@shopify/react-native-skia';
 import { useDerivedValue, useFrameCallback, useSharedValue, type SharedValue } from 'react-native-reanimated';
-import { MIDLINE_BLUE, WAVE_LEVEL_STOPS, heatColor } from '../../../features/tools/levelColor';
+import { MIDLINE_BLUE, WAVE_LEVEL_STOPS } from '../../../features/tools/levelColor';
 import { MATERIAL_BY_ID } from '../../../features/cymatics/materials';
-import { plateAspect, type PlateSpec } from '../../../features/cymatics/plateModes';
+import { plateAspect, plateDrivePoint, plateQRel, type PlateSpec } from '../../../features/cymatics/plateModes';
+import { heatColorFast, heatGainK, heatStrengthK, sandDrive } from '../../../features/cymatics/vizGain';
 import { isLibraryShape, libraryInside, librarySnapInside, loadLibraryShape } from '../../../features/cymatics/modalLibrary';
 import { useStageTextScale } from '../rack/stageAspect';
 import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../modules/ape-gesture-exclusion';
@@ -118,8 +119,13 @@ export type PlateViewProps = {
   /** Signed field ±1 on an N×N grid (NaN outside a disc). */
   grid: Float32Array;
   N: number;
-  /** Resonance strength 0..1 (particle agitation). */
+  /** RESPONSE 0..1 against the fixed reference: how far the plate moves
+   *  (heat colours, 3D / slice height). */
   strength: number;
+  /** How close the drive is to a mode's own peak, 0..1 (readResonance's
+   *  `near`): whether the sand forms a figure. Damping does not change it;
+   *  damping blurs the figure instead (vizGain.sandDrive, checker Y1). */
+  near: number;
   /** Drive amplitude 0..1. */
   amplitude: number;
   view: PlateViewMode;
@@ -182,6 +188,9 @@ export function PlateView(p: PlateViewProps) {
   useEffect(() => {
     rate.value = p.slowMo ? 0.45 : 3.2;
   }, [p.slowMo, rate]);
+  // SLOW MOTION slows the sand by the same factor as the 3D plate and the
+  // slice (0.45 / 3.2 ≈ 0.14×; audit row 23: the sand kept full speed).
+  const SAND_RATE_FULL = 3.2;
 
   // ── particles ─────────────────────────────────────────────────────────────
   const count = Math.max(200, Math.min(8000, Math.round(p.particleCount)));
@@ -191,6 +200,17 @@ export function PlateView(p: PlateViewProps) {
   const gridSV = useSharedValue(grid);
   const strengthSV = useSharedValue(p.strength);
   const ampSV = useSharedValue(p.amplitude);
+  // The sand's drive, worked out once per control change (vizGain.sandDrive):
+  // NEAR decides whether a figure forms; DAMPING blurs it (checker Y1).
+  const sand = sandDrive(p.amplitude, p.near, plateQRel(spec.material, spec.damping));
+  const kickSV = useSharedValue(sand.kick);
+  const jitSV = useSharedValue(sand.jit);
+  const settleScaleSV = useSharedValue(sand.settleScale);
+  useEffect(() => {
+    kickSV.value = sand.kick;
+    jitSV.value = sand.jit;
+    settleScaleSV.value = sand.settleScale;
+  }, [sand.kick, sand.jit, sand.settleScale, kickSV, jitSV, settleScaleSV]);
   const frictionSV = useSharedValue(p.friction);
   const runningSV = useSharedValue(p.running);
   const maskSV = useSharedValue<Uint8Array>(lib ? lib.mask : EMPTY_MASK);
@@ -240,24 +260,28 @@ export function PlateView(p: PlateViewProps) {
   const wantParticles = view === 'particles' || view === 'overlay';
   const cb = useFrameCallback((info) => {
     const dtRaw = info.timeSincePreviousFrame ?? 16;
-    const dt = Math.min(dtRaw, 48) / 1000;
+    const dtReal = Math.min(dtRaw, 48) / 1000;
     // Nothing moves without a drive (owner caption + Low-Light): the strobed
     // clock only advances while the plate is driven (learning pass B8).
     if (!runningSV.value) return;
-    clock.value += dt * rate.value;
+    clock.value += dtReal * rate.value;
     if (!wantParticles) return;
+    // Sand time runs at the clock's slow-motion factor (1 at full speed).
+    const slow = rate.value / SAND_RATE_FULL;
+    const dt = dtReal * slow;
     const P = pos.value;
     const V = vel.value;
     const G = gridSV.value;
     const n = P.length / 2;
     if (n === 0 || G.length !== N * N) return;
-    const s = strengthSV.value;
-    const a = ampSV.value;
-    // Agitation: how hard the plate throws the sand. Off resonance (s→0) the
-    // plate barely moves — the sand just shivers where it lies.
-    const agit = a * (0.04 + 0.96 * s * s);
-    const kick = 2.2 * agit; // gradient descent gain (plate units / s²)
-    const jit = 0.09 * agit; // random walk ∝ local amplitude
+    // Agitation (vizGain.sandDrive): how hard the plate throws the sand. Off
+    // a mode (near→0) the plate barely moves, so the sand just shivers where
+    // it lies, at any damping. On a mode it forms the figure; more damping
+    // walks it there more slowly (kick) onto wider still lines (settle).
+    const kick = kickSV.value; // gradient descent gain (plate units / s²)
+    // Random walk ∝ local amplitude: a per-frame kick, and a random walk slows
+    // as √time, so slowed sand is slower, not calmer.
+    const jit = jitSV.value * Math.sqrt(slow);
     const damp = Math.exp(-dt * (2.5 + 9 * frictionSV.value));
     const h = 1 / N;
     const fr = tick.value;
@@ -265,7 +289,7 @@ export function PlateView(p: PlateViewProps) {
     // still line is no longer shaken, so it stays put — real sand sits ON the
     // nodal line. Without this the residual gradient along the line crept
     // every grain to the crossings and the figure dissolved into dots.
-    const settle = 0.035 + 0.05 * frictionSV.value;
+    const settle = (0.035 + 0.05 * frictionSV.value) * settleScaleSV.value;
     const M = maskSV.value;
     const mnx = maskNxSV.value;
     const mny = maskNySV.value;
@@ -359,43 +383,58 @@ export function PlateView(p: PlateViewProps) {
   // "there is a pattern at every frequency", the lab's own misconception).
   // PHASE and NODES keep the shape — "which figure WOULD form" — and fade
   // with strength instead (opacity, below).
-  const strengthK = 0.12 + 0.88 * Math.max(0, Math.min(1, p.strength));
-  const mesh = useMemo(() => {
-    if (view === 'particles' || view === 'plate3d') return null;
+  //
+  // LEVEL (owner 2026-11-25): how far a point moves is the drive level × the
+  // response, so the HEAT colours rise with LEVEL too, through ONE stated
+  // compressive curve (vizGain.heatLevelGain, g = 1 − (1 − L)⁴): LEVEL 0 is a
+  // still, dark plate, the opening 30 % already reads bright and the map keeps
+  // brightening up to 100 %, while the still lines stay where they are.
+  // PHASE / NODES show the SHAPE (which figure would form), so their opacity
+  // follows NEAR, which damping does not change (checker Y1).
+  const heatK = heatGainK(p.amplitude, p.strength);
+  const shapeK = heatStrengthK(p.near);
+  // Geometry and colours are separate memos (checker Y4): a LEVEL step only
+  // recolours the cells (one table lookup each); it does not rebuild the mesh.
+  const meshGeom = useMemo(() => {
     const verts: { x: number; y: number }[] = [];
-    const cols: string[] = [];
     const idx: number[] = [];
     for (let j = 0; j < N; j++) {
       for (let i = 0; i < N; i++) {
-        const v = grid[j * N + i];
-        const a = v !== v ? 0 : Math.abs(v);
         verts.push({ x: ox + ((i + 0.5) / N) * plateW, y: oy + ((j + 0.5) / N) * plateH });
-        let c: string;
-        if (view === 'phase') {
-          const k = Math.min(1, a * 1.15);
-          c = v > 0 ? mixHex('#0b0b10', PHASE_UP, k) : mixHex('#0b0b10', PHASE_DOWN, k);
-        } else if (view === 'nodes') {
-          c = a < 0.06 ? NODE_LINE : a < 0.12 ? '#8aa0bf' : '#101216';
-        } else {
-          c = heatColor(a * strengthK);
-        }
-        cols.push(c);
         if (i < N - 1 && j < N - 1) {
           const k0 = j * N + i;
           idx.push(k0, k0 + 1, k0 + N, k0 + 1, k0 + N + 1, k0 + N);
         }
       }
     }
-    return { verts, cols, idx };
-  }, [grid, N, view, ox, oy, plateW, plateH, strengthK]);
+    return { verts, idx };
+  }, [N, ox, oy, plateW, plateH]);
+  const meshCols = useMemo(() => {
+    if (view === 'particles' || view === 'plate3d') return null;
+    const cols: string[] = new Array(N * N);
+    for (let k = 0; k < N * N; k++) {
+      const v = grid[k];
+      const a = v !== v ? 0 : Math.abs(v);
+      if (view === 'phase') {
+        const m = Math.min(1, a * 1.15);
+        cols[k] = v > 0 ? mixHex('#0b0b10', PHASE_UP, m) : mixHex('#0b0b10', PHASE_DOWN, m);
+      } else if (view === 'nodes') {
+        cols[k] = a < 0.06 ? NODE_LINE : a < 0.12 ? '#8aa0bf' : '#101216';
+      } else {
+        cols[k] = heatColorFast(a * heatK);
+      }
+    }
+    return cols;
+  }, [grid, N, view, heatK]);
+  const mesh = meshCols && meshCols.length === meshGeom.verts.length ? { verts: meshGeom.verts, cols: meshCols, idx: meshGeom.idx } : null;
 
   // ── 3D plate (strobed) ───────────────────────────────────────────────────
   const M = 30;
   const grid3d = useMemo(() => {
-    // Downsample the field to M×M for the surface + static heat colours.
+    // Downsample the field to M×M for the surface (values only: the heat
+    // colours are their own memo below, so LEVEL does not rebuild this).
     const vals = new Float32Array(M * M);
     const inside = new Uint8Array(M * M);
-    const cols: string[] = [];
     const idx: number[] = [];
     for (let j = 0; j < M; j++) {
       for (let i = 0; i < M; i++) {
@@ -404,7 +443,6 @@ export function PlateView(p: PlateViewProps) {
         const v = grid[gj * N + gi];
         vals[j * M + i] = v !== v ? 0 : v;
         inside[j * M + i] = v === v ? 1 : 0;
-        cols.push(heatColor(Math.abs(vals[j * M + i]) * strengthK));
       }
     }
     // A quad is emitted only when all four corners are on the plate, so the
@@ -417,8 +455,14 @@ export function PlateView(p: PlateViewProps) {
         idx.push(k0, k0 + 1, k0 + M, k0 + 1, k0 + M + 1, k0 + M);
       }
     }
-    return { vals, cols, idx };
-  }, [grid, N, strengthK]);
+    return { vals, idx };
+  }, [grid, N]);
+  const cols3d = useMemo(() => {
+    if (!is3d) return null;
+    const cols: string[] = new Array(M * M);
+    for (let k = 0; k < M * M; k++) cols[k] = heatColorFast(Math.abs(grid3d.vals[k]) * heatK);
+    return cols;
+  }, [grid3d, heatK, is3d]);
   const vals3dSV = useSharedValue(grid3d.vals);
   useEffect(() => {
     vals3dSV.value = grid3d.vals;
@@ -586,10 +630,15 @@ export function PlateView(p: PlateViewProps) {
     cbRef.current.onPlace?.(t, x, y);
   }
 
-  const exX = ox + spec.exciter.x * plateW;
-  const exY = oy + (spec.exciter.y / aspect) * plateH;
-  const spX = spec.support ? ox + spec.support.x * plateW : null;
-  const spY = spec.support ? oy + (spec.support.y / aspect) * plateH : null;
+  // Drawn where the plate is actually driven / held (plateDrivePoint: a chip
+  // asking for a point off a solved shape lands on the nearest plate point,
+  // as the modes do; audit row 17).
+  const exP = plateDrivePoint(spec, spec.exciter);
+  const spP = spec.support ? plateDrivePoint(spec, spec.support) : null;
+  const exX = ox + exP.x * plateW;
+  const exY = oy + (exP.y / aspect) * plateH;
+  const spX = spP ? ox + spP.x * plateW : null;
+  const spY = spP ? oy + (spP.y / aspect) * plateH : null;
   const dotR = 0.9 + p.particleSize * 1.9;
   const showMesh = mesh != null && (view === 'heat' || view === 'overlay' || view === 'phase' || view === 'nodes' || view === 'section');
 
@@ -631,7 +680,7 @@ export function PlateView(p: PlateViewProps) {
                 colors={mesh.cols}
                 indices={mesh.idx}
                 mode="triangles"
-                opacity={view === 'overlay' ? 0.78 : view === 'section' ? 0.55 : view === 'phase' || view === 'nodes' ? 0.35 + 0.61 * strengthK : 0.96}
+                opacity={view === 'overlay' ? 0.78 : view === 'section' ? 0.55 : view === 'phase' || view === 'nodes' ? 0.35 + 0.61 * shapeK : 0.96}
               />
             ) : null}
             {/* Section slice marker */}
@@ -646,7 +695,7 @@ export function PlateView(p: PlateViewProps) {
             {/* Shadow on the bench, the plate's edge slab, then the face */}
             <Oval x={width / 2 - plateW * 0.5} y={height / 2 + height * 0.06 - plateH * 0.21 + 14} width={plateW} height={plateH * 0.42} color="rgba(0,0,0,0.45)" />
             <Vertices vertices={verts3d} indices={grid3d.idx} mode="triangles" color={mat.edge} transform={[{ translateY: 7 }]} />
-            <Vertices vertices={verts3d} colors={grid3d.cols} indices={grid3d.idx} mode="triangles" />
+            {cols3d ? <Vertices vertices={verts3d} colors={cols3d} indices={grid3d.idx} mode="triangles" /> : null}
           </Group>
         )}
         {/* Bevelled edge */}

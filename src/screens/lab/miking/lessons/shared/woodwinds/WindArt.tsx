@@ -30,7 +30,7 @@
 import type { ReactElement, ReactNode } from 'react';
 import { useMemo } from 'react';
 import { View } from 'react-native';
-import { BlurMask, Canvas, DashPathEffect, Group, LinearGradient, Path, PathOp, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
+import { BlurMask, Canvas, DashPathEffect, Group, LinearGradient, Path, PathOp, RadialGradient, Skia, vec , Paint as SkPaint } from '@shopify/react-native-skia';
 import type { VariantId, Vec3, ViewId } from '../../../engine/model/types.ts';
 import type { ArtLabel } from '../../../engine/scene/sceneTypes.ts';
 import { fitXform } from '../../../engine/geometry/frame.ts';
@@ -38,6 +38,11 @@ import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabe
 import { useStageTextScale } from '../../../../rack/stageAspect';
 import { add, dot, len, norm, scale, sub } from '../../../engine/geometry/vec.ts';
 import { drawHand3, FIGURE_TONES, FigureMass, Nails, PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
+import { figureV2On } from '../figureV2/figureV2Config.ts';
+import type { CastMember } from '../figureV2/cast';
+import { FamilyFigureFrontV2, FamilyFigureV2 } from '../figureV2/familyV2';
+import { WIND_AUTHORED_HANDS, windFigure, windReedHands } from './windFigureV2';
+import { ReedHandsLayer } from '../figureV2/reedHandKit';
 import type { HandView } from '../players/handModel.ts';
 import { PAD, touchAt, touchR, windHands, type Touch } from './windHands.ts';
 import type { PlayerPose, Pt } from '../players/playerPose.ts';
@@ -700,10 +705,41 @@ export function WindBody({ L, view, dim = 1 }: { L: Layout; view: ViewId; dim?: 
 }
 
 /** The player, the chair and the instrument in one view (the scenes). */
-export function WindScene({ L, view, playerDim = 1, showJet = true }: { L: Layout; view: ViewId; playerDim?: number; showJet?: boolean }): ReactElement {
+export function WindScene({ L, view, playerDim = 1, showJet = true, v2: v2In, who }: { L: Layout; view: ViewId; playerDim?: number; showJet?: boolean; /** (the study page) old or new whatever the switch */ v2?: boolean; /** (the section plan) the seat's own person */ who?: CastMember }): ReactElement {
   const pose = poseFor(L, view);
   const x = extrasFor(L, view);
   const b = builtFor(L, view);
+  if (v2In ?? figureV2On('familyWinds')) {
+    // (figure roll-out wave 5: the player in the approved look — whole behind the instrument, again over it where
+    // the arms and the hands' front parts lie; the chair, the peg, the strap and the jet as before)
+    const fig = windFigure(L, view, who);
+    const dimL = playerDim < 1 ? <SkPaint opacity={playerDim} /> : undefined;
+    // (owner 2026-11-25: the hands are the reed family's AUTHORED hands — their parts behind the instrument before it,
+    // the rest over it)
+    const reed = WIND_AUTHORED_HANDS ? windReedHands(L, fig.fp) : null;
+    return (
+      <Group>
+        <Paints items={x.floor} />
+        <Paints items={x.chairBack} />
+        <Group layer={dimL}>
+          <FamilyFigureV2 fp={fig.fp} />
+          {reed ? <ReedHandsLayer placed={reed} layer="back" who={fig.fp.in.who} /> : null}
+        </Group>
+        <Paints items={x.peg} />
+        <Paints items={b.back} />
+        <Paints items={b.body} />
+        <Paints items={b.keys} />
+        <Paints items={handsFor(L, view).touches} />
+        <Paints items={b.front} />
+        <Group layer={dimL}>
+          <FamilyFigureFrontV2 fp={fig.fp} region={fig.region} />
+          {reed ? <ReedHandsLayer placed={reed} layer="front" who={fig.fp.in.who} /> : null}
+        </Group>
+        <Paints items={x.strap} />
+        {showJet ? <Paints items={x.jet} /> : null}
+      </Group>
+    );
+  }
   return (
     <Group>
       <Paints items={x.floor} />

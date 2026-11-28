@@ -11,7 +11,7 @@ import { C02_PLACE_START, C02_WORKED } from './model.ts';
 export const C02_SPEC: AmpPagesSpec = {
   rig: 'combo',
   who: 'guitar',
-  intro: 'This lesson is about putting a microphone on an electric guitar’s amp. First the guitar and the amp themselves: how a vibrating string becomes a signal and the signal becomes moving air, and where the amp sits. Then the microphones, a worked example and your own placements. Nothing here makes a sound: the lab is silent and shows the physics instead. (The speaker itself — cones, cabinets, how a speaker spreads its sound — is covered in full in the Amplified speakers & Leslie module.)',
+  intro: 'This lesson is about putting a microphone on an electric guitar’s amp. First the guitar and the amp themselves: how a vibrating string becomes a signal and the signal becomes moving air, and where the amp sits. Then the microphones, a worked example and your own placements. Nothing here makes a sound: the lab is silent and shows the physics instead. (The speaker itself — cones, cabinets, how a speaker spreads its sound — is covered in full in the Amplified Speakers and Leslie module.)',
   shows: [{ id: 'guitar', label: 'ELECTRIC GUITAR, FACE-ON', blurb: 'A solid-body electric guitar. On its own it is very quiet: the pickups turn the strings’ motion into a small signal for the amp.' }],
   instParts: [
     { id: 'el.strings', title: 'STRINGS', text: 'Steel strings, stretched between the nut and the bridge. Picked or plucked, they vibrate — but a solid-body guitar barely sounds in the air. Their motion is what the pickups sense.' },

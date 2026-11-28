@@ -534,7 +534,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: which stroke sets more of the head’s higher shapes moving?', options: ['A stroke at the edge', 'A stroke in the middle', 'Both the same'], after: 'Now STEP through the stroke (or PLAY ONCE), then try STROKE at the middle and at the edge.' },
+  sound: { prompt: 'Before you step through: which stroke sets more of the head’s higher shapes moving?', options: ['A stroke at the edge', 'A stroke in the middle', 'Both the same'], after: 'Now go EVENT by EVENT through the stroke (or PLAY ONCE), then try STROKE at the middle and at the edge.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from 30 cm to 15 cm from the head. What changes most?', options: ['More isolation and detail', 'More of the room', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will this supercardioid reject the wedge best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },

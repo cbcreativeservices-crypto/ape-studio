@@ -6,12 +6,15 @@
  * labels with prose beneath, colours always paired with words. Prose
  * primitives come from tuning/components/primitives (the de-facto lab kit).
  */
-import { useRef, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { navigationRef } from '../../../navigation/navigationRef';
 import type { PageCtx } from '../kit/PagedLab';
 import { Btn, useMarkWhen } from '../tuning/components/primitives';
+import { GoDeeper } from '../foundations/GoDeeper';
+import { goalChipText } from './fixHelpers';
+import { goalsScopeOf, setGoalsLeft } from './pageMemory';
 
 /** Sticky exploration goals: each latches once its predicate has been true;
  *  when ALL have latched the page marks itself done. */
@@ -33,20 +36,30 @@ export function useVisitGoals(ctx: PageCtx, goals: { label: string; hit: boolean
   useMarkWhen(all, () => {
     if (!ctx.isDone) ctx.markDone();
   });
+  // The end screen names this page's own missing goals (lab fix round
+  // 2026-11-14, phase 2, F2; pageMemory.goalsLeftLine).
+  const scope = goalsScopeOf(ctx);
+  const leftKey = goals.filter((_, i) => !seen.current[i]).map((g) => g.label).join('|');
+  useEffect(() => {
+    setGoalsLeft(scope, leftKey ? leftKey.split('|') : []);
+  }, [scope, leftKey]);
   return [...seen.current];
 }
 
-export function GoalChips({ goals, latched }: { goals: { label: string }[]; latched: boolean[] }) {
+export function GoalChips({ goals, latched, now }: { goals: { label: string }[]; latched: boolean[]; now?: boolean[] }) {
   return (
     <View style={styles.chips} accessibilityRole="list">
-      {goals.map((g, i) => (
-        <View key={g.label} style={[styles.chip, latched[i] && styles.chipDone]} accessible accessibilityLabel={`${g.label}: ${latched[i] ? 'done' : 'not yet'}`}>
-          <Text style={[styles.chipText, latched[i] && { color: colors.green }]}>
-            {latched[i] ? '✓ ' : '○ '}
-            {g.label}
-          </Text>
-        </View>
-      ))}
+      {goals.map((g, i) => {
+        const c = goalChipText(g.label, latched[i], now?.[i]);
+        return (
+          <View key={g.label} style={[styles.chip, latched[i] && (c.lost ? styles.chipLost : styles.chipDone)]} accessible accessibilityLabel={`${g.label}: ${c.lost ? 'met earlier, not true now' : latched[i] ? 'done' : 'not yet'}`}>
+            <Text style={[styles.chipText, latched[i] && { color: c.lost ? colors.amber : colors.green }]}>
+              {c.mark}
+              {c.text}
+            </Text>
+          </View>
+        );
+      })}
     </View>
   );
 }
@@ -78,13 +91,30 @@ export function ToolLink({ toolKey, label }: { toolKey: string; label: string })
   return <Btn label={`${label} ›`} onPress={() => go('ToolInfo', { toolKey })} a11y={`Open the ${label} tool`} />;
 }
 
-/** A row of "go deeper" links under a chapter. */
-export function DeeperRow({ children }: { children: ReactNode }) {
+/** A row of "go deeper" links under a chapter. `bare`: no GO DEEPER
+ *  eyebrow (inside a FormulaFold, which already says GO DEEPER). */
+export function DeeperRow({ children, bare }: { children: ReactNode; bare?: boolean }) {
   return (
     <View style={styles.deeper}>
-      <Text style={styles.deeperEyebrow}>GO DEEPER</Text>
+      {bare ? null : <Text style={styles.deeperEyebrow}>GO DEEPER</Text>}
       <View style={styles.deeperRow}>{children}</View>
     </View>
+  );
+}
+
+/** SS-01 (owner 2026-11-15: "build waves 1 thru 3", D62 adoption plan): a
+ *  heavy page opens with the idea in plain words, and its formula moves under
+ *  the shared GO DEEPER fold (foundations/GoDeeper, owner decision 5,
+ *  2026-11-14), with the calculators that work it out. The page's own GO
+ *  DEEPER link row goes inside the same fold, so the page has one GO DEEPER,
+ *  not two. Nothing is removed: the formula and every link are one tap away. */
+export const FORMULA_FOLD_HINT = 'The formula, and the calculator that works it out.';
+export function FormulaFold({ formula, children }: { formula: string; children?: ReactNode }) {
+  return (
+    <GoDeeper hint={FORMULA_FOLD_HINT}>
+      <Text style={styles.formula} accessibilityLabel={`The formula: ${formula}`}>{formula}</Text>
+      {children ? <DeeperRow bare>{children}</DeeperRow> : null}
+    </GoDeeper>
   );
 }
 
@@ -166,10 +196,12 @@ const styles = StyleSheet.create({
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   chip: { borderRadius: 8, borderWidth: 1, borderColor: colors.hairline, backgroundColor: '#101013', paddingHorizontal: 9, paddingVertical: 6, minHeight: 32, justifyContent: 'center', maxWidth: '100%', flexShrink: 1 },
   chipDone: { borderColor: colors.green, backgroundColor: '#0f2416' },
+  chipLost: { borderColor: colors.amber, backgroundColor: '#1a1409' },
   chipText: { color: colors.textMuted, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 0.8 },
   deeper: { gap: 6, marginTop: 2 },
   deeperEyebrow: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 2 },
   deeperRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  formula: { color: colors.cyanBright, fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 0.5, lineHeight: 17 },
   chapter: { color: colors.cyanBright, fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 2 },
   fact: { borderRadius: 12, borderWidth: 1, borderColor: 'rgba(255,198,77,.4)', backgroundColor: 'rgba(255,198,77,.06)', padding: 12, gap: 5 },
   factEyebrow: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 10, letterSpacing: 2 },

@@ -8,8 +8,11 @@ import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Body, Btn, Card, Eyebrow, Lead, Prompt, Row } from '../tuning/components/primitives';
 import { UnderstandingCheck } from '../tuning/components/check';
-import { loadPagedProgress } from '../../../features/lab/pagedProgress';
+import { heldPaged, loadPagedProgress, withHeldPages } from '../../../features/lab/pagedProgress';
+import { useLabKeysDone } from '../../../features/lab/labCompletion';
+import { mixingPageKeyAt } from '../../../features/lab/trainingLabKeys';
 import type { PageCtx, PageDef } from '../kit/PagedLab';
+import { ProNoteButton } from '../../../features/lab/ProNote';
 import { AbPlayer, ConceptList, GoalChips, OpenLabLink, useMixPlayback, useMixPriorities, useVisitGoals, type MixVariant } from './kit';
 import type { MixSettings } from './audio/mixAudio.ts';
 import { AuxArt, GroupsArt, RoutingMapArt, groupsPullReadout, type GroupComp, type GroupPull } from './advFigures';
@@ -17,25 +20,52 @@ import { AuxArt, GroupsArt, RoutingMapArt, groupsPullReadout, type GroupComp, ty
 /* ════ 1 · BEFORE YOU BEGIN (the prerequisite gate) ═══════════════════════ */
 
 const BML_PAGE_COUNT = 16;
+/** Beginning Mixing's per-page credit keys (the lab's own PAGE_KEYS). */
+const BML_PAGE_KEYS = Array.from({ length: BML_PAGE_COUNT }, (_, i) => mixingPageKeyAt('beg', i));
+
+/**
+ * Is each Beginning Mixing page done? A page counts when its mark is stored,
+ * held for this session (a guest), or its credit key is banked. The gate used
+ * to read the stored marks alone, so a learner who had pressed START OVER
+ * (PRACTICE) after finishing, or a guest who had just walked it, was told it
+ * was not done (novice audit G4, 2026-11-14). Pure.
+ */
+export function beginningPagesDone(completed: readonly number[], banked: ReadonlySet<string>): number {
+  let n = 0;
+  for (let i = 0; i < BML_PAGE_COUNT; i++) if (completed.includes(i) || banked.has(BML_PAGE_KEYS[i])) n++;
+  return n;
+}
 
 function PageGate({ ctx }: { ctx: PageCtx }) {
-  const [bmlDone, setBmlDone] = useState<boolean | null>(null);
+  const [bmlMarks, setBmlMarks] = useState<number[] | null>(null);
+  const banked = useLabKeysDone(BML_PAGE_KEYS);
   const [passed, setPassed] = useState(0);
   useEffect(() => {
     let alive = true;
     void loadPagedProgress('mixing-beg').then((p) => {
-      if (alive) setBmlDone(p.completed.length >= BML_PAGE_COUNT);
+      if (alive) setBmlMarks(withHeldPages(p, heldPaged('mixing-beg')).completed);
     });
     return () => {
       alive = false;
     };
   }, []);
+  const bmlPagesDone = bmlMarks == null ? null : beginningPagesDone(bmlMarks, banked);
+  const bmlDone = bmlPagesDone == null ? null : bmlPagesDone >= BML_PAGE_COUNT;
   const unlocked = bmlDone === true || passed >= 3;
   const goals = [{ label: bmlDone ? 'Beginning Mixing complete' : 'Prove the foundations (3 checks)', hit: unlocked }];
   const latched = useVisitGoals(ctx, goals);
   return (
     <View style={styles.page}>
-      <Lead>This lab assumes the Beginning lab’s foundations: the channel path, level-matched judgment, the six routing terms. The boundary rule: Beginning asked “can you make a clear, balanced stereo mix?” — Advanced asks “can you manage, refine, troubleshoot and DELIVER a complex one?” The five dimensions still rule — balance, frequency, pan and width, depth, movement — Advanced pursues the same five at scale.</Lead>
+      {/* BM-04 (owner 2026-11-15: "build waves 1 thru 3", D62): the note no
+          longer opens by itself on arrival; this small link on page 1 is
+          where it lives now (it was PagedLab's `proNote` link).
+          AM-02 (same go): the Lead under it is one plain sentence; the
+          boundary rule and the foundations follow as plain lines instead of
+          one dense bold block. */}
+      <ProNoteButton />
+      <Lead>The same five mix questions as Beginning Mixing, asked of a bigger, busier session.</Lead>
+      <Body>The five dimensions still rule: balance, frequency, pan and width, depth, movement. Beginning asked “can you make a clear, balanced stereo mix?” Advanced asks “can you manage, refine, troubleshoot and DELIVER a complex one?”</Body>
+      <Body>This lab assumes the Beginning lab’s foundations: the channel path, level-matched judgment, the six routing terms.</Body>
       {bmlDone === true ? (
         <Card tone="ok">
           <Eyebrow>PREREQUISITE MET</Eyebrow>
@@ -45,7 +75,11 @@ function PageGate({ ctx }: { ctx: PageCtx }) {
         <>
           <Card tone="note">
             <Eyebrow>TWO WAYS IN</Eyebrow>
-            <Body>Finish the Beginning Mixing lab (suggested — this lab leans on it constantly), or prove the foundations right here with three checks.</Body>
+            <Body>
+              {bmlPagesDone
+                ? 'You have started Beginning Mixing, and some of its pages still have goals open on this device (its WHAT’S LEFT screen names them). Finish those pages (suggested — this lab leans on them constantly), or prove the foundations right here with three checks.'
+                : 'Finish the Beginning Mixing lab (suggested — this lab leans on it constantly), or prove the foundations right here with three checks.'}
+            </Body>
             <OpenLabLink route="BeginningMixingLab" label="OPEN BEGINNING MIXING" />
           </Card>
           <UnderstandingCheck
@@ -117,6 +151,9 @@ function PagePlanning({ ctx }: { ctx: PageCtx }) {
   const [seen, setSeen] = useState<Set<string>>(new Set());
   const [checkDone, setCheckDone] = useState(false);
   const [priorities, togglePriority] = useMixPriorities();
+  // A fourth pick is refused by the list (three at most) — and now SAYS so;
+  // it used to do nothing at all (novice audit G4, 2026-11-14).
+  const [overPick, setOverPick] = useState(false);
   const goals = [
     { label: 'Open every planning move', hit: seen.size >= PLANNING.length },
     { label: 'Commit to three priorities', hit: priorities.length >= 3 },
@@ -132,18 +169,26 @@ function PagePlanning({ ctx }: { ctx: PageCtx }) {
       </Card>
       <Card>
         <Eyebrow>COMMIT — YOUR THREE PRIORITIES</Eyebrow>
-        <Prompt>Not a quiz: a contract with yourself. Pick the THREE things this lab’s session must do — the final page will hold you to them.</Prompt>
+        <Prompt>Not a quiz: a contract with yourself. Pick the THREE things this lab’s session must do — page 20, the final repair, puts them in front of you before you start it.</Prompt>
         <Row>
           {PRIORITY_CHOICES.map((p) => {
             const on = priorities.includes(p.id);
-            return <Btn key={p.id} label={on ? `✓ ${p.name}` : p.name} tone={on ? 'primary' : 'plain'} selected={on} onPress={() => togglePriority(p.id)} a11y={`${on ? 'Remove' : 'Choose'} priority ${p.name}`} />;
+            const press = () => {
+              if (!on && priorities.length >= 3) {
+                setOverPick(true);
+                return;
+              }
+              setOverPick(false);
+              togglePriority(p.id);
+            };
+            return <Btn key={p.id} label={on ? `✓ ${p.name}` : p.name} tone={on ? 'primary' : 'plain'} selected={on} onPress={press} a11y={`${on ? 'Remove' : 'Choose'} priority ${p.name}`} />;
           })}
         </Row>
-        <Body>{priorities.length === 3 ? '✓ Three named. Every decision from here negotiates around these.' : `${priorities.length}/3 chosen — a priority list longer than three is a wish list.`}</Body>
+        <Body>{priorities.length === 3 ? (overPick ? 'Three is the limit. Tap one of your three to drop it, then pick the new one.' : '✓ Three named. Every decision from here negotiates around these.') : `${3 - priorities.length} more to choose — a priority list longer than three is a wish list.`}</Body>
       </Card>
       <UnderstandingCheck
         question="Halfway through a dense mix you realize the drums, percussion and two loops all need the same treatment. The planning lesson:"
-        options={['Copy the same plugin to all nine tracks now', 'Bus architecture decided up front would have given them one shared path — build it now, carefully', 'Mix the nine tracks quieter to avoid the issue', 'Bounce everything and start a new session']}
+        options={['Copy the same plugin and settings onto all nine tracks now', 'Build one shared bus for them now — the plan should have had it', 'Mix the nine tracks quieter so the problem is less audible', 'Bounce everything to audio and start a new session']}
         correct={1}
         explain="Nine copies of one plugin is nine chances to drift apart. The shared-path decision belongs at the planning stage — and when you missed it, the fix is still routing, retrofitted deliberately."
         wrong={[
@@ -193,7 +238,7 @@ function PageSessionMgmt({ ctx }: { ctx: PageCtx }) {
       </Card>
       <UnderstandingCheck
         question="EQ before the compressor, or after? The advanced answer:"
-        options={['Always EQ first — that is the professional standard', 'Always compressor first — it protects the EQ from peaks', 'It depends: EQ first changes what the compressor reacts to; after, it shapes the result', 'The insert order makes no audible difference at all']}
+        options={['Always EQ first — that is the professional standard', 'Always compressor first — it protects the EQ from peaks', 'It depends: EQ first changes what the compressor hears', 'The insert order makes no audible difference at all']}
         correct={2}
         explain="A cut before the compressor removes energy from its detector — the low rumble stops pumping it. The same cut after only reshapes the output. Both are legitimate; the ORDER is a decision, and knowing why is the advanced skill."
         wrong={[
@@ -265,11 +310,18 @@ function PageGroupsDeep({ ctx }: { ctx: PageCtx }) {
       </Card>
       <Card tone="note">
         <Eyebrow>WHEN EACH TOOL WINS</Eyebrow>
-        <Body>SUBGROUP: shared processing — the summed audio passes the bus inserts, then one fader trims the processed result (drive INTO those inserts is set by the channel faders feeding it). VCA/DCA: one fader for many channels with NO summed path — perfect for level control that must not touch each channel’s own processing (though it does change the drive into a bus compressor downstream, and it also scales the channels’ post-fader sends, which a subgroup fader does not). CONTROL GROUP: linked controls for editing convenience. Advanced mixes use all three, on purpose.</Body>
+        {/* AM-02 (owner 2026-11-15: "build waves 1 thru 3", D62): a plain
+            first sentence, then one short line per tool; the two bracketed
+            asides are their own lines. Same facts, no nesting. */}
+        <Body>Each tool wins at a different job. Advanced mixes use all three, on purpose.</Body>
+        <Body>SUBGROUP: shared processing. The summed audio passes the bus inserts, then one fader trims the processed result. The channel faders feeding it set the drive INTO those inserts.</Body>
+        <Body>VCA/DCA: one fader for many channels, with NO summed path. Right for level control that must not touch each channel’s own processing.</Body>
+        <Body>A VCA does still change the drive into a bus compressor downstream, and it scales the channels’ post-fader sends, which a subgroup fader does not.</Body>
+        <Body>CONTROL GROUP: linked controls for editing convenience.</Body>
       </Card>
       <UnderstandingCheck
         question="You pull a VCA down 6 dB versus pulling a drum subgroup’s fader down 6 dB. One difference that matters:"
-        options={['They are identical in every audible way', 'The VCA also drops each channel’s post-fader sends; the subgroup fader drops the summed path after its inserts', 'The subgroup version is always cleaner', 'The VCA version changes the drums’ tone']}
+        options={['Nothing: they are identical in every audible way', 'The VCA also lowers each channel’s post-fader sends', 'The subgroup version always sounds cleaner and tighter', 'The VCA version changes the tone of the drums']}
         correct={1}
         explain="A VCA turns the CHANNELS down — so everything post-fader on each channel, sends included, follows. A subgroup fader turns down the summed result AFTER the subgroup’s processing — the channels (and their sends) keep feeding as before."
         wrong={[
@@ -317,7 +369,7 @@ function PageAuxAdvanced({ ctx }: { ctx: PageCtx }) {
       </Card>
       <UnderstandingCheck
         question="You solo the lead vocal and its lush reverb vanishes with everything else. The professional fix:"
-        options={['Mix with everything un-soloed forever', 'Mark the reverb RETURN solo-safe, so soloing the vocal keeps its space audible', 'Print the reverb onto the vocal track', 'Turn the reverb into an insert on the vocal']}
+        options={['Mix with everything un-soloed forever', 'Mark the reverb RETURN solo-safe', 'Print the reverb onto the vocal track', 'Turn the reverb into an insert on the vocal']}
         correct={1}
         explain="Solo-safe exempts the return from the solo cut — solo the vocal and you hear vocal + its space, which is the sound you are actually mixing."
         wrong={[

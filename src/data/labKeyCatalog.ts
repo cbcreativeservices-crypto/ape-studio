@@ -32,6 +32,8 @@ export const TRAINING_LAB_NAMES: Readonly<Record<string, string>> = {
   tr_tuning: 'Tuning & Temperament Lab',
   tr_sound_systems: 'Sound Systems Lab',
   tr_dj: 'DJ Systems Lab',
+  tr_game_audio: 'Game Audio Lab',
+  tr_stage_plot: 'Stage Plot and Channel Designer',
   tr_eq: 'EQ Lab',
   tr_preprod: 'Audio Pre-Production',
   tr_postprod: 'Audio Post-Production',
@@ -62,6 +64,7 @@ export const TRAINING_LAB_NAMES: Readonly<Record<string, string>> = {
   tr_speech: 'Speech & Voice Lab',
   tr_tube: 'Vacuum Tube Fundamentals',
   tr_amp: 'Amplifier Principles Lab',
+  tr_room_design: 'Room Design & Monitoring',
 };
 
 /** Mixing page titles, by page id — the `title` each page carries in
@@ -127,8 +130,23 @@ export const EAR_MODULE_TITLES: Readonly<Record<string, string>> = {
   clipping: 'Clipping Recognition',
 };
 
+/**
+ * Audio Fundamentals labs MOVED to the Training Lab (owner 2026-11-21 [MD:D74]:
+ * Fundamentals holds only what every student needs). They keep their af_ keys —
+ * IMMUTABLE, student progress is keyed by them — and the server `labs` row's
+ * area is 'training', so a credential can require them like any training lab.
+ * The other af_ keys stay universal and are never listed per credential.
+ */
+export const MOVED_FUNDAMENTALS_LABS: Readonly<Record<string, { name: string; route: string }>> = {
+  af_speaker_coverage: { name: 'Speaker Placement & Coverage', route: 'SpeakerLab' },
+  af_cable_install: { name: 'Cable Dressing & Installation', route: 'CableInstallLab' },
+  af_patchbay: { name: 'Patchbay Signal Flow & Normalling', route: 'PatchbayLab' },
+};
+
 /** Resolve a server key, or null for a key that is not a known lab/lesson. */
 export function describeLabKey(key: string): LabKeyInfo | null {
+  const moved = MOVED_FUNDAMENTALS_LABS[key];
+  if (moved) return { key, name: moved.name, area: 'training', route: moved.route };
   if (key.startsWith('tr_')) {
     const lab = TRAINING_LABS.find((l) => l.key === key);
     const name = TRAINING_LAB_NAMES[key];

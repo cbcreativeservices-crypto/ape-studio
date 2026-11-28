@@ -416,7 +416,7 @@ describe('the harness and the house rules', () => {
     assert.match(nav, /name="ForumMine" getComponent=\{Lazy\.ForumMine\} \/>/);
   });
 
-  it('the community is ON (live by OTA since 2026-11-08; 1.0.1 must keep it on)', () => {
+  it('the community is on (owner 2026-11-07, forum by OTA)', () => {
     assert.match(read('src/config/communityVisible.ts'), /export const COMMUNITY_VISIBLE = true;/);
   });
 

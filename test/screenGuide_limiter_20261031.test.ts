@@ -113,10 +113,14 @@ describe('3. each guide quotes its screen’s real names', () => {
     explore: [
       'IN ▸', '▸ OUT', 'LIMIT', 'GR', 'CEIL', 'RLS', '— dB', 'CEILING', '30, 120 or 500 ms', 'SOURCE', 'SINE 440 Hz', 'CLICK 120', 'PINK NOISE',
       'LAB NOTES', 'GAIN REDUCTION', 'DESIGNED RESPONSE', 'GUIDED LESSON', 'THE AUDIO PATH',
-      'TEACHING MODEL', 'DRUM-HIT MODEL',
+      // Phase 3, lab fix round (owner 2026-11-14, decision 3: a plain one-line model note instead of all-caps badges).
+      'is a model', 'DRUM-HIT MODEL',
     ],
-    learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'Drive', 'RLS', 'Attack', 'Lookahead', 'True-Peak', 'CLICK 120', 'CEILING', 'dBTP'],
-    check: ['CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', '✓', 'LEARN', 'EXPLORE', 'SINE 440 Hz', 'CEILING', 'True-Peak'],
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item LIM-06): the
+    // off-screen controls (Drive, Attack, Lookahead, True-Peak, …) are now ONE last row,
+    // "On real limiters (for later)", so the guides name that row instead of each entry.
+    learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'On real limiters (for later)', 'Drive', 'RLS', 'Lookahead', 'CLICK 120', 'CEILING', 'dBTP'],
+    check: ['CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', '✓', 'LEARN', 'EXPLORE', 'SINE 440 Hz', 'CEILING', 'COMMON MISTAKES'],
   };
   it('a name list for every screen', () => assert.deepEqual(Object.keys(NAMES).sort(), Object.keys(GUIDES).sort()));
   for (const [id, names] of Object.entries(NAMES)) {
@@ -134,7 +138,8 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.match(LIM, /label: 'CEILING', paramId: P\.ceilingDb/);
     assert.match(LIM, /fader: \{ min: -45, max: -15,/);
     assert.match(GUIDES.explore.control.join(' '), /CEILING fader from −45 to −15 dB/);
-    assert.match(LIM, /bezel: \[\s*\{ k: 'CEIL', paramId: P\.ceilingDb \},\s*\{ k: 'RLS', paramId: P\.releaseMs \},\s*\]/);
+    // Phase 2, lab fix round (owner 2026-11-14: "Begin fixing all bugs found and do obvious ... fixes"): a bezel cell may carry its first-visit caption.
+    assert.match(LIM, /bezel: \[\s*\{ k: 'CEIL', paramId: P\.ceilingDb(?:, caption: '[^']*')? \},\s*\{ k: 'RLS', paramId: P\.releaseMs(?:, caption: '[^']*')? \},\s*\]/);
     assert.match(LIM, /pollGr: 'limiter'/);
     assert.match(LIM, /note: 'True-peak \(inter-sample\) detection and lookahead are covered in the lesson/);
     assert.match(GUIDES.explore.control.join(' '), /a note on true peak/);

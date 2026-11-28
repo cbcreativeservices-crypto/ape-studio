@@ -28,6 +28,32 @@ export function renderedSince(r: { t0: number } | null | undefined, t: number | 
   return !!r && t != null && r.t0 > t + RENDER_MARGIN_S;
 }
 
+/** How long the booth must stay clean, in booth seconds of rendered sound,
+ *  before Screen 6's overload counts as fixed (lab fix round 2026-11-14, F2:
+ *  ONE clean 3 s chunk ticked "Fix the hidden overload" while the trims were
+ *  still hot enough to clip the bus on the next loud bar — "✓ fixed" next to
+ *  MIX BUS: OVER, and no "Fixed." line). The first chunk after a change is
+ *  3 s, the next ones 8 s (useBoothAudio), so this needs the change's own
+ *  chunk AND the next one clean. */
+export const CLEAN_HOLD_S = 8;
+
+/** A run of clean renders since the fault started: `since` the booth time
+ *  the run began (null while not clean), `seen` the last chunk counted. */
+export type CleanRun = { since: number | null; seen: number | null };
+export const CLEAN_RUN_FRESH: CleanRun = { since: null, seen: null };
+
+/** Count one more render into the run (each chunk once, only chunks
+ *  rendered after the fault started). A chunk that clips ends the run. */
+export function cleanRunStep(run: CleanRun, r: { t0: number; seconds: number } | null | undefined, clean: boolean, faultAt: number | null): CleanRun {
+  if (!r || !renderedSince(r, faultAt) || r.t0 === run.seen) return run;
+  return { seen: r.t0, since: clean ? (run.since ?? r.t0) : null };
+}
+
+/** Booth seconds of clean sound in the run, up to the end of `r`. */
+export function cleanFor(run: CleanRun, r: { t0: number; seconds: number } | null | undefined): number {
+  return run.since == null || !r ? 0 : r.t0 + r.seconds - run.since;
+}
+
 /** Is this deck reaching the crowd? (playing, its fader up and the
  *  crossfader letting it through) */
 export function deckOnAir(b: Booth, d: DeckId): boolean {

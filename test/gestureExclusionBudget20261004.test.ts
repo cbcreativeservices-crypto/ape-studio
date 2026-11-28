@@ -72,6 +72,8 @@ const ZONE_FILES: Record<string, { audited: boolean }> = {
   'src/screens/lab/micspeaker/MicPrinciplesLabScreen.tsx': { audited: true },
   'src/screens/lab/roomdesign/RoomPlanView.tsx': { audited: true },
   'src/screens/lab/roomdesign/RoomSideView.tsx': { audited: true },
+  // Stage Plot and Channel Designer [MD:D60]: the stage editor's drag surface, on the rack (lane 48 + stage band 140)
+  'src/screens/lab/stageplot/stage/StagePlanView.tsx': { audited: true },
   'src/screens/lab/wave/vizWave.tsx': { audited: true },
   'src/screens/lab/eq/modules/MultiBand.tsx': { audited: true },
   'src/screens/lab/tuning/components/dragRail.tsx': { audited: true },
@@ -91,6 +93,7 @@ const SCREENS: { name: string; files: string[] }[] = [
   { name: 'Mic Principles — polar stage', files: [LANE, 'src/screens/lab/micspeaker/MicPrinciplesLabScreen.tsx'] },
   { name: 'Room Design — plan view', files: [LANE, 'src/screens/lab/roomdesign/RoomPlanView.tsx'] },
   { name: 'Room Design — side view', files: [LANE, 'src/screens/lab/roomdesign/RoomSideView.tsx'] },
+  { name: 'Stage Plot — stage editor', files: [LANE, 'src/screens/lab/stageplot/stage/StagePlanView.tsx'] },
   { name: 'Wave room scene', files: [LANE, 'src/screens/lab/wave/vizWave.tsx'] },
   { name: 'EQ multiband graph', files: [LANE, 'src/screens/lab/eq/modules/MultiBand.tsx'] },
   { name: 'Tuning drag rail', files: [LANE, 'src/screens/lab/tuning/components/dragRail.tsx'] },

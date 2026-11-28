@@ -21,8 +21,10 @@ import { useMemo } from 'react';
 import { Circle, DashPathEffect, Group, LinearGradient, Path, Rect, RoundedRect, Skia, vec } from '@shopify/react-native-skia';
 import { profile, raySet, halfWidthAt, type Dish } from './parabolic.ts';
 import { Dim, type FieldInset } from '../field/FieldStage';
-import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
 import { standing, topPose } from '../foley/performer.ts';
+// (figure V2, wave 7 of D78: the operator is a cast member from above, both hands closed round the dish's grips)
+import { PlayerTopV2, topPlayerOfPose } from '../figureV2/elsewhereTop';
+import { castFor } from '../figureV2/cast';
 import { v3 } from '../foley/frameF.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
@@ -207,6 +209,7 @@ export function dishFocusInset(dish: Dish, offset: number, aim: number): FieldIn
  * defaults: the shared standing adult, the dish's grip at the chest. */
 const OP = standing({ floorY: 0, x: -520, wrR: v3(-120, -1250, 120), wrL: v3(-150, -1260, -150), kindR: 'grip', kindL: 'grip' });
 const OP_TOP = topPose(OP);
+const OP_PLAYER = topPlayerOfPose(OP_TOP, { R: 'fist', L: 'fist' });
 /** The operator and the dish from above at the origin, facing +u (the dish
  *  axis). Rotate the group to aim. Real scale (mm). */
 export function OperatorWithDish({ dish }: { dish: Dish }) {
@@ -223,8 +226,7 @@ export function OperatorWithDish({ dish }: { dish: Dish }) {
   }, [dish]);
   return (
     <Group>
-      <PlayerBehind pose={OP_TOP} />
-      <PlayerInFront pose={OP_TOP} />
+      <PlayerTopV2 player={OP_PLAYER} who={castFor('sports.dish')} />
       <Path path={g.bowl} style="stroke" strokeWidth={30} strokeCap="round" color="#0b0c0f" />
       <Path path={g.bowl} style="stroke" strokeWidth={20} strokeCap="round">
         <LinearGradient start={vec(0, -300)} end={vec(0, 300)} colors={['#e6eef6', '#9fb3c6', '#5d7083']} />

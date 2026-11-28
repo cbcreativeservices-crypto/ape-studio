@@ -66,19 +66,34 @@ import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLes
 import { markLabUnit, registerLabUnits, useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
 import { createLocalStore } from '../../../features/storage/localStore';
 import { LabEndScreen } from '../kit/LabEndScreen';
+import { goalCounts, moduleGoalDetail } from './endRows';
+import { CheckCreditScope } from './CheckCredit';
 import { GuestStartReminder } from '../../../features/lab/GuestStartReminder';
 import { LabHeader, LabNavBar, LabNavProvider, useLabNav } from '../kit/LabNavBar';
 import { FOUNDATIONS_LAB_KEY, FOUNDATIONS_STEP_COUNT, FOUNDATIONS_UNITS } from './units';
-import { RackUnit } from '../rack/RackUnit';
+import { captionedRack } from './captionedRack';
+import { FOUNDATIONS_CAPTIONS } from './bezelCaptions';
+
+/** Every module's rack: first-visit bezel captions, and the sound-off line where
+ *  the module has PLAY (lab fix round 2026-11-14, phase 2). */
+const RackUnit = captionedRack(FOUNDATIONS_CAPTIONS, { soundOffWhenPlayable: true, modelNotes: true, drawingPlaceholder: true });
 import type { BezelItem, DockParam } from '../rack/rackTypes';
 import { StageTextScale, useStageTextScale } from '../rack/stageAspect';
-import { CheckQuestion, ConceptBadge, LevelMeterBar, TracerCaption, VizUnavailableCard, type CheckSpec } from './bits';
+import { CheckQuestion, ConceptBadge, LevelMeterBar, PlainModelNote, TracerCaption, VizUnavailableCard, type CheckSpec } from './bits';
 import { requireViz, type VizModule } from './skiaGate';
 import { START_LEVEL_01 } from '../../../features/audio/startLevel';
 import { useStopOnAudioMute } from '../../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../../features/audio/useStopOnBlur';
 import { safeGoBack } from '../../../lib/safeGoBack';
+import { PLAIN_TERMS } from '../../../features/lab/plainTerms';
+import { motionHzFor } from './motionHz';
+
+/** The shared plain dB line (plainTerms.ts, D62 guardrail 3), said once before
+ *  Module 9's readouts use dB (FO-03, owner 2026-11-15, "build waves 1 thru 3"). */
+const DB_LINE = `SEND and HEARD count in ${PLAIN_TERMS.db.term}: ${PLAIN_TERMS.db.sentence.charAt(0).toLowerCase()}${PLAIN_TERMS.db.sentence.slice(1)}`;
+/** "+2.00 octaves" / "+1.00 octave": the word, never "8ve" (FO-03). */
+const octWord = (n: number) => (Math.abs(n - 1) < 0.005 ? 'octave' : 'octaves');
 
 const STEP_KEY = 'ape:fosStep';
 /** The resume point, on the shared safe store (pattern catalog 2026-10-02,
@@ -447,11 +462,16 @@ function FitStage({ w, h, natural, children }: { w: number; h: number; natural: 
 const FIT_REF_W = 320; // the narrowest layout the composites were designed at
 const THREE_WINDOW_NATURAL = 240; // label+cone row (133) + gap + label + gap + graph (84)
 const DUAL_DOMAIN_NATURAL = 262; // 2 labels + 2×100 panels + 26 cable strip + gaps
+const SCOPE_ONLY_NATURAL = 120; // M7 before the room is shown: 1 label + the 100 scope panel + gap
+const M7_STEPS_H = 26; // the 1 · FREEZE / 2 · DRAG THE PROBE row on M7's display
+const M7_ROOM_KEY_H = 34; // room under the SAME WAVE, IN THE ROOM › key
 const HSTACK_NATURAL = 282; // 4 + 6×30 rows + 12 gap + 86 sum
 
 /** Shared TONE bezel cell — the voice state, printed on every audio module. */
 function toneCell(tone: ToneApi): BezelItem {
-  return { k: 'TONE', v: tone.playing ? 'LIVE' : '—', tint: tone.playing ? undefined : '#7a7f8a' };
+  // Sound off (phase 2, S3 BezelItem.silent): the cell says so instead of a
+  // bare dash that looked broken (G1 module 1).
+  return { k: 'TONE', v: tone.playing ? 'LIVE' : '—', tint: tone.playing ? undefined : '#7a7f8a', silent: { v: 'OFF' } };
 }
 
 /** Shared PLAY dock key (kind:'toggle', LED = sounding) — the course's inline
@@ -486,13 +506,14 @@ function playKey(tone: ToneApi, onPlay: () => void, opts?: { drivesLevel?: boole
 
 /** The static-panel disclosure twin of ConceptBadge (§1.7). */
 function AnalyticBadge({ text }: { text?: string }) {
-  return <Text style={styles.analyticBadge}>{text ?? 'ANALYTIC — DRAWN FROM THE MATH, NOT A MEASUREMENT'}</Text>;
+  // Plain sentence case (owner's decision 3; checker K1), the shared look.
+  return <PlainModelNote>{text ?? 'Drawn exactly from the math. It is not a measurement.'}</PlainModelNote>;
 }
 
 // Compact honesty classes pinned on the stage bezel strip (one line). The FULL
 // verbatim disclosure stays with each module, leading the well.
+// (The bezel shows each as a plain sentence: modelNotes.ts, owner's decision 3.)
 const BADGE_CONCEPT = 'CONCEPTUAL MODEL — SLOWED FOR VISIBILITY';
-const BADGE_ANALYTIC = 'ANALYTIC — DRAWN FROM THE MATH, NOT A MEASUREMENT';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Module racks (each renders the RackUnit itself; viz children mount ONLY when
@@ -603,7 +624,7 @@ function M2Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       }}
     >
       {wellTop}
-      <ConceptBadge extra="ALL THREE WINDOWS SHOW THE SAME MOMENT" />
+      <ConceptBadge extra="All three windows show the same moment." />
       {wellBottom}
     </RackUnit>
   );
@@ -825,9 +846,9 @@ function M5Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       }}
     >
       {wellTop}
-      <ConceptBadge extra={`LEFT = ${M5_FIXED_A} Hz reference · RIGHT = your frequency — count the orbit laps`} />
+      <ConceptBadge extra={`Left is the ${M5_FIXED_A} Hz reference, right is your frequency: count the orbit laps.`} />
       <Text style={styles.caption}>
-        Ride the FREQ B lane ({M5_MIN}–{M5_MAX} Hz): B's orbit dot and its
+        Slide FREQ B ({M5_MIN}–{M5_MAX} Hz): B's orbit dot and its
         compressions both speed up or slow down with the frequency — same-size vibration, different
         RATE. Press PLAY to listen to the frequency you chose.
       </Text>
@@ -885,7 +906,7 @@ function M6Rack({ viz, tone: _tone, focused, help, wellTop, wellBottom }: RackPr
       }}
     >
       {wellTop}
-      <ConceptBadge extra="HORIZONTAL SCALE IS REAL — the room is 7 m wide, ticks every 1 m" />
+      <ConceptBadge extra="The distances are real: the room is 7 m wide, with a tick every 1 m." />
       <Text style={styles.caption}>
         λ = speed ÷ frequency = 343 ÷ {f} ≈ {lambda.toFixed(2)} m — {(7 / lambda).toFixed(1)}{' '}
         wavelength{7 / lambda >= 1.95 ? 's' : ''} fit across the room. The amber bracket IS that
@@ -899,7 +920,9 @@ function M6Rack({ viz, tone: _tone, focused, help, wellTop, wellBottom }: RackPr
 function M6Stage({ viz, w, h, f, focused }: { viz: VizModule; w: number; h: number; f: number; focused: boolean }) {
   // Phase clock — continuous while the lane drags the frequency. The tracer
   // molecules ride the same phase (owner 2026-10-16), so no second clock.
-  const phase = viz.usePhaseClock(focused, visHzFor(f));
+  // motionHzFor, not visHzFor: 55 and 110 Hz must not rock alike (owner
+  // 2026-11-25, fix-first round 2; the mapping is stated in motionHz.ts).
+  const phase = viz.usePhaseClock(focused, motionHzFor(f));
   return (
     <View style={{ width: w, height: h, justifyContent: 'center' }}>
       <viz.WavelengthRulerView phase={phase} width={w} height={h} freqHz={f} />
@@ -915,22 +938,44 @@ function M7Rack({ viz, tone, focused, help, wellTop, wellBottom, m7Predicted, on
   const [cursor, setCursor] = useState(0.69); // ≈ one wavelength/period back
   const [frozen, setFrozen] = useState(false);
   const [f, setF] = useState(220);
+  // FO-01 (owner 2026-11-15, "build waves 1 thru 3", D62): the answer comes in
+  // two steps. First the recording view alone (THE MIC'S OUTPUT: time), then
+  // the room (space) on a tap; and the steps sit on the display, FREEZE first.
+  const [roomShown, setRoomShown] = useState(false);
+  const [dragged, setDragged] = useState(false);
   // Predict-first: the learner CALLS IT before the display reveals — a wrong
   // prediction is the strongest known setup for the correction to stick.
   // State lifted to the screen (see RackProps) so the prose/check can't spoil.
   const predicted = m7Predicted ?? null;
   const setPredicted = (v: 'time' | 'space') => onM7Predict?.(v);
-  const beat = !frozen ? 1 : cursor > 0.03 ? 3 : 2;
+  // Step 1 · FREEZE is the one to do until the display is frozen; then
+  // step 2 · DRAG THE PROBE, until the PROBE has moved while frozen.
+  const step = !frozen ? 1 : dragged ? 3 : 2;
   // The cover hides the display these keys drive, so until the learner has
   // called it they would move nothing anyone can see. (Reads after "— locked:".)
   const m7Lock = predicted == null ? 'call it on the display first: TIME or SPACE' : undefined;
   const params: DockParam[] = [
     {
+      kind: 'toggle',
+      id: 'freeze',
+      label: 'FREEZE',
+      value: frozen,
+      onToggle: () => {
+        if (frozen) setDragged(false); // running again: the steps start over
+        setFrozen(!frozen);
+      },
+      locked: m7Lock,
+      helpKey: 'domain_link',
+    },
+    {
       kind: 'fader',
       id: 'probe',
       label: 'PROBE',
       value: cursor,
-      onChange: setCursor,
+      onChange: (v) => {
+        setCursor(v);
+        if (frozen) setDragged(true);
+      },
       locked: m7Lock,
       autoBind: true, // the lane comes up on PROBE the moment the call is made
       // The readout IS the lesson: the same spot on two rulers. (It was an
@@ -944,7 +989,6 @@ function M7Rack({ viz, tone, focused, help, wellTop, wellBottom, m7Predicted, on
       tint: '#37e05f',
       helpKey: 'domain_link',
     },
-    { kind: 'toggle', id: 'freeze', label: 'FREEZE', value: frozen, onToggle: () => setFrozen((v) => !v), locked: m7Lock, helpKey: 'domain_link' },
     {
       kind: 'options',
       id: 'freq',
@@ -1015,11 +1059,32 @@ function M7Rack({ viz, tone, focused, help, wellTop, wellBottom, m7Predicted, on
                 </View>
               </View>
             ) : (
-              <FitStage w={w} h={h} natural={DUAL_DOMAIN_NATURAL}>
-                {(vw, k) => (
-                  <viz.DualDomainView width={vw} scale={k} visHz={visHzFor(f)} realHz={f} cursor={cursor} running={focused && !frozen} frozen={frozen} />
+              <View style={{ width: w, height: h }}>
+                {/* The steps, on the display (FO-01): FREEZE first. */}
+                <View style={styles.beatsRowStage}>
+                  <View style={[styles.beatChip, step === 1 ? styles.beatChipOnAmber : styles.beatChipOnGreen]}>
+                    <Text style={[styles.beatTxt, step === 1 ? styles.beatTxtAmber : styles.beatTxtGreen]}>1 · FREEZE</Text>
+                  </View>
+                  <View style={[styles.beatChip, step === 2 && styles.beatChipOnAmber, step === 3 && styles.beatChipOnGreen]}>
+                    <Text style={[styles.beatTxt, step === 2 && styles.beatTxtAmber, step === 3 && styles.beatTxtGreen]}>2 · DRAG THE PROBE</Text>
+                  </View>
+                </View>
+                <FitStage w={w} h={h - M7_STEPS_H - (roomShown ? 0 : M7_ROOM_KEY_H)} natural={roomShown ? DUAL_DOMAIN_NATURAL : SCOPE_ONLY_NATURAL}>
+                  {(vw, k) => (
+                    <viz.DualDomainView width={vw} scale={k} visHz={visHzFor(f)} realHz={f} cursor={cursor} running={focused && !frozen} frozen={frozen} showRoom={roomShown} />
+                  )}
+                </FitStage>
+                {roomShown ? null : (
+                  <Pressable
+                    style={styles.roomKey}
+                    onPress={() => setRoomShown(true)}
+                    accessibilityRole="button"
+                    accessibilityLabel="Show the same wave in the room"
+                  >
+                    <Text style={styles.roomKeyTxt}>SAME WAVE, IN THE ROOM ›</Text>
+                  </Pressable>
                 )}
-              </FitStage>
+              </View>
             )
           ) : (
             <StageFallback w={w} />
@@ -1027,40 +1092,32 @@ function M7Rack({ viz, tone, focused, help, wellTop, wellBottom, m7Predicted, on
       }}
     >
       {wellTop}
-      {/* THE GOAL — stated before anything else renders. */}
-      <View style={styles.goalCard}>
-        <Text style={styles.goalEyebrow}>THE GOAL</Text>
-        <Text style={styles.goalBody}>
-          Studio waveforms draw TIME. Sound itself travels through SPACE. Learn to flip between the
-          two views without getting lost.
-        </Text>
-      </View>
       {predicted == null ? null : (
         <>
+          {/* THE GOAL states the answer, so it waits for the guess (FO-02, owner
+              2026-11-15, "build waves 1 thru 3", D62). */}
+          <View style={styles.goalCard}>
+            <Text style={styles.goalEyebrow}>THE GOAL</Text>
+            <Text style={styles.goalBody}>
+              Studio waveforms draw TIME. Sound itself travels through SPACE. Learn to flip between the
+              two views without getting lost.
+            </Text>
+          </View>
           <Text style={styles.predictResult}>
             {predicted === 'time'
               ? 'Called it — TIME. The wavy line is a diary: left is earlier, right is later. Watch the display prove it.'
               : 'It is TIME — and most people guess space. Left is earlier, right is later. The display shows why.'}
           </Text>
-          {/* Guided 3-beat sequence — the screen teaches in order. */}
-          <View style={styles.beatsRow}>
-            <View style={[styles.beatChip, beat === 1 && styles.beatChipOnAmber]}>
-              <Text style={[styles.beatTxt, beat === 1 && styles.beatTxtAmber]}>1 · WATCH</Text>
-            </View>
-            <View style={[styles.beatChip, beat === 2 && styles.beatChipOnGreen]}>
-              <Text style={[styles.beatTxt, beat === 2 && styles.beatTxtGreen]}>2 · FREEZE</Text>
-            </View>
-            <View style={[styles.beatChip, beat === 3 && styles.beatChipOnGreen]}>
-              <Text style={[styles.beatTxt, beat === 3 && styles.beatTxtGreen]}>3 · DRAG THE PROBE</Text>
-            </View>
-          </View>
-          <ConceptBadge extra="ONE WAVE — TWO QUESTIONS · where vs when" />
-          <Text style={styles.caption}>
-            The green PROBE is a bookmark on ONE spot of the wave — the dashed line and dot mark it
-            in both graphs at once. The room&#8217;s green readout says WHERE that spot is (meters
-            past the mic); the mic graph&#8217;s says WHEN the mic felt it (ms ago). Drag the PROBE and
-            watch the two readouts move together: distance = speed × time.
-          </Text>
+          {/* The 1 · 2 steps now sit on the display (FO-01). */}
+          <ConceptBadge extra="One wave, two questions: where, and when." />
+          {roomShown ? (
+            <Text style={styles.caption}>
+              The green PROBE is a bookmark on ONE spot of the wave — the dashed line and dot mark it
+              in both graphs at once. The room&#8217;s green readout says WHERE that spot is (meters
+              past the mic); the mic graph&#8217;s says WHEN the mic felt it (ms ago). Drag the PROBE and
+              watch the two readouts move together: distance = speed × time.
+            </Text>
+          ) : null}
         </>
       )}
       {wellBottom}
@@ -1085,7 +1142,7 @@ function M8Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       // Same log mapping the spiral drag glides: 0..1 = 110 Hz → 3 octaves up.
       value: octAbove / 3,
       onChange: (v) => setFreq(110 * Math.pow(2, Math.max(0, Math.min(3, v * 3)))),
-      format: () => `${Math.round(f)} Hz · ${octAbove.toFixed(2)} 8ve`,
+      format: () => `${Math.round(f)} Hz · ${octAbove.toFixed(2)} ${octWord(octAbove)}`,
       formatShort: () => `${Math.round(f)} Hz`,
       helpKey: 'octave_spiral',
     },
@@ -1094,7 +1151,7 @@ function M8Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       id: 'jump',
       label: 'OCTAVES',
       valueLabel: `${Math.round(f)} Hz`,
-      options: [110, 220, 440, 880].map((hz, i) => ({ id: String(hz), label: i === 0 ? `${hz} Hz` : `${hz} Hz · +${i} 8ve` })),
+      options: [110, 220, 440, 880].map((hz, i) => ({ id: String(hz), label: i === 0 ? `${hz} Hz` : `${hz} Hz · +${i} ${octWord(i)}` })),
       selectedId: [110, 220, 440, 880].includes(Math.round(f)) ? String(Math.round(f)) : null,
       onSelect: (id) => setFreq(Number(id)),
       sticky: true, // A/B the doublings — the whole lesson
@@ -1114,14 +1171,14 @@ function M8Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
         onGuide: () => help('octave_spiral'),
         bezel: [
           { k: 'FREQ', v: `${Math.round(f)} Hz`, helpKey: 'octave_spiral' },
-          { k: 'ABOVE 110', v: `+${octAbove.toFixed(2)} 8ve`, flex: 1.3, helpKey: 'octave_spiral' },
+          { k: 'ABOVE 110', v: `+${octAbove.toFixed(2)} ${octWord(octAbove)}`, flex: 1.3, helpKey: 'octave_spiral' },
           toneCell(tone),
         ],
         render: (w, h) => (viz ? <M8Stage viz={viz} w={w} h={h} f={f} focused={focused} onFreq={setFreq} /> : <StageFallback w={w} />),
       }}
     >
       {wellTop}
-      <AnalyticBadge text="ANALYTIC — THE SPIRAL IS HOW HEARING MAPS FREQUENCY (log), DRAWN EXACTLY · THE ORBIT LAPS ONCE PER CYCLE (SLOWED)" />
+      <AnalyticBadge text="The spiral is how hearing maps frequency, drawn exactly from the math; the orbit laps once per cycle, slowed down." />
       <Text style={styles.spiralHint}>
         Drag AROUND the spiral to glide the pitch — one full turn is one octave. The dots on the
         upward ray mark 110 · 220 · 440 · 880 Hz: every crossing is a DOUBLING, yet each turn feels
@@ -1274,7 +1331,7 @@ function M9Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       }}
     >
       {wellTop}
-      <AnalyticBadge text="SIMPLIFIED SENSITIVITY CURVE — ILLUSTRATION INSPIRED BY EQUAL-LOUDNESS CONTOURS, NOT MEASURED DATA · TOP-RIGHT INSET = WHAT YOU HEAR (ITS SIZE = LEVEL × EAR CURVE · SLOWED)" />
+      <AnalyticBadge text="A simplified hearing curve inspired by equal-loudness contours, not measured data. The top-right inset is what you hear: its size is the level times the ear curve (slowed)." />
       {sens != null && sensDb != null ? (
         <Text style={styles.caption}>
           Ear sensitivity at {f} Hz ≈ {sensDb} dB relative to 1 kHz —{' '}
@@ -1295,8 +1352,10 @@ function M9Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
   );
 }
 function M9Stage({ viz, w, h, f, lvl, focused }: { viz: VizModule; w: number; h: number; f: number; lvl: number; focused: boolean }) {
-  // Phase clock — continuous while the frequency sweep drags.
-  const phase = viz.usePhaseClock(focused, visHzFor(f));
+  // Phase clock — continuous while the frequency sweep drags. motionHzFor:
+  // 80 and 110 Hz, and 2 kHz and 8 kHz, must not pulse alike (owner
+  // 2026-11-25, fix-first round 2; the mapping is stated in motionHz.ts).
+  const phase = viz.usePhaseClock(focused, motionHzFor(f));
   return (
     <View style={{ width: w, height: h, justifyContent: 'center' }}>
       <viz.EqualLoudnessView phase={phase} width={w} height={h} freqHz={f} level01={lvl} />
@@ -1381,13 +1440,13 @@ function M10Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
             flex: 1.3,
             helpKey: 'phase_sum',
           },
-          { k: 'OUT', v: tone.playing && stereoMode ? (stereoMode === 'drift' ? '220/222' : '220/220') : '—', tint: tone.playing ? undefined : '#7a7f8a' },
+          { k: 'OUT', v: tone.playing && stereoMode ? (stereoMode === 'drift' ? '220/222' : '220/220') : '—', tint: tone.playing ? undefined : '#7a7f8a', silent: { v: 'OFF' } },
         ],
         render: (w, h) => (viz ? <M10Stage viz={viz} w={w} h={h} phase={phase} focused={focused} /> : <StageFallback w={w} />),
       }}
     >
       {wellTop}
-      <AnalyticBadge text="DRAWN FROM THE MATH — THE BOTTOM LINE IS THE EXACT SUM OF THE TWO TRAVELING WAVES (SLOWED)" />
+      <AnalyticBadge text="Drawn from the math: the bottom line is the exact sum of the two traveling waves, slowed down." />
       {tone.stereoReady ? (
         <Text style={styles.caption}>
           Two REAL tones (the HEAR key), hard-panned: one fully left, one fully right. DRIFTING =
@@ -1400,7 +1459,7 @@ function M10Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
         <Text style={styles.caption}>
           {__DEV__
             ? 'This engine build predates the stereo dual-oscillator — the drawn sum above stays exact; install the newest dev build to HEAR the drifting-phase demo.'
-            : 'This version of the app cannot play this demo yet. The drawn sum above stays exact; update the app to HEAR the drifting-phase demo.'}
+            : 'This demo’s two tones do not play on this device, but the drawn sum above is exact: set PRESET to 180° and watch the bottom line go flat.'}
         </Text>
       ) : null}
       {wellBottom}
@@ -1461,7 +1520,7 @@ function M11Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       helpKey: 'harmonic_stack',
       render: () => (
         <View style={{ gap: 10 }}>
-          <Text style={styles.trayHead}>HARMONICS — tap to select; the lane sets its level</Text>
+          <Text style={styles.trayHead}>HARMONICS — tap one, then slide its level</Text>
           <View style={styles.chipRow}>
             {amps.map((a, i) => {
               const on = a > 0.02;
@@ -1515,16 +1574,16 @@ function M11Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       }}
     >
       {wellTop}
-      <AnalyticBadge text="LAYERS AND SUM DRAWN FROM THE SAME RECIPE YOU HEAR · PHASE-LOCKED, SLOWED · EACH ROW'S COLOR = ITS LEVEL" />
+      <AnalyticBadge text="The layers and the sum are drawn from the same recipe you hear, locked in step and slowed down. Each row's color is its level." />
       {!tone.additiveReady && tone.engineReady ? (
         <Text style={styles.caption}>
           {__DEV__
             ? 'This engine build predates the additive generator — the drawing stays exact; install the newest dev build to HEAR each harmonic enter the tone.'
-            : 'This version of the app cannot play this demo yet. The drawing stays exact; update the app to HEAR each harmonic enter the tone.'}
+            : 'The harmonics do not play on this device, but the drawing is exact: change a layer’s level and watch the SUM change shape while its rate stays put.'}
         </Text>
       ) : null}
       <Text style={styles.caption}>
-        H1 (the fundamental) is at the BOTTOM; higher harmonics stack upward. Every layer is a pure
+        H1, the fundamental (F0 on the readouts: the note itself), is at the BOTTOM; higher harmonics stack upward. Every layer is a pure
         sine at a whole-number multiple of {M11_F0} Hz — changing a harmonic's amplitude changes the
         TIMBRE, not the pitch, and its row color tracks the level (blue = quiet → red = loud).
       </Text>
@@ -1600,11 +1659,10 @@ function M12Rack({ viz, tone, focused, help, wellTop, wellBottom }: RackProps) {
       }}
     >
       {wellTop}
-      <AnalyticBadge text="ANALYTIC — THE WAVE TAKEN APART: WAVE & INGREDIENTS TRAVEL (SLOWED); THE SPECTRUM HOLDS STILL. THE MEASURED VERSION LIVES IN THE RTA & SPECTROGRAM" />
+      <AnalyticBadge text="The wave is taken apart exactly by the math: the wave and its ingredients travel (slowed); the spectrum holds still. The measured version lives in the RTA and the spectrogram." />
       <Text style={styles.caption}>
         Fourier’s claim: ANY repeating pressure pattern — however jagged — is a stack of plain
-        sines. Ride UNMIX to pull this wave apart into its ingredient list. Every analyzer in this
-        app does exactly that, live, on real signals.
+        sines. Every analyzer in this app takes real signals apart the same way, live.
       </Text>
       {wellBottom}
     </RackUnit>
@@ -1623,7 +1681,7 @@ function M12Stage({ viz, w, h, amps, morph, focused }: { viz: VizModule; w: numb
 
 const M13_TOOLS: { q: string; name: string; blurb: string; route: ToolRoute }[] = [
   { q: 'HOW LOUD IS IT IN THE ROOM?', name: 'SPL Meter', blurb: 'Weighted (filtered A, C or flat Z — A follows the ear), time-averaged level from the real mic — ears estimate, meters measure.', route: 'SplMeter' },
-  { q: 'WHAT FREQUENCY IS THAT?', name: 'Frequency Counter & Tuner', blurb: 'Measures a steady tone’s exact frequency in Hz — and reads it musically as note, octave, and cents for tuning.', route: 'FrequencyCounter' },
+  { q: 'WHAT FREQUENCY IS THAT?', name: 'Tuner & Frequency Counter', blurb: 'Measures a steady tone’s exact frequency in Hz — and reads it musically as note, octave, and cents for tuning.', route: 'FrequencyCounter' },
   { q: 'WHAT’S THE RECIPE RIGHT NOW?', name: 'RTA', blurb: 'Live energy per frequency band — Module 12’s Fourier idea, measured.', route: 'Rta' },
   { q: 'HOW DOES IT CHANGE OVER TIME?', name: 'Spectrogram', blurb: 'Frequency vs time — sweeps, decays, harmonics appearing and fading.', route: 'SpectrogramLive' },
   { q: 'WHAT IS THE PRESSURE DOING?', name: 'Waveform', blurb: 'Module 2’s graph captured live: real pressure over real time.', route: 'WaveformLive' },
@@ -1649,7 +1707,7 @@ function M13Rack({ viz, focused, help, wellTop, wellBottom, onTool }: RackProps)
       }}
     >
       {wellTop}
-      {viz ? <ConceptBadge extra="SOURCE → AIR → MIC — the chain every tool below listens to" /> : null}
+      {viz ? <ConceptBadge extra="SOURCE → AIR → MIC is the chain every tool below listens to." /> : null}
       {/* Intro text ABOVE the list (owner 2026-08-05). */}
       <Text style={styles.caption}>
         Every card opens the REAL tool — live mic, real measurements, honest units (dBFS · uncalibrated
@@ -1734,7 +1792,7 @@ function M14Rack({ viz, focused, help, wellTop, wellBottom }: RackProps) {
       }}
     >
       {wellTop}
-      {viz ? <ConceptBadge extra="THE WHOLE MODEL, ONE LAST LOOK" /> : null}
+      {viz ? <ConceptBadge extra="The whole model, one last look." /> : null}
       <Text style={styles.comingHead}>YOU BUILT THE WHOLE MODEL</Text>
       {M14_RECAP.map((c) => (
         <Text key={c} style={styles.comingRow}>
@@ -1768,6 +1826,11 @@ type Step = {
   checks?: CheckSpec[];
 };
 
+/** Does the module carry a CHECK YOURSELF card (its "done" is then the card)? */
+function moduleHasCheck(s: Step | undefined): boolean {
+  return !!s && (!!s.check || (s.checks?.length ?? 0) > 0);
+}
+
 const STEPS: Step[] = [
   {
     key: 'm1',
@@ -1777,15 +1840,19 @@ const STEPS: Step[] = [
       'Sound is a pressure wave, usually in air. Not electricity. Not a waveform. Not a speaker. Not a graph.',
       'Air molecules repeatedly squeeze together (compression) and spread apart (rarefaction). Those pressure changes travel outward until they reach your ears.',
       'Watch the particles: each one only rocks back and forth around its home. The PATTERN of squeezes is what travels — the air itself stays put.',
+      // G1 module 1 (lab fix round 2026-11-14): "FREQ ×4 while MODEL ×1.8,
+      // unexplained" — visHzFor is a slowed, squeezed (log) speed on purpose.
+      'FREQ is the real tone. MODEL is how fast the drawing rocks: slowed far down, and squeezed so every pitch stays watchable. From MID to HIGH, FREQ goes ×4 (220 → 880 Hz) but MODEL only about ×1.8. The direction is real (higher pitch, faster rocking); the size of the jump is not.',
     ],
     Rack: M1Rack,
     check: {
       question: 'A clap reaches you across a room. What actually crossed the room?',
       options: [
-        'The air near the clap traveled to your ear',
+        'The air near the clap traveled across to your ear',
         'A pattern of pressure changes — each molecule only rocked in place',
-        'Tiny sound particles thrown off by the hands',
+        'Tiny sound particles thrown off by the clapping hands',
       ],
+      why: { 0: 'Watch a pink tracer dot: it rocks around its mark and never travels toward the ear.', 2: 'Hands throw nothing off. The dots show the same air rocking in place while the squeeze moves on.' },
       correctIdx: 1,
       reveal:
         'The PATTERN travels; the air stays put. Watch the particle window: every molecule rocks around its home while the squeeze marches across the room. This is the single most common misconception about sound — and everything in this course builds on getting it right.',
@@ -1799,18 +1866,19 @@ const STEPS: Step[] = [
     paras: [
       'The same sound can be pictured three ways: the SPEAKER that makes it, the AIR that carries it, and the GRAPH engineers draw of it.',
       'These are three views of ONE phenomenon, at the same moment: the cone pushes, the air squeezes, the graph plots the squeeze.',
-      'The wavy line is NOT the shape of the sound. It is a graph of PRESSURE over time. This one misunderstanding causes enormous confusion later — settle it now.',
+      'The wavy line is NOT the shape of the sound. It is a graph of PRESSURE: here, the pressure all along the air at one moment, lined up with the dots above. This one misunderstanding causes enormous confusion later — settle it now.',
     ],
     Rack: M2Rack,
     check: {
       question: 'Is the wavy line the shape sound makes in the air?',
       options: [
         'Yes — sound ripples through air in a wave shape',
-        'No — it is a graph of pressure plotted over time',
+        'No — it is a graph of pressure, not a picture of the air',
       ],
+      why: { 0: 'Look at the dots above the graph: the air only squeezes and spreads. Nothing in the air is curved like the line.' },
       correctIdx: 1,
       reveal:
-        'The line is a GRAPH — pressure at one point, plotted over time. In the air itself, molecules just move back and forth along the direction of travel (the particle window above). Nothing in the air is ever shaped like the line.',
+        'The line is a GRAPH — how far the pressure sits above or below normal, drawn here along the air at one moment (Module 7 shows the other way: one point, over time). In the air itself, molecules just move back and forth along the direction of travel (the particle window above). Nothing in the air is ever shaped like the line.',
       wrongHint: 'Look at the particle window — do you see anything wave-SHAPED in the air?',
     },
   },
@@ -1819,7 +1887,7 @@ const STEPS: Step[] = [
     tag: 'MODULE 3',
     title: 'COMPRESSION & RAREFACTION',
     paras: [
-      'Ride the STRENGTH lane. A stronger vibration packs the molecules closer on every squeeze (compression) and spreads them thinner on every stretch (rarefaction).',
+      'Slide STRENGTH. A stronger vibration packs the molecules closer on every squeeze (compression) and spreads them thinner on every stretch (rarefaction).',
       'Pressure above the room’s resting pressure is POSITIVE. Below it is NEGATIVE. The resting level — atmospheric pressure — is the graph’s zero line.',
       'Hold onto this picture: a microphone is just a tiny surface that rides these pressure swings. Every mic you will ever use starts here.',
     ],
@@ -1831,7 +1899,7 @@ const STEPS: Step[] = [
     title: 'AMPLITUDE',
     paras: [
       'Small vibration → quiet sound. Large vibration → loud sound. That size is AMPLITUDE.',
-      'Ride the lane and watch everything move together: the cone travels farther, the squeezes get denser, the graph gets taller, and the level rises — four views of one number.',
+      'Slide AMPLITUDE and watch everything move together: the cone travels farther, the squeezes get denser, the graph gets taller, and the level rises — four views of one number.',
       'Amplitude is the SIZE of the vibration, not its rate. Rate is a different property — that is the next module.',
     ],
     Rack: M4Rack,
@@ -1842,8 +1910,9 @@ const STEPS: Step[] = [
         'Move back and forth FARTHER',
         'Move physically closer to your ear',
       ],
+      why: { 0: 'How often it moves is the rate, which is pitch (Module 5). Slide AMPLITUDE and watch how far the cone travels.', 2: 'The cone stays where it is. Slide AMPLITUDE and watch what changes in its swing.' },
       correctIdx: 1,
-      wrongHint: 'Ride the AMP lane and watch the cone: what changes — how OFTEN it moves, or how FAR?',
+      wrongHint: 'Slide AMPLITUDE and watch the cone: what changes — how OFTEN it moves, or how FAR?',
       reveal:
         'Farther = bigger pressure swings = louder. Moving back and forth MORE OFTEN squeezes the air more times each second — that changes the PITCH, so it is no longer the same note. (Getting closer does sound louder, but the speaker itself isn’t making a louder sound.)',
     },
@@ -1865,6 +1934,7 @@ const STEPS: Step[] = [
         'Vibrate back and forth MORE OFTEN each second',
         'Push more air with each cycle',
       ],
+      why: { 0: 'A bigger swing was amplitude, back in Module 4. Watch the two orbit dials here instead.', 2: 'More air per cycle is a bigger push, which makes it louder. Count how often B laps A.' },
       correctIdx: 1,
       reveal:
         'Pitch follows the RATE — cycles per second (Hz). Vibrating farther makes it LOUDER (that was Module 4). Two properties, two knobs: size = amplitude (mostly loudness), rate = frequency (pitch).',
@@ -1878,16 +1948,17 @@ const STEPS: Step[] = [
     paras: [
       'A wave is not just a rate — it takes up SPACE. While one compression travels away at 343 m/s, the next is already being made behind it. The distance between them is the wavelength, λ.',
       'λ = speed ÷ frequency. A 55 Hz bass note is over six meters long — it doesn’t fit in your bedroom. A 5 kHz sparkle is seven centimeters.',
-      'This is why bass behaves so differently: it wraps around obstacles, piles up in room corners, and needs big speaker drivers. Ride the lane and watch real meters of air.',
+      'This is why bass behaves so differently: it wraps around obstacles, piles up in room corners, and needs big speaker drivers. Slide FREQ and watch real meters of air.',
     ],
     Rack: M6Rack,
     check: {
       question: 'A 55 Hz wave is ~6 m long. Your eardrum is ~1 cm across. How can you hear it at all?',
       options: [
-        'The whole 6 m wave squeezes into the ear',
+        'The whole 6 m wave squeezes into the ear canal',
         'The ear reads the pressure changes ARRIVING AT ONE POINT, over time',
         'You can’t — subwoofers are felt, not heard',
       ],
+      why: { 0: 'Look at the ear on the stage: the wave runs past it and never fits inside.', 2: 'You do hear 55 Hz; the ear is just less sensitive there (Module 9). Watch the ear marker read one spot.' },
       correctIdx: 1,
       wrongHint: 'Look at the ear marker on the stage: the whole wave never enters it — only the pressure at that one spot, moment by moment.',
       reveal:
@@ -1899,15 +1970,17 @@ const STEPS: Step[] = [
     tag: 'MODULE 7',
     title: 'ONE WAVE, TWO QUESTIONS',
     paras: [
-      'THE ROOM is measured everywhere at once: a camera flash of the air — compressions marching away from the speaker at 343 m/s. Its ruler is meters. The ringed microphone standing in it is the ONE point the lower graph listens to.',
-      'THE MIC’S OUTPUT is measured at the mic only. Follow its cable down: the mic cannot see the room — it feels pressure rise and fall at its capsule and draws it, newest at the right, into the MIC INPUT on the NOW line. Its ruler is milliseconds. This is the wavy line every recording screen shows: a WAVEFORM. The word is not audio jargon — physics, mathematics and electronics all plot a quantity against time and call it the same thing. A DAW (recording software) is simply where you will meet it most.',
+      // FO-01: the recording view first, the room second, as the display now shows them.
+      'THE MIC’S OUTPUT is measured at the mic only. The mic cannot see the room — it feels pressure rise and fall at its capsule and draws it, newest at the right, into the MIC INPUT on the NOW line. Its ruler is milliseconds. This is the wavy line every recording screen shows: a WAVEFORM. The word is not audio jargon — physics, mathematics and electronics all plot a quantity against time and call it the same thing. A DAW (recording software) is simply where you will meet it most.',
       'Why does it slide LEFT? Because this view is RECORDING, live — exactly what a DAW does when the view follows the playhead (the moving play position): new sound lands at the pinned NOW line and everything older slides left. Freeze it and read it like a finished track: left = earlier, right = later.',
+      'THE ROOM is measured everywhere at once: a camera flash of the air — compressions marching away from the speaker at 343 m/s. Its ruler is meters. The ringed microphone standing in it is the ONE point the lower graph listens to: follow its cable down into MIC INPUT.',
       'Freeze, then drag the PROBE. The crests pair up: the crest the mic drew one period ago (4.5 ms at 220 Hz) has traveled exactly one wavelength (1.56 m) past it down the room — distance = speed × time ties the two rulers together at every point. One wave, two rulers, one equation.',
     ],
     Rack: M7Rack,
     check: {
       question: 'On a studio waveform display, the horizontal axis is…',
       options: ['Distance through the air, in meters', 'Time, in seconds', 'Frequency, low to high'],
+      why: { 0: 'Distance through the air is what the ROOM picture shows. Check which ruler the mic’s own graph uses.', 2: 'Low to high is a spectrum’s axis (Module 12). Freeze and read the lower graph’s ruler.' },
       correctIdx: 1,
       wrongHint: 'Freeze the display and drag the PROBE: which ruler does the LOWER graph read — meters, or milliseconds?',
       reveal:
@@ -1931,6 +2004,7 @@ const STEPS: Step[] = [
         'Hearing works in RATIOS — both are a doubling (×2)',
         'The ear can’t tell high frequencies apart',
       ],
+      why: { 0: '220 → 440 adds 220 Hz, but 440 → 880 adds 440 Hz. Different steps in hertz, yet they sound the same.', 2: 'The ear tells high notes apart well. Look at where each doubling lands on the spiral.' },
       correctIdx: 1,
       wrongHint: 'Drag the spiral one full turn from 220. Where do you land — 440, or 220 + some fixed number?',
       reveal:
@@ -1944,7 +2018,9 @@ const STEPS: Step[] = [
     paras: [
       'Module 4 said bigger amplitude = louder. True — for one frequency at a time. Across frequencies, the ear applies its own hidden curve.',
       'The COLORED curve is what you actually hear: it peaks in the few-kHz region — where speech lives — and falls off steeply toward the lows. Its color is read off the loudness scale at the left, so warm = loud, cool = faint.',
-      'Sweep the frequency WITHOUT touching the level: the amplitude number stays fixed while the loudness visibly (audibly) changes. Amplitude is physics; loudness is perception wearing that curve.',
+      // FO-03 (a line in, a line out): the plain dB line in; this paragraph shortened.
+      DB_LINE,
+      'Sweep the frequency WITHOUT touching the level: the amplitude stays fixed while the loudness changes. Amplitude is physics; loudness is perception.',
     ],
     Rack: M9Rack,
     check: {
@@ -1954,6 +2030,7 @@ const STEPS: Step[] = [
         'The ear is simply less sensitive at low frequencies',
         'It doesn’t — equal amplitude always means equal loudness',
       ],
+      why: { 0: 'The same pressure swing carries the same push. Watch SEND: it never moves when only FREQ changes.', 2: 'Sweep FREQ with LEVEL untouched: SEND stays put while HEARD moves.' },
       correctIdx: 1,
       wrongHint: 'Sweep FREQ with LEVEL untouched: SEND never moves, but HEARD does. What does that tell you?',
       reveal:
@@ -1967,7 +2044,7 @@ const STEPS: Step[] = [
     paras: [
       'Phase is WHERE in its cycle a wave is, measured in degrees. Alone it is inaudible. But sound is almost never alone.',
       'When two copies of the same wave meet, phase decides everything: aligned (0°) they ADD into double. Opposed (180°) they CANCEL — pressure up meets pressure down, and the air simply never moves.',
-      'Ride the lane and watch the sum. This one idea powers noise-canceling headphones, explains hollow-sounding mic pairs, comb filtering, and why subwoofer placement matters.',
+      'Slide PHASE and watch the sum. This one idea powers noise-canceling headphones, explains hollow-sounding mic pairs, comb filtering, and why subwoofer placement matters.',
     ],
     Rack: M10Rack,
     check: {
@@ -1977,6 +2054,7 @@ const STEPS: Step[] = [
         'Silence — every push meets an equal pull',
         'The pitch drops one octave',
       ],
+      why: { 0: 'Two waves add only when they line up. At 180° watch what the SUM line does.', 2: 'Phase never changes the rate. The frequency in the readouts stays where it was.' },
       correctIdx: 1,
       reveal:
         'At 180° every compression lands on an equal rarefaction: the sum is zero — silence from two real sounds. (The energy isn’t destroyed; in real rooms it redistributes to places where they align.) Aligned instead, the same pair doubles. Phase decides.',
@@ -1996,6 +2074,7 @@ const STEPS: Step[] = [
     check: {
       question: 'Adding harmonics to a 220 Hz fundamental changes the sound’s…',
       options: ['Pitch — more harmonics, higher note', 'Character (timbre) — the pitch stays at 220 Hz', 'Speed through the air'],
+      why: { 0: 'Watch F0 in the readouts while you raise H2 and H3: does it move?', 2: 'Sound travels at one speed for every note. Watch the SUM: its shape changes, its rate does not.' },
       correctIdx: 1,
       wrongHint: 'Turn H2 and H3 up and watch the readouts: does F0 ever move off 220 Hz?',
       reveal:
@@ -2009,7 +2088,7 @@ const STEPS: Step[] = [
     paras: [
       'Module 11 built complex tones out of sines in harmonic relationships. Fourier’s theorem is the breathtaking reverse: any repeating pattern — however jagged — can be taken apart into plain sines at whole-number multiples of its repeat rate (its harmonics). The fit is exact — though sharp corners need an endless list of them.',
       'That means every sound has two complete descriptions: the waveform (pressure over time) and the SPECTRUM (which sines, how strong, and how they line up in time). Same information, two views.',
-      'Ride UNMIX to pull this wave apart into its ingredient list. The analyzers and spectrograms in the app’s measuring tools do this same job live, on real sound from the mic.',
+      'Slide UNMIX to pull this wave apart into its ingredient list. The analyzers and spectrograms in the app’s measuring tools do this same job live, on real sound from the mic.',
     ],
     Rack: M12Rack,
     // Owner 2026-09-13, on the Pixel: this check "asks about a spectrum
@@ -2022,15 +2101,16 @@ const STEPS: Step[] = [
     // same idea is testable from what is actually in front of them.
     check: {
       question:
-        'You ride UNMIX all the way up on a 220 Hz tone and the wave separates into parts at 220, 440 and 660 Hz. What does that tell you?',
+        'You slide UNMIX all the way up on a 220 Hz tone and the wave separates into parts at 220, 440 and 660 Hz. What does that tell you?',
       options: [
         'Three separate sounds got mixed together by mistake',
-        'This ONE tone is built from sines at whole-number multiples of 220 Hz — its harmonics',
+        'ONE tone made of sines at whole multiples of 220 Hz: its harmonics',
         'UNMIX added new frequencies that were not there before',
       ],
+      why: { 0: 'There is only one tone here. Pick PURE and slide UNMIX: does one plain sine split?', 2: 'UNMIX only shows what is already inside. Set RECIPE to PURE and count the parts.' },
       correctIdx: 1,
       wrongHint:
-        'Set the RECIPE to PURE and ride UNMIX again: how many parts does one plain sine come apart into?',
+        'Set the RECIPE to PURE and slide UNMIX again: how many parts does one plain sine come apart into?',
       reveal:
         'UNMIX does not add or remove anything — it shows what was always there. 220 · 440 · 660 is a whole-number family: the signature of ONE 220 Hz tone with its harmonics (Module 11). That list of ingredients is called the SPECTRUM, and reading one is reading a recipe.',
     },
@@ -2048,10 +2128,11 @@ const STEPS: Step[] = [
     check: {
       question: 'A level meter in this app reads −12 dBFS. What is that a measurement of?',
       options: [
-        'The loudness your ear experiences',
+        'The loudness your ear experiences right now',
         'The sound pressure in the room, in dB SPL',
-        'Digital signal level relative to full scale — not calibrated loudness',
+        'Digital level against full scale, not calibrated loudness',
       ],
+      why: { 0: 'The app cannot know what your ear experiences: that depends on your volume, speakers and hearing.', 1: 'dB SPL needs a calibrated microphone in the room. This meter reads the digital signal only.' },
       correctIdx: 2,
       wrongHint: 'Could a meter inside the app know how loud your ROOM is without a calibrated mic? What can it actually measure?',
       reveal:
@@ -2080,14 +2161,16 @@ const STEPS: Step[] = [
           'Louder = vibrate more often · Higher = vibrate farther',
           'Both come from pushing more air per cycle',
         ],
+        why: { 1: 'That swaps them. Module 4 changed the size of the swing; Module 5 changed how often it repeats.', 2: 'Pushing more air is only half the story. Modules 4 and 5 changed two different things.' },
         correctIdx: 0,
         reveal:
-          'SIZE of the vibration mostly sets loudness (Module 4); RATE of the vibration is pitch (Module 5). Two independent knobs — you proved it on the stage when one lane moved without the other.',
+          'SIZE of the vibration mostly sets loudness (Module 4); RATE of the vibration is pitch (Module 5). Two independent knobs — you proved it on the stage when one slider moved without the other.',
         wrongHint: 'Modules 4 and 5 were a deliberate contrast pair: AMP changed one thing, FREQ the other. Which was which?',
       },
       {
         question: 'Course check 2 — a studio waveform slides by on screen. Reading it left to right, you are moving through…',
         options: ['Space — meters across the room', 'Time — earlier to later', 'Frequency — low notes to high'],
+        why: { 0: 'Space was the ROOM picture in Module 7. A recording screen draws what the mic heard, moment by moment.', 2: 'Low to high is a spectrum’s axis (Module 12), not a waveform’s.' },
         correctIdx: 1,
         reveal:
           'The waveform is a diary of pressure AT THE MIC: left is earlier, right is later (Module 7). The room view is the one drawn in meters — and distance = speed × time ties the two rulers together.',
@@ -2100,6 +2183,7 @@ const STEPS: Step[] = [
           'The character (timbre) changes; the pitch stays at 220 Hz',
           'Both rise together',
         ],
+        why: { 0: 'In Module 11, F0 never left 220 Hz while the layers changed.', 2: 'Watch F0 in Module 11: one thing changed and one stayed put.' },
         correctIdx: 1,
         reveal:
           'Harmonics are the RECIPE (Modules 11–12): they set the sound’s character while the repeat rate (220 times a second) keeps the pitch. The analyzer told you the same story in reverse — one tone, many sine ingredients.',
@@ -2217,9 +2301,12 @@ export function FoundationsCourseScreen() {
   useEffect(() => {
     registerLabUnits(FOUNDATIONS_LAB_KEY, FOUNDATIONS_UNITS);
   }, []);
-  useEffect(() => {
-    markLabUnit(FOUNDATIONS_LAB_KEY, String(step));
-  }, [step]);
+  // "DONE = WORK DONE" (owner's decision 1, 2026-11-14): a module counts when
+  // its CHECK YOURSELF card(s) are answered right (CheckCreditScope below),
+  // not when it is opened. Module 3 has no card: it counts when the learner
+  // moves on from it with NEXT (forwardCredits). Credit already stored is
+  // never touched; only new credit follows this rule.
+  const creditStep = useCallback((i: number) => markLabUnit(FOUNDATIONS_LAB_KEY, String(i)), []);
 
   /**
    * THE LAST MODULE ENDS ON THE WHAT'S-LEFT SCREEN (owner 2026-09-29: "every
@@ -2244,7 +2331,20 @@ export function FoundationsCourseScreen() {
     () => STEPS.map((st, i) => ({ id: String(i), title: st.title, done: banked.has(String(i)) })),
     [banked],
   );
-  const nav = useLabNav({ units: navUnits, index: step, ending, go: goTo, finish, unEnd });
+  // A module with no CHECK YOURSELF card counts when the learner moves on from
+  // it to the next one (the reading-page rule); a jump elsewhere does not.
+  const goCredit = useCallback(
+    (n: number) => {
+      if (n === step + 1 && !moduleHasCheck(STEPS[step])) creditStep(step);
+      goTo(n);
+    },
+    [step, goTo, creditStep],
+  );
+  const finishCredit = useCallback(() => {
+    if (!moduleHasCheck(STEPS[step])) creditStep(step);
+    finish();
+  }, [step, finish, creditStep]);
+  const nav = useLabNav({ units: navUnits, index: step, ending, go: goCredit, finish: finishCredit, unEnd });
 
   const s = STEPS[step];
   const openPlayground = useCallback(() => {
@@ -2374,7 +2474,9 @@ export function FoundationsCourseScreen() {
       {ending ? (
         <LabEndScreen
           labTitle="Foundations of Sound"
-          units={STEPS.map((st, i) => ({ id: String(i), label: st.title }))}
+          labId="af_foundations"
+          units={STEPS.map((st, i) => ({ id: String(i), label: st.title, detail: moduleGoalDetail(moduleHasCheck(st) ? 'check' : 'next', FOUNDATIONS_SCREEN_GUIDES[st.key as FoundationsStepKey]?.intro?.learning) }))}
+          howItCounts={goalCounts({ next: true })}
           cleared={banked}
           unreadable={progressUnreadable}
           mode="credit"
@@ -2385,6 +2487,7 @@ export function FoundationsCourseScreen() {
         />
       ) : (
       <View style={styles.rackWrap}>
+        <CheckCreditScope key={s.key} onComplete={() => creditStep(step)}>
         <s.Rack
           key={s.key}
           viz={viz}
@@ -2397,6 +2500,7 @@ export function FoundationsCourseScreen() {
           m7Predicted={m7Predicted}
           onM7Predict={setM7Predicted}
         />
+        </CheckCreditScope>
       </View>
       )}
 
@@ -2496,7 +2600,19 @@ const styles = StyleSheet.create({
   predictBtnSub: { fontFamily: fonts.barlowRegular, fontSize: 11.5, color: colors.textSub },
   predictResult: { fontFamily: fonts.barlowSemiBold, fontSize: 13, lineHeight: 18, color: colors.purple },
   predictSub: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSub, textAlign: 'center' },
-  beatsRow: { flexDirection: 'row', gap: 6 },
+  beatsRowStage: { flexDirection: 'row', gap: 6, height: 26, paddingHorizontal: 6, paddingTop: 4 },
+  roomKey: {
+    position: 'absolute',
+    right: 8,
+    bottom: 6,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: 'rgba(127,212,255,0.55)',
+    backgroundColor: '#0c0c0f',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+  },
+  roomKeyTxt: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1, color: '#7fd4ff' },
   beatChip: { flex: 1, borderWidth: 1, borderColor: '#2c2c33', borderRadius: 8, paddingVertical: 5, alignItems: 'center' },
   beatChipOnAmber: { borderColor: 'rgba(255,198,77,0.55)', backgroundColor: 'rgba(255,198,77,0.08)' },
   beatChipOnGreen: { borderColor: 'rgba(55,224,95,0.55)', backgroundColor: 'rgba(55,224,95,0.08)' },

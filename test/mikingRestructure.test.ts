@@ -97,7 +97,10 @@ describe('the standard line and the START wording', () => {
     for (const lesson of ALL) {
       const t = journeyIntro(lesson.noun);
       assert.doesNotMatch(t, /where (it|they) sits?/i);
-      assert.match(t, /starting setups/);
+      // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item MK-05): the journey
+      // sentence (the map right below lists the modules) gave way to the lesson's size and
+      // where a beginner may stop.
+      assert.ok(t.includes('Eight modules: 1 and 2 are the foundation, and 3 to 8 go deeper.'), t);
     }
     for (const f of ['pages/PInstrument.tsx', 'lessons/shared/journeyPages.tsx', 'lessons/shared/handdrums/pages/HInstrument.tsx', 'lessons/shared/smallperc/pages/SInstrument.tsx', 'lessons/shared/kitPages/PKitOrient.tsx']) {
       const s = read(`src/screens/lab/miking/${f}`);

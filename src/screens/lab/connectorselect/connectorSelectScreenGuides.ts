@@ -51,12 +51,12 @@ export const CONNECTOR_SELECT_SCREEN_GUIDES: Record<ConnectorSelectPageId, Scree
   threeThings: {
     intro: {
       learning: 'Why connector, cable construction and signal are three separate things, and the four questions that judge any connection: fit, signal, construction, safety.',
-      start: 'Tap each part on THE EXPLODED CABLE, starting with Strain relief and Outer jacket. Then open each question under ASK THESE FOUR QUESTIONS — EVERY TIME, FOREVER.',
+      start: 'Open each question under ASK THESE FOUR QUESTIONS — EVERY TIME, FOREVER, under the photo. Then tap each part on THE EXPLODED CABLE, starting with Strain relief and Outer jacket.',
     },
     seeing: [
-      'You’re at STATION 1 · CONNECTOR, CABLE AND SIGNAL. Read THE CENTRAL LESSON card: every cable is really three separate things.',
-      'The photo shows a mic cable stripped back. THE EXPLODED CABLE pulls the same cable apart into zones you can tap.',
-      'Below sit eight part buttons, from Cable connector (plug) to Strain relief, then ASK THESE FOUR QUESTIONS — EVERY TIME, FOREVER and your goal chips: ○ not yet, ✓ done.',
+      'STATION 1 · CONNECTOR, CABLE AND SIGNAL: the top line names a cable’s three things and the four questions. The photo shows a mic cable stripped back.',
+      'Under it: ASK THESE FOUR QUESTIONS — EVERY TIME, FOREVER, then THE CENTRAL LESSON.',
+      'THE EXPLODED CABLE pulls it apart into zones; eight part buttons, Cable connector (plug) to Strain relief, and your goal chips follow.',
     ],
     control: [
       'Tap a zone on the drawing, or a part button below it, to see that part’s name and its job.',
@@ -88,7 +88,7 @@ export const CONNECTOR_SELECT_SCREEN_GUIDES: Record<ConnectorSelectPageId, Scree
     },
     seeing: [
       'You’re at STATION 1 · THE SAME PLUG, TWO JOBS. The photo shows one 1/4-inch TRS plug, and this whole page is about that one plug.',
-      'Two job buttons, BALANCED MONO and STEREO PHONES, show what each job is used for and what TIP, RING and SLEEVE carry in it.',
+      'Two job buttons, BALANCED MONO and STEREO PHONES, show what each job is used for and what TIP, RING and SLEEVE carry in it. BALANCED MONO adds one line on what balanced buys you.',
       'Below them are a one-question check and two goal chips.',
     ],
     control: [
@@ -571,7 +571,7 @@ export const CONNECTOR_SELECT_SCREEN_GUIDES: Record<ConnectorSelectPageId, Scree
 export const CONNECTOR_SELECT_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'A review of how every connection is judged — fit, signal, construction, safety — and which pages of this lab you still have to work through.',
-    start: 'Read the list under WHAT\'S LEFT and tap the first page’s row to open it. Or tap REVIEW ▾ to reopen a page you’ve already finished.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
     'WHAT\'S LEFT lists, by name, every page you haven’t finished yet. When none are left, the title reads LAB COMPLETE.',

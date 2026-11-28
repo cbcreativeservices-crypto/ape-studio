@@ -52,7 +52,7 @@ export function FieldRow({
         <View style={[styles.dot, { backgroundColor: STATE_TINT[state] }]} />
         <Text style={styles.label}>
           {field.label}
-          {field.required ? <Text style={styles.req}> ·  required</Text> : null}
+          {field.required ? <Text style={styles.req}> · required</Text> : null}
         </Text>
       </View>
       {field.help ? <Text style={styles.help}>{field.help}</Text> : null}
@@ -139,7 +139,10 @@ export function FieldRow({
             accessibilityRole="button"
             accessibilityLabel={`Mark "${field.label}" not applicable to this project`}
           >
-            <Text style={styles.naLink}>Not applicable to this project</Text>
+            {/* PO-02 (owner 2026-11-15: "build waves 1 thru 3", D62): a short
+                link on every shown question; the full meaning stays in the
+                screen-reader label above. */}
+            <Text style={styles.naLink}>Not applicable?</Text>
           </Pressable>
         )
       ) : null}

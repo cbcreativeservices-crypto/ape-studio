@@ -46,7 +46,8 @@ import {
   type SkImage,
 } from '@shopify/react-native-skia';
 import { useDerivedValue, useFrameCallback, useSharedValue } from 'react-native-reanimated';
-import { MIDLINE_BLUE, WAVE_LEVEL_STOPS, heatColor, heatRgbW } from '../../../features/tools/levelColor';
+import { MIDLINE_BLUE, WAVE_LEVEL_STOPS, heatRgbW } from '../../../features/tools/levelColor';
+import { heatColorFast, heatGainK, heatLevelGain, heatStrengthK } from '../../../features/cymatics/vizGain';
 import { HEAD_BY_ID, type ConeRead, type Driver, type MembraneSpec } from '../../../features/cymatics/membrane';
 import { colors, fonts } from '../../../theme/tokens';
 import { useStageTextScale } from '../rack/stageAspect';
@@ -103,8 +104,12 @@ export type MembraneViewProps = {
   /** Signed field ±1 on an N×N grid (NaN outside the head). */
   grid: Float32Array;
   N: number;
-  /** Response strength 0..1 at the drive frequency. */
+  /** RESPONSE 0..1 at the drive frequency, against the fixed (Open-head) reference. */
   strength: number;
+  /** The same response against THIS head's own peak (membraneStrength's
+   *  `near`): "which figure would form". Damping does not change it; it sets
+   *  how strongly PHASE / NODE LINES show (checker Y1). */
+  near: number;
   /** Drive amplitude 0..1. */
   amplitude: number;
   view: MembraneViewMode;
@@ -247,24 +252,27 @@ export function MembraneView(p: MembraneViewProps) {
 
   // ── static meshes: heat / phase / nodes (plate idiom) ────────────────────
   // Heat / 3D encode the RESPONSE, not a +/-1 shape (Plate parity): dark between resonances.
-  const strengthK = 0.12 + 0.88 * Math.max(0, Math.min(1, p.strength));
-  const mesh = useMemo(() => {
+  // LEVEL (owner 2026-11-25): how far a point moves is the drive level × the
+  // response, so the HEAT colours (heat, 3D, the cone's front view) rise with
+  // LEVEL too, through ONE stated compressive curve (vizGain.heatLevelGain,
+  // g = 1 − (1 − L)⁴): dark at LEVEL 0, already bright at the opening 30 %,
+  // still brightening up to 100 %. PHASE / NODES show the shape (which figure
+  // would form), so their opacity follows NEAR, which damping does not change.
+  const levelK = heatLevelGain(p.amplitude);
+  const heatK = heatGainK(p.amplitude, p.strength);
+  const shapeK = heatStrengthK(p.near);
+  // Geometry (grid only) and colours are separate memos (checker Y4): a LEVEL
+  // step recolours the cells (one table lookup each), not the whole mesh.
+  const meshGeom = useMemo(() => {
     if (view !== 'heat' && view !== 'phase' && view !== 'nodes' && view !== 'section') return null;
     const verts: { x: number; y: number }[] = [];
-    const cols: string[] = [];
     const idx: number[] = [];
     const inside = new Uint8Array(N * N);
     for (let j = 0; j < N; j++) {
       for (let i = 0; i < N; i++) {
         const v = grid[j * N + i];
-        const a = v !== v ? 0 : Math.abs(v);
         inside[j * N + i] = v === v ? 1 : 0;
         verts.push({ x: ox + ((i + 0.5) / N) * D, y: oy + ((j + 0.5) / N) * D });
-        let c: string;
-        if (view === 'phase') c = v > 0 ? mixHex('#0b0b10', PHASE_UP, Math.min(1, a * 1.15)) : mixHex('#0b0b10', PHASE_DOWN, Math.min(1, a * 1.15));
-        else if (view === 'nodes') c = a < 0.06 ? NODE_LINE : a < 0.12 ? '#8aa0bf' : '#101216';
-        else c = heatColor(a * strengthK);
-        cols.push(c);
       }
     }
     for (let j = 0; j < N - 1; j++) {
@@ -274,15 +282,27 @@ export function MembraneView(p: MembraneViewProps) {
         idx.push(k0, k0 + 1, k0 + N, k0 + 1, k0 + N + 1, k0 + N);
       }
     }
-    return { verts, cols, idx };
-  }, [grid, N, view, ox, oy, D, strengthK]);
+    return { verts, idx };
+  }, [grid, N, view, ox, oy, D]);
+  const meshCols = useMemo(() => {
+    if (view !== 'heat' && view !== 'phase' && view !== 'nodes' && view !== 'section') return null;
+    const cols: string[] = new Array(N * N);
+    for (let k = 0; k < N * N; k++) {
+      const v = grid[k];
+      const a = v !== v ? 0 : Math.abs(v);
+      if (view === 'phase') cols[k] = v > 0 ? mixHex('#0b0b10', PHASE_UP, Math.min(1, a * 1.15)) : mixHex('#0b0b10', PHASE_DOWN, Math.min(1, a * 1.15));
+      else if (view === 'nodes') cols[k] = a < 0.06 ? NODE_LINE : a < 0.12 ? '#8aa0bf' : '#101216';
+      else cols[k] = heatColorFast(a * heatK);
+    }
+    return cols;
+  }, [grid, N, view, heatK]);
+  const mesh = meshGeom && meshCols && meshCols.length === meshGeom.verts.length ? { verts: meshGeom.verts, cols: meshCols, idx: meshGeom.idx } : null;
 
   // ── 3D head (tilted, strobed, head-shaped) ───────────────────────────────
   const M = 40;
   const grid3d = useMemo(() => {
     const vals = new Float32Array(M * M);
     const inside = new Uint8Array(M * M);
-    const cols: string[] = [];
     const idx: number[] = [];
     for (let j = 0; j < M; j++) {
       for (let i = 0; i < M; i++) {
@@ -291,7 +311,6 @@ export function MembraneView(p: MembraneViewProps) {
         const v = grid[gj * N + gi];
         vals[j * M + i] = v !== v ? 0 : v;
         inside[j * M + i] = v === v ? 1 : 0;
-        cols.push(heatColor(Math.abs(vals[j * M + i]) * strengthK));
       }
     }
     for (let j = 0; j < M - 1; j++) {
@@ -301,8 +320,15 @@ export function MembraneView(p: MembraneViewProps) {
         idx.push(k0, k0 + 1, k0 + M, k0 + 1, k0 + M + 1, k0 + M);
       }
     }
-    return { vals, cols, idx };
-  }, [grid, N, strengthK]);
+    return { vals, idx };
+  }, [grid, N]);
+  // The 3D colours alone follow LEVEL (checker Y4).
+  const cols3d = useMemo(() => {
+    if (!is3d) return null;
+    const cols: string[] = new Array(M * M);
+    for (let k = 0; k < M * M; k++) cols[k] = heatColorFast(Math.abs(grid3d.vals[k]) * heatK);
+    return cols;
+  }, [grid3d, heatK, is3d]);
   const vals3dSV = useSharedValue(grid3d.vals);
   useEffect(() => {
     vals3dSV.value = grid3d.vals;
@@ -599,12 +625,15 @@ export function MembraneView(p: MembraneViewProps) {
     c.addRect(Skia.XYWHRect(domeFx0 - 6 * domeK + travel, cyL + 12.3 * domeK, 6 * domeK, 1.2 * domeK));
     return c;
   }, [spk, domeFx0, domeK]);
-  const frontMesh = useMemo(() => {
-    if (!p.cone) return null;
-    const G = p.cone.grid;
+  // Keyed on the cone's grid and excursion, not the `cone` prop object (a new
+  // object every render), and the colours apart from the geometry (checker Y4).
+  const coneGridIn = p.cone?.grid ?? null;
+  const coneExc = p.cone?.read.excursion ?? 0;
+  const frontGeom = useMemo(() => {
+    if (!coneGridIn) return null;
+    const G = coneGridIn;
     const n = coneN;
     const verts: { x: number; y: number }[] = [];
-    const cols: string[] = [];
     const idx: number[] = [];
     const inside = new Uint8Array(n * n);
     for (let j = 0; j < n; j++) {
@@ -612,7 +641,6 @@ export function MembraneView(p: MembraneViewProps) {
         const v = G[j * n + i];
         inside[j * n + i] = v === v ? 1 : 0;
         verts.push({ x: spk.fx - spk.fR + ((i + 0.5) / n) * spk.fR * 2, y: spk.fy - spk.fR + ((j + 0.5) / n) * spk.fR * 2 });
-        cols.push(heatColor(v !== v ? 0 : Math.abs(v) * (0.35 + 0.65 * p.cone.read.excursion)));
       }
     }
     for (let j = 0; j < n - 1; j++) {
@@ -622,8 +650,20 @@ export function MembraneView(p: MembraneViewProps) {
         idx.push(k0, k0 + 1, k0 + n, k0 + 1, k0 + n + 1, k0 + n);
       }
     }
+    return { verts, idx };
+  }, [coneGridIn, spk]);
+  const frontMesh = useMemo(() => {
+    if (!coneGridIn || !frontGeom) return null;
+    const G = coneGridIn;
+    const n = coneN;
+    const cols: string[] = new Array(n * n);
+    for (let k = 0; k < n * n; k++) {
+      const v = G[k];
+      cols[k] = heatColorFast(v !== v ? 0 : Math.abs(v) * levelK * (0.35 + 0.65 * coneExc));
+    }
+    const { verts, idx } = frontGeom;
     return { verts, cols, idx };
-  }, [p.cone, spk]);
+  }, [coneGridIn, frontGeom, coneExc, levelK]);
 
   // ── touch: strike point / section ────────────────────────────────────────
   const dragRef = useRef(p.dragTarget);
@@ -721,7 +761,7 @@ export function MembraneView(p: MembraneViewProps) {
                   <RadialGradient c={vec(cx - R * 0.35, cy - R * 0.4)} r={R * 1.1} colors={['rgba(255,255,255,0.22)', 'rgba(255,255,255,0)']} />
                 </Circle>
               ) : null}
-              {showMesh && mesh ? <Vertices vertices={mesh.verts} colors={mesh.cols} indices={mesh.idx} mode="triangles" opacity={view === 'section' ? 0.6 : view === 'phase' || view === 'nodes' ? 0.35 + 0.61 * strengthK : 0.96} /> : null}
+              {showMesh && mesh ? <Vertices vertices={mesh.verts} colors={mesh.cols} indices={mesh.idx} mode="triangles" opacity={view === 'section' ? 0.6 : view === 'phase' || view === 'nodes' ? 0.35 + 0.61 * shapeK : 0.96} /> : null}
               {isSection ? <SkLine p1={vec(ox, oy + p.sectionY * D)} p2={vec(ox + D, oy + p.sectionY * D)} color="#ffc64d" strokeWidth={1.5} /> : null}
             </Group>
             {/* Bearing edge */}
@@ -753,7 +793,7 @@ export function MembraneView(p: MembraneViewProps) {
             <Oval x={rim3d.x - 6} y={rim3d.y + rim3d.wall} width={rim3d.w + 12} height={rim3d.h} style="stroke" strokeWidth={1.5} color="#5a4530" />
             <Rect x={rim3d.x - 6} y={rim3d.y + rim3d.h / 2} width={rim3d.w + 12} height={rim3d.wall} color="#3b2a1c" />
             <Oval x={rim3d.x} y={rim3d.y} width={rim3d.w} height={rim3d.h} color="#0b0b10" />
-            <Vertices vertices={verts3d} colors={grid3d.cols} indices={grid3d.idx} mode="triangles" />
+            {cols3d ? <Vertices vertices={verts3d} colors={cols3d} indices={grid3d.idx} mode="triangles" /> : null}
             <Oval x={rim3d.x - 6} y={rim3d.y - 3} width={rim3d.w + 12} height={rim3d.h + 6} style="stroke" strokeWidth={5} color="#9aa0a8" />
             <Oval x={rim3d.x} y={rim3d.y} width={rim3d.w} height={rim3d.h} style="stroke" strokeWidth={1.5} color="#d7dbe0" />
           </Group>

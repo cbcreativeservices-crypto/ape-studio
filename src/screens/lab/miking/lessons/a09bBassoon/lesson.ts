@@ -372,7 +372,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: WindLesson['predictions'] = {
-  sound: { prompt: 'Before you step through: where does the bassoon’s very lowest note leave?', options: ['The boot', 'The bell at the top', 'The bocal'], after: 'Now STEP through (or PLAY ONCE), then try the notes on the next step.' },
+  sound: { prompt: 'Before you step through: where does the bassoon’s very lowest note leave?', options: ['The boot', 'The bell at the top', 'The bocal'], after: 'Now go EVENT by EVENT (or PLAY ONCE), then try the notes on the next step.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from the keys up toward the bell. What changes?', options: ['More of the lowest note', 'More of the high notes', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front. Where will a supercardioid aimed back at the bassoon reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
@@ -474,7 +474,7 @@ const copy: Partial<LessonCopy> = {
     workedAim: 'Aim it at the keys on the long joint — the lab counts it while the mic points within about {tol}° of them. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of every part — the bell beside the head, the bocal and the reed, the hands and thumbs, the seat strap. Clearance comes first, before any number, and the player stops before a real mic moves.',
     blocked: {},
-    reveal: 'Toward the bell, the lowest note tends to grow and the rest to thin; toward the boot’s holes, the middle notes lead; farther, more room. Each zone’s LISTEN FOR line is an idea to check by ear.',
+    reveal: 'Toward the bell, the lowest note tends to grow and the rest to thin; toward the boot’s holes, the middle notes lead; farther, more room. Each zone’s TENDS TO HEAR line is an idea to check by ear.',
     typeNotes: {
       sdcCard: 'Ideas to try: begin facing the keys a third of the way down from the bell; then a foot from the boot’s holes, or high on the right — one change at a time, the lowest note and a high passage each time.',
       wwMini: 'Ideas to try with a miniature: keep its strap on the bell joint; change only the capsule’s angle — farther down the instrument for a more even range.',
@@ -625,7 +625,7 @@ export const A09B_LESSON: WindLesson = {
   unknowns: [
     { text: 'The player’s height above the floor and the hold across the body — drawing defaults — so no HEIGHT readout is shown.', dims: ['yFloor'] },
     { text: 'The split of the 2.6 m bore between the bocal, wing joint, boot, long joint and bell, the joints’ diameters and the key layout are drawing defaults; the 1.35 m height, the bore’s ends and the bell are sourced; the holes sit where the semitone rule puts them (a simplified picture).', dims: [] },
-    { text: 'The hands, arms, head, the seat strap and the bassoon’s pivot — illustrative keep-outs (a 20 mm margin round the bassoon).', dims: [] },
+    { text: 'The hands, arms, head, the seat strap and the bassoon’s pivot — illustrative keep-outs (a 20 mm margin around the bassoon).', dims: [] },
     { text: 'The bell view’s 12–30 cm, the clip’s 3–13 cm and the miniature’s size and reach — drawing defaults to check on the real instrument.', dims: [] },
     { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],

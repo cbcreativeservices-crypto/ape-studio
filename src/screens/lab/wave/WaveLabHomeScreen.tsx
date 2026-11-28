@@ -14,11 +14,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../../theme/tokens';
 import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
-import { WAVE_HOME_GUIDE } from './waveScreenGuides';
+import { WAVE_HOME_GUIDE, WAVE_SCREEN_GUIDES } from './waveScreenGuides';
+import { goalCounts, moduleGoalDetail } from '../foundations/endRows';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
-import { WAVE_MODULES } from './modules/registry';
+import { WAVE_GROUPS, WAVE_MODULES, WAVE_PLAIN } from './modules/registry';
 import { LabEndLink, LabEndScreen } from '../kit/LabEndScreen';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
@@ -36,7 +37,6 @@ export function WaveLabHomeScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [lessonOpen, setLessonOpen] = useState(false);
   const builder = WAVE_MODULES.find((m) => m.id === 'builder');
-  const modules = WAVE_MODULES.filter((m) => m.id !== 'builder');
   // Accordion: every module collapsed by default, only one open at a time.
   const [openId, setOpenId] = useState<string | null>(null);
   const clearedUnits = useLabClearedUnits('af_wave_physics');
@@ -63,14 +63,16 @@ export function WaveLabHomeScreen() {
       <ScreenGuideHintAnchor>
         <LabHeader
           title="WAVE PHYSICS LABORATORY"
-          subtitle="One room model · fifteen experiments"
+          subtitle="One room model · sixteen modules"
           right={<ScreenGuideKey title="WAVE PHYSICS LABORATORY" guide={WAVE_HOME_GUIDE} />}
         />
       </ScreenGuideHintAnchor>
       {ending ? (
         <LabEndScreen
           labTitle="Wave Physics Laboratory"
-          units={WAVE_MODULES.map((m) => ({ id: m.id, label: m.title }))}
+          labId="af_wave_physics"
+          units={WAVE_MODULES.map((m) => ({ id: m.id, label: m.title, detail: moduleGoalDetail('check', WAVE_SCREEN_GUIDES[m.id]?.intro?.learning) }))}
+          howItCounts={goalCounts()}
           cleared={clearedUnits}
           unreadable={unreadable}
           mode="credit"
@@ -93,36 +95,47 @@ export function WaveLabHomeScreen() {
         >
           <Text style={styles.lessonText}>ⓘ GUIDED LESSON</Text>
         </Pressable>
+        {/* One short line for the old three (WA-06: a line in, a line out). */}
         <Text style={styles.body}>
-          Place sound sources in a room, move the walls, change the materials — and watch
-          wavefronts, interference, reflections and coverage evolve live. Every module below is a
-          ready-made setup of the same Room Builder.
+          Sound in rooms, in four parts. Every module is a ready-made setup of the same Room Builder.
         </Text>
-        <Text style={styles.sectionTitle}>THE 15 MODULES</Text>
         {/* UNREADABLE is not "not started" (owner 2026-10-03, "do 2"; D51):
             no ✓ on a row is a stand-in when the banked units could not be
             read — said here, before the rows. Every module stays open. */}
         {unreadable ? <ProgressUnreadableNote /> : null}
-        <TabletGrid minTile={360} maxCols={2} gap={8}>
-        {modules.map((m) => (
-          <ModuleAccordionRow
-            key={m.id}
-            num={m.num}
-            name={m.title}
-            blurb={m.blurb}
-            expanded={openId === m.id}
-            done={clearedUnits.has(m.id)}
-            onToggle={() => setOpenId((cur) => (cur === m.id ? null : m.id))}
-            onOpen={() => navigation.navigate('WaveModule', { id: m.id })}
-          />
+        {/* Four plain groups, each row with a few plain words (owner
+            2026-11-15, "build waves 1 thru 3", D62 item WA-06), in place of
+            one "MODULES 1–15" list. Module numbers and order are unchanged. */}
+        {WAVE_GROUPS.map((g) => (
+          <View key={g.title} style={{ gap: 8 }}>
+            <Text style={styles.sectionTitle}>{g.title}</Text>
+            <TabletGrid minTile={360} maxCols={2} gap={8}>
+            {g.ids.map((id) => {
+              const m = WAVE_MODULES.find((x) => x.id === id)!;
+              return (
+                <ModuleAccordionRow
+                  key={m.id}
+                  num={m.num}
+                  name={m.title}
+                  subtitle={WAVE_PLAIN[m.id]}
+                  blurb={m.blurb}
+                  expanded={openId === m.id}
+                  done={clearedUnits.has(m.id)}
+                  onToggle={() => setOpenId((cur) => (cur === m.id ? null : m.id))}
+                  onOpen={() => navigation.navigate('WaveModule', { id: m.id })}
+                />
+              );
+            })}
+            </TabletGrid>
+          </View>
         ))}
-        </TabletGrid>
         {builder && (
           <>
-            <Text style={styles.sectionTitle}>PUT IT ALL TOGETHER</Text>
+            <Text style={styles.sectionTitle}>PUT IT ALL TOGETHER · MODULE 16</Text>
             <ModuleAccordionRow
               num={builder.num}
               name={builder.title}
+              subtitle={WAVE_PLAIN[builder.id]}
               blurb={builder.blurb}
               expanded={openId === builder.id}
               done={clearedUnits.has(builder.id)}

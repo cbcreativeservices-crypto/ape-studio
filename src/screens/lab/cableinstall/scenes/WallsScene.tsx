@@ -673,8 +673,8 @@ export function WallsScene({ width, completed, onComplete, openSources }: CiModu
       {/* S1 — SURFACE RACEWAY */}
       <CiSection title="1 · SURFACE RACEWAY — PICK THE ROUTE">
         <Text style={styles.lead}>
-          A permanent line must get from the rack to the wall device. Three candidates are drawn — judge the whole life of
-          the cable.
+          A permanent line must get from the rack to the wall device (raceway = a channel fixed to the wall that holds
+          cable). Three candidates are drawn — judge the whole life of the cable.
         </Text>
         <View style={{ gap: 7 }}>
           {S1_ROUTES.map((r, i) => (
@@ -716,7 +716,7 @@ export function WallsScene({ width, completed, onComplete, openSources }: CiModu
             {wall ? (
               <View style={{ gap: 8 }}>
                 <Text style={styles.wallLabel}>
-                  WALL {wallIdx + 1} OF {CI_WALL_TYPES.length}: {wall.label}
+                  WALL {wallIdx + 1}: {wall.label}
                 </Text>
                 <View style={{ gap: 7 }}>
                   {stableShuffle(wall.actions).map(({ item: a }, i) => (

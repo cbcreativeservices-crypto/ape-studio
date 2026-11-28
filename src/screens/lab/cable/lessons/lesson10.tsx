@@ -50,6 +50,9 @@ function faultLabel(cable: TesterCable): string {
   return cable.faultOptions.find((o) => o.id === cable.faultId)?.label ?? cable.faultId;
 }
 
+/** The map's one key line (CF-02): OPEN is a gap, never "the way is open". */
+export const MAP_KEY = 'CLOSED = connected · OPEN = a gap, no path';
+
 /** Per-row scan cadence for the animated test run (ms). */
 const SCAN_STEP_MS = 150;
 
@@ -104,6 +107,9 @@ function ContinuityMap({ cable, animate, named = true }: { cable: TesterCable; a
         title="INSIDE THE CABLE"
         render={(w) => <WiringTrace cable={cable} width={w} progress={total ? shown / total : 1} named={named} />}
       />
+      {/* One key line where the words are read (CF-02, owner 2026-11-15:
+          "build waves 1 thru 3"): OPEN sounded like "the way is open". */}
+      <Text style={st.mapKey}>{MAP_KEY}</Text>
       <View style={st.mapRow}>
         <Text style={[st.mapCell, st.mapHead, st.cellPath]}>PATH</Text>
         <Text style={[st.mapCell, st.mapHead, st.cellVal]}>EXPECTED</Text>
@@ -215,8 +221,8 @@ export function Lesson10Body() {
         <Text style={st.simText}>{SIMULATION_BADGE}</Text>
       </View>
       <Text style={s.body}>
-        Eight leads are on the bench. Connect each one to the tester, read the continuity map, name the fault, then
-        decide what happens to the cable. Wrong picks stay open — keep trying.
+        Eight leads are on the bench. Test each one, name the fault, then decide what happens to the cable. Wrong picks
+        stay open.
       </Text>
 
       <View style={s.chipWrap}>
@@ -359,6 +365,7 @@ const st = StyleSheet.create({
   mapRow: { flexDirection: 'row', gap: 8, alignItems: 'flex-start' },
   mapCell: { fontFamily: fonts.mono, fontSize: 12, lineHeight: 17, color: colors.textSecondary },
   mapHead: { color: colors.amberLabel },
+  mapKey: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17, color: colors.textSecondary },
   cellPath: { flex: 1.15 },
   scanText: { color: colors.amberLabel },
   cellVal: { flex: 0.75 },

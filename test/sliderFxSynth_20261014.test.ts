@@ -128,8 +128,10 @@ describe('E1 — delay echo spacing grows with TIME', () => {
     }
     assert.ok(echoSpacingFrac(500) / echoSpacingFrac(80) > 6);
   });
-  test('both pictures use the fixed window', () => {
-    assert.match(read('screens/lab/fxAnim.tsx'), /return echoSpacingFrac\(timeMs\) \* outSpan;/);
+  // Renamed owner 2026-11-25, click tempo: the animated window is ECHO_SPAN_MS at the opening tempo and scales with the click's tempo.
+  test('both pictures use the ECHO_SPAN_MS window (the animated one scaled by the click tempo)', () => {
+    // owner 2026-11-25, click tempo: the window is a fixed number of beats, so the spacing is ÷ the window scale (1 at the opening tempo).
+    assert.match(read('screens/lab/fxAnim.tsx'), /return \(echoSpacingFrac\(timeMs\) \/ winScale\) \* outSpan;/);
     const viz = read('features/lab/fxViz.tsx');
     assert.match(viz, /const spanMs = ECHO_SPAN_MS;/);
     assert.doesNotMatch(viz, /Math\.max\(timeMs \* 6\.5, 500\)/);

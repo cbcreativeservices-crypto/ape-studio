@@ -289,7 +289,7 @@ export const AMP_CHECKS: AmpCheck[] = [
   {
     id: 'c-classc', moduleId: 'classes', scored: true,
     q: 'Why is Class C unsuitable for ordinary full-range audio?',
-    options: ['It is too efficient to sound natural', 'Its short conduction pulses need a tuned circuit to recover one frequency', 'It requires vacuum tubes, which are now rare', 'Its voltage gain is too low for a loudspeaker'],
+    options: ['It is too efficient to sound natural', 'Its pulses need a tuned circuit, which recovers one frequency', 'It requires vacuum tubes, which are now rare', 'Its voltage gain is too low for a loudspeaker'],
     correct: 1,
     explain: 'Class C conducts in brief pulses and relies on a resonant tank (a tuned circuit) ringing at ONE tuned frequency. Music is broadband, so the recovery trick does not apply — Class C lives in radio (RF).',
   },
@@ -391,7 +391,7 @@ export const AMP_CHECKS: AmpCheck[] = [
   {
     id: 'a-thermal', moduleId: 'apply', scored: true,
     q: 'An amplifier keeps dropping into thermal protection at a show. Best FIRST response?',
-    options: ['Keep resetting it until the show is over', 'Check ventilation, load, and drive level, then correct the cause', 'Bridge it to gain some headroom', 'Lower the speaker impedance to ease the load'],
+    options: ['Keep resetting it until the show is over', 'Check airflow, load and drive, then fix the cause', 'Bridge it to gain some headroom', 'Lower the speaker impedance to ease the load'],
     correct: 1,
     explain: 'Protection is telling you something: blocked airflow, too low a load, or sustained clipping. Resetting without fixing the cause invites failure.',
   },

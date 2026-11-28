@@ -235,7 +235,7 @@ export const STAGE4_EDIT: StageDef = {
           fieldId: "edit_faults_checked",
           label: "Edit faults checked for",
           kind: "multiChoice",
-          help: "The list a careful pass listens for. Ticking them here is a commitment to having listened.",
+          help: "The list a careful pass listens for. Checking them here is a commitment to having listened.",
           options: [
             { value: "clicks", label: "Clicks at boundaries" },
             { value: "fades", label: "Missing fades" },
@@ -421,7 +421,7 @@ export const STAGE4_EDIT: StageDef = {
         },
         {
           fieldId: "artifact_check",
-          label: "Have the repairs been checked for artefacts",
+          label: "Have the repairs been checked for artifacts",
           kind: "choice",
           help: "Over-reduced speech goes hollow and watery, and it is easiest to hear when you stop listening to the noise and start listening to the voice.",
           required: true,
@@ -440,7 +440,7 @@ export const STAGE4_EDIT: StageDef = {
       watches: ["edit.review_done", "edit.assembly_state"],
       severity: "attention",
       kind: "unrealistic",
-      title: "Assembling material nobody has listened to",
+      title: "Assembling material nobody has listened to. Is that intended?",
       detail: "The assembly is under way and the source review is not finished. Anything unheard is either a problem you will find at the worst moment or a better take you will never know about.",
       fixHint: "Finish the review pass first. It is the cheapest hour in the whole project.",
       needsLogic: true,
@@ -462,7 +462,7 @@ export const STAGE4_EDIT: StageDef = {
       watches: ["edit.take_log"],
       severity: "info",
       kind: "missing",
-      title: "A preferred take with no reason recorded",
+      title: "A preferred take with no reason recorded. Is that intended?",
       detail: "In three weeks, when a client asks why this one, the reason has to be remembered rather than read.",
       fixHint: "One short phrase per row is enough.",
       needsLogic: true,
@@ -495,7 +495,7 @@ export const STAGE4_EDIT: StageDef = {
       watches: ["edit.missing_marked", "edit.assembly_state"],
       severity: "attention",
       kind: "missing",
-      title: "Silent gaps where material is missing",
+      title: "Silent gaps where material is missing. Is that intended?",
       detail: "The assembly has holes and they are not labeled. A silent gap looks exactly like a deliberate pause, right up to the moment it is delivered as one.",
       fixHint: "Put a marker or a labeled clip in every gap saying what belongs there and who is getting it.",
       needsLogic: true,
@@ -506,8 +506,8 @@ export const STAGE4_EDIT: StageDef = {
       watches: ["edit.temp_material", "edit.assembly_state"],
       severity: "info",
       kind: "missing",
-      title: "No record of what is temporary",
-      detail: "Assemblies almost always contain something standing in for something else. If it is not written down, the stand-in travels quietly towards the master.",
+      title: "No record of what is temporary. Is that intended?",
+      detail: "Assemblies almost always contain something standing in for something else. If it is not written down, the stand-in travels quietly toward the master.",
       fixHint: "List anything temporary and what replaces it. If genuinely nothing is temporary, mark the field not applicable.",
       needsLogic: true,
       logicIntent: "Fire when assembly_state is partial or complete and temp_material is empty and not marked not applicable."
@@ -528,7 +528,7 @@ export const STAGE4_EDIT: StageDef = {
       watches: ["edit.room_tone_available", "edit.gaps_filled"],
       severity: "attention",
       kind: "missing",
-      title: "Speech edited with no room tone to fill the gaps",
+      title: "Speech edited with no room tone to fill the gaps. Is that intended?",
       detail: "Removing a word or a pause opens a hole of pure digital silence in a background that was never silent. The result is a conversation that keeps stopping and starting, which listeners hear as edits even when they cannot say why.",
       fixHint: "Harvest tone from the quietest gaps in the same take and same microphone, and lay it under the edits. If there is genuinely none, this is a pickup to request.",
       needsLogic: true,
@@ -552,9 +552,9 @@ export const STAGE4_EDIT: StageDef = {
       watches: ["edit.edit_faults_checked", "edit.assembly_state"],
       severity: "attention",
       kind: "missing",
-      title: "The edit has not been checked for the usual faults",
+      title: "The edit has not been checked for the usual faults. Is that intended?",
       detail: "Clicks at boundaries, missing fades and cut-off consonants are cheap to fix now and expensive once they are buried under processing.",
-      fixHint: "Do one pass listening only for joins, with the material soloed, then one in context. Tick what you checked.",
+      fixHint: "Do one pass listening only for joins, with the material soloed, then one in context. Mark what you checked.",
       needsLogic: true,
       logicIntent: "Fire when assembly_state is complete and edit_faults_checked has fewer than three entries.",
       onlyFor: ["podcast", "live"]
@@ -588,7 +588,7 @@ export const STAGE4_EDIT: StageDef = {
       watches: ["edit.problem_list", "edit.comparison_method", "edit.artifact_check"],
       severity: "attention",
       kind: "unrealistic",
-      title: "Restoration with no before-and-after check",
+      title: "Restoration with no before-and-after check. Is that intended?",
       detail: "Repairs are being applied without listening to what is being removed. Aggressive restoration takes the noise and a share of the voice with it, and the damage it leaves is usually harder to fix than the problem it was aimed at.",
       fixHint: "Listen to the removed signal on its own. If you can hear speech, music or useful ambience in it, back the processing off.",
       needsLogic: true,
@@ -610,7 +610,7 @@ export const STAGE4_EDIT: StageDef = {
       watches: ["edit.problem_list"],
       severity: "attention",
       kind: "missing",
-      title: "A problem logged with no decision against it",
+      title: "A problem logged with no decision against it. Is that intended?",
       detail: "Rows in the problem list have no chosen action, which means they are noticed and unowned. Those are the ones that reach a master.",
       fixHint: "Every row needs a decision, and leaving it unchanged is a perfectly good one to record.",
       needsLogic: true,
@@ -643,7 +643,7 @@ export const STAGE4_EDIT: StageDef = {
         { pb_where: "31:20 remote", pb_problem: "dropout", pb_severity: "distracting", pb_action: "", pb_notes: "Half a word gone" }
       ]
     },
-    passWhen: "Every problem row carries an action, including the dropout that had none; neither of the two subtle problems is still set to re-record or ADR; a processing order is written down; the comparison method includes listening to the removed signal and level-matched comparison; the artefact check is no longer outstanding; breaths are no longer being removed wholesale; and the preferred take records a reason beyond being the quietest.",
+    passWhen: "Every problem row carries an action, including the dropout that had none; neither of the two subtle problems is still set to re-record or ADR; a processing order is written down; the comparison method includes listening to the removed signal and level-matched comparison; the artifact check is no longer outstanding; breaths are no longer being removed wholesale; and the preferred take records a reason beyond being the quietest.",
     debrief: "Two of the five original decisions were the expensive kind. Re-recording a guest to remove a mouth noise nobody would notice costs a session, a favor and a performance that will not match the one around it — and ADR for the same reason is worse. Meanwhile the one row with no decision at all was the genuinely serious one: half a word missing from the remote feed, which no amount of processing repairs and which needs either the guest's local file or a re-record of that line. Notice the pattern. Effort was being spent in inverse proportion to severity, which is what happens whenever repairs are judged soloed and one at a time. The working method fixes it better than any individual decision: listen to what you are removing, match the levels, and judge it in the mix."
   }
 };

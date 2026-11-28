@@ -143,7 +143,9 @@ export function ConcertSnareCoupled({ w, h, variant, mode, swing, accessibilityL
   const squeeze = mode === 'opposed' ? swing : 0;
   const tint = squeeze > 0 ? `rgba(111,168,255,${(0.32 * squeeze).toFixed(3)})` : `rgba(232,234,238,${(0.12 * -squeeze).toFixed(3)})`;
   const labels: StaticLabel[] = [
-    { id: 'b', text: swing === 0 ? 'BATTER · AT REST' : swing > 0 ? 'BATTER ↓ IN' : 'BATTER ↑ OUT', short: 'BATTER', u: -R - 30, v: -70, align: 'right', tone: 'blue' },
+    // On the audience side, clear of the sticks (owner 2026-11-22: the sticks
+    // now lie low over the player's side of the head, where this name sat).
+    { id: 'b', text: swing === 0 ? 'BATTER · AT REST' : swing > 0 ? 'BATTER ↓ IN' : 'BATTER ↑ OUT', short: 'BATTER', u: R + 30, v: -70, align: 'left', tone: 'blue' },
     { id: 's', text: s === 0 ? 'SNARE HEAD · AT REST' : s > 0 ? 'SNARE HEAD ↓ OUT' : 'SNARE HEAD ↑ IN', short: 'SNARE HEAD', u: -R - 30, v: D + 70, align: 'right', tone: 'blue' },
     { id: 'air', text: mode === 'together' ? 'AIR CARRIED ALONG' : squeeze > 0.05 ? 'AIR SQUEEZED' : squeeze < -0.05 ? 'AIR EASED' : 'AIR AT REST', short: 'AIR', u: R + 40, v: D / 2, align: 'left', tone: 'blue' },
     { id: 'ex', text: 'MOTION DRAWN LARGER', short: 'DRAWN LARGER', u: SOUND_BOX.u1 - 20, v: SOUND_BOX.v1 - 22, align: 'right', tone: 'illustrative' },

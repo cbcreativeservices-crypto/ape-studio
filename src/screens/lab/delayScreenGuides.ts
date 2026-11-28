@@ -50,16 +50,16 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
   explore: {
     intro: {
       learning: 'How a delay works: TIME sets the gap between repeats, FEEDBACK sets how long the trail lasts, and a delay time can match the song’s tempo.',
-      start: 'Set SOURCE to CLICK 90 and tap ▶. Watch the repeats leave on ▸ OUT. Then step FDBK from 25% to 75% and see the trail grow while the spacing stays the same.',
+      start: 'Watch ▸ OUT: each gray click comes back once, as a blue echo. Then step FDBK to 75% and see the trail grow while the spacing stays the same. Tap ▶ with CLICK 120 to hear it.',
     },
     seeing: [
       'Your source comes in on IN ▸ in gray, passes the green DELAY stage and leaves on ▸ OUT with its repeats in color. OUT’s ruler: seconds since a sound passed the stage.',
-      'TIME, FDBK and MIX show your settings. The strip under them says TEACHING MODEL: the picture comes from the same math as the sound you hear.',
+      'TIME, FDBK and MIX show your settings. The line under them says the picture is a model, drawn from the same math as the sound you hear.',
       'A steady SINE or PINK source draws a band and says TRY CLICK: repeats of a steady sound blur into it.',
     ],
     control: [
       'Tap ▶ in the header, or tap the glass, to play the source through the delay; ■ stops it. Every control works while it plays.',
-      'Drag the TIME fader, 80 to 500 ms. Tap a key for its choices: FDBK (FEEDBACK: 0%, 25%, 50% or 75%), MIX (25%, 50%, 100% WET), COLOR (PING-PONG, and REPEAT DAMPING: DARK 2k, TAPE 6k, OFF 20k), SOURCE (CLICK 90, PINK NOISE, SINE 220 Hz).',
+      'Drag the TIME fader, 80 to 500 ms. Tap a key for its choices: FDBK (FEEDBACK: 0%, 25%, 50% or 75%), MIX (25%, 50%, 100% WET), COLOR (PING-PONG, and REPEAT DAMPING: DARK 2k, TAPE 6k, OFF 20k), SOURCE (CLICK, PINK NOISE, SINE 220 Hz).',
       'Long-press a key or a readout for its lesson entry. The ⓘ at the end of the readouts explains the display.',
       '▴ HIDE DISPLAY and ⤢ FULL SCREEN sit under the glass. Scroll to LAB NOTES for DESIGNED RESPONSE (each repeat drawn as a stem, a line whose height is its level), THE AUDIO PATH, two CHECK YOURSELF questions and ⓘ GUIDED LESSON.',
     ],
@@ -77,7 +77,7 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
     tryThis: [
       'With FDBK under 75% (at 75% the caption warns of a long trail), slide TIME to the top: 500 ms. In LAB NOTES, the caption under DESIGNED RESPONSE names a quarter-note at 120 BPM (60,000 ÷ 500).',
       'Keep TIME at 500 ms and MIX at 50%. Set FDBK to 25%: DESIGNED RESPONSE shows 3 stems after the gray dry one. At 75%: 6, and the trail runs past the 3250 ms edge.',
-      'Open COLOR and turn PING-PONG on with SOURCE on CLICK 90: OUT splits into an L lane over an R lane, odd repeats left, even right. In LAB NOTES, DESIGNED RESPONSE labels one click’s repeats L, R, L.',
+      'Set FDBK to 50%, open COLOR and turn PING-PONG on: OUT splits into an L lane over an R lane, odd repeats left, even right. In LAB NOTES, DESIGNED RESPONSE labels one click’s repeats L, R, L.',
     ],
   },
 
@@ -85,7 +85,7 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
   learn: {
     intro: {
       learning: 'The words of delay (time, feedback, wet / dry, slapback, ping-pong, damping) and how a song’s tempo turns into a delay time in milliseconds.',
-      start: 'Scroll to FORMULA / CONCEPT and work out a quarter note at 120 BPM. Then switch to EXPLORE, slide TIME to 500 ms, and check your answer in LAB NOTES.',
+      start: 'Start on EXPLORE, no sound needed: with FDBK at 0%, drag TIME all the way down to 80 ms and watch the one echo close in behind each click: a slapback. Leave FORMULA / CONCEPT for last.',
     },
     seeing: [
       'This is the Delay lab’s guided lesson as one page to read. Nothing on it moves, but the ▶ in the header still plays or stops the sound.',
@@ -98,7 +98,7 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
       'On EXPLORE, long-press a key or a readout to open just its entry. A SOURCE choice opens that test signal’s own note.',
     ],
     changes: [
-      'Read this page beside EXPLORE: each CONTROLS entry names a part of the rack and says what it does to the repeats.',
+      'Open CONTROLS and read it beside EXPLORE: each entry names a part of the rack and says what it does to the repeats.',
       'Most COMMON MISTAKES lines pair a setting with what goes wrong: too much feedback runs away, a delay off the tempo smears the groove, full-range repeats pile up.',
       'FORMULA / CONCEPT turns BPM into milliseconds. On EXPLORE, the caption under DESIGNED RESPONSE names the BPM for your TIME.',
     ],
@@ -109,8 +109,8 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
       'Why too much feedback runs away, and why a delay off the tempo smears the groove.',
     ],
     tryThis: [
-      'Read FORMULA / CONCEPT and work out a quarter note at 120 BPM. Then on EXPLORE, with FDBK under 75%, slide TIME to 500 ms: the caption under DESIGNED RESPONSE names 120 BPM.',
-      'Read the COMMON MISTAKES line on slapback. Then on EXPLORE set TIME to 80 ms and FDBK to 0%: DESIGNED RESPONSE shows one stem after the dry one — a single quick repeat.',
+      'Open COMMON MISTAKES and read the line on slapback. Then on EXPLORE set TIME to 80 ms and FDBK to 0%: DESIGNED RESPONSE shows one stem after the dry one — a single quick repeat.',
+      'Last, open FORMULA / CONCEPT and work out a quarter note at 120 BPM. Then on EXPLORE, with FDBK under 75%, slide TIME to 500 ms: the caption under DESIGNED RESPONSE names 120 BPM.',
     ],
   },
 
@@ -118,7 +118,7 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
   check: {
     intro: {
       learning: 'A review of delay’s core ideas: turning tempo into delay time, what FEEDBACK controls, what makes a slapback, and what REPEAT DAMPING does to the repeats.',
-      start: 'Tap an answer on each card. If the tempo question stumps you, reread FORMULA / CONCEPT on LEARN. For the others, try that control on EXPLORE and come back.',
+      start: 'Tap an answer on each card. If the tempo question stumps you, open FORMULA / CONCEPT on LEARN. For the others, try that control on EXPLORE and come back.',
     },
     seeing: [
       'This is CHECK YOUR UNDERSTANDING for the Delay lab. A line under the heading counts the questions you still need to get right.',
@@ -127,12 +127,13 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
     ],
     control: [
       'Tap an option to answer. Scroll down for every card.',
-      'A wrong answer costs nothing: pick again straight away. There is no score.',
+      'A wrong answer costs nothing: pick again right away.',
       'Use the tabs under the title to go to EXPLORE or LEARN; cards already right stay right. If you leave the lab before the last right answer, they clear.',
     ],
     changes: [
       'A right answer turns its card green with ✓, shows CORRECT and the reason, and stays right.',
-      'A wrong one shows NOT QUITE — TRY ANOTHER and the reason, so you can work out the answer.',
+      'A wrong one shows NOT QUITE — TRY ANOTHER and a pointer; a second wrong pick adds the explanation.',
+      'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: what is left in this lab.',
       'Get all four right and the check is passed: a green card says so.',
     ],
     teaches: [
@@ -141,7 +142,7 @@ export const DELAY_SCREEN_GUIDES: Record<DelayScreenId, ScreenGuide> = {
       'Why an engineer might darken the repeats with REPEAT DAMPING.',
     ],
     tryThis: [
-      'Test the tempo formula at another tempo: on EXPLORE, with FDBK under 75%, set TIME to 375 ms. The caption under DESIGNED RESPONSE names 160 BPM. FORMULA / CONCEPT on LEARN shows why.',
+      'Test the tempo formula on another note: on EXPLORE, with FDBK under 75%, set TIME to 375 ms and read the caption under DESIGNED RESPONSE. FORMULA / CONCEPT on LEARN shows why.',
       'Stuck on FEEDBACK or REPEAT DAMPING? On LEARN, each CONTROLS entry says what that control does to the repeats. Read it, then try it on EXPLORE.',
     ],
   },

@@ -141,7 +141,9 @@ describe('3. placement: the controls the "start" line names stay usable', () => 
   it('when it does cover the controls, one tap closes it: the dim, ✕, GOT IT, BACK', () => {
     const overlay = block(SG, 'function ScreenIntroOverlay(');
     assert.ok(overlay, 'overlay found');
-    assert.match(overlay, /<Pressable\s+key=\{k\}\s+style=\{\[styles\.pane, style\]\}\s+onPress=\{onClose\}/);
+    // 2026-11-21 (owner: no background behind the first intro card): the one pane is solid screen colour.
+    assert.match(overlay, /<Pressable\s+key=\{k\}\s+style=\{\[styles\.pane, styles\.introSolid, style\]\}\s+onPress=\{onClose\}/);
+    assert.doesNotMatch(overlay, /keepOutline/, 'no bright band around the card');
     assert.match(overlay, /pane\(StyleSheet\.absoluteFill, 'all'\)/);
     assert.match(overlay, /useBackWhileFocused\(true, back\)/);
     const card = block(SG, 'function IntroCard(');
@@ -227,13 +229,18 @@ describe('5. when it shows, and the wiring', () => {
   const ctl = block(SG, 'function IntroCardController(');
   it('gated like the hint: Low-Light / kill switch, focus, the lab term popup, any open DimModal and its closing fade, the host’s hold', () => {
     assert.ok(ctl, 'controller found');
-    for (const re of [/useOverlaysSuppressed\(\)/, /useIsFocused\(\)/, /useLabTermIntroOwed\(\)/, /useModalHostOpen\(\)/, /rootModalHoldMs\(\)/]) {
+    // 2026-11-14 (lab fix round S1; owner approval "Begin fixing all bugs
+    // found and do obvious ... fixes", report row 1): the card waits on the
+    // TERM popup only when it is not carrying the term inside itself
+    // (useLabTermOnlyOwed), and it presents WITH the page: no quiet wait and
+    // no closing-fade wait (it is in the screen's own tree, never a Modal).
+    for (const re of [/useOverlaysSuppressed\(\)/, /useIsFocused\(\)/, /useLabTermOnlyOwed\(\)/, /useModalHostOpen\(\)/]) {
       assert.match(ctl, re);
     }
     assert.match(ctl, /const clear = seen === false && focused && !suppressed && !labTermFirst && !hold && \(inModal \|\| !modalUp\);/);
     // Low-Light re-checked at the moment it would present.
     assert.match(ctl, /if \(areOverlaysSuppressed\(\)\) return;/);
-    assert.match(ctl, /SCREEN_INTRO_SETTLE_MS \+ rootModalHoldMs\(\)/);
+    assert.match(ctl, /\}, SCREEN_INTRO_SETTLE_MS\);/);
   });
   it('once per device: a read still out keeps it owed; UNREADABLE shows nothing; written when the student CLOSES it', () => {
     assert.match(ctl, /const owed = seen === 'loading' \|\| seen === false;/);
@@ -241,10 +248,12 @@ describe('5. when it shows, and the wiring', () => {
     // (left, rebuilt) comes back next time.
     assert.doesNotMatch(ctl, /markScreenIntroSeen/);
     const host = block(SG, 'export function ScreenGuideHost(');
-    assert.match(host, /setShown\(\{ title: offer\.title, guide: offer\.guide, mode: 'intro', claim: offer\.id \}\);/);
-    // Every way out claims it: close (✕, GOT IT, the dim, BACK), EXPLAIN, the end-layer BACK.
-    assert.match(host, /const close = useCallback\(\(\) => \{\s*claimIntro\(claimRef\.current\);\s*setShown\(null\);/);
-    assert.match(host, /onExplain=\{\(\) => \{\s*claimIntro\(shown\.claim\);/);
+    // `term` (2026-11-14, S1): the lab term carried inside the card.
+    assert.match(host, /setShown\(\{ title: offer\.title, guide: offer\.guide, mode: 'intro', claim: offer\.id, term: term \?\? undefined \}\);/);
+    // Every way out claims it: close (✕, GOT IT, the dim, BACK), the end-layer BACK.
+    // (No EXPLAIN on the popup since 2026-11-14, owner: "Remove from all popups".)
+    assert.match(host, /const close = useCallback\(\(\) => \{\s*claimIntro\(claimRef\.current\);\s*(?:const t = termRef\.current;\s*if \(t\) finishCarriedLabTerm\(t\.key\);\s*)?setShown\(null\);/);
+    assert.doesNotMatch(host, /onExplain/);
     assert.match(host, /backRef\.current = \(\) => \{[\s\S]*?claimIntro\(claimRef\.current\);/);
     // The dev bypass mirrors useScreenIntro: every visit, nothing persisted.
     assert.match(ctl, /const bypass = devBypass\('alwaysShowIntros'\);/);
@@ -265,9 +274,9 @@ describe('5. when it shows, and the wiring', () => {
     // No intro, nothing: the key offers only when the guide has one.
     assert.match(key, /if \(!host \|\| !intro \|\| !id\) return;/);
   });
-  it('re-openable: EXPLAIN THIS SCREEN goes into the guide; the guide’s first step leads back with ‹ INTRO', () => {
+  it('re-openable: the header ⓘ goes into the guide; the guide’s first step leads back with ‹ INTRO', () => {
     const host = block(SG, 'export function ScreenGuideHost(');
-    assert.match(host, /setShown\(\{ title: shown\.title, guide: shown\.guide, mode: 'guide' \}\);/);
+    assert.match(host, /setShown\(\{ title, guide, mode: 'guide' \}\);/);
     assert.match(host, /onIntro=\{shown\.guide\.intro \? \(\) => setShown\(\{ title: shown\.title, guide: shown\.guide, mode: 'intro' \}\) : undefined\}/);
     const card = block(SG, 'function GuideCard(');
     assert.match(card, /\{step === 0 && onIntro \? \(\s*<Pressable onPress=\{onIntro\}/);
@@ -277,11 +286,13 @@ describe('5. when it shows, and the wiring', () => {
     const host = block(SG, 'export function ScreenGuideHost(');
     assert.match(host, /if \(o\) \{\s*claimIntro\(o\.id\);\s*handle\(o\.id\);/);
   });
-  it('the card: two labelled parts, ✕, GOT IT, EXPLAIN THIS SCREEN', () => {
+  it('the card: two labelled parts, ✕, GOT IT, and a line pointing to the header ⓘ (no EXPLAIN button: owner 2026-11-14 "Remove from all popups")', () => {
     const card = block(SG, 'function IntroCard(');
     assert.match(card, /\{SCREEN_INTRO_TEXT\.learning\}<\/Text>\s*<Text style=\{styles\.introLearning\}>\{intro\.learning\}<\/Text>/);
     assert.match(card, /\{SCREEN_INTRO_TEXT\.start\}<\/Text>\s*<Text style=\{styles\.introStart\}>\{intro\.start\}<\/Text>/);
-    assert.match(card, /ⓘ \{SCREEN_INTRO_TEXT\.explain\}/);
+    assert.doesNotMatch(card, /SCREEN_INTRO_TEXT\.explain/);
+    assert.match(card, /<Text style=\{styles\.introGuideNote\}>\{SCREEN_INTRO_GUIDE_NOTE\}<\/Text>/);
+    assert.equal(T.SCREEN_INTRO_GUIDE_NOTE, 'Tap ⓘ at the top of the screen to have it explained step by step.');
   });
   it('no host: the key presents the card itself, intro and guide sharing ONE DimModal (never close-then-present)', () => {
     const popup = block(SG, 'export function ScreenGuidePopup(');

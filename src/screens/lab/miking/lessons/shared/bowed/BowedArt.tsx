@@ -31,6 +31,9 @@ import { add, dot, len, norm, scale, sub } from '../../../engine/geometry/vec.ts
 import { archAt, fbHalf, fingerboardZ, halfWidth, outline, stationsOf, stringYs, stringZ, type BowedSpec } from './bowedSpec.ts';
 import { drawnBow, drawnHands, neckBackZ, type PosedHand } from './bowedHands.ts';
 import { anchorsOf, toLesson, type BPoint, type BowPose, type Posture } from './posture.ts';
+import { figureV2On } from '../figureV2/figureV2Config.ts';
+import { bowedFamIn, bowedFigureGroups } from './bowedFigureV2';
+import type { CastMember } from '../figureV2/cast';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 type P2 = [number, number];
@@ -115,6 +118,8 @@ export type Item = {
   soft?: SkPath;
   /** The garment's bounds: one cloth in one light (FigureMass). */
   garment?: GarmentBox;
+  /** (figure roll-out wave 5) a drawn node in this item's place (the player in the approved look). */
+  node?: ReactElement;
 };
 export type Group3 = { key: string; depth: number; items: Item[] };
 
@@ -477,7 +482,7 @@ function instrumentItems(P: InstPose, view: ViewId): Item[] {
 }
 
 /** The bow: hair, stick (cambered), frog with its eye, the tip's head. */
-function bowItems(P: Pick<Posture, 'spec' | 'bow'>, view: ViewId): Item[] {
+export function bowItems(P: Pick<Posture, 'spec' | 'bow'>, view: ViewId): Item[] {
   const b = P.bow;
   const k = Math.max(1, P.spec.bow.mm / 750);
   const pt = (s: number, lift: number) => prj(view, add(add(b.tip, scale(sub(b.frog, b.tip), s)), scale(b.up, lift)));
@@ -1095,6 +1100,7 @@ export function playerGroups(P: Pick<Posture, 'player' | 'chair'>, view: ViewId,
 export function PaintItem({ it }: { it: Item }) {
   const { box } = it;
   const grad = typeof it.fill === 'object' ? it.fill : null;
+  if (it.node) return it.node;
   if (it.head) return <FigureHead fill={it.head.paths.fill} />;
   if (it.tone) {
     return (
@@ -1146,7 +1152,7 @@ export function PaintItem({ it }: { it: Item }) {
  * stick; fingers' roots behind the board) paints just behind the instrument:
  * the plane through the neck or the stick, square to the view.
  */
-function cutFor(view: ViewId, axis: { p: V3; d: V3 }): { p: V3; n: V3 } | undefined {
+export function cutFor(view: ViewId, axis: { p: V3; d: V3 }): { p: V3; n: V3 } | undefined {
   const V = TO_VIEWER[view];
   const n = sub(V, scale(axis.d, dot(V, axis.d)));
   if (len(n) < 0.25) return undefined; // seen end-on: nothing to hide behind
@@ -1183,13 +1189,27 @@ function stickHide(P: Posture, view: ViewId): SkPath {
 
 /** All the groups for a view, far to near. The posture as DRAWN (bowedHands.drawnHands): the violin/viola bow near
  *  the end of a down-bow, each elbow solved to its posed wrist; the keep-outs, hit areas and mics stay the posture's. */
-export function sceneGroups(P0: Posture, view: ViewId, opts: { player?: boolean; bow?: boolean } = {}): Group3[] {
+export function sceneGroups(P0: Posture, view: ViewId, opts: { player?: boolean; bow?: boolean; /** (the study page) the player in the old look or the new, whatever the switch */ v2?: boolean; /** (a setting plan's neighbor) another cast member than the lesson's own player */ who?: CastMember } = {}): Group3[] {
   const bowed = opts.bow !== false;
   const D = P0.player ? drawnHands(P0, bowed && P0.strokes.length > 0) : null;
   const P = D ? D.P : P0;
   const groups: Group3[] = [];
   const instDepth = depthOf(view, { x: 0, y: 0, z: 0 });
-  if (opts.player !== false && D) {
+  const fi = opts.player !== false && D && (opts.v2 ?? figureV2On('familyBowed')) ? bowedFamIn(P, D, view, bowed, (a) => cutFor(view, a), opts.who) : null;
+  if (fi) {
+    // (figure roll-out wave 5: the player in the approved look; the chair as before)
+    // (the authored hands: a bow hand's thumb lies under the stick — the stick and frog, not the hair, repainted over it)
+    const over = bowed && P.strokes.length > 0 ? bowItems(P, view).slice(1) : [];
+    const bowOver = over.length ? (
+      <Group>
+        {over.map((it, i) => (
+          <PaintItem key={i} it={it} />
+        ))}
+      </Group>
+    ) : null;
+    groups.push(...bowedFigureGroups(fi, view, instDepth, { L: D ? neckHide(P, view, D.L) : undefined }, D ? { P, D, bowed, bowOver } : undefined));
+    if (P.chair) groups.push(...playerGroups(P, view, true, {}).filter((g) => g.key === 'chair' || g.key === 'chairLegs'));
+  } else if (opts.player !== false && D) {
     const L = posedHold(D.L, view, instDepth, true, neckHide(P, view, D.L));
     const R = D.R ? posedHold(D.R, view, instDepth, false, bowed ? stickHide(P, view) : neckHide(P, view, D.R)) : undefined;
     groups.push(...playerGroups(P, view, true, { hands: { L, R } }));

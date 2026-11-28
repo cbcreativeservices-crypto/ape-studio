@@ -25,6 +25,7 @@ import { flipFader, SoundSystemsRackLayout, type SsPageDef } from './rackLayout'
 import { StageFit } from '../rack/StageFit';
 // Console routing survives BACK / CONTINUE for the session (bug hunt 2026-09-29).
 import { usePageMemory } from './pageMemory';
+import { BUS_BLURB, leftWord } from './fixHelpers';
 
 function useRouteCredit(id: string, done: boolean, ctx: PageCtx) {
   useEffect(() => {
@@ -37,7 +38,6 @@ function useRouteCredit(id: string, done: boolean, ctx: PageCtx) {
 }
 
 const WEDGE_NAMES = { aux1: 'SINGER', aux2: 'GUITAR', aux3: 'BASS', aux4: 'DRUMS', aux5: 'REVERB', aux6: 'SUBS', aux7: 'LOBBY' } as const;
-const BUS_BADGE = 'BUS METERS — COMPUTED · who hears what, from the console’s settings';
 
 /** The bus a channel contributes to, in dB — or OFF. */
 function heardDb(list: ReturnType<typeof mainHears>, channelId: string): string {
@@ -89,13 +89,13 @@ function PageChannel({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
-        badge: 'CHANNEL STRIP — ILLUSTRATIVE · one channel in signal order',
+        modelNote: 'A drawing of one console channel, in signal order.',
         initialParam: 'station',
         hideDragTag: true,
         bezel: [
           { k: 'STATION', v: st.name.toUpperCase(), tint: colors.cyanBright, flex: 2.2 },
-          { k: 'AUDIO', v: st.kind, flex: 1 },
-          { k: 'SEEN', v: `${seen.size}/${STATIONS.length}`, flex: 0.7 },
+          { k: 'AUDIO', caption: 'through / copy', v: st.kind, flex: 1 },
+          { k: 'SEEN', v: leftWord(seen.size, STATIONS.length, 'ALL SEEN'), flex: 0.7 },
         ],
         stage: (w, h) => (
           <StageFit w={w} h={h} aspect={354 / STRIP_H}>
@@ -104,7 +104,7 @@ function PageChannel({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Ride STATION down the strip in signal order — or tap a block on it. The sends leave as copies at the PRE and POST tap points; the main path ends at the assignment."
+      caption="Slide STATION down the strip in signal order — or tap a block on it. The sends leave as copies at the PRE and POST tap points; the main path ends at the assignment."
       wellTop={
         <Card tone="math">
           <Eyebrow>{st.name.toUpperCase()}</Eyebrow>
@@ -178,7 +178,7 @@ function PagePrePost({ ctx }: { ctx: PageCtx }) {
         size: 'M',
         // View-built bus columns: their text does not grow with the box, so no full-screen zoom.
         fullScreen: false,
-        badge: BUS_BADGE,
+        modelNote: 'Worked out from your console settings, not measured.',
         initialParam: 'fader',
         hideDragTag: true,
         bezel: [
@@ -200,7 +200,7 @@ function PagePrePost({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Set WEDGE TAP to PRE and FX TAP to POST, then ride the VOX FADER down to −10 or below and watch which bus moves."
+      caption="Set WEDGE TAP to PRE and FX TAP to POST, then slide the VOX FADER down to −10 or below and watch which bus moves."
     >
       <ChapterTag n={4}>PRE-FADER AND POST-FADER SENDS</ChapterTag>
       <Body>The vocal channel with its two sends, both currently tapped the WRONG way around: the wedge follows the house fader, the reverb ignores it.</Body>
@@ -251,7 +251,7 @@ function PageWhichTool({ ctx }: { ctx: PageCtx }) {
           />
         );
       })}
-      <Body>{count} of {WHICH_TOOL.length} chosen.</Body>
+      <Body>{count === WHICH_TOOL.length ? 'Every situation answered.' : `${WHICH_TOOL.length - count} situations still to answer.`}</Body>
     </View>
   );
 }
@@ -339,14 +339,14 @@ function PageMonitorMixes({ ctx }: { ctx: PageCtx }) {
         size: 'L',
         // View-built bus columns: their text does not grow with the box, so no full-screen zoom.
         fullScreen: false,
-        badge: BUS_BADGE,
+        modelNote: 'Worked out from your console settings, not measured.',
         initialParam: 'send',
         hideDragTag: true,
         bezel: [
           { k: 'CHANNEL', v: ch.name.toUpperCase(), tint: colors.cyanBright, flex: 1.4 },
           { k: 'SEND', v: `${fmtDb(sendDb)}${sendDb > -60 ? ' dB' : ''}`, tint: colors.amber },
-          { k: 'TAP', v: send ? tap.toUpperCase() : '—', tint: tap === 'pre' && send ? colors.greenBright : undefined, flex: 0.8 },
-          { k: 'WEDGES ≥2', v: `${each.filter((n) => n >= 2).length}/4`, tint: each.every((n) => n >= 2) ? colors.green : undefined },
+          { k: 'TAP', caption: 'copy point', v: send ? tap.toUpperCase() : '—', tint: tap === 'pre' && send ? colors.greenBright : undefined, flex: 0.8 },
+          { k: 'WEDGES ≥2', caption: 'two-plus each', v: leftWord(each.filter((n) => n >= 2).length, 4, 'ALL FOUR'), tint: each.every((n) => n >= 2) ? colors.green : undefined },
         ],
         stage: (w, h) => (
           <BusBank
@@ -357,7 +357,7 @@ function PageMonitorMixes({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Pick a CHANNEL, tap SEND to pick its wedge, ride the lane up and set PRE — or open CONSOLE for the whole desk. Watch the wedges fill above."
+      caption="Pick a CHANNEL, tap SEND to pick its wedge, slide it up and set PRE — or open CONSOLE for the whole desk. Watch the wedges fill above."
     >
       <ChapterTag n={4}>FOUR INDEPENDENT MONITOR MIXES</ChapterTag>
       <Body>Four aux sends, one per wedge, on every channel. Wedge 1 is the singer’s: vocal and a little keys. Wedge 2 the guitarist’s: guitar, vocal, kick. Wedge 3 the bassist’s: bass, kick, vocal. Wedge 4 the drummer’s: kick, bass, vocal.</Body>
@@ -417,14 +417,14 @@ function PageGroups({ ctx }: { ctx: PageCtx }) {
         size: 'L',
         // View-built bus columns: their text does not grow with the box, so no full-screen zoom.
         fullScreen: false,
-        badge: BUS_BADGE,
+        modelNote: 'Worked out from your console settings, not measured.',
         initialParam: 'dca',
         hideDragTag: true,
         bezel: [
-          { k: 'KICK → MAIN', v: heardDb(mainHears(cs), 'kick'), flex: 1.2 },
-          { k: 'KICK → WEDGE', v: heardDb(auxHears(cs, 'aux4'), 'kick'), tint: colors.greenBright, flex: 1.2 },
-          { k: 'BAND DCA', v: `${fmtDb(dca.levelDb)}${dca.levelDb > -60 ? ' dB' : ''}`, tint: colors.amber },
-          { k: 'DRUMS GRP', v: subgrouped ? (group.toMain ? '→ L/R' : 'NOT → L/R') : `${drums.filter((d) => cs.channels.find((c) => c.id === d)?.subgroup === 'sub-drums').length}/3`, tint: subgrouped && group.toMain ? colors.green : undefined },
+          { k: 'KICK → MAIN', caption: 'kick in house', v: heardDb(mainHears(cs), 'kick'), flex: 1.2 },
+          { k: 'KICK → WEDGE', caption: 'kick in wedge', v: heardDb(auxHears(cs, 'aux4'), 'kick'), tint: colors.greenBright, flex: 1.2 },
+          { k: 'BAND DCA', caption: 'band remote', v: `${fmtDb(dca.levelDb)}${dca.levelDb > -60 ? ' dB' : ''}`, tint: colors.amber },
+          { k: 'DRUMS GRP', caption: 'drum subgroup', v: subgrouped ? (group.toMain ? '→ L/R' : 'NOT → L/R') : leftWord(drums.filter((d) => cs.channels.find((c) => c.id === d)?.subgroup === 'sub-drums').length, 3, 'ALL IN'), tint: subgrouped && group.toMain ? colors.green : undefined },
         ],
         stage: (w, h) => (
           <BusBank
@@ -439,7 +439,7 @@ function PageGroups({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Open CONSOLE: route the three drum channels into the DRUMS subgroup and take them OFF direct L/R, and hang the kick on the BAND DCA. Then ride BAND DCA down to −10: the main mix drops, the drummer’s wedge does not."
+      caption="Open CONSOLE: route the three drum channels into the DRUMS subgroup and take them OFF direct L/R, and hang the kick on the BAND DCA. Then slide BAND DCA down to −10: the main mix drops, the drummer’s wedge does not."
     >
       <ChapterTag n={4}>SUBGROUPS AND DCAs — THE DIFFERENCE, PROVEN</ChapterTag>
       <Body>Three drum channels and the bass, with their L/R assignment, their GROUP cell, their DCA cell, and the drummer’s pre-fader wedge send.</Body>
@@ -491,12 +491,12 @@ function PageMutes({ ctx }: { ctx: PageCtx }) {
         size: 'M',
         // View-built bus columns: their text does not grow with the box, so no full-screen zoom.
         fullScreen: false,
-        badge: BUS_BADGE,
+        modelNote: 'Worked out from your console settings, not measured.',
         initialParam: 'mg-band',
         bezel: [
           { k: 'BAND MUTE', v: bandMuted ? 'ON' : 'OFF', tint: bandMuted ? colors.red : undefined },
           { k: 'MAIN HEARS', v: `${mainHeard.length} CH`, tint: onlyMcPb ? colors.green : undefined, flex: 1.1 },
-          { k: 'STILL LIVE', v: onlyMcPb ? 'MC · PB' : mainHeard.length === cs.channels.length ? 'ALL' : 'CHECK', tint: onlyMcPb ? colors.green : undefined, flex: 1.1 },
+          { k: 'STILL LIVE', caption: 'not muted', v: onlyMcPb ? 'MC · PB' : mainHeard.length === cs.channels.length ? 'ALL' : 'CHECK', tint: onlyMcPb ? colors.green : undefined, flex: 1.1 },
           { k: 'CHECK', v: solved ? '✓' : '—', tint: solved ? colors.green : undefined, flex: 0.7 },
         ],
         stage: (w, h) => <BusBank w={w} h={h} buses={[{ id: 'main', title: 'MAIN MIX — WHO IS STILL LIVE', list: mainHears(cs) }]} />,
@@ -521,6 +521,13 @@ function PageMutes({ ctx }: { ctx: PageCtx }) {
         options={['AFL — after-fader listen', 'PFL — pre-fader listen', 'Solo-in-place', 'The direct output']}
         correct={0}
         explain="AFL listens after the fader and pan: the channel as the mix hears it. PFL is for checking a source before you bring it up; solo-in-place mutes the rest of the show."
+        // its own reason for each wrong pick (lab fix round 2026-11-14, phase 2, F2)
+        wrong={[
+          undefined,
+          'PFL listens BEFORE the fader, in mono: you would not hear the fader or the pan.',
+          'Solo-in-place mutes every other channel in the house: never on a show.',
+          'A direct output feeds a recorder, not your headphones, and it does not follow the mix.',
+        ]}
         onCorrect={() => setSolved(true)}
       />
     </SoundSystemsRackLayout>
@@ -555,7 +562,7 @@ function PageMatrices({ ctx }: { ctx: PageCtx }) {
       kind: 'group',
       id: 'matrix',
       label: 'MATRICES',
-      valueLabel: `${[fillsOk, lobbyOk, recOk].filter(Boolean).length}/3`,
+      valueLabel: leftWord([fillsOk, lobbyOk, recOk].filter(Boolean).length, 3, 'ALL SET'),
       render: () => (
         <View style={{ gap: 10 }}>
           <Body>Three matrices and the buses they can take. Tap a crosspoint to cycle it: off → 0 dB → −6 dB. The matrices above fill as you go.</Body>
@@ -585,14 +592,14 @@ function PageMatrices({ ctx }: { ctx: PageCtx }) {
         size: 'L',
         // View-built bus columns: their text does not grow with the box, so no full-screen zoom.
         fullScreen: false,
-        badge: BUS_BADGE,
+        modelNote: 'Worked out from your console settings, not measured.',
         initialParam: 'mc7',
         hideDragTag: true,
         bezel: [
-          { k: 'FILLS TAKE', v: takes(fills), tint: fillsOk ? colors.green : undefined, flex: 1.2 },
-          { k: 'LOBBY TAKES', v: takes(lobby), tint: lobbyOk ? colors.green : undefined, flex: 1.4 },
-          { k: 'REC TAKES', v: takes(rec), tint: recOk ? colors.green : undefined, flex: 1.1 },
-          { k: 'MC → AUX 7', v: `${fmtDb(mcSend?.db ?? -90)}${mcSend && mcSend.db > -60 ? ' dB' : ''}`, tint: colors.amber, flex: 1.1 },
+          { k: 'FILLS TAKE', caption: 'front-row feed', v: takes(fills), tint: fillsOk ? colors.green : undefined, flex: 1.2 },
+          { k: 'LOBBY TAKES', caption: 'lobby feed', v: takes(lobby), tint: lobbyOk ? colors.green : undefined, flex: 1.4 },
+          { k: 'REC TAKES', caption: 'recorder feed', v: takes(rec), tint: recOk ? colors.green : undefined, flex: 1.1 },
+          { k: 'MC → AUX 7', caption: 'announce feed', v: `${fmtDb(mcSend?.db ?? -90)}${mcSend && mcSend.db > -60 ? ' dB' : ''}`, tint: colors.amber, flex: 1.1 },
         ],
         stage: (w, h) => (
           <BusBank
@@ -608,7 +615,7 @@ function PageMatrices({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Open MATRICES and give the fills and the recorder MAIN. The lobby wants MAIN plus more announce mic: ride MC → AUX 7 up (an aux kept for exactly that, so no wedge hears it) and let Matrix 3 take AUX 7."
+      caption="Open MATRICES and give the fills and the recorder MAIN. The lobby wants MAIN plus more announce mic: slide MC → AUX 7 up (an aux kept for exactly that, so no wedge hears it) and let Matrix 3 take AUX 7."
     >
       <ChapterTag n={4}>MATRIX OUTPUTS</ChapterTag>
       <Body>Three matrices and the buses they can take. A matrix mixes finished BUSES — the main mix, an aux, a subgroup — into a further output with its own level, EQ and delay.</Body>
@@ -616,7 +623,7 @@ function PageMatrices({ ctx }: { ctx: PageCtx }) {
       <GoalChips goals={goals} latched={latched} />
       <Card tone="math">
         <Eyebrow>THE LOBBY</Eyebrow>
-        <Body>The announce mic should arrive louder than everything else — it comes in twice: inside MAIN and by its own route on AUX 7. Its Aux 7 send is PRE-fader, like the monitor sends: a house fader ride on the announce channel changes only the part inside MAIN, not the extra on AUX 7. The channel MUTE (above the PRE tap on this console) still closes both.</Body>
+        <Body>The announce mic should arrive louder than everything else — it comes in twice: inside MAIN and by its own route on AUX 7. Its Aux 7 send is PRE-fader, like the monitor sends: a house fader move on the announce channel changes only the part inside MAIN, not the extra on AUX 7. The channel MUTE (above the PRE tap on this console) still closes both.</Body>
       </Card>
       <KeyFact>A matrix is the post-main tool. Whatever the house engineer does to the mix, the fills, the lobby and the recorder follow it — and each can still be shaped on its own. On a smaller console without matrices the same feeds come from spare aux outputs, at the cost of building each one channel by channel.</KeyFact>
     </SoundSystemsRackLayout>
@@ -667,7 +674,7 @@ function PagePatch({ ctx }: { ctx: PageCtx }) {
       id: 'bus',
       label: 'BUS',
       valueLabel: actBus ?? '—',
-      options: BUSES.map((b) => ({ id: b, label: b })),
+      options: BUSES.map((b) => ({ id: b, label: b, blurb: BUS_BLURB[b] })),
       selectedId: actBus,
       onSelect: (id) => setPatch((p) => ({ ...p, [act.id]: id as Bus })),
     },
@@ -676,13 +683,13 @@ function PagePatch({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'M',
-        badge: 'OUTPUT PATCH — ILLUSTRATIVE · a wrong patch is silent at best',
+        modelNote: 'A drawing of the stagebox outputs; a wrong patch is silent at best.',
         initialParam: 'socket',
         hideDragTag: true,
         bezel: [
           { k: 'SOCKET', v: act.short, tint: colors.cyanBright, flex: 1.3 },
-          { k: 'FED FROM', v: actBus ?? 'UNPATCHED', tint: actBus ? (actBus === act.needs ? colors.green : colors.red) : undefined, flex: 1.3 },
-          { k: 'PATCHED', v: `${correct}/${DESTINATIONS.length}`, tint: done ? colors.green : undefined },
+          { k: 'FED FROM', caption: 'which bus', v: actBus ?? 'UNPATCHED', tint: actBus ? (actBus === act.needs ? colors.green : colors.red) : undefined, flex: 1.3 },
+          { k: 'PATCHED', v: leftWord(correct, DESTINATIONS.length, 'ALL'), tint: done ? colors.green : undefined },
         ],
         stage: (w, h) => (
           <StageFit w={w} h={h} aspect={354 / PATCH_H}>
@@ -691,7 +698,7 @@ function PagePatch({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Ride SOCKET along the stagebox’s outputs (or tap one on the panel), then tap BUS and pick what it needs. A wrong patch is silent at best — a main output into a wedge amplifier puts the house mix in the singer’s wedge."
+      caption="Slide SOCKET along the stagebox’s outputs (or tap one on the panel), then tap BUS and pick what it needs. A wrong patch is silent at best — a main output into a wedge amplifier puts the house mix in the singer’s wedge."
       wellTop={
         <>
           {wrong.map((d) => (

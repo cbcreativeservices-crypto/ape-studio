@@ -53,7 +53,8 @@ import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { CheckQuestion } from './foundations/bits';
-import { LabShell, HeaderPlayButton } from './LabShell';
+import { CollapsibleSection, LabShell, HeaderPlayButton } from './LabShell';
+import { LabCheckEnd } from './kit/LabCheckEnd';
 import { noiseScreenGuide } from './noiseScreenGuides';
 import { StageAspectReport } from './rack/stageAspect';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
@@ -78,7 +79,9 @@ const COLORS: { key: NoiseColor; label: string; mode: number; slope: number }[] 
  *  used to recite white's rationale under every colour, and the owner-priority
  *  name-the-colour skill had nothing to hang on. NEW COPY — owner review. */
 const COLOR_CHARACTER: Record<NoiseColor, string> = {
-  white: 'Equal energy per Hz — sounds bright because every higher octave holds twice the bandwidth. The untilted reference.',
+  // NOI-03 (owner 2026-11-15, "build waves 1 thru 3"): why flat still sounds bright, with LEARN's
+  // own example, readable with sound off (this line shows in the tray and in WHAT YOU'RE SEEING).
+  white: 'Flat per Hz, yet it sounds bright: the octave from 5,000 to 10,000 Hz holds 5,000 Hz of noise, the octave from 50 to 100 Hz only 50. The untilted reference.',
   pink: 'Equal energy per OCTAVE — roughly matches how we hear. The mixing and measurement reference.',
   brown: 'Energy piles up toward the bottom — 6 dB more per Hz for every octave down: rumble, surf, distant thunder.',
   // Plain RPDF/TPDF dither is FLAT (white). Only NOISE-SHAPED dither is
@@ -235,6 +238,8 @@ export function NoiseLabScreen() {
   return (
     <LabShell
       labId="noise"
+      // FINISH · SEE WHAT'S LEFT under the CHECK; opening it stops the noise (fix round 2026-11-14, S2).
+      checkEnd={<LabCheckEnd labId="noise" labTitle="Noise Lab" onOpen={stopNoise} />}
       title="NOISE LAB"
       subtitle="Colors · Slopes · Energy per octave"
       intro={INTRO}
@@ -259,6 +264,8 @@ export function NoiseLabScreen() {
         initialParam: 'color',
         onHelp: openLesson,
         stage: {
+          // The silent learner's line (fix round 2026-11-14, S3 §1): every EXPLORE step here works with sound off.
+          soundOffLine: 'Sound off? Each color still shows its tilt: watch the line and SLOPE.',
           size: 'M',
           // The rack's ⤢ FULL SCREEN (full-screen build 2026-09-30). The slope
           // chart draws through a viewBox that follows the box's shape, so
@@ -268,6 +275,10 @@ export function NoiseLabScreen() {
           badge: speakerView
             ? `PHONE SPEAKER OUTPUT — ${SPEAKER_HPF_HZ} Hz HPF ON ${selected.label}`
             : 'IDEALIZED SPECTRAL SLOPES — ANALYTIC, NOT A MEASUREMENT',
+          // Phase 3 (owner decision 3, 2026-11-14, S3 §2): the disclosure as one plain sentence.
+          modelNote: speakerView
+            ? `This is the phone-speaker version: a ${SPEAKER_HPF_HZ} Hz high-pass filter is on.`
+            : 'These slopes are idealized, worked out from the math, not measured.',
           onGuide: () => openLesson('display'),
           bezel: [
             { k: 'COLOR', v: selected.label, tint: NOISE_TINTS[color], helpKey: color },
@@ -277,8 +288,10 @@ export function NoiseLabScreen() {
               tint: NOISE_TINTS[color],
               flex: 1.3,
               helpKey: color,
+              // Plain-word captions on the first visit (fix round 2026-11-14, S3 §4).
+              caption: 'how it tilts',
             },
-            { k: 'OUT', v: `${outDb} dBFS` },
+            { k: 'OUT', v: `${outDb} dBFS`, caption: 'output level' },
           ],
           render: (w, h) => (
             // Tapping the display toggles play/stop (owner 2026-07-31).
@@ -353,12 +366,14 @@ export function NoiseLabScreen() {
         </Text>
       </View>
 
-      <View style={{ gap: 6 }}>
-        <Text style={styles.sectionHead}>SPKR — PHONE SPEAKER OUTPUT (REALITY)</Text>
+      {/* Starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections
+          proposal): background on the SPKR key. The speaker-safety advisory
+          under OUTPUT LEVEL stays open. */}
+      <CollapsibleSection title="SPKR — PHONE SPEAKER OUTPUT (REALITY)" startOpen={false}>
         <Text style={styles.caption}>
           {`The SPKR key overlays reality on the mathematics: the phone's built-in speakers cannot produce sounds below ${SPEAKER_HPF_HZ} Hz, so a high-pass filter has been applied. Flip it on to see exactly what the filter removes from the selected color.`}
         </Text>
-      </View>
+      </CollapsibleSection>
 
       {engineReady ? (
         <View style={{ gap: 6 }}>
@@ -381,6 +396,11 @@ export function NoiseLabScreen() {
           question: 'A hiss that RISES +3 dB per octave toward the top. Which color?',
           options: ['Blue', 'Pink', 'Brown'],
           correctIdx: 0,
+          // Checker C2 (2026-11-14): a reason per wrong option, by authored index; never the answer.
+          why: {
+            1: 'Pink tilts down toward the bass, −3 dB per octave. Watch which end of the line lifts as you tap the colors.',
+            2: 'Brown tilts down even more steeply, toward rumble. Tap the colors and watch which end of the line lifts.',
+          },
           reveal:
             'Rising toward the treble = BLUE (+3 dB/oct; violet is steeper at +6). Pink and brown tilt the other way — down toward the bass.',
           wrongHint: 'Watch which end of the slope chart lifts as you tap the colors.',
@@ -391,6 +411,11 @@ export function NoiseLabScreen() {
           question: 'You want the reference noise that holds equal energy in every octave. Which color?',
           options: ['Pink', 'White', 'Violet'],
           correctIdx: 0,
+          // Checker C2 (2026-11-14): a reason per wrong option, by authored index; never the answer.
+          why: {
+            1: 'White holds equal energy per hertz, so the upper octaves get more. Read the line under the WHITE chip.',
+            2: 'Violet rises steeply toward the treble, so its octaves are far from equal. Read the line under each chip.',
+          },
           reveal:
             'PINK holds equal energy per OCTAVE — matching how hearing divides the spectrum — which is why it is the mixing and system-tuning reference. White is equal per Hz and reads bright.',
           wrongHint: 'The per-color line under the chips names each one\u2019s job.',
@@ -466,7 +491,9 @@ function SlopeChart({
   running: boolean;
 }) {
   const H = 150;
-  const VH = H + 18; // plot + the frequency-label strip
+  // NOI-02 (owner 2026-11-15, "build waves 1 thru 3"): a second label row under the frequency
+  // numbers says what left and right sound like (rumble ← → hiss).
+  const VH = H + 32; // plot + the frequency-label strip + the rumble / hiss row
   const W = Math.max(240, (w / Math.max(1, h)) * VH);
   // FULL SCREEN (2026-09-30): the chart's viewBox follows the box's shape
   // down to 240:166, so in a tall portrait body it would letterbox and leave
@@ -511,8 +538,10 @@ function SlopeChart({
       s += `${i === 0 ? 'M' : 'L'}${xAt(oct).toFixed(1)} ${yAt(db).toFixed(1)}`;
     }
     return s;
+    // `running` is a dep (owner 2026-11-25, audit B9): on Stop the ticker
+    // stops, so without it the trace froze in its last jittered shape.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tick, selectedSlope, speakerView, W]);
+  }, [tick, running, selectedSlope, speakerView, W]);
 
   // Selected color's response AFTER the speaker high-pass, sampled across the
   // axis (guard is a curve, so a straight line won't do). slope·oct + guardDb(f).
@@ -599,6 +628,20 @@ function SlopeChart({
       ))}
       <SvgText x={W - 3} y={H + 13} fill={colors.textSub} fontSize={11.5} textAnchor="end">
         Hz
+      </SvgText>
+      {/* NOI-02: what up and down mean, in the empty space above and below the 1 kHz pivot
+          (every line crosses the middle there, so the words never sit on a line). */}
+      <SvgText x={xAt(0) - 5} y={14} fill={colors.textSecondary} fontSize={11} textAnchor="end">
+        ↑ louder
+      </SvgText>
+      <SvgText x={xAt(0) - 5} y={H - 7} fill={colors.textSecondary} fontSize={11} textAnchor="end">
+        ↓ quieter
+      </SvgText>
+      <SvgText x={2} y={H + 28} fill={colors.textSecondary} fontSize={11.5} textAnchor="start">
+        ← rumble
+      </SvgText>
+      <SvgText x={W - padR} y={H + 28} fill={colors.textSecondary} fontSize={11.5} textAnchor="end">
+        hiss →
       </SvgText>
       {/* the pivot every slope shares: 0 dB at 1 kHz */}
       <Circle cx={xAt(0)} cy={H / 2} r={3.2} fill="#e8e8ec" stroke="#2c2c32" strokeWidth={1} />

@@ -10,7 +10,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { Body, Btn, Card, Eyebrow, Lead, Prompt, Row } from '../tuning/components/primitives';
 import { UnderstandingCheck } from '../tuning/components/check';
 import type { PageCtx, PageDef } from '../kit/PagedLab';
-import { AbPlayer, ConceptList, GoalChips, useMixPlayback, useVisitGoals, type MixVariant } from './kit';
+import { AbPlayer, ConceptList, GoDeeper, GoalChips, useMixPlayback, useVisitGoals, type MixVariant } from './kit';
 import { combNotchesHz, combPeaksHz } from './engine/advanced.ts';
 import type { MixSettings } from './audio/mixAudio.ts';
 import { ParallelArt, type ParallelMode } from './advFigures';
@@ -70,7 +70,7 @@ function PageParallel({ ctx }: { ctx: PageCtx }) {
       </Card>
       <UnderstandingCheck
         question="Your parallel drum crush sounds huge — until the mix bus clips. What did the parallel path change that an insert would not have?"
-        options={['Nothing — parallel and insert load the bus identically', 'It ADDED a second copy’s energy on top of the dry path — summed level rose', 'Parallel compression always removes level', 'The clip means the compressor is broken']}
+        options={['Nothing — parallel and insert load the bus identically', 'It ADDED a second copy’s energy, so the summed level rose', 'Parallel compression always removes level', 'The clip means the compressor is broken']}
         correct={1}
         explain="Parallel means dry PLUS wet — real summed energy the insert version never adds. Every parallel path is a level commitment: blend it in, then re-check the bus headroom."
         wrong={[
@@ -150,12 +150,13 @@ function PageAdvEq({ ctx }: { ctx: PageCtx }) {
         />
       </Card>
       <Card>
-        <Eyebrow>THE ADVANCED TOOLKIT</Eyebrow>
-        <ConceptList items={conceptItems.map((c) => ({ id: c.id, name: c.name, blurb: c.blurb }))} opened={seen} onOpen={(id) => setSeen((s) => new Set(s).add(id))} />
+        <GoDeeper title="THE ADVANCED TOOLKIT" openWhen={latched[0]} note="The check below draws on this list; it opens by itself once the experiment above is done.">
+          <ConceptList items={conceptItems.map((c) => ({ id: c.id, name: c.name, blurb: c.blurb }))} opened={seen} onOpen={(id) => setSeen((s) => new Set(s).add(id))} />
+        </GoDeeper>
       </Card>
       <UnderstandingCheck
         question="The acoustic guitar masks the vocal — but only in the chorus, when it strums hard. The precise tool:"
-        options={['A static cut on the guitar, all song long', 'A dynamic EQ band on the guitar that dips when its energy crosses a threshold', 'Mute the guitar in every chorus', 'Raise the vocal’s fader for the chorus']}
+        options={['A static EQ cut on the guitar, all song long', 'A dynamic EQ band on the guitar, triggered by its level', 'Mute the guitar in every chorus section', 'Raise the vocal’s fader for every chorus']}
         correct={1}
         explain="The collision is CONDITIONAL, so the cut should be too. Dynamic EQ dips the guitar’s band only while it earns the dip — verses keep the full guitar."
         wrong={[
@@ -216,14 +217,15 @@ function PageAdvDynamics({ ctx }: { ctx: PageCtx }) {
         <DuckArt ducking={ducked} />
       </Card>
       <Card>
-        <Eyebrow>THE ADVANCED TOOLKIT</Eyebrow>
-        <ConceptList items={toolItems.map((c) => ({ id: c.id, name: c.name, blurb: c.blurb }))} opened={seen} onOpen={(id) => setSeen((s) => new Set(s).add(id))} />
+        <GoDeeper title="THE ADVANCED TOOLKIT" openWhen={latched[0]} note="The check below draws on this list; it opens by itself once the experiment above is done.">
+          <ConceptList items={toolItems.map((c) => ({ id: c.id, name: c.name, blurb: c.blurb }))} opened={seen} onOpen={(id) => setSeen((s) => new Set(s).add(id))} />
+        </GoDeeper>
       </Card>
       <UnderstandingCheck
         question="Why do engineers often prefer two compressors doing 3 dB each over one doing 6 dB?"
-        options={['Two plugins always sound better than one plugin', 'Each stage works gently inside its comfortable range, so neither is audibly grabbing', 'It uses the computer more efficiently', 'The second one fixes the first one’s mistakes automatically']}
+        options={['Two plugins always sound better than one plugin', 'Each stage works gently, so neither is audibly grabbing', 'It uses the computer more efficiently', 'The second one fixes the first one’s mistakes automatically']}
         correct={1}
-        explain="Serial staging keeps every gain-reduction element in its polite zone. Same total control, far less of the pumping a single hard-working stage betrays."
+        explain="Serial staging keeps every gain-reduction element in its gentle zone. Same total control, far less of the pumping a single hard-working stage betrays."
         wrong={[
           'Count is not quality — ask what each stage is being asked to do.',
           undefined,
@@ -295,7 +297,7 @@ function PagePhase({ ctx }: { ctx: PageCtx }) {
       </Card>
       <UnderstandingCheck
         question="Snare top and bottom mics: summed, the drum goes thin and papery. Flipping Ø on the bottom mic makes it full again. Why did that work?"
-        options={['The bottom mic was broken and the flip repaired it', 'Top and bottom captured the head moving opposite ways — near-mirror signals canceled', 'The flip added a small delay that aligned the two mics', 'Thin snares always need polarity flips as a default move']}
+        options={['The bottom mic was broken and the flip repaired it', 'Top and bottom heard the head move opposite ways and canceled', 'The flip added a small delay that aligned the two mics', 'Thin snares always need polarity flips as a default move']}
         correct={1}
         explain="As a snare’s top head moves away from its mic, the bottom head moves toward its mic — near-mirror waveforms. Summed, they cancel; one flip turns the cancellation into reinforcement. The flip adds no time, but top and bottom still sit a small time apart, so fine alignment can follow."
         wrong={[
@@ -362,8 +364,9 @@ function PageAdvDepth({ ctx }: { ctx: PageCtx }) {
         <DecayPlot space={space} />
       </Card>
       <Card>
-        <Eyebrow>THE SET-DESIGN TOOLKIT</Eyebrow>
-        <ConceptList items={depthItems.map((c) => ({ id: c.id, name: c.name, blurb: c.blurb }))} opened={seen} onOpen={(id) => setSeen((s) => new Set(s).add(id))} />
+        <GoDeeper title="THE SET-DESIGN TOOLKIT" openWhen={latched[0]} note="The check below draws on this list; it opens by itself once the experiment above is done.">
+          <ConceptList items={depthItems.map((c) => ({ id: c.id, name: c.name, blurb: c.blurb }))} opened={seen} onOpen={(id) => setSeen((s) => new Set(s).add(id))} />
+        </GoDeeper>
       </Card>
       <UnderstandingCheck
         question="The vocal needs a lush, long reverb — but the mix gets muddy the moment you add it. The set-design fix:"

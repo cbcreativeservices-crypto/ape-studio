@@ -60,7 +60,7 @@ export const CLAV_COPY: LessonCopy = {
     workedAim: 'Aim it straight in at the speaker — the lab counts it while the mic faces the way the starting point names. Distance, position across the cone and angle are separate things to try.',
     workedClear: 'Clear of the grille — the mic never touches it — on a stand that cannot tip into the speaker, its cable out of the player’s way. Clearance comes first, before any number.',
     blocked: {},
-    reveal: 'Toward the center tends to bring more bite; toward the edge or turned off axis, a rounder sound; farther back, more cabinet and room — and every amp, speaker and setting is different, so “it depends” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
+    reveal: 'Toward the center tends to bring more bite; toward the edge or turned off axis, a rounder sound; farther back, more cabinet and room — and every amp, speaker and setting is different, so “it depends” is fair too. Each zone’s TENDS TO HEAR line is an idea to check by ear.',
     typeNotes: {
       instDynCard: 'Ideas to try with an instrument dynamic: right at the grille on the dust-cap line, then one change at a time — across the cone, the angle, the distance.',
       sdcCard: 'Ideas to try with a small condenser: check its maximum level against the loudest playing first, and listen for the extra detail — or the extra harshness — it brings.',

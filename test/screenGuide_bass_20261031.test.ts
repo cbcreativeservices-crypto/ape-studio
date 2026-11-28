@@ -247,11 +247,13 @@ describe('4. every TRY THIS number is what the screen prints', () => {
     const ci = (G.check as unknown as { intro: { learning: string; start: string } }).intro;
     const ct = [...G.check.tryThis, ...G.check.teaches, ci.learning, ci.start].join(' ');
     assert.doesNotMatch(ct, /82\.4|123\.6|61\.7|FRET to 12|octave|doubl|three times|3rd harmonic|\bH3\b|fifth|PERFECT 5TH|same ratio/i);
-    assert.match(G.check.tryThis[0], /On LEARN, reread FORMULA \/ CONCEPT: the fret rule f = f₀ · 2\^\(n\/12\)/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(G.check.tryThis[0], /On LEARN, open FORMULA \/ CONCEPT: the fret rule f = f₀ · 2\^\(n\/12\)/);
     assert.equal(harmonic('E', 4).freq, '164.8');
     assert.equal(STR.E.hz.toFixed(1), '41.2');
     assert.match(G.check.tryThis[1], /MODE NATURAL HARMONICS, STRING E, NODE ¼\. Count the lobes, then compare FREQ, 164\.8 Hz, with open E’s 41\.2 Hz/);
-    assert.match(ci.start, /Reread FORMULA \/ CONCEPT on LEARN/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(ci.start, /Open FORMULA \/ CONCEPT on LEARN/);
     // the PRO TIPS line the LEARN step points at is the first one (old lesson text, the 2026-11-08 Part A rewrite, or the 2026-11-11 copy fix naming NODE ½)
     assert.match(code('src/features/lab/guidedLessons/content.ts'), /proTips: \[\s*["']Play open E, then (the 12th-fret octave|fret 12), then (the (12th-fret|½) harmonic|NODE ½ in NATURAL HARMONICS)/);
   });
@@ -287,8 +289,10 @@ describe('6. guide fixes vetted against the screen (2026-10-31 review round)', (
       assert.match(G[id].control.join(' '), /While ■ shows, every new pick plays; ■ stops\. If the screen says the string model is playing, you hear a modeled string\./);
     }
   });
-  it('the swing speed follows the FRET, not the string — the guide says "on one string"', () => {
-    assert.match(s, /const visHz = 0\.45 \* \(mode === 'fretted' \? Math\.pow\(2, fret \/ 12\) : harmonicN\);/);
+  it('the swing speed follows the sounding note — the guide\'s "on one string" line stays true', () => {
+    // owner 2026-11-25, fix-first 15: the swing now follows the STRING's pitch too
+    // (it used to ignore it, so open G swung half as fast as E at fret 12).
+    assert.match(s, /const visHz = swingHzFor\(STRINGS\[stringIdx\]\.hz \* \(mode === 'fretted' \? Math\.pow\(2, fret \/ 12\) : harmonicN\)\);/);
     assert.match(G.fretted.changes.join(' '), /On one string, a higher fret swings faster/);
     assert.doesNotMatch(textOf(G.fretted), /a higher note swings faster/);
   });

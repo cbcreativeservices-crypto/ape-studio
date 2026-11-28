@@ -508,7 +508,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: where does each panelist’s voice leave the body?', options: ['The chest', 'The mouth (and the nose)', 'The throat'], after: 'Now STEP through (or PLAY ONCE), then turn a panelist and open more mics.' },
+  sound: { prompt: 'Before you step through: where does each panelist’s voice leave the body?', options: ['The chest', 'The mouth (and the nose)', 'The throat'], after: 'Now go EVENT by EVENT (or PLAY ONCE), then turn a panelist and open more mics.' },
   microphone: { prompt: 'Before you move anything: is every boundary mic an omni?', options: ['Yes', 'No', 'Only on a table'], after: 'Now choose each TYPE and see where it starts.' },
   placement: { prompt: 'Predict: the lectern gooseneck moves from 35 cm to 25 cm from the lips. What changes?', options: ['More voice, less room', 'More room', 'It depends on this presenter'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The PA is at the stage’s front corner. Where will a supercardioid lectern mic reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
@@ -655,7 +655,7 @@ export const B06_LESSON: Lesson = {
   unknowns: [
     { text: 'The panelists seated (the lips 450 mm above a 740 mm table), 70 cm apart, and the presenter standing (the lips 1550 mm above the floor) — the shared figures’ drawing defaults.', dims: ['yFloor'] },
     { text: 'The table (70 cm deep, a cloth skirt), the gooseneck bases (33 cm in front, 21 cm to the left), the boundary’s place, the lectern (its top 37–43 cm below the lips, 45 cm deep), the aisle mic’s place and the PA — drawing defaults.', dims: [] },
-    { text: 'The panel gooseneck’s distance (20–30 cm round the proposal’s 25 cm) and its 10–35° below the mouth’s line, and the lectern’s “a little off-center” drawn below the mouth — the lab’s drawing. The gooseneck’s reach (46 cm) and head are drawing defaults.', dims: [] },
+    { text: 'The panel gooseneck’s distance (20–30 cm around the proposal’s 25 cm) and its 10–35° below the mouth’s line, and the lectern’s “a little off-center” drawn below the mouth — the lab’s drawing. The gooseneck’s reach (46 cm) and head are drawing defaults.', dims: [] },
     { text: 'The 7–10 in gain-setting distance at a podium is not drawn as a zone (owner item O-LEC). The head turns about its center (a simplified picture).', dims: [] },
   ],
   live: { wedges },

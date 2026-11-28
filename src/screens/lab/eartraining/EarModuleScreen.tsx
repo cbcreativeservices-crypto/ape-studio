@@ -27,7 +27,8 @@ import { EAR_MODULES, earModuleById } from '../../../features/ear/modules/regist
 import type { EarModuleId, EarTrial } from '../../../features/ear/earTypes';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { useBackWhileFocused } from '../../../lib/useBackWhileFocused';
-import { earCreditedIds, earEndUnits } from './earLabEnd';
+import { earAnswersUnlocked, earCreditedIds, earEndUnits, earPlayFirstLine, earScoreWindowLabel } from './earLabEnd';
+import { NeedsSoundTag, useSoundOff } from '../rack/silentPath';
 import {
   applyTrial, emptyModuleProgress, isEarProgressUnreadable, loadEarProgress, recentAccuracy, saveEarProgress, setEarSaveBlocked,
   type EarProgressState,
@@ -185,6 +186,8 @@ export function EarModuleScreen() {
   const [plays, setPlays] = useState<number[]>([]);
   const [streak, setStreak] = useState(0);
   const [accuracy, setAccuracy] = useState<number | null>(null);
+  // How many answers the score pill rests on (earScoreWindowLabel).
+  const [scoreAnswers, setScoreAnswers] = useState(0);
   const [levelMsg, setLevelMsg] = useState<string | null>(null);
   const [fatigued, setFatigued] = useState(false);
   const [subBassOk, setSubBassOk] = useState(true);
@@ -332,6 +335,7 @@ export function EarModuleScreen() {
       setLevel(lvl);
       setStreak(p.streak);
       setAccuracy(recentAccuracy(p));
+      setScoreAnswers(p.trials.length);
       setSubBassOk(s.subBassOk);
       void beginTrial(lvl, s.subBassOk);
     })();
@@ -415,7 +419,8 @@ export function EarModuleScreen() {
 
   const onAnswer = useCallback(
     (i: number) => {
-      if (!mod || !trial || phase !== 'answering' || answeredRef.current) return;
+      // PLAY FIRST (owner decision 4): no answer before every clip has sounded.
+      if (!mod || !trial || phase !== 'answering' || answeredRef.current || !earAnswersUnlocked(plays)) return;
       answeredRef.current = true;
       player()?.stop();
       setPlaying(null);
@@ -434,6 +439,7 @@ export function EarModuleScreen() {
       if (next.mastered >= REQUIRED_EAR_LEVEL) reportTrainingComplete(earModuleKey(mod.id));
       setStreak(next.streak);
       setAccuracy(recentAccuracy(next));
+      setScoreAnswers(next.trials.length);
       setLevel(next.level);
       setRoundAnswered((n) => n + 1);
       setRoundScore((v) => v + score);
@@ -464,8 +470,12 @@ export function EarModuleScreen() {
         })();
       }, 50);
     },
-    [mod, trial, phase, makeFresh],
+    [mod, trial, phase, makeFresh, plays],
   );
+
+  // PLAY FIRST (owner decision 4, 2026-11-14): see earAnswersUnlocked.
+  const unlocked = earAnswersUnlocked(plays);
+  const soundOff = useSoundOff();
 
   const roundDone = roundAnswered >= ROUND;
 
@@ -582,7 +592,7 @@ export function EarModuleScreen() {
           guide under the chip rule, owner 2026-10-31). */}
       <LabHeader
         title={mod.title.toUpperCase()}
-        subtitle={`Level ${level}/${mod.levels} · ${mod.levelNames[level - 1] ?? ''}`}
+        subtitle={`Level ${level} · ${mod.levelNames[level - 1] ?? ''}`}
         guide={ending ? EAR_END_GUIDE : EAR_SCREEN_GUIDES[mod.id]}
         guideTitle={ending ? 'WHAT’S LEFT' : undefined}
         right={
@@ -590,12 +600,12 @@ export function EarModuleScreen() {
             <View
               style={styles.statPill}
               accessible
-              accessibilityLabel={accuracy != null ? `Accuracy ${Math.round(accuracy * 100)} percent over the last 20 trials` : 'No trials yet'}
+              accessibilityLabel={accuracy != null ? `Accuracy ${Math.round(accuracy * 100)} percent ${earScoreWindowLabel(scoreAnswers).a11y}` : 'No trials yet'}
             >
               <Text style={styles.statText}>
                 {accuracy != null ? `${Math.round(accuracy * 100)}%` : '—'}
               </Text>
-              <Text style={styles.statSub}>last 20</Text>
+              <Text style={styles.statSub}>{accuracy != null ? earScoreWindowLabel(scoreAnswers).sub : 'last 20'}</Text>
             </View>
           </>
         }
@@ -608,6 +618,7 @@ export function EarModuleScreen() {
             const unread = !s || isEarProgressUnreadable(s);
             return (
               <LabEndScreen
+                labId="ear-training"
                 labTitle="Ear Training Lab"
                 units={unread ? EAR_MODULES.map((m) => ({ id: m.id, label: m.title })) : earEndUnits(EAR_MODULES, s.modules)}
                 cleared={unread ? new Set<string>() : earCreditedIds(EAR_MODULES, s.modules)}
@@ -706,15 +717,29 @@ export function EarModuleScreen() {
               <Text style={styles.rendering}>Rendering the clips…</Text>
             ) : (
               <>
+                {/* Every drill is a listening task (fix round 2026-11-14, S3 §2): the question's NEEDS SOUND tag turns amber while sound is off. Phase 3: no "of 10" progress counter. */}
                 <Text style={styles.roundLine}>
-                  Trial {trialNo} of {ROUND} · Streak {streak}
+                  Trial {trialNo} · Streak {streak}
                 </Text>
-                <Text style={styles.question}>{trial.question}</Text>
+                <Text style={styles.question}>{trial.question} <NeedsSoundTag /></Text>
                 {transport}
                 {clipError ? (
                   <Text style={styles.clipError} accessibilityRole="alert">
                     {clipError}
                   </Text>
+                ) : null}
+                {/* PLAY FIRST (owner decision 4, 2026-11-14): the answers open once every
+                    clip has sounded; with sound off the drill says so and offers a way on. */}
+                {phase === 'answering' && !unlocked ? (
+                  <View style={{ gap: 6 }}>
+                    <Text style={styles.playFirst} accessibilityLiveRegion="polite">{earPlayFirstLine(soundOff)}</Text>
+                    {soundOff ? (
+                      // Not the retired back-arrow word (labNavLaw); the header ‹ still leaves the lab.
+                      <Pressable onPress={() => safeGoBack(navigation)} accessibilityRole="button" accessibilityLabel="Go to the drill list" style={styles.playFirstBack}>
+                        <Text style={styles.playFirstBackText}>TO THE DRILL LIST ›</Text>
+                      </Pressable>
+                    ) : null}
+                  </View>
                 ) : null}
 
                 <View style={styles.answerWrap}>
@@ -725,7 +750,7 @@ export function EarModuleScreen() {
                       <Pressable
                         key={i}
                         onPress={() => onAnswer(i)}
-                        disabled={phase !== 'answering'}
+                        disabled={phase !== 'answering' || !unlocked}
                         style={[
                           styles.answerChip,
                           layout.compact && styles.answerChipCompact,
@@ -738,14 +763,14 @@ export function EarModuleScreen() {
                         ]}
                         accessibilityRole="button"
                         accessibilityLabel={`${a.label}${isCorrect ? ', correct answer' : isWrongPick ? ', your pick, not correct' : ''}`}
-                        accessibilityState={{ disabled: phase !== 'answering', selected: picked === i }}
+                        accessibilityState={{ disabled: phase !== 'answering' || !unlocked, selected: picked === i }}
                         // Twin of accessibilityState, which RNW 0.21 drops. aria-disabled's
                         // DOM value comes from the `disabled` prop above (RNW's Pressable
                         // emits its own after spreading props); both say the same thing.
                         // Correctness/your-pick is also carried in accessibilityLabel, which
                         // is what actually announces on web. The chosen/not-chosen state uses
                         // aria-pressed: aria-selected is invalid (and inert) on role=button.
-                        aria-disabled={phase !== 'answering'}
+                        aria-disabled={phase !== 'answering' || !unlocked}
                         aria-pressed={picked === i}
                       >
                         <Text
@@ -789,7 +814,7 @@ export function EarModuleScreen() {
                       <View style={styles.roundCard} accessible accessibilityRole="summary">
                         <Text style={styles.roundTitle}>ROUND COMPLETE</Text>
                         <Text style={styles.roundText}>
-                          {roundScore % 1 === 0 ? roundScore : roundScore.toFixed(1)} of {ROUND} — {roundVerdict(roundPct)}
+                          {roundScore % 1 === 0 ? roundScore : roundScore.toFixed(1)} right this round — {roundVerdict(roundPct)}
                         </Text>
                       </View>
                     ) : null}
@@ -857,6 +882,9 @@ const styles = StyleSheet.create({
   fatigue: { color: colors.gold, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17 },
   rendering: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 14, paddingVertical: 30, textAlign: 'center' },
   roundLine: { color: colors.textMuted, fontFamily: fonts.barlowCondensedMedium, fontSize: 12, letterSpacing: 0.5, marginTop: 2 },
+  playFirst: { color: colors.gold, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18 },
+  playFirstBack: { alignSelf: 'flex-start', minHeight: 44, justifyContent: 'center', paddingHorizontal: 12, borderRadius: 10, borderWidth: 1, borderColor: colors.hairline },
+  playFirstBackText: { color: colors.textSecondary, fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 1 },
   question: { color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 17, lineHeight: 23 },
   transportRow: { flexDirection: 'row', gap: 12, marginVertical: 8 },
   clipChip: {

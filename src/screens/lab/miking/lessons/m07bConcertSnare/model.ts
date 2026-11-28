@@ -59,7 +59,7 @@ export const CSN_ZONES: DocumentedZone[] = [
     requires: { micTypeIds: BOTH },
     drawn: { side: { u0: R - 30, u1: R + 80, v0: RIM_Y - 75, v1: RIM_Y - 25 }, top: { u0: R - 30, u1: R + 80, v0: -110, v1: 110 } },
     start: { p: { x: R + 40, y: RIM_Y - 50, z: 0 }, az: 0, el: -15 },
-    tendency: 'More direct detail and less room: crisp strokes and more of the snares’ edge. Rolls can sound less joined-up this close — check a soft roll, not only an accent.',
+    tendency: 'More direct detail and less room: crisp strokes and more of the snares’ edge. Rolls can sound less smooth this close — check a soft roll, not only an accent.',
     checks: ['The whole stick path, with the player playing the passage', 'A soft roll and the loudest accent', 'Other percussion and monitors nearby'],
   },
   {

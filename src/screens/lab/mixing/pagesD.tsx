@@ -166,6 +166,9 @@ function PageExport({ ctx }: { ctx: PageCtx }) {
   const [depth, setDepth] = useState<null | '16' | '24'>(null);
   const [named, setNamed] = useState(false);
   const [inspected, setInspected] = useState(false);
+  // The inspection inspects a BOUNCE, so it waits for one: it used to pass
+  // with no sample rate chosen (novice audit G4, 2026-11-14).
+  const [tooEarly, setTooEarly] = useState(false);
   const [checkDone, setCheckDone] = useState(false);
   const goals = [
     { label: 'Choose rate & depth', hit: rate != null && depth != null },
@@ -176,7 +179,8 @@ function PageExport({ ctx }: { ctx: PageCtx }) {
   const latched = useVisitGoals(ctx, goals);
   return (
     <View style={styles.page}>
-      <Lead>The export is the product. A handful of unglamorous decisions — format, name, inspection — decide whether tonight’s work survives contact with the world.</Lead>
+{/* BM-01 (owner 2026-11-15: "build waves 1 thru 3", D62): one plain first line; the lede is trimmed so the page reads no longer. */}
+      <Lead>The export is the product. Sample rate is how many snapshots of the sound per second; bit depth, how finely each is measured. Those, the name and an inspection decide if tonight’s work survives.</Lead>
       <Card>
         <Eyebrow>FORMAT — MATCH THE SESSION, DELIVER WHAT’S ASKED</Eyebrow>
         <Body>Default: export at the SESSION’s sample rate (no resample without a reason) and 24-bit. 44.1 kHz / 16-bit is the CD legacy target; streaming masters are commonly delivered 24-bit. When a client specifies, the spec wins.</Body>
@@ -204,8 +208,9 @@ function PageExport({ ctx }: { ctx: PageCtx }) {
         <Prompt>Every export gets opened and checked before it ships. The list:</Prompt>
         <Body>Play the START (clipped count-in? missing pickup?), the END (cut reverb tail? truncation?), scan the waveform for clipping, confirm the duration, and listen for anything missing — a muted return, a bypassed insert, a dead side.</Body>
         <BounceArt rate={rate} depth={depth} named={named} inspected={inspected} />
-        <Btn label={inspected ? '✓ BOUNCE INSPECTED' : 'RUN THE INSPECTION'} tone={inspected ? 'primary' : 'plain'} selected={inspected} onPress={() => setInspected(true)} a11y="Run the bounce inspection" />
+        <Btn label={inspected ? '✓ BOUNCE INSPECTED' : 'RUN THE INSPECTION'} tone={inspected ? 'primary' : 'plain'} selected={inspected} onPress={() => (rate && depth ? setInspected(true) : setTooEarly(true))} a11y="Run the bounce inspection" />
         {inspected ? <Body>✓ Start clean · end tail complete · no clipped samples · length correct · all parts present. THIS pass, every time, is what “professional” mostly means.</Body> : null}
+        {!inspected && tooEarly && !(rate && depth) ? <Body>No bounce yet: choose a SAMPLE RATE and a BIT DEPTH above first. You inspect the file you actually exported.</Body> : null}
       </Card>
       <UnderstandingCheck
         question="Your bounce plays fine, then stops at 3:40 — but the song runs 3:55. Most likely story?"

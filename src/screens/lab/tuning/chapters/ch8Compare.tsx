@@ -32,6 +32,19 @@ const JU_FRACS: Record<string, [number, number]> = { E: [5, 4], A: [5, 3], B: [1
 const RAIL_H = 128;
 type Phrase = 'third' | 'triad' | 'FA' | 'GB' | 'scale';
 
+/** A rail marker's role once RATIOS is on (owner 2026-11-25, audit B15): the
+ *  notes the chosen EXAMPLE sounds light; the rest are muted. E, A and B keep
+ *  their "differs" colour (near; the just lane exact) when they are in the
+ *  passage, and the NOTE being inspected stays lit whatever the passage. They
+ *  used to take the differs colour before the passage was checked, so "C–E
+ *  third" still lit A and B, and the just lane was always lit. */
+function exampleRole(spelling: string, lane: 0 | 1, inExample: readonly string[], sel: string, differ: readonly string[]): 'near' | 'exact' | 'neutral' | 'muted' {
+  const lit = inExample.includes(spelling) || spelling === sel;
+  if (lane === 1) return lit ? 'exact' : 'muted';
+  if (!lit) return 'muted';
+  return differ.includes(spelling) ? 'near' : 'neutral';
+}
+
 export function Ch8Compare({ ctx }: ChapterProps) {
   const [compared, setCompared] = useState(false);
   const [sel, setSel] = useState<Differ>('E');
@@ -49,8 +62,8 @@ export function Ch8Compare({ ctx }: ChapterProps) {
   const inExample: readonly string[] = phrase === 'third' ? ['C', 'E'] : phrase === 'triad' ? ['C', 'E', 'G'] : phrase === 'FA' ? ['F', 'A'] : phrase === 'GB' ? ['G', 'B'] : ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
   const markers: RailMarker[] = compared
     ? [
-        ...PY.notes.slice(0, 7).map((n) => ({ id: `p${n.spelling}`, cents: n.value.cents, label: n.spelling, role: (DIFFER as readonly string[]).includes(n.spelling) ? ('near' as const) : inExample.includes(n.spelling) ? ('neutral' as const) : ('muted' as const), lane: 0 as const, emphasis: n.spelling === sel })),
-        ...JU.notes.slice(0, 7).filter((n) => (DIFFER as readonly string[]).includes(n.spelling)).map((n) => ({ id: `j${n.spelling}`, cents: n.value.cents, label: `${n.spelling} just`, role: 'exact' as const, lane: 1 as const, emphasis: n.spelling === sel })),
+        ...PY.notes.slice(0, 7).map((n) => ({ id: `p${n.spelling}`, cents: n.value.cents, label: n.spelling, role: exampleRole(n.spelling, 0, inExample, sel, DIFFER), lane: 0 as const, emphasis: n.spelling === sel })),
+        ...JU.notes.slice(0, 7).filter((n) => (DIFFER as readonly string[]).includes(n.spelling)).map((n) => ({ id: `j${n.spelling}`, cents: n.value.cents, label: `${n.spelling} just`, role: exampleRole(n.spelling, 1, inExample, sel, DIFFER), lane: 1 as const, emphasis: n.spelling === sel })),
       ]
     : PY.notes.slice(0, 7).map((n) => ({ id: `p${n.spelling}`, cents: n.value.cents, label: n.spelling, role: 'neutral' as const }));
 
@@ -117,14 +130,14 @@ export function Ch8Compare({ ctx }: ChapterProps) {
         hideDragTag: true,
         bezel: compared
           ? [
-              { k: `PYTH ${sel}`, v: `${pyC.toFixed(2)} ¢`, tint: colors.gold },
-              { k: `JUST ${sel}`, v: `${juC.toFixed(2)} ¢`, tint: colors.green },
-              { k: '81/80', v: `${SYNTONIC_COMMA.cents.toFixed(2)} ¢` },
+              { k: `PYTH ${sel}`, v: `${pyC.toFixed(2)} ¢`, tint: colors.gold, caption: 'by fifths' },
+              { k: `JUST ${sel}`, v: `${juC.toFixed(2)} ¢`, tint: colors.green, caption: 'by small ratio' },
+              { k: ctx.mathView ? '81/80' : 'COMMA', v: `${SYNTONIC_COMMA.cents.toFixed(2)} ¢`, caption: 'comma size' }, // D62 TU-01: words in BASIC
               soundCell(status),
             ]
           : [
-              { k: 'PYTHAGOREAN', v: PY.notes.slice(0, 7).map((n) => n.spelling).join(' '), flex: 1.5 },
-              { k: 'JUST', v: JU.notes.slice(0, 7).map((n) => n.spelling).join(' '), flex: 1.5 },
+              { k: 'PYTHAGOREAN', v: PY.notes.slice(0, 7).map((n) => n.spelling).join(' '), flex: 1.5, caption: 'fifths-built' },
+              { k: 'JUST', v: JU.notes.slice(0, 7).map((n) => n.spelling).join(' '), flex: 1.5, caption: 'small ratios' },
               soundCell(status),
             ],
         stage: (w, h) => (

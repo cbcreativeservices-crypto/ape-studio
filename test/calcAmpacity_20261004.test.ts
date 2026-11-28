@@ -166,11 +166,11 @@ describe('calcAmpacity — the full published tables, pinned', () => {
     const want: [number, number][] = [[1, 1], [3, 1], [4, 0.8], [6, 0.8], [7, 0.7], [9, 0.7], [10, 0.5], [20, 0.5], [21, 0.45], [30, 0.45], [31, 0.4], [40, 0.4], [41, 0.35], [200, 0.35]];
     for (const [c, f] of want) close(num(run('factors', { insul: 90, ambient: 30, ccc: c }), 'CONDUCTOR-COUNT ADJUSTMENT FACTOR'), f);
   });
-  it('240.4(D): 14 AWG 15 A, 12 AWG 20 A, 10 AWG 30 A; none from 8 AWG up', () => {
-    for (const [g, a] of [[14, 15], [12, 20], [10, 30]]) close(num(run('awg', { awg: g, insul: 90, term: 75, ambient: 30, ccc: 3 }), 'MAX OVERCURRENT DEVICE (240.4(D))'), a);
-    const r = run('awg', { awg: 8, insul: 90, term: 75, ambient: 30, ccc: 3 }).find((x) => x.label === 'MAX OVERCURRENT DEVICE (240.4(D))')!;
-    assert.equal(r.value, undefined);
-    assert.match(r.text ?? '', /covers copper from 18 to 10 AWG\. This size is larger/);
+  it('240.4(D): 14 AWG 15 A, 12 AWG 20 A, 10 AWG 30 A; from 8 AWG up the 240.4(B) next standard size (Comp A audit C04, 2026-11-26)', () => {
+    for (const [g, a] of [[14, 15], [12, 20], [10, 30]]) close(num(run('awg', { awg: g, insul: 90, term: 75, ambient: 30, ccc: 3 }), 'MAX OVERCURRENT DEVICE (240.4)'), a);
+    // 8 AWG 90 °C on 75 °C terminals: allowable 50 A, a standard rating → 50 A.
+    close(num(run('awg', { awg: 8, insul: 90, term: 75, ambient: 30, ccc: 3 }), 'MAX OVERCURRENT DEVICE (240.4)'), 50);
+    assert.match(fn('ampacity', 'awg').steps!({ awg: 8, insul: 90, term: 75, ambient: 30, ccc: 3 }).join(' '), /240\.4\(D\) covers copper from 18 to 10 AWG only/);
   });
 });
 
@@ -183,7 +183,7 @@ describe('calcAmpacity — hand vectors (at least two per function)', () => {
     close(num(o, 'CORRECTED AMPACITY'), 30 * 0.91 * 0.8);
     close(num(o, 'TERMINATION LIMIT (60 °C TERMINALS)'), 20);
     close(num(o, 'ALLOWABLE AMPACITY'), 20);
-    close(num(o, 'MAX OVERCURRENT DEVICE (240.4(D))'), 20);
+    close(num(o, 'MAX OVERCURRENT DEVICE (240.4)'), 20);
     close(num(o, 'MAX CONTINUOUS LOAD (80%)'), 16);
   });
   it('awg #2: 4/0 at 75 °C, 30 °C, 3 conductors, 75 °C terminals → 230 A, 184 A continuous', () => {
@@ -198,7 +198,10 @@ describe('calcAmpacity — hand vectors (at least two per function)', () => {
     close(num(o, 'CONDUCTOR-COUNT ADJUSTMENT FACTOR'), 0.5);
     close(num(o, 'CORRECTED AMPACITY'), 40 * 1.15 * 0.5);
     close(num(o, 'ALLOWABLE AMPACITY'), 23); // below the 35 A terminal limit
-    close(num(o, 'MAX CONTINUOUS LOAD (80%)'), 23); // min(23 corrected, 0.8×35 = 28, 0.8×30 A breaker = 24)
+    // Comp A audit C01 (2026-11-26): the breaker protects the 23 A conductor, so
+    // it is the next standard size, 25 A (240.4(B)); 0.8 × 25 = 20 A. (Was 23 A.)
+    close(num(o, 'MAX OVERCURRENT DEVICE (240.4)'), 25);
+    close(num(o, 'MAX CONTINUOUS LOAD (80%)'), 20);
   });
   it('awg #4 (fraction of a degree): 14 AWG 75 °C at 30.2 °C reads as 31 °C → × 0.94; continuous held by the 15 A breaker', () => {
     const o = run('awg', { awg: 14, insul: 75, term: 75, ambient: 30.2, ccc: 3 });
@@ -212,14 +215,17 @@ describe('calcAmpacity — hand vectors (at least two per function)', () => {
     close(num(o, 'CORRECTED AMPACITY'), 40 * 0.91 * 0.8);
     close(num(o, 'TERMINATION LIMIT (75 °C TERMINALS)'), 40);
     close(num(o, 'ALLOWABLE AMPACITY'), 40 * 0.91 * 0.8);
-    close(num(o, 'MAX CONTINUOUS LOAD (80%)'), 40 * 0.91 * 0.8);
+    // 29.12 A → a 30 A breaker (240.4(B)) → 24 A continuous (audit C01; was 29.12 A).
+    close(num(o, 'MAX CONTINUOUS LOAD (80%)'), 24);
   });
   it('kcmil #1: 500 kcmil 90 °C at 45 °C, 9 conductors, 75 °C terminals → 261.87 A', () => {
     const o = run('kcmil', { kcmil: 500, insul: 90, term: 75, ambient: 45, ccc: 9 });
     close(num(o, 'CORRECTED AMPACITY'), 430 * 0.87 * 0.7);
     close(num(o, 'TERMINATION LIMIT (75 °C TERMINALS)'), 380);
     close(num(o, 'ALLOWABLE AMPACITY'), 430 * 0.87 * 0.7);
-    close(num(o, 'MAX CONTINUOUS LOAD (80%)'), 430 * 0.87 * 0.7);
+    // 261.87 A → a 300 A breaker (240.4(B)) → 240 A continuous (audit C02; was 261.87 A).
+    close(num(o, 'MAX OVERCURRENT DEVICE (240.4)'), 300);
+    close(num(o, 'MAX CONTINUOUS LOAD (80%)'), 240);
   });
   it('kcmil #2: 250 kcmil 75 °C, 30 °C, 3 conductors → 255 A, 204 A continuous', () => {
     const o = run('kcmil', { kcmil: 250, insul: 75, term: 75, ambient: 30, ccc: 3 });

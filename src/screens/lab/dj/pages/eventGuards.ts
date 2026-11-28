@@ -32,3 +32,23 @@ export const clampIntBpm = (bpm: number): number => (Number.isFinite(bpm) ? Math
 /** Screen 18: a needle drop stays on the record (its first second to 30 s
  *  before the end), however often it is pressed. */
 export const clampNeedle = (posSec: number, trackSec: number): number => Math.max(1, Math.min(Math.max(1, trackSec - 30), posSec));
+
+/**
+ * Screen 24: the on-air track never runs out during the event (DJ-08, owner
+ * 2026-11-15: "build waves 1 thru 3", D62 adoption plan). A learner who fixed
+ * the faults first let deck A play to its end; the room went silent, the
+ * clean-transition goal kept failing with "The room went quiet during the
+ * change", and the page told them to trace a fault that was not there. Now a
+ * playing deck within REPEAT_LEAD_SEC of its end jumps back whole phrases
+ * (32 bars), so its beat stays where it was and the change can always be
+ * tried. Returns the new track position, or null when nothing is needed.
+ */
+export const REPEAT_LEAD_SEC = 20;
+export const REPEAT_PHRASE_BARS = 32;
+export function repeatPhrasePos(posNow: number, endSec: number, barSec: number): number | null {
+  if (!(barSec > 0) || endSec - posNow > REPEAT_LEAD_SEC) return null;
+  const back = REPEAT_PHRASE_BARS * barSec;
+  let p = posNow - back;
+  while (endSec - p <= REPEAT_LEAD_SEC && p - back >= 0) p -= back;
+  return p >= 0 ? p : null;
+}

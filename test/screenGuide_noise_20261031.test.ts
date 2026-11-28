@@ -110,7 +110,7 @@ describe('3. each guide quotes its screen’s real names', () => {
   const NAMES: Record<string, string[]> = {
     explore: [
       // chart labels + bezel readouts + badge
-      'COLOR', 'SLOPE', 'OUT', 'dBFS', 'dB/OCT', 'IDEALIZED SPECTRAL SLOPES — ANALYTIC, NOT A MEASUREMENT',
+      'COLOR', 'SLOPE', 'OUT', 'dBFS', 'dB/OCT', /* Phase 3, owner 2026-11-14 (decision 3, S3 model note): the disclosure is said as one plain sentence under the display; the badge text stays only as the fallback. */
       // dock keys + chips
       'SPKR', 'WHITE', 'PINK', 'BROWN', 'BLUE', 'VIOLET',
       // the well and the rack's own controls
@@ -212,7 +212,8 @@ describe('6. review round 2026-10-31 — each fix re-proved from the code', () =
   const g = NOISE_SCREEN_GUIDES;
   it('the guide names BOTH badges (SPKR swaps it)', () => {
     assert.match(s, /\? `PHONE SPEAKER OUTPUT — \$\{SPEAKER_HPF_HZ\} Hz HPF ON \$\{selected\.label\}`/);
-    assert.match(g.explore.seeing[2], /with SPKR, PHONE SPEAKER OUTPUT — 150 Hz HPF ON plus the color/);
+    // Phase 3, owner 2026-11-14 (decision 3, S3 model note): the disclosure is said as one plain sentence under the display; the badge text stays only as the fallback.
+    assert.match(g.explore.seeing[2], /idealized slopes, not measured; with SPKR, the 150 Hz high-pass filter/);
   });
   it('SPKR dims ALL five straight lines; the bright line is the filtered curve', () => {
     assert.match(s, /active=\{!speakerView && l\.key === selectedKey\}\s*dim=\{speakerView\}/);

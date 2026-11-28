@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { PageHero, Section, List } from "@/components/content";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
+  path: "/institutions",
   title: "Institutions & Teams",
   description:
     "Bulk and multi-seat licensing for schools, studios, and industry on Pro Audio Training Academy. Discounted seats with unique login codes for your learners.",
-};
+  image: "/og/og-institutions.png",
+});
 
 const EMAIL = "info@proaudiotrainingacademy.com";
 const QUOTE_MAIL = `mailto:${EMAIL}?subject=${encodeURIComponent("Institution licensing quote")}`;

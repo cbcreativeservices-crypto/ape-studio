@@ -35,6 +35,7 @@ import { partIdOf, type BuiltGuitarModel, type GuitarScene } from './guitarModel
 import { guitarPlayerPose } from './guitarPlayer.ts';
 import type { PlayerPose } from '../players/playerPose.ts';
 import { figureCovers, PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
+import { GuitarPlayerV2Scene, guitarV2Covers } from './guitarSceneV2';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -895,8 +896,25 @@ function Floor({ y, u0, u1 }: { y: number; u0: number; u1: number }) {
 /** Upright: the side view is the FRONT, the top view the instrument from
  *  above. Lap: the side view is the edge (flipped: the top faces up), the top
  *  view the face. */
-export function GuitarSceneArt({ sc, view }: { sc: GuitarScene; view: ViewId }) {
+export function GuitarSceneArt({ sc, view, v2 = false, assumePtPerMm }: { sc: GuitarScene; view: ViewId; /** (figure V2, wave 3 set 3c) the player in the new look: a lesson opts in (`makeGuitarArt` extras.v2) */ v2?: boolean; /** (v2) the drawn scale where the picture provides none (the stage plan) */ assumePtPerMm?: number }) {
   const lap = sc.o.lap;
+  if (v2) {
+    // THE NEW LOOK: the same instrument drawing, the player round it (guitarSceneV2)
+    const upright = !lap;
+    const instrument =
+      upright && view === 'side' ? (
+        <GuitarFace sc={sc} />
+      ) : upright ? (
+        <GuitarEdge sc={sc} />
+      ) : view === 'side' ? (
+        <Group transform={[{ scaleY: -1 }]}>
+          <GuitarEdge sc={sc} />
+        </Group>
+      ) : (
+        <GuitarFace sc={sc} />
+      );
+    return <GuitarPlayerV2Scene sc={sc} view={view} instrument={instrument} under={view === 'side' ? <Floor y={sc.floorY} u0={sc.g.tail - 900} u1={sc.g.L + 1200} /> : undefined} assumePtPerMm={assumePtPerMm} />;
+  }
   const pose = playerPoseOf(sc, view);
   // The player in two layers round the instrument (shared/players).
   if (!lap && view === 'side') {
@@ -989,7 +1007,9 @@ export function guitarLabels(sc: GuitarScene, view: ViewId, extra?: (sc: GuitarS
   if (face) {
     const holeX = sp.body.pot ? sp.body.pot.cx.mm : sp.opening.kind === 'coverplate' ? sp.opening.x.mm : g.hole.x;
     out.push(partLabel('opening', openWord, openShort, { u: holeX, v: 0 }, sp.body.pot ? [{ u: holeX, v: vIn(upper(holeX) - 24), align: 'center' }, ...around(holeX).slice(2)] : aboveFirst(holeX)));
-    out.push(partLabel('bridge', 'BRIDGE', undefined, { u: sp.bridge.x.mm, v: 0 }, around(sp.bridge.x.mm)));
+    // (KeysGuitar3, review 2026-11-24: "the BRIDGE leader runs across the picking hand", which plays over the strings
+    // just past the bridge's middle) the leader lands on the bridge's bass wing, above the strings, clear of the hand
+    out.push(partLabel('bridge', 'BRIDGE', undefined, { u: sp.bridge.x.mm, v: -sp.bridge.w.mm * 0.38 }, around(sp.bridge.x.mm)));
     if (sp.jointFret && sp.jointFret.mm !== 12) out.push(partLabel('fret12', '12TH FRET', '12TH', { u: g.fret12, v: 0 }, aboveFirst(g.fret12, 20)));
     out.push(partLabel('joint', sp.jointFret?.mm === 12 ? 'NECK JOINT · 12TH FRET' : 'NECK JOINT', 'JOINT', { u: g.edge, v: 0 }, around(g.edge, 22)));
     const hx = g.L + sp.neck.headLen.mm * 0.55;
@@ -1124,17 +1144,18 @@ export function guitarHit(sc: GuitarScene, view: ViewId, u: number, vv: number, 
 /** The lesson art for a built guitar model: one scene per variant. */
 export function makeGuitarArt(
   built: BuiltGuitarModel,
-  extras?: { labels?: (sc: GuitarScene, view: ViewId) => ArtLabel[]; zones?: readonly DocumentedZone[] },
+  extras?: { labels?: (sc: GuitarScene, view: ViewId) => ArtLabel[]; zones?: readonly DocumentedZone[]; /** (figure V2, wave 3 set 3c) the player in the new look */ v2?: boolean },
 ): Pick<LessonArt, 'Instrument' | 'labels' | 'hitTest' | 'labelObstacles' | 'labelsYieldToMic' | 'figureAt'> {
   const scOf = (v: VariantId) => built.scenes[v] ?? built.scenes[built.model.defaultVariant];
   const vid = (v: VariantId) => (built.scenes[v] ? v : built.model.defaultVariant);
   const zones = extras?.zones ?? [];
   return {
-    Instrument: ({ view, variant }) => <GuitarSceneArt sc={scOf(variant)} view={view} />,
+    Instrument: ({ view, variant }) => <GuitarSceneArt sc={scOf(variant)} view={view} v2={!!extras?.v2} />,
     labels: (view, variant) => guitarLabels(scOf(variant), view, extras?.labels, viewsOf(built.model, vid(variant))[view]),
     hitTest: (view, variant, u, v, tol) => guitarHit(scOf(variant), view, u, v, tol),
     // The drawn player, so the part labels keep off the figure too.
-    figureAt: (view, variant, u, v, tol) => figureCovers(playerPoseOf(scOf(variant), view), u, v, tol),
+    // (v2: the new arms and hands as drawn, the body as the pose's own masses)
+    figureAt: (view, variant, u, v, tol) => (extras?.v2 && guitarV2Covers(scOf(variant), view, u, v, tol)) || figureCovers(playerPoseOf(scOf(variant), view), u, v, tol),
     // The words keep off the suggested starting points and step back from
     // the mic (art pass 2026-10-05: labels were drawn over both).
     labelObstacles: (view, variant, shown) =>

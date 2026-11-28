@@ -131,6 +131,13 @@ function BenchSearch({ open, onToggle }: { open: ReadonlySet<ConnectorId>; onTog
 
 /* ── page 1 ──────────────────────────────────────────────────────────────── */
 
+/** Page 1's opening line: the three things, then the four questions as the habit (CS-05). */
+export const CS_OPENING =
+  'Three things live in your hand when you hold a cable: the CONNECTOR you see, the CABLE inside it, and the SIGNAL the equipment puts on it. Every time, ask four questions: does it fit, what signal, which cable, is it safe?';
+/** How this lab sits beside its sister lab (CS-06). */
+export const CS_SISTER_LINE =
+  'This is the choosing lab. Cable & Connector Fundamentals is the naming lab. Either one can come first.';
+
 function PageThreeThings({ ctx }: { ctx: PageCtx }) {
   const [part, setPart] = useState<string | null>(null);
   const [seenParts, setSeenParts] = useState<ReadonlySet<string>>(new Set());
@@ -157,21 +164,13 @@ function PageThreeThings({ ctx }: { ctx: PageCtx }) {
   return (
     <View style={{ gap: 10 }}>
       <StationTag>STATION 1 · CONNECTOR, CABLE AND SIGNAL</StationTag>
-      <Lead>Three different things live in your hand when you hold a cable: the CONNECTOR you can see, the CABLE construction you mostly can’t, and the SIGNAL that isn’t in either until the equipment puts it there.</Lead>
-      <LessonCard />
-      <Card>
-        <Eyebrow>THE EXPLODED CABLE — TAP A ZONE OR A PART BELOW</Eyebrow>
-        {/* The real thing first (owner 2026-09-25), then the tappable drawing
-            that names each part — jacket, shield, insulation, conductors are
-            all visible in the photograph. */}
-        <LabPhoto source={ANATOMY_PHOTO} aspect={PHOTO_ASPECT} label="a microphone cable stripped back — jacket, copper braid shield, cotton filler, the twisted blue and white pair, and bare stranded conductors" caption="STRIPPED BACK — JACKET · BRAID · FILLER · PAIR · CONDUCTORS" />
-        <ExplodedCable selected={part} onSelect={selectPart} controls={partReadout} />
-        <ConceptList
-          items={CABLE_PARTS.map((p) => ({ id: p.id, name: p.name, blurb: p.blurb }))}
-          opened={seenParts}
-          onOpen={selectPart}
-        />
-      </Card>
+      {/* The opening (CS-05, owner 2026-11-15: "build waves 1 thru 3"): the
+          three-things line names the four questions, the stripped-cable photo
+          comes first, and the four questions sit right under it as the habit.
+          The photo's caption went (the part list below names every layer) to
+          pay for the sister-lab line (CS-06). */}
+      <Lead>{CS_OPENING}</Lead>
+      <LabPhoto source={ANATOMY_PHOTO} aspect={PHOTO_ASPECT} label="a microphone cable stripped back — jacket, copper braid shield, cotton filler, the twisted blue and white pair, and bare stranded conductors" />
       <Card tone="note">
         <Eyebrow>ASK THESE FOUR QUESTIONS — EVERY TIME, FOREVER</Eyebrow>
         <ConceptList
@@ -180,12 +179,27 @@ function PageThreeThings({ ctx }: { ctx: PageCtx }) {
           onOpen={(id) => setSeenQs((prev) => new Set(prev).add(id))}
         />
       </Card>
+      <Text style={styles.sisterLine}>{CS_SISTER_LINE}</Text>
+      <LessonCard />
+      <Card>
+        <Eyebrow>THE EXPLODED CABLE — TAP A ZONE OR A PART BELOW</Eyebrow>
+        <ExplodedCable selected={part} onSelect={selectPart} controls={partReadout} />
+        <ConceptList
+          items={CABLE_PARTS.map((p) => ({ id: p.id, name: p.name, blurb: p.blurb }))}
+          opened={seenParts}
+          onOpen={selectPart}
+        />
+      </Card>
       <GoalChips goals={goals} latched={latched} />
     </View>
   );
 }
 
 /* ── page 2 ──────────────────────────────────────────────────────────────── */
+
+/** What "balanced" buys you, in one line (CS-02). */
+export const CS_BALANCED_LINE =
+  'Balanced: the signal travels twice, one copy flipped, so noise picked up on the way cancels at the input.';
 
 function PageSamePlug({ ctx }: { ctx: PageCtx }) {
   const rec = getConnector('trs_quarter')!;
@@ -203,7 +217,7 @@ function PageSamePlug({ ctx }: { ctx: PageCtx }) {
   return (
     <View style={{ gap: 10 }}>
       <StationTag>STATION 1 · THE SAME PLUG, TWO JOBS</StationTag>
-      <Lead>Here is the whole lab in one plug. Two 1/4-inch TRS cables, identical to the eye — one carries a balanced MONO line signal, the other carries unbalanced STEREO headphones.</Lead>
+      <Lead>The whole lab in one plug: two identical 1/4-inch TRS cables, one carrying a balanced MONO line, the other unbalanced STEREO headphones.</Lead>
       <Card>
         <ConnectorPhoto id="trs_quarter" />
         <View style={styles.toggleRow}>
@@ -211,6 +225,9 @@ function PageSamePlug({ ctx }: { ctx: PageCtx }) {
           <Btn label="STEREO PHONES" tone={mode === 'stereo' ? 'primary' : 'plain'} selected={mode === 'stereo'} onPress={() => { setMode('stereo'); setSeen((p) => new Set(p).add('stereo')); }} a11y="Show the stereo headphone job" />
         </View>
         <Prompt>{active.application}</Prompt>
+        {/* What balanced buys you, said where the word is met (CS-02, owner
+            2026-11-15: "build waves 1 thru 3"); the lead above got shorter. */}
+        {mode === 'balanced' ? <Text style={styles.factValue}>{CS_BALANCED_LINE}</Text> : null}
         {active.contacts.map((c) => (
           <View key={c.label} style={styles.factRow}>
             <Text style={styles.factLabel}>{c.label.toUpperCase()}</Text>
@@ -301,6 +318,7 @@ const styles = StyleSheet.create({
   cautionEyebrow: { color: colors.red, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1.5 },
   cautionText: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18 },
   toggleRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  sisterLine: { color: colors.textSub, fontFamily: fonts.barlowItalic, fontSize: 12.5, lineHeight: 18 },
   partDock: { paddingHorizontal: 12, gap: 3 },
   partName: { color: colors.cyanBright, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1.5 },
   partBlurb: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18 },

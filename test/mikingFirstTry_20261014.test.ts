@@ -63,7 +63,8 @@ describe('#19 the quick check: first try counts, retakes are practice', () => {
   it('a retake is labelled PRACTICE and records nothing', () => {
     const practice = card.slice(card.indexOf('if (practice) {'), card.indexOf('// The first try: stored picks first'));
     assert.match(practice, /QUICK CHECK · PRACTICE · not recorded/);
-    assert.match(practice, /PRACTICE · \$\{gradedP\.right\} OF \$\{gradedP\.total\}/);
+    // Changed on purpose (owner decision 2, 2026-11-14: no "N of total"): right and missed.
+    assert.match(practice, /PRACTICE · \$\{gradedP\.right\} RIGHT · \$\{gradedP\.total - gradedP\.right\} MISSED/);
     assert.doesNotMatch(practice, /recordQuick|recordQuickPick/);
     assert.match(card, /PRACTICE THE QUICK CHECK · NOT RECORDED/);
   });

@@ -37,8 +37,9 @@ export const HARMONOGRAPH_SCREEN_GUIDES: Record<HarmonographScreenId, ScreenGuid
   // ── EXPLORE — the machine ─────────────────────────────────────────────────
   explore: {
     intro: {
-      learning: 'Musical intervals are frequency ratios. A simple ratio such as 3:2 draws a figure that closes; a ratio slightly off slowly turns, which is beating made visible.',
-      start: 'Watch the pen draw at the opening 3:2. Open TUNE and tap LOCKED RATIO to see the figure close. Then tap 2:1 OCTAVE, and press ▶ to hear the interval.',
+      // The plain picture first (owner 2026-11-15: "build waves 1 thru 3", D62 HG-04).
+      learning: 'This old machine draws music. Two swinging arms move the pen. When their speeds make a musical interval, the drawing closes into a neat shape.',
+      start: 'Tap TUNE, then 2:1 OCTAVE, and watch. Tap LOCKED RATIO too and the drawing closes. Press ▶ to hear the interval.',
     },
     seeing: [
       'This is a harmonograph: two pendulums move the pen (OSC 1 cyan, OSC 2 violet). In ROTARY the paper platform swings too (PLAT, the amber ring).',
@@ -73,7 +74,7 @@ export const HARMONOGRAPH_SCREEN_GUIDES: Record<HarmonographScreenId, ScreenGuid
   learn: {
     intro: {
       learning: 'The ideas behind the drawings in words: ratio, interval, phase, damping, precession and beating, and the mix-ups people make between them.',
-      start: 'Scroll from the top and read CONTROLS and COMMON MISTAKES. Then switch to EXPLORE and change DETUNE or DAMPING to see what you just read.',
+      start: 'Scroll from the top and open CONTROLS and COMMON MISTAKES. Then switch to EXPLORE and change DETUNE or DAMPING to see what you just read.',
     },
     seeing: [
       'This is the Harmonograph guided lesson as one page to read. Nothing plays or draws here.',
@@ -93,8 +94,8 @@ export const HARMONOGRAPH_SCREEN_GUIDES: Record<HarmonographScreenId, ScreenGuid
       'The common mix-ups, amplitude versus frequency and phase versus ratio, and why each one happens.',
     ],
     tryThis: [
-      'Read the PRO TIPS line on detuning. Then on EXPLORE switch DETUNE from +1% to +3%: the figure turns faster.',
-      'Read the COMMON MISTAKES line on damping extremes. Then on EXPLORE compare LIGHT and HEAVY: LIGHT spirals in slowly over many turns; HEAVY dies away in far fewer.',
+      'Open PRO TIPS and read the line on detuning. Then on EXPLORE switch DETUNE from +1% to +3%: the figure turns faster.',
+      'Open COMMON MISTAKES and read the line on damping extremes. Then on EXPLORE compare LIGHT and HEAVY: LIGHT spirals in slowly over many turns; HEAVY dies away in far fewer.',
     ],
   },
 
@@ -102,24 +103,24 @@ export const HARMONOGRAPH_SCREEN_GUIDES: Record<HarmonographScreenId, ScreenGuid
   check: {
     intro: {
       learning: 'A review of the lab’s four ideas: the ratio behind a fifth, what a locked ratio does to the figure, what detuning does, and what damping does.',
-      start: 'Read each question and tap the answer you think is right. Unsure? Switch to LEARN and reread that idea under CONTROLS, then come back.',
+      start: 'Read each question and tap the answer you think is right. Unsure? Switch to LEARN, open CONTROLS and reread that idea, then come back.',
     },
     seeing: [
       'CHECK YOUR UNDERSTANDING: four questions on the fifth’s ratio, locked figures, detune and damping.',
       'Each question turns to ✓ once you get it right.',
     ],
     control: [
-      'Tap an answer. If it’s wrong, you see NOT QUITE — TRY ANOTHER with the explanation: read it, then pick again. If it’s right, you see CORRECT with the same explanation.',
+      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
     ],
     changes: [
-      'Get all four right and the check is passed. A wrong answer costs nothing, and there is no score.',
+      'Get all four right and the check is passed.',
     ],
     teaches: [
       'How a frequency ratio, a locked or detuned ratio, and damping each show up in a harmonograph figure.',
     ],
     tryThis: [
-      'Unsure? Switch to LEARN and reread the CONTROLS entry on the idea the question is about. Then come back and answer.',
-      'A wrong pick shows the explanation. Read it before you try again.',
+      'Unsure? Switch to LEARN, open CONTROLS and reread the entry on the idea the question is about. Then come back and answer.',
+      'A wrong pick says what to look at again. Look at the figure on EXPLORE before you try again.',
     ],
   },
 };

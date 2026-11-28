@@ -29,12 +29,17 @@
 import { useMemo } from 'react';
 import { BlurMask, DashPathEffect, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
 import type { ViewId, Vec3 } from '../../../engine/model/types.ts';
-import { EAR, EAR_HALF, HEAD_C } from '../voice/voiceSpec.ts';
+import { EAR as EAR0, EAR_HALF as EAR_HALF0, HEAD_C } from '../voice/voiceSpec.ts';
 import { VoiceFigure } from '../voice/VoiceArt';
 import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
 import { SINGER_SIDE, SINGER_TOP } from '../voice/voicePose.ts';
 import { StudioChair } from './BroadcastArt';
-import { HOST } from './talkerPose.ts';
+import { HOST, SEAT_Y } from './talkerPose.ts';
+import { castFor, type CastMember, type RoleKey } from '../figureV2/cast';
+import { PersonSideV2, PersonTopV2 } from '../figureV2/personV2';
+import { personTopPlan, type PersonTopOpts } from '../figureV2/topPerson.ts';
+import { topPaths } from '../figureV2/FigureV2Top';
+import type { PlayerPose } from '../players/playerPose.ts';
 import { BREATH_JET, BODY_DIMS, CHEST_X, MOVE_POSES, NECK_Y, packAt, type MoveId } from './bodyWorn.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
@@ -186,14 +191,15 @@ export function LavClip({ view, grip }: { view: ViewId; grip: Vec3 }) {
  * the secondary loop's spare is used, so it runs straight and the pull rests on
  * its tape, which stays drawn with a tug mark beside it.
  */
-export function LavCable({ view, from, pack, loops, taut = false, tug = false, standing = true }: { view: ViewId; from: Vec3; pack: Vec3; loops: { broadcast: boolean; secondary: boolean; spent?: boolean }; taut?: boolean; tug?: boolean; standing?: boolean }) {
+export function LavCable({ view, from, pack, loops, taut = false, tug = false, standing = true, dx = 0 }: { view: ViewId; from: Vec3; pack: Vec3; loops: { broadcast: boolean; secondary: boolean; spent?: boolean }; taut?: boolean; tug?: boolean; standing?: boolean; /** (figure V2) the shirt's front this far from the old figure's: the cable runs down it */ dx?: number }) {
   const p = useMemo(() => {
     const out = make();
     const under = make();
     const secondary = make();
     const tape = make();
     const pull = make();
-    const X = CHEST_X + 3;
+    // (the path code is also read on its own by the cable tests, where `dx` is not in scope: 0 there)
+    const X = CHEST_X + 3 + (typeof dx === 'number' ? dx : 0);
     const belt = NECK_Y + (standing ? 520 : 470);
     const secY = NECK_Y + 300;
     if (view === 'side') {
@@ -254,7 +260,7 @@ export function LavCable({ view, from, pack, loops, taut = false, tug = false, s
       under.cubicTo(CHEST_X - 40, -180, pack.x + 60, -220, pack.x, pack.z);
     }
     return { out, under, secondary, tape, pull };
-  }, [view, from, pack, loops.broadcast, loops.secondary, loops.spent, taut, tug, standing]);
+  }, [view, from, pack, loops.broadcast, loops.secondary, loops.spent, taut, tug, standing, dx]);
   return (
     <Group>
       <Path path={p.out} style="stroke" strokeWidth={6.6} strokeCap="round" strokeJoin="round" color="#08090b" />
@@ -282,7 +288,27 @@ export function LavCable({ view, from, pack, loops, taut = false, tug = false, s
  * up beside it; a small status LED.
  */
 /** A bodypack transmitter on the back of the belt, its antenna up. */
-export function BeltPack({ view, at }: { view: ViewId; at: Vec3 }) {
+/**
+ * (FrontBoom3, review 2026-11-24: "the bodypack floats in empty space off the talker's back") from above, the pack
+ * drawn ON the belt at the back of the person as the new figure draws them: moved in along x until its body side
+ * lies a few mm inside the torso's outline at the pack's own z (drawing only: the lav, its lead and every measured
+ * point unchanged).
+ */
+export function packOnTop(at: Vec3, pose: PlayerPose, who: CastMember, opts: PersonTopOpts = {}): Vec3 {
+  const plan = personTopPlan(pose, who, opts);
+  const torso = topPaths(plan).torso;
+  const D = BODY_DIMS.packD.mm;
+  const dir = pose.neck.u > at.x ? 1 : -1;
+  // (the pack's body side; scanned toward the neck until it is inside the torso)
+  for (let k = 0; k < 400; k += 2) {
+    const face = at.x + dir * (D / 2 + k);
+    if (torso.contains(face, at.z)) return { ...at, x: at.x + dir * (k + 10) };
+  }
+  return at;
+}
+
+export function BeltPack({ view, at: at0, on }: { view: ViewId; at: Vec3; /** (from above) the person it is worn by: the pack drawn on their belt (packOnTop) */ on?: { pose: PlayerPose; who: CastMember; opts?: PersonTopOpts } }) {
+  const at = useMemo(() => (view === 'top' && on ? packOnTop(at0, on.pose, on.who, on.opts) : at0), [view, at0, on]);
   const p = useMemo(() => {
     const box = make();
     const ant = make();
@@ -365,8 +391,10 @@ export function FabricOver({ view, at }: { view: ViewId; at: Vec3 }) {
 /** The headset's frame: a hook over the near ear and a thin boom along the
  *  cheek to `capsule` (frame V, the head facing ahead — wrap it in the
  *  head's turn to turn it). */
-export function HeadsetFrame({ view, capsule }: { view: ViewId; capsule: Vec3 }) {
+export function HeadsetFrame({ view, capsule, ear }: { view: ViewId; capsule: Vec3; /** (figure V2) the ear as the new head draws it (drawing only; the capsule stays) */ ear?: { side: { x: number; y: number }; top: { x: number; z: number } } }) {
   const p = useMemo(() => {
+    const EAR = ear ? { x: view === 'side' ? ear.side.x : ear.top.x, y: ear.side.y } : EAR0;
+    const EAR_HALF = ear ? ear.top.z : EAR_HALF0;
     const hook = make();
     const boom = make();
     if (view === 'side') {
@@ -383,7 +411,7 @@ export function HeadsetFrame({ view, capsule }: { view: ViewId; capsule: Vec3 })
       boom.cubicTo(HEAD_C.x + 60, EAR_HALF + 4, capsule.x - 30, capsule.z + 22, capsule.x - 8, capsule.z);
     }
     return { hook, boom };
-  }, [view, capsule]);
+  }, [view, capsule, ear]);
   return (
     <Group>
       <Path path={p.hook} style="stroke" strokeWidth={9} strokeCap="round" color="#0a0b0d" />
@@ -436,9 +464,26 @@ const TOP_HEADLESS = { ...SINGER_TOP, head: { ...SINGER_TOP.head, r: 1 } };
 /** The voice family's standing figure in a jacket, the bodypack on the back
  *  of the belt (frame V). `headless` leaves the head off (a step draws it
  *  turned); `pack` false hides the pack. */
-export function StandingPresenter({ view, headless = false, pack = true, tie = false }: { view: ViewId; headless?: boolean; pack?: boolean; tie?: boolean }) {
+export function StandingPresenter({ view, headless = false, pack = true, tie = false, v2 = false, who = 'presenter' }: { view: ViewId; headless?: boolean; pack?: boolean; tie?: boolean; /** (figure V2, wave 4) the new look: the presenter in their own jacket (a lesson passes it for all its figures or none) */ v2?: boolean; who?: RoleKey }) {
   const pose = view === 'side' ? SIDE_HEADLESS : TOP_HEADLESS;
   const at = packAt(true);
+  if (v2) {
+    const person = castFor(who);
+    return (
+      <Group>
+        {pack && view === 'side' ? <BeltPack view="side" at={at} /> : null}
+        {view === 'side' ? (
+          <Group>
+            <PersonSideV2 pose={SINGER_SIDE} who={person} opts={PRESENTER_OPTS} part={headless ? 'headless' : 'all'} />
+            {headless ? null : <Path path={PRESENTER_MOUTH} color="#24170f" opacity={0.92} />}
+          </Group>
+        ) : (
+          <PersonTopV2 pose={SINGER_TOP} who={person} opts={PRESENTER_TOP_OPTS} head={headless ? 'none' : 'show'} />
+        )}
+        {pack && view === 'top' ? <BeltPack view="top" at={at} on={{ pose: SINGER_TOP, who: person, opts: PRESENTER_TOP_OPTS }} /> : null}
+      </Group>
+    );
+  }
   return (
     <Group>
       {pack && view === 'side' ? <BeltPack view="side" at={at} /> : null}
@@ -455,6 +500,19 @@ export function StandingPresenter({ view, headless = false, pack = true, tie = f
     </Group>
   );
 }
+
+/** (figure V2) the standing presenter drawn new: the mouth on the lip point, the hands at rest, the jacket. */
+const PRESENTER_OPTS = { lip: { u: 0, v: 0 }, rest: 'restSide' as const, jacket: true };
+const PRESENTER_TOP_OPTS: PersonTopOpts = { jacket: true };
+/** Between the lips (side): the small dark lens the standing figure has. */
+const PRESENTER_MOUTH = (() => {
+  const q = make();
+  q.moveTo(1.5, -2.5);
+  q.cubicTo(-4, -4.5, -11, -3.5, -14, 0);
+  q.cubicTo(-11, 3.5, -4, 4.5, 1.5, 2.5);
+  q.close();
+  return q;
+})();
 
 /* ── the wearer in each move ── */
 
@@ -489,7 +547,23 @@ function WaistTurn() {
 
 /** The wearer in profile in one move of THE LOOPS (MOVE_POSES), jacket on, the
  *  near arm over it. The pack is the step's own drawing. */
-export function MovePresenter({ move }: { move: MoveId }) {
+export function MovePresenter({ move, v2 = false, who = 'presenter' }: { move: MoveId; /** (figure V2, wave 4) the presenter drawn new, in their jacket */ v2?: boolean; who?: RoleKey }) {
+  const pose = MOVE_POSES[move];
+  const seated = pose.posture === 'seated';
+  if (v2)
+    return (
+      <Group>
+        {seated ? <StudioChair view="side" t={HOST} /> : null}
+        {/* (hands that hold nothing: hanging at rest; seated or held out, lying palm-down — on the thighs, in the air) */}
+        <PersonSideV2 pose={pose} who={castFor(who)} opts={{ lip: { u: 0, v: 0 }, rest: move === 'sit' || move === 'gesture' ? 'restFlat' : 'restSide', jacket: true, ...(seated ? { seatV: SEAT_Y } : {}) }} />
+        <Path path={PRESENTER_MOUTH} color="#24170f" opacity={0.92} />
+        {move === 'turn' ? <WaistTurn /> : null}
+      </Group>
+    );
+  return <MovePresenterOld move={move} />;
+}
+/** The look before the roll-out (its own component: hooks never follow a return). */
+function MovePresenterOld({ move }: { move: MoveId }) {
   const pose = MOVE_POSES[move];
   const seated = pose.posture === 'seated';
   const mouth = useMemo(() => {

@@ -250,7 +250,7 @@ export function PRoomSetting({ lesson, answers, onAnswered }: PageProps) {
           if (it) p(it.id);
         },
         format: () => (s ? `${byId(s)?.short ?? s} · ${byId(s)?.tag ?? ''}` : `step through the ${list.length} items`),
-        formatShort: () => (s ? (byId(s)?.short ?? s).slice(0, 9) : 'STEP'),
+        formatShort: () => (s ? (byId(s)?.short ?? s).slice(0, 9) : 'PICK'),
       },
       list.length,
       list.findIndex((q) => q.id === s),

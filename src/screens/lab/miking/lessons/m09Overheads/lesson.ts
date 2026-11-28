@@ -550,7 +550,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: the stick strikes the top of the cymbal. Which way does the cymbal send its sound?', options: ['Only upward, toward the ceiling', 'Up and down, from both faces', 'Only out from the edge'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch where the sound leaves.' },
+  sound: { prompt: 'Before you step through: the stick strikes the top of the cymbal. Which way does the cymbal send its sound?', options: ['Only upward, toward the ceiling', 'Up and down, from both faces', 'Only out from the edge'], after: 'Now go EVENT by EVENT through the stroke (or PLAY ONCE) and watch where the sound leaves.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'In front, close up'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you raise the mic over the snare from 1 m to 1.2 m. What changes?', options: ['More cymbals and room', 'More kick and snare', 'It depends on this kit and room'], after: 'Rest a mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The drum fill sits behind and below the side mic. How can its pattern help?', options: ['Turn or tilt the mic so a null faces it', 'It cannot: the fill is behind it', 'Only a louder mic helps'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },
@@ -656,7 +656,7 @@ export const M09_LESSON: Lesson = {
     { title: 'WHAT THEY ARE', text: 'Overheads are microphones above — or just beside — the drum kit that hear the whole kit at once. They are a point of view on the drums and cymbals, not an instrument of their own.', src: 'S-OH-MM' },
     { title: 'WHERE YOU MEET THEM', text: 'In most studio drum recordings, and on many stages — wherever the cymbals, or the whole kit, need to reach the mix.', src: 'DPA-KIT' },
     { title: 'THEIR JOB', text: 'Either the main picture of the kit — drums and cymbals in balance, close mics adding focus — or mostly the cymbals, supporting close mics on the drums. Decide which before you place them.', src: 'S-OH-MM' },
-    { title: 'THE KIT THEY HEAR', text: 'A typical 5-piece: a 22 in kick, a 14 in snare, 10 and 12 in rack toms, a 16 in floor tom, 14 in hi-hats, 16 and 18 in crashes and a 20 in ride. In this drawing the cymbals hang about 0.85–1.2 m off the floor and a seated drummer’s head is near 1.3 m.', src: 'ZIL-K' },
+    { title: 'THE KIT THEY HEAR', text: 'A typical 5-piece: a 22 in kick, a 14 in snare, 10 and 12 in rack toms, a 16 in floor tom, 14 in hi-hats, 16 and 18 in crashes and a 20 in ride. In this drawing the cymbals hang about 0.85–1.2 m off the floor and a seated drummer’s head is near 1.4 m.', src: 'ZIL-K' },
   ],
   sound: {
     // The drum lessons' strike sequence is not used here (the lesson draws its
@@ -704,7 +704,7 @@ export const M09_LESSON: Lesson = {
   },
   unknowns: [
     { text: 'Kit positions, heights and tilts — a typical right-handed layout, drawing defaults.', dims: [] },
-    { text: 'The drummer’s body and the sticks’ reach (head top 1.3 m, shoulder 1.15 m, reach 700 mm) — drawing defaults, not published figures.', dims: [] },
+    { text: 'The drummer’s body and the sticks’ reach (head top 1.39 m, shoulder 1.15 m, reach 700 mm) — drawing defaults, not published figures.', dims: [] },
     { text: 'The X/Y and ORTF pair height over the snare (the mono height), the spaced pair’s plan points, and the shoulder method’s kick reference point (the kick’s batter center) — drawing defaults.', dims: [] },
     { text: 'The overhead boom stand’s reach and tube sizes — ILLUSTRATIVE.', dims: [] },
     { text: 'Every keep-out clearance, including each cymbal’s swing (± 60 mm at the edge) — ILLUSTRATIVE values for the owner to approve.', dims: ['cym.hihat', 'cym.crash1', 'cym.crash2', 'cym.ride'] },

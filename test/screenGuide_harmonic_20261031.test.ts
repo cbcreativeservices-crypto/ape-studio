@@ -122,7 +122,7 @@ describe('3. each guide quotes its screen’s real names', () => {
   const NAMES: Record<string, string[]> = {
     explore: [
       // bezel, badge, dock keys + options
-      'F0', 'THD', 'CREST', 'SLOPE', 'ANALYTIC MODEL — NOT A MEASUREMENT', 'PRESET', 'THD CALC', 'AXIS', 'MODE', 'LOG ♪', 'LIN',
+      'F0', 'THD', 'CREST', 'SLOPE', /* Phase 3, owner 2026-11-14 (decision 3, S3 model note): the disclosure is said as one plain sentence under the display; the badge text stays only as the fallback. */ 'PRESET', 'THD CALC', 'AXIS', 'MODE', 'LOG ♪', 'LIN',
       'ANALYTIC MODEL', 'REAL SIGNAL', 'RESTORE PRESET',
       'SINE', 'SQUARE', 'TRIANGLE', 'SAW', 'PULSE', 'SYM CLIP', 'ASYM CLIP', 'SOFT SAT', 'HARD CLIP',
       // the stem editor, card, detail sheet and well chips
@@ -132,7 +132,7 @@ describe('3. each guide quotes its screen’s real names', () => {
       // course-navigation lines (decision 4, 2026-11-08) — negative check in section 6.
       'Distortion',
     ],
-    live: ['REAL SIGNAL', 'F0', 'MIC', 'LIVE', 'START…', 'OFF', 'TONE', 'ON', 'MUTED', 'MAX', 'REAL SIGNAL — dBFS · UNCALIBRATED', '⚠ ALLOW SPEAKER WHILE MIC IS ON', 'LAB NOTES', 'AXIS', 'LOG ♪', 'LIN', 'MODE', 'ANALYTIC MODEL', 'PRESET', 'THD CALC'],
+    live: ['REAL SIGNAL', 'F0', 'MIC', 'LIVE', 'START…', 'OFF', 'TONE', 'ON', 'MUTED', 'MAX', /* Phase 3 model note (S3) */ '⚠ ALLOW SPEAKER WHILE MIC IS ON', 'LAB NOTES', 'AXIS', 'LOG ♪', 'LIN', 'MODE', 'ANALYTIC MODEL', 'PRESET', 'THD CALC'],
     learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'PULSE', 'NORMALIZE', 'SINE', 'POLARITY +180°', 'THD', 'CREST', 'SLOPE', 'MODE', 'AXIS', 'PRESET', 'ANALYTIC MODEL', 'REAL SIGNAL', '▶'],
     // decision 6 (2026-11-08): CHECK no longer walks to MUTE EVEN → SQUARE (the build-square answer);
     // it studies TRIANGLE's recipe instead.
@@ -155,7 +155,8 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.deepEqual(M.PRESETS.map((p: { label: string }) => p.label), ['SINE', 'SQUARE', 'TRIANGLE', 'SAW', 'PULSE', 'SYM CLIP', 'ASYM CLIP', 'SOFT SAT', 'HARD CLIP']);
     assert.match(v, /useState<ViewMode>\('model'\)/);
     assert.match(v, /useState<AxisMode>\('log'\)/);
-    assert.match(v, /useState<PresetKey>\('saw'\)/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item HAR-04): the lab opens on SINE.
+    assert.match(v, /useState<PresetKey>\('sine'\)/);
     assert.match(v, /const F0_MIN = 60;\s*const F0_MAX = 300;\s*const DEFAULT_F0 = 100;/);
     // PRESET + THD CALC only in model view; F0 · AXIS · MODE in both
     assert.match(v, /\.\.\.\(view === 'model'\s*\? \(\[\s*\{\s*kind: 'options',\s*id: 'preset'/);
@@ -185,7 +186,9 @@ describe('4. the TRY THIS numbers are what the bezel prints', () => {
     assert.match(v, /slope: qualifying >= MIN_SLOPE_HARMONICS \? envelopeSlopeDbPerOct\(model\) : null/);
     assert.match(v, /v: modelThd\.pct != null \? `\$\{modelThd\.pct\.toFixed\(1\)\} %` : '—'/);
     assert.match(v, /v: modelCrestDb != null \? `\$\{modelCrestDb\.toFixed\(1\)\} dB` : '—'/);
-    assert.match(v, /v: slopeInfo\.slope != null \? slopeInfo\.slope\.toFixed\(1\) : '—'/);
+    // Fix round 2026-11-14 (owner: "Begin fixing all bugs found and do obvious … fixes"):
+    // the SLOPE value carries its unit, in the Noise Lab's form.
+    assert.match(v, /v: slopeInfo\.slope != null \? slopeInfo\.slope\.toFixed\(1\) : '—',\s*sub: slopeInfo\.slope != null \? 'dB\/OCT' : undefined,/);
   });
   type H = { n: number; amp: number; phaseDeg: number; enabled: boolean; muted: boolean };
   const read3 = (set: H[]) => {

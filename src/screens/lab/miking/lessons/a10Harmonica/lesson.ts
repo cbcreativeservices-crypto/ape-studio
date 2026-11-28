@@ -456,7 +456,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: what turns the breath into a note?', options: ['Reeds chopping the air', 'The breath whistling', 'The covers ringing'], after: 'Now STEP through the reed (or PLAY ONCE), then try its shapes and the hands’ chamber.' },
+  sound: { prompt: 'Before you step through: what turns the breath into a note?', options: ['Reeds chopping the air', 'The breath whistling', 'The covers ringing'], after: 'Now go EVENT by EVENT through the reed (or PLAY ONCE), then try its shapes and the hands’ chamber.' },
   microphone: { prompt: 'Before you move anything: this harp mic is omni. Where does it pick up LEAST?', options: ['Nowhere: much the same all around', 'Straight behind it', 'At its sides'], after: 'Sweep SOURCE ANGLE around a cardioid, then choose the harp mic’s TYPE and sweep again.' },
   placement: { prompt: 'Predict: you move the stand mic from 15 cm back to 30 cm. What changes most?', options: ['More room, less breath and detail', 'More breath', 'Nothing'], after: 'Rest the mic in two zones — switch PATH to try the amp — and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge sits downstage, behind the stand mic. Can a cardioid’s null reach it?', options: ['Yes — its back can face the wedge', 'No — only an omni can', 'It is already at the side'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION. Then pick the harp amp as the MONITOR.' },

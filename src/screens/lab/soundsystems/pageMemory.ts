@@ -60,3 +60,30 @@ export function usePageMemory<T>(name: string, init: T | (() => T)): [T, Dispatc
   }, [scope, key, value]);
   return [value, setValue];
 }
+
+/* ── what is still missing on a page (lab fix round 2026-11-14, phase 2, F2) ──
+ * The end screen ("What's left") names each unfinished row's own missing
+ * goals. A page reports the goal labels it has not met yet (useVisitGoals, a
+ * capstone's unmet requirements) under its scope; the end screen reads them.
+ * Same session-only, same-person map as the working memory above: a page not
+ * visited this session has no line, and the shared "how a page counts"
+ * sentence covers it. */
+const LEFT = ':__left';
+
+/** The scope a page reports under rides on its ctx (SsPagedLab adds it), not
+ *  on a hook, so a page still runs where only state hooks exist. */
+export type GoalsScope = { goalsScope?: string };
+export const goalsScopeOf = (ctx: unknown): string => (ctx as GoalsScope | null)?.goalsScope ?? '';
+
+export function setGoalsLeft(scope: string, labels: readonly string[]): void {
+  if (scope) liveMemory().set(`${scope}${LEFT}`, labels);
+}
+
+/** "Left: a · b · c, + 2 more", or undefined when nothing is known or left. */
+export function goalsLeftLine(scope: string): string | undefined {
+  const labels = liveMemory().get(`${scope}${LEFT}`) as readonly string[] | undefined;
+  if (!labels || labels.length === 0) return undefined;
+  const shown = labels.slice(0, 2).join(' · ');
+  // Ends with a full stop: the end row reads its detail, then "Opens it." (checker C1).
+  return `Left: ${shown}${labels.length > 2 ? `, + ${labels.length - 2} more` : ''}.`;
+}

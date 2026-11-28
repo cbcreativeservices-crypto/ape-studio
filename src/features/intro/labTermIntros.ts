@@ -144,6 +144,13 @@ export type LabTermIntroInput = {
   holdMs: number;
   /** The popup is already on screen (once up, it stays until CONTINUE). */
   presented: boolean;
+  /** CARRY (2026-11-14): a focused screen's intro card will carry the term
+   *  inside it ('ready'), or its seen flag is still being read ('pending').
+   *  Optional: omitted = 'none' (the term shows on its own sheet). */
+  carrier?: 'none' | 'pending' | 'ready';
+  /** Work under way on the screen (a tray open, a drag): an owed popup is
+   *  dropped for this visit, never drawn over it. Optional, default false. */
+  workUnderway?: boolean;
 };
 
 /**
@@ -159,12 +166,42 @@ export type LabTermIntroInput = {
  * members-only preview. Once presented it stays until CONTINUE.
  */
 export function labTermIntroState(i: LabTermIntroInput): { owed: boolean; show: boolean } {
+  // Membership still being CHECKED on a members-only lab (2026-11-14): the
+  // term may be owed in a moment, so it is OWED (nothing shown) — the screen's
+  // intro card must not present first and then have the term land on top of
+  // it (seen in the web preview, which mounts labs without the member gate).
+  // 'unconfirmed' (the check gave up) and 'locked' owe nothing, as before.
+  if (i.wired && !i.freeLab && i.gate === 'checking' && !i.previewActive && i.focused && !i.dismissed && i.seen !== true && i.seen !== 'unreadable') {
+    return { owed: true, show: false };
+  }
   const forThisUser = i.wired && (i.freeLab || i.gate === 'open') && !i.previewActive;
   if (!forThisUser || !i.focused || i.dismissed || i.seen === 'unreadable' || i.seen === true) {
     return { owed: false, show: false };
   }
   if (i.seen === 'loading') return { owed: true, show: false };
   if (i.presented) return { owed: true, show: !i.suppressed };
+  // CARRIED: the screen's intro card shows it (one card, not two); it stays
+  // OWED until that card closes, so the lab's other popups keep waiting.
+  if ((i.carrier ?? 'none') !== 'none' && !i.held) return { owed: true, show: false };
+  // Never over work under way (audit 2026-11-14, row 1: "It never opens on
+  // top of an open tray or console"): see labTermIntroExtras' `drop`.
+  if (i.workUnderway) return { owed: false, show: false };
   const clear = !i.suppressed && !i.held && i.pushSettled && !i.otherModalOpen && i.holdMs <= 0;
   return { owed: true, show: clear };
+}
+
+/**
+ * The two side answers of the same state (2026-11-14):
+ *   `drop`  — work started before the popup could show: drop it for THIS
+ *             visit (the caller latches `dismissed`), never marked seen, so
+ *             it comes on the next visit instead of landing after the tray;
+ *   `offer` — offer the term to an intro card that can carry it (never while
+ *             something else owns the screen: the term introduces the LAB,
+ *             not the Amplitude orientation).
+ */
+export function labTermIntroExtras(i: LabTermIntroInput): { drop: boolean; offer: boolean } {
+  const forThisUser = i.wired && (i.freeLab || i.gate === 'open') && !i.previewActive;
+  const due = forThisUser && i.focused && !i.dismissed && i.seen === false && !i.presented;
+  const carried = (i.carrier ?? 'none') !== 'none' && !i.held;
+  return { drop: due && !carried && !!i.workUnderway, offer: due && (carried || !i.workUnderway) && !i.held };
 }

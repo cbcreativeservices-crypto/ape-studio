@@ -29,7 +29,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Defs, G, Line, LinearGradient, Path, Rect, Stop } from 'react-native-svg';
 import type { BandsFrame, EngineConfig } from '../../../../../modules/ape-dsp';
-import { useDspEngine, useToolAutoStart } from '../../../../features/tools/engine/useDspEngine';
+import { useDspEngine, useReleaseMicOnBackground } from '../../../../features/tools/engine/useDspEngine';
 import { LOUDNESS_STOPS } from '../../../../features/tools/levelColor';
 import { butterworthHighPassDb } from '../../../../features/lab/fxViz';
 import { colors, fonts } from '../../../../theme/tokens';
@@ -285,7 +285,7 @@ function SeeingGlass({
   );
 }
 
-export function SeeingFrequencyModule(_p: EqModuleComponentProps) {
+export function SeeingFrequencyModule(p: EqModuleComponentProps) {
   // Ref-stable config (RtaScreen rule): useDspEngine's start() closes over this
   // object. spectrumEnabled MUST stay true — the native engine only runs the
   // FFT when spectrum is enabled and the band frame is derived from that FFT.
@@ -310,10 +310,16 @@ export function SeeingFrequencyModule(_p: EqModuleComponentProps) {
     setMicPaused(true);
     stop();
   }, [stop]);
-  // Straight into the live tool on open (owner 2026-08-01 auto-start rule).
-  // `stop` opts into the tools' background release + resume (pattern hunt
-  // P20, 2026-10-02): without it Home left the mic open behind the app.
-  useToolAutoStart(state, onStart, stop);
+  // ⛔ THE MIC OPENS ONLY ON A TAP (lab fix round 2026-11-14, F7 item 1). This
+  // used useToolAutoStart — the TOOLS' "straight into the live tool" rule
+  // (owner 2026-08-01, written for the RTA, SPL meter and the other tools) —
+  // so opening this LESSON from the EQ Lab menu opened the phone microphone
+  // (and, on a first run, raised the OS permission prompt) before the learner
+  // had touched anything. A lesson is not a tool the learner asked to run:
+  // the mic now starts on the MIC key or a tap on the display, never on
+  // arrival. Background release stays (pattern hunt P20, 2026-10-02): Home
+  // still closes a running mic, and nothing reopens it by itself.
+  useReleaseMicOnBackground(state, stop);
 
   const bands = frames.bands;
   const anyUnresolvable = bands != null && bands.resolvable.some((r) => !r);
@@ -349,12 +355,12 @@ export function SeeingFrequencyModule(_p: EqModuleComponentProps) {
             ? '◂ look below 100 Hz — what energy lives there even when the room seems quiet?'
             : `HPF ${hpfHz} Hz · 12 dB/OCT — the low end is rolled off; amber = the filter’s response`,
         bezel: [
-          { k: 'HPF', v: hpfHz == null ? 'OFF' : `${hpfHz} Hz` },
-          { k: 'SLOPE', v: '12/OCT' },
-          { k: 'RES', v: '1/3 OCT' },
+          { k: 'HPF', caption: 'low cut', v: hpfHz == null ? 'OFF' : `${hpfHz} Hz` },
+          { k: 'SLOPE', caption: 'how steep', v: '12/OCT' },
+          { k: 'RES', caption: 'bar width', v: '1/3 OCT' },
           {
             k: 'MIC',
-            v: state === 'running' ? 'LIVE' : micPaused ? 'PAUSED' : '—',
+            v: state === 'running' ? 'LIVE' : micPaused ? 'PAUSED' : 'OFF',
             tint: state === 'running' ? undefined : '#7a7f8a',
           },
         ],
@@ -381,9 +387,12 @@ export function SeeingFrequencyModule(_p: EqModuleComponentProps) {
 
         {/* Honest not-ready card (absent/spike/denied/error). */}
         <EngineGate state={state} lastError={lastError} onRetry={onStart} />
-        {!micPaused && (state === 'idle' || state === 'starting') && (
-          <Text style={styles.starting}>Starting the analyzer…</Text>
+        {/* Mic OFF until a tap (F7 item 1): say how to start it, never
+            "Starting…" over a mic nobody asked for. */}
+        {!micPaused && state === 'idle' && (
+          <Text style={styles.starting}>The microphone is off. Tap MIC, or tap the display, to let it listen to your room.</Text>
         )}
+        {!micPaused && state === 'starting' && <Text style={styles.starting}>Starting the analyzer…</Text>}
         {anyUnresolvable && (
           <Text style={styles.grayNote}>grayed bands: insufficient resolution at this setting</Text>
         )}
@@ -401,18 +410,25 @@ export function SeeingFrequencyModule(_p: EqModuleComponentProps) {
         </Text>
 
         {/* Retrieval (learning pass 2026-08-31) — NEW COPY, owner review. */}
+        {/* Work done (phase 3): this module counts when its check is answered right. */}
         <CheckQuestion
+          onSolved={p.onDone}
           spec={{
             question: 'The amber curve on the display is…',
             options: [
-              'The filter’s DESIGNED response — what the low-cut would remove',
+              'The filter’s designed shape',
               'A measurement of the room after filtering',
-              'The microphone’s frequency response',
+              'The microphone’s own frequency response',
             ],
             correctIdx: 0,
             reveal:
               'The amber curve is the filter’s designed shape, worked out from its math. The bars below it are redrawn as if that filter were in place, so you can see what it would take away before you take it.',
-            wrongHint: 'Read the caption under the display — designed, not measured.',
+            // A reason per wrong option (phase 2, F5's `why`): names the mix-up, never the answer.
+            why: {
+              1: 'Nothing is measured after filtering here: the mic signal is never filtered. Read the caption under the display.',
+              2: 'The mic’s own response is not drawn here; the amber curve appears only when you move LOW CUT.',
+            },
+            wrongHint: 'Read the caption under the display: what does it say the amber curve is?',
           }}
         />
 

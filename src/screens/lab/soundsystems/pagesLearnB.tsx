@@ -26,14 +26,15 @@ import { SETUP_SEQUENCE } from '../../../features/soundsystems/operate';
 import { rightJudgements } from '../../../features/soundsystems/check';
 import type { GearKind, Placed, SignalLevel, SlotId } from '../../../features/soundsystems/types';
 import type { DockParam } from '../rack/rackTypes';
-import { CalcLink, ChapterTag, DeeperRow, GoalChips, KeyFact, LabLink, Readout, ReadoutRow, useVisitGoals, VerdictLine } from './bits';
+import { CalcLink, ChapterTag, DeeperRow, FormulaFold, GoalChips, KeyFact, LabLink, Readout, ReadoutRow, useVisitGoals, VerdictLine } from './bits';
 import { GearGlyph, GearInSvg, INK } from './art/gearArt';
 import { CableLegend, FieldKey, PLOT_H, PLOT_W, VenueView, type PlotBeam } from './art/VenueView';
 import { SplitDiagram, SubFeedRouter, type SubFeedMode } from './art/diagrams';
-import { BEAM_COLOR, placedToBeams, PLOT_BADGE, THROW } from './plot';
+import { BEAM_COLOR, placedToBeams, THROW } from './plot';
 import { flipFader, lanePos, laneVal, SoundSystemsRackLayout, type SsPageDef } from './rackLayout';
 import { StageFit } from '../rack/StageFit';
 import { TitledStage } from '../rack/TitledStage';
+import { leftWord } from './fixHelpers';
 
 /* ── 8 · Subwoofer feeds ────────────────────────────────────────────────── */
 
@@ -94,7 +95,7 @@ function PageSubFeeds({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'M',
-        badge: 'SUB FEED ROUTER — ILLUSTRATIVE · blue = what reaches the subwoofer',
+        modelNote: 'A drawing: blue shows what reaches the subwoofer.',
         initialParam: 'feed',
         // The feed's NAME cropped in its bezel cell ("CROSSOVER-…"): it prints
         // in full above the router now (owner 2026-09-29, TitledStage). The
@@ -230,15 +231,15 @@ function PageSubPlacement({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
-        badge: PLOT_BADGE,
+        modelNote: 'A teaching picture of coverage, not a measurement of a real room.',
         initialParam: 'layout',
         hideDragTag: true,
         // The layout's NAME cropped in its bezel cell ("CARDIOID STACK…"): it
         // prints in full above the plan now (owner 2026-09-29).
         bezel: [
           { k: 'SUBS', v: `${l.placed.length}`, flex: 0.6 },
-          { k: 'PATTERN', v: l.pattern, tint: '#6fa8ff', flex: 1.2 },
-          { k: 'RIG', v: l.rig, flex: 0.9 },
+          { k: 'PATTERN', caption: 'mic pickup', v: l.pattern, tint: '#6fa8ff', flex: 1.2 },
+          { k: 'RIG', caption: 'flown or stack', v: l.rig, flex: 0.9 },
         ],
         stage: (w, h) => (
           <TitledStage w={w} h={h} aspect={PLOT_W / PLOT_H} title={l.name}>
@@ -247,7 +248,7 @@ function PageSubPlacement({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Ride LAYOUT through the five arrangements and watch where the low end lands — and, for the two arrays, where it stops."
+      caption="Slide LAYOUT through the five arrangements and watch where the low end lands — and, for the two arrays, where it stops."
     >
       <ChapterTag n={5}>SUBWOOFER PLACEMENT AND ARRAYS</ChapterTag>
       <Body>{l.orient}</Body>
@@ -307,14 +308,14 @@ function PageMonitors({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
-        badge: PLOT_BADGE,
+        modelNote: 'A teaching picture of coverage, not a measurement of a real room.',
         initialParam: 'monitor',
         hideDragTag: true,
         // MONITOR and STANDS AT cropped in their bezel cells ("IN-EAR MONI…"):
         // both print in full above the stage now (owner 2026-09-29).
         bezel: [
           { k: 'FED BY', v: m.feed, flex: 1.4 },
-          { k: 'SEEN', v: `${seen.size}/4`, flex: 0.7 },
+          { k: 'SEEN', v: leftWord(seen.size, 4, 'ALL SEEN'), flex: 0.7 },
         ],
         stage: (w, h) => (
           <TitledStage w={w} h={h} aspect={PLOT_W / PLOT_H} title={m.name} subtitle={`Stands at ${slotDef(m.slot).label}`}>
@@ -323,7 +324,7 @@ function PageMonitors({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Tap a monitor on the stage, or ride MONITOR through the four of them."
+      caption="Tap a monitor on the stage, or slide MONITOR through the four of them."
       wellTop={
         <Card tone="math">
           <View style={styles.inspectHead}>
@@ -394,13 +395,13 @@ function PageMonitorWorld({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'M',
-        badge: 'FOH / MONITOR SPLIT — ILLUSTRATIVE',
+        modelNote: 'A drawing of one microphone split between two consoles.',
         initialParam: 'gain',
         bezel: [
-          { k: 'SPLIT', v: mode === 'analog' ? 'ANALOG' : 'GAIN SHARE', tint: colors.cyanBright, flex: 1.3 },
-          { k: 'MON PREAMP', v: gainMove ? `+${gainDb} dB` : 'AS SET', flex: 1.1 },
-          { k: 'FOH HEARS', v: !gainMove ? 'AS SET' : mode === 'analog' ? 'UNCHANGED' : `TRIM −${gainDb}`, tint: colors.green, flex: 1.2 },
-          { k: 'CHECKS', v: `${solved}/2`, flex: 0.8 },
+          { k: 'SPLIT', caption: 'mic splitter', v: mode === 'analog' ? 'ANALOG' : 'GAIN SHARE', tint: colors.cyanBright, flex: 1.3 },
+          { k: 'MON PREAMP', caption: 'monitor gain', v: gainMove ? `+${gainDb} dB` : 'AS SET', flex: 1.1 },
+          { k: 'FOH HEARS', caption: 'the house desk', v: !gainMove ? 'AS SET' : mode === 'analog' ? 'UNCHANGED' : `TRIM −${gainDb}`, tint: colors.green, flex: 1.2 },
+          { k: 'CHECKS', kNarrow: 'DONE', v: leftWord(solved, 2, 'BOTH DONE'), flex: 0.8 },
         ],
         stage: (w, h) => (
           <StageFit w={w} h={h} aspect={354 / 160}>
@@ -409,7 +410,7 @@ function PageMonitorWorld({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Ride MON GAIN to have the monitor engineer raise a preamp, then switch the SPLIT. Read what happens at front of house."
+      caption="Slide MON GAIN to have the monitor engineer raise a preamp, then switch the SPLIT. Read what happens at front of house."
     >
       <ChapterTag n={6}>MONITOR CONSOLE, SPLITS AND TALKBACK</ChapterTag>
       <Body>Three sources feeding TWO consoles — the house console at front of house and the monitor console at side stage — by one of the two ways the split is made.</Body>
@@ -662,13 +663,13 @@ function PageLoads({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'M',
-        badge: 'PARALLEL LOAD — CALCULATED · from the Audio Calculator Laboratory',
+        modelNote: 'The load is calculated with the Audio Calculator Laboratory.',
         initialParam: 'count',
         hideDragTag: true,
         bezel: [
-          { k: 'TOTAL LOAD', v: fmtOhms(load.ohms), tint: loadTint, flex: 1.2 },
+          { k: 'TOTAL LOAD', caption: 'amp sees', kNarrow: 'LOAD', v: fmtOhms(load.ohms), tint: loadTint, flex: 1.2 },
           { k: 'AMP MIN', v: `${min} Ω` },
-          { k: 'INTO LOAD', v: watts == null ? '—' : `${watts} W` },
+          { k: 'INTO LOAD', caption: 'power to boxes', v: watts == null ? '—' : `${watts} W` },
           { k: 'VERDICT', v: verdict.toUpperCase(), tint: loadTint, flex: 1.2 },
         ],
         stage: (w, h) => (
@@ -678,7 +679,7 @@ function PageLoads({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Ride CABINETS to add boxes across the channel and watch the load fall. Find the point where the amplifier can no longer drive it."
+      caption="Slide CABINETS to add boxes across the channel and watch the load fall. Find the point where the amplifier can no longer drive it."
       wellTop={
         <>
           <VerdictLine ok={verdict === 'safe'} warn={verdict === 'marginal' || verdict === 'open'}>
@@ -689,20 +690,20 @@ function PageLoads({ ctx }: { ctx: PageCtx }) {
       }
     >
       <ChapterTag n={8}>AMPLIFIERS AND LOUDSPEAKER COMPATIBILITY · LOADS</ChapterTag>
-      <Body>One amplifier channel and the passive cabinets wired across it in parallel. The wire turns gold at the amplifier’s minimum and red below it.</Body>
+      {/* SS-01 (owner 2026-11-15: "build waves 1 thru 3"): the idea in plain words first; the formula is folded under GO DEEPER. */}
+      <Body>The idea: every cabinet you add in parallel lowers the load’s impedance, so the amplifier must deliver more current, until the load is too low to drive safely. Here, one amplifier channel and its cabinets: the wire turns gold at the amplifier’s minimum and red below it.</Body>
       <Prompt>Add cabinets and watch the load fall. Find the point where the amplifier can no longer drive it.</Prompt>
       <GoalChips goals={goals} latched={latched} />
       <Card tone="math">
-        <Eyebrow>THE ARITHMETIC · FROM THE CALCULATOR</Eyebrow>
-        <Text style={styles.path}>Ztot = 1 ÷ Σ(1/Zi)</Text>
+        <Eyebrow>WHY THE LOAD FALLS</Eyebrow>
         <Body>A passive loudspeaker is a load. Parallel cabinets share the amplifier’s voltage and each draws its own current; the total impedance is always below the lowest cabinet, and the amplifier must deliver the sum of the currents. Bridging joins two channels into one with twice the voltage swing — and DOUBLES the minimum impedance (twice the per-channel minimum, often 8 Ω), so a load below the bridged minimum is the classic mistake.</Body>
         <Body>This amplifier’s ratings — {AMP.at8} W at 8 Ω, {AMP.at4} W at 4 Ω, {AMP.bridged8} W bridged at 8 Ω, {AMP.minOhms} Ω minimum — are an example. Read YOUR amplifier’s table; never assume the ratio.</Body>
       </Card>
-      <DeeperRow>
+      <FormulaFold formula="Ztot = 1 ÷ Σ(1/Zi)">
         <CalcLink id={CALC_LINKS.parallel.workspace} label="Parallel loads" />
         <CalcLink id="cable" label="Speaker cable loss and gauge" />
         <LabLink route="AmpLab" label="Amplifier Principles Lab" />
-      </DeeperRow>
+      </FormulaFold>
     </SoundSystemsRackLayout>
   );
 }
@@ -811,28 +812,28 @@ function PagePower({ ctx }: { ctx: PageCtx }) {
         size: 'S',
         // View-built band and readouts: nothing in it grows with the box, so no full-screen zoom.
         fullScreen: false,
-        badge: 'POWER BAND — CALCULATED · SPL from the Audio Calculator Laboratory · free field, one cabinet',
+        modelNote: 'Calculated with the Audio Calculator Laboratory: one cabinet, in free field.',
         initialParam: 'amp',
         hideDragTag: true,
         bezel: [
           { k: 'MATCH', v: match === 'ok' ? (amp > CABINET.program ? 'JUST OVER' : 'IN BAND') : match === 'under' ? 'UNDER' : 'OVER', tint },
-          { k: 'CONTINUOUS', v: `${CABINET.continuous} W`, flex: 1.1 },
-          { k: 'PROGRAM', v: `${CABINET.program} W` },
-          { k: `SPL @ ${dist} m`, v: `${spl.toFixed(1)} dB`, tint: colors.amber, flex: 1.2 },
+          { k: 'CONTINUOUS', caption: 'steady power', v: `${CABINET.continuous} W`, flex: 1.1 },
+          { k: 'PROGRAM', caption: 'music power', v: `${CABINET.program} W` },
+          { k: `SPL @ ${dist} m`, kNarrow: 'SPL', v: `${spl.toFixed(1)} dB`, tint: colors.amber, flex: 1.2 },
         ],
         stage: (w, h) => <PowerBand amp={amp} match={match} dist={dist} spl={spl} w={w} h={h} />,
         params,
       }}
-      caption="Ride AMP across the cabinet’s power band and read which side of it the amplifier lands on. Move the LISTENER and watch the SPL fall with distance."
+      caption="Slide AMP across the cabinet’s power band and read which side of it the amplifier lands on. Move the LISTENER and watch the SPL fall with distance."
       wellTop={<VerdictLine ok={match === 'ok'} warn={match === 'over'}>{ampMatchCopy(match, amp, CABINET.continuous, CABINET.program)}</VerdictLine>}
     >
       <ChapterTag n={8}>POWER RATINGS, HEADROOM AND PROTECTION</ChapterTag>
-      <Body>The cabinet’s power band — continuous to program — and where the chosen amplifier lands on it.</Body>
+      {/* SS-01: the idea in plain words first; the formula is folded under GO DEEPER. */}
+      <Body>The idea: pick an amplifier inside the cabinet’s power band and run it clean; doubling the watts makes it only a little louder. The band runs from continuous to program, and the mark is where the chosen amplifier lands.</Body>
       <Prompt>Try each side of the band and read what it costs.</Prompt>
       <GoalChips goals={goals} latched={latched} />
       <Card tone="math">
         <Eyebrow>HOW LOUD, WHERE · FROM THE CALCULATOR</Eyebrow>
-        <Text style={styles.path}>SPL = sensitivity + 10·log10(P) − 20·log10(d) − headroom</Text>
         <ReadoutRow>
           <Readout k="SENSITIVITY" v={`${CABINET.sensitivity} dB · 1 W / 1 m`} />
           <Readout k="LISTENER AT" v={`${dist} m`} />
@@ -845,10 +846,10 @@ function PagePower({ ctx }: { ctx: PageCtx }) {
         <Eyebrow>PROTECTING HIGH-FREQUENCY DRIVERS</Eyebrow>
         <Body>Tweeters die from clipped amplifiers and from sustained feedback far more often than from clean power. The processor’s limiter, set for the cabinet; a powered loudspeaker’s input gain left at its nominal mark; and an operator who reduces gain before the clip light stays on — these are the protections. Sensitivity and maximum SPL on the data sheet tell you how loud a cabinet CAN go; headroom tells you how loud you should ASK it to go.</Body>
       </Card>
-      <DeeperRow>
+      <FormulaFold formula="SPL = sensitivity + 10·log10(P) − 20·log10(d) − headroom">
         <CalcLink id={CALC_LINKS.spl.workspace} label="Loudspeaker power and SPL" />
         <CalcLink id={CALC_LINKS.splDistance.workspace} label="SPL at a distance" />
-      </DeeperRow>
+      </FormulaFold>
     </SoundSystemsRackLayout>
   );
 }

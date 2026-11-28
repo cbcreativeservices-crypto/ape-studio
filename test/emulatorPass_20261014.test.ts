@@ -41,8 +41,9 @@ describe('1 · Ear Training what’s-left', () => {
     const p = { frequency: prog({ mastered: 2, level: 3, total: 60 }), eq: prog({ level: 1, total: 7 }) };
     const units = earEndUnits(MODS, p);
     assert.deepEqual(units.map((u) => u.id), ['frequency', 'eq', 'comb']);
-    assert.match(units[0].detail!, /^Level 2 of 5 cleared/);
-    assert.match(units[1].detail!, /^Tried · level 1 of 4 · 7 answers · clear level 2 at 80 % over 20 answers to count$/);
+    // Phase 3, owner 2026-11-14: "remove progress N-of-total" — the level is named alone.
+    assert.match(units[0].detail!, /^Level 2 cleared/);
+    assert.match(units[1].detail!, /^Tried · level 1 · 7 answers · clear level 2 at 80 % over 20 answers to count$/);
     assert.match(units[2].detail!, /^Not tried yet/);
     assert.deepEqual([...earCreditedIds(MODS, p)], ['frequency']);
   });
@@ -133,7 +134,8 @@ describe('3/4 · Speech', () => {
     assert.match(s, /\{ title: 'Check Yourself', short: 'Check', Component: PageSpeechChecks, manualDone: true \}/);
     const p = read('src/screens/lab/speech/speechPagesB.tsx');
     assert.match(p, /if \(n >= PASS_MARK && !isDone\) markDone\(\);/);
-    assert.match(p, /correct this visit\{ctx\.isDone \? ' · page complete'/);
+    // Phase 3, owner 2026-11-14: one unit noun per lab — Speech says "module", as its strip does.
+    assert.match(p, /correct this visit\{ctx\.isDone \? ' · module complete'/);
   });
 
   it('Popping breath caption describes the drawn trace (noise past the middle, voice returns)', () => {

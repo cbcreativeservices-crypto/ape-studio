@@ -310,7 +310,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: what moves most of the air when a bass string is plucked?', options: ['The string itself', 'The top, driven by the bridge', 'The long neck'], after: 'Now STEP through the pluck (or PLAY ONCE) and watch what each event drives.' },
+  sound: { prompt: 'Before you step through: what moves most of the air when a bass string is plucked?', options: ['The string itself', 'The top, driven by the bridge', 'The long neck'], after: 'Now go EVENT by EVENT through the pluck (or PLAY ONCE) and watch what each event drives.' },
   placement: { prompt: 'Predict: you slide the mic from the neck joint toward the sound hole. What changes?', options: ['More string detail', 'More body and low end', 'It depends on this bass'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   ...STRINGS_PREDICT,
 };

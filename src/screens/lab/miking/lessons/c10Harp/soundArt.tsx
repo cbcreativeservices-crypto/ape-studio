@@ -26,6 +26,7 @@ import { fitXform } from '../../engine/geometry/frame.ts';
 import { StaticLabels, type StaticLabel } from '../../engine/scene/StaticLabels';
 import { HarpSide, harpistSideMoved, HarpWithHarpistSide } from './art';
 import { harpHandPlan } from './harpistPose.ts';
+import { FigureScale } from '../shared/figureV2/detail';
 import { harpGeom } from './harpSpec.ts';
 
 const AMBER = '#ffc64d';
@@ -182,7 +183,10 @@ export function HarpPluckSequence({ w, h, variant, reveal, shown, accessibilityL
     <View style={{ width: w, height: h }}>
       <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={accessibilityLabel}>
         <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
-          <HarpWithHarpistSide variant={variant} dim={0.8} harpDim={0.75} fronts={fronts} />
+          {/* (the picture's own drawn scale: the figure picks its level of detail from it) */}
+          <FigureScale ptPerMm={xf.s}>
+            <HarpWithHarpistSide variant={variant} dim={0.8} harpDim={0.75} fronts={fronts} />
+          </FigureScale>
           <Group opacity={sBOn}>
             <Path path={sB} style="stroke" strokeWidth={6} color={BLUE} />
           </Group>

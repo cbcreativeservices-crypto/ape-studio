@@ -54,7 +54,10 @@ export const ReportCard = forwardRef<View, { report: SharedCalculatorReport }>(f
         <>
           <View style={styles.rule} />
           <Text style={styles.section} accessibilityRole="header">PRIMARY RESULT</Text>
-          <Text style={styles.primary} accessibilityLabel={`Primary result ${r.primaryResult.formattedValue}`}>
+          {/* The result's own name, so a bare number is never the headline
+              (beginner audit 2026-11-14: "PRIMARY RESULT 375"). */}
+          <Text style={styles.rowLabel}>{r.primaryResult.label}</Text>
+          <Text style={styles.primary} accessibilityLabel={`Primary result ${r.primaryResult.label} ${r.primaryResult.formattedValue}`}>
             {r.primaryResult.formattedValue}
           </Text>
         </>

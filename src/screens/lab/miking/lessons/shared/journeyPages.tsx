@@ -27,10 +27,10 @@ import type { Lesson, MicPattern, MicPose, MicSlot, MicType } from '../../engine
 import { PageSteps, type MikingStep } from '../../engine/steps';
 import { Body, Card, KeyButton, Landing, Note, OrderTaskCard, Point, PredictCard, ScenarioList, SetupTaskCard } from '../../engine/kit';
 import { JourneyMap, PathChooser, QuickCheckCard, type JourneyProps } from '../../engine/journeyKit';
-import { journeyIntro } from '../../engine/journey.ts';
+import { journeyIntro, JOURNEY_LENGTH_LINE } from '../../engine/journey.ts';
 import { copyOf, ownInstrumentWord } from '../../engine/model/copy.ts';
 import { PolarCompare } from '../../engine/scene/PolarCompare';
-import { gainDb, isModelled, nullAngles, PATTERN_LABELS } from '../../engine/physics/polar.ts';
+import { gainDb, isModelled, nullAngles, PATTERN_BLURBS, PATTERN_LABELS } from '../../engine/physics/polar.ts';
 import { fmtAngle, fmtDb, fmtIdealPickup, fmtLen, isDeepNull } from '../../engine/model/units.ts';
 import type { Rig } from '../../engine/scene/useRig.ts';
 import { previewMemo, reachOf, stopWordOf } from '../../engine/scene/placementDock.ts';
@@ -52,7 +52,8 @@ export function startStep(lesson: Lesson, journey: JourneyProps, _intro: string,
     layout: 'read',
     body: (
       <>
-        <Body>{own ?? journeyIntro(lesson.noun, ownInstrumentWord(lesson))}</Body>
+        {/* MK-05 (2026-11-15): a lesson's own intro also says its size and where to stop. */}
+        <Body>{own ? `${own} ${JOURNEY_LENGTH_LINE}` : journeyIntro(lesson.noun, ownInstrumentWord(lesson))}</Body>
         <JourneyMap met={journey.met} here="meet" titleOf={journey.titleOf} />
         <PathChooser journey={journey} />
         {journey.path === 'experienced' ? <QuickCheckCard items={lesson.diagnostic} journey={journey} /> : null}
@@ -145,7 +146,7 @@ export function GMicrophone({ lesson, answers, onAnswered }: PageProps, spec: Mi
         selectedId: pat,
         onSelect: (id) => setPattern(id as MicPattern),
         sticky: true,
-        options: t.patterns.map((p) => ({ id: p.id, label: p.label })),
+        options: t.patterns.map((p) => ({ id: p.id, label: p.label, blurb: PATTERN_BLURBS[p.id] })),
       },
     ],
     [angle, pickup, t, typeId, pat, lesson.micTypeIds],
@@ -196,7 +197,8 @@ export function GMicrophone({ lesson, answers, onAnswered }: PageProps, spec: Mi
           {lesson.micTypeIds.map((id) => {
             const m = MIC_TYPES[id];
             const isOpen = open.has(id);
-            const p = m.patterns[0].id;
+            // (audit 2026-11-25, Appendix E: the picked type's card names the pattern picked, as the bezel and the lobe do)
+            const p = id === typeId ? pat : m.patterns[0].id;
             return (
               <Card key={id}>
                 <Point title={m.label.toUpperCase()}>{m.blurb}</Point>

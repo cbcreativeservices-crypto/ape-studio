@@ -171,12 +171,16 @@ describe('3. each guide quotes its screen’s real names', () => {
     'bias.bias': ["label: 'BIAS'", "k: 'REGION'", "'CUTOFF'", "'SATUR.'", "'LINEAR'", "k: 'IDLE'", 'DEVICE CURRENT (gold)', 'TOO LITTLE BIAS', 'APPROPRIATE LINEAR BIAS', 'EXCESSIVE BIAS'],
     'bias.angle': ["label: 'ANGLE'", "k: 'CLASS'", "label: '90° · C'", "label: '180° · B'", "label: '270° · AB'", "label: '360° · A'"],
     'bias.pushpull': ["k: 'HANDOFF'", "'NOTCH'", "'OVERBIAS'", "'CLEAN'", 'YOUR TASK', 'ZERO CROSS', '×3.2'],
-    'classes.explorer': ["label: 'CLASS'", "label: 'LEVEL'", "label: 'SIGNAL'", "label: 'AB BIAS'", "label: 'TUNE'", "k: 'CONDUCT.'", "k: 'IDLE'", "k: 'DISTORT.'", "'NOTCH'", "'DETUNED'", "'CLEAN'", 'SIDE BY SIDE', 'ZERO CROSS', 'after the tuned circuit'],
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item AMPL-02): module 4's bezel
+    // shows CONDUCT., EFFIC. and DISTORT.; IDLE CURRENT is in the card under the display.
+    'classes.explorer': ["label: 'CLASS'", "label: 'LEVEL'", "label: 'SIGNAL'", "label: 'AB BIAS'", "label: 'TUNE'", "k: 'CONDUCT.'", 'IDLE CURRENT', "k: 'DISTORT.'", "'NOTCH'", "'DETUNED'", "'CLEAN'", 'SIDE BY SIDE', 'ZERO CROSS', 'after the tuned circuit'],
     'classd.pwm': ["label: 'LEVEL'", "label: 'VIEW'", "k: 'AT TROUGH'", "k: 'AT PEAK'", "label: 'Raw switching'", "label: 'Filter action'", "label: 'Recovered audio'", 'CLASS D'],
     'classd.bridge': ["k: 'AT PEAK'", "k: 'TO LOAD'", "k: 'AS HEAT'", '+RAIL', '−RAIL', 'HIGH SIDE', 'LOW SIDE', 'LOAD', '0 V', 'DEAD TIME', 'WHERE THE ENERGY GOES'],
     'supply.rails': ["k: 'STATE'", "k: 'RAILS'", "k: 'OUTPUT'", "k: 'CURRENT'", "k: 'POWER'", "'V-CLIP'", "'I-LIMIT'", "'PROTECT'", "label: 'RAIL'", "label: 'LOAD'", "label: 'SUPPLY'", "label: 'Linear supply'", "label: 'Switch-mode supply'"],
     'realworld.gain': ["label: 'SOURCE'", "label: 'MIXER'", "label: 'AMP IN'", "k: 'VERDICT'", "'HEALTHY'", "'STARVED'", "'MIXER / DSP'", "'AMP OUTPUT'", "'(rails)'", "'SPEAKER'", 'CLIPPING', '% of clip'],
-    'realworld.practice': ["label: 'Parallel'", "label: 'Series'", 'CLEAR', 'Bridge mode', 'Power ratio P2 ÷ P1', 'CHECK', 'POWER AND CURRENT'],
+    // Split in two (phase 3, owner decision 5, 2026-11-14): loads/power/bridging, then loudness/risk/spec sheets.
+    'realworld.practice': ["label: 'Parallel'", "label: 'Series'", 'CLEAR', 'Bridge mode', 'POWER AND CURRENT'],
+    'realworld.risk': ['Power ratio P2 ÷ P1', 'CHECK'],
     'apply.diagnose': ['OUTPUT — what is this amplifier doing?', "k: 'PICTURE'", "k: 'SCORE'", "k: 'READING'", "'RIGHT'", "'WRONG'", 'NEXT WAVEFORM ›', 'REPEAT THE ROUND ›'],
     'apply.choose': ['2 · CHOOSE AN AMPLIFIER', '3 · MYTH REVIEW', 'NEXT SCENARIO ›', 'NEXT STATEMENT ›', "label: 'True'", "label: 'False'", "label: 'It depends'"],
     'apply.challenge': ["k: 'OUTPUT'", "k: 'FAULT'", "'NONE'", "k: 'SCORE'", "label: 'SETUP'", 'SCORE THIS CONFIGURATION', '"Operating mode"', '"Supply condition"', '"Speaker load (nominal)"', '"Ventilation"', "label: 'Sagging (weak AC power)'"],
@@ -338,7 +342,10 @@ describe('4. the numbers in the guide are the numbers the screen prints', () => 
     // decimal and agrees with the 0.08 test at every 1% BIAS step. The HEAT
     // cell reads "warm" across the whole lane, so the cost shown is SUPPLY.
     assert.match(src, /const idlePct = \(pp\.idleCurrent \* 100\)\.toFixed\(1\);/);
-    assert.match(src, /\{ k: 'IDLE', v: `\$\{idlePct\}%`, tint: tooHot \? colors\.gold : AMP_COLORS\.pos \}/);
+    // `caption` added on purpose (lab fix round 1, phase 2, owner 2026-11-14: "Begin fixing all bugs found and do
+    // obvious (my decision is not required) fixes as you suggestted in the report."): the first-visit bezel caption.
+    // Shortened to 'at rest' (checker C3, 2026-11-14): 'resting draw' was cut with "…" in the 43 px cell at 320.
+    assert.match(src, /\{ k: 'IDLE', v: `\$\{idlePct\}%`, tint: tooHot \? colors\.gold : AMP_COLORS\.pos, caption: 'at rest' \}/);
     assert.doesNotMatch(src, /Math\.round\(pp\.idleCurrent \* 100\)/);
     assert.equal((pp(0.83).idleCurrent * 100).toFixed(1), '8.0');
     assert.equal((pp(0.84).idleCurrent * 100).toFixed(1), '8.1');
@@ -455,7 +462,8 @@ describe('4. the numbers in the guide are the numbers the screen prints', () => 
     const p = guideOf('realworld', 'practice').tryThis.join(' ');
     assert.match(p, /Ztotal ≈ 4\.00 Ω[\s\S]*\+ 8 Ω: 2\.67 Ω/);
     assert.match(p, /4 Ω: 7\.08 A and 200 W, against 3\.54 A and 100 W at 8 Ω/);
-    assert.match(p, /starts at 2\.00×: the formula reads \+3\.01 dB\. Slide it to the top, 10\.00×: \+10\.00 dB/);
+    // The watts lane moved to the split-off 'risk' step (phase 3, owner decision 5).
+    assert.match(guideOf('realworld', 'risk').tryThis.join(' '), /starts at 2\.00×: the formula reads \+3\.01 dB\. Slide it to the top, 10\.00×: \+10\.00 dB/);
     assert.match(src, /const \[ratio, setRatio\] = useState\(2\);/);
     // The log2 lane's top: round(log2(10)·12)/12 overshoots, the clamp lands on log2(10) → 10.000×.
     const top = Math.min(Math.log2(10), Math.round(Math.log2(10) / (1 / 12)) * (1 / 12));

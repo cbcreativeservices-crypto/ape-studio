@@ -41,11 +41,13 @@ import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { LabShell, HeaderPlayButton } from './LabShell';
+import { LabCheckEnd } from './kit/LabCheckEnd';
 import { useStageTextScale } from './rack/stageAspect';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../features/audio/useStopOnBlur';
 import { autotuneScreenGuide } from './autotuneScreenGuides';
+import { PLAIN_TERMS } from '../../features/lab/plainTerms';
 
 const GEN_LEVEL_DB = -20;
 const ACTIVITY_MS = 500;
@@ -91,6 +93,23 @@ function voicePayload(hz: number): number[] {
 
 /** Fader readout — 0 reads "OFF" (the old "0% — OFF" chip, kept honest). */
 const fmtAmount = (amount: number) => (amount <= 0.005 ? 'OFF' : `${Math.round(amount * 100)}%`);
+
+/** The AMOUNT lane's value as the lab uses it (owner 2026-11-25, audit B18):
+ *  a resting position at or under 0.5 % IS off, for the sound, the curves and
+ *  the readout alike. The lane is continuous, so it could hand over 0.003:
+ *  the readout said OFF and SPEED greyed to UNUSED, but the curve drew solid
+ *  and a faint wedge showed (and the pass corrected by 0.3 %). */
+function amountFromLane(v: number): number {
+  return v <= 0.005 ? 0 : v;
+}
+
+/** Where the pitch dot starts when it (re)appears mid-pass (audit B10): at the
+ *  pass's elapsed share, so it rides the note that is SOUNDING. After a SPEED
+ *  change mid-play the replay starts 250 ms later but the dot was hidden for
+ *  the 1.1 s redraw, then started from the top: ~0.85 s behind the sound. */
+function pitchDotFrom(elapsedMs: number, totalMs: number): number {
+  return totalMs > 0 ? Math.min(1, Math.max(0, elapsedMs / totalMs)) : 0;
+}
 
 const INTRO =
   'Every note has a target line on the cents grid — one vertical line per semitone. This ' +
@@ -265,10 +284,14 @@ export function AutotuneLabScreen() {
   return (
     <LabShell
       labId="autotune"
+      // FINISH · SEE WHAT'S LEFT under the CHECK; opening it stops the melody (fix round 2026-11-14, S2).
+      checkEnd={<LabCheckEnd labId="autotune" labTitle="Autotune Lab" onOpen={stop} />}
       title="AUTOTUNE LAB"
       subtitle="Pitch Correction · Cents Grid · Retune Speed"
       intro={INTRO}
-      exploreCaption="Set the correction amount and retune speed, then play the out-of-tune melody and watch each note pull onto its gridline."
+      // AUT-02 (owner 2026-11-15, "build waves 1 thru 3"): the first line under the display explains
+      // ¢ in the shared words (plainTerms.ts); it replaces the old caption, so no line is added.
+      exploreCaption={`¢ = cents: ${PLAIN_TERMS.cents.short}. Slide AMOUNT, switch SPEED, and watch each note pull onto its gridline.`}
       // Screen Guide (2026-10-31): the ⓘ explains the tab on screen (EXPLORE
       // rack, LEARN reading page, CHECK questions). A CONCEPT lab — the singer
       // is the app's own tone generator and every number is the lab's exact
@@ -288,13 +311,22 @@ export function AutotuneLabScreen() {
         initialParam: 'amount',
         onHelp: openLesson,
         stage: {
+          // The silent learner's line (fix round 2026-11-14, S3 §1): every EXPLORE step here works with sound off.
+          // AUT-03 (owner 2026-11-15, "build waves 1 thru 3"): points the eye at the bend (same slot, no new line).
+          soundOffLine: 'Sound off? Switch SPEED and watch each curve replay: FAST snaps, SLOW glides.',
           size: 'L', // the cents grid IS the lab — earns the tall glass
           fullScreen: true, // the rack's ⤢ FULL SCREEN (full-screen build 2026-09-30)
           badge: 'CENTS GRID — THE CURVE SHOWS THE EXACT RETUNING YOU HEAR',
+          // Phase 3 (owner decision 3, 2026-11-14, S3 §2): the disclosure as one plain sentence.
+          // AUT-01 (owner 2026-11-15, "build waves 1 thru 3"): the one-line key on the display, in the
+          // note's own slot, and still the honesty line (amber = what you hear). In the code GRAY is
+          // the note AS SUNG and the GRIDLINE is the right note (the target).
+          modelNote: 'Each row is one sung note, top to bottom: gray as sung, amber as heard; gridline = right note.',
           onGuide: () => openLesson('cents_grid'),
           bezel: [
-            { k: 'AMOUNT', v: fmtAmount(amount), helpKey: 'correction' },
-            { k: 'SPEED', v: speed.short, helpKey: 'retune_speed' },
+            // Plain-word captions on the first visit (fix round 2026-11-14, S3 §4).
+            { k: 'AMOUNT', v: fmtAmount(amount), helpKey: 'correction', caption: 'how far pulled' },
+            { k: 'SPEED', v: speed.short, helpKey: 'retune_speed', caption: 'how fast' },
             // Live transport readout: which note is being corrected right now.
             {
               k: 'NOTE',
@@ -302,7 +334,7 @@ export function AutotuneLabScreen() {
               helpKey: 'cents_grid',
             },
             // The residual: where the worst note (45¢ flat) ENDS after correction.
-            { k: 'ENDS', v: `${remaining(MELODY[3].offCents)}¢`, helpKey: 'correction' },
+            { k: 'ENDS', v: `${remaining(MELODY[3].offCents)}¢`, helpKey: 'correction', caption: 'still off by' },
           ],
           render: (w, h) => (
             // Tapping the display toggles play/stop (owner 2026-07-31) — same
@@ -312,7 +344,7 @@ export function AutotuneLabScreen() {
               accessibilityRole="button"
               accessibilityLabel={playing ? 'Tap to stop' : 'Tap to play'}
             >
-              <CentsGrid amount={amount} tau={tau} activeNote={activeNote} playing={playing} passId={passId} width={w} height={h} />
+              <CentsGrid amount={amount} tau={tau} activeNote={activeNote} playing={playing} passId={passId} replayKey={speedKey} width={w} height={h} />
             </Pressable>
           ),
         },
@@ -327,7 +359,7 @@ export function AutotuneLabScreen() {
               // Lockstep rule: a control change ends the running pass; armed, it
               // replays with the new setting (owner 2026-09-29).
               if (playing) hush();
-              setAmount(v);
+              setAmount(amountFromLane(v));
             },
             format: () => fmtAmount(amount),
             helpKey: 'correction',
@@ -347,6 +379,12 @@ export function AutotuneLabScreen() {
             },
             sticky: true, // A/B snap vs glide while the curves redraw — the lesson
             helpKey: 'retune_speed',
+            // SH-64 (owner 2026-11-15, "build waves 1 thru 3"): with AMOUNT at OFF nothing is pulled,
+            // so SPEED changes nothing: the key is grayed and a tap says why.
+            locked: amount <= 0.005 ? 'SPEED does nothing while AMOUNT is OFF: raise AMOUNT first.' : undefined,
+            // Checker fix (owner 2026-11-15): "LOCKED" reads as members-only. "AMOUNT OFF" does not fit
+            // a dock key at 9 pt, so the key says what is true of SPEED itself; a tap gives the reason.
+            lockedValue: 'UNUSED',
           },
           {
             // Visible transport (owner 2026-08-05 — the header ▶ alone was easy
@@ -367,10 +405,11 @@ export function AutotuneLabScreen() {
 
       <View style={{ gap: 6 }}>
         <Text style={styles.sectionHead}>READING THE GRID</Text>
+        {/* AUT-01 (owner 2026-11-15): the gray / amber key moved onto the display (the note under
+            it); AUT-03: switching SPEED replays each curve. */}
         <Text style={styles.caption}>
-          Gray = as sung (out of tune) · amber = corrected pitch over the note’s duration (time runs
-          downward within each note). Ride the AMOUNT fader and every curve re-bends live; switch
-          SPEED and watch snap become glide.
+          Ride the AMOUNT fader and every curve re-bends live; switch SPEED and watch each curve
+          replay from its top, a snap or a glide.
         </Text>
       </View>
 
@@ -409,11 +448,16 @@ export function AutotuneLabScreen() {
         spec={{
           question: 'Why does FAST retune sound robotic?',
           options: [
-            'Pitch JUMPS to the grid faster than any natural voice can move — and vibrato flattens with it',
-            'It adds distortion to the voice',
-            'It corrects to the wrong notes',
+            'Pitch jumps to the grid faster than a voice moves, so vibrato flattens',
+            'It adds distortion to the voice, like an overdriven preamp',
+            'It corrects every note to the wrong line on the grid',
           ],
           correctIdx: 0,
+          // Checker C2 (2026-11-14): a reason per wrong option, by authored index; never the answer.
+          why: {
+            1: 'Correction moves pitch, not tone: nothing clips. Play the melody on FAST, then SLOW, and watch the curve shapes.',
+            2: 'Each note is still pulled to its nearest line; NOTE names it. Compare how the curves reach the line on FAST and SLOW.',
+          },
           reveal:
             'A ~25 ms snap is faster than any human pitch motion, so every scoop, slide and vibrato cycle gets ironed flat the instant it starts — that instant flatness IS the robotic sound.',
           wrongHint: 'Play the melody on FAST, then SLOW, and watch the curve shapes.',
@@ -423,11 +467,16 @@ export function AutotuneLabScreen() {
         spec={{
           question: '100% correction on SLOW still leaves a short note a few cents off. Why?',
           options: [
-            'The glide takes time — the note ends before the correction finishes',
-            'SLOW mode caps correction at 90%',
-            'The singer moved',
+            'The glide takes time, and the note ends before it finishes',
+            'SLOW mode caps the correction amount at 90 percent',
+            'The singer moved off the note after it was corrected',
           ],
           correctIdx: 0,
+          // Checker C2 (2026-11-14): a reason per wrong option, by authored index; never the answer.
+          why: {
+            1: 'AMOUNT sets how far, and it is at 100%. Read ENDS with AMOUNT at 100%, then switch SPEED to FAST.',
+            2: 'The melody is fixed; nothing moves after correction. Watch a short note’s curve: where is it when the note stops?',
+          },
           reveal:
             'Retune speed is a time constant (τ): on SLOW, τ is ~400 ms, and each τ closes most of the remaining gap to the grid. A 1.1 s note ends mid-glide — read the ENDS cell, it does the τ math live. Transparent tuning trades precision for motion.',
           wrongHint: 'Set 100% + SLOW and read ENDS — then switch to FAST.',
@@ -460,6 +509,7 @@ function CentsGrid({
   activeNote,
   playing,
   passId,
+  replayKey,
   width,
   height,
 }: {
@@ -470,6 +520,8 @@ function CentsGrid({
   playing: boolean;
   /** Changes at every pass start (re-syncs the dot to t = 0). */
   passId: number;
+  /** AUT-03: a change (the SPEED key) replays the corrected curves from top to bottom. */
+  replayKey?: string;
   /** The stage hands its width in (right on the first frame in FULL SCREEN,
    *  where the grid mounts fresh at a new size); measured when absent. */
   width?: number;
@@ -498,6 +550,37 @@ function CentsGrid({
     [w, loC, hiC],
   );
 
+  // AUT-03 (owner 2026-11-15, "build waves 1 thru 3"): when SPEED changes, the corrected curves
+  // redraw from the top of each row to its bottom at the melody's own pace (one note = NOTE_MS),
+  // so FAST is SEEN as a snap and SLOW as a glide with sound off. Teaching motion, so it follows
+  // the decorative-motion setting (off under Reduce animations / Low-Light: the curves just change).
+  const motion = useDecorativeMotion();
+  const [reveal, setReveal] = useState(1);
+  const firstReplay = useRef(true);
+  useEffect(() => {
+    if (firstReplay.current) {
+      firstReplay.current = false;
+      return;
+    }
+    if (!motion) {
+      setReveal(1);
+      return;
+    }
+    let raf = 0;
+    const t0 = Date.now();
+    const step = () => {
+      const p = Math.min(1, (Date.now() - t0) / NOTE_MS);
+      setReveal(p);
+      if (p < 1) raf = requestAnimationFrame(step);
+    };
+    setReveal(0);
+    raf = requestAnimationFrame(step);
+    return () => {
+      cancelAnimationFrame(raf);
+      setReveal(1);
+    };
+  }, [replayKey, motion]);
+
   // Correction curves — one per note, memoized on the controls.
   const curves = useMemo(() => {
     if (w <= 0) return [];
@@ -510,7 +593,9 @@ function CentsGrid({
       let d = '';
       const xs: number[] = [];
       const ys: number[] = [];
-      for (let k = 0; k <= N; k++) {
+      // AUT-03: only the revealed part of the row (at least one segment).
+      const last = Math.max(1, Math.round(reveal * N));
+      for (let k = 0; k <= last; k++) {
         const t = (k / N) * noteSec;
         const c = note.midi * 100 + correctedCents(note.offCents, amount, tau, t);
         const x = xOf(c);
@@ -522,10 +607,10 @@ function CentsGrid({
       // The correction itself, as an area: from the sung pitch over to the
       // curve. A wide amber wedge = a hard, fast pull; a thin sliver = a
       // gentle one (art grading 2026-10-16: the bare hook was easy to miss).
-      const fill = `${d}L${sungX.toFixed(1)} ${y1.toFixed(1)}L${sungX.toFixed(1)} ${y0.toFixed(1)}Z`;
+      const fill = `${d}L${sungX.toFixed(1)} ${ys[ys.length - 1].toFixed(1)}L${sungX.toFixed(1)} ${y0.toFixed(1)}Z`;
       return { d, fill, xs, ys, y0, y1, sungX, gridX: xOf(note.midi * 100) };
     });
-  }, [w, rowH, padY, amount, tau, xOf]);
+  }, [w, rowH, padY, amount, tau, xOf, reveal]);
 
   // ---- The PITCH DOT: where the voice is right now, riding the curves at the
   // melody's real pace (NOTE_MS per note). While a pass plays it restarts at
@@ -533,7 +618,6 @@ function CentsGrid({
   // pass silently on a loop (decorative pacing — off under Reduce animations,
   // Low-Light, or when the screen is not focused), drawn as a dim ring so it
   // never reads as sound. Native-driver transforms: zero re-renders.
-  const motion = useDecorativeMotion();
   const isFocused = useIsFocused();
   const dot = useRef(new Animated.Value(0)).current;
   const dotRange = useMemo(() => {
@@ -553,17 +637,32 @@ function CentsGrid({
     });
     return input.length >= 2 ? { input, xs, ys } : null;
   }, [curves, ts]);
-  const showDot = dotRange !== null && isFocused && (playing || motion);
+  const showDot = dotRange !== null && reveal >= 1 && isFocused && (playing || motion);
+  // When the pass's audio started (passId bumps as it starts sounding).
+  const passT0 = useRef(Date.now());
+  useEffect(() => {
+    passT0.current = Date.now();
+  }, [passId]);
   useEffect(() => {
     if (!showDot) return;
+    const total = NOTE_MS * MELODY.length;
+    if (playing) {
+      // Mid-pass (e.g. after the redraw that follows a SPEED change), start at
+      // the sounding note, not the top (pitchDotFrom, audit B10).
+      const from = pitchDotFrom(Date.now() - passT0.current, total);
+      dot.setValue(from);
+      const rest = Animated.timing(dot, { toValue: 1, duration: (1 - from) * total, easing: Easing.linear, useNativeDriver: true });
+      rest.start();
+      return () => rest.stop();
+    }
     dot.setValue(0);
     const run = Animated.timing(dot, {
       toValue: 1,
-      duration: NOTE_MS * MELODY.length,
+      duration: total,
       easing: Easing.linear,
       useNativeDriver: true,
     });
-    const anim = playing ? run : Animated.loop(Animated.sequence([run, Animated.delay(900)]));
+    const anim = Animated.loop(Animated.sequence([run, Animated.delay(900)]));
     anim.start();
     return () => anim.stop();
   }, [showDot, playing, passId, dot]);
@@ -629,6 +728,10 @@ function CentsGrid({
                 fill="none"
                 strokeDasharray={amount === 0 ? '4 4' : undefined}
               />
+              {/* AUT-01: the notes in order, 1 to 6, at the row's right edge (clear of every gridline label). */}
+              <SvgText x={w - 3} y={c.y0 + 11} fill={colors.textSub} fontSize={10} fontFamily={fonts.mono} textAnchor="end">
+                {`${i + 1}`}
+              </SvgText>
               <SvgText
                 x={c.sungX + (MELODY[i].offCents >= 0 ? 6 : -6)}
                 y={c.y0 + 11}

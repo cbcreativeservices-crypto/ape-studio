@@ -416,7 +416,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: where does a cloth pass get its sharp detail?', options: ['From the hands', 'From the fold flexing and rubbing', 'From the room'], after: 'Now STEP through (or PLAY ONCE) and watch the hands, the fold, the swing and the room.' },
+  sound: { prompt: 'Before you step through: where does a cloth pass get its sharp detail?', options: ['From the hands', 'From the fold flexing and rubbing', 'From the room'], after: 'Now go EVENT by EVENT (or PLAY ONCE) and watch the hands, the fold, the swing and the room.' },
   microphone: { prompt: 'Before you move anything: where will the supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move from about 1.25 m to about 60 cm from the fabric. What changes?', options: ['More detail and finger rub', 'More room', 'It depends on this garment'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front of the artist. Where will a supercardioid aimed at the fabric reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },

@@ -26,12 +26,17 @@ import { UnderstandingCheck } from '../components/check';
 import { StageFit } from '../../rack/StageFit';
 import { ExpandableFigure } from '../../kit/ExpandableFigure';
 import type { DockParam } from '../../rack/rackTypes';
+import { CollapsibleSection } from '../../LabShell';
 import { TuningRackLayout, playTray, soundCell, stopKey, usePlayerStatus, type PlayClip } from '../rackLayout';
 
 const JUST = TUNING_SYSTEMS.just;
 const JUST_FRACS: Record<string, Frac | undefined> = { C: frac(1, 1), D: frac(9, 8), E: frac(5, 4), F: frac(4, 3), G: frac(3, 2), A: frac(5, 3), B: frac(15, 8) };
 const jf = (sp: string): Frac => JUST_FRACS[sp] ?? frac(1, 1);
 const THIRDS: [string, string][] = [['C', 'E'], ['F', 'A'], ['G', 'B']];
+/** Each pure third's arc row on the rail (owner 2026-11-25, audit B19): F–A on
+ *  top, C–E under it, G–B lowest, so no label sits on a neighbouring arc
+ *  (F–A and G–B overlap in cents; C–E clears both). */
+const ARC_ROW: Record<string, number> = { C: 1, F: 0, G: 2 };
 const NAMES = ['C', 'D', 'E', 'F', 'G', 'A', 'B'] as const;
 type Tonic = 'C' | 'F' | 'G' | 'D';
 /** Proper major-scale spellings. The letter alone is not enough: F major
@@ -48,9 +53,14 @@ const RAIL_H = 128;
 const N = JUST.notes.length; // 8
 
 /** A dock key that holds its slot but is not usable yet (rackTypes fader
- *  `locked`): it reads LOCKED, never binds the lane, and a tap prints why. */
-function lockedKey(id: string, label: string, reason: string): DockParam {
-  return { kind: 'fader', id, label, locked: reason, value: 0, onChange: () => {}, format: () => '' };
+ *  `locked`): it never binds the lane, and a tap prints why. It reads its
+ *  own "not yet" words, dimmed, never LOCKED, which looked like a
+ *  members-only lock (owner 2026-11-15: "build waves 1 thru 3", D62 TU-04;
+ *  rack `lockedValue`, SN-1). The words are short ("2 notes", "all 8") so all
+ *  three fit a 60 px key at the dock's own size (checker, 2026-11-15: "after
+ *  2 notes" needed 98 px and was cut to "after …"); the reason line says the rest. */
+function lockedKey(id: string, label: string, reason: string, lockedValue: string): DockParam {
+  return { kind: 'fader', id, label, locked: reason, lockedValue, value: 0, onChange: () => {}, format: () => '' };
 }
 
 export function Ch7Just({ ctx }: ChapterProps) {
@@ -129,6 +139,13 @@ export function Ch7Just({ ctx }: ChapterProps) {
       : []),
   ];
 
+  // SHOW FIRST / NEXT / LAST ARC draws each pure 5/4 third on the rail
+  // (audit B19: the press used to add only a text card). Hidden in RETUNE,
+  // where the upper lane is muted and the lower lane is the lesson.
+  const arcBrackets = revealed >= 7 && !(keyStage && mode === 'retune')
+    ? THIRDS.slice(0, arcs).map(([lo, hi]) => ({ fromCents: ratioToCents(fracValue(jf(lo))), toCents: ratioToCents(fracValue(jf(hi))), label: `${lo}–${hi} · 5/4`, role: 'exact' as const, row: ARC_ROW[lo] }))
+    : undefined;
+
   const clips: PlayClip[] = [
     ...(revealed > 1 ? [{ id: 'newest', label: `C + ${newest.spelling}`, make: () => renderNotes([root, hz(newest.value.numericRatio)], 1.4, 'rich'), name: `C and ${newest.spelling}` }] : []),
     ...(revealed >= 5
@@ -166,7 +183,7 @@ export function Ch7Just({ ctx }: ChapterProps) {
     // locked-key pattern), and come alive in place.
     clips.length
       ? playTray({ player: ctx.player, last, setLast, clips, short: (c) => c.label.split(' ')[0] })
-      : lockedKey('play', 'PLAY', 'reveal a second note first — then C sounds with the newest one'),
+      : lockedKey('play', 'PLAY', 'reveal a second note first — then C sounds with the newest one', '2 notes'),
     ...(keyStage
       ? ([
           {
@@ -182,8 +199,8 @@ export function Ch7Just({ ctx }: ChapterProps) {
           { kind: 'toggle', id: 'retune', label: 'RETUNE', value: mode === 'retune', onToggle: () => setMode((m) => (m === 'keep' ? 'retune' : 'keep')) },
         ] as DockParam[])
       : [
-          lockedKey('tonic', 'TONIC', `reveal all ${N} notes first — then try the mapping in another key`),
-          lockedKey('retune', 'RETUNE', `reveal all ${N} notes first — then rebuild the set for the new tonic`),
+          lockedKey('tonic', 'TONIC', `reveal all ${N} notes first — then try the mapping in another key`, `all ${N}`),
+          lockedKey('retune', 'RETUNE', `reveal all ${N} notes first — then rebuild the set for the new tonic`, `all ${N}`),
         ]),
     stopKey(ctx.player),
   ];
@@ -197,20 +214,20 @@ export function Ch7Just({ ctx }: ChapterProps) {
         hideDragTag: true,
         bezel: keyStage
           ? [
-              { k: 'TONIC', v: tonic, tint: colors.cyanBright, flex: 0.8 },
-              { k: 'MODE', v: mode === 'keep' ? 'KEEP' : 'RETUNE', tint: mode === 'retune' ? colors.gold : undefined },
+              { k: 'TONIC', v: tonic, tint: colors.cyanBright, flex: 0.8, caption: 'home note' },
+              { k: 'MODE', v: mode === 'keep' ? 'KEEP' : 'RETUNE', tint: mode === 'retune' ? colors.gold : undefined, caption: 'keep or retune' },
               { k: mode === 'keep' ? 'IMPURE' : 'MOVED', v: mode === 'keep' ? `${keyDemo.checks.filter((c) => !c.ok).length} of 4` : `${keyDemo.moved.length} + ${keyDemo.added.length} new`, tint: colors.gold, flex: 1.1 },
               soundCell(status),
             ]
           : [
-              { k: 'NOTE', v: `${newest.spelling} ${newest.value.exactLabel}`, tint: colors.gold, flex: 1.1 },
-              { k: 'CENTS', v: `${newest.value.cents.toFixed(2)} ¢` },
-              { k: 'Hz', v: `${hz(newest.value.numericRatio).toFixed(2)} Hz`, flex: 1.1 },
+              { k: 'NOTE', v: `${newest.spelling} ${newest.value.exactLabel}`, tint: colors.gold, flex: 1.1, caption: 'latest note' },
+              { k: 'CENTS', v: `${newest.value.cents.toFixed(2)} ¢`, caption: 'its position' },
+              { k: 'Hz', v: `${hz(newest.value.numericRatio).toFixed(2)} Hz`, flex: 1.1, caption: 'frequency' },
               soundCell(status),
             ],
         stage: (w, h) => (
           <StageFit w={w} h={h} aspect={CENTS_RAIL_W / centsRailH(RAIL_H)}>
-            <CentsRail markers={markers} reduceMotion={ctx.reduceMotion} height={RAIL_H} fit />
+            <CentsRail markers={markers} brackets={arcBrackets} reduceMotion={ctx.reduceMotion} height={RAIL_H} fit />
           </StageFit>
         ),
         params,
@@ -231,7 +248,8 @@ export function Ch7Just({ ctx }: ChapterProps) {
       {revealed >= 5 ? (
         <>
           <Eyebrow>THE 4:5:6 MAJOR TRIAD</Eyebrow>
-          <EquationStage
+          {/* The fraction chain folds under MATH (D62 TU-01); the paragraph below says it in words. */}
+          {ctx.mathView ? <EquationStage
             reduceMotion={ctx.reduceMotion}
             steps={[
               { text: 'C, E, G = 1, 5/4, 3/2' },
@@ -239,8 +257,12 @@ export function Ch7Just({ ctx }: ChapterProps) {
               { text: '4 × 1, 4 × 5/4, 4 × 3/2', emphasis: true },
               { text: '= 4 : 5 : 6', note: 'the C-major triad as a simple whole-number relationship' },
             ]}
-          />
-          <Body>The C-major triad can be written as the simple whole-number relationship 4:5:6 — a ratio between the three notes. They are not harmonics 4, 5 and 6 of the C shown here; that reading only works for a shared note two octaves below C. Hear C, E, G, the chord and the aligned partials from the PLAY key.</Body>
+          /> : null}
+          <Body>The C-major triad can be written as the simple whole-number relationship 4:5:6 — a ratio between the three notes. Hear C, E, G, the chord and the aligned partials from the PLAY key.</Body>
+          {/* owner 2026-11-21: "build the second-pass collapse fixes too": the reading beside the task starts CLOSED, one tap away, every word kept. */}
+          <CollapsibleSection title="MORE DETAIL · WHAT 4:5:6 IS NOT" startOpen={false}>
+            <Body>They are not harmonics 4, 5 and 6 of the C shown here; that reading only works for a shared note two octaves below C.</Body>
+          </CollapsibleSection>
         </>
       ) : null}
 

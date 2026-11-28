@@ -73,6 +73,7 @@ import {
   withTiming,
 } from '../motion';
 import type { CiModuleProps } from '../registry';
+import { CollapsibleSection } from '../../LabShell';
 
 /* ── (A) stage-craft decisions ──────────────────────────────────────────── */
 type CraftOption = { id: string; label: string; ok: boolean; short: string };
@@ -1701,7 +1702,7 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
         <Text style={s.lead}>
           Soundcheck in an hour. The deck is as found — the numbered badges mark three hazards: ① mic lines webbed
           across the playing area, ② spare cable in loose loops, ③ monitor feeds bare across the deck. Make three calls —
-          the plot redraws each part the professional way as you get it right.
+          the plot redraws each part the professional way as you get it right. (SR / SL = stage right / stage left, as the performer faces the audience; the riser is the raised platform.)
         </Text>
         {/* The plan may only redraw a part "the professional way" once the call
             was actually CORRECT (fix 2026-08-28). This was keyed on
@@ -1719,9 +1720,13 @@ export function FloorScene({ width, completed, onComplete, openSources }: CiModu
           )}
           controls={craftDock}
         />
-        <Text style={s.caption}>
-          Training visualization — stage plot to scale (faint grid = 1 m; cables drawn wider for tracing), in the lab’s teaching colors (field cable colors vary): cyan = mic and line-level lines, and the keys' short instrument lead to its DI (the wedge feeds are line-level XLR into powered wedges) · gray = multicores (trunk to FOH, split to MON, the MON returns back to the snake head, drum sub-snake — it fans out into one cyan XLR tail per input at the snake head) · red = AC power (quad boxes, and each wedge's own power cable from its own quad-box outlet, apart from the audio and crossing it square) · gray strips = gaffer tape · yellow-lidded ramp = low-profile cover at the stair · dashed = the way performers come up the stair · the spare mic line is coiled at the box with its end capped, not plugged into a return. The amp, keys and split lines were already dressed right.
-        </Text>
+        {/* The ~150-word key folds under the drawing (CI-01, owner 2026-11-15:
+            "build waves 1 thru 3"); it sat open between the plan and the calls. */}
+        <CollapsibleSection title="COLOR KEY · TEACHING COLORS" startOpen={false}>
+          <Text style={s.caption}>
+            Training visualization — stage plot to scale (faint grid = 1 m; cables drawn wider for tracing), in the lab’s teaching colors (field cable colors vary): cyan = mic and line-level lines, and the keys' short instrument lead to its DI (the wedge feeds are line-level XLR into powered wedges) · gray = multicores (trunk to FOH, split to MON, the MON returns back to the snake head, drum sub-snake — it fans out into one cyan XLR tail per input at the snake head) · red = AC power (quad boxes, and each wedge's own power cable from its own quad-box outlet, apart from the audio and crossing it square) · gray strips = gaffer tape · yellow-lidded ramp = low-profile cover at the stair · dashed = the way performers come up the stair · the spare mic line is coiled at the box with its end capped, not plugged into a return. The amp, keys and split lines were already dressed right.
+          </Text>
+        </CollapsibleSection>
         <View style={{ gap: 12 }}>
           {CRAFT_DECISIONS.map((d, di) => {
             const answered = craftAnswered(d.id);

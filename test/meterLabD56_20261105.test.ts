@@ -84,12 +84,15 @@ describe('Scope: SIGNAL is never a dead tray', () => {
 });
 
 describe('Well text matches the meter', () => {
-  it('VU: ORGAN does not light the LED at +0.0 dB (0.72 FS), and the well says so', async () => {
+  it('VU: lined up, PINK NOISE and ORGAN leave the lamp dark at +0.0 dB, and the well says so', async () => {
+    // Recalibrated 2026-11-21 (owner: pink noise "should be at U ... with no peak light"):
+    // the module trims each signal (VU_LINEUP_DB) and the face's lamp is true 0 dBFS.
     const E = await import('../src/screens/lab/meter/meterEngine.ts');
-    assert.ok(Math.max(...E.renderSignal('organ').map(Math.abs)) < 0.72);
-    assert.match(V, /if \(m >= 0\.72\)/);
+    const pk = (s: 'organ' | 'pinknoise') => Math.max(...E.renderSignal(s).map(Math.abs)) * Math.pow(10, (E.VU_LINEUP_DB[s] ?? 0) / 20);
+    assert.ok(pk('organ') < 1 && pk('pinknoise') < 1);
+    assert.match(V, /if \(m >= 0\.72\)/); // the Signal Detective's lesson VU (VuView) is unchanged
     assert.doesNotMatch(A, /similar LED/);
-    assert.match(A, /stay under the LED, which stays dark/);
+    assert.match(A, /the PEAK lamp stays dark/);
   });
   it('Peak: the lamp is not called a latch', () => {
     assert.doesNotMatch(A, /it LATCHES/);
@@ -116,11 +119,11 @@ describe('Audio Community is off Profile, the same way as Home', () => {
     assert.match(P, /^const SHOW_COMMUNITY_ON_PROFILE = false;$/m);
     assert.match(code('src/screens/courses/CourseSelectionScreen.tsx'), /^const SHOW_COMMUNITY_ON_HOME = COMMUNITY_VISIBLE;$/m);
   });
-  it('the PROFILE tab does not count requests nobody can reach', () => {
-    const T = code('src/components/nav/TabBar.tsx');
-    assert.match(T, /^const SHOW_COMMUNITY_BADGE_ON_TAB = COMMUNITY_VISIBLE;$/m);
-    assert.match(T, /SHOW_COMMUNITY_BADGE_ON_TAB && name === 'Profile' \? <CommunityBadge/);
-    assert.match(T, /SHOW_COMMUNITY_BADGE_ON_TAB && name === 'Profile' && inboxLabel/);
+  it('the menu does not count requests nobody can reach (the circle menu replaced the tab bar, owner 2026-11-20)', () => {
+    const T = code('src/components/nav/CircleMenu.tsx');
+    assert.match(T, /\{COMMUNITY_VISIBLE \? <CommunityBadge state=\{inbox\}/);
+    assert.match(T, /const unread = COMMUNITY_VISIBLE \? badgeA11y\(inbox\) : '';/);
+    assert.match(code('src/components/nav/CircleMenuPanel.tsx'), /const extra = badge && COMMUNITY_VISIBLE \? badgeA11y\(badge\) : '';/);
   });
   it('the section and the contact-request promise both hang on it', () => {
     assert.match(P, /\{SHOW_COMMUNITY_ON_PROFILE \? \(\n\s*<Section title="AUDIO COMMUNITY DIRECTORY"/);

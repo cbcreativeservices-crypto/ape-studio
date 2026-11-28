@@ -13,7 +13,9 @@
  * Every AUDIO FUNDAMENTALS lab (the `af_*` keys) is a UNIVERSAL prerequisite —
  * required for every credential, no exceptions. Those are deliberately NOT
  * listed here: the UI adds them separately. This file holds ONLY the variable
- * part. Required labs UNLOCK THE FINAL EXAM (owner 2026-10-13, server-checked
+ * part. EXCEPTION (owner 2026-11-21 [MD:D74]): af_speaker_coverage, af_cable_install
+ * and af_patchbay moved to the Training Lab (keys unchanged, server area 'training';
+ * labKeyCatalog MOVED_FUNDAMENTALS_LABS) and are listed here only where the job uses them. Required labs UNLOCK THE FINAL EXAM (owner 2026-10-13, server-checked
  * like topics), so every row below costs a learner real work.
  *
  * THE BAR, applied to every row: "could a learner do this job without having
@@ -211,9 +213,15 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
   ],
   'cert-analog-console-recording-v3': [
     ...beg('mxb_terms', 'mxb_sends'),
+    // Added 2026-11-21 (owner: moved out of Audio Fundamentals into the Training Lab; required only where the job uses it).
+    { key: 'af_patchbay', why: 'In an analog room the outboard gear is reached through the patchbay, so every insert and every overpatch goes through it.' },
   ],
   'cert-analog-electronics-for-audio-v3': [
     { key: 'tr_amp', why: 'Transistors, transformers and amplifier topologies are where these components actually get used.' },
+  ],
+  'cert-archaeoacoustics-and-heritage-v3': [
+    // Added 2026-11-19 [MD:D70] (owner: Comp B Wave 0, "Add the 3 + wire Room Design").
+    { key: 'tr_reverb', why: 'Heritage sites are studied by how sound decays in them, and that decay is what reverb is.' },
   ],
   'cert-assisted-listening-and-accessibility-v3': [
     { key: 'tr_speech', why: 'Assisted listening is measured in speech intelligibility, which starts with how speech is produced and heard.' },
@@ -232,6 +240,11 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'tr_amp', why: 'Fault-finding inside analog gear means knowing what the circuit was supposed to be doing.' },
     { key: 'ear_defect', why: 'Troubleshooting starts by naming the symptom by ear — hum, buzz, crackle or dropout each point somewhere different.' },
   ],
+  'cert-av-over-ip-systems-v3': [
+    // Added 2026-11-21 (owner: borderline rows approved with the moved-labs list [MD:D74]).
+    { key: 'af_speaker_coverage', why: 'Installed AV systems are designed so every listener in the room sits inside a speaker’s coverage.' },
+    { key: 'af_cable_install', why: 'Network and speaker cable in an install runs through walls, ceilings and racks, and has to be routed, separated and labeled.' },
+  ],
   'cert-band-tracking-specialist-v3': [
     { key: 'tr_mic_select', why: 'Tracking a band is a run of microphone choices, each one defensible for its source.' },
     { key: 'tr_phase', why: 'A band in one room means many microphones hearing the same sources, and phase decides whether they add up.' },
@@ -246,9 +259,14 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'tr_compression', why: 'The air chain is built around compression and limiting — threshold, ratio and release shape how the station sounds.' },
     { key: 'tr_limiter', why: 'Broadcast is delivered to a hard ceiling and a loudness target.' },
     ...mk('B01'),
+    // Added 2026-11-21 (owner: borderline rows approved with the moved-labs list [MD:D74]).
+    { key: 'af_cable_install', why: 'A broadcast plant is racks and long cable runs that have to stay labeled, protected and serviceable while the station stays on air.' },
+    { key: 'af_patchbay', why: 'Broadcast signals are rerouted at the patchbay, and a wrong patch on a normalled point can take a feed off air.' },
   ],
   'cert-car-audio-installation-v3': [
     { key: 'tr_amp', why: 'Matching amplifiers to speaker loads without damaging either is the core of a vehicle install.' },
+    // Added 2026-11-21 (owner: moved out of Audio Fundamentals into the Training Lab; required only where the job uses it).
+    { key: 'af_cable_install', why: 'A vehicle install depends on routing power cable away from signal cable and protecting every run where it passes bare metal.' },
   ],
   'cert-compression-and-dynamics-v3': [
     { key: 'tr_compression', why: 'This certificate is compression — threshold, ratio, attack, release and the envelope they produce.' },
@@ -257,10 +275,17 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'ear_compression', why: 'You have to hear compression — the envelope changing, not just the level — to set it well.' },
     ...adv('mxa_parallel', 'mxa_adv_dyn', 'mxa_bus'),
   ],
+  'cert-consumer-and-home-audio-v3': [
+    // Added 2026-11-19 [MD:D70] (owner: Comp B Wave 0, "Add the 3 + wire Room Design").
+    { key: 'tr_room_design', why: 'Speakers in a living room are heard through the room, so where they sit matters as much as which they are.' },
+  ],
   'cert-corporate-and-event-production-v3': [
     { key: 'tr_preprod', why: 'An event lives or dies on the scope, crew and schedule agreed before load-in.' },
     { key: 'tr_sound_systems', why: 'Designing, wiring and tuning the event’s system is one of this certificate’s named topics.' },
     ...mk('B05', 'B06'),
+    // Added 2026-11-21 (owner: moved out of Audio Fundamentals into the Training Lab; required only where the job uses it).
+    { key: 'af_speaker_coverage', why: 'An event system has to reach every seat in the room, and that is decided by where each speaker sits and points.' },
+    { key: 'af_cable_install', why: 'Event cable crosses floors the public walks on, so it has to be routed and covered so that nobody trips.' },
   ],
   'cert-critical-listening-and-ear-training-v3': [
     { key: 'ear_frequency', why: 'Naming a frequency by ear is the bedrock of every tonal descriptor.' },
@@ -284,6 +309,8 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
   ],
   'cert-distributed-and-paging-systems-v3': [
     { key: 'tr_amp', why: 'A distributed system is an amplifier loading problem before it is anything else.' },
+    // Added 2026-11-21 (owner: moved out of Audio Fundamentals into the Training Lab; required only where the job uses it).
+    { key: 'af_speaker_coverage', why: 'A paging system is many speakers spaced so every part of the building is covered, with no dead spots between them.' },
   ],
   'cert-dj-and-club-sound-v3': [
     // DJ Systems Lab (owner 2026-10-18, built 2026-10-27 [MD:R3]): required by
@@ -311,6 +338,10 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'tr_distortion', why: 'A drive pedal is a distortion circuit — you need to hear what clipping and saturation actually do.' },
     { key: 'tr_amp', why: 'Pedals are designed around the amplifier stage they feed.' },
   ],
+  'cert-electronic-live-performance-v3': [
+    // Added 2026-11-19 [MD:D70] (owner: Comp B Wave 0, "Add the 3 + wire Room Design").
+    { key: 'tr_dj', why: 'A live electronic set runs on the same booth, gain structure and cueing as a DJ set.' },
+  ],
   'cert-electronics-repair-technician-v3': [
     { key: 'tr_amp', why: 'Most audio repair is amplifier repair, and you need the working circuit in your head first.' },
     { key: 'ear_defect', why: 'A repair starts with naming the fault by ear — hum, buzz, crackle and dropout point to different causes.' },
@@ -330,6 +361,10 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'tr_eq', why: 'Front of house is frequency decisions made fast, on a live console.' },
     { key: 'tr_compression', why: 'Holding a live vocal and a live kit in place is compression work.' },
     ...beg('mxb_terms', 'mxb_sends'),
+    // Stage Plot and Channel Designer (owner 2026-11-13 [MD:D60]): required by
+    // the four live-show certificates and two programs below. Server rows:
+    // Comp A, only after the update that reports tr_stage_plot is on phones.
+    { key: 'tr_stage_plot', why: 'Advancing a show, with the stage plot, the input list and who brings what, is front-of-house work.' },
   ],
   'cert-foley-performance-and-recording-v3': [
     { key: 'tr_postprod', why: 'Foley is recorded to picture and delivered into a post session to a specification.' },
@@ -346,15 +381,33 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
   ],
   'cert-game-audio-v3': [
     { key: 'tr_binaural', why: 'Game audio places sound objects around the player. On headphones, they are heard through binaural rendering.' },
+    // Game Audio Lab (owner 2026-11-13 [MD:D60] (e)/(f)): required by the two
+    // game credentials and the interactive music certificate. Server rows:
+    // Comp A, only after the update that reports tr_game_audio is on phones.
+    { key: 'tr_game_audio', why: 'Game audio work is events, game information, variation, voice budgets and adaptive music, set up inside the real tools.' },
   ],
   'cert-guitar-tone-and-recording-v3': [
     { key: 'tr_mic_select', why: 'Guitar tone on a record is largely the microphone in front of the cabinet.' },
     { key: 'tr_distortion', why: 'The tone itself is harmonic distortion — you should be able to hear which kind.' },
     ...mk('C01', 'C02', 'C08', 'SPK'),
   ],
+  'cert-hearing-health-and-conservation-v3': [
+    // Added 2026-11-19 [MD:D70] (owner: Comp B Wave 0, "Add the 3 + wire Room Design").
+    { key: 'ear_loudness', why: 'Noticing a small change in level by ear is where protecting your hearing starts.' },
+  ],
   'cert-home-studio-starter-v3': [
+    // Added 2026-11-19 [MD:D70] (owner: Comp B Wave 0, "Add the 3 + wire Room Design").
+    { key: 'tr_room_design', why: 'A home studio’s monitors and listening spot are only as good as the room around them.' },
     { key: 'tr_mic_select', why: 'The first real decision in a home studio is which microphone, and why.' },
     ...mk('E01'),
+  ],
+  'cert-home-theater-design-v3': [
+    // Added 2026-11-19 [MD:D70] (owner: Comp B Wave 0, "Add the 3 + wire Room Design").
+    { key: 'tr_room_design', why: 'Seats and speakers in a home theater are placed around the room’s modes and reflections.' },
+  ],
+  'cert-how-sound-behaves-in-a-room-v3': [
+    // Added 2026-11-19 [MD:D70] (owner: Comp B Wave 0, "Add the 3 + wire Room Design").
+    { key: 'tr_room_design', why: 'This lab shows a room’s modes and reflections change as you move the speakers and the listener.' },
   ],
   'cert-immersive-audio-production-v3': [
     { key: 'tr_stereo', why: 'An immersive mix still has to hold up folded down to stereo and mono.' },
@@ -371,6 +424,9 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'tr_harmonic', why: 'Timbre is largely harmonic content, and this is where you see it.' },
     { key: 'tr_envelope', why: 'Two instruments with a similar spectrum are still told apart by their envelopes.' },
   ],
+  'cert-interactive-and-game-music-v3': [
+    { key: 'tr_game_audio', why: 'Interactive music is delivered into middleware as states, layers and changes timed to the bar.' },
+  ],
   'cert-live-mixing-specialist-v3': [
     { key: 'tr_eq', why: 'Live mixing is frequency decisions made in real time.' },
     { key: 'tr_compression', why: 'Live sources are held in place with compression, not with the fader alone.' },
@@ -381,6 +437,9 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'tr_sound_systems', why: 'Designing, wiring, testing, tuning and fault-finding a live system is this certificate.' },
     { key: 'tr_phase', why: 'Aligning subs to tops and the main speakers to the delay speakers is phase work.' },
     { key: 'tr_eq', why: 'Tuning a deployed system is filtering it to the room.' },
+    // Added 2026-11-21 (owner: moved out of Audio Fundamentals into the Training Lab; required only where the job uses it).
+    { key: 'af_speaker_coverage', why: 'Deciding where the speakers hang, how high and how far they tilt is how the whole audience hears the same show.' },
+    { key: 'af_cable_install', why: 'Snakes, splits and speaker runs have to be laid so they are safe to walk past and quick to pack away.' },
   ],
   'cert-live-wireless-mic-systems-v3': [
     ...mk('B05'),
@@ -434,6 +493,7 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'tr_eq', why: 'Ringing out a wedge is narrow, fast, deliberate filtering.' },
     { key: 'ear_frequency', why: 'Ringing out means naming the feeding-back frequency by ear before the band hears it.' },
     ...beg('mxb_sends'),
+    { key: 'tr_stage_plot', why: 'Planning each performer’s mix, wedges and in-ears is the monitor engineer’s job.' },
   ],
   'cert-nearfield-acoustic-holography-v3': [
     { key: 'tr_cymatics', why: 'Chladni plates and cymatic patterns are the hands-on half of this certificate’s sound-field visualization topic.' },
@@ -455,6 +515,8 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'tr_sound_systems', why: 'Deploying, wiring and tuning a PA in a real venue is two of this certificate’s three topics.' },
     { key: 'tr_phase', why: 'Boxes that overlap in coverage combine by phase, not by wishful thinking.' },
     { key: 'tr_eq', why: 'System tuning is largely filtering the rig to the room, once aim and delay are set.' },
+    // Added 2026-11-21 (owner: moved out of Audio Fundamentals into the Training Lab; required only where the job uses it).
+    { key: 'af_speaker_coverage', why: 'A PA is aimed so every seat sits in a speaker’s beam, and this lab shows who it reaches and who it misses.' },
   ],
   'cert-plugin-and-processing-power-user-v3': [
     ...adv('mxa_parallel', 'mxa_bus'),
@@ -477,6 +539,8 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     ...adv('mxa_groups', 'mxa_stems', 'mxa_null', 'mxa_deliver'),
   ],
   'cert-room-acoustics-and-treatment-v3': [
+    // Added 2026-11-19 [MD:D70] (owner: Comp B Wave 0, "Add the 3 + wire Room Design").
+    { key: 'tr_room_design', why: 'Treatment is placed where the modes and first reflections are, and this lab maps them in a room you draw.' },
     ...mk('F13'),
   ],
   'cert-seismoacoustics-and-infrasound-v3': [
@@ -511,6 +575,12 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
   'cert-speech-and-voice-science-v3': [
     { key: 'tr_speech', why: 'Anatomy, voicing, vowels and formants are the subject of this certificate.' },
   ],
+  'cert-stage-patch-and-signal-distribution-v3': [
+    { key: 'tr_stage_plot', why: 'The input list, the channel order, the DI boxes and the splits are the patch.' },
+    // Added 2026-11-21 (owner: moved out of Audio Fundamentals into the Training Lab; required only where the job uses it).
+    { key: 'af_cable_install', why: 'Looms on a stage have to be run, protected and labeled so a fault can be traced in minutes during a show.' },
+    { key: 'af_patchbay', why: 'A normalled patch point changes what is connected the moment a cable goes in, so you have to know what a patch will break.' },
+  ],
   'cert-streaming-mastering-and-loudness-v3': [
     { key: 'tr_mastering', why: 'Mastering for a streaming destination — loudness at matched level and its current spec — is this certificate.' },
     { key: 'tr_limiter', why: 'Streaming delivery is a true-peak ceiling and a loudness target.' },
@@ -528,11 +598,20 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'tr_mic_select', why: 'The recording is decided at the microphone, before any processing.' },
     { key: 'tr_phase', why: 'Several microphones in one room is the recurring problem of studio recording.' },
     ...mk('M01', 'M02', 'M09', 'M11', 'C01', 'C02', 'C08', 'C11', 'E01'),
+    // Added 2026-11-21 (owner: moved out of Audio Fundamentals into the Training Lab; required only where the job uses it).
+    { key: 'af_patchbay', why: 'Most studios route their gear through a patchbay, and a patch you did not predict can cut a signal in the middle of a take.' },
+  ],
+  'cert-studio-wiring-and-infrastructure-v3': [
+    // Added 2026-11-21 (owner: moved out of Audio Fundamentals into the Training Lab; required only where the job uses it).
+    { key: 'af_cable_install', why: 'Studio wiring is routing, supporting, dressing and labeling cable so the next technician can find and fix any run.' },
+    { key: 'af_patchbay', why: 'Wiring a patchbay means choosing which points are normalled, half-normalled or thru, and that choice decides how the studio works.' },
   ],
   'cert-system-tuning-and-alignment-v3': [
     { key: 'tr_phase', why: 'Alignment is phase — this is where you see what happens when two sources combine.' },
     { key: 'tr_eq', why: 'Tuning a system is filtering it, with a measurement to justify each move.' },
     ...mk('F11', 'F14'),
+    // Added 2026-11-21 (owner: moved out of Audio Fundamentals into the Training Lab; required only where the job uses it).
+    { key: 'af_speaker_coverage', why: 'Tuning cannot fix a seat that no speaker reaches, so coverage, fills and delays come before any EQ.' },
   ],
   'cert-tape-restoration-v3': [
     { key: 'ear_defect', why: 'Dropouts, hiss and print-through have to be named by ear before a tape can be restored.' },
@@ -551,6 +630,11 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'tr_phaser', why: 'Phasing uses all-pass stages instead of delay, and the difference matters in a mix.' },
     { key: 'ear_delay', why: 'Setting a delay to the song means hearing its time, not reading it.' },
     { key: 'ear_reverb', why: 'Telling a room from a plate from a hall by ear is what choosing a reverb depends on.' },
+  ],
+  'cert-touring-and-road-crew-v3': [
+    { key: 'tr_stage_plot', why: 'Sending each venue the advance packet, and setting the stage from it, is touring work.' },
+    // Added 2026-11-21 (owner: moved out of Audio Fundamentals into the Training Lab; required only where the job uses it).
+    { key: 'af_cable_install', why: 'Running, covering and coiling cable at every load-in is daily crew work, and a badly coiled cable costs the next show time.' },
   ],
   'cert-tube-amp-building-v3': [
     { key: 'tr_tube', why: 'How a tube amplifies by controlling electron flow is the thing you are building.' },
@@ -590,6 +674,8 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
   'prog-acoustics-and-psychoacoustics-research-v3': [
     { key: 'tr_speech', why: 'Speech perception is one of this program’s named topics and needs the production side first.' },
     ...mk('F11', 'F13'),
+    // Added 2026-11-21 (owner: moved out of Audio Fundamentals into the Training Lab; required only where the job uses it).
+    { key: 'tr_room_design', why: 'Room treatment and studio design are named topics here, and this lab maps where the modes and reflections fall in a room you draw.' },
   ],
   'prog-ai-audio-production-v3': [
     { key: 'tr_oscillator', why: 'Synthesis is one of this program’s topics, and generated audio is judged against what an oscillator really produces.' },
@@ -607,6 +693,9 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'tr_phase', why: 'Optimization is combining sources correctly, which is a phase question.' },
     { key: 'tr_eq', why: 'System EQ is the tool the measurement is feeding.' },
     ...mk('F11', 'F13', 'F14'),
+    // Added 2026-11-21 (owner: moved out of Audio Fundamentals into the Training Lab; required only where the job uses it).
+    { key: 'af_speaker_coverage', why: 'Even coverage starts with where the speakers sit and aim, before any measurement or tuning.' },
+    { key: 'tr_room_design', why: 'Treating a room starts with knowing where its modes and first reflections land at the listening seat.' },
   ],
   'prog-audio-dsp-and-machine-learning-v3': [
     { key: 'tr_oscillator', why: 'Synthesis is one of this program’s topics, and band-limited oscillators are where it starts.' },
@@ -616,6 +705,11 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'tr_amp', why: 'Most of the gear on the bench is an amplifier of some kind.' },
     { key: 'tr_tube', why: 'Tube equipment is a routine part of a repair bench and behaves differently.' },
     { key: 'ear_defect', why: 'A repair starts with naming the fault by ear — hum, buzz, crackle and dropout point to different causes.' },
+  ],
+  'prog-audio-networking-and-infrastructure-v3': [
+    // Added 2026-11-21 (owner: moved out of Audio Fundamentals into the Training Lab; required only where the job uses it).
+    { key: 'af_cable_install', why: 'A network is only as reliable as its cabling, so every run is routed, supported, kept clear of power and labeled.' },
+    { key: 'af_patchbay', why: 'Patchbays are still where racks and rooms meet, and how each point is normalled has to be designed and written down.' },
   ],
   'prog-audio-preservation-restoration-and-archival-science-v3': [
     { key: 'tr_eq', why: 'Restoration is filtering. The skill is knowing when a filter is harming the record.' },
@@ -629,6 +723,8 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'tr_amp', why: 'Specifying amplification to a loudspeaker load is core to system design.' },
     { key: 'tr_phase', why: 'Systems that overlap in coverage combine by phase.' },
     ...mk('F14'),
+    // Added 2026-11-21 (owner: moved out of Audio Fundamentals into the Training Lab; required only where the job uses it).
+    { key: 'af_speaker_coverage', why: 'Designing a system means choosing where each speaker goes so its pattern covers the listeners and not the walls.' },
   ],
   'prog-bioacoustics-and-ecoacoustics-v3': [
     ...mk('F06', 'F07', 'F16'),
@@ -645,6 +741,9 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'tr_amp', why: 'Install work is an amplifier and loading problem before it is anything else.' },
     { key: 'tr_phase', why: 'Distributed loudspeakers overlap, and overlap is phase.' },
     ...mk('B06'),
+    // Added 2026-11-21 (owner: moved out of Audio Fundamentals into the Training Lab; required only where the job uses it).
+    { key: 'af_speaker_coverage', why: 'An install is laid out so every listener sits inside a speaker’s coverage, with fills where the main speakers cannot reach.' },
+    { key: 'af_cable_install', why: 'An install puts cable in walls, ceilings and racks that has to pass inspection and stay serviceable for years.' },
   ],
   'prog-concert-and-festival-production-v3': [
     { key: 'tr_sound_systems', why: 'A concert rig is designed, wired, tuned and fault-found on a deadline.' },
@@ -653,11 +752,17 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'ear_frequency', why: 'Finding a feeding-back frequency by ear, fast, is daily work on a show.' },
     ...beg('mxb_sends'),
     ...mk('E09'),
+    { key: 'tr_stage_plot', why: 'Every act on a festival bill arrives as a stage plot and an input list, and the changeovers are planned from them.' },
+    // Added 2026-11-21 (owner: moved out of Audio Fundamentals into the Training Lab; required only where the job uses it).
+    { key: 'af_speaker_coverage', why: 'A festival crowd is covered by aiming, hanging and tilting the PA, with delay speakers for the people far back.' },
+    { key: 'af_cable_install', why: 'A festival site is cable across stages and crowds, run to be safe, protected from traffic and quick to change over.' },
   ],
   'prog-dj-and-club-audio-v3': [
     { key: 'tr_dj', why: 'Building, running and troubleshooting the DJ booth and its feed to the venue is the core of this program.' },
     { key: 'tr_eq', why: 'Club mixing and club system tuning are both frequency work.' },
     { key: 'ear_band', why: 'DJ mixing moves whole bands in and out, and you have to hear which one you just moved.' },
+    // Added 2026-11-21 (owner: moved out of Audio Fundamentals into the Training Lab; required only where the job uses it).
+    { key: 'af_speaker_coverage', why: 'Even sound across the dance floor comes from where the club’s speakers sit and point, not from the DJ’s EQ.' },
   ],
   'prog-earth-space-and-seismoacoustics-v3': [
     ...mk('F16'),
@@ -687,6 +792,7 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'tr_binaural', why: 'Interactive audio places objects around the player’s head.' },
     { key: 'tr_reverb', why: 'Game spaces are sold to the player with reverb.' },
     { key: 'tr_postprod', why: 'Assets are still delivered to a specification with an archive behind them.' },
+    { key: 'tr_game_audio', why: 'This program is how a game asks for sound and how the audio side answers, from events and game information to the mix and the real tools.' },
   ],
   'prog-hearing-science-and-psychoacoustics-v3': [
     { key: 'tr_speech', why: 'Speech perception is central to this program.' },
@@ -709,6 +815,10 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'ear_frequency', why: 'Finding a feeding-back frequency by ear, fast, is daily work on a show.' },
     ...beg('mxb_terms', 'mxb_sends'),
     ...mk('E01', 'E09', 'B05'),
+    { key: 'tr_stage_plot', why: 'A live show starts with the stage plot, the input list and the monitor plan the engineer works from.' },
+    // Added 2026-11-21 (owner: moved out of Audio Fundamentals into the Training Lab; required only where the job uses it).
+    { key: 'af_speaker_coverage', why: 'Where the speakers sit and point decides who hears the show clearly, before a single fader moves.' },
+    { key: 'af_cable_install', why: 'Every show starts with cable run safely across a stage and a floor, and ends with it coiled so it lays out straight next time.' },
   ],
   'prog-medical-and-clinical-acoustics-v3': [
     { key: 'tr_speech', why: 'Clinical audio work is dominated by speech and the voice.' },
@@ -750,11 +860,16 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
     { key: 'tr_drum_tuning', why: 'The kit sound is decided at the drums before any microphone goes up.' },
     ...KIT_AND_CYMBALS,
     ...mk('C01', 'C02', 'C08', 'SPK', 'C11', 'E01', 'E02', 'E08'),
+    // Added 2026-11-21 (owner: moved out of Audio Fundamentals into the Training Lab; required only where the job uses it).
+    { key: 'af_patchbay', why: 'The console and the outboard gear meet at the patchbay, and patching without breaking the normal signal path is daily studio work.' },
+    { key: 'tr_room_design', why: 'A control room can only be trusted once its speakers, listening seat and treatment are placed around the room’s modes and reflections.' },
   ],
   'prog-theater-venue-and-entertainment-audio-v3': [
     { key: 'tr_sound_systems', why: 'A venue system is designed, wired, tuned and kept working show after show.' },
     { key: 'tr_eq', why: 'Venue systems and body-microphone channels are both tuned with filters.' },
     ...mk('B05'),
+    // Added 2026-11-21 (owner: moved out of Audio Fundamentals into the Training Lab; required only where the job uses it).
+    { key: 'af_speaker_coverage', why: 'A venue system has to reach every seat, from the front row to the balcony, and that starts with where the speakers point.' },
   ],
   'prog-transducer-and-audio-hardware-engineering-v3': [
     { key: 'tr_amp', why: 'Driving a transducer is an amplifier and loading problem.' },
@@ -766,6 +881,9 @@ export const LAB_REQUIREMENTS_BY_SLUG: Record<string, readonly LabRequirement[]>
   ],
   'prog-vehicle-and-consumer-audio-systems-v3': [
     { key: 'tr_amp', why: 'Consumer and vehicle systems are specified around the amplifier and the load it sees.' },
+    // Added 2026-11-21 (owner: moved out of Audio Fundamentals into the Training Lab; required only where the job uses it).
+    { key: 'af_cable_install', why: 'Car and home installs are judged on cable routed out of harm’s way, kept apart from power and finished so it can be serviced.' },
+    { key: 'tr_room_design', why: 'Home hi-fi is heard through the room, so where the speakers and the listener sit decides what the system can do.' },
   ],
   'prog-worship-audio-production-v3': [
     { key: 'tr_eq', why: 'A worship room is tuned and mixed with frequency decisions.' },

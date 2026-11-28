@@ -143,7 +143,9 @@ describe('Lab 7 — START, the badge, the hydrophone, power, the guest', () => {
       assert.match(src(`lessons/${dir}/pages.tsx`), /startStep\(lesson, journey, '', \{ ownIntro: true \}\)/, id);
       assert.ok((copyOf(lesson(id)).terms?.startIntro ?? '').length > 40, `${id} has its own intro`);
     }
-    assert.match(src('lessons/shared/journeyPages.tsx'), /<Body>\{own \?\? journeyIntro\(/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item MK-05): the own intro
+    // also says the lesson's size and where to stop.
+    assert.match(src('lessons/shared/journeyPages.tsx'), /<Body>\{own \? `\$\{own\} \$\{JOURNEY_LENGTH_LINE\}` : journeyIntro\(/);
   });
   it('L7F: each speech lesson names its own loudspeaker on the live badge', () => {
     assert.match(src('pages/PContext.tsx'), /\$\{X\.badgeWhere \?\? 'monitors where a stage often puts them'\}/);

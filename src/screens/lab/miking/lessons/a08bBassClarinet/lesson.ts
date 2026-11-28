@@ -389,7 +389,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: WindLesson['predictions'] = {
-  sound: { prompt: 'Before you step through: where does most of a bass clarinet’s middle note leave?', options: ['The bell only', 'The holes and the bell together', 'The neck'], after: 'Now STEP through (or PLAY ONCE), then try the notes on the next step.' },
+  sound: { prompt: 'Before you step through: where does most of a bass clarinet’s middle note leave?', options: ['The bell only', 'The holes and the bell together', 'The neck'], after: 'Now go EVENT by EVENT (or PLAY ONCE), then try the notes on the next step.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move from the blend view toward the bell. What changes?', options: ['More low-note weight', 'More key detail', 'Nothing'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front. Where will a supercardioid aimed back at the instrument reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
@@ -491,7 +491,7 @@ const copy: Partial<LessonCopy> = {
     workedAim: 'Aim it at the middle of the instrument — the lab counts it while the mic points within about {tol}° of it — so the holes and the bell are heard together.',
     workedClear: 'Clear of every part — the peg and its path, the chair and the feet, the neck, the hands and the bell. Clearance comes first, before any number, and the player stops before a real mic moves.',
     blocked: {},
-    reveal: 'Toward the bell tends to bring more low-note weight; toward the keys, more articulation and clicks; the blend view, both. Each zone’s LISTEN FOR line is an idea to check by ear.',
+    reveal: 'Toward the bell tends to bring more low-note weight; toward the keys, more articulation and clicks; the blend view, both. Each zone’s TENDS TO HEAR line is an idea to check by ear.',
     typeNotes: {
       sdcCard: 'Ideas to try: begin 0.6–1.2 m in front at the middle; then the blend view and the bell view — one change at a time, low, middle and high phrases each time.',
       wwMini: 'Ideas to try with a miniature: keep its clip on the bell’s rim; change only the capsule’s angle between the bell and the keys while the player plays the whole part.',
@@ -616,7 +616,7 @@ export const A08B_LESSON: WindLesson = {
   setting: {
     items: [
       { id: 'self', label: 'the bass clarinet and its player', short: 'BASS CLARINET', note: 'Seated, the instrument between the knees on its peg, the neck to the lips, the bell turned up in front. Ringed in amber: the instrument this lesson mics.', prov: { kind: 'illustrative', reason: 'bass_clarinet/GEOMETRY_PROPOSAL.md (drawing defaults)' }, tag: 'THE INSTRUMENT', scene: 'all' },
-      { id: 'peg', label: 'the floor peg and the chair', short: 'PEG · CHAIR', note: 'The peg carries the instrument’s weight on the floor. Keep stand bases and cables off its path — a knock reaches the mic as a thump.', prov: { kind: 'illustrative', reason: 'a 120 mm keep-out round the peg’s foot (drawing default)' }, tag: 'KEEP CLEAR', scene: 'kit', planIds: ['self'] },
+      { id: 'peg', label: 'the floor peg and the chair', short: 'PEG · CHAIR', note: 'The peg carries the instrument’s weight on the floor. Keep stand bases and cables off its path — a knock reaches the mic as a thump.', prov: { kind: 'illustrative', reason: 'a 120 mm keep-out around the peg’s foot (drawing default)' }, tag: 'KEEP CLEAR', scene: 'kit', planIds: ['self'] },
       { id: 'hands', label: 'the neck, the hands and the bell', short: 'NECK · HANDS', note: 'The curved neck at the lips is never a mount; the hands and thumbs work the keys; the bell moves with the player. No mic, stand or cable there.', prov: { kind: 'illustrative', reason: 'the proposal’s keep-outs' }, tag: 'KEEP CLEAR', scene: 'kit', planIds: ['self'] },
       { id: 'stand', label: 'the music stand', short: 'MUSIC STAND', note: 'In front of the player. They must see the music and the conductor.', prov: { kind: 'illustrative', reason: 'a typical layout' }, tag: 'SIGHT LINE', scene: 'kit', planIds: ['stand.bcl'] },
       { id: 'clarinets', label: 'the clarinets beside', short: 'CLARINETS', note: 'The bass clarinet usually sits at the end of the clarinets; a close mic hears them too.', prov: { kind: 'illustrative', reason: 'a typical seating' }, tag: 'SPILL', scene: 'kit', planIds: ['cl1', 'cl2'] },
@@ -645,7 +645,7 @@ export const A08B_LESSON: WindLesson = {
   unknowns: [
     { text: 'The player’s height above the floor and the instrument’s lean between the knees — drawing defaults — so no HEIGHT readout is shown.', dims: ['yFloor'] },
     { text: 'Every bass clarinet dimension is a drawing default (1350 mm of tube incl. the neck, bell Ø 110, the peg); the low C model’s extra 250 mm is three semitones of tube (derived); the holes sit where the semitone rule puts them (a simplified picture).', dims: [] },
-    { text: 'The hands, arms, head, the peg’s foot and the bell’s movement — illustrative keep-outs (a 20 mm margin round the instrument).', dims: [] },
+    { text: 'The hands, arms, head, the peg’s foot and the bell’s movement — illustrative keep-outs (a 20 mm margin around the instrument).', dims: [] },
     { text: 'The blend view’s 25–55 cm, the bell view’s 15–35 cm and the clip’s 6–24 cm — drawing defaults: we found no published bass-clarinet number for them.', dims: [] },
     { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],

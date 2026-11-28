@@ -23,6 +23,7 @@ import { colors, fonts } from '../../../theme/tokens';
 import { hapticsEnabled } from '../../../features/settings/store';
 import type { DockParam } from './rackTypes';
 import { trayReleaseIsTap } from './trayTap';
+import { TRAY_HELP_SLOP, TRAY_STICKY_NOTE, TRAY_STICKY_NOTE_SHORT, TRAY_TITLE_FS, trayTitleFit } from './dockFit';
 
 /** In-tray option chip — LabChip's semantics (selected state, 📷 photoHint,
  *  long-press lesson) in the tools' PopupOpt skin. Own component (not LabChip)
@@ -87,6 +88,7 @@ export function DockTray({
   onCardLayout,
   maxHeight,
   active = true,
+  passThrough = false,
 }: {
   /** The open options/group param (null = tray closed, renders nothing). */
   param: Extract<DockParam, { kind: 'options' | 'group' }> | null;
@@ -113,6 +115,11 @@ export function DockTray({
    *  back but gives up Android back — bug hunt 2026-09-29: back silently
    *  closed an invisible tray instead of leaving the screen. */
   active?: boolean;
+  /** ADDITIVE (lab fix round 1, 2026-11-14, row 8): no backdrop at all. The
+   *  area around the card stays readable and live (the inline rack: the
+   *  well); the HOST closes the tray on a tap there. Default: the backdrop,
+   *  as before (full screen keeps its clear, tap-to-close one). */
+  passThrough?: boolean;
 }) {
   const open = param != null;
   // Latest onClose by ref: the host passes a fresh closure every render, and
@@ -144,6 +151,15 @@ export function DockTray({
   /** When the tray last scrolled (TRAY_TAP_SLOP): a chip released after it
    *  is a scroll's end, not a pick. */
   const lastScrollAt = useRef(0);
+  /** A STRAY TAP NEVER RESETS WORK (row 8; G5c: "a tap meant for SHOW A
+   *  HINT landed on the open GRID tray ... and reset the fault"). The in-tray
+   *  ⟲ reset arms on the first tap and runs only on a second one within
+   *  RESET_ARM_MS; the key says so meanwhile. */
+  const [resetArmed, setResetArmed] = useState(false);
+  const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (resetTimer.current) clearTimeout(resetTimer.current);
+  }, []);
   /** HEIGHT STAYS PUT WHILE OPEN (emulator pass 2026-10-14): toggling a
    *  chip swapped in a longer or shorter blurb, the card grew or shrank, the
    *  list flipped between its two orders (blurb above / below the chips) —
@@ -158,12 +174,22 @@ export function DockTray({
     setTallestH(0);
     setOverflowLatched(false);
   }, [trayId]);
+  // A different tray (or a re-open) is never left armed.
+  useEffect(() => {
+    setResetArmed(false);
+  }, [trayId]);
+  /** The sticky title's room and its natural widths (dockFit trayTitleFit). */
+  const [titleW, setTitleW] = useState(0);
+  const [titleFullW, setTitleFullW] = useState(0);
+  const [titleShortW, setTitleShortW] = useState(0);
+  const [titleBareW, setTitleBareW] = useState(0);
   const overflowsNow = contentH - viewH > 4;
   useEffect(() => {
     if (overflowsNow && param) setOverflowLatched(true);
   }, [overflowsNow, param]);
 
   if (!param) return null;
+  const titleFit = trayTitleFit(titleW, titleFullW, titleShortW, titleBareW);
   const blurbSel = param.kind === 'options' ? param.options.find((o) => o.id === param.selectedId) : undefined;
   const blurbNode = blurbSel?.blurb ? (
     <View style={styles.blurbBox}>
@@ -178,16 +204,20 @@ export function DockTray({
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
       {/* Backdrop dims the WELL only (this overlay lives inside the well wrap —
-          the stage above and dock below stay bright and live). */}
-      <Pressable
-        style={[styles.backdrop, !dim && styles.backdropClear]}
-        onPress={onClose}
-        accessibilityRole="button"
-        accessibilityLabel="Close the tray"
-      />
+          the stage above and dock below stay bright and live). None at all
+          for a pass-through tray (row 8): its host closes it on a tap. */}
+      {passThrough ? null : (
+        <Pressable
+          style={[styles.backdrop, !dim && styles.backdropClear]}
+          onPress={onClose}
+          accessibilityRole="button"
+          accessibilityLabel="Close the tray"
+        />
+      )}
       <View
         style={[
           styles.card,
+          passThrough && styles.cardLift,
           { bottom: 6 + bottomInset },
           maxHeight != null && maxHeight > 0 && { maxHeight },
           tallestH > 0 && { minHeight: maxHeight != null && maxHeight > 0 ? Math.min(tallestH, maxHeight) : tallestH },
@@ -199,10 +229,61 @@ export function DockTray({
         }}
       >
         <View style={styles.head}>
-          <Text style={styles.title} numberOfLines={1}>
+          {/* The title's natural widths with the long note, the short one and
+              none, measured off screen (invisible, never read aloud), so the
+              note gives way before the title is cut (dockFit trayTitleFit). */}
+          {sticky ? (
+            <View style={styles.measureBox} pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" aria-hidden>
+              <View style={styles.measureRow}>
+                <Text style={styles.measureTitle} onLayout={(e) => setTitleFullW(e.nativeEvent.layout.width)}>
+                  {param.label}
+                  <Text style={styles.stickyNote}>{TRAY_STICKY_NOTE}</Text>
+                </Text>
+              </View>
+              <View style={styles.measureRow}>
+                <Text style={styles.measureTitle} onLayout={(e) => setTitleShortW(e.nativeEvent.layout.width)}>
+                  {param.label}
+                  <Text style={styles.stickyNote}>{TRAY_STICKY_NOTE_SHORT}</Text>
+                </Text>
+              </View>
+              <View style={styles.measureRow}>
+                <Text style={styles.measureTitle} onLayout={(e) => setTitleBareW(e.nativeEvent.layout.width)}>
+                  {param.label}
+                </Text>
+              </View>
+            </View>
+          ) : null}
+          <Text
+            style={[styles.title, titleFit.fs !== TRAY_TITLE_FS ? { fontSize: titleFit.fs, letterSpacing: (1.4 * titleFit.fs) / TRAY_TITLE_FS } : null]}
+            numberOfLines={titleFit.wrap ? 2 : 1}
+            onLayout={(e) => setTitleW(e.nativeEvent.layout.width)}
+          >
             {param.label}
-            {sticky ? <Text style={styles.stickyNote}>  ·  stays open — compare while you watch</Text> : null}
+            {sticky && titleFit.note !== 'none' ? (
+              <Text style={styles.stickyNote}>{titleFit.note === 'short' ? TRAY_STICKY_NOTE_SHORT : TRAY_STICKY_NOTE}</Text>
+            ) : null}
           </Text>
+          {/* A VISIBLE ⓘ (phase 3, owner's decision 3): the control's lesson
+              was long-press only ("hidden long-press help", report pattern).
+              The same lesson the long-press opens; RackUnit's `help` leaves
+              full screen first. */}
+          {param.helpKey && onHelp ? (
+            <Pressable
+              onPress={() => onHelp(param.helpKey)}
+              // A 44 pt tap area round the 23 x 18 glyph, nothing drawn moves
+              // (SN-6, 2026-11-15): the button's own box grows by padding and
+              // gives the same back in negative margin, so the glyph and the
+              // row stay where they were. A real box, not hitSlop, which
+              // react-native-web ignores. None to the right (the ✕'s own slop
+              // fills that gap), never down into the first choice (dockFit
+              // TRAY_HELP_SLOP).
+              style={[styles.helpKey, helpKeyArea]}
+              accessibilityRole="button"
+              accessibilityLabel={`What ${param.label} does`}
+            >
+              <Text style={styles.helpGlyph}>ⓘ</Text>
+            </Pressable>
+          ) : null}
           <Pressable onPress={onClose} hitSlop={10} accessibilityRole="button" accessibilityLabel="Close">
             <Text style={styles.close}>✕</Text>
           </Pressable>
@@ -263,12 +344,21 @@ export function DockTray({
           {overflows ? blurbNode : null}
           {param.kind === 'options' && param.onReset ? (
             <Pressable
-              style={styles.resetBtn}
-              onPress={param.onReset.onPress}
+              style={[styles.resetBtn, resetArmed && styles.resetBtnArmed]}
+              onPress={() => {
+                if (resetTimer.current) clearTimeout(resetTimer.current);
+                if (!resetArmed) {
+                  setResetArmed(true);
+                  resetTimer.current = setTimeout(() => setResetArmed(false), RESET_ARM_MS);
+                  return;
+                }
+                setResetArmed(false);
+                param.onReset?.onPress();
+              }}
               accessibilityRole="button"
-              accessibilityLabel={param.onReset.label}
+              accessibilityLabel={resetArmed ? `Tap again to ${param.onReset.label.toLowerCase()}` : param.onReset.label}
             >
-              <Text style={styles.resetText}>⟲ {param.onReset.label}</Text>
+              <Text style={[styles.resetText, resetArmed && styles.resetTextArmed]}>{resetArmed ? RESET_ARMED_TEXT : `⟲ ${param.onReset.label}`}</Text>
             </Pressable>
           ) : null}
         </ScrollView>
@@ -286,6 +376,23 @@ export function DockTray({
     </View>
   );
 }
+
+/** How long an armed in-tray reset waits for its second tap. */
+export const RESET_ARM_MS = 3000;
+export const RESET_ARMED_TEXT = 'TAP AGAIN TO RESET';
+
+/** SN-6: the ⓘ's 44 pt box (dockFit TRAY_HELP_SLOP), added on top of
+ *  styles.helpKey's 4 px sides; every px of padding is given back as margin. */
+const helpKeyArea = {
+  paddingLeft: 4 + TRAY_HELP_SLOP.left,
+  marginLeft: -TRAY_HELP_SLOP.left,
+  paddingRight: 4 + TRAY_HELP_SLOP.right,
+  marginRight: -TRAY_HELP_SLOP.right,
+  paddingTop: TRAY_HELP_SLOP.top,
+  marginTop: -TRAY_HELP_SLOP.top,
+  paddingBottom: TRAY_HELP_SLOP.bottom,
+  marginBottom: -TRAY_HELP_SLOP.bottom,
+} as const;
 
 const styles = StyleSheet.create({
   backdrop: {
@@ -321,7 +428,15 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
   },
   stickyNote: { fontSize: 12, letterSpacing: 0.3, color: colors.textSub },
+  /** A zero-size, clipped, invisible box for the title measures (DockButton's). */
+  measureBox: { position: 'absolute', left: 0, top: 0, width: 0, height: 0, overflow: 'hidden', opacity: 0 },
+  measureRow: { position: 'absolute', left: 0, top: 0, width: 2000, flexDirection: 'row', alignItems: 'flex-start' },
+  /** `title`'s type at its natural width (no flex: the web reads flex 0 as a
+   *  zero basis and the measure collapsed to one word). */
+  measureTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: colors.textPrimary },
   close: { fontFamily: fonts.oswaldSemiBold, fontSize: 15, color: colors.textSub, paddingHorizontal: 4 },
+  helpKey: { paddingHorizontal: 4 },
+  helpGlyph: { fontFamily: fonts.barlowSemiBold, fontSize: 15, color: colors.amber },
   bodyWrap: { flexShrink: 1, minHeight: 0 },
   slack: { flexGrow: 1, flexShrink: 0, marginTop: -8 },
   body: { flexGrow: 0 },
@@ -354,6 +469,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
   },
   resetText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.textSecondary },
+  resetBtnArmed: { borderColor: 'rgba(255,198,77,.7)', backgroundColor: '#1c1608' },
+  resetTextArmed: { color: colors.amber },
+  /** A pass-through card has no wash behind it: a shadow lifts it off the page. */
+  cardLift: {
+    borderColor: '#3a3a44',
+    shadowColor: '#000',
+    shadowOpacity: 0.75,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: -2 },
+    elevation: 10,
+  },
   // What-am-I-changing readout — quiet panel above the chips, amber-named.
   // minHeight ≈ two body lines so the card doesn't jump height while A/B-ing
   // between short and long blurbs.

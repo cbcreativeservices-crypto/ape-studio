@@ -36,6 +36,9 @@ import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabe
 import type { ViewBox } from '../../../engine/model/types.ts';
 import { PaintItem } from '../bowed/BowedArt';
 import { PROJ, hornGroups } from './BrassArt';
+import { figureV2On } from '../figureV2/figureV2Config.ts';
+import { brassPlayer } from './brassFigureV2';
+import { PlungerHandV2 } from './plungerHandV2';
 import { bellProfile, bellRadius, SLIDE_POSITIONS, type BrassSpec } from './brassSpec.ts';
 import type { HornPose } from './brassPosture.ts';
 import { HeadIcon, aboveRotation } from '../../../../../../features/lab/headIcons';
@@ -489,7 +492,9 @@ export function MuteView({ w, h, P, mute, accessibilityLabel }: { w: number; h: 
   const labels: StaticLabel[] = [
     { id: 'bell', text: 'BELL', u: -F * 0.5, v: -R * 1.45, align: 'center', at: { u: -F * 0.5, v: -bellRadius(spec, -F * 0.5) } },
     { id: 'rim', text: 'RIM', u: R * 0.2, v: -R * 1.45, align: 'center', at: { u: 0, v: -R } },
-    ...(mute !== 'open' ? [{ id: 'mute', text: mute === 'plunger' ? 'PLUNGER · HAND' : `${mute.toUpperCase()} MUTE`, short: 'MUTE', u: R * 1.4, v: R * 1.35, align: 'center' as const, tone: 'amber' as const, at: { u: R * 0.9, v: R * 0.6 } }] : []),
+    // (the plunger's caption on clear ground beside the bell — the left hand's sleeve now comes up through the
+    // place it sat; the text is unchanged)
+    ...(mute !== 'open' ? [{ id: 'mute', text: mute === 'plunger' ? 'PLUNGER · HAND' : `${mute.toUpperCase()} MUTE`, short: 'MUTE', u: mute === 'plunger' && figureV2On('familyBrass') ? -F * 0.42 : R * 1.4, v: R * 1.35, align: 'center' as const, tone: 'amber' as const, at: { u: R * 0.9, v: R * 0.6 } }] : []),
   ];
   return (
     <Stage w={w} h={h} box={box} a11y={accessibilityLabel} labels={labels}>
@@ -511,9 +516,14 @@ export function MuteView({ w, h, P, mute, accessibilityLabel }: { w: number; h: 
           </Path>
           <Path path={m.extra} style="stroke" strokeWidth={1.6} color="#15171b" />
           <Path path={m.corks} color="#b8875a" />
-          <Path path={m.hand}>
-            <LinearGradient start={vec(0, -40)} end={vec(0, 40)} colors={['#e2bfa3', '#b98d6f', '#7d5a45']} />
-          </Path>
+          {mute === 'plunger' && figureV2On('familyBrass') ? (
+            // (figure roll-out wave 5: the left hand round the cup's back, in the approved look)
+            <PlungerHandV2 k={R / 61.5} who={brassPlayer(P)} />
+          ) : (
+            <Path path={m.hand}>
+              <LinearGradient start={vec(0, -40)} end={vec(0, 40)} colors={['#e2bfa3', '#b98d6f', '#7d5a45']} />
+            </Path>
+          )}
         </>
       ) : null}
     </Stage>

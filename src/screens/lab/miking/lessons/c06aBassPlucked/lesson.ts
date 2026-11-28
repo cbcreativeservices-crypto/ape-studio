@@ -469,7 +469,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: once the finger lets go, what does the string do?', options: ['It stops at once', 'It swings back and rings on', 'It holds its pulled shape'], after: 'Now STEP through (or PLAY ONCE) and watch the string, the bridge and the top.' },
+  sound: { prompt: 'Before you step through: once the finger lets go, what does the string do?', options: ['It stops at once', 'It swings back and rings on', 'It holds its pulled shape'], after: 'Now go EVENT by EVENT (or PLAY ONCE) and watch the string, the bridge and the top.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic a little higher, toward the fingerboard. What changes?', options: ['More finger and pitch', 'More body', 'It depends on this bass'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The drum kit sits off to the bassist’s right. Will aiming the mic away remove it?', options: ['Yes, completely', 'Partly — often least in the lows', 'No difference at all'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },

@@ -43,7 +43,7 @@ export const CHORUS_SCREEN_GUIDES: Record<ChorusScreenId, ScreenGuide> = {
   explore: {
     intro: {
       learning: 'How chorus works: a copy of your sound, 15–35 ms late and slowly wobbling in time, beats against the dry sound, and your ear hears that as thick and wide.',
-      start: 'Set SOURCE to SINE 440 Hz and tap ▶. Watch the bold line swell and thin. Then set MIX to 100% = VIBRATO and see the swelling stop.',
+      start: 'Watch the bold line on OUT for a few seconds: it swells and thins. Set MIX to 100% = VIBRATO and see the swelling stop. Then tap ▶ with SINE 440 Hz to hear both.',
     },
     seeing: [
       'Left of the green CHORUS bar (IN ▸) is your sound, in gray. Right of it, to ▸ OUT: your sound again (faint gray), the delayed copy (blue) and what you hear: the two mixed (bold glowing line).',
@@ -52,7 +52,7 @@ export const CHORUS_SCREEN_GUIDES: Record<ChorusScreenId, ScreenGuide> = {
     ],
     control: [
       'Tap ▶ at the top right, or tap the display, to play the source through the chorus; ■ stops it.',
-      'Drag the RATE fader (0.10–3.00 Hz, starts at 0.25 Hz) to set how fast the LFO, a low-frequency oscillator, wobbles the copy’s delay.',
+      'Drag the RATE fader (0.10–3.00 Hz, starts at 0.50 Hz) to set how fast the LFO, a low-frequency oscillator, wobbles the copy’s delay.',
       'DEPTH (SUBTLE, CLASSIC or DEEP) sets how far that delay swings. DELAY (VOICE DELAY: 15, 20 or 35 ms) sets how far behind your sound the copy sits.',
       'MIX (30%, 50% or 100% = VIBRATO) sets how much copy you hear. SOURCE picks SINE 440 Hz or PINK NOISE. Compare DELAY on PINK NOISE: on a sine, each setting should sound the same.',
       'Long-press a key or readout for its lesson entry. Below: HIDE DISPLAY, FULL SCREEN, and LAB NOTES with the response curve and two quick questions.',
@@ -78,7 +78,7 @@ export const CHORUS_SCREEN_GUIDES: Record<ChorusScreenId, ScreenGuide> = {
   learn: {
     intro: {
       learning: 'The vocabulary of chorus (LFO, rate, depth, voice delay, wet/dry mix, vibrato) and why too much movement, or no dry sound, stops it sounding like chorus.',
-      start: 'Scroll to the MIX entry and read it. Then switch to EXPLORE, play SINE 440 Hz and set MIX to 100% = VIBRATO to hear what it describes.',
+      start: 'Open CONTROLS and read the MIX entry. Then switch to EXPLORE, play SINE 440 Hz and set MIX to 100% = VIBRATO to hear what it describes.',
     },
     seeing: [
       'This is the Chorus guided lesson as one page to read. Nothing on it moves, but ▶ in the header still plays or stops the sound.',
@@ -100,8 +100,8 @@ export const CHORUS_SCREEN_GUIDES: Record<ChorusScreenId, ScreenGuide> = {
       'Why a wide chorus can thin out when the mix is summed to mono, so a mono check is worth doing.',
     ],
     tryThis: [
-      'Read the MIX entry, then on EXPLORE play SINE 440 Hz and set MIX to 100% = VIBRATO: the bold line stops swelling — the dry voice it beat against is gone.',
-      'Read the COMMON MISTAKES line on RATE and DEPTH, then on EXPLORE set DEPTH to DEEP and drag RATE to 3.00 Hz: listen for the seasick warble.',
+      'Open CONTROLS and read the MIX entry, then on EXPLORE play SINE 440 Hz and set MIX to 100% = VIBRATO: the bold line stops swelling — the dry voice it beat against is gone.',
+      'Open COMMON MISTAKES and read the line on RATE and DEPTH, then on EXPLORE set DEPTH to DEEP and drag RATE to 3.00 Hz: listen for the seasick warble.',
     ],
   },
 
@@ -116,8 +116,9 @@ export const CHORUS_SCREEN_GUIDES: Record<ChorusScreenId, ScreenGuide> = {
       'A line under the heading says how many are still to get right. A ✓ replaces a question’s number once you answer it right.',
     ],
     control: [
-      'Tap an answer. Right: it turns green and CORRECT shows why. Wrong: NOT QUITE — TRY ANOTHER shows why, and you pick again straight away.',
-      'There is no score, and a wrong answer costs nothing. A right answer stays right.',
+      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
+      'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: what is left in this lab.',
+      'A right answer stays right.',
       'Use the tabs under the title to go to LEARN or EXPLORE at any time; answers already right stay right. If you leave the lab before the last one is right, the check starts over.',
     ],
     changes: [
@@ -129,8 +130,8 @@ export const CHORUS_SCREEN_GUIDES: Record<ChorusScreenId, ScreenGuide> = {
       'How the length of the delay, and the RATE of its movement, change what you hear.',
     ],
     tryThis: [
-      'For the 100% wet question, reread the MIX entry on LEARN, then come back.',
-      'For the flanger question, on LEARN reread the COMMON MISTAKES line on flanger, then come back.',
+      'For the 100% wet question, open CONTROLS on LEARN and reread the MIX entry, then come back.',
+      'For the flanger question, on LEARN open COMMON MISTAKES and reread the line on flanger, then come back.',
     ],
   },
 };

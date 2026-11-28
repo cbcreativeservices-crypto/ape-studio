@@ -14,7 +14,7 @@
  *  • ConceptBadge — the standing "CONCEPTUAL MODEL — SLOWED FOR VISIBILITY"
  *    disclosure every animated panel carries.
  */
-import { useEffect, useRef, useState } from 'react';
+import { Fragment, useContext, useEffect, useRef, useState } from 'react';
 import { LayoutAnimation, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import { TRACER_CAPTION, TRACER_COLOR } from './tracer';
@@ -27,6 +27,8 @@ import { NO_INSETS, laneDragValue, laneRawAt, laneValueAt } from '../rack/laneEd
 import { useEdgeGuard } from '../rack/useEdgeGuard';
 import { createLaneFeed } from '../rack/laneFeed';
 import { laneFingerAt, laneFingerDx, laneLandDx, type LaneFinger, type LaneLift } from '../rack/laneFinger';
+import { addMiss, checkWrongText, seededOrder, showRevealAfterMisses } from './checkWords';
+import { CheckCreditContext } from './CheckCredit';
 
 export type CheckSpec = {
   question: string;
@@ -36,11 +38,18 @@ export type CheckSpec = {
   reveal: string;
   /** Shown after a wrong answer (gentle nudge, stays until solved). */
   wrongHint?: string;
+  /** A reason per WRONG option, keyed by the AUTHORED option index (the card
+   *  shuffles only what it shows). Wins over `wrongHint` for that option
+   *  (lab fix round 2026-11-14, shared check card); see checkWords.ts. */
+  why?: Record<number, string>;
 };
 
 export function CheckQuestion({ spec, onSolved }: { spec: CheckSpec; onSolved?: () => void }) {
   const [picked, setPicked] = useState<number | null>(null);
   const [solved, setSolved] = useState(false);
+  // Distinct wrong options picked so far (checkWords.addMiss): after a second,
+  // different miss the explanation shows under the reason.
+  const [misses, setMisses] = useState<number[]>([]);
   // Collapsible (owner 2026-08-31): same expand/close triangle as the
   // WHAT'S HAPPENING sections, in the card's top-left. Starts open.
   const [open, setOpen] = useState(true);
@@ -50,14 +59,14 @@ export function CheckQuestion({ spec, onSolved }: { spec: CheckSpec; onSolved?: 
   // position, not the concept. The authored order stays authoritative; only the
   // presentation order is permuted, and correctness is checked by ORIGINAL
   // index so no spec ever needs re-authoring.
-  const [order] = useState<number[]>(() => {
-    const idx = spec.options.map((_, i) => i);
-    for (let i = idx.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [idx[i], idx[j]] = [idx[j], idx[i]];
-    }
-    return idx;
-  });
+  // SEEDED, not Math.random (checker C3 O-2, 2026-11-14): a remount must
+  // never reorder the options (checkWords.seededOrder).
+  const [order] = useState<number[]>(() => seededOrder(spec.question, spec.options));
+  // "Done = work done" (owner 2026-11-14): inside a CheckCreditScope the card
+  // registers itself and reports a right answer, so its module counts once
+  // every card on it is solved. Outside a scope: nothing changes.
+  const credit = useContext(CheckCreditContext);
+  useEffect(() => credit?.register(spec.question), [credit, spec.question]);
   // Synchronous guard (QA night 2026-09-01): same-frame repeat taps all saw
   // solved===false and fired onSolved once EACH — one Cable final-check
   // question credited "3 OF 10 SOLVED", and a counter jumping past its ===
@@ -66,10 +75,12 @@ export function CheckQuestion({ spec, onSolved }: { spec: CheckSpec; onSolved?: 
   const pick = (orig: number) => {
     if (solved || solvedRef.current) return;
     setPicked(orig);
+    setMisses((m) => addMiss(m, orig, spec.correctIdx));
     if (orig === spec.correctIdx) {
       solvedRef.current = true;
       setSolved(true);
       onSolved?.(); // optional: lets a host aggregate a "passed" state (R6c)
+      credit?.solved(spec.question);
     }
   };
   return (
@@ -99,8 +110,8 @@ export function CheckQuestion({ spec, onSolved }: { spec: CheckSpec; onSolved?: 
           const good = solved && i === spec.correctIdx;
           const bad = isPicked && !solved && i !== spec.correctIdx;
           return (
+            <Fragment key={i}>
             <Pressable
-              key={i}
               style={[styles.checkOpt, good && styles.checkOptGood, bad && styles.checkOptBad]}
               onPress={() => pick(i)}
               accessibilityRole="button"
@@ -114,14 +125,20 @@ export function CheckQuestion({ spec, onSolved }: { spec: CheckSpec; onSolved?: 
                 {opt}
               </Text>
             </Pressable>
+            {/* SN-F6a-1 (owner 2026-11-15, "build waves 1 thru 3", D62, F6a SD-01):
+                the wrong-answer words sit right under the option just tapped,
+                not after the last option. Same words, same elements. */}
+            {bad ? (
+              <>
+                <Text style={styles.checkHint}>{checkWrongText(spec, i)}</Text>
+                {showRevealAfterMisses(misses) ? <Text style={styles.checkRevealAfterMiss}>{spec.reveal}</Text> : null}
+              </>
+            ) : null}
+            </Fragment>
           );
         })}
       </View>
-      {solved ? (
-        <Text style={styles.checkReveal}>✓ {spec.reveal}</Text>
-      ) : picked != null ? (
-        <Text style={styles.checkHint}>{spec.wrongHint ?? 'Not quite — try again.'}</Text>
-      ) : null}
+      {solved ? <Text style={styles.checkReveal}>✓ {spec.reveal}</Text> : null}
         </>
       )}
     </View>
@@ -444,10 +461,12 @@ export function LevelMeterBar({ levelDb, minDb = -48, maxDb = -12 }: { levelDb: 
 export function VizUnavailableCard() {
   return (
     <View style={styles.unavailCard}>
-      <Text style={styles.unavailTitle}>ANIMATED VIEWS NEED AN APP UPDATE</Text>
+      {/* SH-37 (owner 2026-11-15, "build waves 1 thru 3", D62): no "update the app"
+          line in learner text; say what still works, as the store lines elsewhere do. */}
+      <Text style={styles.unavailTitle}>THE ANIMATED VIEW DOESN’T SHOW ON THIS DEVICE</Text>
       <Text style={styles.unavailBody}>
-        This version of the app can’t show the air-particle and speaker animations yet. The lesson
-        text and audio work fully — update the app to see the motion.
+        The air-particle and speaker animations can’t be drawn in this version of the app. The lesson
+        text and audio work fully; only the moving drawing is missing.
       </Text>
     </View>
   );
@@ -455,12 +474,20 @@ export function VizUnavailableCard() {
 
 /** The standing disclosure on every animated model panel. */
 export function ConceptBadge({ extra }: { extra?: string }) {
+  // ONE PLAIN SENTENCE (owner's decision 3, 2026-11-14; checker K1): the
+  // all-caps "CONCEPTUAL MODEL — SLOWED FOR VISIBILITY" line now reads as a
+  // sentence-case note. The disclosure stays; only the wording changed.
   return (
-    <Text style={styles.badge}>
-      CONCEPTUAL MODEL — SLOWED FOR VISIBILITY (real air moves at the audio rate, thousands of
-      times faster){extra ? ` · ${extra}` : ''}
+    <Text style={styles.modelNote}>
+      A picture of the idea, slowed down so you can see it: real air moves thousands of times
+      faster.{extra ? ` ${extra}` : ''}
     </Text>
   );
+}
+
+/** The same plain note look for a module's own disclosure sentence. */
+export function PlainModelNote({ children }: { children: string }) {
+  return <Text style={styles.modelNote}>{children}</Text>;
 }
 
 /**
@@ -507,6 +534,7 @@ const styles = StyleSheet.create({
   checkOptTextBad: { color: '#ff6b5e' },
   checkReveal: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: '#37e05f' },
   checkHint: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: '#ff8d7a' },
+  checkRevealAfterMiss: { fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18, color: colors.textSecondary },
 
   // DragSlider
   sliderHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
@@ -582,6 +610,7 @@ const styles = StyleSheet.create({
   unavailBody: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSub },
 
   badge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1, lineHeight: 13, color: colors.textSub },
+  modelNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16, color: colors.textSub },
 
   tracerRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
   tracerDot: { width: 9, height: 9, borderRadius: 4.5, marginTop: 5, backgroundColor: TRACER_COLOR },

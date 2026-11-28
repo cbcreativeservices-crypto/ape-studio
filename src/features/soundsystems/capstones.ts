@@ -108,6 +108,13 @@ const passiveHasAmp = (s: SoundSystem) => {
   const passive = s.placed.filter((p) => p.kind === 'passiveSpeaker' || p.kind === 'passiveSub' || p.kind === 'wedge');
   return passive.every((p) => upstream(s, p.id).some((u) => u.kind === 'amp'));
 };
+/** "Every passive cabinet has an amplifier" as a ROW of its own: met only
+ *  once there IS a passive cabinet (lab fix round 2026-11-14, F2: capstones 4
+ *  and 9 ticked it with no cabinet on the plot — a free tick). The combined
+ *  rows (`driven`, `live` on capstones 6 and 10) keep `passiveHasAmp`, where
+ *  a powered-only build is right. */
+const passiveAmped = (s: SoundSystem) =>
+  s.placed.some((p) => p.kind === 'passiveSpeaker' || p.kind === 'passiveSub' || p.kind === 'wedge') && passiveHasAmp(s);
 
 /* ── which console output feeds each loudspeaker (WF-SS-02) ──────────────── */
 
@@ -276,6 +283,10 @@ const drumsSubgrouped = (cs: ConsoleState) => {
   return drums.length > 0 && drums.every((c) => c.subgroup === 'sub-drums') && hears(subgroupBus(cs, 'sub-drums')).length === drums.length;
 };
 const drumsReachMain = (cs: ConsoleState) => cs.channels.filter((c) => c.family === 'drums').every((c) => hears(mainBus(cs)).some((h) => h.channelId === c.id));
+/** "The drums STILL reach the main mix (the subgroup is assigned to main)":
+ *  judged once the drums are on their subgroup — on the plain desk it was
+ *  met before anything was done (lab fix round 2026-11-14, F2). */
+const drumsStillReachMain = (cs: ConsoleState) => cs.channels.some((c) => c.family === 'drums' && c.subgroup === 'sub-drums') && drumsReachMain(cs);
 const vocalReverbPost = (cs: ConsoleState) => {
   const vox = cs.channels.filter((c) => c.family === 'vocal');
   return vox.length > 0 && vox.every((c) => c.sends.aux5?.tap === 'post' && c.sends.aux5.db > -60);
@@ -307,6 +318,11 @@ const iemVocalPre = (s: SoundSystem, cs: ConsoleState) => {
 // fail "every monitor send is PRE" (bug hunt 2026-09-29).
 const monitorsPre = (cs: ConsoleState) =>
   cs.channels.every((c) => ['aux1', 'aux2', 'aux3', 'aux4'].every((a) => !c.sends[a] || c.sends[a].db <= -60 || c.sends[a].tap === 'pre'));
+/** At least one monitor send is up (above OFF). "Every monitor send is
+ *  PRE-fader" is not met while there is no send at all (lab fix round
+ *  2026-11-14, F2: capstone 6 read ✓ before anything was sent, then
+ *  un-ticked the moment the learner sent the first channel). */
+const anyMonitorSend = (cs: ConsoleState) => cs.channels.some((c) => ['aux1', 'aux2', 'aux3', 'aux4'].some((a) => !!c.sends[a] && c.sends[a].db > -60));
 const fillsFromMain = (cs: ConsoleState) => 'main' in cs.matrices.find((m) => m.id === 'mx-fills')!.inputs && hears(matrixBus(cs, 'mx-fills')).length > 0;
 const lobbyFromMainAndMc = (cs: ConsoleState) => {
   const m = cs.matrices.find((x) => x.id === 'mx-lobby')!;
@@ -388,7 +404,7 @@ export const CAPSTONES: readonly Capstone[] = [
       req('mains', 'Loudspeakers at main left and main right', 'build', (s) => anySpeakerIn(s, 'mainL') && anySpeakerIn(s, 'mainR')),
       req('subs', 'Subwoofers at sub left and sub right', 'build', (s) => anySubIn(s, 'subL') && anySubIn(s, 'subR')),
       req('processor', 'Every main and sub is fed THROUGH the loudspeaker processor', 'build', (s) => roleViaProcessor(s, 'main') && roleViaProcessor(s, 'sub')),
-      req('amps', 'Every passive cabinet is driven by a power amplifier', 'build', (s) => passiveHasAmp(s) && count(s, 'amp') >= 1),
+      req('amps', 'Every passive cabinet is driven by a power amplifier', 'build', (s) => passiveAmped(s) && count(s, 'amp') >= 1),
       req('live', 'Everything live', 'build', live),
       VIA_CONSOLE,
       feedsReq('Outputs: MAIN L to the left main, MAIN R to the right; the subs on MAIN MONO, a sub aux or matrix', stereoLR),
@@ -432,7 +448,7 @@ export const CAPSTONES: readonly Capstone[] = [
       VIA_CONSOLE,
       feedsReq('Outputs: MAIN L to the left main, MAIN R to the right; each wedge on a different monitor aux', (v) => stereoLR(v) && wedgesOnOwnAux(v)),
       req('fourMixes', 'Console: something is sent to each of Aux 1–4', 'route', (s, cs) => fourMonitorMixes(cs) && wedgeAuxesCarry(s, cs)),
-      req('pre', 'Console: every monitor send is PRE-fader', 'route', (_s, cs) => monitorsPre(cs)),
+      req('pre', 'Console: every monitor send is PRE-fader', 'route', (_s, cs) => anyMonitorSend(cs) && monitorsPre(cs)),
     ],
   },
   {
@@ -448,7 +464,7 @@ export const CAPSTONES: readonly Capstone[] = [
       VIA_CONSOLE,
       feedsReq('Outputs: the mains on MAIN L and MAIN R — or MONO into both'),
       req('drumsSub', 'Kick, snare and overheads on the DRUMS subgroup', 'route', (_s, cs) => drumsSubgrouped(cs)),
-      req('drumsMain', 'The drums still reach the main mix (the subgroup is assigned to main)', 'route', (_s, cs) => drumsReachMain(cs)),
+      req('drumsMain', 'The drums still reach the main mix (the subgroup is assigned to main)', 'route', (_s, cs) => drumsStillReachMain(cs)),
       req('reverb', 'Both vocals sent to Aux 5 (reverb), POST-fader', 'route', (_s, cs) => vocalReverbPost(cs)),
       req('dca', 'Every band channel (not the announce mic or playback) on the BAND DCA', 'route', (_s, cs) => bandOnDca(cs)),
     ],
@@ -485,7 +501,7 @@ export const CAPSTONES: readonly Capstone[] = [
       req('fills', 'Front fills left and right', 'build', (s) => anySpeakerIn(s, 'frontFillL') && anySpeakerIn(s, 'frontFillR')),
       req('delays', 'Delay loudspeakers left and right', 'build', (s) => anySpeakerIn(s, 'delayL') && anySpeakerIn(s, 'delayR')),
       req('processor', 'Mains, subs, fills and delays ALL fed through the processor', 'build', (s) => roleViaProcessor(s, 'main') && roleViaProcessor(s, 'sub') && roleViaProcessor(s, 'fill') && roleViaProcessor(s, 'delay')),
-      req('amps', 'Every passive cabinet has an amplifier', 'build', passiveHasAmp),
+      req('amps', 'Every passive cabinet has an amplifier', 'build', passiveAmped),
       req('live', 'Everything live', 'build', live),
       VIA_CONSOLE,
       feedsReq('Outputs: MAIN L to the left main, MAIN R to the right; the subs on MAIN MONO, a sub aux or matrix; each front fill on Matrix 2, MONO or its own side’s main; each delay on its own side’s main or MONO', stereoLR),
@@ -563,9 +579,70 @@ export type CapstoneGrade = {
   pass: boolean;
 };
 
+/** Nothing is met on an EMPTY venue (lab fix round 2026-11-14, F2: "REQS
+ *  already reads 1/8 before anything is placed" — "No analog snake",
+ *  "Nothing vocal is sent to the sub aux" and the like were true of the
+ *  empty plot). A "keep it that way" row ticks once the build has begun. */
 export function gradeCapstone(c: Capstone, s: SoundSystem, cs: ConsoleState): CapstoneGrade {
   const met: string[] = [];
   const unmet: string[] = [];
-  for (const r of c.requirements) (r.test(s, cs) ? met : unmet).push(r.id);
+  const begun = s.placed.length > 0;
+  for (const r of c.requirements) (begun && r.test(s, cs) ? met : unmet).push(r.id);
   return { met, unmet, pass: unmet.length === 0 };
+}
+
+const MICS: readonly GearKind[] = ['vocalMic', 'instrumentMic'];
+/** The capstones whose brief says every main and sub (and, outdoors, fill
+ *  and delay) goes THROUGH the processor — and the roles that rule covers. */
+const PROCESSOR_ROLES: Readonly<Record<string, readonly Parameters<typeof inRole>[1][]>> = {
+  'stereo-subs': ['main', 'sub'],
+  outdoor: ['main', 'sub', 'fill', 'delay'],
+  festival: ['main', 'sub'],
+};
+
+/**
+ * A cable the engine ACCEPTS (it is physically possible) but that breaks the
+ * rule this capstone is about — said at the moment it is made, as a △ line
+ * instead of a green ✓ (lab fix round 2026-11-14, F2: "wrong links get a
+ * green ✓ and LIVE", capstones 2, 5 and 9). The loudspeaker still reads LIVE:
+ * sound does reach it, which is true; the line says why it is still wrong.
+ * `before` is the build without the new cable. Null when nothing is wrong.
+ */
+export function linkWarning(c: Pick<Capstone, 'id'> | null, before: SoundSystem, after: SoundSystem, from: string, to: string): string | null {
+  const kind = (s: SoundSystem, id: string) => s.placed.find((p) => p.id === id)?.kind;
+  const fromKind = kind(after, from);
+  const toKind = kind(after, to);
+  if (!fromKind || !toKind) return null;
+  // A microphone has ONE output (any lab page, capstone or not).
+  if (MICS.includes(fromKind) && after.links.filter((l) => l.from === from).length > 1) {
+    return 'A microphone has one output: on a real stage this second cable is not possible. Tap the first cable on the plot to remove it.';
+  }
+  if (!c) return null;
+  // Around the mix: a loudspeaker newly reached on a path that skips the console.
+  const was = consoleWalk(before).bypassed;
+  if ([...consoleWalk(after).bypassed].some((id) => !was.has(id))) {
+    return 'It plays — but it goes AROUND the mix: the console never hears it, so nobody at front of house can set its level. This build wants every loudspeaker fed THROUGH the console.';
+  }
+  // The networked stage: every source into the stagebox, the console's outputs back down the link.
+  if (c.id === 'network') {
+    if (isSource(fromKind) && fromKind !== 'powerDistro' && toKind !== 'stagebox') {
+      return 'Accepted, but this build puts every source into the stagebox: a long mic-level run straight to the console is the fragile cable the stagebox is here to remove.';
+    }
+    if (fromKind === 'console' && toKind !== 'stagebox') {
+      return 'Accepted, but this build sends the console’s outputs back down the network link: cable the console to the stagebox, and the loudspeakers from the stagebox.';
+    }
+  }
+  // Live without the processor, where the brief says everything goes through it.
+  const roles = PROCESSOR_ROLES[c.id];
+  if (roles) {
+    const liveBefore = new Set(trace(before).live);
+    const missed = trace(after).live.filter((id) => !liveBefore.has(id)).map((id) => after.placed.find((p) => p.id === id)!).filter((p) => roles.includes(slotDef(p.slot).role) && !feedsThrough(after, p.id, 'processor'));
+    if (missed.length) {
+      const role = slotDef(missed[0].slot).role;
+      return role === 'fill' || role === 'delay'
+        ? 'Live, but not through the processor: with no delay set it plays BEFORE the main sound arrives. This build feeds every fill and delay from the processor.'
+        : 'Live, but not through the processor: its crossover and limiting are skipped. This build feeds every main and sub through the processor.';
+    }
+  }
+  return null;
 }

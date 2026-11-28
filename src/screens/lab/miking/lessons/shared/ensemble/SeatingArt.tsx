@@ -34,7 +34,7 @@ import { TimpanoSide, TimpanoTop } from '../concert/TimpaniArt';
 import { DrumPlan, CymbalPlan, CymbalSide, DrumExterior, SnareStandSide } from '../drums/DrumArt';
 import { CONCERT_BD_36x16, CONCERT_SNARE_14x65 } from '../drums/concertSpec.ts';
 import { DEG, planDir, uv, type StageView } from './frameS.ts';
-import { DIMS, headTop, isVoice, sectionBox, BASS_DRUM_STATION, TIMPANI_SET, type Gear, type Seat, type Seating } from './seating.ts';
+import { DIMS, headTop, isVoice, sectionBox, BASS_DRUM_STATION, TIMPANI_MALLETS, TIMPANI_SET, type Gear, type Seat, type Seating } from './seating.ts';
 // Group 4: the band players and the stage gear (drawn into these batches) —
 // the drum kit (one kind for groups 4 and 5) is Lab 1's shared kit, whole.
 import { BAND_KINDS, bandElevInstrument, bandElevWhole, bandGearElev, bandGearPlan, bandPlanInstrument, bandPlanWhole, gearBehind, type BandTools } from './BandArt';
@@ -44,6 +44,25 @@ import { isNatural, ROWS } from '../mallets/malletSpec.ts';
 import { CONGA_DIMS } from '../../m04aCongas/model.ts';
 // group 2: the voices' sizes (a child is the adult figure at its scale).
 import { VOX } from './seatingVoices.ts';
+// (figure V2, wave 6 of D78: the plan from above in the approved look, behind SeatingView's `v2`)
+import { PlayerTopV2, MarkerTopV2, type TopGrip, type TopPlayer } from '../figureV2/elsewhereTop';
+import { castForKey, castInTurn, CAST_IN_TURN } from '../figureV2/markerPose';
+import { famFrontRegion, famPlan, FamilyFigureFrontV2, FamilyFigureV2, type FamIn, type FamPlan, type FamSkeleton, type FamView } from '../figureV2/familyV2';
+import { PersonFrontV2 } from '../figureV2/FigureV2Front';
+import { FRONT_SEATED, FRONT_STANDING } from '../figureV2/frontPlan.ts';
+import { PersonSideV2 } from '../figureV2/personV2';
+import { ConductorV2 } from '../figureV2/conductorV2';
+import { ChoristerV2 } from '../figureV2/choristerV2';
+import { bowNearFrog, hold2Of, KIND2, type Stick } from './ensembles2Holds';
+import { CAST, castFor } from '../figureV2/cast';
+// (2026-11-26) the seated acoustic guitar and the mandolin: the shared guitar family's own drawings at true size
+import { GuitarEdge, GuitarFace } from '../guitars/GuitarArt';
+import { geomOf, outlinePoly } from '../guitars/guitarSpec.ts';
+import type { GuitarScene } from '../guitars/guitarModel.ts';
+import { GUITAR_POSE, HELD_DRAWN } from './bandStage.ts';
+import { SINGER_SIDE } from '../voice/voicePose.ts';
+import { poseOnTalker } from '../broadcast/talkerPose.ts';
+import type { CastId, CastMember } from '../figureV2/cast';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -200,8 +219,7 @@ function addFig(b: Batch, tone: FigTone, q: SkPath): void {
 
 /* ── geometry helpers (build time) ── */
 type P2 = { u: number; v: number };
-const P = (u: number, v: number): P2 => ({ u, v });
-/** A path-op result as a WINDING path (ops may return even-odd; batch paths fill by winding). */
+const P = (u: number, v: number): P2 => ({ u, v });/** A path-op result as a WINDING path (ops may return even-odd; batch paths fill by winding). */
 function asWinding(p: SkPath | null): SkPath {
   if (!p) return make();
   return p.makeAsWinding() ?? p;
@@ -676,6 +694,8 @@ function figureArms(addShirt: (p: SkPath) => void, addSkin: (p: SkPath) => void,
    *  the body's own shoulder (body.cap) so the sleeve flows out of the shirt —
    *  one garment outline, an armhole seam at most (owner 2026-10-15). */
   const sleeve = (a: P2, e: P2, wrist: { u: number; v: number }) => {
+    // (figure V2, wave 6: the plan in the approved look records each arm the seat poses)
+    if (ARM_REC) ARM_REC.push({ a, e, w: P(wrist.u, wrist.v) });
     const root = pt(a.u, a.v + (body?.drop ?? 0));
     const d1 = Math.atan2(e.v - root.v, e.u - root.u);
     const d2 = Math.atan2(wrist.v - e.v, wrist.u - e.u);
@@ -891,6 +911,45 @@ function holdFor(s: Seat, lift: number, bowedBass: boolean): Hold | null {
   if (s.kind === 'bass') return holdOf(bowedBass ? 'bass' : 'bassPizz');
   return holdOf(s.kind, lift);
 }
+/** (figure V2) the hold the new drawing uses: Lab 5's, or (Ensembles2) a keys or percussion seat's — never the
+ *  old drawings' (they keep holdFor). */
+function holdV2For(s: Seat, lift: number, bowedBass: boolean): Hold | null {
+  // (Ensembles3) a cellist bows near the frog: the bow hand inside his own space, never over his neighbour's
+  // instrument (the chairs ≈ 0.9 m apart); the contact point on the strings is unchanged
+  if (s.kind === 'cello') {
+    const h = holdFor(s, lift, bowedBass);
+    return h ? bowNearFrog(h, CELLO_FROG_TO_CONTACT) : null;
+  }
+  return holdFor(s, lift, bowedBass) ?? hold2Of(s.kind, /\.2$/.test(s.id));
+}
+/** (Ensembles3) the cello's bow in the new pictures: the contact point this far along the bow from the frog. */
+export const CELLO_FROG_TO_CONTACT = 170;
+/** (Ensembles3) set while a v2 picture is built: planSeat and elevSeat then draw what the new figure holds (the
+ *  cello's bow slid toward its frog) and, from the side or the front, the tuba as the new figure plays it. */
+let V2_BUILD = false;
+function asV2<T>(f: () => T): T {
+  const was = V2_BUILD;
+  V2_BUILD = true;
+  try {
+    return f();
+  } finally {
+    V2_BUILD = was;
+  }
+}
+/** The hold the drawing of a seat's instrument follows (the old pictures keep holdFor). */
+const holdDraw = (s: Seat, lift: number, bowedBass: boolean): Hold | null => (V2_BUILD && s.kind === 'cello' ? holdV2For(s, lift, bowedBass) : holdFor(s, lift, bowedBass));
+/** (Ensembles3) the parts of a v2 elevation's instrument BEHIND its player (a tuba's bell beside and behind the
+ *  head): elevSeat puts them here while a v2 elevation is built; painted before the person. */
+let BEHIND: Batch | null = null;
+/** (Ensembles2) the old sticks, mallet and beater heads of a keys or percussion seat out of its batch: the new
+ *  figure's hands hold their own. */
+function clearSticks(b: Batch, k: string) {
+  if (!(KIND2 as readonly string[]).includes(k)) return;
+  b.stick = make();
+  if (k === 'timpani' || k === 'percussion') b.mat.hide = make();
+  if (k === 'marimba' || k === 'vibraphone') b.holes = make();
+}
+
 /** How each view is built (build passes it down). */
 type SeatOpts = { light: boolean; bowedBass: boolean; classical?: boolean };
 
@@ -1324,6 +1383,145 @@ export function GrandPianoTop() {
 /** Group 4: the path builders BandArt.tsx draws with. */
 const BAND_TOOLS: BandTools = { P, capsule, taper, ellipse, rr, poly, line, flare };
 
+/* ═══════ (2026-11-26) THE SEATED ACOUSTIC GUITAR AND THE MANDOLIN, AT TRUE SIZE ═══════
+ * Owner: "the acoustic duo needs to redo the guitars they are oddly stretched". The old outline (BandArt) laid the
+ * body's width along (−sin, +cos) against an axis (−cos, +sin): not square to it — 54° apart at the guitar's 18°,
+ * only 26° at the mandolin's 32° — so the body was sheared into a narrow sliver, beside necks about 20 % (guitar)
+ * and 85 % (mandolin) too long, in one orange wood. Now each is the guitar family's own drawing — C01's steel-string
+ * dreadnought and C05b's A-style mandolin (GuitarFace and GuitarEdge, unchanged: a spruce top, dark sides and neck,
+ * the bridge, the pickguard or finger rest, the hole) — projected exactly from its frame G (x along the strings, y
+ * toward the treble edge, z out of the top) into each view, its hole's center on bandStage.soundHole (HELD_DRAWN).
+ * The tail, the angle, the seat and every measured point stay bandStage's; the hands stay the hold's.
+ */
+type HeldK = 'aguitar' | 'mandolin';
+const isHeldAcoustic = (k: string): k is HeldK => k === 'aguitar' || k === 'mandolin';
+/** The sides' and the back's wood (GuitarEdge's own ramps: the dreadnought's mahogany, the mandolin's maple). */
+const HELD_WOOD: Record<HeldK, string[]> = { aguitar: ['#7a3f1e', '#5d2e15', '#45210f', '#2c1509'], mandolin: ['#b9763c', '#8a5025', '#5a3014'] };
+const heldScenes = new Map<HeldK, GuitarScene>();
+/** The family drawing's scene: GuitarFace and GuitarEdge read only its geometry and its cache key. */
+function heldScene(k: HeldK): GuitarScene {
+  let sc = heldScenes.get(k);
+  if (!sc) {
+    const spec = HELD_DRAWN[k].spec;
+    sc = { g: geomOf(spec), variant: { id: 'ensemble', spec, posture: 'seated' } } as unknown as GuitarScene;
+    heldScenes.set(k, sc);
+  }
+  return sc;
+}
+/** Frame G in a view: the screen point of G's origin, and the screen step of one millimetre along x, y and z. */
+type HeldMap = { o: P2; x: P2; y: P2; z: P2 };
+const heldAt = (M: HeldMap, x: number, y: number, z: number): P2 => P(M.o.u + M.x.u * x + M.y.u * y + M.z.u * z, M.o.v + M.x.v * x + M.y.v * y + M.z.v * z);
+/** The matrix drawing G's (x, y) — the top: GuitarFace — or its (x, z) — the edge: GuitarEdge — into the view. */
+const heldMatrix = (M: HeldMap, second: 'y' | 'z') => Skia.Matrix([M.x.u, M[second].u, M.o.u, M.x.v, M[second].v, M.o.v, 0, 0, 1]);
+/** Frame G in the seat's own frame (right, up, forward): G's origin `off` along GUITAR_POSE's axis (−cos, sin) from
+ *  its tail; y toward the treble edge, square to the axis in the top's plane (−sin, −cos: the treble edge toward the
+ *  floor); z out of the top, forward. */
+function heldLocal(k: HeldK) {
+  const G = GUITAR_POSE[k];
+  const an = G.ang * DEG;
+  const ar = -Math.cos(an);
+  const au = Math.sin(an);
+  const off = HELD_DRAWN[k].off;
+  return { o: { r: G.tailR + ar * off, up: G.tailUp + au * off, f: G.fwd }, x: { r: ar, up: au, f: 0 }, y: { r: -au, up: ar, f: 0 }, z: { r: 0, up: 0, f: 1 } };
+}
+/** …in an elevation (elevSeat's X and Q: u = o.u + right·rightU + fwd·fwdU, v = g − up). */
+function heldMapElev(k: HeldK, o: P2, g: number, rightU: number, fwdU: number): HeldMap {
+  const L = heldLocal(k);
+  const d = (q: { r: number; up: number; f: number }) => P(q.r * rightU + q.f * fwdU, -q.up);
+  return { o: P(o.u + L.o.r * rightU + L.o.f * fwdU, g - L.o.up), x: d(L.x), y: d(L.y), z: d(L.z) };
+}
+/** …from above, in the seat's local plan (x right, y back: forward is −y). */
+function heldMapPlan(k: HeldK): HeldMap {
+  const L = heldLocal(k);
+  const d = (q: { r: number; up: number; f: number }) => P(q.r, -q.f);
+  return { o: P(L.o.r, -L.o.f), x: d(L.x), y: d(L.y), z: d(L.z) };
+}
+/** A convex hull (monotone chain). */
+function hull2(pts: readonly P2[]): P2[] {
+  const p = [...pts].sort((a, b) => a.u - b.u || a.v - b.v);
+  const cross = (o: P2, a: P2, b: P2) => (a.u - o.u) * (b.v - o.v) - (a.v - o.v) * (b.u - o.u);
+  const half = (list: P2[]) => {
+    const h: P2[] = [];
+    for (const q of list) {
+      while (h.length >= 2 && cross(h[h.length - 2], h[h.length - 1], q) <= 0) h.pop();
+      h.push(q);
+    }
+    return h.slice(0, -1);
+  };
+  return [...half(p), ...half([...p].reverse())];
+}
+/**
+ * The instrument in a view. `face`: its top toward the viewer — the sides swept back from the top's outline, then
+ * the family's face drawing. `back`: turned away — the sides, then the back and the back of the neck and head.
+ * `edge`: seen edge-on (from above; from the side when square to the viewer) — the family's edge drawing (the neck,
+ * the tilted headstock), then the body's true silhouette (the outline's front and back, joined) with the top's edge.
+ */
+function heldArt(k: HeldK, M: HeldMap, mode: 'face' | 'back' | 'edge', key: string): { el: ReactElement; foot: SkPath } {
+  const sc = heldScene(k);
+  const g = sc.g;
+  const D = g.depth;
+  const pts = outlinePoly(g, 72);
+  const ring = (z: number) => pts.map(([x, y]) => heldAt(M, x, y, z));
+  let body: SkPath;
+  if (mode === 'edge') body = poly(hull2([...ring(0), ...ring(-D)]));
+  else {
+    // the outline swept from the top to the back: copies of one winding unite
+    body = make();
+    for (let i = 0; i <= 12; i++) body.addPath(poly(ring((-D * i) / 12)));
+  }
+  const bb = body.getBounds();
+  const wood = HELD_WOOD[k];
+  const end = g.L + g.spec.neck.headLen.mm;
+  const at = (x: number, y: number, z: number) => heldAt(M, x, y, z);
+  // the neck and the headstock's footprint, in the top's plane and edge-on (the labels keep off both)
+  const foot = body.copy();
+  foot.addPath(poly([at(g.edge, -34, 0), at(end, -34, 0), at(end, 34, 0), at(g.edge, 34, 0)]));
+  foot.addPath(poly([at(g.edge, 0, 10), at(end, 0, 10), at(end, 0, -45), at(g.edge, 0, -45)]));
+  let backPart: ReactElement | null = null;
+  if (mode === 'back') {
+    const back = poly(ring(-D));
+    // the back of the neck (as wide as the board), then the headstock's plate (GuitarFace's outline: a paddle 60 mm
+    // across, the dreadnought's 86)
+    const neckBack = poly([at(g.edge, -g.boardHalf(g.edge), -22), at(g.L, -g.boardHalf(g.L), -22), at(g.L, g.boardHalf(g.L), -22), at(g.edge, g.boardHalf(g.edge), -22)]);
+    const hl = g.spec.neck.headLen.mm;
+    const hw = g.spec.neck.head === 'paddle' ? 30 : 43;
+    const headBack = poly([at(g.L, -g.boardHalf(g.L), -22), at(g.L + hl * 0.12, -hw, -22), at(g.L + hl * 0.96, -hw, -22), at(end, -hw * 0.4, -22), at(end, hw * 0.4, -22), at(g.L + hl * 0.96, hw, -22), at(g.L + hl * 0.12, hw, -22), at(g.L, g.boardHalf(g.L), -22)]);
+    backPart = (
+      <Group>
+        <Path path={back}>
+          <LinearGradient start={vec(bb.x, bb.y)} end={vec(bb.x + bb.width, bb.y + bb.height)} colors={[wood[0], wood[1], wood[2]]} />
+        </Path>
+        <Path path={back} style="stroke" strokeWidth={3} color="#120904" />
+        <Path path={neckBack} color={wood[1]} />
+        <Path path={neckBack} style="stroke" strokeWidth={2.5} color="#120904" />
+        <Path path={headBack} color={wood[wood.length - 1]} />
+        <Path path={headBack} style="stroke" strokeWidth={2.5} color="#120904" />
+      </Group>
+    );
+  }
+  const el = (
+    <Group key={key}>
+      {mode === 'edge' ? (
+        <Group matrix={heldMatrix(M, 'z')}>
+          <GuitarEdge sc={sc} />
+        </Group>
+      ) : null}
+      <Path path={body}>
+        <LinearGradient start={vec(bb.x, bb.y)} end={vec(bb.x + bb.width, bb.y + bb.height)} colors={wood} />
+      </Path>
+      <Path path={body} style="stroke" strokeWidth={3} color="#120904" />
+      {mode === 'edge' ? <Path path={poly(ring(0))} style="stroke" strokeWidth={8} strokeJoin="round" color="#e6c27f" /> : null}
+      {mode === 'face' ? (
+        <Group matrix={heldMatrix(M, 'y')}>
+          <GuitarFace sc={sc} />
+        </Group>
+      ) : null}
+      {backPart}
+    </Group>
+  );
+  return { el, foot };
+}
+
 /* ═══════════════════ PLAN (from above) ═══════════════════ */
 
 /** A SINGER from above (group 2): standing, the head forward over the
@@ -1402,7 +1600,7 @@ function planSeat(b: Batch, s: Seat, o: SeatOpts) {
   // hands are the hold's (ensembleHands.ts), seen from above (u = right,
   // v = back, d = up); the kind's own arm and hand calls below then draw nothing.
   const lift = standing && KIND[k].posture === 'seated' ? STAND_LIFT : 0;
-  const hold = holdFor(s, lift, o.bowedBass);
+  const hold = holdDraw(s, lift, o.bowedBass);
   const PLAN_VIEW: HandView = (q) => ({ u: q.x, v: -q.z, d: q.y });
   if (hold) {
     for (const hp of heldArms(b, hold, { L: LS, R: RS }, PLAN_VIEW, { x: 0, y: 1, z: 0 }, fa.armTo, o.light, placeOf(s))) {
@@ -1625,12 +1823,17 @@ function planSeat(b: Batch, s: Seat, o: SeatOpts) {
         const pedalA = Math.atan2(s.p.z - c.v, s.p.x - c.u);
         b.extra.push({ key: `tp:${s.id}:${i}`, el: <Group key={`tp:${s.id}:${i}`} transform={[{ translateX: c.u }, { translateY: c.v }]}><TimpanoTop R={dr.d / 2} pedalA={pedalA} /></Group>, foot: ellipse(c, dr.d / 2 + 30, dr.d / 2 + 30) });
       }
-      arm([LS, P(-260, -180), P(-200, -380)]);
-      arm([RS, P(260, -180), P(200, -380)]);
-      hand(P(-200, -380));
-      hand(P(200, -380));
-      put(b.stick, line(make(), P(-200, -380), P(-260, -600)));
-      put(b.stick, line(make(), P(200, -380), P(260, -600)));
+      // One mallet on each of the two middle drums, its head a hand's width in from the rim nearest
+      // the player (seating.ts TIMPANI_MALLETS; owner 2026-11-22).
+      const [tL, tR] = TIMPANI_MALLETS;
+      arm([LS, P(-250, -110), tL.hand]);
+      arm([RS, P(250, -110), tR.hand]);
+      hand(tL.hand);
+      hand(tR.hand);
+      for (const m of [tL, tR]) {
+        put(b.stick, line(make(), m.hand, m.head));
+        put(b.mat.hide, ellipse(m.head, 19, 19));
+      }
       break;
     }
     case 'percussion': {
@@ -1765,6 +1968,15 @@ function planSeat(b: Batch, s: Seat, o: SeatOpts) {
       break;
     }
     default:
+      if (isHeldAcoustic(k)) {
+        // (2026-11-26) the seated acoustic guitar or the mandolin at true size, edge-on from above; the old figure's
+        // arm and hand calls stay BandArt's (its drawing goes to a scratch batch, unused)
+        const key = `held:${s.id}:plan`;
+        const art = heldArt(k, heldMapPlan(k), 'edge', key);
+        b.extra.push({ key, el: <Group key={key} transform={[{ translateX: s.p.x }, { translateY: s.p.z }, { rotate: (s.face * Math.PI) / 180 }]}>{art.el}</Group>, foot: placeOf(s)(art.foot) });
+        bandPlanInstrument(newBatch(), s, { ...BAND_TOOLS, put, arm, hand, LS, RS });
+        break;
+      }
       // Group 4: the band players' instruments (BandArt.tsx).
       if (BAND_KINDS.has(k)) bandPlanInstrument(b, s, { ...BAND_TOOLS, put, arm, hand, LS, RS });
   }
@@ -1893,7 +2105,7 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section', so: SeatOpts) {
   const dF = front ? -Math.cos(F) : Math.sin(F);
   const VIEW: HandView = (q) => ({ u: X(q.x, q.z), v: g - q.y, d: q.x * dR + q.z * dF });
   const onView = (q: V3) => P(X(q.x, q.z), g - q.y);
-  const hold = holdFor(s, lift, so.bowedBass);
+  const hold = holdDraw(s, lift, so.bowedBass);
   const heldHands = hold ? heldArms(b, hold, { L: shL, R: shR }, VIEW, { x: dR, y: 0, z: dF }, fa.armTo, so.light) : [];
   const arm = hold ? () => undefined : fa.arm;
   const hand = hold ? (_c: P2) => undefined : (c: P2) => fa.hand(c, (q) => ellipse(q, 42, 48));
@@ -2061,6 +2273,41 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section', so: SeatOpts) {
       break;
     }
     case 'tuba': {
+      if (V2_BUILD) {
+        // (Ensembles3) THE TUBA AS IT IS PLAYED, the new pictures: the body upright in the lap below the chin (its
+        // top at the valves, ≈ 1.1 m), the bell rising from it past the player's LEFT shoulder, beside and behind
+        // the head, its mouth above the head round the sound point (0, 120 ahead, 1450 up — unchanged); the
+        // mouthpiece at the lips. The bell is painted behind the person when it lies farther than the head (from
+        // the front and the player's right), in front of it when nearer (from the player's left).
+        // (the bell's throat rises just behind the left shoulder, 150 mm left and 100 mm back, its mouth over the
+        // head: from the hall it stands beside and behind the head even with the player turned on the arc)
+        const depthOf = (right: number, fwd: number) => right * dR + fwd * dF;
+        const bellBehind = depthOf(-150, -100) < depthOf(0, 15);
+        const bellInto = bellBehind && BEHIND ? BEHIND : b;
+        const across = (r: number) => r * Math.abs(rightU) + r * 0.72 * Math.abs(fwdU);
+        b.mat.brass.addPath(ellipse(Q(-20, 150, 850), across(180), 230));
+        // the tube from the body's top back to the bell's throat (behind the shoulder with the bell)
+        b.mat.brass.addPath(capsule(Q(-95, 140, 1030), Q(-125, 70, 1070), 44));
+        bellInto.mat.brass.addPath(capsule(Q(-125, 70, 1070), Q(-150, -100, 1110), 46));
+        // the bell: a throat widening fast toward the mouth (r ∝ t³), the mouth's rim seen edge-on
+        const a0 = Q(-150, -100, 1100);
+        const a1 = Q(-60, -30, 1460);
+        const L0 = Math.hypot(a1.u - a0.u, a1.v - a0.v) || 1;
+        const n0 = P(-(a1.v - a0.v) / L0, (a1.u - a0.u) / L0);
+        const rA = 46;
+        const rB = 205;
+        const side = (s: number) => Array.from({ length: 13 }, (_, i) => {
+          const t = i / 12;
+          const r = rA + (rB - rA) * t * t * t;
+          return P(a0.u + (a1.u - a0.u) * t + n0.u * r * s, a0.v + (a1.v - a0.v) * t + n0.v * r * s);
+        });
+        bellInto.mat.brass.addPath(poly([...side(1), ...side(-1).reverse()]));
+        bellInto.mat.brass.addPath(capsule(P(a1.u - n0.u * rB, a1.v - n0.v * rB), P(a1.u + n0.u * rB, a1.v + n0.v * rB), 10));
+        // the leadpipe and the mouthpiece at the lips
+        b.mat.brass.addPath(capsule(Q(70, 175, 1075), Q(22, 150, 1148), 9));
+        b.mat.silver.addPath(capsule(Q(22, 150, 1148), Q(TUBA_MOUTH.x, TUBA_MOUTH.z, TUBA_MOUTH.y), 8));
+        break;
+      }
       b.mat.brass.addPath(ellipse(Q(0, 120, 900), 190, 300));
       b.mat.brass.addPath(flare(Q(40, 120, 1100), Q(70, 120, 1500), 70, 215));
       arm([shL, Q(-220, 120, 860), Q(-120, 200, 1000)]);
@@ -2418,6 +2665,16 @@ function elevSeat(b: Batch, s: Seat, view: 'front' | 'section', so: SeatOpts) {
       break;
     }
     default:
+      if (isHeldAcoustic(k)) {
+        // (2026-11-26) the seated acoustic guitar or the mandolin at true size: its top toward the viewer, its back,
+        // or edge-on (square to the view); the old figure's arm and hand calls stay BandArt's (scratch drawing)
+        const key = `held:${s.id}:${view}`;
+        const mode = Math.abs(rightU) > 0.35 ? (dF > 0 ? 'face' : 'back') : 'edge';
+        const art = heldArt(k, heldMapElev(k, o, g, rightU, fwdU), mode, key);
+        b.extra.push({ key, el: art.el, foot: art.foot });
+        bandElevInstrument(newBatch(), s, view, { ...BAND_TOOLS, Q, X, arm, hand, shL, shR, g, o, front, rightU, fwdU });
+        break;
+      }
       // Group 4: the band players' instruments (BandArt.tsx).
       if (BAND_KINDS.has(k)) bandElevInstrument(b, s, view, { ...BAND_TOOLS, Q, X, arm, hand, shL, shR, g, o, front, rightU, fwdU });
   }
@@ -2794,8 +3051,602 @@ export function sectionOutline(s: Seating, sectionId: string, view: StageView): 
   return rr(Math.min(a.u, b.u), Math.min(a.v, b.v), Math.max(a.u, b.u), Math.max(a.v, b.v), 120);
 }
 
-/** The whole seating in one view (Skia elements in mm of the view's (u, v)). */
-export function SeatingView({ seating, view, hi = null }: { seating: Seating; view: StageView; hi?: string | null }) {
+/* ═══════════════ figure V2 (wave 6 of D78): the plan from above in the approved look ═══════════════ */
+
+/** The arms a seat poses (local: x right, y back), recorded while its plan is painted. */
+type ArmRec = { a: P2; e: P2; w: P2 };
+let ARM_REC: ArmRec[] | null = null;
+
+/** Hands that rest flat on what they play (keys, a harp's strings, drum heads); every other hand closes round
+ *  what it holds (a neck, a bow, a tube, a mallet, a baton) — the approved fist from above. */
+const FLAT_HANDS = new Set<string>(['piano', 'harp', 'keys', 'keyboard', 'organ', 'celesta', 'congas', 'bongos', 'djembe', 'cajon']);
+
+/** The cast member's figure for a seat, in its local frame (the neck 18 mm behind the old head's centre,
+ *  facing −y), from the arms its plan posed. Null player: a singer with the arms hanging (drawn standing). */
+function seatPlayerV2(q: Seat, arms: readonly ArmRec[]): { player: TopPlayer | null; standing: boolean } {
+  const voice = isVoice(q.kind);
+  const neck = P(0, voice ? -37 + 18 : 20 + 18);
+  const standing = q.posture === 'standing' || q.kind === 'conductor' || voice;
+  // the right arm is the one on the +x side (x right)
+  const side = (sx: 1 | -1) => arms.filter((r) => Math.sign(r.a.u) === sx).slice(-1)[0] ?? null;
+  const R = side(1);
+  const L = side(-1);
+  if (!R || !L) return { player: null, standing };
+  const flat = FLAT_HANDS.has(q.kind);
+  const grip = (r: ArmRec, sx: 1 | -1): TopGrip => {
+    const d = Math.hypot(r.w.u - r.e.u, r.w.v - r.e.v) || 1;
+    const f = P((r.w.u - r.e.u) / d, (r.w.v - r.e.v) / d);
+    const at = P(r.w.u + f.u * 55, r.w.v + f.v * 55);
+    // flat: the hand points along the forearm; a fist: closed round a line across it (a bow, a neck, a tube)
+    return flat ? { elbow: r.e, at, along: f, thumb: sx === 1 ? 1 : -1, kind: 'rest' } : { elbow: r.e, at, along: P(-f.v * sx, f.u * sx), thumb: sx === 1 ? -1 : 1, sx: 0.8 };
+  };
+  return { player: { neck, facing: -Math.PI / 2, R: grip(R, 1), L: grip(L, -1), seated: !standing }, standing };
+}
+
+/* ── a player who HOLDS an instrument: the family figure (figureV2/familyV2.tsx, read only) on the ensemble's own
+ *  hold (ensembleHands.ts: the posed hands, elbows and shoulders, solved once per kind) — the bow arm and the
+ *  stopping hand, a wind player's fingers on the keys — in the approved look, in every view ── */
+
+type V3L = { x: number; y: number; z: number };
+const v3l = (x: number, y: number, z: number): V3L => ({ x, y, z });
+const mid3l = (a: V3L, b: V3L): V3L => v3l((a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2);
+
+/** The body's joints round a hold, in the player's own frame (x right, y up, z forward, the floor at y 0):
+ *  the shoulders the hold was solved from; the head over them (a violinist's or violist's head tipped down to
+ *  the left, the jaw on the chin rest); the hips on the chair or standing; seated, the knees forward (a cellist's
+ *  wide round the instrument). */
+function seatSkeleton(q: Seat, hold: Hold): FamSkeleton {
+  const sL = hold.L?.shoulder ?? v3l(-200, 1050, 0);
+  const sR = hold.R?.shoulder ?? v3l(200, 1050, 0);
+  const seated = q.posture !== 'standing';
+  const n = v3l((sL.x + sR.x) / 2, (sL.y + sR.y) / 2 + 45, (sL.z + sR.z) / 2 - 10);
+  const chin = q.kind === 'violin' || q.kind === 'viola';
+  const head = chin ? v3l(n.x - 45, n.y + 150, n.z + 40) : v3l(n.x, n.y + 175, n.z + 25);
+  const face = chin ? v3l(-0.42, -0.38, 0.82) : v3l(0, -0.08, 1);
+  const hipY = n.y - (seated ? 495 : 505);
+  const pelvis = v3l(n.x, hipY, n.z - 20);
+  const kneeW = q.kind === 'cello' ? 200 : 118;
+  // (owner 2026-11-26, "Yes, move them") the seated acoustic guitarist sits as every seated player does, the thighs
+  // level: the guitar now RESTS on the right thigh (bandStage GUITAR_POSE.aguitar, set from this thigh). The old
+  // lowered lap (the thighs sloping 165 mm down to the knees, the feet drawn back) only made room for a guitar that
+  // hung too low.
+  const knee = (sx: number) => (seated ? v3l(sx * kneeW, hipY - 30, 420) : v3l(sx * 105, hipY - 420, 15));
+  const ankle = (sx: number) => (seated ? v3l(sx * (kneeW + 8), 90, 470) : v3l(sx * 110, 90, 0));
+  const toe = (sx: number) => (seated ? v3l(sx * (kneeW + 12), 25, 640) : v3l(sx * 115, 25, 175));
+  return {
+    head,
+    headR: 110,
+    face,
+    neck: n,
+    chest: v3l(n.x, n.y - 200, n.z + 60),
+    pelvis,
+    shoulderL: sL,
+    shoulderR: sR,
+    hipL: v3l(-100, hipY, pelvis.z),
+    hipR: v3l(100, hipY, pelvis.z),
+    kneeL: knee(-1),
+    kneeR: knee(1),
+    ankleL: ankle(-1),
+    ankleR: ankle(1),
+    toeL: toe(-1),
+    toeR: toe(1),
+  };
+}
+
+/** A rigid map of the player's frame into the family's view frame (a point, and a direction). */
+type Rigid = { pt: (q: V3L) => V3L; dir: (q: V3L) => V3L };
+const mapSkeleton = (k: FamSkeleton, T: Rigid): FamSkeleton => ({
+  head: T.pt(k.head),
+  headR: k.headR,
+  face: T.dir(k.face),
+  neck: T.pt(k.neck),
+  chest: k.chest ? T.pt(k.chest) : undefined,
+  pelvis: T.pt(k.pelvis),
+  shoulderL: T.pt(k.shoulderL),
+  shoulderR: T.pt(k.shoulderR),
+  hipL: T.pt(k.hipL),
+  hipR: T.pt(k.hipR),
+  kneeL: T.pt(k.kneeL),
+  kneeR: T.pt(k.kneeR),
+  ankleL: T.pt(k.ankleL),
+  ankleR: T.pt(k.ankleR),
+  toeL: T.pt(k.toeL),
+  toeR: T.pt(k.toeR),
+});
+const mapHand = (sk: HandSkeleton, T: Rigid): HandSkeleton => ({
+  frame: { o: T.pt(sk.frame.o), x: T.dir(sk.frame.x), y: T.dir(sk.frame.y), z: T.dir(sk.frame.z) },
+  fingers: sk.fingers.map((d) => ({ ...d, joints: d.joints.map(T.pt), dorsal: d.dorsal.map(T.dir) })),
+  thumb: { ...sk.thumb, joints: sk.thumb.joints.map(T.pt), dorsal: sk.thumb.dorsal.map(T.dir) },
+  palm: sk.palm.map(T.pt),
+  miss: sk.miss,
+});
+
+/** The plan's map: the player's local plan frame (x right, forward −y on the page) seen from above. */
+const PLAN_RIGID: Rigid = { pt: (q) => v3l(q.x, -q.y, -q.z), dir: (q) => v3l(q.x, -q.y, -q.z) };
+
+/** An elevation's map, as elevSeat projects the hold (u along the view, v down from the floor g, d toward the viewer). */
+function elevRigid(q: Seat, view: 'front' | 'section'): { T: Rigid; o: { u: number; v: number }; famView: FamView; facing: number; fwdU: number } {
+  const o = uv(view, q.p);
+  const F = q.face * DEG;
+  const front = view === 'front';
+  const rightU = front ? Math.cos(F) : -Math.sin(F);
+  const fwdU = front ? Math.sin(F) : Math.cos(F);
+  const dR = front ? Math.sin(F) : Math.cos(F);
+  const dF = front ? -Math.cos(F) : Math.sin(F);
+  const dir = (p: V3L) => v3l(p.x * rightU + p.z * fwdU, -p.y, p.x * dR + p.z * dF);
+  const pt3 = (p: V3L) => {
+    const d = dir(p);
+    return v3l(o.u + d.x, o.v + d.y, d.z);
+  };
+  // face-on when the player is turned toward the viewer (within ≈ 63° of square-on: a player on an arc turned 54°
+  // toward its middle is seen from the front, three-quarter — never a profile pasted into a front view); else in
+  // profile (Ensembles3: the rule was "more toward than across", which drew the arc's outer players in profile)
+  const famView: FamView = dF >= 0.45 ? 'front' : 'side';
+  return { T: { pt: pt3, dir }, o, famView, facing: fwdU >= 0 ? 1 : -1, fwdU };
+}
+/** (Ensembles3) the v2 tuba's mouthpiece at the lips (player frame: x right, y up, z forward). */
+const TUBA_MOUTH = { x: 2, y: 1172, z: 128 } as const;
+/** Where each brass player's lips meet the mouthpiece (the holds' own points). */
+const MOUTHPIECE: Partial<Record<string, { x: number; y: number; z: number }>> = {
+  trumpet: { x: TRUMPET.mouth.x, y: TRUMPET.mouth.y, z: TRUMPET.mouth.z },
+  trombone: { x: TROMBONE.mouth.x, y: TROMBONE.mouth.y, z: TROMBONE.mouth.z },
+  tuba: TUBA_MOUTH,
+};
+
+/** The family figure for a held seat in a view (memoised per seat and view by famPlan's key). */
+function seatFam(q: Seat, hold: Hold, view: StageView, who: CastMember): { fp: FamPlan; inst: number; headFront?: boolean } | null {
+  if (!hold.L || !hold.R) return null;
+  const T = view === 'plan' ? PLAN_RIGID : elevRigid(q, view).T;
+  const famView: FamView = view === 'plan' ? 'top' : elevRigid(q, view).famView;
+  const toward = famView === 'top' ? v3l(0, -1, 0) : v3l(0, 0, 1);
+  const sk = mapSkeleton(seatSkeleton(q, hold), T);
+  const arm = (a: Arm3) => ({ sk: mapHand(a.sk, T), elbow: T.pt(a.elbow), shoulder: T.pt(a.shoulder), cut: { p: T.pt(a.at), n: toward }, ...(a.hidden ? { handElsewhere: true } : {}) });
+  const floor = T.pt(v3l(0, 0, 0));
+  const seat = T.pt(v3l(0, DIMS.chairSeat, 0));
+  // (Ensembles3) a brass player seen face-on while turned on an arc: the face-on head is drawn with its mouth ON the
+  // mouthpiece (the turned head's face moves toward the horn), never the mouthpiece ending at the cheek
+  const mp = MOUTHPIECE[q.kind];
+  const turned = view !== 'plan' && famView === 'front' && Math.abs(elevRigid(q, view).fwdU) >= 0.25;
+  const liftMp = q.posture === 'standing' && KIND[q.kind].posture === 'seated' ? STAND_LIFT : 0;
+  const lip = mp && turned ? T.pt(v3l(mp.x, mp.y + liftMp, mp.z)) : null;
+  const fi: FamIn = {
+    ...(lip ? { lip } : {}),
+    key: `ens|${q.id}|${q.kind}|${view}`,
+    s: sk,
+    view: famView,
+    who,
+    seated: q.posture !== 'standing',
+    floorY: floor.y,
+    ...(q.posture !== 'standing' ? { seatY: seat.y } : {}),
+    arms: { L: arm(hold.L), R: arm(hold.R) },
+  };
+  const fp = famPlan(fi);
+  // the instrument's depth: where the hands meet it
+  const at = [hold.L.at, hold.R.at].map(T.pt);
+  const D = (p: V3L) => (famView === 'top' ? -p.y : p.z);
+  const inst = (D(at[0]) + D(at[1])) / 2;
+  // (Ensembles3) an upright string's neck passes the player's LEFT of the head: seen face-on the head and its face
+  // show beside the neck, over it where the two meet — never the neck and scroll drawn across the face
+  const headFront = famView === 'front' && (q.kind === 'bass' || q.kind === 'cello');
+  return { fp, inst, ...(headFront ? { headFront } : {}) };
+}
+
+/** (Ensembles2) a chorister's old folder (its black covers, the spine line) out of the batch: the new figure holds it. */
+function clearFolder(b: Batch) {
+  b.mat.ebony = make();
+  b.hair = make();
+}
+
+/** Who sits in each seat: the cast in turn by the seat's place in its seating (neighbours always two people). */
+const SEAT_WHO = new WeakMap<Seat, CastMember>();
+function castSeats(s: Seating) {
+  // (Cast figures 2026-11-26) a drum kit draws its own drummer (the kit drummer, in every view): its seat IS the
+  // drummer, and the other players take the rest of the cast in turn — never the drummer a second time beside his kit
+  const kit = s.seats.some((q) => q.kind === 'drumkit');
+  const players = (ids: readonly CastId[]) => {
+    let i = 0;
+    for (const q of s.seats) SEAT_WHO.set(q, q.kind === 'drumkit' ? CAST.drummer : CAST[ids[i++ % ids.length]]);
+  };
+  if (s.conductor) {
+    // (Ensembles2) the conductor's person never also plays in his seating: the players take the other four in turn
+    const cond = castFor('ensemble.conductor');
+    const four = CAST_IN_TURN.filter((id) => id !== cond.id);
+    players(kit ? four.filter((id) => id !== 'drummer') : four);
+    SEAT_WHO.set(s.conductor, cond);
+    return;
+  }
+  if (kit) {
+    players(CAST_IN_TURN.filter((id) => id !== 'drummer'));
+    return;
+  }
+  [...s.seats, ...(s.conductor ? [s.conductor] : [])].forEach((q, i) => SEAT_WHO.set(q, castInTurn(i)));
+}
+const seatWho = (q: Seat): CastMember => SEAT_WHO.get(q) ?? castForKey(q.id);
+
+type BuiltV2 = { base: Batch; rest: Batch; figs: { q: Seat; player: TopPlayer | null; fam?: { fp: FamPlan; inst: number } | null }[] };
+const cacheV2 = new Map<string, BuiltV2>();
+
+/** The plan with the figures taken out of the batches (the chairs and stands in `base`, the instruments in
+ *  `rest`) and each seat's cast member drawn on its own (lite at plan sizes). */
+function buildPlanV2(s: Seating): BuiltV2 {
+  return asV2(() => buildPlanV2In(s));
+}
+function buildPlanV2In(s: Seating): BuiltV2 {
+  const hit = cacheV2.get(s.id);
+  if (hit) return hit;
+  const so: SeatOpts = { light: s.seats.length > LIGHT_HANDS_ABOVE, bowedBass: /^(orch|strings|chamber)\./.test(s.id), classical: isClassical(s) };
+  castSeats(s);
+  const base = newBatch();
+  const rest = newBatch();
+  const figs: BuiltV2['figs'] = [];
+  for (const g of s.gear ?? []) bandGearPlan(rest, g, BAND_TOOLS);
+  const seats = [...s.seats, ...(s.conductor ? [s.conductor] : [])];
+  for (const q of seats) {
+    const sb = newBatch();
+    planStand(sb, q);
+    if (bandPlanWhole(newBatch(), q)) {
+      // (the kit draws its own drummer: already the approved figure)
+      planSeat(sb, q, so);
+      mergeInto(rest, sb, true);
+      continue;
+    }
+    ARM_REC = [];
+    planSeat(sb, q, so);
+    const arms = ARM_REC;
+    ARM_REC = null;
+    // the chair, the stand's legs and desk under the person; the figure's own masses out
+    const b0 = newBatch();
+    b0.fig.seat = sb.fig.seat;
+    b0.legs = sb.legs;
+    b0.desks = sb.desks;
+    mergeInto(base, b0, true);
+    for (const t of ['shirt', 'trousers', 'skin', 'shoe', 'seat'] as const) sb.fig[t] = make();
+    for (const k of ['sleeves', 'shoulders', 'skinBack', 'folds', 'creases', 'handLines', 'nails', 'legs', 'desks'] as const) sb[k] = make();
+    for (const m of HAIR_MATS) sb.mat[m] = make();
+    // (the conductor's old baton line: his baton is drawn with him; a chorister's old folder: hers with her)
+    if (q.kind === 'conductor') sb.stick = make();
+    if (q.kind === 'chorister' || q.kind === 'child') clearFolder(sb);
+    clearSticks(sb, q.kind);
+    mergeInto(rest, sb, true);
+    const lift = q.posture === 'standing' && KIND[q.kind].posture === 'seated' ? STAND_LIFT : 0;
+    const hold = holdV2For(q, lift, so.bowedBass);
+    figs.push({ q, player: seatPlayerV2(q, arms).player, fam: hold ? seatFam(q, hold, 'plan', seatWho(q)) : null });
+  }
+  const out = { base, rest, figs };
+  cacheV2.set(s.id, out);
+  return out;
+}
+
+/** A seat's local frame on the plan (placeOf's transform). */
+const seatXf = (q: Seat) => [{ translateX: q.p.x }, { translateY: q.p.z }, { rotate: (q.face * Math.PI) / 180 }, { scale: q.kind === 'child' ? VOX.child.scale : 1 }];
+
+function SeatFigureV2({ q, player, part, fam }: { q: Seat; player: TopPlayer | null; part: 'lower' | 'upper'; fam?: { fp: FamPlan; inst: number } | null }) {
+  const who = seatWho(q);
+  if (q.kind === 'conductor') {
+    // (Ensembles2) the conductor from above: the standing figure, the arms raised, the baton (figureV2/conductorV2)
+    if (part === 'lower') return null;
+    return (
+      <Group transform={seatXf(q)}>
+        <ConductorV2 who={castFor('ensemble.conductor')} view="top" />
+      </Group>
+    );
+  }
+  if (q.kind === 'chorister' || q.kind === 'child') {
+    // (Ensembles2) a chorister or a child holding the open folder (figureV2/choristerV2), the neck 18 mm behind the head
+    if (part === 'lower') return null;
+    return (
+      <Group transform={seatXf(q)}>
+        <Group transform={[{ translateY: -37 + 18 }]}>
+          <ChoristerV2 who={who} view="top" />
+        </Group>
+      </Group>
+    );
+  }
+  if (fam) {
+    // the held instrument's player: the whole person under the instrument, then the parts nearer than it over it
+    return (
+      <Group transform={seatXf(q)}>
+        {part === 'lower' ? <FamilyFigureV2 fp={fam.fp} /> : <FamilyFigureFrontV2 fp={fam.fp} region={famFrontRegion(fam.fp, fam.inst)} />}
+      </Group>
+    );
+  }
+  if (!player) {
+    // a singer (the arms hanging): the standing person, the neck 18 mm behind the head, facing −y
+    if (part === 'lower') return null;
+    return (
+      <Group transform={seatXf(q)}>
+        <Group transform={[{ translateY: -37 + 18 }]}>
+          <MarkerTopV2 who={who} facing={-Math.PI / 2} />
+        </Group>
+      </Group>
+    );
+  }
+  if (part === 'lower' && !player.seated) return null;
+  return (
+    <Group transform={seatXf(q)}>
+      <PlayerTopV2 player={player} who={who} part={part} />
+    </Group>
+  );
+}
+
+/** The plan in the approved look: chairs and stands, the seated legs, the instruments, then the people. */
+function SeatingPlanV2({ seating }: { seating: Seating; hi: string | null }) {
+  const g = useMemo(() => buildPlanV2(seating), [seating]);
+  return (
+    <Group>
+      <PaintBatch b={g.base} />
+      {g.figs.map((f) => (
+        <SeatFigureV2 key={`l${f.q.id}`} q={f.q} player={f.player} fam={f.fam} part="lower" />
+      ))}
+      <PaintBatch b={g.rest} />
+      {g.figs.map((f) => (
+        <SticksV2 key={`s${f.q.id}`} q={f.q} view="plan" />
+      ))}
+      {g.figs.map((f) => (
+        <SeatFigureV2 key={`u${f.q.id}`} q={f.q} player={f.player} fam={f.fam} part="upper" />
+      ))}
+    </Group>
+  );
+}
+
+/** (Ensembles2) the sticks a keys or percussion seat's hands hold (mallets, a beater, snare sticks): drawn over
+ *  the instrument, under the hand's parts nearer than it — the fist closes round them. */
+const STICK_LOOK: Record<Stick['kind'], { head: string; rim: string }> = {
+  mallet: { head: '#e8dfcb', rim: '#8f8571' },
+  yarn: { head: '#5b4a6c', rim: '#2c2236' },
+  beater: { head: '#efe9dc', rim: '#9c9381' },
+  stick: { head: '#d9bd8e', rim: '#7b5f37' },
+};
+function SticksV2({ q, view }: { q: Seat; view: StageView }) {
+  const h = hold2Of(q.kind, /\.2$/.test(q.id));
+  if (!h || !h.sticks.length) return null;
+  const proj = (p: V3L): P2 => {
+    if (view === 'plan') return P(p.x, -p.z);
+    const r = elevRigid(q, view).T.pt(p);
+    return P(r.x, r.y);
+  };
+  const shapes = h.sticks.map((st) => {
+    const a = proj(st.butt);
+    const f = proj(st.head);
+    const shaft = taper(a, f, st.kind === 'stick' ? 7 : 5.5, st.kind === 'stick' ? 3.5 : 4.5);
+    const hd = ellipse(f, st.headR, st.headR);
+    return { shaft, hd, look: STICK_LOOK[st.kind] };
+  });
+  const body = (
+    <Group>
+      {shapes.map((x, i) => (
+        <Group key={i}>
+          <Path path={x.shaft} color="#a8834f" />
+          <Path path={x.shaft} style="stroke" strokeWidth={1.4} color="#4a3520" opacity={0.8} />
+          <Path path={x.hd} color={x.look.head} />
+          <Path path={x.hd} style="stroke" strokeWidth={2} color={x.look.rim} />
+        </Group>
+      ))}
+    </Group>
+  );
+  return view === 'plan' ? <Group transform={seatXf(q)}>{body}</Group> : body;
+}
+
+/* ── the elevations (front: from the hall; section: from the conductor's right) in v2 ── */
+
+/** A singer in elevation: the approved standing figure, the lips on the seat's lip point (frame V's figure: the
+ *  lips 1550 above the floor); face-on when facing the viewer, else in profile toward its facing. */
+function SingerElevV2({ q, view, who }: { q: Seat; view: 'front' | 'section'; who: CastMember }) {
+  const E = elevRigid(q, view);
+  const k = q.kind === 'child' ? VOX.child.scale : 1;
+  const lipAhead = (q.kind === 'child' ? VOX.child.lipAhead : VOX.adult.lipAhead) * k;
+  const front = E.famView === 'front';
+  const lip = front ? E.T.pt(v3l(0, 1550 * k, 0)) : E.T.pt(v3l(0, 1550 * k, lipAhead));
+  return (
+    <Group transform={[{ translateX: lip.x }, { translateY: lip.y }, { scale: k }]}>
+      {q.kind === 'chorister' ? (
+        <ChoristerV2 who={who} view={front ? 'front' : 'side'} facing={E.facing > 0 ? 1 : -1} />
+      ) : front ? (
+        <PersonFrontV2 pose={FRONT_STANDING} who={who} />
+      ) : (
+        <PersonSideV2 pose={E.facing > 0 ? SINGER_SIDE : SINGER_SIDE_LEFT} who={who} opts={{ lip: { u: 0, v: 0 }, rest: 'restSide' }} />
+      )}
+    </Group>
+  );
+}
+/** (Ensembles2) the conductor in elevation: from the hall his BACK (the front view), from his right in profile
+ *  (the section) — figureV2/conductorV2, its origin the floor under him (the podium's top). */
+function ConductorElevV2({ q, view }: { q: Seat; view: 'front' | 'section' }) {
+  const E = elevRigid(q, view);
+  // (he faces the players, away from the hall: the front view sees his back)
+  return (
+    <Group transform={[{ translateX: E.o.u }, { translateY: E.o.v }]}>
+      <ConductorV2 who={castFor('ensemble.conductor')} view={view === 'front' ? 'back' : 'side'} facing={E.facing > 0 ? 1 : -1} />
+    </Group>
+  );
+}
+/** (Cast figures 2026-11-26) the kit's drummer from the hall: the drummer seated on his throne, facing the hall
+ *  (frontPlan FRONT_SEATED: the hips on the seat, the hands resting at the thighs), the kit drawn over him. The
+ *  section view's kit (KitSide) and the plan's (KitTop) already draw him; the front view had left him out. The
+ *  picture is cut at the floor line: the seated pose's feet sit a little lower, hidden behind the kick. */
+function KitDrummerFrontV2({ q }: { q: Seat }) {
+  const o = uv('front', q.p);
+  // the pose's own floor (FRONT_STANDING's, the lips at 0) on the stage floor: the hips 470 mm up, on the throne
+  const floor = FRONT_STANDING.floor ?? 1550;
+  return (
+    <Group clip={rr(o.u - 1500, o.v - 2600, o.u + 1500, o.v, 0)}>
+      <Group transform={[{ translateX: o.u }, { translateY: o.v - floor }]}>
+        <PersonFrontV2 pose={FRONT_SEATED} who={CAST.drummer} />
+      </Group>
+    </Group>
+  );
+}
+const SINGER_SIDE_LEFT = poseOnTalker(SINGER_SIDE, { id: 'ensLeft', lip: { x: 0, y: 0, z: 0 }, facing: -1 } as never);
+
+type ElevItem = { q: Seat; d: number; base: Batch; back: Batch | null; rest: Batch; fam: { fp: FamPlan; inst: number; headFront?: boolean } | null; voice: boolean };
+const cacheElevV2 = new Map<string, ElevItem[]>();
+
+/** Each seat in elevation, far to near: its chair and stand (base), its instrument (rest), its person. */
+function buildElevV2(s: Seating, view: 'front' | 'section'): ElevItem[] {
+  return asV2(() => buildElevV2In(s, view));
+}
+function buildElevV2In(s: Seating, view: 'front' | 'section'): ElevItem[] {
+  const key = `${s.id}|${view}`;
+  const hit = cacheElevV2.get(key);
+  if (hit) return hit;
+  const so: SeatOpts = { light: s.seats.length > LIGHT_HANDS_ABOVE, bowedBass: /^(orch|strings|chamber)\./.test(s.id), classical: isClassical(s) };
+  // (children are drawn from above only — E06, the lead ruling — as in the old elevations)
+  const seats = [...s.seats, ...(s.conductor ? [s.conductor] : [])].filter((q) => q.kind !== 'child' && (view !== 'section' || Math.abs(q.p.x) <= SECTION_SLICE || q.kind === 'conductor'));
+  const depth = (q: Seat) => (view === 'front' ? q.p.z : q.p.x);
+  castSeats(s);
+  const out: ElevItem[] = [];
+  for (const q of [...seats].sort((a, b) => depth(a) - depth(b))) {
+    const sb = newBatch();
+    elevStand(sb, q, view);
+    const back = newBatch();
+    BEHIND = back;
+    try {
+      elevSeat(sb, q, view, so);
+    } finally {
+      BEHIND = null;
+    }
+    const base = newBatch();
+    base.fig.seat = sb.fig.seat;
+    base.legs = sb.legs;
+    base.desks = sb.desks;
+    for (const t of ['shirt', 'trousers', 'skin', 'shoe', 'seat'] as const) sb.fig[t] = make();
+    for (const k of ['sleeves', 'shoulders', 'skinBack', 'folds', 'creases', 'handLines', 'nails', 'legs', 'desks'] as const) sb[k] = make();
+    for (const m of HAIR_MATS) sb.mat[m] = make();
+    if (q.kind === 'conductor') sb.stick = make();
+    if (q.kind === 'chorister') clearFolder(sb);
+    clearSticks(sb, q.kind);
+    const lift = q.posture === 'standing' && KIND[q.kind].posture === 'seated' ? STAND_LIFT : 0;
+    const hold = holdV2For(q, lift, so.bowedBass);
+    out.push({ q, d: depth(q), base, back, rest: sb, fam: hold ? seatFam(q, hold, view, seatWho(q)) : null, voice: isVoice(q.kind) });
+  }
+  // (Ensembles2) the stage gear (amps, wedges, the PA, DI boxes) painted with the players by depth, as the old
+  // elevations paint it — the new elevations had left it out
+  for (const g of (s.gear ?? []).filter((x) => view !== 'section' || Math.abs(x.p.x) <= SECTION_SLICE)) {
+    const gb = newBatch();
+    bandGearElev(gb, g, view, BAND_TOOLS);
+    const q = { id: `gear:${g.id}`, kind: 'gear', section: g.section ?? '', p: g.p, face: g.face, posture: 'standing', stand: null } as unknown as Seat;
+    out.push({ q, d: (view === 'front' ? g.p.z : g.p.x) + (gearBehind(g) ? 0 : 1), base: newBatch(), back: null, rest: gb, fam: null, voice: false });
+  }
+  out.sort((a, b) => a.d - b.d);
+  cacheElevV2.set(key, out);
+  return out;
+}
+
+/**
+ * THE ENSEMBLE LESSONS IN THE APPROVED LOOK (figure V2, wave 6 of D78, 2026-11-24), switched on WHOLE — every
+ * seating each lesson shows, in the plan, the front and the section: E02 background vocals, E04 duets, E08 the
+ * acoustic group, E10 the horn section. The others wait for the pieces they still need (a conductor seen from
+ * behind and with a baton; the choir's folders; the piano, harp, celesta, keys, timpani and percussion players).
+ */
+/**
+ * THE BIG SEATINGS' ONE SWITCH (Ensembles2, 2026-11-24): the lessons whose pictures hold 35 or more people — E11
+ * (the string orchestra, 35), E13 and E14 (the orchestra, 58), E16 (the big band) — are on only while this is
+ * true. If the phone measurement fails, set it to false: those four lessons go back to the old figures WHOLE (each
+ * lesson's every seating is in the list, so no lesson mixes the two looks). Nothing else changes.
+ */
+export const ENSEMBLE_V2_BIG_ON = true;
+export const ENSEMBLE_V2_BIG: readonly string[] = [
+  // E11: the two quartets and the string orchestra with its conductor
+  'quartet.arc', 'quartet.arcVa', 'strings.american',
+  // E13 the mixed ensemble, E14 the full orchestra
+  'chamber.mixed', 'orch.american', 'orch.german',
+  // E16 the big band
+  'bb.standard', 'bb.horseshoe',
+];
+
+export const ENSEMBLE_V2: ReadonlySet<string> = new Set([
+  'vocal.line', 'vocal.shared', 'vocal.circle', 'duo.shared', 'duo.fig8', 'vocal.quartet', 'acoustic.duo', 'acoustic.trio', 'horns.line', 'horns.arc',
+  // (Ensembles2) E05 the choir and E06 the children's choir: the choristers holding their folders, the conductor
+  // (figureV2/conductorV2: his back from the hall, in profile from his right, from above); children drawn from
+  // above only (the lead ruling — never in the front or section views)
+  'choir.arc', 'choir.risers', 'choir.children', 'choir.childrenSolo',
+  // (Ensembles2) E12 the percussion ensemble, E15 the jazz combo: the keys and percussion seats on their holds
+  // (ensembles2Holds.ts)
+  'perc.trio', 'perc.large', 'jazz.guitar', 'jazz.quartet',
+  // (Ensembles2) E09 the complete band: the standing keyboard player on the keys hold
+  'band.stage', 'band.room',
+  // the big seatings (E11, E13, E14, E16), behind their one switch
+  ...(ENSEMBLE_V2_BIG_ON ? ENSEMBLE_V2_BIG : []),
+]);
+
+/** Whether every seat of a seating can be drawn in the approved look in every view (its players hold their
+ *  instruments in a solved hold, or sing; the kit's drummer draws himself): a lesson switches on WHOLE only then. */
+export function seatingV2Ready(s: Seating): boolean {
+  return [...s.seats, ...(s.conductor ? [s.conductor] : [])].every((q) => q.kind === 'drumkit' || q.kind === 'conductor' || isVoice(q.kind) || !!holdV2For(q, 0, false));
+}
+
+function SeatingElevV2({ seating, view, hi }: { seating: Seating; view: 'front' | 'section'; hi: string | null }) {
+  const items = useMemo(() => buildElevV2(seating, view), [seating, view]);
+  const draw = (it: ElevItem, key: string) => (
+    <Group key={key}>
+      <PaintBatch b={it.base} />
+      {it.back ? <PaintBatch b={it.back} /> : null}
+      {it.fam ? <FamilyFigureV2 fp={it.fam.fp} /> : it.voice ? <SingerElevV2 q={it.q} view={view} who={seatWho(it.q)} /> : it.q.kind === 'conductor' ? <ConductorElevV2 q={it.q} view={view} /> : it.q.kind === 'drumkit' && view === 'front' ? <KitDrummerFrontV2 q={it.q} /> : null}
+      <PaintBatch b={it.rest} />
+      <SticksV2 q={it.q} view={view} />
+      {it.fam ? <FamilyFigureFrontV2 fp={it.fam.fp} region={famFrontRegion(it.fam.fp, it.fam.inst, it.fam.headFront ? { headFront: true } : {})} /> : null}
+    </Group>
+  );
+  return (
+    <Group>
+      {items.map((it) => draw(it, `e${it.q.id}`))}
+      {hi ? (
+        <Group>
+          <Path path={rr(-30000, -30000, 30000, 30000, 0)} color="#05060a" opacity={0.42} />
+          {items.filter((it) => it.q.section === hi || (hi === 'cond' && it.q.kind === 'conductor')).map((it) => draw(it, `h${it.q.id}`))}
+        </Group>
+      ) : null}
+    </Group>
+  );
+}
+
+/** (v2) the picked section over the veil: its chairs, legs, instruments and people. */
+function SeatingPlanHiV2({ seating, hi }: { seating: Seating; hi: string }) {
+  const g = useMemo(() => buildPlanV2(seating), [seating]);
+  const inHi = (q: Seat) => q.section === hi || (hi === 'cond' && q.kind === 'conductor');
+  const parts = useMemo(() => asV2(() => {
+    const so: SeatOpts = { light: seating.seats.length > LIGHT_HANDS_ABOVE, bowedBass: /^(orch|strings|chamber)\./.test(seating.id), classical: isClassical(seating) };
+    const base = newBatch();
+    const rest = newBatch();
+    for (const f of g.figs.filter((x) => inHi(x.q))) {
+      const sb = newBatch();
+      planStand(sb, f.q);
+      planSeat(sb, f.q, so);
+      const b0 = newBatch();
+      b0.fig.seat = sb.fig.seat;
+      b0.legs = sb.legs;
+      b0.desks = sb.desks;
+      mergeInto(base, b0, true);
+      for (const t of ['shirt', 'trousers', 'skin', 'shoe', 'seat'] as const) sb.fig[t] = make();
+      for (const k of ['sleeves', 'shoulders', 'skinBack', 'folds', 'creases', 'handLines', 'nails', 'legs', 'desks'] as const) sb[k] = make();
+      for (const m of HAIR_MATS) sb.mat[m] = make();
+      if (f.q.kind === 'conductor') sb.stick = make();
+      if (f.q.kind === 'chorister' || f.q.kind === 'child') clearFolder(sb);
+      clearSticks(sb, f.q.kind);
+      mergeInto(rest, sb, true);
+    }
+    return { base, rest };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [g, hi]);
+  const figs = g.figs.filter((f) => inHi(f.q));
+  return (
+    <Group>
+      <PaintBatch b={parts.base} />
+      {figs.map((f) => (
+        <SeatFigureV2 key={`hl${f.q.id}`} q={f.q} player={f.player} fam={f.fam} part="lower" />
+      ))}
+      <PaintBatch b={parts.rest} />
+      {figs.map((f) => (
+        <SeatFigureV2 key={`hu${f.q.id}`} q={f.q} player={f.player} fam={f.fam} part="upper" />
+      ))}
+    </Group>
+  );
+}
+
+/** The whole seating in one view (Skia elements in mm of the view's (u, v)). `v2`: the plan (from above)
+ *  with its people in the approved look — OFF by default: a lesson switches it with its other views. */
+export function SeatingView({ seating, view, hi = null, v2: v2Prop }: { seating: Seating; view: StageView; hi?: string | null; v2?: boolean }) {
+  const v2 = v2Prop ?? (ENSEMBLE_V2.has(seating.id) && seatingV2Ready(seating));
   const g = useMemo(() => build(seating, view, hi), [seating, view, hi]);
   const floor = useMemo(() => (view === 'plan' ? stageFloor(seating) : null), [seating, view]);
   const risers = useMemo(() => {
@@ -2876,7 +3727,9 @@ export function SeatingView({ seating, view, hi = null }: { seating: Seating; vi
         </>
       ) : null}
       {podium ? <Mass path={podium} mat="riser" contour={6} /> : null}
-      {g.layers.map((b, i) => (
+      {v2 && view === 'plan' ? <SeatingPlanV2 seating={seating} hi={null} /> : null}
+      {v2 && view !== 'plan' ? <SeatingElevV2 seating={seating} view={view} hi={hi} /> : null}
+      {(v2 ? [] : g.layers).map((b, i) => (
         <Group key={i}>
           {g.keys[i] ? <Path path={g.keys[i]!} style="stroke" strokeWidth={g.keyW} strokeJoin="round" color="#06070a" opacity={0.92} /> : null}
           <Shaded f={g.shade[i]} a={g.ghost[i] ? GHOST_ALPHA : 1}>
@@ -2884,17 +3737,17 @@ export function SeatingView({ seating, view, hi = null }: { seating: Seating; vi
           </Shaded>
         </Group>
       ))}
-      {g.ghostLines.map((q, i) =>
+      {(v2 ? [] : g.ghostLines).map((q, i) =>
         q ? (
           <Path key={`gh${i}`} path={q} style="stroke" strokeWidth={g.keyW * 0.5} strokeJoin="round" color="#c3cde2" opacity={0.45}>
             <DashPathEffect intervals={[g.keyW * 2.2, g.keyW * 1.6]} />
           </Path>
         ) : null,
       )}
-      {hi && g.hiBatch ? (
+      {hi && g.hiBatch && !(v2 && view !== 'plan') ? (
         <>
           <Path path={veil} color="#05060a" opacity={0.42} />
-          <PaintBatch b={g.hiBatch} />
+          {v2 && view === 'plan' ? <SeatingPlanHiV2 seating={seating} hi={hi} /> : <PaintBatch b={g.hiBatch} />}
         </>
       ) : null}
       {outline ? <Path path={outline} style="stroke" strokeWidth={view === 'plan' ? 40 : 34} color={AMBER} opacity={0.95} /> : null}

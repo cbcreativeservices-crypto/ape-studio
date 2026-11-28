@@ -39,7 +39,9 @@ describe('glossary lookups use the tagged audio sense', () => {
     const lp = src('features/glossary/learningProfiles.ts');
     assert.match(lp, /'Patch \(synth preset\)'/);
     assert.match(lp, /'Reflection \(acoustics\)'/);
-    assert.match(lp, /'Real-time analyzer'/, 'the Meter lab links the RTA (owner 2026-10-20)');
+    // The served card is "RTA (Real-Time Analyzer)" since Comp A's Fix31 merge (2026-11-14).
+    assert.match(lp, /'RTA \(Real-Time Analyzer\)'/, 'the Meter lab links the RTA (owner 2026-10-20)');
+    assert.doesNotMatch(lp, /'Real-time analyzer'/, 'the retired card name is gone');
     const sh = src('features/startHere/startHereGlossary.ts');
     assert.match(sh, /'Compression \(acoustics\)'/);
     assert.match(sh, /'Reflection \(acoustics\)'/);

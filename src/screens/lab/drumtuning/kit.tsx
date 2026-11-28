@@ -13,7 +13,7 @@ import { AccessibilityInfo, Pressable, StyleSheet, Text, View } from 'react-nati
 import { colors, fonts } from '../../../theme/tokens';
 import { AUDIO_UNAVAILABLE_MESSAGE } from '../../../../modules/ape-dsp';
 import { Body, Card, KeyButton } from '../mastering/kit';
-import type { DrumScenario } from './drumContent';
+import { drumWrongLine, type DrumScenario } from './drumContent';
 
 export { Body, Card, Checklist, CompareTable, KeyButton, KeyTerms, Kicker, PEAK_RED, Point, SectionTitle, TakeawayCard, levelTint } from '../mastering/kit';
 
@@ -42,9 +42,10 @@ function shuffled(n: number, seed: number): number[] {
  * One scenario, one pick. Correct BY VALUE. The card reports ONCE, when the
  * correct option is reached, and says whether the FIRST pick was right —
  * so a chapter's credit needs the right answer, not merely an answer, while
- * a retry stays free and explained. A wrong pick names THAT option as the
- * one that does not fit and keeps the card open; the full explanation is
- * revealed by the correct pick.
+ * a retry stays free and explained. A wrong pick gives THAT option's own
+ * reason (DRUM_SCENARIO_WHY) and keeps the card open; a second different
+ * wrong pick adds the explanation (fix round 2026-11-14), and the correct
+ * pick shows it too.
  */
 export function DrumScenarioCard({ s, onAnswered, keepOrder }: { s: DrumScenario; onAnswered?: (firstPickCorrect: boolean) => void; keepOrder?: boolean }) {
   const order = useMemo(() => (keepOrder ? s.options.map((_, i) => i) : shuffled(s.options.length, hashId(s.id))), [s, keepOrder]);
@@ -77,7 +78,7 @@ export function DrumScenarioCard({ s, onAnswered, keepOrder }: { s: DrumScenario
                   reported.current = true;
                   onAnswered?.(!firstWrong.current);
                 }
-                AccessibilityInfo.announceForAccessibility?.(ok ? 'Correct.' : `${o}: not the best fit. Choose again.`);
+                AccessibilityInfo.announceForAccessibility?.(ok ? 'Correct.' : drumWrongLine(s, o, wrongPicks.includes(o) ? wrongPicks.length : wrongPicks.length + 1).replace(/^✗ /, ''));
               }}
               style={[styles.opt, isRight && styles.optRight, isWrongPick && styles.optWrong, wasWrong && !isWrongPick && styles.optDim]}
               accessibilityRole="button"
@@ -92,7 +93,9 @@ export function DrumScenarioCard({ s, onAnswered, keepOrder }: { s: DrumScenario
       </View>
       {picked != null ? (
         <Text style={[styles.explain, { color: correct ? colors.green : colors.gold }]}>
-          {correct ? `✓ ${s.explain}` : `✗ "${picked}" is not the best fit here. Choose again; the full explanation appears with the option that fits.`}
+          {/* Fix round 2026-11-14 (S2 rule): the wrong option's own reason first;
+              a second different miss adds the explanation (drumWrongLine). */}
+          {correct ? `✓ ${s.explain}` : drumWrongLine(s, picked, wrongPicks.length)}
         </Text>
       ) : null}
     </Card>

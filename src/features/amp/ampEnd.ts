@@ -16,7 +16,7 @@
  * can never show above an unpassed check. `passed` comes from the banked
  * labCompletion record, which a practice run never clears.
  */
-import type { AmpModuleId } from './ampContent';
+import { checksForModule, type AmpModuleId } from './ampContent.ts';
 import type { AmpProgressState } from './ampProgress';
 
 export type AmpEndUnit = { id: string; label: string; detail?: string; kind?: 'unit' | 'check' };
@@ -24,6 +24,24 @@ export type AmpEndUnit = { id: string; label: string; detail?: string; kind?: 'u
 /** The check's unit id — features/lab/understanding UNDERSTANDING_UNIT
  *  (pinned equal by test/labEndCheckUnit_tubeAmp_d41j_20261101). */
 export const AMP_CHECK_UNIT = 'understanding';
+
+/** What is still missing on one unfinished module, in its own numbers
+ *  (phase 2 end screen, 2026-11-14): the checks it still needs, or the last
+ *  tap. Undefined for a done module (the row then shows no line). */
+export function ampModuleLeft(state: AmpProgressState, id: AmpModuleId): string | undefined {
+  return moduleLeft(state, id);
+}
+function moduleLeft(state: AmpProgressState, id: AmpModuleId): string | undefined {
+  const m = state.modules[id];
+  if (m?.done) return undefined;
+  if (id === 'apply') return 'Still to do: submit the final assessment in its last step.';
+  const answered = Object.keys(m?.checks ?? {}).length;
+  const left = Math.max(0, checksForModule(id).length - answered);
+  if (left === 0) return 'Still to do: tap MARK COMPLETE › at the end of the module.';
+  return answered === 0
+    ? 'Still to do: answer its CHECK YOURSELF questions, then MARK COMPLETE ›.'
+    : `Still to do: ${left} more check${left === 1 ? '' : 's'} to answer, then MARK COMPLETE ›.`;
+}
 
 export function ampEndModel(
   state: AmpProgressState,
@@ -34,7 +52,7 @@ export function ampEndModel(
   const cleared = new Set<string>(built.filter((x) => state.modules[x.id]?.done).map((x) => x.id));
   if (state.bestFinal?.passed || state.final?.passed) cleared.add('final');
   const units: AmpEndUnit[] = [
-    ...built.map((x) => ({ id: x.id, label: x.title })),
+    ...built.map((x) => ({ id: x.id, label: x.title, detail: moduleLeft(state, x.id) })),
     {
       id: 'final',
       label: 'Final assessment',

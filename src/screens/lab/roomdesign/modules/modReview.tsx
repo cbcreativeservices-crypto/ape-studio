@@ -16,11 +16,13 @@ import { LabNextButton } from '../../kit/LabNavBar';
 import { Body, Caption, Card, KV, NumField, SectionTitle, SuggestionRow, TierTag, TrayButton } from '../bits';
 import { accountDesignsLine, BADGE, DELETE_FAILED, SAVE_FAILED, SAVE_NOT_YET, saveLine, STORE_UNREADABLE, type RoomLabCtx } from '../labCtx';
 import { RoomPlanView } from '../RoomPlanView';
+import { GoDeeper } from '../../foundations/GoDeeper';
 import {
   analyze,
   bounds,
   compareMeasured,
   diffLayouts,
+  earlyUntreatedWallReflections,
   fmtDelta,
   fmtHz,
   fmtLen,
@@ -76,6 +78,18 @@ export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
 
   return (
     <View style={styles.doc}>
+      {/* BEGINNER CORE FIRST (owner's decision 5, 2026-11-14; G1 Room 6:
+          "the Review page buries its advice under tables"): SUGGESTED NEXT
+          STEPS opens the page; the two tables fold under GO DEEPER ▾. */}
+      <Card>
+        <SectionTitle title="SUGGESTED NEXT STEPS" />
+        <Caption>! look at this first · ▸ worth testing · ✓ as it should be · ⓘ normal, not a reason to move anything.</Caption>
+        {a.suggestions.map((s, i) => (
+          <SuggestionRow key={i} s={s} tag={i === firstCheck ? 'TRY FIRST' : undefined} />
+        ))}
+      </Card>
+
+      <GoDeeper hint="The room and layout table, the modes, the reflections and the decay times.">
       <Card>
         <SectionTitle title="ROOM AND LAYOUT" tier="CALCULATED" />
         <KV k="Plan" v={`${room.shape} · ${fmtU(b.width)} × ${fmtU(b.length)}`} />
@@ -130,13 +144,13 @@ export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
         {a.modes.slice(0, 12).map((m, i) => (
           <KV key={i} k={`${m.kind} (${m.nx},${m.ny},${m.nz})`} v={fmtHz(m.f)} tint={a.rectangular ? colors.cyanBright : colors.amber} />
         ))}
-        {a.coincident.length > 0 ? <Caption>{`Near-coincident modes (at least one axial, both ≤ 150 Hz, within 5 % of each other): ${a.coincident.slice(0, 3).map(([x, y]) => `${fmtHz(x.f)} & ${fmtHz(y.f)}`).join(' · ')} — expect a stronger buildup there.`}</Caption> : null}
+        {a.coincident.length > 0 ? <Caption>{`Near-coincident modes (at least one axial, both ≤ 150 Hz, within 5% of each other): ${a.coincident.slice(0, 3).map(([x, y]) => `${fmtHz(x.f)} & ${fmtHz(y.f)}`).join(' · ')} — expect a stronger buildup there.`}</Caption> : null}
         <Text style={styles.sub}>WHERE THE MODEL PREDICTS STRONGER OR WEAKER PRESSURE AT THE SEAT</Text>
         {a.listenerZones.map((z, i) => {
           const centred = !st || Math.abs(st.axisOffset) < 0.1;
           const note = z.mode.axis === 'W' && z.zone === 'null' && centred ? ' · center line: expected, keep it' : z.mode.axis === 'H' && z.zone === 'null' ? ' · ⓘ normal at seated ear height' : z.mode.axis === 'L' && z.zone !== 'between' ? ' · move fore/aft to test' : '';
           const tint = z.mode.axis !== 'L' && z.zone === 'null' ? colors.textSub : z.zone === 'peak' ? '#ff5a48' : z.zone === 'null' ? '#2f74ff' : colors.green;
-          return <KV key={i} k={`${z.mode.axis}-axis ${fmtHz(z.mode.f)}`} v={`${Math.round(z.pressure * 100)} % — ${z.zone === 'peak' ? 'pressure peak' : z.zone === 'null' ? 'null' : 'between'}${note}`} tint={tint} />;
+          return <KV key={i} k={`${z.mode.axis}-axis ${fmtHz(z.mode.f)}`} v={`${Math.round(z.pressure * 100)}% — ${z.zone === 'peak' ? 'pressure peak' : z.zone === 'null' ? 'null' : 'between'}${note}`} tint={tint} />;
         })}
         <Caption>Mode shape only — not how strongly the speakers excite each mode. A centered pair barely drives the odd width modes; the length axis is the one worth moving along.</Caption>
         <Text style={styles.sub}>LIKELY EARLY REFLECTIONS (FIRST ORDER, IMAGE-SOURCE)</Text>
@@ -156,14 +170,8 @@ export function ReviewModule({ ctx }: { ctx: RoomLabCtx }) {
           {bassJudgement(a)} {imagingJudgement(a)} {translationJudgement(a)}
         </Caption>
       </Card>
+      </GoDeeper>
 
-      <Card>
-        <SectionTitle title="SUGGESTED NEXT STEPS" />
-        <Caption>! look at this first · ▸ worth testing · ✓ as it should be · ⓘ normal, not a reason to move anything.</Caption>
-        {a.suggestions.map((s, i) => (
-          <SuggestionRow key={i} s={s} tag={i === firstCheck ? 'TRY FIRST' : undefined} />
-        ))}
-      </Card>
 
       <Card>
         <SectionTitle title="MEASURE VERSUS ESTIMATE" tier="MEASURED" />
@@ -306,7 +314,8 @@ function bassJudgement(a: ReturnType<typeof analyze>): string {
 function imagingJudgement(a: ReturnType<typeof analyze>): string {
   const s = a.stereo;
   if (!s) return '';
-  const early = a.reflections.filter((r) => r.surface.kind === 'wall' && r.delayMs < 15 && !r.treatedBy).length;
+  // The same rule as SUGGESTED NEXT STEPS (earlyUntreatedWallReflections).
+  const early = earlyUntreatedWallReflections(a.reflections).length;
   const sym = s.pathDiff <= SYM_TOL && Math.abs(s.wallL.side - s.wallR.side) <= 0.15;
   return `Stereo imaging: ${sym ? 'the geometry is matched left and right' : 'the two sides do not match'}${early > 0 ? `, and ${early} untreated wall reflection${early > 1 ? 's' : ''} inside 15 ms will blur the image and widen the center` : ', and the early wall reflections are treated or late'}.`;
 }

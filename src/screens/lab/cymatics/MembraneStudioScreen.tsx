@@ -46,6 +46,7 @@ import {
   fundamentalHz,
   membraneModes,
   membraneQ,
+  membraneRefQ,
   membraneStrength,
   readCone,
   sampleCone,
@@ -68,6 +69,7 @@ import { DriveHint } from './DriveHint';
 import { RES_TINT } from '../../../features/cymatics/resTint';
 import { START_LEVEL_01 } from '../../../features/audio/startLevel';
 import { goToCymatics, useStudioKey } from './goToCymatics';
+import { STUDIO_RELATION } from './homePath';
 import { CYMATICS_CHECK_TITLE, cymaticsStudioGuide } from './cymaticsScreenGuides';
 
 const F_MIN = 20;
@@ -147,7 +149,11 @@ function MembraneStudio() {
   const modes = useMemo(() => membraneModes(spec, 16), [spec]);
   const Q = useMemo(() => membraneQ(spec), [spec]);
   const f01 = useMemo(() => fundamentalHz(spec), [spec]);
-  const st = useMemo(() => membraneStrength(modes, freq, Q), [modes, freq, Q]);
+  // RESPONSE (st.strength) against a FIXED reference, the Open head, so DAMPING
+  // lowers the peak (owner 2026-11-25, fix-first 15). "On a mode?" (AT
+  // RESONANCE, MODE, LAND ON) reads st.near, which damping does not change.
+  const refQ = useMemo(() => membraneRefQ(spec), [spec]);
+  const st = useMemo(() => membraneStrength(modes, freq, Q, refQ), [modes, freq, Q, refQ]);
   const grid = useMemo(() => sampleMembrane(modes, freq, Q, GRID_N), [modes, freq, Q]);
   const head = HEAD_BY_ID[spec.head];
 
@@ -297,14 +303,14 @@ function MembraneStudio() {
       chooser: {
         title: isSpeaker ? 'JUMP TO A CONE STAGE' : 'JUMP TO A MODE',
         options: modeOptions.map((o) => ({ id: o.id, label: o.label, blurb: o.blurb })),
-        selectedId: isSpeaker ? null : st.dominant && st.strength > 0.5 ? st.dominant.id : null,
+        selectedId: isSpeaker ? null : st.dominant && st.near > 0.5 ? st.dominant.id : null,
         onSelect: (id) => {
           const o = modeOptions.find((x) => x.id === id);
           if (o) land(o.hz);
         },
         // Land on the nearest driven mode — was a tap on the RESPONSE bezel
         // cell (owner rule 2026-10-10: the bezel is read-only; controls dock).
-        onReset: nearestDriven && st.strength <= 0.5 ? { label: `LAND ON ${nearestDriven.label.split(' · ')[0]} · ${formatHz(nearestDriven.hz)}`, onPress: () => land(nearestDriven.hz) } : undefined,
+        onReset: nearestDriven && st.near <= 0.5 ? { label: `LAND ON ${nearestDriven.label.split(' · ')[0]} · ${formatHz(nearestDriven.hz)}`, onPress: () => land(nearestDriven.hz) } : undefined,
       },
     },
     {
@@ -435,25 +441,26 @@ function MembraneStudio() {
   const ex = modes.filter((m) => m.drive > 0.05);
   const bezel = isSpeaker
     ? [
-        { k: 'DRIVE', v: formatHzPrecise(freq, true), helpKey: 'frequency' },
-        { k: 'fs', v: formatHz(driver.fs), helpKey: 'cone' },
-        { k: 'ka', v: cone.ka.toFixed(2), helpKey: 'cone' },
-        { k: 'STAGE', v: `${CONE_STAGE_NUM[cone.stage]} / 6`, tint: CONE_TINT[CONE_STAGE_NUM[cone.stage]], helpKey: 'breakup', flex: 1.1 },
+        { k: 'DRIVE', v: formatHzPrecise(freq, true), helpKey: 'frequency', caption: 'tone fed in' },
+        { k: 'fs', v: formatHz(driver.fs), helpKey: 'cone', caption: 'cone rings at' },
+        { k: 'ka', v: cone.ka.toFixed(2), helpKey: 'cone', caption: 'cone vs wave' },
+        { k: 'STAGE', v: `${CONE_STAGE_NUM[cone.stage]} / 6`, tint: CONE_TINT[CONE_STAGE_NUM[cone.stage]], helpKey: 'breakup', flex: 1.1, caption: 'breakup stage' },
       ]
     : [
-        { k: 'DRIVE', v: formatHzPrecise(freq, true), helpKey: 'frequency' },
-        { k: 'FUNDAMENTAL', v: formatHz(f01), helpKey: 'tension', flex: 1.2 },
-        { k: 'MODE', v: st.dominant && st.strength > 0.5 ? st.dominant.label.split(' · ')[0] : '—', helpKey: 'modes' },
+        { k: 'DRIVE', v: formatHzPrecise(freq, true), helpKey: 'frequency', caption: 'tone fed in' },
+        { k: 'FUNDAMENTAL', v: formatHz(f01), helpKey: 'tension', flex: 1.2, caption: 'lowest note' },
+        { k: 'MODE', v: st.dominant && st.near > 0.5 ? st.dominant.label.split(' · ')[0] : '—', helpKey: 'modes', caption: 'which pattern' },
         // Read-only (owner rule 2026-10-10): LAND ON is in the FREQ tray.
-        { k: 'RESPONSE', v: `${Math.round(st.strength * 100)} %`, tint: levelColor(st.strength), helpKey: 'resonance' },
+        { k: 'RESPONSE', v: `${Math.round(st.strength * 100)} %`, tint: levelColor(st.strength), helpKey: 'resonance', caption: 'how much moves' },
       ];
 
   const togglePlay = () => (tone.running ? tone.stop() : void tone.start());
+  // K4 (owner decision 3, 2026-11-14): one plain sentence, not an all-caps disclaimer.
   const badge = isSpeaker
-    ? `SIMULATION · ILLUSTRATIVE cone stages · CALCULATED fs, ka, 1/f² excursion — ${cone.label === 'CALCULATED' ? 'this stage is calculated' : 'this stage is illustrative'}`
+    ? `A simulation: fs, ka and the 1/f² excursion are calculated; ${cone.label === 'CALCULATED' ? 'this cone stage is calculated too.' : 'this cone stage is illustrative.'}`
     : spec.kettle
-      ? 'SIMULATION · CALCULATED Bessel head modes · APPROXIMATED kettle loading (measured on real timpani)'
-      : 'SIMULATION · CALCULATED — clamped-membrane Bessel modes';
+      ? 'A simulation: the drumhead’s modes are calculated; the kettle loading is approximated from real timpani.'
+      : 'A simulation: the clamped drumhead’s modes, calculated.';
   // SAVE → the Pattern Gallery (Phase 4): the full state, never a picture.
   // One save per press: SAVE stays disabled until the write settles, and the
   // ref catches a same-frame double tap before the re-render (bug hunt
@@ -487,9 +494,13 @@ function MembraneStudio() {
         guide={cymaticsStudioGuide('membrane')}
         accuracy={false}
         checkTitle={CYMATICS_CHECK_TITLE}
-        title="MEMBRANE & LOUDSPEAKER STUDIO"
+        // Two lines at most beside the header keys: "…STUDIO" made a third
+        // line and was cut at 390 wide (novice audit 2026-11-14). The home's
+        // OPEN THE MEMBRANE & LOUDSPEAKER STUDIO › keeps the full name.
+        title="MEMBRANE & LOUDSPEAKER"
         subtitle="Cymatics Lab: Sound Made Visible"
-        intro="A drumhead is a membrane: it has almost no stiffness of its own, only tension, so its modes follow the Bessel patterns — and their frequencies are NOT a harmonic series, which is why a bare drumhead has no clear pitch and a timpani (with its kettle) does. A loudspeaker cone is the opposite bargain: a stiff shell asked to move as one piston until, at its breakup frequency, it stops obeying."
+        // The first sentence says how the studio relates to the modules (owner 2026-11-15, D62 CY-02); "the Bessel patterns" became plain drumhead modes (CY-03).
+        intro={`${STUDIO_RELATION.membrane} A drumhead has almost no stiffness of its own, only tension, so its modes are drumhead modes whose frequencies are NOT a harmonic series: a bare drumhead has no clear pitch, and a timpani (with its kettle) does. A loudspeaker cone is the opposite: a stiff shell that moves as one piston until, at its breakup frequency, it stops obeying.`}
         exploreCaption="Tune the head, move the mallet, sweep the modes. Then show the loudspeaker and sweep from its resonance up through breakup."
         headerAction={
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
@@ -503,6 +514,9 @@ function MembraneStudio() {
           stage: {
             size: 'L',
             badge,
+            modelNote: badge,
+            // The sound-off line (owner 2026-11-15: "build waves 1 thru 3", D62 SH-12): shown only while sound is off.
+            soundOffLine: 'Sound off? Turn on Silent drive in STRIKE: the figure and every readout still work.',
             onGuide: () => openLesson('membrane_display'),
             bezel,
             hideDragTag: true,
@@ -521,6 +535,7 @@ function MembraneStudio() {
                   grid={grid}
                   N={GRID_N}
                   strength={st.strength}
+                  near={st.near}
                   amplitude={amplitude}
                   view={view}
                   running={driving}
@@ -541,7 +556,7 @@ function MembraneStudio() {
                 </View>
               ) : (
                 <View style={[styles.noSkia, { width: w, height: h }]}>
-                  <Text style={styles.noSkiaText}>This version of the app can’t draw the drum. Controls and readouts still work; update the app to see it.</Text>
+                  <Text style={styles.noSkiaText}>The drum can’t be drawn on this device. Controls and readouts still work.</Text>
                 </View>
               ),
           },
@@ -570,14 +585,14 @@ function MembraneStudio() {
         {!isSpeaker ? (
           <View style={styles.card}>
             <View style={styles.rowBetween}>
-              <Text style={[styles.resLabel, { color: RES_TINT[st.strength > 0.5 ? 'at' : st.strength > 0.15 ? 'approaching' : 'between'] }]}>{st.strength > 0.5 ? 'AT RESONANCE' : st.strength > 0.15 ? 'APPROACHING' : 'BETWEEN RESONANCES'}</Text>
+              <Text style={[styles.resLabel, { color: RES_TINT[st.near > 0.5 ? 'at' : st.near > 0.15 ? 'approaching' : 'between'] }]}>{st.near > 0.5 ? 'AT RESONANCE' : st.near > 0.15 ? 'APPROACHING' : 'BETWEEN RESONANCES'}</Text>
               <Text style={styles.resPct}>{Math.round(st.strength * 100)} %</Text>
             </View>
             <View style={styles.meterTrack}>
               <LinearGradient colors={rampColors(st.strength)} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[styles.meterFill, { width: `${Math.max(2, Math.round(st.strength * 100))}%` }]} />
             </View>
             <Text style={styles.caption}>
-              {st.dominant && st.strength > 0.5
+              {st.dominant && st.near > 0.5
                 ? `Mode ${st.dominant.label} at ${formatHz(st.dominant.hz)} · Q ≈ ${Math.round(Q)}. LEVEL ${Math.round(amplitude * 100)} % sets how far the head moves — not which mode.`
                 : ex.length
                   ? `Nearest driven mode: ${ex.reduce((a, b) => (Math.abs(a.hz - freq) < Math.abs(b.hz - freq) ? a : b)).label} at ${formatHz(ex.reduce((a, b) => (Math.abs(a.hz - freq) < Math.abs(b.hz - freq) ? a : b)).hz)}.`

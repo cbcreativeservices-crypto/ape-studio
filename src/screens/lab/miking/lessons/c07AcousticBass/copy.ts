@@ -46,7 +46,7 @@ export const C07_COPY = stringsCopy({
   workedZone: { bass: 'neck.bass' },
   workedAim: 'Angle it to take in the top and the strings, not straight into the sound hole: the lab counts it while the line the mic points along meets the top within about 13 cm of {head}.',
   clearWhat: 'the plucking hand and arm, the fretting hand along the long neck, and the player’s view of it',
-  placementReveal: 'Toward the hole tends to bring more low-mid body — and boom close in; toward the neck, more string and finger. Every bass and room differs, so “it depends on this bass” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',
+  placementReveal: 'Toward the hole tends to bring more low-mid body — and boom close in; toward the neck, more string and finger. Every bass and room differs, so “it depends on this bass” is fair too. Each zone’s TENDS TO HEAR line is an idea to check by ear, not a promised result.',
   typeNotes: {
     sdcCard: 'Ideas to try: begin at the neck joint, then move one thing at a time — toward the hole, toward the bridge, a little farther back — and play the lowest notes each time.',
     instDynCard: 'Ideas to try with a dynamic: a little closer, and watch the bass that proximity adds on the low strings.',

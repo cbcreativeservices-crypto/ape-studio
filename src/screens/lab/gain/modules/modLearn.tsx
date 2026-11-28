@@ -11,7 +11,8 @@
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
-import { CheckQuestion, type CheckSpec } from '../../foundations/bits';
+import { type CheckSpec } from '../../foundations/bits';
+import { GoalCheck, useMetWhen } from '../../meter/moduleGoal';
 import { GlossaryText } from '../../../../features/glossary/glossaryLink';
 import { RackUnit } from '../../rack/RackUnit';
 import type { DockParam } from '../../rack/rackTypes';
@@ -25,7 +26,8 @@ const mk = (key: string, name: string, kind: Stage['kind'], gain: number, min: n
 
 /** Honesty badge on every gain-chain glass: the meters are a simulation on a
  *  relative scale (0 = the overload ceiling) — never a measurement. */
-const BADGE = 'SIMULATED SIGNAL CHAIN · RELATIVE dB';
+// S3's plain model note (phase 3, owner decision 3), not an all-caps badge.
+const BADGE = 'A simulated signal chain; levels are relative dB.';
 
 const fmtDb = (v: number) => `${v >= 0 ? '+' : ''}${v} dB`;
 // The dock KEY carries the unit too (emulator pass 2026-10-14: the key read
@@ -39,7 +41,10 @@ export function ZoneLegend() {
     <View style={styles.legend}>
       <View style={styles.legendItem}><View style={[styles.sw, { backgroundColor: '#2f74ff' }]} /><Text style={styles.legendText}>TOO LOW</Text></View>
       <View style={styles.legendItem}><View style={[styles.sw, { backgroundColor: '#3fae52' }]} /><Text style={styles.legendText}>HEALTHY</Text></View>
-      <View style={[styles.legendItem]}><View style={[styles.sw, { backgroundColor: '#ff5f4e' }]} /><Text style={styles.legendText}>OVERLOAD</Text></View>
+      {/* GN-02 (owner 2026-11-15, D62): the key uses STATUS's words AND colors (checker fix: HOT is
+          amber on STATUS and on the meter's top, CLIP red), so one swatch each. */}
+      <View style={[styles.legendItem]}><View style={[styles.sw, { backgroundColor: '#ffc64d' }]} /><Text style={styles.legendText}>HOT</Text></View>
+      <View style={[styles.legendItem]}><View style={[styles.sw, { backgroundColor: '#ff5f4e' }]} /><Text style={styles.legendText}>CLIP</Text></View>
       {/* The grey band at a meter's foot is the stage's hiss — the noise floor
           every stage amplifies (art grading 2026-10-16: it had no key). */}
       <View style={[styles.legendItem]}>
@@ -62,6 +67,10 @@ const INTRO_CHECK: CheckSpec = {
     'Turning the final output all the way up',
   ],
   correctIdx: 1,
+  why: {
+    0: 'Push SOURCE up and watch: past the healthy band every stage after it clips.',
+    2: 'Maxing the output only raises the last stage. A problem earlier in the chain stays.',
+  },
   reveal:
     'Gain staging keeps the signal comfortably within the usable range of EACH stage — enough level to stay above the noise, enough headroom to avoid overload. It is not a race to be loud.',
   wrongHint: 'Louder isn’t the goal — a healthy, consistent level from stage to stage is.',
@@ -98,7 +107,7 @@ export function IntroModule(_p: GainModuleComponentProps) {
       stage={{
         fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'M',
-        badge: BADGE,
+        modelNote: BADGE,
         bezel: [
           { k: 'SOURCE', v: fmtLv(nodes[0].level), tint: stageTint(nodes[0]) },
           { k: 'PREAMP', v: fmtLv(nodes[1].level), tint: stageTint(nodes[1]) },
@@ -121,7 +130,7 @@ export function IntroModule(_p: GainModuleComponentProps) {
           preamp is forced into overload; pull it down and everything sinks toward TOO LOW. The whole
           job: a healthy level at every stage.
         </Text>
-        <CheckQuestion spec={INTRO_CHECK} />
+        <GoalCheck spec={INTRO_CHECK} />
       </View>
     </RackUnit>
   );
@@ -137,15 +146,20 @@ export function InputGainModule(_p: GainModuleComponentProps) {
   const nodes = computeChain(-30, stages);
   const preNode = nodes[1];
   const done = preNode.region === 'healthy' && !preNode.distorted;
+  // The module counts once the preamp sits in the healthy green (owner's
+  // decision 1, phase 3: done = work done, never on opening).
+  useMetWhen(done);
   const params: DockParam[] = [
     {
+      // GN-02 (owner 2026-11-15, D62): one name for the control, PREAMP, as in every other module
+      // (was INPUT GAIN here). GN-01: the lane says it is the knob's gain.
       kind: 'fader',
       id: 'pre',
-      label: 'INPUT GAIN',
+      label: 'PREAMP',
       level: true,
       value: pre / 40,
       onChange: (t) => setPre(Math.round(t * 40)),
-      format: () => fmtDb(pre),
+      format: () => `${fmtDb(pre)} gain (the knob)`,
       formatShort: () => fmtG(pre),
       tint: stageTint(preNode),
     },
@@ -162,10 +176,11 @@ export function InputGainModule(_p: GainModuleComponentProps) {
       stage={{
         fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'M',
-        badge: BADGE,
+        modelNote: BADGE,
         bezel: [
-          { k: 'PREAMP', v: fmtLv(preNode.level), tint: stageTint(preNode) },
-          { k: 'HEADROOM', v: `${Math.max(0, -Math.round(preNode.level))} dB` },
+          // GN-01: the level that comes OUT, named as a level (the dock key holds the knob's gain).
+          { k: 'PREAMP LEVEL', kNarrow: 'LEVEL', v: fmtLv(preNode.level), tint: stageTint(preNode) },
+          { k: 'HEADROOM', v: `${Math.max(0, -Math.round(preNode.level))} dB`, caption: 'until clip' },
           { k: 'OUTPUT', v: fmtLv(nodes[2].level), tint: stageTint(nodes[2]) },
           { k: 'STATUS', ...stageStatus(preNode) },
         ],
@@ -178,9 +193,10 @@ export function InputGainModule(_p: GainModuleComponentProps) {
           strong enough to work with, but not so hot that it clips.
         </GlossaryText>
         <ZoneLegend />
+        {/* GN-01 (owner 2026-11-15: "build waves 1 thru 3", D62): the knob and the level, named, in the
+            instruction's place (a line in, a line out). */}
         <Text style={styles.instruction}>
-          ONLY the PREAMP fader is yours on this screen — the source and output are FIXED. Raise the
-          input gain until the preamp meter sits in the healthy green without touching overload.
+          {`The knob adds gain; the level is what comes out. Here the PREAMP knob adds ${fmtDb(pre)} and the PREAMP LEVEL reads ${fmtLv(preNode.level)}. Raise it until that level sits in the healthy green, short of CLIP.`}
         </Text>
         <View style={[styles.goal, done && styles.goalDone]}>
           <Text style={[styles.goalText, done && styles.goalTextDone]}>
@@ -207,6 +223,10 @@ const FOLLOW_CHECK: CheckSpec = {
   question: 'You set the preamp too hot and it clipped. Turning the processor after it DOWN will…',
   options: ['Fix the distortion it caused', 'Lower the level, not the distortion', 'Do nothing at all downstream'],
   correctIdx: 1,
+  why: {
+    0: 'The flattened shape was made at the preamp. A later stage only scales what it is handed.',
+    2: 'Turning the processor down does lower everything after it. Watch PROC and OUTPUT move.',
+  },
   reveal:
     'Turning a later stage down only changes LEVEL. Once a stage clips, the distortion is part of the signal and travels downstream — you have to fix it at the stage where it happened.',
   wrongHint: 'Downstream controls move level up and down — they can’t un-clip a signal.',
@@ -223,6 +243,11 @@ export function FollowModule(_p: GainModuleComponentProps) {
     [pre],
   );
   const nodes = computeChain(-30, stages);
+  // Which stage clipped FIRST (beginner audit 2026-11-14: past about +30 dB
+  // every column reads CLIP — the model is right, a full-scale signal hits
+  // each later stage's ceiling and lights its clip light too — so the card's
+  // "which stage reaches CLIP first" is now said in words).
+  const firstClip = nodes.find((n) => n.stageClipped) ?? null;
   const params: DockParam[] = [
     {
       kind: 'fader',
@@ -249,10 +274,11 @@ export function FollowModule(_p: GainModuleComponentProps) {
       stage={{
         fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'M',
-        badge: BADGE,
+        modelNote: BADGE,
         bezel: [
           { k: 'PREAMP', v: fmtLv(nodes[1].level), tint: stageTint(nodes[1]) },
-          { k: 'PROC', v: fmtLv(nodes[2].level), tint: stageTint(nodes[2]) },
+          // SH-26 (owner 2026-11-15, D62): the code spelled out where it fits (the audit: PROC was never spelled out).
+          { k: 'PROCESSOR', kNarrow: 'PROC', v: fmtLv(nodes[2].level), tint: stageTint(nodes[2]) },
           { k: 'OUTPUT', v: fmtLv(nodes[3].level), tint: stageTint(nodes[3]) },
           { k: 'STATUS', ...stageStatus(nodes[3]) },
         ],
@@ -260,6 +286,15 @@ export function FollowModule(_p: GainModuleComponentProps) {
       }}
     >
       <View style={styles.well}>
+        {firstClip ? (
+          <View style={[styles.note, styles.noteBad]}>
+            <Text style={styles.noteText}>
+              {`First stage to clip: ${firstClip.key === 'pre' ? 'PREAMP' : firstClip.key === 'proc' ? 'PROC (the processor)' : 'OUTPUT'}. ${
+                firstClip.key === 'out' ? 'It is the last stage.' : 'Every stage after it sits on the ceiling and lights CLIP too, but the damage started here.'
+              }`}
+            </Text>
+          </View>
+        ) : null}
         <GlossaryText style={styles.body}>
           A chain is a sequence — each stage feeds the next. Only the PREAMP moves here; the
           processor and output are FIXED. Sweep the preamp and follow the signal across: a weak
@@ -271,7 +306,7 @@ export function FollowModule(_p: GainModuleComponentProps) {
           Notice you can’t rescue a bad preamp setting with anything that comes after it — a decision
           early in the chain has already shaped everything downstream.
         </Text>
-        <CheckQuestion spec={FOLLOW_CHECK} />
+        <GoalCheck spec={FOLLOW_CHECK} />
       </View>
     </RackUnit>
   );
@@ -289,6 +324,10 @@ const LOWHIGH_CHECK: CheckSpec = {
     'The signal is now polarity inverted',
   ],
   correctIdx: 1,
+  why: {
+    0: 'Watch the gray band at the bottom of the meters as the late gain rises.',
+    2: 'Gain changes level, never polarity. Nothing here flipped the wave.',
+  },
   reveal:
     'Every dB of gain lifts the noise a stage was handed along with the signal. Boost late and you boost the accumulated hiss of everything upstream — the meter reads healthy, the recording hisses. Set a healthy level EARLY instead.',
   wrongHint: 'Run the TOO LOW scenario and watch the gray band at the bottom of the meters.',
@@ -371,13 +410,13 @@ export function LowHighModule(_p: GainModuleComponentProps) {
       stage={{
         fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'M',
-        badge: BADGE,
+        modelNote: BADGE,
         bezel: [
           { k: 'PREAMP', v: fmtLv(nodes[1].level), tint: stageTint(nodes[1]) },
           { k: 'OUTPUT', v: fmtLv(nodes[2].level), tint: stageTint(nodes[2]) },
           // Magnitude readout for the new hiss-fill; amber only when the
           // noise genuinely intrudes.
-          { k: 'NOISE', v: fmtLv(nodes[2].noise), tint: nodes[2].noise > -30 ? '#e8c341' : undefined },
+          { k: 'NOISE', v: fmtLv(nodes[2].noise), tint: nodes[2].noise > -30 ? '#e8c341' : undefined, caption: 'hiss level' },
           { k: 'STATUS', ...stageStatus(nodes[2]) },
         ],
         render: (w, h) => <ChainStage w={w} h={h} cols={cols} />,
@@ -406,7 +445,7 @@ export function LowHighModule(_p: GainModuleComponentProps) {
                   : 'BALANCED: healthy level at every stage, with headroom to spare.'}
           </Text>
         </View>
-        <CheckQuestion spec={LOWHIGH_CHECK} />
+        <GoalCheck spec={LOWHIGH_CHECK} />
       </View>
     </RackUnit>
   );
@@ -421,6 +460,10 @@ const FADER_CHECK: CheckSpec = {
     'You didn’t pull the fader down far enough to clean it up',
   ],
   correctIdx: 1,
+  why: {
+    0: 'The fader works: OUTPUT went down. Look at where the DIST tag first appeared.',
+    2: 'Pull FADER all the way down: the output gets quieter, and DIST still reads YES.',
+  },
   reveal:
     'A fader sets LEVEL, not quality. The clip happened at the preamp; the fader after it makes the distorted signal quieter, but the distortion is already part of the waveform. Fix clipping where it occurs — at the input gain.',
   wrongHint: 'The order matters: the damage is upstream of the fader.',
@@ -478,7 +521,7 @@ export function FaderVsGainModule(_p: GainModuleComponentProps) {
       stage={{
         fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'M',
-        badge: BADGE,
+        modelNote: BADGE,
         bezel: [
           { k: 'PREAMP', v: fmtLv(nodes[1].level), tint: stageTint(nodes[1]) },
           { k: 'OUTPUT', v: fmtLv(nodes[3].level), tint: stageTint(nodes[3]) },
@@ -504,7 +547,7 @@ export function FaderVsGainModule(_p: GainModuleComponentProps) {
                 : 'Clean chain. Clipping has to be prevented at the input gain, not patched at the fader.'}
           </Text>
         </View>
-        <CheckQuestion spec={FADER_CHECK} />
+        <GoalCheck spec={FADER_CHECK} />
       </View>
     </RackUnit>
   );

@@ -164,7 +164,11 @@ const PLANS: Record<'pedal' | 'lever', Record<'R' | 'L', HandPlan>> = {
       y: -1165,
       dy: [-50, 0, 8, 16],
       pole: v(0.1, 0.6, 1),
-      frame: F(v(-500.97, -1128.47, 91.56), v(0.7905, -0.5194, -0.3246), v(0.6117, 0.642, 0.4623), v(-0.0318, -0.564, 0.8252)),
+      // (KeysGuitar3, review 2026-11-24 "the fingers a stack of knuckle bumps": re-fitted — the pads and the thumb
+      // on the SAME strings — with the knuckle row standing up the back of the hand and each finger running out of
+      // its own knuckle toward its string, so the three playing fingers lie side by side in the picture, never one
+      // over the next; the old frame: (-500.97, -1128.47, 91.56) x (0.7905, -0.5194, -0.3246))
+      frame: F(v(-500.49, -1133.27, 112.68), v(0.8413, -0.1871, -0.5073), v(0.2785, 0.9542, 0.1099), v(0.4636, -0.2338, 0.8548)),
     },
     // The left hand: lower, toward the pillar, near the middle of its strings.
     L: {
@@ -173,7 +177,9 @@ const PLANS: Record<'pedal' | 'lever', Record<'R' | 'L', HandPlan>> = {
       y: -1070,
       dy: [-50, 0, 8, 16],
       pole: v(0.1, 0.6, -1),
-      frame: F(v(-348.03, -1115.68, -115.18), v(0.772, 0.1619, 0.6147), v(0.3851, 0.6502, -0.6549), v(0.5057, -0.7423, -0.4397)),
+      // (KeysGuitar3: re-fitted, the knuckle row level across and the three fingers hanging side by side to their
+      // strings — a whole hand seen through the strings, never a paddle; the old frame (-348.03, -1115.68, -115.18))
+      frame: F(v(-339.15, -1121.68, -115.18), v(0.6375, 0.0035, 0.7705), v(0.7421, 0.2657, -0.6153), v(0.2069, -0.9641, -0.1669)),
     },
   },
   lever: {
@@ -185,7 +191,8 @@ const PLANS: Record<'pedal' | 'lever', Record<'R' | 'L', HandPlan>> = {
       y: -950,
       dy: [-50, 0, 8, 16],
       pole: v(0.1, 0.6, 1),
-      frame: F(v(-416.57, -923.62, 102.35), v(0.847, -0.3291, -0.4175), v(0.4734, 0.8242, 0.3108), v(0.2419, -0.4609, 0.8539)),
+      // (KeysGuitar3: re-fitted as the pedal harp's right hand; old frame (-416.57, -923.62, 102.35))
+      frame: F(v(-432.17, -928.42, 111.95), v(0.8702, -0.0724, -0.4874), v(0.1895, 0.9623, 0.1953), v(0.455, -0.2623, 0.8511)),
     },
     L: {
       side: -1,
@@ -193,7 +200,8 @@ const PLANS: Record<'pedal' | 'lever', Record<'R' | 'L', HandPlan>> = {
       y: -860,
       dy: [-50, 0, 8, 16],
       pole: v(0.1, 0.6, -1),
-      frame: F(v(-286.34, -881.19, -110.1), v(0.8474, 0.0133, 0.5307), v(0.3627, 0.7156, -0.597), v(0.3877, -0.6984, -0.6016)),
+      // (KeysGuitar3: re-fitted as the pedal harp's left hand; old frame (-286.34, -881.19, -110.1))
+      frame: F(v(-270.26, -897.51, -107.7), v(0.6931, -0.1372, 0.7076), v(0.7182, 0.2167, -0.6613), v(0.0626, -0.9666, -0.2487)),
     },
   },
 };

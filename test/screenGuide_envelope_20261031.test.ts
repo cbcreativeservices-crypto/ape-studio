@@ -128,7 +128,8 @@ describe('3. each guide quotes its page’s real names', () => {
     p1: ['A', 'D', 'S', 'R', 'ms →', '90%', '10%', 'SWEEP THE SHAPE', 'Attack', 'Decay', 'Release', 'Sustain level', 'Hold (energy still supplied)', 'ATTACK: LINEAR', 'SNAP', 'DECAY: LINEAR', 'NATURAL', 'RESET', 'READOUT', 'THE WORDS', 'FULL SCREEN', '‹ PREV', 'NEXT ›', 'MODULE', '▾'],
     p2: ['Snare drum', 'Kick drum', 'Piano', 'Violin', 'Trumpet', 'Cymbal', 'Speech', 'SWEEP THE SHAPE', 'FULL SCREEN', 'LOAD INTO THE EXPLORER ›', 'The Envelope Explorer', 'ATTACK: SNAP'],
     p3: ['Sharp transient', 'Soft transient', 'No transient', 'THE WORDS · ONSETS', 'WHY TRANSIENTS MATTER', 'SWEEP THE SHAPE', 'FULL SCREEN'],
-    p4: ['TYPICAL VALUES — ILLUSTRATIVE, NOT MEASURED', 'Finger snap', 'Pink noise', 'Piano note', 'About', 'FULL SCREEN'],
+    // K4, owner 2026-11-14 (decision 3): "plain one-line model notes, no ALL-CAPS disclaimers on screen". 
+    p4: ['for illustration, not measured', 'Finger snap', 'Pink noise', 'Piano note', 'About', 'FULL SCREEN'],
     p5: ['peak', 'average (RMS)', 'crest factor', 'Percussive (snare)', 'Sustained (trumpet)', 'WORKED EXAMPLE', 'WHY IT MATTERS', 'FULL SCREEN'],
     p6: ['SOUND ENVELOPE · THIS LAB', 'WAVE PROPAGATION · THE WAVE PHYSICS LAB', 'GOT IT ›', 'NEXT ›', 'MODULE', '▾', 'Common Sound Shapes', 'Cymbal'],
     p7: ['UNDERSTANDING CHECK', '✓', 'NEXT ›', 'The Envelope Explorer', 'RESET', 'Peak vs Average Level'],
@@ -286,7 +287,8 @@ describe('4. every number TRY THIS quotes is what the page prints', () => {
   });
   it('vetted: the strip has ⏮; the Gallery full-screen dock holds the six sound buttons (no Speech)', () => {
     assert.match(code('src/screens/lab/kit/LabNavBar.tsx'), />⏮</);
-    assert.match(GUIDES.p1.control.join(' '), /⏮ goes to the first page/);
+    // Phase 3, owner 2026-11-14 (decision 3, one name per unit of progress): Envelope/Speech say "module", as their strip does.
+    assert.match(GUIDES.p1.control.join(' '), /⏮ goes to the first module/);
     assert.match(s, /controls=\{<Row>\{presetBtns\}<\/Row>\}/);
     assert.match(s, /const presetBtns = PRESETS\.map/);
     assert.equal(M.PRESETS.length, 6);
@@ -319,8 +321,9 @@ describe('5. wiring + the accuracy-chip decision', () => {
     assert.doesNotMatch(code(`${ENV}/EnvelopeChart.tsx`), /AccuracyNote/);
     // visual only: no audio engine, no microphone
     assert.doesNotMatch(s + code(`${ENV}/EnvelopeChart.tsx`), /ApeDsp|useMicrophone|getUserMedia|AudioRecorder/);
-    assert.match(code(`${ENV}/EnvelopeChart.tsx`), /export const CHART_HONESTY = 'ILLUSTRATIVE MODEL — DRAWN FROM THE SETTINGS, NOT A MEASUREMENT';/);
-    assert.match(s, /badge="TYPICAL VALUES — ILLUSTRATIVE, NOT MEASURED"/);
+    // K4, owner 2026-11-14 (decision 3): "plain one-line model notes, no ALL-CAPS disclaimers on screen". 
+    assert.match(code(`${ENV}/EnvelopeChart.tsx`), /export const CHART_HONESTY = 'An illustrative model, drawn from the settings, not a measurement\.';/);
+    assert.match(s, /badge="Typical values, for illustration, not measured\."/);
   });
 });
 
@@ -369,21 +372,24 @@ describe('6. the what’s-left END guide is complete and true for this lab', () 
     assert.match(PAGED_END, /unreadable=\{(unreadable|endUnreadable)\}/);
     // LAB COMPLETE needs every page AND the check (all rows cleared)
     assert.match(LAB_END, /complete: required > 0 && left\.length === 0/);
-    assert.match(END.seeing[0], /WHAT'S LEFT, or LAB COMPLETE once every page and the check are done/);
+    // Phase 3, owner 2026-11-14 (decision 3, one name per unit of progress): Envelope/Speech say "module", as their strip does.
+    assert.match(END.seeing[0], /WHAT'S LEFT, or LAB COMPLETE once every module and the check are done/);
     // unreadable: a failed credit read ALONE sets it (this lab has a check),
     // so done pages may still fold into ✓ DONE — never "every page is listed";
     // the shared note replaces the lead line; every row (listed or under
     // REVIEW ▾) still jumps.
     assert.match(PAGED, /const unreadable = pagesUnreadable \|\| \(\(!!creditLabKey \|\| !!check \|\| pageCreditKeys\.length > 0\) && creditUnreadable\);/);
     assert.match(END_SCREEN, /\{unreadable \? \(\s*<ProgressUnreadableNote \/>\s*\) : \(\s*<Text style=\{styles\.lead\}>/);
-    assert.match(END.seeing[2], /title reads YOUR PROGRESS, a note replaces the line under it, and every page still opens\./);
+    // Phase 3, owner 2026-11-14 (decision 3, one name per unit of progress): "module", as the strip says.
+    assert.match(END.seeing[2], /title reads YOUR PROGRESS, a note replaces the line under it, and every module still opens\./);
     assert.doesNotMatch(t, /every page is still listed/);
   });
   it('progress mode: Envelope banks no page credit, so rows and the fold read ✓ DONE, never CREDITED', () => {
     assert.doesNotMatch(s, /creditLabKey=|pageCreditKeys=|onPageDone=/);
     assert.match(PAGED, /const creditMode: 'credit' \| 'progress' = creditLabKey \|\| pageCreditKeys\.length > 0 \? 'credit' : 'progress';/);
     assert.match(PAGED_END, /mode=\{creditMode\}/);
-    assert.match(PAGED_END, /noun="page"/);
+    // Owner decision 3 (quick pick, 2026-11-14): "One name per unit of progress in each lab … used everywhere" — PagedLab's end screen takes the lab's unitNoun (default module), never a fixed "page".
+    assert.match(PAGED_END, /noun=\{unitNoun\}/);
     assert.match(END_SCREEN, /const tag = mode === 'credit' && !isGuest \? 'CREDITED' : 'DONE';/);
     assert.match(END_SCREEN, /\{showCredited \? 'HIDE ▴' : 'REVIEW ▾'\}/);
     assert.match(t, /✓ DONE line/);
@@ -418,8 +424,9 @@ describe('6. the what’s-left END guide is complete and true for this lab', () 
     assert.match(PAGED, /resetPagedProgress\(labId\)\)\.then\(\(\) => \{\s*const fresh: PagedProgress = \{ completed: \[\], lastPage: 0, done: false \};/);
     assert.match(PAGED, /\? bankedCheck\.has\(UNDERSTANDING_UNIT\)\s*: \(!!creditLabKey && bankedPages\.has/);
     assert.match(PAGED, /confirmDialog\('Start a fresh practice run\?'/);
-    assert.match(END.changes[2], /^START OVER \(PRACTICE\) clears the page check marks; reviewing clears nothing\. A passed check stays\.$/);
-    assert.match(END.control[3], /START OVER \(PRACTICE\), at the foot of that list, asks first, then clears the page check marks\./);
+    // Phase 3, owner 2026-11-14 (decision 3, one name per unit of progress): Envelope/Speech say "module", as their strip does.
+    assert.match(END.changes[2], /^START OVER \(PRACTICE\) clears the module check marks; reviewing clears nothing\. A passed check stays\.$/);
+    assert.match(END.control[3], /START OVER \(PRACTICE\), at the foot of that list, asks first, then clears the module check marks\./);
     assert.doesNotMatch(t, /Nothing is taken away/i);
   });
   it('the strip on the end screen: ⏮ live, ‹ PREV leaves back to the page, readout WHAT’S LEFT ▾ opens the list; CONTENTS footer WHAT’S LEFT ›', () => {
@@ -428,12 +435,13 @@ describe('6. the what’s-left END guide is complete and true for this lab', () 
     assert.match(PAGED, /const unEnd = useCallback\(\(\) => setEnding\(false\), \[\]\);/); // page unchanged
     assert.match(BAR, /\{view\.pos\} \{contentsOpen \? '▴' : '▾'\}/);
     assert.match(BAR, /\{NAV\.whatsLeft\} ›/);
-    assert.match(END.control[3], /⏮ opens the first page, ‹ PREV returns to the page you came from, and WHAT'S LEFT ▾ opens the list of pages/);
+    // Phase 3, owner 2026-11-14 (decision 3, one name per unit of progress): Envelope/Speech say "module", as their strip does.
+    assert.match(END.control[3], /⏮ opens the first module, ‹ PREV returns to the module you came from, and WHAT'S LEFT ▾ opens the list of modules/);
     // CONTENTS order: the page rows, then WHAT'S LEFT ›, then START OVER
     // (PRACTICE) last — so WHAT'S LEFT › is "just under the page list", not
     // "at the foot".
     assert.match(BAR, /\{NAV\.whatsLeft\} ›<\/Text>\s*<\/Pressable>\s*\{nav\.reset \? \(/);
-    assert.match(END.tryThis[0], /tap MODULE ▾ and WHAT'S LEFT › just under the page list:/);
+    assert.match(END.tryThis[0], /tap MODULE ▾ and WHAT'S LEFT › just under the module list:/);
     assert.doesNotMatch(END.tryThis[0], /foot of the list/);
     // REVIEW ▾ exists only once something is done; the ✓ is read in CONTENTS
     assert.match(END_SCREEN, /\{w\.credited\.length > 0 \? \(/);
@@ -450,9 +458,12 @@ describe('6. the what’s-left END guide is complete and true for this lab', () 
     assert.match(PAGED, /if \(!pagesWithCheck\[from\]\?\.manualDone\) markDone\(\);/);
     assert.match(s, /const pick = \(i: number\) => \{ setSel\(i\); touch\(\); \};/);
     assert.match(s, /<G key=\{e\.name\} onPress=\{\(\) => pick\(i\)\}>/); // page 4's numbered markers
-    assert.match(END.changes[0], /^Pages 1–5 count as done once you move a slider, tap a choice button or numbered marker, or tap NEXT ›/);
+    // Phase 3, owner 2026-11-14 (decision 1, "a page counts when its own goal or check is met, not when opened"): modules 1–5 are manualDone, so NEXT alone no longer counts them.
+    assert.match(END.changes[0], /^Modules 1–5 count as done once you move a slider, tap a choice button or numbered marker; NEXT › alone does not count them/);
     // page 6: GOT IT › or NEXT
-    assert.match(s, /\{!ctx\.isDone \? <Btn label="GOT IT ›" tone="primary" onPress=\{ctx\.markDone\} \/> : null\}/);
+    // Fix round 2026-11-14 (owner: "Begin fixing all bugs found and do obvious … fixes"):
+    // once tapped, the page says it is done instead of the button vanishing.
+    assert.match(s, /\{!ctx\.isDone \? <Btn label="GOT IT ›" tone="primary" onPress=\{ctx\.markDone\} \/> : <Text style=\{styles\.loaded\}>✓ THIS MODULE IS DONE · NEXT MOVES ON<\/Text>\}/); // Phase 3, owner 2026-11-14 (decision 3, one name per unit of progress): Envelope/Speech say "module", as their strip does.
     assert.match(END.changes[0], /Envelope vs Propagation counts with GOT IT › or NEXT ›/);
     // page 7 (manualDone): all six; the check (manualDone): all four
     assert.match(s, /\{ title: 'Check Yourself', short: 'Check', Component: PageChecks, manualDone: true \}/);
@@ -463,7 +474,7 @@ describe('6. the what’s-left END guide is complete and true for this lab', () 
     assert.match(END.changes[1], /Check Yourself counts once all six are right, Check your understanding once all four are/);
     // a jump (row / CONTENTS) never marks: goTo sets the page only
     assert.match(PAGED, /const goTo = useCallback\(\(i: number\) => \{\s*const idx = [^\n]*\n\s*navigatedRef\.current = true;\s*setEnding\(false\);\s*setPage\(idx\);/);
-    assert.match(END.changes[1], /Jumping to a page never marks it\./);
+    assert.match(END.changes[1], /Jumping to a module never marks it\./);
   });
   it('every on-screen name the END guide quotes is in the source it describes', () => {
     const SRC_END = [END_SCREEN, LAB_END, PAGED, NAVC, BAR, s].join('\n');

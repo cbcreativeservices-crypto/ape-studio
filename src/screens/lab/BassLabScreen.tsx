@@ -50,6 +50,7 @@ import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { LabShell, HeaderPlayButton } from './LabShell';
+import { LabCheckEnd } from './kit/LabCheckEnd';
 import { useStageTextScale } from './rack/stageAspect';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
@@ -72,6 +73,19 @@ const STRINGS = [
   { key: 'D', label: 'D', midi: 38, hz: 73.416 },
   { key: 'G', label: 'G', midi: 43, hz: 97.999 },
 ] as const;
+
+/**
+ * The drawn string's swing rate (owner 2026-11-25, fix-first 15, item 6):
+ * the SOUNDING note's real frequency (string pitch × 2^(fret/12), or string
+ * pitch × harmonic n) divided by ONE constant slow-down factor, so the swing
+ * is strictly proportional to the note: a note an octave up always swings
+ * exactly twice as fast, on any string. The factor is set so open low E
+ * (41.2 Hz) keeps its old 0.45 swings/s (≈ 91.6× slower than real). Range:
+ * 0.45/s (open E) to 5.35/s (G string, 5th harmonic, 490 Hz), about 11
+ * frames per swing at 60 fps: watchable, so no compression is applied.
+ */
+const SWING_SLOWDOWN = STRINGS[0].hz / 0.45;
+const swingHzFor = (soundHz: number) => soundHz / SWING_SLOWDOWN;
 
 const NOTE_NAMES = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'] as const;
 const INTERVALS = [
@@ -136,6 +150,13 @@ export function BassLabScreen() {
   const [mode, setMode] = useState<Mode>('fretted');
   const [stringIdx, setStringIdx] = useState(0); // E
   const [fret, setFret] = useState(0); // open
+  // The first thing to try, marked on the board (owner 2026-11-15: "build
+  // waves 1 thru 3", D62 BA-04): a ring at fret 12 until the learner first
+  // lands there on this visit, then it goes for good. Never a lock.
+  const [reached12, setReached12] = useState(false);
+  useEffect(() => {
+    if (fret === 12) setReached12(true);
+  }, [fret]);
   const [nodeIdx, setNodeIdx] = useState(0); // ½
   const [running, setRunning] = useState(false);
   // TEMP (owner 2026-09-29): ▶ shows "…" while a start is in flight, so a
@@ -391,6 +412,8 @@ export function BassLabScreen() {
   return (
     <LabShell
       labId="bass"
+      // FINISH · SEE WHAT'S LEFT under the CHECK; opening it stops the note (fix round 2026-11-14, S2).
+      checkEnd={<LabCheckEnd labId="bass" labTitle="Bass Guitar Lab" onOpen={stopNote} />}
       title="BASS GUITAR LAB"
       subtitle="Strings · Frets · Harmonics · Intervals"
       intro={INTRO}
@@ -418,9 +441,13 @@ export function BassLabScreen() {
         initialParam: 'fret',
         onHelp: openLesson,
         stage: {
+          // The silent learner's line (fix round 2026-11-14, S3 §1): every EXPLORE step here works with sound off.
+          soundOffLine: 'Sound off? FRET and NODE still show the note, the length and the interval.',
           size: 'L', // the fretboard IS the lab — earns the tall glass
           fullScreen: true, // the rack's ⤢ FULL SCREEN (full-screen build 2026-09-30)
           badge: 'FRETS AT REAL SPACING FROM THE FRET EQUATION — BRIDGE ← NUT',
+          // Phase 3 (owner decision 3, 2026-11-14, S3 §2): the disclosure as one plain sentence.
+          modelNote: 'The frets sit at their real spacing, worked out from the fret equation.',
           onGuide: () => openLesson('display'),
           bezel:
             mode === 'fretted'
@@ -443,6 +470,7 @@ export function BassLabScreen() {
               mode={mode}
               stringIdx={stringIdx}
               fret={fret}
+              target={mode === 'fretted' && !reached12 ? 12 : null}
               harmonicN={node.n}
               width={w}
               height={h}
@@ -492,7 +520,10 @@ export function BassLabScreen() {
                 // watch the vibrating length shrink by the same RATIO each step.
                 value: fret / NUM_FRETS,
                 onChange: (v) => setFret(Math.min(NUM_FRETS, Math.max(0, Math.round(v * NUM_FRETS)))),
-                format: () => (fret === 0 ? 'OPEN' : `FRET ${fret} of ${NUM_FRETS}`),
+                // The lane and the drag bubble print the LABEL beside this value
+                // ("FRET  3 of 12"), so the value never repeats the word
+                // (novice audit 2026-11-14: the bubble read "FRET FRET 3 of 12").
+                format: () => (fret === 0 ? 'OPEN' : `${fret} of ${NUM_FRETS}`),
                 formatShort: () => (fret === 0 ? 'OPEN' : `${fret}/${NUM_FRETS}`),
                 helpKey: 'fret',
               }
@@ -538,7 +569,7 @@ export function BassLabScreen() {
         <Text style={styles.sectionHead}>THE EXACT NUMBERS</Text>
         {/* Fraction · interval · wavelength — the richer readout lines behind
             the bezel cells (NOTE/FREQ/INTERVAL live up there). */}
-        <Text style={styles.badge}>READOUT — EXACT VALUES FROM THE STRING MODEL</Text>
+        <Text style={styles.badge}>Readout: exact values from the string model.</Text>
         {mode === 'fretted' ? (
           <Text style={styles.readRow}>
             Vibrating length: {(vibFrac * 100).toFixed(1)}% of the string
@@ -576,7 +607,7 @@ export function BassLabScreen() {
                 ? mode === 'fretted'
                   ? ` The string model is a simplified tone: harmonic n has ≈ 1/n of the fundamental’s amplitude (a real pluck falls off faster), output ${GEN_LEVEL_DB} dBFS · uncalibrated.`
                   : ` The string model plays only the exact harmonic ${node.n} of the open ${str.label} string, output ${GEN_LEVEL_DB} dBFS · uncalibrated.`
-                : ' This version of the app plays a pure sine at the target pitch here; update the app to hear the string tone.'
+                : ' On this device it plays a pure sine at the target pitch.'
               : ''}
           </Text>
         ) : null}
@@ -597,11 +628,16 @@ export function BassLabScreen() {
         spec={{
           question: 'Fretting at the 7th fret and touching the node at 1/3 both raise the pitch. What\u2019s the difference?',
           options: [
-            'Fretting SHORTENS the string (new fundamental); the harmonic keeps full length but forces 3 lobes',
-            'Nothing — both make the same note the same way',
-            'The harmonic is just quieter',
+            'Fretting shortens the string; the touch keeps full length but forces 3 lobes',
+            'Nothing: both make the same note in the same way on the string',
+            'The harmonic is the same note, only quieter and a little duller',
           ],
           correctIdx: 0,
+          // Checker C2 (2026-11-14): a reason per wrong option, by authored index; never the answer.
+          why: {
+            1: 'Switch MODE between FRETTED and NATURAL HARMONICS and watch the string: the lobes are not the same.',
+            2: 'Loudness is not what the picture shows changing. Switch MODE and compare the vibrating length and the lobes.',
+          },
           reveal:
             'The fret moves the nut: a shorter string with its own full harmonic series. The node touch keeps the whole string ringing but kills every vibration mode (harmonic) WITHOUT a node there — only H3, H6, H9 survive. Same pitch class, different physics, different tone.',
           wrongHint: 'Switch MODE and watch the lobes: 1 big lobe vs 3 equal ones.',
@@ -611,11 +647,16 @@ export function BassLabScreen() {
         spec={{
           question: 'The 5th harmonic\u2019s readout shows \u2248G\u266F3 \u221214\u00A2. Why the \u2248?',
           options: [
-            '5 \u00D7 the fundamental lands 14 cents flat of the equal-tempered note',
-            'The string is out of tune',
-            'The display rounds badly',
+            '5 × the fundamental lands 14 cents flat of the tempered note',
+            'The string is slightly out of tune with the rest of the bass',
+            'The display rounds the frequency badly that high up',
           ],
           correctIdx: 0,
+          // Checker C2 (2026-11-14): a reason per wrong option, by authored index; never the answer.
+          why: {
+            1: 'The model string is exactly in tune: its harmonics are exact multiples. Compare 5 × 41.2 Hz with the tempered G♯3.',
+            2: 'FREQ shows the exact value. Compare 5 × 41.2 = 206.0 Hz with the tempered G♯3 at 207.65 Hz.',
+          },
           reveal:
             'Harmonics are EXACT integer multiples — it is the piano\u2019s equal-tempered grid that bends notes to fit 12 keys. H5 (a pure major third) sits 14\u00A2 flat of the tempered third: the string is honest, the keyboard compromises.',
           wrongHint: 'Compare 5 \u00D7 41.2 = 206.0 Hz with the tempered G\u266F3 at 207.65 Hz.',
@@ -683,6 +724,7 @@ function Fretboard({
   mode,
   stringIdx,
   fret,
+  target,
   harmonicN,
   width,
   height,
@@ -691,6 +733,8 @@ function Fretboard({
   mode: Mode;
   stringIdx: number;
   fret: number;
+  /** A fret to try first (D62 BA-04): a dashed ring on the selected string. */
+  target: number | null;
   harmonicN: number;
   width: number;
   height: number;
@@ -783,11 +827,12 @@ function Fretboard({
   // THE STRING VIBRATES (art grading 2026-10-16: the wave was a still
   // envelope). The selected string itself swings between the envelope's two
   // edges, y = y0 − A·sin(nπx/L)·cos(2πft), slowed right down to watch; a
-  // higher note (or a higher harmonic) swings proportionally faster. Held
-  // still by Low-Light / reduced motion (decorative-motion gate).
+  // higher note (or a higher harmonic) swings proportionally faster, the
+  // STRING's own pitch included (swingHzFor above). Held still by Low-Light /
+  // reduced motion (decorative-motion gate).
   const motionOk = useDecorativeMotion();
   const vib = useSharedValue(0);
-  const visHz = 0.45 * (mode === 'fretted' ? Math.pow(2, fret / 12) : harmonicN);
+  const visHz = swingHzFor(STRINGS[stringIdx].hz * (mode === 'fretted' ? Math.pow(2, fret / 12) : harmonicN));
   useEffect(() => {
     cancelAnimation(vib);
     vib.value = 0;
@@ -1065,6 +1110,10 @@ function Fretboard({
                 </Fragment>
               );
             })}
+            {/* The first fret to try (D62 BA-04): a calm dashed ring, no motion. */}
+            {mode === 'fretted' && target != null && target !== fret ? (
+              <Circle cx={fretPos(target) * w} cy={selY} r={11} fill="none" stroke={colors.amber} strokeWidth={2} strokeDasharray="4 3" opacity={0.9} />
+            ) : null}
             {/* FRETTED: dim the dead length (nut → fret) + domed finger dot. */}
             {mode === 'fretted' && fret > 0 ? (
               <>

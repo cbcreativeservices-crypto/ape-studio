@@ -26,12 +26,14 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { DigitalModuleProps } from '../DigitalModuleScreen';
 import { Badge, MythReality, PanelCard, ReadoutGrid, dstyles } from '../bits';
-import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
+import { VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
+import { GoalCheck } from '../../meter/moduleGoal';
 import { CollapsibleSection } from '../../LabShell';
 import { RackUnit } from '../../rack/RackUnit';
 import type { DockParam } from '../../rack/rackTypes';
 import { requireVizQuant } from '../skiaGate';
 import type { DitherMode } from '../vizQuant';
+import { quantErrorRmsDb, quantLevelCount, quantLevelsUsed, type QuantGridMode } from '../quantMath';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared pure math/format helpers (no Skia — safe on every client)
@@ -42,26 +44,9 @@ function fmtGroup(n: number): string {
   return sign + Math.abs(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
-/** Mid-tread two's-complement quantizer on the −1..+1 axis (same math the
- *  viz draws — kept in both files so readouts work without Skia). */
-function quantizeNorm(x: number, bits: number): number {
-  const half = Math.pow(2, bits - 1);
-  const code = Math.max(-half, Math.min(half - 1, Math.round(x * half)));
-  return code / half;
-}
-
-/** RMS of the quantization error of a sine at `amp` peak through N bits. */
-function quantErrorRmsDb(bits: number, amp: number): number {
-  let acc = 0;
-  const M = 512;
-  for (let i = 0; i < M; i++) {
-    const x = amp * Math.sin((2 * Math.PI * i) / M);
-    const e = x - quantizeNorm(x, bits);
-    acc += e * e;
-  }
-  const rms = Math.sqrt(acc / M);
-  return rms > 0 ? 20 * Math.log10(rms) : Number.NEGATIVE_INFINITY;
-}
+// The quantizer, the level count and the error RMS come from quantMath — the
+// very numbers the picture draws (owner 2026-11-22: "adjusting level and bits
+// looks the same"), so a readout can never disagree with the glass.
 
 function fmtDb(db: number, digits = 1): string {
   return Number.isFinite(db) ? `${db.toFixed(digits)} dBFS` : '−∞ dBFS';
@@ -122,12 +107,17 @@ const BIT_BLURBS: Record<number, string> = {
   24: 'Sixteen million levels — the studio standard: ~144 dB of theoretical range (6 dB/bit rule of thumb; 6.02·24 + 1.76 ≈ 146 dB), far below any room’s noise floor.',
 };
 
-const DITHER_BADGE = 'REAL DITHER MATH (RPDF/TPDF/1ST-ORDER SHAPING) · SPECTRUM STRIP IS A SIMPLIFIED SHAPE, NOT A MEASURED SPECTRUM (FFT)';
+const DITHER_BADGE = 'Real dither math (RPDF, TPDF, first-order shaping); the spectrum strip is a simplified shape, not a measured FFT.';
 
 const CHECK_BITDEPTH: CheckSpec = {
   question: 'A converter stores 8 bits per sample. How many amplitude levels does it have, and what is its THEORETICAL SNR (6.02·N + 1.76 dB, undithered)?',
   options: ['256 levels · ≈ 49.9 dB', '65,536 levels · ≈ 96 dB', '8 levels · ≈ 8 dB', '256 levels · ≈ 96 dB'],
   correctIdx: 0,
+  why: {
+    1: 'That is 16-bit. Count the levels for 8 bits: 2 to the 8th power.',
+    2: 'Levels double with each bit; 8 bits gives far more than 8.',
+    3: 'The level count fits 8 bits, but the SNR belongs to 16 bits. Use 6.02 × 8 + 1.76.',
+  },
   reveal: 'Levels = 2⁸ = 256, and 6.02×8 + 1.76 ≈ 49.9 dB — theoretical. Real converters land below their formula number (analog noise, linearity), and remember: bits set AMPLITUDE resolution, never frequency response.',
   wrongHint: 'Levels = 2ᴺ, and each bit is worth ≈ 6 dB of theoretical SNR.',
 };
@@ -135,12 +125,17 @@ const CHECK_BITDEPTH: CheckSpec = {
 const CHECK_DITHER: CheckSpec = {
   question: 'What does dither actually do when you reduce bit depth?',
   options: [
-    'Linearizes quantization and preserves low-level behavior — at the cost of a controlled noise increase',
+    'Keeps low-level detail linear, for a little steady added noise',
     'Adds resolution, recovering detail below the last bit for free',
     'Removes quantization noise entirely',
     'Boosts high frequencies to mask the distortion',
   ],
   correctIdx: 0,
+  why: {
+    1: 'Dither adds no information. Look at the histogram: the error changes shape, not size.',
+    2: 'There is still noise after dither; it is just steady instead of distorted.',
+    3: 'Dither is a tiny noise added before rounding, not an EQ.',
+  },
   reveal: 'Dither does not add resolution — it linearizes quantization and preserves low-level behavior at the cost of a controlled noise increase: the correlated distortion becomes benign, steady noise, and fades stay smooth.',
   wrongHint: 'Think trade: what does dither buy, and what does it cost?',
 };
@@ -155,11 +150,16 @@ export function QuantModule(p: DigitalModuleProps) {
   // so its chart must answer on the glass: a dither pick shows the DITHER
   // chart; LEVEL, BITS or ERROR brings the steps back.
   const [stageView, setStageView] = useState<'quant' | 'dither'>('quant');
+  // How the glass drew the levels: one line each, or a shaded band when they
+  // sit closer than about 3 px (told by QuantView, which measures its glass).
+  const [gridMode, setGridMode] = useState<QuantGridMode>('lines');
 
   const amp = Math.pow(10, levelDb / 20);
   const half = Math.pow(2, bits - 1);
   const step = 1 / half;
-  const levels = Math.pow(2, bits);
+  const levels = quantLevelCount(bits);
+  // The levels the sine actually spans, bottom code to top: a quiet wave gets few.
+  const levelsUsed = quantLevelsUsed(bits, levelDb);
   const drTheory = 6.02 * bits + 1.76;
   const errRmsDb = useMemo(() => quantErrorRmsDb(bits, amp), [bits, amp]);
   // Below ~8 steps of peak swing the error locks to the signal (correlated).
@@ -237,14 +237,15 @@ export function QuantModule(p: DigitalModuleProps) {
       stage={{
         fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'L', // the step grid + whiskers are the lesson
-        badge:
+        // S3's plain model note (phase 3, owner decision 3), not an all-caps badge.
+        modelNote:
           stageView === 'dither'
-            ? DITHER_BADGE
+            ? 'Real dither math; the spectrum strip is a simplified shape, not a measured FFT.'
             : errorOnly
-              ? `ERROR VIEW — VERTICAL ZOOM ×${fmtGroup(levels)} (±½ STEP FILLS THE PANEL)`
-              : bits >= 12
-                ? `AT ${bits}-BIT THE STEPS ARE SMALLER THAN A PIXEL — SHOWN AS A FINE BAND, NOT EXAGGERATED`
-                : 'AMBER = ORIGINAL · BLUE = SAMPLED · GREEN = STORED/RESULT · RED = ROUNDING ERROR',
+              ? `Error view, zoomed ×${fmtGroup(levels)} so half a step fills the panel.`
+              : gridMode === 'band'
+                ? `At ${bits}-bit the ${fmtGroup(levels)} levels are too close to draw apart: a shaded band.`
+                : 'Amber is the original, blue sampled, green stored, red the rounding error.',
         onGuide: () => p.help(stageView === 'dither' ? 'dither' : 'bit_depth'),
         bezel:
           stageView === 'dither'
@@ -256,8 +257,8 @@ export function QuantModule(p: DigitalModuleProps) {
               ]
             : [
                 { k: 'BITS', v: `${bits}-bit`, helpKey: 'bit_depth' },
-                { k: 'LEVELS', v: fmtGroup(levels), helpKey: 'quant_levels' },
-                { k: 'TH. SNR', v: `≈${drTheory.toFixed(1)} dB`, helpKey: 'bit_depth' },
+                { k: 'LEVELS', v: fmtGroup(levels), helpKey: 'quant_levels', caption: 'step count' },
+                { k: 'TH. SNR', v: `≈${drTheory.toFixed(1)} dB`, helpKey: 'bit_depth', caption: 'over hiss' },
                 { k: 'PEAK', v: fmtDb(levelDb, 0), helpKey: 'quant_error' },
               ],
         render: (w, h) =>
@@ -269,7 +270,7 @@ export function QuantModule(p: DigitalModuleProps) {
               </View>
             </View>
           ) : viz ? (
-            <viz.QuantView width={w} height={h} bits={bits} levelDb={levelDb} errorOnly={errorOnly} />
+            <viz.QuantView width={w} height={h} bits={bits} levelDb={levelDb} errorOnly={errorOnly} onGridMode={setGridMode} />
           ) : (
             <View style={{ flex: 1, justifyContent: 'center', padding: 12 }}>
               <VizUnavailableCard />
@@ -279,8 +280,10 @@ export function QuantModule(p: DigitalModuleProps) {
     >
       <View style={styles.stack}>
         <Text style={dstyles.body}>
-          Sampling measured WHEN; quantization measures HOW LOUD. Each sample is rounded to the nearest of 2ᴺ levels — the red
-          whiskers are what rounding throws away. Quantization bites hardest on quiet signals: ride the LEVEL fader down and watch.
+          Sampling measured WHEN; quantization measures HOW LOUD. The level lines span full scale and never move: BITS sets how
+          many there are (2ᴺ), LEVEL only sets how tall the wave is against them. Green is the wave rounded to the nearest level,
+          one level per step; each sample stores the green value at its instant — the red whiskers are what rounding throws
+          away. Quantization bites hardest on quiet signals: slide the LEVEL fader down and watch LEVELS USED fall.
         </Text>
         <ReadoutGrid
           help={p.help}
@@ -295,6 +298,7 @@ export function QuantModule(p: DigitalModuleProps) {
               : [
                   { k: 'STEP SIZE', v: `1/${fmtGroup(half)} FS` },
                   { k: 'HEADROOM', v: `${(-levelDb).toFixed(0)} dB` },
+                  { k: 'LEVELS USED', v: fmtGroup(levelsUsed) },
                 ]
           }
         />
@@ -306,7 +310,8 @@ export function QuantModule(p: DigitalModuleProps) {
           </Text>
         ) : null}
 
-        <CollapsibleSection title="REAL CONVERTERS — THEORY VS PRACTICE">
+        {/* Starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal): extra reading, one tap away. */}
+        <CollapsibleSection title="REAL CONVERTERS — THEORY VS PRACTICE" startOpen={false}>
           <Text style={dstyles.body}>
             6.02·N + 1.76 dB is the FORMULA, not the product. Analog input noise, clock jitter and converter linearity set the
             real limit: the industry measure is ENOB (effective number of bits), and even excellent 24-bit converters deliver
@@ -318,30 +323,32 @@ export function QuantModule(p: DigitalModuleProps) {
           />
         </CollapsibleSection>
 
-        <PanelCard>
-          <SectionHead title="DITHER — THE FIX FOR CORRELATED ERROR" onHelp={() => p.help('dither')} />
-          <Text style={dstyles.body}>
-            A tiny sine reduced to 8 bits, zoomed in to the last few steps. Undithered, the rounding error locks to the signal —
-            the histogram shows discrete spikes. Adding the right noise BEFORE rounding decorrelates it: dither linearizes
-            quantization and preserves low-level behavior at the cost of a controlled noise increase.
-          </Text>
-          {/* The dither choice is the DITHER dock key now (owner rule
-              2026-10-10: every lab control lives in the bottom dock). */}
-          {viz ? <viz.DitherView width={p.width} mode={dither} /> : <VizUnavailableCard />}
-          <Badge text={DITHER_BADGE} />
-          <Text style={dstyles.caption}>
-            {dither === 'none'
-              ? 'NO DITHER: the error repeats with the signal — correlated spikes in the histogram. Audible as gritty distortion and fades that cut out (gating), not hiss.'
-              : dither === 'rpdf'
-                ? 'RPDF (flat, ±½ step): decorrelates the error VALUES, but the error POWER still tracks the signal — in quiet passages the hiss rises and falls.'
-                : dither === 'tpdf'
-                  ? 'TPDF (two flat noises added together, ±1 step): the standard. Error value AND power decorrelate — a steady, benign noise floor.'
-                  : 'NOISE-SHAPED: TPDF plus first-order error feedback pushes the noise toward the top of the band, where hearing is least sensitive. Same honest trade, spent more cleverly.'}
-          </Text>
-        </PanelCard>
-
-        <CheckQuestion spec={CHECK_BITDEPTH} />
-        <CheckQuestion spec={CHECK_DITHER} />
+        <GoalCheck spec={CHECK_BITDEPTH} />
+        {/* Two lessons on one page (phase 3, owner decision 5): bit depth first, dither folded here. The DITHER dock key still drives it. */}
+        <CollapsibleSection title="PART 2 · DITHER" startOpen={false}>
+          <PanelCard>
+            <SectionHead title="DITHER — THE FIX FOR CORRELATED ERROR" onHelp={() => p.help('dither')} />
+            <Text style={dstyles.body}>
+              A tiny sine reduced to 8 bits, zoomed in to the last few steps. Undithered, the rounding error locks to the signal —
+              the histogram shows discrete spikes. Adding the right noise BEFORE rounding decorrelates it: dither linearizes
+              quantization and preserves low-level behavior at the cost of a controlled noise increase.
+            </Text>
+            {/* The dither choice is the DITHER dock key now (owner rule
+                2026-10-10: every lab control lives in the bottom dock). */}
+            {viz ? <viz.DitherView width={p.width} mode={dither} /> : <VizUnavailableCard />}
+            <Badge text={DITHER_BADGE} />
+            <Text style={dstyles.caption}>
+              {dither === 'none'
+                ? 'NO DITHER: the error repeats with the signal — correlated spikes in the histogram. Audible as gritty distortion and fades that cut out (gating), not hiss.'
+                : dither === 'rpdf'
+                  ? 'RPDF (flat, ±½ step): decorrelates the error VALUES, but the error POWER still tracks the signal — in quiet passages the hiss rises and falls.'
+                  : dither === 'tpdf'
+                    ? 'TPDF (two flat noises added together, ±1 step): the standard. Error value AND power decorrelate — a steady, benign noise floor.'
+                    : 'NOISE-SHAPED: TPDF plus first-order error feedback pushes the noise toward the top of the band, where hearing is least sensitive. Same honest trade, spent more cleverly.'}
+            </Text>
+          </PanelCard>
+          <GoalCheck spec={CHECK_DITHER} />
+        </CollapsibleSection>
         <LessonRow onPress={() => p.help()} />
       </View>
     </RackUnit>
@@ -387,6 +394,11 @@ const CHECK_MSB: CheckSpec = {
     'Nothing much — the MSB is the least valuable bit',
   ],
   correctIdx: 0,
+  why: {
+    1: 'In two’s complement the top bit counts as negative. Flip SIGN and read DECIMAL.',
+    2: 'Flipping one bit is not a sign change. Look at the weight printed under the MSB.',
+    3: 'MSB means most significant bit: the biggest weight of all.',
+  },
   reveal: 'The MSB carries the only NEGATIVE weight: −32,768. So +1 becomes −32,768 + 1 = −32,767 — a full-scale jump from one bit. The MSB is the most valuable bit; the LSB (worth 1) is the least.',
   wrongHint: 'The MSB’s weight is negative under two’s complement.',
 };
@@ -453,7 +465,8 @@ export function BinaryModule(p: DigitalModuleProps) {
     },
     // The register panel's RESET — was a chip in the well (owner rule
     // 2026-10-10: every lab control lives in the bottom dock).
-    { kind: 'action', id: 'regreset', label: 'RESET REG', onPress: () => setReg(16384) },
+    // DG-02 (owner 2026-11-15: "build waves 1 thru 3", D62): spelled out (was RESET REG; the register IS the bits).
+    { kind: 'action', id: 'regreset', label: 'RESET BITS', onPress: () => setReg(16384) },
   ];
 
   return (
@@ -468,8 +481,17 @@ export function BinaryModule(p: DigitalModuleProps) {
         bezel: [
           { k: 'SAMPLE', v: `#${sel}`, helpKey: 'binary_sample' },
           { k: 'DECIMAL', v: fmtGroup(v), helpKey: 'binary_sample' },
-          { k: 'HEX', v: fmtHex16(v), helpKey: 'binary_sample' },
-          { k: 'LEVEL', v: fmtDb(sampleDb(v)), helpKey: 'binary_sample' },
+          { k: 'HEX', v: fmtHex16(v), helpKey: 'binary_sample', caption: 'short code' },
+          // Number on the value line, dBFS on the unit line: LEVEL keeps its
+          // key at 390 (beginner audit 2026-11-14: the card names LEVEL and its
+          // key was the one dropped).
+          {
+            k: 'LEVEL',
+            v: Number.isFinite(sampleDb(v)) ? sampleDb(v).toFixed(1) : '−∞',
+            sub: 'dBFS',
+            vA11y: fmtDb(sampleDb(v)),
+            helpKey: 'binary_sample',
+          },
         ],
         render: (w, h) =>
           viz ? (
@@ -483,7 +505,7 @@ export function BinaryModule(p: DigitalModuleProps) {
     >
       <View style={styles.stack}>
         <Text style={dstyles.body}>
-          A digital recording is nothing but a list of integers. Ride the SAMPLE fader — or tap and
+          A digital recording is nothing but a list of integers. Slide the SAMPLE fader — or tap and
           drag across the strip itself (16-bit · 48 kHz) — and read the SAME stored number every way
           at once: every readout derives from one signed 16-bit integer.
         </Text>
@@ -552,7 +574,7 @@ export function BinaryModule(p: DigitalModuleProps) {
             helpKey="bit_toggle"
             items={[
               { k: 'DECIMAL', v: fmtGroup(reg) },
-              { k: 'HEX', v: fmtHex16(reg) },
+              { k: 'HEX', v: fmtHex16(reg), caption: 'short code' },
               { k: 'NORMALIZED', v: (reg / 32768).toFixed(5) },
               { k: 'LEVEL', v: fmtDb(sampleDb(reg)) },
             ]}
@@ -560,7 +582,7 @@ export function BinaryModule(p: DigitalModuleProps) {
           {/* RESET is the dock's RESET key now (owner rule 2026-10-10). */}
         </PanelCard>
 
-        <CheckQuestion spec={CHECK_MSB} />
+        <GoalCheck spec={CHECK_MSB} />
         <LessonRow onPress={() => p.help()} />
       </View>
     </RackUnit>

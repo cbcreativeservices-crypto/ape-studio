@@ -151,13 +151,17 @@ describe('2. each guide quotes its screen’s real names', () => {
     comb: ['Δt', '1ST NULL', 'SPACING', 'MIC→WALL', 'WALL', '← MIC', 'MIC →'],
     standing: ['TYPE', 'PRESSURE', 'VERDICT', 'TANGENTIAL', 'AXIAL', 'NODE', 'ANTINODE', 'WIDTH', 'DEPTH', 'MODE'],
     coverage: ['NOM COV', 'vs ON-AXIS', 'AIM', 'COV', 'HEAT'],
-    linearray: ['BOXES', 'LEN', 'LF CTRL', 'SPLAY (PER BOX)', 'HEIGHT (HANG DEPTH)', 'ARRAY'],
+    // Lab fix round 2026-11-14 (owner: "Begin fixing all bugs found and do obvious
+    // (my decision is not required) fixes"): ARRAY's three stacked sliders became
+    // the BOXES / SPLAY / HEIGHT dock faders, and Room Builder's ROOM tray shows
+    // WIDTH and DEPTH side by side, so no slider hides behind "more ↓".
+    linearray: ['BOXES', 'LEN', 'LF CTRL', 'SPLAY', 'HEIGHT', 'per box', 'hang depth'],
     delayalign: ['REQ', 'SET', 'OFF BY', 'SUM', 'XOVER', 'AUTO-ALIGN', 'MAIN POLARITY Ø', 'THE WRONG TOOL'],
     cardioidsub: ['FRONT SUB', 'REAR SUB', 'AUDIENCE ↓', 'REAR MIC', 'F − R', 'CARDIOID', 'WRONG WAY', 'REAR POLARITY Ø INVERT', 'SOLO FRONT SUB'],
     beamsteer: ['STEER', 'Δt/BOX', 'GRATING', 'IN FIELD', 'vs STRAIGHT', 'BOXES'],
     echo: ['GAP', '1ST REFL', 'FUSES', 'ECHO', 'FAR WALL', 'CANYON 60 m', 'GYM 24 m', 'CHURCH 30 m', 'WAREHOUSE 40 m', 'ROCK'],
     reverb: ['RT 125', 'RT 500', 'RT 2K', 'GAP', 'ABSORB'],
-    builder: ['ROOM', '1ST ARR', 'RT60', 'THROUGH −', 'WALLS', 'SRC', 'ROOM WIDTH', 'ROOM DEPTH', 'POLARITY Ø INVERT', 'LEVEL'],
+    builder: ['ROOM', '1ST ARR', 'RT60', 'THROUGH −', 'WALLS', 'SRC', 'WIDTH', 'DEPTH', 'POLARITY Ø INVERT', 'LEVEL'],
   };
   it('a name list for every module', () => {
     assert.deepEqual(Object.keys(NAMES).sort(), Object.keys(WAVE_SCREEN_GUIDES).sort());
@@ -268,8 +272,11 @@ describe('5. the one-time hint', () => {
     for (const re of [/useOverlaysSuppressed\(\)/, /useIsFocused\(\)/, /useLabTermIntroOwed\(\)/, /useModalHostOpen\(\)/, /rootModalHoldMs\(\)/]) {
       assert.match(SG, re);
     }
-    assert.match(SG, /const clear = owed && focused && !suppressed && !labTermFirst && !modalUp;/);
-    assert.match(SG, /return clear && settled;/);
+    // 2026-11-14 (lab fix round S1; owner approval "Begin fixing all bugs
+    // found and do obvious ... fixes"): never on a visit where another popup
+    // came (`crowded`), and it retires after SCREEN_GUIDE_HINT_LIFE_MS.
+    assert.match(SG, /const clear = owed && focused && !suppressed && !labTermFirst && !modalUp && !crowded;/);
+    assert.match(SG, /const visible = clear && settled;/);
   });
   it('an inline callout, not a modal: absolutely placed under the header, a tap retires it', () => {
     const anchor = (SG.match(/export function ScreenGuideHintAnchor[\s\S]*?\n\}/) ?? [''])[0];
@@ -399,9 +406,11 @@ describe('6. stepped, and placed away from the area it explains (owner review 20
     assert.match(overlay, /place && place\.dim \?/);
     assert.match(overlay, /strip=\{section\.place === 'strip'\}/);
     assert.match(overlay, /useBackWhileFocused\(true, back\)/);
-    // One experiment at a time with its own ‹ ›.
-    assert.match(SG, /accessibilityLabel="Previous experiment"/);
-    assert.match(SG, /accessibilityLabel="Next experiment"/);
+    // One thing to try at a time with its own ‹ ›. Neutral words since
+    // 2026-11-14 (lab fix round S1; owner approval "Begin fixing all bugs found
+    // and do obvious ... fixes"): most screens are not experiments.
+    assert.match(SG, /accessibilityLabel="Previous thing to try"/);
+    assert.match(SG, /accessibilityLabel="Next thing to try"/);
     assert.match(SG, /<Text style=\{styles\.tryText\}>\{items\[e\]\}<\/Text>/);
   });
 });

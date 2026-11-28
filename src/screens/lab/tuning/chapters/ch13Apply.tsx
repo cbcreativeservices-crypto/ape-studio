@@ -56,8 +56,9 @@ export function Ch13Apply({ ctx }: ChapterProps) {
   const [c1, setC1] = useState<Frac>(frac(9, 4));
   const [c1Hist, setC1Hist] = useState<{ op: '×2' | '÷2'; before: Frac; after: Frac }[]>([]);
   const c1In = fracValue(c1) >= 1 && fracValue(c1) < 2;
+  // Practice after the credit (owner 2026-11-25, audit B5): ×2 / ÷2 keep working
+  // after RESET once the challenge is solved; the credit is never removed.
   const c1Apply = (op: '×2' | '÷2') => {
-    if (done[0]) return;
     const after = op === '÷2' ? frac(c1.n, c1.d * 2) : frac(c1.n * 2, c1.d);
     setC1Hist([...c1Hist, { op, before: c1, after }]);
     setC1(after);
@@ -91,22 +92,23 @@ export function Ch13Apply({ ctx }: ChapterProps) {
   useMarkWhen(Math.abs(thirdErr) < 0.05, () => mark(3));
   useMarkWhen(all, ctx.markDone);
 
-  const doneCell: BezelItem = { k: 'DONE', v: `${done.filter(Boolean).length}/6`, tint: all ? colors.green : colors.cyanBright, flex: 0.8 };
+  // Phase 3 (owner 2026-11-14): no "N of total" progress; the cell counts what is LEFT.
+  const doneCell: BezelItem = { k: 'LEFT', v: all ? 'NONE' : `${6 - done.filter(Boolean).length}`, tint: all ? colors.green : colors.cyanBright, flex: 0.8, caption: 'still to do' };
   const bezel: BezelItem[] =
     figure === 'fold' ? [
-      { k: 'RATIO', v: fracLabel(c1), tint: c1In ? colors.green : colors.gold },
-      { k: 'VALUE', v: fracValue(c1).toFixed(4) },
-      { k: 'REGION', v: fracValue(c1) < 1 ? 'BELOW' : c1In ? 'INSIDE' : 'ABOVE', tint: c1In ? colors.green : undefined },
+      { k: 'RATIO', v: fracLabel(c1), tint: c1In ? colors.green : colors.gold, caption: 'the fraction' },
+      { k: 'VALUE', v: fracValue(c1).toFixed(4), caption: 'as a decimal' },
+      { k: 'REGION', v: fracValue(c1) < 1 ? 'BELOW' : c1In ? 'INSIDE' : 'ABOVE', tint: c1In ? colors.green : undefined, caption: 'where it sits' },
       doneCell,
     ]
     : figure === 'third' ? [
-      { k: 'THIRD', v: `${thirdCents.toFixed(2)} ¢`, tint: done[3] ? colors.green : colors.cyanBright },
-      { k: '4 × RATIO', v: (4 * thirdRatio).toFixed(4), tint: Math.abs(thirdErr) < 0.05 ? colors.green : undefined },
-      { k: 'FROM 5/4', v: Math.abs(thirdErr) < 0.05 ? '0 ¢' : `${thirdErr > 0 ? '+' : ''}${thirdErr.toFixed(2)} ¢`, tint: Math.abs(thirdErr) < 0.05 ? colors.green : Math.abs(thirdErr) < 8 ? colors.gold : colors.orange },
+      { k: 'THIRD', v: `${thirdCents.toFixed(2)} ¢`, tint: done[3] ? colors.green : colors.cyanBright, caption: 'size of third' },
+      { k: '4 × RATIO', v: (4 * thirdRatio).toFixed(4), tint: Math.abs(thirdErr) < 0.05 ? colors.green : undefined, caption: 'four of them' },
+      { k: 'FROM 5/4', v: Math.abs(thirdErr) < 0.05 ? '0 ¢' : `${thirdErr > 0 ? '+' : ''}${thirdErr.toFixed(2)} ¢`, tint: Math.abs(thirdErr) < 0.05 ? colors.green : Math.abs(thirdErr) < 8 ? colors.gold : colors.orange, caption: 'off pure third' },
       doneCell,
     ]
     : [
-      ...E_SYSTEMS.map(([l, s]) => ({ k: `${l.toUpperCase()} E`, v: `${eOf(s).value.cents.toFixed(2)} ¢`, tint: last === `e${l}` ? colors.cyanBright : undefined })),
+      ...E_SYSTEMS.map(([l, s]) => ({ k: `${l.toUpperCase()} E`, v: `${eOf(s).value.cents.toFixed(2)} ¢`, tint: last === `e${l}` ? colors.cyanBright : undefined, caption: 'where E sits' })),
       soundCell(status, 0.9),
     ];
 
@@ -182,8 +184,9 @@ export function Ch13Apply({ ctx }: ChapterProps) {
 
       <Eyebrow>1 · NORMALIZE</Eyebrow>
       <Prompt>Fold 9/4 into one octave — FIGURE 1 · FOLD, then ×2 / ÷2.</Prompt>
-      <Card tone={done[0] ? 'ok' : 'plain'}>
-        <MathLine>current: {fracLabel(c1)}{done[0] ? ' ✓ inside 1 ≤ r < 2' : ''}</MathLine>
+      {/* The ✓ reads the CURRENT value (audit B5): after RESET, 9/4 is not inside. */}
+      <Card tone={c1In ? 'ok' : 'plain'}>
+        <MathLine>current: {fracLabel(c1)}{c1In ? ' ✓ inside 1 ≤ r < 2' : ''}</MathLine>
         {c1Hist.map((h, i) => <Text key={i} style={styles.hist}>{fracLabel(h.before)} {h.op} = {fracLabel(h.after)}</Text>)}
       </Card>
 

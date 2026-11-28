@@ -6,7 +6,7 @@
  * fxLabConfigs.tsx) with three tabs, so the guides are keyed by the shell's
  * tab id:
  *   explore — the rack: two animated spectrum analyzers (fxAnim SpectrumFlow,
- *             flanger), the bezel (CENTER · RATE · FDBK), the dock (CENTER
+ *             flanger), the bezel (CENTER · SWEEP (its RATE) · FDBK), the dock (CENTER
  *             fader · SWEEP tray = RATE + DEPTH · FDBK · MIX · SOURCE), the
  *             header ▶, LAB NOTES (DESIGNED RESPONSE, THE AUDIO PATH, two
  *             CHECK YOURSELF cards, ⓘ GUIDED LESSON);
@@ -47,13 +47,13 @@ export const FLANGER_SCREEN_GUIDES: Record<FlangerScreenId, ScreenGuide> = {
   // ── EXPLORE — the rack ────────────────────────────────────────────────────
   explore: {
     intro: {
-      learning: 'How a flanger works: a copy delayed by a few milliseconds cancels the dry sound at evenly spaced notches, and sweeping that delay makes the jet sound.',
-      start: 'Tap ▶ to play PINK NOISE and watch the notches slide on OUT. Then drag CENTER from 2.0 ms down to 0.50 ms and see the notches spread apart.',
+      learning: 'How a flanger works: a copy delayed by a few milliseconds cancels the dry sound at notches evenly spaced in Hz, and sweeping that delay makes the jet sound.',
+      start: 'Drag CENTER from 2.0 ms down to 0.50 ms and see the notches on OUT spread apart. Then tap ▶ to play PINK NOISE and hear them sweep: the jet.',
     },
     seeing: [
-      'Two spectrum analyzers. Left of the green FLANGER bar (IN ▸) is your source: PINK NOISE draws flat, WHITE NOISE rises to the right. Right of the bar, SPECTRUM (dB) to ▸ OUT shows the same noise after the flanger.',
+      'Left of the green FLANGER bar (IN ▸) is your source: PINK NOISE draws flat, WHITE NOISE rises to the right. Right of it, under DIPS = CANCELED HERE, ▸ OUT shows the noise after the flanger.',
       'On OUT, the amber trace is what you hear: watch its notches sweep. The dotted line is the input, to compare. Ticks mark 100, 1k and 10k Hz.',
-      'CENTER, RATE and FDBK on the frame show your settings.',
+      'CENTER, SWEEP (its RATE) and FDBK on the frame show your settings.',
     ],
     control: [
       'Tap ▶ at the top right, or the display, to play the noise through the flanger; ■ stops it.',
@@ -64,7 +64,7 @@ export const FLANGER_SCREEN_GUIDES: Record<FlangerScreenId, ScreenGuide> = {
     ],
     changes: [
       'The flanger mixes in a copy of your sound 0.5–5 ms late. Where it lands half a cycle late, it cancels the dry sound: a notch. Notches repeat every 1 ÷ delay: every 500 Hz at 2.0 ms.',
-      'The Hz scale runs in octaves, so evenly spaced notches crowd right and fill a band up high.',
+      'The Hz scale runs in octaves, so notches evenly spaced in Hz crowd right, up high.',
       'The LFO (a slow wobble) moves the delay, so every notch slides at once: the jet. Positive FDBK lifts tall, narrow peaks between them.',
     ],
     teaches: [
@@ -83,11 +83,13 @@ export const FLANGER_SCREEN_GUIDES: Record<FlangerScreenId, ScreenGuide> = {
   learn: {
     intro: {
       learning: 'The language of flanging (comb filter, notch spacing, LFO, feedback, through-zero) and the formula that places every notch from the delay time.',
-      start: 'Scroll to FORMULA / CONCEPT and read it. Then switch to EXPLORE, open LAB NOTES, set CENTER to 5.0 ms, and check that the notches sit every 200 Hz.',
+      // FL-02 (owner 2026-11-15, "build waves 1 thru 3"): the first paragraph
+      // and the silent CENTER drag first; the formula last.
+      start: 'Read the first paragraph, what a flanger is. Then on EXPLORE drag CENTER from 2.0 ms down to 0.50 ms, no sound needed, and watch the notches on OUT spread apart. Leave FORMULA / CONCEPT for last.',
     },
     seeing: [
       'This is the Flanger guided lesson as one page to read. Nothing on it moves, but ▶ in the header still plays or stops the sound.',
-      'It starts with what a flanger is, then CONTROLS: the display, RATE, DEPTH, CENTER, FDBK, MIX, LFO Waveform, Stereo width / LFO phase offset, and Through-Zero (TZF, marked ADV for advanced).',
+      'It starts with what a flanger is, then CONTROLS: the display, RATE, DEPTH, CENTER, FDBK, MIX, and one entry, Other controls you will meet.',
       'It ends with COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT.',
     ],
     control: [
@@ -95,18 +97,18 @@ export const FLANGER_SCREEN_GUIDES: Record<FlangerScreenId, ScreenGuide> = {
       'On EXPLORE, ⓘ GUIDED LESSON at the end of LAB NOTES opens this same lesson as a sheet. Long-press a key or readout there to open just its entry.',
     ],
     changes: [
-      'Read this beside EXPLORE: most entries are something you can hear or see there.',
+      'Open CONTROLS: most entries are things you can hear or see on EXPLORE.',
       'On EXPLORE, CENTER is the CENTER fader, RATE and DEPTH share the SWEEP key, and FDBK and MIX are keys of their own.',
-      'LFO Waveform and Stereo width are common on flangers; Through-Zero is a specialty. None has a key on this rack, and their entries say so (this rack’s left and right sweeps always sit a quarter cycle apart).',
+      'Other controls you will meet names three that many flangers add: LFO waveform, stereo width and, a specialty, through-zero. None has a key on this rack (its left and right sweeps always sit a quarter cycle apart).',
     ],
     teaches: [
-      'The words for a flanger: comb filter (a row of evenly spaced notches), notch spacing, LFO (the slow wobble that moves the delay), feedback (regeneration), through-zero.',
+      'The words for a flanger: comb filter (a row of notches evenly spaced in Hz), notch spacing, LFO (the slow wobble that moves the delay), feedback (regeneration), through-zero.',
       'The formula: notches at odd multiples of 1 ÷ (2 × delay), spaced 1 ÷ delay apart.',
       'Why a sine tone, with energy at one frequency only, is a poor test source, and why 100% wet loses the comb.',
     ],
     tryThis: [
-      'Read FORMULA / CONCEPT, then on EXPLORE open LAB NOTES and set CENTER to 5.0 ms: the caption reads notches every 200 Hz, which is 1 ÷ 0.005 s.',
-      'Read the MIX entry, then on EXPLORE switch MIX between 50% EVEN and 100% and compare OUT: the deep notches at 50% EVEN are gone at 100%.',
+      'Open FORMULA / CONCEPT, then on EXPLORE open LAB NOTES and set CENTER to 5.0 ms: the caption reads notches every 200 Hz, which is 1 ÷ 0.005 s.',
+      'Open CONTROLS and read the MIX entry, then on EXPLORE switch MIX between 50% EVEN and 100% and compare OUT: the deep notches at 50% EVEN are gone at 100%.',
     ],
   },
 
@@ -121,8 +123,9 @@ export const FLANGER_SCREEN_GUIDES: Record<FlangerScreenId, ScreenGuide> = {
       'A line under the heading says how many are still to get right. A ✓ replaces a question’s number once you answer it right.',
     ],
     control: [
-      'Tap an answer. Right: it turns green and CORRECT shows why. Wrong: NOT QUITE — TRY ANOTHER shows why, and you pick again straight away.',
-      'There is no score, and a wrong answer costs nothing. A right answer stays right.',
+      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
+      'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: what is left in this lab.',
+      'A right answer stays right.',
       'Use the tabs under the title to go to LEARN or EXPLORE at any time; answers already right stay right. If you leave the lab before the last one, the check starts over.',
     ],
     changes: [
@@ -135,7 +138,7 @@ export const FLANGER_SCREEN_GUIDES: Record<FlangerScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'Test the spacing law on a different delay: on EXPLORE, with MIX on 50% EVEN, slide CENTER to the top, 5.0 ms. The caption under DESIGNED RESPONSE reads notches every 200 Hz: 1 ÷ 0.005 s.',
-      'For the source question, reread the COMMON MISTAKES line on test sources on LEARN, then come back.',
+      'For the source question, open COMMON MISTAKES on LEARN and reread the line on test sources, then come back.',
     ],
   },
 };

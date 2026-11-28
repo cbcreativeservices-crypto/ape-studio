@@ -22,6 +22,7 @@ import { DvsRig, DvsRoute, DvsScope } from '../art/dvsArt';
 import { TT_D, TT_W } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { waitFor, waitIf } from '../goalWords';
 import { stopKey } from '../dock';
 import { getBooth, updateBooth } from '../booth/boothStore';
 import { useScreenSetup } from '../booth/setup';
@@ -164,7 +165,17 @@ function PageDvs({ ctx }: { ctx: PageCtx }) {
     if (b.dvs?.mode === 'REL' && b.tt.playing && lk !== 'LOST') h.current.rel = true;
   };
   const hits = [h.current.play, h.current.abs, h.current.rel, h.current.ride, h.current.cal, faultFixed, check];
-  const goals = GOALS_DVS.map((label, i) => ({ label, hit: hits[i] }));
+  // DJ-04 (owner 2026-11-15: "build waves 1 thru 3"): set up right with the
+  // record or deck 1 stopped, the chip says which to start, instead of a
+  // silent ○. The record first: deck 1 follows it.
+  const startNext = (ok: boolean) => (!ok ? undefined : !tt.playing ? waitFor('tt') : !A.playing ? waitFor('A') : undefined);
+  const waits = [
+    startNext(d.mode === 'ABS' && booth.ch[1].input === 'USB'),
+    waitIf(d.mode === 'ABS', !tt.playing, 'tt'),
+    waitIf(d.mode === 'REL', !tt.playing, 'tt'),
+    startNext(d.dirty && d.mode === 'INT'),
+  ];
+  const goals = GOALS_DVS.map((label, i) => ({ label, hit: hits[i], wait: waits[i] }));
   const latched = useVisitGoals(ctx, goals, 'DVS', ready);
   const scope = s2?.scope ?? controlScope(booth, 0);
   const topH = (H: number, k: number) => Math.round(Math.min(170 * Math.sqrt(k), H * 0.54));
@@ -211,7 +222,7 @@ function PageDvs({ ctx }: { ctx: PageCtx }) {
           </Scene>
         ),
         bezel: [
-          { k: 'ROUND TRIP', v: `${rt.toFixed(1)} ms`, vA11y: `${rt.toFixed(1)} milliseconds`, sub: `${booth.laptop?.buffer ?? 256} SMP`, tint: '#8fbcff' },
+          { k: 'ROUND TRIP', caption: 'in + out delay', v: `${rt.toFixed(1)} ms`, vA11y: `${rt.toFixed(1)} milliseconds`, sub: `${booth.laptop?.buffer ?? 256} SMP`, tint: '#8fbcff' },
           { k: 'SIGNAL', v: `${Math.round(q * 100)} %`, sub: lock, tint: lock === 'LOCKED' ? colors.green : lock === 'UNSTABLE' ? colors.amber : lock === 'IGNORED' ? colors.textSub : '#ff5a48' },
           { k: 'DECK 1', v: A.playing ? 'PLAYING' : 'STOPPED', sub: `${A.pitch >= 0 ? '+' : '−'}${Math.abs(A.pitch).toFixed(0)} %`, tint: A.playing ? colors.green : colors.textSub },
           { k: 'CROWD', v: tone ? 'TONE!' : musicLive ? 'MUSIC' : 'NOTHING', tint: tone ? '#ff5a48' : musicLive ? colors.green : colors.textSub },

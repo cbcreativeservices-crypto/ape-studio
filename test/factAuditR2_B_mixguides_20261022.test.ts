@@ -93,7 +93,12 @@ describe('fact audit R2 · mixing guides: the ONE WHO hearing note (owner ruling
     const types = read('src/screens/lab/mixingGuides/data/types.ts');
     assert.ok(types.includes(`WHO_LIVE_LEVEL_NOTE =\n  '${NOTE}'`));
     const screen = read('src/screens/lab/mixingGuides/MixingGuideScreen.tsx');
-    assert.match(screen, /r\.key === 'liveSpl' \? <Text style=\{styles\.glanceNote\}>\{WHO_LIVE_LEVEL_NOTE\}<\/Text>/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item MG-01, checker follow-up): the
+    // level rows moved into SPL & loudness, so the ONE note is drawn once, still VISIBLE, as the last
+    // line of the top AT A GLANCE box (under the live level only where that row stays on top).
+    assert.match(screen, /r\.key === 'liveSpl' && whoNote === 'underLive' \? <Text style=\{styles\.glanceNote\}>\{WHO_LIVE_LEVEL_NOTE\}<\/Text>/);
+    assert.match(screen, /\{whoNote === 'end' \? \(\s*<View style=\{\[styles\.glanceRow, styles\.rowRule\]\}>\s*<Text style=\{styles\.glanceNote\}>\{WHO_LIVE_LEVEL_NOTE\}<\/Text>/);
+    assert.equal((screen.match(/\{WHO_LIVE_LEVEL_NOTE\}/g) ?? []).length, 2, 'two places in code, one drawn per guide');
   });
   it('is not copied into the guide files', () => {
     for (const f of readdirSync(join(ROOT, DIR))) {

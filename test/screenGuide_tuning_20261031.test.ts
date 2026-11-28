@@ -56,7 +56,9 @@ describe('1. every Tuning & Temperament screen has a complete guide', () => {
   it('one guide per chapter, in CHAPTERS order — the registry still lists these fourteen files', () => {
     const reg = code(`${DIR}/chapters/index.ts`);
     assert.equal(GUIDES.length, 14);
-    const order = [...reg.matchAll(/\{ index: (\d+), title: CHAPTER_TITLES\[\d+\], short: '[^']*', objective: '[^']*',(?: rack: true,)? Component: (Ch\w+) \}/g)].map((m) => [Number(m[1]), m[2]]);
+    // `ackDone: true` (fix round 2026-11-14, owner: "Begin fixing all bugs found and do
+    // obvious … fixes"): a NEXT off an acknowledgement-only chapter marks it.
+    const order = [...reg.matchAll(/\{ index: (\d+), title: CHAPTER_TITLES\[\d+\], short: '[^']*', objective: '[^']*',(?: rack: true,)?(?: ackDone: true,)? Component: (Ch\w+) \}/g)].map((m) => [Number(m[1]), m[2]]);
     assert.deepEqual(order.map((o) => o[0]), [...Array(14).keys()]);
     assert.deepEqual(order.map((o) => o[1]), CH_FILES.map((f) => f.replace(/^ch(\d+)(\w+)$/, (_, n, w) => `Ch${n}${w}`)));
   });
@@ -109,22 +111,24 @@ describe('2. every step fits its no-scroll budget', () => {
 });
 
 describe('3. each guide quotes its chapter’s real names', () => {
-  const SHARED = [`${DIR}/rackLayout.tsx`, `${DIR}/TuningLabScreen.tsx`, `${DIR}/components/octaveElevator.tsx`, `${DIR}/components/stageFigures.tsx`, `${DIR}/components/harmonicLadder.tsx`, 'src/screens/lab/kit/LabNavBar.tsx', 'src/screens/lab/kit/labNav.ts', 'src/screens/lab/rack/RackUnit.tsx', 'src/screens/lab/LabShell.tsx'].map(code).join('\n');
+  const SHARED = [`${DIR}/rackLayout.tsx`, `${DIR}/TuningLabScreen.tsx`, `${DIR}/components/octaveElevator.tsx`, `${DIR}/components/stageFigures.tsx`, `${DIR}/components/harmonicLadder.tsx`, 'src/screens/lab/kit/LabNavBar.tsx', 'src/screens/lab/kit/labNav.ts', 'src/screens/lab/rack/RackUnit.tsx', 'src/screens/lab/LabShell.tsx', `${DIR}/chapters/index.ts`].map(code).join('\n');
   const NAMES: string[][] = [
-    ['ROOT', 'OCTAVE', 'SOUND', 'STOPPED', 'HEAR IT', '■ STOP', 'SCOPE ⓘ', 'BEGIN LAB ›', 'IN THIS CHAPTER', 'BASIC', 'MATH', '‹ PREV', 'NEXT ›'],
+    ['ROOT', 'OCTAVE', 'SOUND', 'STOPPED', 'HEAR IT', '■ STOP', 'SCOPE ⓘ', 'BEGIN LAB ›', 'To finish:', 'BASIC', // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item TU-03): To finish: replaces the IN THIS CHAPTER kicker
+ 'MATH', '‹ PREV', 'NEXT ›'],
     ['RATIO', 'CENTS', 'INTERVAL', 'UPPER', 'ROOT', 'UPPER NOTE', 'TOGETHER', 'C3–C4', 'C4–C5', 'SHOW ME', 'TWO OCTAVES, TWO REGISTERS', 'minor 3rd', 'major 3rd', 'fourth', 'fifth', 'between'],
     ['RATIO', 'CENTS', 'MARKER', 'SHOW ME', '3:2 · YOUR ANSWER', 'WHOLE-NUMBER RELATIONSHIP'],
     ['RATIO', 'VALUE', 'REGION', 'NEXT OP', 'BELOW', 'INSIDE', 'ABOVE', 'COMPARISON OCTAVE', 'VIEW', 'Demo A · reduce 9/4', 'Demo B · raise 3/4', 'Your turn', 'SHOW OP', 'MOVE ÷2', 'MOVE ×2', 'REPLAY', 'SHOW ME', 'RESET'],
     ['THIRD', 'FROM 5/4', 'PARTIALS Δ', 'LISTEN', 'Full tones', 'Isolated partials', '▶ PLAY', 'SHOW ME', 'Just 5/4', 'Equal-tempered 2^(1/3)', 'Pythagorean 81/64', 'BEATING MODEL', 'LOG-FREQUENCY AXIS'],
     ['STEP', 'NEWEST', 'CENTS', 'ADD FIFTH', 'FIFTHS', 'BY PITCH'],
     ['EXPECTED C', 'ACTUAL B♯', 'GAP', 'HEAR', 'A · EXPECTED C', 'B · ACTUAL B♯', 'A → B', 'TOGETHER', 'PYTHAGOREAN COMMA', 'EXPECTED C · ACTUAL B♯'],
-    ['NOTE', 'CENTS', 'Hz', 'TONIC', 'MODE', 'KEEP', 'RETUNE', 'IMPURE', 'MOVED', 'NOTES', 'PLAY', 'LOCKED', 'E 5/4', 'G 3/2', 'CHORD 4:5:6', 'ALIGNED PARTIALS'],
+    ['NOTE', 'CENTS', 'Hz', 'TONIC', 'MODE', 'KEEP', 'RETUNE', 'IMPURE', 'MOVED', 'NOTES', 'PLAY', '2 notes', /* owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item TU-04): not-yet keys read their own words, not LOCKED */ 'E 5/4', 'G 3/2', 'CHORD 4:5:6', 'ALIGNED PARTIALS'],
     ['RATIOS', 'NOTE', 'EXAMPLE', 'A / B', 'A · PYTHAGOREAN', 'B · JUST', 'A → B', 'PYTH', 'JUST', '81/80', 'C–E major third', 'C–E–G triad', 'F–A major third', 'G–B major third', 'C-major phrase'],
-    ['PART', 'FIFTH', 'g⁴/4', 'FROM 5/4', 'WOLF', 'NORMAL', 'WIDER BY', 'SHOW ME', '▶ C–E–G', 'NOTES', '▶ SCALE', 'PURE FIFTH 3/2', 'MEANTONE FIFTH ⁴√5'],
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item TU-01, checker fix): the guide names BASIC's keys.
+    ['PART', 'FIFTH', 'THIRD', 'FROM PURE', 'WOLF', 'NORMAL', 'WIDER BY', 'SHOW ME', '▶ C–E–G', 'NOTES', '▶ SCALE', 'PURE FIFTH 3/2', 'MEANTONE FIFTH'],
     ['STEP', 'RATIO', 'Hz', 'ADD ×r', 'OCTAVE ✓', 'STEPS', 'A / B', 'A · PATTERN IN C', 'B · STARTING ON F', 'A → B'],
     ['NOTE', 'Hz', 'VS EQUAL', 'SYSTEM', 'REF', 'A4 = 440', 'A / B', 'EXAMPLE', 'SYSTEM B', 'HEAR THE SAME NOTE MOVE', 'C FIXED AT', '0 ¢ = EQUAL TEMPERAMENT', '+ HIGHER', '− LOWER'],
     ['MISCONCEPTIONS', 'WHERE THIS MEETS PROFESSIONAL AUDIO', 'UNDERSTOOD ›', 'seen · tap to reread ▸', 'A4 = 440 Hz is a law of nature.'],
-    ['FIGURE', '1 · Normalize 9/4', '4 · Align the third', '6 · Hear E move', 'FOLD', 'THIRD', 'E MOVES', 'RATIO', 'VALUE', 'REGION', 'DONE', '4 × RATIO', 'SHOW ME', 'WHAT YOU KEEP', 'RETRY THE CHALLENGES'],
+    ['FIGURE', '1 · Normalize 9/4', '4 · Align the third', '6 · Hear E move', 'FOLD', 'THIRD', 'E MOVES', 'RATIO', 'VALUE', 'REGION', /* Phase 3, owner 2026-11-14: "remove progress N-of-total"; DONE n/6 became LEFT */ 'LEFT', '4 × RATIO', 'SHOW ME', 'WHAT YOU KEEP', 'RETRY THE CHALLENGES'],
   ];
   it('a name list for every chapter', () => assert.equal(NAMES.length, GUIDES.length));
   NAMES.forEach((names, i) => {
@@ -263,7 +267,8 @@ describe('4. TRY THIS numbers are what the chapters print (A4 = 440)', () => {
     assert.equal(f2(w.widerThanNormalBy), '41.06');
     assert.match(code(`${DIR}/chapters/ch9Meantone.tsx`), /const MIN = 690, MAX = 705;/);
     assert.match(code(`${DIR}/chapters/ch9Meantone.tsx`), /const \[fifthCents, setFifthCents\] = useState\(700\);/);
-    for (const s of ['t = 1.118034 (the step from C to D) and D at 193.16 ¢', 'g⁴/4 reads 400.00 ¢, FROM 5/4 +13.69 ¢', 'FIFTH 696.58 ¢', 'WOLF 737.64 ¢, NORMAL 696.58 ¢, WIDER BY 41.06 ¢']) assert.ok(t(9).includes(s), s);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item TU-01, checker fix): the guide quotes BASIC's words.
+    for (const s of ['D reads 193.16 ¢, halfway to E 5/4', 'THIRD reads 400.00 ¢, FROM PURE +13.69 ¢', 'FIFTH 696.58 ¢', 'WOLF 737.64 ¢, NORMAL 696.58 ¢, WIDER BY 41.06 ¢']) assert.ok(t(9).includes(s), s);
     assert.ok(all(9).includes('5.38 ¢ narrower'));
   });
   it('ch10: step 1 = 1.059463, 277.18 Hz (+15.56 Hz); the last step adds 29.37 Hz', () => {
@@ -275,8 +280,9 @@ describe('4. TRY THIS numbers are what the chapters print (A4 = 440)', () => {
     // The bezel is STEP / RATIO / Hz; the per-step +Hz is the LAB NOTES card's line.
     assert.ok(code(`${DIR}/chapters/ch10Equal.tsx`).includes('= +{(hz(built) - hz(built - 1)).toFixed(2)} Hz'));
     for (const s of ['RATIO 1.059463, Hz 277.18 Hz; the LAB NOTES card reads +15.56 Hz', 'LAB NOTES reads +29.37 Hz for the last step']) assert.ok(t(10).includes(s), s);
-    // A → B lights BOTH patterns for the whole clip; only A then B shows the move.
-    assert.ok(code(`${DIR}/chapters/ch10Equal.tsx`).includes("last === 'ab' ? [...pattern, ...pattern.map((s) => s + 5)]"));
+    // owner 2026-11-25, fix-first 15 (round 2, audit B20): A → B lights the C pattern,
+    // then the F pattern as it sounds (it used to light both for the whole clip).
+    assert.ok(code(`${DIR}/chapters/ch10Equal.tsx`).includes("last === 'ab' ? (abHalf === 'b' ? pattern.map((s) => s + 5) : pattern)"));
     assert.ok(t(10).includes('Play A · PATTERN IN C, then B · STARTING ON F'));
     assert.doesNotMatch(t(10), /Play A → B[^.]*watch/);
   });
@@ -305,7 +311,8 @@ describe('4. TRY THIS numbers are what the chapters print (A4 = 440)', () => {
     assert.ok(s13.includes('const c2Correct = RULES.every((r) => picks[r.rule] === r.answer);'));
     for (const n of [2, 4, 5]) assert.ok(s13.includes(`onCorrect={() => mark(${n})}`), `challenge ${n + 1} ticks on a right answer`);
     const g = all(13);
-    assert.ok(g.includes('DONE shows on FOLD (1) and THIRD (4), and E MOVES (6) shows the three E’s and SOUND'));
+    // Phase 3, owner 2026-11-14: "remove progress N-of-total" — the DONE n/6 cell now counts what is LEFT.
+    assert.ok(g.includes('LEFT (still to do) shows on FOLD (1) and THIRD (4), and E MOVES (6) shows the three E’s and SOUND'));
     assert.ok(g.includes('do challenge 2 (match the rule) and answer the questions for 3, 5 and 6'));
     assert.ok(g.includes('gets a check mark once you get it right'));
     assert.doesNotMatch(g, /perfect answers are not needed/);

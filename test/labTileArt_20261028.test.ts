@@ -1,5 +1,6 @@
 /**
- * Labs menu tile art (owner 2026-10-28/29): 16 Audio Fundamentals + 47 Advanced Training images.
+ * Labs menu tile art (owner 2026-10-28/29): 16 Audio Fundamentals + 47 Advanced Training images,
+ * + 2 on 2026-11-13 [MD:D60] (Game Audio Lab, Stage Plot and Channel Designer) = 65.
  * Each art entry must name a real lab in labCatalog.ts (a renamed lab would
  * silently lose its picture), each file must exist, and every Audio
  * Fundamentals lab has one.
@@ -37,7 +38,7 @@ function leafNames(section: 'fundamentals' | 'training'): string[] {
 
 describe('Labs menu tile art', () => {
   it('has 16 entries, each a real lab, each file present', () => {
-    assert.equal(entries.length, 63);
+    assert.equal(entries.length, 65); // 63 + Game Audio Lab + Stage Plot and Channel Designer (2026-11-13)
     const all = new Set([...leafNames('fundamentals'), ...leafNames('training')]);
     for (const e of entries) {
       assert.ok(all.has(e.name), `${e.name} is not a lab name in labCatalog.ts`);

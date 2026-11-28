@@ -1,3 +1,4 @@
+// 2026-11-21 owner (tester on a tablet): learner text says "this device", never "this phone".
 /**
  * Pattern hunt phase 2, wave 3 — P6 "silent success" (closer G7 of
  * docs/bughunt/PATTERN_CATALOG_2026_10_02.md): a "Saved" / "credited" / "✓"
@@ -295,7 +296,7 @@ const VOID_WRITE = /void AsyncStorage\.(setItem|multiSet)\(/;
  *  write, each with why the claim is still honest. May only shrink. */
 const CLAIM_BESIDE_VOID_WRITE: Record<string, string> = {
   'features/storage/localStore.ts': 'the helper: its doc comment uses the word; the void write is the damaged-blob set-aside, never the value',
-  'screens/glossary/GlossaryScreen.tsx': '"Saved on this phone" is an offline-cache COUNT from a read; the void writes are view preferences nobody is told about',
+  'screens/glossary/GlossaryScreen.tsx': '"Saved on this device" is an offline-cache COUNT from a read; the void writes are view preferences nobody is told about',
   'screens/tools/SplMeterScreen.tsx': 'the void multiSet is the full-screen brightness preference; SAVED ✓ is gated on saveMeasurement\'s result (tested above)',
 };
 

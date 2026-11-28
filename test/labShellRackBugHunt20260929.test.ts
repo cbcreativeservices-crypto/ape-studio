@@ -43,7 +43,10 @@ test('LP6 hidden rack: its open tray gives up Android back', () => {
   // onClose rides a ref since 2026-10-01 (navShellBugPass20261001.test.ts).
   assert.match(t, /\}, \[open, active, navCtx\]\);/);
   const r = read('src/screens/lab/rack/RackUnit.tsx');
-  assert.match(r, /maxHeight=\{rootH > 0 \? trayRoom : undefined\} active=\{active\} \/>/);
+  // Lab fix round 1 (2026-11-14; owner: "Begin fixing all bugs found and do
+  // obvious ... fixes as you suggested in the report"; checker C1 FAIL 1): the
+  // card's cap is trayCardRoom, which keeps a tray fold's freed room for the lesson.
+  assert.match(r, /maxHeight=\{rootH > 0 \? trayCardRoom : undefined\} active=\{active\} \/>/);
   const shell = read('src/screens/lab/LabShell.tsx');
   assert.match(shell, /onHelp=\{rack\.onHelp\}\n\s+active=\{mode === 'explore'\}/);
 });

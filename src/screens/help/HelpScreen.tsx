@@ -26,6 +26,10 @@ import { resetAmplitudeOrientation } from '../../features/lab/amplitudeOrientati
 import { HELP_CATEGORIES, filterHelp, type HelpEntry } from '../../features/help/helpContent';
 import { readingColumn } from '../../theme/readingColumn';
 import { safeGoBack } from '../../lib/safeGoBack';
+import { HomeOrBackKey } from '../../components/nav/HomeOrBackKey';
+import { ScreenCircleMenu, goHome } from '../../components/nav/CircleMenu';
+import { PlaceArt } from '../../components/nav/CircleMenuPanel';
+import { menuClearance } from '../../components/nav/circleMenuPlaces';
 
 export function HelpScreen() {
   const insets = useSafeAreaInsets();
@@ -76,17 +80,20 @@ export function HelpScreen() {
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       <View style={styles.header}>
-        <Pressable onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel="Back">
-          <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
-        </Pressable>
+        {/* The hubs' top row (owner 2026-11-20): the HOME key (‹ when deeper),
+            then the section's menu icon and the title. */}
+        <HomeOrBackKey alwaysHome onPress={() => goHome(navigation)} backStyle={styles.back} hitSlop={BACK_HIT_SLOP} />
+        <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+          <PlaceArt place="help" size={26} />
+        </View>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
-          <Text style={styles.title}>HELP</Text>
+          <Text style={styles.title} accessibilityRole="header">HELP</Text>
           <Text style={styles.subtitle}>QUICK ANSWERS · DIRECT LINKS</Text>
         </View>
       </View>
 
       <ScrollView
-        contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 24 }]}
+        contentContainerStyle={[styles.scroll, { paddingBottom: menuClearance(insets.bottom) + 12 }]}
         keyboardShouldPersistTaps="handled"
       >
         {/* Search — filters question + answer text live. */}
@@ -232,6 +239,9 @@ export function HelpScreen() {
           </View>
         </View>
       </ScrollView>
+      {/* The circle menu's MENU button (owner 2026-11-20), lit on this place.
+          It lets every other touch through. */}
+      <ScreenCircleMenu here="help" />
     </View>
   );
 }

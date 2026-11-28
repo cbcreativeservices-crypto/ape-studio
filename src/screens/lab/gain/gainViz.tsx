@@ -37,9 +37,11 @@ import {
   ZONE_CLIP_FILL,
   ZONE_HOT_FILL,
   ZONE_LOW_FILL,
+  statusWord,
   type ChainNode,
   type Stage,
   type StageKind,
+  type StatusWord,
 } from './gainEngine';
 
 const pct = (x: number): `${number}%` => `${Number((x * 100).toFixed(1))}%`;
@@ -52,8 +54,23 @@ function regionLabelFor(node: ChainNode): string {
     case 'low': return 'TOO LOW';
     case 'healthy': return 'HEALTHY';
     case 'hot': return 'HOT';
-    default: return 'OVERLOAD';
+    default: return 'CLIP'; // GN-02: the key's word (was OVERLOAD)
   }
+}
+
+/** The longest region word that fits ONE line in the 44-wide tag at 9 pt
+ *  ("OVERLOAD", ~38 pt, was measured to fit; bug pass 3). */
+export const REGION_ONE_LINE_CHARS = 8;
+
+/** The one-word form when the glass has no room for two lines: the word
+ *  that carries the meaning — QUIET (SOURCE). The first word was taken
+ *  blindly and TOO LOW read "TOO" (beginner audit 2026-11-14). Checker fix
+ *  (owner 2026-11-15: "build waves 1 thru 3", D62, one word per state): a
+ *  word that fits one line is kept whole, so TOO LOW stays TOO LOW, the word
+ *  STATUS and the color key use (it was cut to LOW). */
+export function shortRegionLabel(label: string): string {
+  if (label.length <= 8) return label;
+  return label.split(' ')[0];
 }
 
 /** Source descriptor under the source column (owner wording). */
@@ -149,7 +166,7 @@ export function StageMeterV({
         // one line, into the PREAMP column's label on a 7-column X-Ray chain
         // at 360 wide (column pitch ~45 pt).
         <Text style={[s.vRegion, s.vRegionUnder, { color: node.region === 'low' ? '#6f9bff' : col }]}>
-          {shortLabel ? regionLabelFor(node).split(' ')[0] : regionLabelFor(node)}
+          {shortLabel ? shortRegionLabel(regionLabelFor(node)) : regionLabelFor(node)}
         </Text>
       )}
     </View>
@@ -163,12 +180,20 @@ export function stageTint(node: ChainNode): string {
 }
 
 /** Compact bezel status cell for a node — spread into a BezelItem. */
+// GN-02 (owner 2026-11-15: "build waves 1 thru 3", D62): STATUS speaks the meters' and the color
+// key's words (TOO LOW, HEALTHY, HOT, CLIP; was LOW / OK), plus NOISY for the hiss problem, amber
+// like the NOISE readout. The word comes from the pure gainEngine.statusWord.
+const STATUS_TINT: Record<StatusWord, string> = {
+  CLIP: '#ff5f4e',
+  DIST: '#ff7a1e',
+  NOISY: '#e8c341',
+  'TOO LOW': '#6f9bff',
+  HOT: '#ffc64d',
+  HEALTHY: '#3fae52',
+};
 export function stageStatus(node: ChainNode): { v: string; tint: string } {
-  if (node.stageClipped) return { v: 'CLIP', tint: '#ff5f4e' };
-  if (node.distorted) return { v: 'DIST', tint: '#ff7a1e' };
-  if (node.region === 'low') return { v: 'LOW', tint: '#6f9bff' };
-  if (node.region === 'hot') return { v: 'HOT', tint: '#ffc64d' };
-  return { v: 'OK', tint: '#3fae52' };
+  const v = statusWord(node);
+  return { v, tint: STATUS_TINT[v] };
 }
 
 export type StageColSpec = {
@@ -186,6 +211,11 @@ export type StageColSpec = {
   onPress?: () => void;
   /** Scan-blue highlight (the inspected / X-Rayed column). */
   active?: boolean;
+  /** A hidden column already inspected: its verdict word (OK, LOW, HOT,
+   *  CLIP, DIST) replaces INSPECT under the "?", so the learner keeps a map
+   *  of what they checked (beginner audit 2026-11-14) without the meter
+   *  opening (one device at a time, owner 2026-08-10). */
+  checked?: { v: string; tint: string };
 };
 
 /** The drawn gear above each column (pt, unscaled) — art fix 2026-10-16:
@@ -224,7 +254,8 @@ export function ChainStage({ w, h, cols }: { w: number; h: number; cols: StageCo
   // strip on every Gain page with a quiet source (emulator pass 2026-10-14).
   // Reserve the second line; where even the floor meter leaves no room for
   // it, the word drops to "QUIET" — the number below always stays.
-  const twoLineLabel = cols.some((c) => (c.display ?? 'meter') === 'meter' && regionLabelFor(c.node).includes(' ') && !c.node.stageClipped && !c.node.distorted);
+  // Only a word too long for one line (QUIET SOURCE) needs the second line.
+  const twoLineLabel = cols.some((c) => (c.display ?? 'meter') === 'meter' && regionLabelFor(c.node).length > REGION_ONE_LINE_CHARS && !c.node.stageClipped && !c.node.distorted);
   const room = h / ts - METER_CHROME;
   const shortLabel = twoLineLabel && room - REGION_LINE < MIN_METER;
   const meterH = Math.max(MIN_METER, room - (twoLineLabel && !shortLabel ? REGION_LINE : 0)) * ts;
@@ -291,7 +322,11 @@ export function ChainStage({ w, h, cols }: { w: number; h: number; cols: StageCo
                   <View style={[s.slotBox, { height: meterH }]}>
                     <Text style={s.slotQ}>?</Text>
                   </View>
-                  <Text style={s.slotUnder}>INSPECT</Text>
+                  {c.checked ? (
+                    <Text style={[s.slotUnder, { color: c.checked.tint }]}>{c.checked.v}</Text>
+                  ) : (
+                    <Text style={s.slotUnder}>INSPECT</Text>
+                  )}
                 </View>
               )}
               {c.readout ? (
@@ -472,9 +507,12 @@ const styles = StyleSheet.create({
 
 
 
-  led: { width: 9, height: 9, borderRadius: 4.5, backgroundColor: '#23252d', borderWidth: 1, borderColor: '#0c0c0f' },
-  ledSig: { backgroundColor: '#3fae52' },
-  ledClip: { backgroundColor: '#ff3b2a' },
+  // GN-03 (owner 2026-11-15: "build waves 1 thru 3", D62): bigger lights (9 → 14) with a glow ring
+  // when lit, so a dark SIG light reads as dark at phone width. The ring is a border (identical on
+  // iOS and Android, unlike a shadow).
+  led: { width: 14, height: 14, borderRadius: 7, backgroundColor: '#1b1c22', borderWidth: 2, borderColor: '#2c2e36' },
+  ledSig: { backgroundColor: '#5bdc6e', borderColor: 'rgba(91,255,133,.45)' },
+  ledClip: { backgroundColor: '#ff3b2a', borderColor: 'rgba(255,107,94,.55)' },
   /* Peak hold: a light hairline spanning the track — never red, so the
      only red mark on a meter is its ceiling. */
   vPeak: { position: 'absolute', left: 0, right: 0, height: 1.5, backgroundColor: '#e9e9ef' },

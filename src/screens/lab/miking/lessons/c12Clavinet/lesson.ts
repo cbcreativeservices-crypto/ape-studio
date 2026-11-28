@@ -545,7 +545,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: what makes the clavinet’s sound reach a microphone?', options: ['The strings themselves', 'The pickups, through a speaker', 'The keys hitting the case'], after: 'Now STEP through the key (or PLAY ONCE) and watch where the signal goes.' },
+  sound: { prompt: 'Before you step through: what makes the clavinet’s sound reach a microphone?', options: ['The strings themselves', 'The pickups, through a speaker', 'The keys hitting the case'], after: 'Now go EVENT by EVENT through the key (or PLAY ONCE) and watch where the signal goes.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the close mic from the center of the speaker to its edge. What changes?', options: ['More bite', 'A rounder sound', 'It depends on this amp'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Which way should the mic’s rejection point?', options: ['Toward the loudest monitor', 'Away from the loudest monitor', 'Straight up'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
@@ -716,7 +716,7 @@ export const C12_LESSON: Lesson = {
     { text: 'The amplifier is drawn generically: the cabinet sizes come from a real open-backed combo and a real closed 1×12 cabinet, not from the lesson; the speaker’s position on the baffle, the open back’s opening and the chassis are drawing defaults.', dims: [] },
     { text: 'The speaker’s dust cap (radius 5 cm) and surround (12.8 cm) are drawing defaults; the cone’s size comes from a real 12-inch speaker.', dims: [] },
     { text: 'The clavinet’s case (100 × 45 cm), the stage layout and the keyboardist’s position are drawing defaults: the leaflet gives no dimensions. The mechanism is drawn as one straight string, not to scale.', dims: [] },
-    { text: 'The bands round the guides’ figures (at the grille 0.5–5 cm, the dust-cap line ±2 cm, the edge 9–14 cm off the center, behind the open back 5–15 cm) — the lab’s drawing. We found no source that gives a distance behind an open back.', dims: [] },
+    { text: 'The bands around the guides’ figures (at the grille 0.5–5 cm, the dust-cap line ±2 cm, the edge 9–14 cm off the center, behind the open back 5–15 cm) — the lab’s drawing. We found no source that gives a distance behind an open back.', dims: [] },
     { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],
   live: { wedges },

@@ -192,7 +192,7 @@ export function DuckArt({ ducking }: { ducking: boolean }) {
           : 'No compressor on the bass. Below, two bars of the real kick track, and the bass gain: a flat line at 0 dB — the bass never moves.'
       }
     >
-      <CompFace x={40} y={22} w={292} settings={ducking ? DUCK : null} keyIn={ducking ? 'KICK' : null} title={ducking ? 'BASS COMP · KEY ← KICK · NO MAKE-UP' : 'BASS COMPRESSOR'} />
+      <CompFace x={40} y={22} w={292} settings={ducking ? DUCK : null} keyIn={ducking ? 'KICK' : null} title={ducking ? 'BASS COMP · KEY ← KICK · NO MAKE-UP' : 'BASS COMPRESSOR'} offTitle="COMPRESSOR OFF: THE BASS IS UNTOUCHED" />
       {/* lane 1: the real kick, min/max per column */}
       <Rect x={x0} y={lane1.y} width={DUCK_COLS} height={lane1.h} fill="#0b0c10" stroke="#232833" strokeWidth={0.7} />
       <Line x1={x0} y1={lane1.y + lane1.h / 2} x2={x0 + DUCK_COLS} y2={lane1.y + lane1.h / 2} stroke="#2f74ff" strokeWidth={0.6} opacity={0.7} />

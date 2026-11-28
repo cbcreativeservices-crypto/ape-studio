@@ -138,13 +138,15 @@ describe('the shell hosts a rack chapter at full height', () => {
   });
 
   test('the shell navigates through the shared strip (kit/LabNavBar), 1-based, with FINISH on the last chapter', () => {
-    assert.match(shell, /import \{ LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav \} from '\.\.\/kit\/LabNavBar'/);
+    // Phase 3, owner 2026-11-14: one unit noun per lab — the strip says CHAPTER (LabNounProvider).
+    assert.match(shell, /import \{ LabHeader, LabNavBar, LabNavProvider, LabNextButton, LabNounProvider, useLabNav \} from '\.\.\/kit\/LabNavBar'/);
     assert.match(shell, /<LabHeader\b/);
     assert.match(shell, /<LabNavBar nav=\{nav\} \/>/);
     assert.match(shell, /<LabNavProvider value=\{nav\}>/, 'the rack chapters get the in-flow NEXT from the provider');
     // One unit per chapter, in registry order, keyed by the 0-based index the
     // strip prints 1-based; `done` is this device's completed list.
-    assert.match(shell, /CHAPTERS\.map\(\(c\) => \(\{ id: String\(c\.index\), title: c\.title, done: !!progress\?\.completed\.includes\(c\.index\) \}\)\)/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item TU-05): CONTENTS marks the deeper chapter.
+    assert.match(shell, /CHAPTERS\.map\(\(c\) => \(\{ id: String\(c\.index\), title: DEEPER_CHAPTERS\.has\(c\.index\) \? `\$\{c\.title\} · \$\{DEEPER_MARK\}` : c\.title, done: !!progress\?\.completed\.includes\(c\.index\) \}\)\)/);
     assert.match(shell, /index: CHAPTERS\.findIndex\(\(c\) => c\.index === chapter\)/);
     // NEXT / CONTENTS go through goTo (stop + save); FINISH stops and opens the end screen.
     assert.match(shell, /const navGo = useCallback\(\(i: number\) => goTo\(CHAPTERS\[i\]\?\.index \?\? 0\), \[goTo\]\);/);
@@ -316,7 +318,10 @@ describe('every dock key changes the picture (review 2026-09-30)', () => {
     assert.match(ch(6), /<Spiral highlight=\{/);
   });
   test('chapter 8: the EXAMPLE lights its notes on the rail', () => {
-    assert.match(ch(8), /inExample\.includes\(n\.spelling\) \? \('neutral' as const\)/);
+    // owner 2026-11-25, fix-first 15 (round 2, audit B15): one role rule for both lanes;
+    // E, A and B used to stay lit whatever the passage.
+    assert.match(ch(8), /role: exampleRole\(n\.spelling, 0, inExample, sel, DIFFER\)/);
+    assert.match(ch(8), /const lit = inExample\.includes\(spelling\) \|\| spelling === sel;/);
   });
   test('chapter 10: the A / B pick lights the pattern on the rail', () => {
     assert.match(ch(10), /const lit = new Set<number>\(!status\.playing \? \[\]/);

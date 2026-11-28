@@ -16,6 +16,7 @@ import { levelColorForDb } from '../../../features/tools/levelColor';
 import { AUDIO_UNAVAILABLE_MESSAGE } from '../../../../modules/ape-dsp';
 import type { BezelItem } from '../rack/rackTypes';
 import type { Scenario } from './masteringContent';
+import { SCENARIO_WHY, WHY_DEFAULT } from './masteringWhy';
 
 /** The app-wide peak-readout red (owner standard). */
 export const PEAK_RED = '#ff5a48';
@@ -41,10 +42,10 @@ export const fmtDb = (v: number | null | undefined, unit = 'dB', digits = 1): st
 /** Bezel cells for a measured version: PEAK · TRUE PK · LUFS · PLR. */
 export function measureBezel(m: { peakDb: number; truePeakDb: number; lufs: number; plr: number } | undefined, ceilingDb = 0): BezelItem[] {
   return [
-    { k: 'PEAK', v: m ? `${m.peakDb.toFixed(1)}` : '—', tint: m ? levelTint(m.peakDb, ceilingDb) : colors.textMuted },
-    { k: 'TRUE PK', v: m ? `${m.truePeakDb.toFixed(1)}` : '—', tint: m ? levelTint(m.truePeakDb, ceilingDb) : colors.textMuted },
-    { k: 'LUFS', v: m ? `${m.lufs.toFixed(1)}` : '—', tint: m ? lufsTint(m.lufs) : colors.textMuted },
-    { k: 'PLR', v: m ? `${m.plr.toFixed(1)}` : '—' },
+    { k: 'PEAK', v: m ? `${m.peakDb.toFixed(1)}` : '—', tint: m ? levelTint(m.peakDb, ceilingDb) : colors.textMuted, caption: 'highest sample' },
+    { k: 'TRUE PK', v: m ? `${m.truePeakDb.toFixed(1)}` : '—', tint: m ? levelTint(m.truePeakDb, ceilingDb) : colors.textMuted, caption: 'smoothed peak' },
+    { k: 'LUFS', v: m ? `${m.lufs.toFixed(1)}` : '—', tint: m ? lufsTint(m.lufs) : colors.textMuted, caption: 'how loud' },
+    { k: 'PLR', v: m ? `${m.plr.toFixed(1)}` : '—', caption: 'peak over loud' },
   ];
 }
 
@@ -53,7 +54,7 @@ export function measureBezel(m: { peakDb: number; truePeakDb: number; lufs: numb
  *  — independent of which version is on the glass. */
 export function matchBezel(matched: boolean, loudGainDb: number | undefined, loudLabel: string): BezelItem {
   const v = !matched ? 'OFF' : loudGainDb != null && loudGainDb !== 0 ? `${loudGainDb.toFixed(1)} on ${loudLabel}` : 'ON ▶';
-  return { k: 'MATCH dB', v, tint: matched ? colors.cyan : colors.gold, flex: 1.7 };
+  return { k: 'MATCH dB', v, tint: matched ? colors.cyan : colors.gold, flex: 1.7, caption: 'fair compare' };
 }
 
 /* ── text ────────────────────────────────────────────────────────────────── */
@@ -149,6 +150,18 @@ export function KeyTerms({ terms }: { terms: readonly { term: string; def: strin
  *  by a step change shows what is already recorded. */
 export const RecordedAnswersContext = createContext<Readonly<Record<string, boolean>>>({});
 
+/**
+ * The line under a WRONG pick (lab fix round, phase 2, 2026-11-14; S2's check
+ * card rule): first miss = why THAT option does not fit (masteringWhy.ts),
+ * never the answer; a second, different miss adds the full explanation. It
+ * used to be one generic sentence for every option — up to seven identical
+ * ✗ lines in a row on Module 4's eight-option cards (novice audit G4).
+ */
+export function wrongLine(s: Scenario, picked: string, misses: number): string {
+  const why = SCENARIO_WHY[s.id]?.[picked] ?? WHY_DEFAULT;
+  return misses >= 2 ? `✗ NOT QUITE — ${why}\n\n${s.explain}` : `✗ NOT QUITE — TRY ANOTHER. ${why}`;
+}
+
 /** Deterministic shuffle of option indices per scenario + mount. */
 function shuffled(n: number, seed: number): number[] {
   const a = Array.from({ length: n }, (_, i) => i);
@@ -212,7 +225,7 @@ export function ScenarioCard({ s, onAnswered, keepOrder, compact, recorded }: {
                   reported.current = true;
                   onAnswered?.(ok);
                 }
-                AccessibilityInfo.announceForAccessibility?.(ok ? 'Correct.' : `${o}: not the best fit. Choose again.`);
+                AccessibilityInfo.announceForAccessibility?.(ok ? 'Correct.' : `Not quite. ${SCENARIO_WHY[s.id]?.[o] ?? WHY_DEFAULT}`);
               }}
               style={[styles.opt, compact && styles.optChip, isRight && styles.optRight, isWrongPick && styles.optWrong, wasWrong && !isWrongPick && styles.optDim]}
               accessibilityRole="button"
@@ -232,7 +245,7 @@ export function ScenarioCard({ s, onAnswered, keepOrder, compact, recorded }: {
         <Text style={[styles.explain, { color: correct ? colors.green : colors.gold }]}>
           {correct
             ? `✓ ${s.explain}`
-            : `✗ "${picked}" is not the best fit here — it does not address what the situation actually asks for. Choose again; the full explanation appears with the option that does.`}
+            : wrongLine(s, picked, wrongPicks.length)}
         </Text>
       ) : null}
     </Card>
@@ -381,7 +394,35 @@ export function unmatchedWarning(mixLufs: number | undefined, loudLufs: number |
   return `Turn your volume down first — unmatched, ${loudName} steps up by about ${step != null ? step.toFixed(0) : fallback} dB.`;
 }
 
+/**
+ * GO DEEPER ▾ (phase 3, owner's decision 5, 2026-11-14: "long pages:
+ * beginner core first … fold the depth under Go deeper ▾"). The step's
+ * beginner core reads first; the mechanics and the measurement notes wait
+ * folded. Nothing is removed. Closed again on every visit.
+ */
+export function GoDeeper({ title, children }: { title: string; children: ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <View style={{ gap: 10 }}>
+      <Pressable
+        onPress={() => setOpen((o) => !o)}
+        style={styles.deeperHead}
+        accessibilityRole="button"
+        accessibilityState={{ expanded: open }}
+        aria-expanded={open}
+        accessibilityLabel={`${title}. ${open ? 'Fold it away' : 'Go deeper: open it'}`}
+      >
+        <Text style={styles.sectionTitle}>{title}</Text>
+        <Text style={styles.deeperKey}>{open ? 'FOLD ▴' : 'GO DEEPER ▾'}</Text>
+      </Pressable>
+      {open ? children : null}
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
+  deeperHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, minHeight: 44 },
+  deeperKey: { color: colors.amber, fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1 },
   sectionTitle: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 2, marginTop: 4 },
   kicker: { color: colors.cyanBright, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1.8 },
   body: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20 },

@@ -44,18 +44,20 @@ export const HARMONIC_SCREEN_GUIDES: Record<HarmonicScreenId, ScreenGuide> = {
   explore: {
     intro: {
       learning: 'Why timbre is a harmonic recipe: which whole-number multiples of the fundamental are present and how strong, and why the ear follows levels far more than phase.',
-      start: 'Tap ▶ on the default SAW. In LAB NOTES tap MUTE EVEN and watch THD and CREST drop. Then pick PRESET → SQUARE and compare the readouts.',
+      // A first step that needs no sound (novice audit 2026-11-14), then the sound.
+      // HAR-04 (owner 2026-11-15, "build waves 1 thru 3"): the lab opens on SINE; build a sound by hand first.
+      start: 'Drag stem H3 up: a second band lights and the wave changes shape. Then tap ▶ to hear it, and tap MEASURE to read THD rise from 0 %.',
     },
     seeing: [
       'Frequency runs up. Each harmonic is a band, brighter and wider when louder. Left labels: harmonic, Hz, note, cents (1: 100 G2 +35¢).',
-      'On LOG ♪ a piano runs up the right side; keys under a harmonic glow amber. Below is the summed wave, three cycles.',
-      'Readouts: F0, THD (overtones against the fundamental, %), CREST (peak against RMS level, dB), SLOPE (dB per octave). Badge: ANALYTIC MODEL — NOT A MEASUREMENT.',
+      'On LOG ♪ a piano runs up the right; keys under a harmonic glow amber. Below: the summed wave, three cycles.',
+      'Readouts: F0; MEASURE adds THD (overtones against the fundamental, %), CREST (peak against RMS level, dB), SLOPE (dB per octave). Drawn from the math, not measured.',
     ],
     control: [
-      'Tap ▶ in the header to hear the twelve harmonics as drawn; ■ stops. Slide F0 to move the fundamental from 60 to 300 Hz.',
-      'PRESET: SINE, SQUARE, TRIANGLE, SAW, PULSE and four distortion recipes, SYM CLIP, ASYM CLIP, SOFT SAT and HARD CLIP. RESTORE PRESET undoes your edits; THD CALC shows how THD is worked out.',
+      'Tap ▶ in the header to hear the harmonics as drawn; ■ stops. Slide F0 to move the fundamental from 60 to 300 Hz.',
+      'PRESET: SINE, SQUARE, TRIANGLE, SAW, PULSE and four distortion recipes, SYM CLIP, ASYM CLIP, SOFT SAT and HARD CLIP. RESTORE PRESET undoes edits; MEASURE adds THD, CREST and SLOPE; THD CALC shows the math.',
       'AXIS: LOG ♪ (equal height per octave) or LIN (equal Hz). MODE: ANALYTIC MODEL or REAL SIGNAL (your mic, live).',
-      'In LAB NOTES, each stem H1–H12 is one harmonic’s level: drag it up or down; tap for its card and ▶ SOLO; double-tap to reset; long-press for phase, POLARITY +180° and MUTE. Then GROUPS & OVERLAYS, SOLO or MUTE ODD and EVEN, NORMALIZE, SNAPSHOT A, A/B GHOST.',
+      'Under the display each stem H1–H12 is one harmonic’s level: drag it up or down, tap for its card and ▶ SOLO; double-tap to reset; long-press for phase, POLARITY +180° and MUTE. In LAB NOTES: GROUPS & OVERLAYS, SOLO or MUTE ODD and EVEN, NORMALIZE, SNAPSHOT A, A/B GHOST.',
     ],
     changes: [
       'Harmonics are whole-number multiples of F0. The display rescales with F0, so bands stay put while their labels and lit keys change.',
@@ -70,7 +72,7 @@ export const HARMONIC_SCREEN_GUIDES: Record<HarmonicScreenId, ScreenGuide> = {
       'Distortion is a harmonic recipe too, as the four distortion presets show.',
     ],
     tryThis: [
-      'On the default SAW, tap MUTE EVEN: THD falls from 75.2 % to 43.8 % and CREST from 5.8 to 1.6 dB. That’s SQUARE’s recipe: pick it and see the same numbers.',
+      'Tap MEASURE and pick PRESET → SAW, then tap MUTE EVEN: THD falls from 75.2 % to 43.8 % and CREST from 5.8 to 1.6 dB. That’s SQUARE’s recipe: pick it and see the same numbers.',
       'Pick PRESET → TRIANGLE: SLOPE reads −12.0, twice as steep as SQUARE’s −6.0, and THD only 12.1 %. Same odd harmonics, fading much faster.',
       'PRESET → SAW, long-press stem H2, tap POLARITY +180°, then DONE: the wave changes shape and CREST drops to 4.4 dB, yet THD stays 75.2 %. Same levels, nearly the same sound.',
     ],
@@ -85,7 +87,7 @@ export const HARMONIC_SCREEN_GUIDES: Record<HarmonicScreenId, ScreenGuide> = {
     seeing: [
       'REAL SIGNAL: your mic, analyzed live. A heatmap fills the display, newest at the right, about 18 s of history, with the harmonic marker lines on top.',
       'The green curve at the right is the spectrum right now; the bottom strip is the mic’s level over time.',
-      'Readouts: F0, MIC (LIVE, START… or OFF), TONE (ON, OFF or MUTED), MAX (strongest on the heatmap). REAL SIGNAL — dBFS · UNCALIBRATED: levels are relative.',
+      'Readouts: F0, MIC (LIVE, START… or OFF), TONE (ON, OFF or MUTED), MAX (strongest on the heatmap). Note: dBFS, not calibrated, so levels are relative.',
     ],
     control: [
       'Tap ▶ in the header, or the display, to start the mic, and the tone once ⚠ ALLOW SPEAKER WHILE MIC IS ON is checked; ■ stops both.',
@@ -100,7 +102,7 @@ export const HARMONIC_SCREEN_GUIDES: Record<HarmonicScreenId, ScreenGuide> = {
     ],
     teaches: [
       'Real equipment adds harmonics a model doesn’t. That’s harmonic distortion, the thing THD measures.',
-      'dBFS here is relative to the phone’s own full scale: it compares sounds on this phone and is not a measured sound level.',
+      'dBFS here is relative to the device’s own full scale: it compares sounds on this device and is not a measured sound level.',
       'A spectrogram shows frequency up, time across, and level as color.',
     ],
     tryThis: [
@@ -114,7 +116,7 @@ export const HARMONIC_SCREEN_GUIDES: Record<HarmonicScreenId, ScreenGuide> = {
   learn: {
     intro: {
       learning: 'The words and formulas of additive synthesis: fundamental, harmonic, partial, odd and even, duty cycle and phase, and the Fourier series behind each classic wave.',
-      start: 'Read the PRO TIPS line on building a square. Then on EXPLORE pick SINE and drag H3, H5 and H7 down to 1/3, 1/5 and 1/7 of H1.',
+      start: 'Open PRO TIPS and read the line on building a square. Then on EXPLORE pick SINE and drag H3, H5 and H7 down to 1/3, 1/5 and 1/7 of H1.',
     },
     seeing: [
       'This is the guided lesson as one page. ▶ in the header still plays what you set on EXPLORE.',
@@ -137,8 +139,8 @@ export const HARMONIC_SCREEN_GUIDES: Record<HarmonicScreenId, ScreenGuide> = {
       'Why a wave’s shape can mislead where its spectrum does not.',
     ],
     tryThis: [
-      'Read the PRO TIPS line on building a square. Then on EXPLORE pick SINE and drag H3 to about −9.5 dB, H5 to −14 and H7 to −17 (1/3, 1/5, 1/7 of H1): the wave squares off.',
-      'Read the Harmonic phase entry, then on EXPLORE long-press a stem, tap POLARITY +180°, then DONE: the wave changes, THD does not.',
+      'Open PRO TIPS and read the line on building a square. Then on EXPLORE pick SINE and drag H3 to about −9.5 dB, H5 to −14 and H7 to −17 (1/3, 1/5, 1/7 of H1): the wave squares off.',
+      'Open CONTROLS and read the Harmonic phase entry, then on EXPLORE long-press a stem, tap POLARITY +180°, then DONE: the wave changes, THD does not.',
     ],
   },
 
@@ -153,8 +155,8 @@ export const HARMONIC_SCREEN_GUIDES: Record<HarmonicScreenId, ScreenGuide> = {
       'They ask where the 3rd harmonic of 100 Hz sits, what raising the level does, what changing only phases does, and which wave is built from odd harmonics at 1/n.',
     ],
     control: [
-      'Tap an answer. If it’s right, you see CORRECT and the reason, and its number turns to ✓. If not, you see NOT QUITE — TRY ANOTHER with the reason; pick again.',
-      'There’s no score, and a wrong answer costs nothing. Use the tabs under the title to go to LEARN or EXPLORE.',
+      'Tap an answer. Right: it turns green, its number turns to ✓ and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
+      'Use the tabs under the title to go to LEARN or EXPLORE.',
     ],
     changes: [
       'Answers already right stay right if you switch to LEARN or EXPLORE and come back. Leave the lab before the last one and the check starts over.',

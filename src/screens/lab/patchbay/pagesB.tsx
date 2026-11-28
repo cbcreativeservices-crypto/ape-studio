@@ -5,7 +5,11 @@
  * 2026-09-10 (sheet: docs/APE_PATCHBAY_LAB_COPY_2026_09_10.md).
  */
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { safeGoBack } from '../../../lib/safeGoBack';
+import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
+import { CollapsibleSection } from '../LabShell';
 import { colors, fonts } from '../../../theme/tokens';
 import type { PageCtx, PageDef } from '../kit/PagedLab';
 import { Body, Card, Eyebrow, Lead, Prompt, useMarkWhen } from '../tuning/components/primitives';
@@ -163,7 +167,7 @@ function PagePredict({ ctx }: { ctx: PageCtx }) {
       {PREDICT_SCENARIOS.map((s, i) => (
         <View key={s.id} style={{ gap: 8 }}>
           <UnderstandingCheck
-            eyebrow={`PREDICT ${i + 1} OF ${PREDICT_SCENARIOS.length}`}
+            eyebrow={`PREDICT ${i + 1}`}
             question={s.question}
             options={s.options}
             correct={s.correct}
@@ -212,7 +216,7 @@ function PageDetective({ ctx }: { ctx: PageCtx }) {
       {DETECTIVE_CASES.map((c, i) => (
         <View key={c.id} style={{ gap: 8 }}>
           <Card>
-            <Eyebrow>{`CASE ${i + 1} OF ${DETECTIVE_CASES.length}`}</Eyebrow>
+            <Eyebrow>{`CASE ${i + 1}`}</Eyebrow>
             <Body>{c.intro}</Body>
             {c.probes.map((p) => (
               <Text key={p.prose} style={local.probe}>
@@ -240,6 +244,7 @@ function PageDetective({ ctx }: { ctx: PageCtx }) {
 /* ── 13 · The four questions, answered — and what Phase B adds ──────────── */
 
 function PageWrap(_: { ctx: PageCtx }) {
+  const navigation = useNavigation();
   return (
     <View style={{ gap: 12 }}>
       <Lead>You can now stand in front of any vertical pair and answer the four questions this lab opened with:</Lead>
@@ -257,13 +262,25 @@ function PageWrap(_: { ctx: PageCtx }) {
           half-normalled top/bottom variants — Neutrik patch-panel docs; tap/mult —
           Bittree; source-above / destination-below — ART and Behringer manuals;
           Normal / Half-Normal / Thru labeling — Samson. */}
+      {/* PB-04 (owner 2026-11-15: "build waves 1 thru 3", D62): part one ends here, so the page says it
+          is a good place to stop and offers the way back to the labs; the sources card folds (a line
+          in, a line out; its words unchanged). Leaving here never marks the page: NEXT still does. */}
       <Card>
-        <Eyebrow>SOURCES BEHIND THIS LAB</Eyebrow>
-        <Body>
-          Patch-panel maker documentation and patchbay manuals: normalling definitions and the half-normalled top/bottom
-          variants, tap/mult behavior, the source-above / destination-below layout, and Normal / Half-Normal / Thru labeling.
-        </Body>
+        <Eyebrow>GOOD PLACE TO STOP</Eyebrow>
+        <Body>Part one ends here. Stop if you like, and start part two on the next page another time.</Body>
+        <Pressable accessibilityRole="button" onPress={() => safeGoBack(navigation)} hitSlop={BACK_HIT_SLOP} style={local.stopLink}>
+          <Text style={local.stopText}>STOP HERE · BACK TO THE LABS ›</Text>
+        </Pressable>
       </Card>
+      <CollapsibleSection title="SOURCES BEHIND THIS LAB" startOpen={false}>
+        <Card>
+          <Eyebrow>SOURCES BEHIND THIS LAB</Eyebrow>
+          <Body>
+            Patch-panel maker documentation and patchbay manuals: normalling definitions and the half-normalled top/bottom
+            variants, tap/mult behavior, the source-above / destination-below layout, and Normal / Half-Normal / Thru labeling.
+          </Body>
+        </Card>
+      </CollapsibleSection>
       <Card>
         <Eyebrow>PART TWO STARTS ON THE NEXT PAGE</Eyebrow>
         <Body>
@@ -283,7 +300,7 @@ export const PATCHBAY_PAGES_B: PageDef[] = [
   { title: 'Full vs Half vs Thru — the table', short: 'TABLE', Component: PageCompare, manualDone: true },
   { title: 'Predict before patching', short: 'PREDICT', Component: PagePredict, manualDone: true },
   { title: 'Patchbay detective', short: 'DETECT', Component: PageDetective, manualDone: true },
-  { title: 'The four questions, answered', short: 'WRAP', Component: PageWrap },
+  { title: 'The four questions, answered', short: 'WRAP', Component: PageWrap, reading: true },
 ];
 
 const local = StyleSheet.create({
@@ -295,4 +312,6 @@ const local = StyleSheet.create({
   td: { flex: 1, color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 11, lineHeight: 15, paddingVertical: 8, paddingHorizontal: 6 },
   tdAction: { flex: 1.35, color: colors.textPrimary, fontFamily: fonts.barlowMedium },
   probe: { color: colors.cyanBright, fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18 },
+  stopLink: { minHeight: 44, justifyContent: 'center', alignSelf: 'flex-start' },
+  stopText: { color: colors.green, fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1 },
 });

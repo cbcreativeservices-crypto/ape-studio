@@ -127,13 +127,19 @@ describe('3. each guide quotes its screen’s real names', () => {
   };
   const NAMES: Record<string, string[]> = {
     analog: ['SPEAKER', 'PRESSURE →', 'MIC', 'CONTINUOUS VOLTAGE →', 'FREQ', 'PERIOD', 'PEAK', 'RMS', 'AMP', 'ZOOM', 'WAVE', 'SINE', 'SQUARE', 'TRIANGLE', 'SAW', 'IMPULSE', 'WHITE NOISE', 'MODS', 'POLARITY Ø INVERT', 'ADD NOISE', 'ADD DISTORTION'],
-    sampling: ['INPUT — CONTINUOUS', 'TRUE INPUT (DIM) — ABOVE NYQUIST', 'ALIAS REMOVED', 'FS', 'INPUT', 'NYQUIST', 'READS AS', 'FREQ', 'ZOOM', 'RATE', '/CYC', 'RECONSTRUCTED · ON', 'ALIAS', 'PLAY INPUT', 'PLAY PREDICTED ALIAS', 'ANTI-ALIASING FILTER', 'FILTER OFF', 'FILTER ON', 'dB/OCT', 'CUTOFF'],
-    quant: ['AMBER = ORIGINAL · BLUE = SAMPLED · GREEN = STORED/RESULT · RED = ROUNDING ERROR', 'BITS', 'LEVELS', 'TH. SNR', 'PEAK', 'LEVEL', '-BIT', 'ERROR', 'DITHER', 'NO DITHER', 'RPDF', 'TPDF', 'NOISE-SHAPED', 'CORRELATED', 'ERROR HISTOGRAM'],
-    binary: ['SAMPLE', 'DECIMAL', 'HEX', 'LEVEL', 'TIME', 'BINARY', 'NORMALIZED', '% OF FS', 'RESET REG', 'SIGN', '16-bit · 48 kHz'],
-    adc: ['0 dBFS (full scale)', 'analog rail', 'noise floor', 'ANLG', 'DIG', 'TOO LOW', 'RIGHT', 'TOO HIGH', 'PEAK', 'SNR', 'HEADROOM', 'ZONE', 'INPUT', 'AN. CLIP', 'A+D CLIP', '0.0 OVER', 'THE CONVERSION CHAIN', 'SIMPLIFIED', 'STANDARD', 'X-RAY', 'SAMPLE & HOLD — WATCH ONE CELL WORK'],
+    // FS → RATE for the sample rate, and units on the bezel's sub line (lab fix round 1, owner
+    // 2026-11-14: "Begin fixing all bugs found and do obvious (my decision is not required) fixes as
+    // you suggestted in the report."): FS keeps one meaning, full scale.
+    sampling: ['INPUT — CONTINUOUS', 'TRUE INPUT (DIM) — ABOVE NYQUIST', 'ALIAS REMOVED', 'INPUT', 'NYQUIST', 'READS AS', 'FREQ', 'ZOOM', 'RATE', '/CYC', 'RECONSTRUCTED · ON', 'ALIAS', 'PLAY INPUT', 'PLAY PREDICTED ALIAS', 'ANTI-ALIASING FILTER', 'FILTER OFF', 'FILTER ON', 'dB/OCT', 'CUTOFF'],
+    quant: ['Amber is the original, blue sampled, green stored, red the rounding error.','BITS', 'LEVELS', 'TH. SNR', 'PEAK', 'LEVEL', '-BIT', 'ERROR', 'DITHER', 'NO DITHER', 'RPDF', 'TPDF', 'NOISE-SHAPED', 'CORRELATED', 'ERROR HISTOGRAM'],
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item DG-02): the codes are spelled out —
+    // RESET REG → RESET BITS, ZOH → HELD STEPS, OS RATE → OVERSAMPLE RATE, ISP FREQ → TONE FREQ, and ZONE reads
+    // CLIP with WHERE on its sub line (analog / both stages; checker fix: 'analog + digital' did not fit at 390) instead of AN. CLIP / A+D CLIP.
+    binary: ['SAMPLE', 'DECIMAL', 'HEX', 'LEVEL', 'TIME', 'BINARY', 'NORMALIZED', '% OF FS', 'RESET BITS', 'SIGN', '16-bit · 48 kHz'],
+    adc: ['0 dBFS (full scale)', 'analog rail', 'noise floor', 'ANLG', 'DIG', 'TOO LOW', 'RIGHT', 'TOO HIGH', 'PEAK', 'SNR', 'HEADROOM', 'ZONE', 'INPUT', 'CLIP', 'both stages', '0.0 OVER', 'THE CONVERSION CHAIN', 'SIMPLIFIED', 'STANDARD', 'X-RAY', 'SAMPLE & HOLD — WATCH ONE CELL WORK'],
     processing: ['FLOAT INTERNAL PATH', 'FIXED-POINT RENDER (24-BIT)', 'FLOAT BUS', 'FIXED', '0.0 CLIP', 'TRIM', 'GAIN', 'VALUE', 'HOW A FLOAT NUMBER WORKS', 'SIGN', 'EXPONENT (decade)', 'MANTISSA (slides 1→10)', 'INTEGER vs FLOATING POINT'],
-    dac: ['SAMPLES', 'ZOH', 'RECONSTRUCTED', 'ORIGINAL', 'DAC CLOCK', 'RECON LPF', 'FS', 'MODE', 'LAYERS', 'INTER-SAMPLE PEAKS', 'SAMPLE PK', 'TRUE PK', 'MISSED', 'SIMPLIFIED', 'STANDARD', 'X-RAY', 'OS RATE', 'SPECTRAL IMAGES & OVERSAMPLING', 'ISP FREQ', 'PHASE', 'INTER-SAMPLE PEAK EXPLORER', 'dBTP'],
-    errors: ['IDEAL CLOCK', 'WITH JITTER (EXAGGERATED)', 'VALUE ERROR ≈ SLOPE × TIMING ERROR', 'INTERVAL', '20.83 µs @48k', 'PEAK DEV', 'MODE', 'JITTER', 'JITTER MODE', 'RANDOM', 'PERIODIC', 'CLOCKING — ONE MASTER, THE REST FOLLOW', 'MODULE 8 · MYTH vs REALITY', 'DATA RATE — THE MENTAL MATH'],
+    dac: ['SAMPLES', 'HELD STEPS', 'RECONSTRUCTED', 'ORIGINAL', 'DAC CLOCK', 'RECON LPF', 'RATE', 'MODE', 'LAYERS', 'INTER-SAMPLE PEAKS', 'SAMPLE PK', 'TRUE PK', 'MISSED', 'SIMPLIFIED', 'STANDARD', 'X-RAY', 'OVERSAMPLE RATE', 'SPECTRAL IMAGES & OVERSAMPLING', 'TONE FREQ', 'PHASE', 'INTER-SAMPLE PEAK EXPLORER', 'dBTP'],
+    errors: ['IDEAL CLOCK', 'WITH JITTER (EXAGGERATED)', 'VALUE ERROR ≈ SLOPE × TIMING ERROR', 'INTERVAL', 'µs @48k', 'PEAK DEV', 'MODE', 'JITTER', 'JITTER MODE', 'RANDOM', 'PERIODIC', 'CLOCKING — ONE MASTER, THE REST FOLLOW', 'MODULE 8 · MYTH vs REALITY', 'DATA RATE — THE MENTAL MATH'],
   };
   const HOME_SRC = code(`${D}DigitalLabHomeScreen.tsx`) + code('src/screens/lab/ModuleAccordionRow.tsx');
   const HOME_NAMES = ['SOUND', 'ANALOG', 'SAMPLES', 'NUMBERS', 'LOUDSPEAKER', 'THE EIGHT MODULES', 'SECONDARY TOOLS', 'LEARNING', 'GUIDED LESSON', 'OPEN', 'SAMPLE INSPECTOR', 'ALIASING EXPLORER', 'DITHER COMPARATOR', 'TRUE-PEAK EXPLORER', 'CLOCK & JITTER', 'DATA-RATE CALCULATOR', 'BUFFER LATENCY CALC', 'FFT RESOLUTION CALC', 'SEE WHAT’S LEFT', 'MYTH vs REALITY'];
@@ -191,7 +197,9 @@ describe('4. TRY THIS numbers are what the modules print', () => {
   });
   it('Module 2: 48k default, sweep tops at 30 kHz, alias 18 kHz; cutoff floor 0.3 × Nyquist = 7.2 kHz; 1.7 /CYC folds to 0.7 × f', () => {
     assert.match(A, /useState<RateMode>\(\{ kind: 'abs', fs: 48000 \}\)/);
-    assert.match(A, /Math\.min\(rateMode\.fs \* 0\.75, 30000\)/);
+    // owner 2026-11-25, fix-first 15: the FREQ range moved to samplingFreq.ts (the tone is now kept in Hz across RATE).
+    assert.match(A, /const fMax = samplingFreqMax\(rateMode\);/);
+    assert.match(code('src/screens/lab/digital/samplingFreq.ts'), /Math\.min\(mode\.fs \* 0\.75, 30000\)/);
     assert.match(A, /const cutoffHz = \(0\.3 \+ 0\.68 \* cutV\) \* nyq;/);
     assert.match(A, /const CYC_CHIPS = \[4, 3, 2\.5, 2, 1\.7\];/);
     const alias = (f: number, fs: number) => Math.abs(f - Math.round(f / fs) * fs);
@@ -241,14 +249,14 @@ describe('4. TRY THIS numbers are what the modules print', () => {
       const over = ao >= 0.999;
       const rp = 20 * Math.log10(Math.max(1e-4, Math.min(1, ao)));
       const zone = d < -18 ? 'TOO LOW' : d <= -10 ? 'RIGHT' : 'TOO HIGH';
-      return { peak: over ? '0.0 OVER' : rp.toFixed(1), snr: (rp + 60).toFixed(0), head: over ? 'none' : (-rp).toFixed(1), zone: d > 0.5 && over ? 'A+D CLIP' : d > 0.5 ? 'AN. CLIP' : zone };
+      return { peak: over ? '0.0 OVER' : rp.toFixed(1), snr: (rp + 60).toFixed(0), head: over ? 'none' : (-rp).toFixed(1), zone: d > 0.5 && over ? 'CLIP, both stages' : d > 0.5 ? 'CLIP, analog' : zone };
     };
     assert.deepEqual(gr(-54 + 0.6 * 66), { peak: '-14.5', snr: '46', head: '14.5', zone: 'RIGHT' });
     assert.deepEqual(gr(-54), { peak: '-54.0', snr: '6', head: '54.0', zone: 'TOO LOW' });
-    assert.deepEqual(gr(12), { peak: '0.0 OVER', snr: '60', head: 'none', zone: 'A+D CLIP' });
-    assert.equal(gr(1).zone, 'AN. CLIP');
+    assert.deepEqual(gr(12), { peak: '0.0 OVER', snr: '60', head: 'none', zone: 'CLIP, both stages' });
+    assert.equal(gr(1).zone, 'CLIP, analog');
     assert.ok(Number(gr(1).peak) < 0);
-    for (const s of ['−14.5 dBFS', 'SNR 46 dB', '−54.0 dBFS', 'SNR 6 dB', '0.0 OVER', 'HEADROOM none', 'A+D CLIP', 'AN. CLIP']) assert.ok(t('adc').includes(s), s);
+    for (const s of ['−14.5 dBFS', 'SNR 46 dB', '−54.0 dBFS', 'SNR 6 dB', '0.0 OVER', 'HEADROOM none', 'CLIP, both stages', 'CLIP, analog']) assert.ok(t('adc').includes(s), s);
   });
   it('Module 6: bus = −6 + 12 × GAIN, starting at the top; TRIM takes off the added 12 dB', () => {
     assert.match(C, /const gainDb = 12 \* gain01;/);
@@ -313,12 +321,13 @@ describe('6. chip decision: Digital Audio is a CONCEPT lab — no accuracy chip'
       assert.doesNotMatch(s, /right=\{/, `${p}: nothing else sits in the header's right slot`);
     }
   });
-  it('the model scenes carry their own illustrative-model badges (Modules 3–4 are exact math)', () => {
+  // S3 plain model notes since phase 3 (owner decision 3; checker K3 F-1, 2026-11-14).
+  it('the model scenes carry their own model notes (Modules 3–4 are exact math)', () => {
     const M = (f: string) => code(`src/screens/lab/digital/modules/${f}.tsx`);
     const BADGES: [string, string[]][] = [
-      ['modAnalog', ['ILLUSTRATIVE MODEL, SLOWED']], // Module 1
-      ['modChain', ['ILLUSTRATIVE MODEL — level axis compressed', 'ILLUSTRATIVE MODEL — one drawn bus']], // Modules 5, 6
-      ['modDac', ['CONCEPTUAL MODEL', 'EXACT SINE MATH', 'TIMING DEVIATION EXAGGERATED ×1000']], // Modules 7, 8
+      ['modAnalog', ['A slowed model: one sound, three views']], // Module 1
+      ['modChain', ['A model: the level axis is squeezed', 'A model of one bus']], // Modules 5, 6
+      ['modDac', ['A slowed model; the held steps', 'Exact sine math', 'timing errors are drawn 1000 times larger']], // Modules 7, 8
     ];
     for (const [f, bs] of BADGES) for (const b of bs) assert.ok(M(f).includes(b), `${f}: "${b}"`);
   });

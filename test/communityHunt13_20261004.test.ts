@@ -18,13 +18,15 @@ describe('H13-1 Career Finder: a ★ on an unreadable record is never shown as S
 
   it('Hub: families starred on an unreadable record are not listed under SAVED FAMILIES', () => {
     const src = read('src/screens/careerfinder/CareerFinderScreen.tsx');
-    assert.match(src, /\{saving \? 'SAVED FAMILIES' : 'STARRED FAMILIES — NOT SAVED ON THIS PHONE'\}/);
+    // Comp A Career Finder text review 2026-11-14 (owner: "assign an agent in the background to work on this"): "device", not "phone" (Pattern 2).
+    assert.match(src, /\{saving \? 'SAVED FAMILIES' : 'STARRED FAMILIES — NOT SAVED ON THIS DEVICE'\}/);
   });
 
   it('Family page: a filled ★ that was not written says so', () => {
     const src = read('src/screens/careerfinder/CareerFamilyScreen.tsx');
     assert.match(src, /const saving = useCareerFinderSaving\(\);/);
-    assert.match(src, /\{saved && !saving \? <Text[^>]*>STARRED — NOT SAVED ON THIS PHONE<\/Text> : null\}/);
+    // Comp A Career Finder text review 2026-11-14 (owner: "assign an agent in the background to work on this"): "device", not "phone" (Pattern 2).
+    assert.match(src, /\{saved && !saving \? <Text[^>]*>STARRED — NOT SAVED ON THIS DEVICE<\/Text> : null\}/);
     // The hook sits above the "not in the index" early return (hook order).
     assert.ok(src.indexOf('const saving = useCareerFinderSaving();') < src.indexOf('if (!fam) {'));
   });

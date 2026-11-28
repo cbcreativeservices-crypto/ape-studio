@@ -456,7 +456,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: how does a bow keep a note going?', options: ['It strikes the string very fast', 'It grips the string, then lets it slip', 'It presses the string against the board'], after: 'Now STEP through (or PLAY ONCE) and watch the string, the bridge and the top.' },
+  sound: { prompt: 'Before you step through: how does a bow keep a note going?', options: ['It strikes the string very fast', 'It grips the string, then lets it slip', 'It presses the string against the board'], after: 'Now go EVENT by EVENT (or PLAY ONCE) and watch the string, the bridge and the top.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you bring a cardioid from a meter to 25 cm from the viola. What changes?', options: ['More definition, and more low end', 'More of the room', 'It depends on this viola'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will a supercardioid aimed at the viola reject the wedge best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },

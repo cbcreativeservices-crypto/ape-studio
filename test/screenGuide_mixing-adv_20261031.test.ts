@@ -149,7 +149,8 @@ describe('2. each guide quotes its page’s real names', () => {
     p12: ['WIDTH AND ITS INVOICE, HEARD', 'AS MIXED', 'WIDENED 1.6×', 'WIDENED → MONO', 'WHERE EACH PART SITS — AND WHAT MONO COSTS IT', 'THE STABLE-CENTER RULE'],
     p13: ['SECTION DESIGN, HEARD', 'STATIC', 'SECTION-DESIGNED', 'BGV PAD', 'VERSE · BARS 1–2', 'CHORUS · BARS 3–4', 'Detailed rides', 'Subgroup & VCA automation', 'Plugin automation', 'Snapshots & sections', '▲ ENTERS'],
     p14: ['THE BUS CHAIN, THREE WAYS', 'NO BUS CHAIN', 'CONSERVATIVE CHAIN', 'OVERCOOKED', 'COMP', 'DRIVE', 'THE MASTERING BORDER'],
-    p15: ['MEASURE — BS.1770-STYLE ESTIMATES', 'TRIM ', 'MEASURE', 'MEASURING…', 'LOUDNESS', 'TRUE PEAK', 'clear of −1', 'above −1', 'THE TRANSLATION CHECKS', 'THE MIX', 'MONO'],
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item AM-02): the plain idea names the card.
+    p15: ['MEASURE — LOUDNESS AND TRUE PEAK', 'TRIM ', 'MEASURE', 'MEASURING…', 'LOUDNESS', 'TRUE PEAK', 'clear of −1', 'above −1', 'THE TRANSLATION CHECKS', 'THE MIX', 'MONO'],
     p16: ['THE DELIVERABLES VOCABULARY', 'Tracks vs multitracks vs stems', 'Alternate mixes', 'Standard stem sets', 'Identical starts & lengths', 'Names & versions'],
     p17: ['RUN IT — REAL MATH ON THE REAL SESSION', 'RUN THE NULL TEST', 'CLEAN BUS', 'BUS COMP ON FULL MIX', 'NULLS ✓', 'BROKEN ✗'],
     p18: ['THE PRACTICES', 'Version control', 'Metadata & documentation', 'Archive & recall', 'THE DELIVERY CHECKLIST — CHECKED, NOT REMEMBERED', '☐', '☑'],
@@ -263,7 +264,9 @@ describe('5. the accuracy chip: KEPT — real measurement numbers on screen', ()
   });
   it('the reason is on screen: LUFS / true-peak estimates and a crest readout', () => {
     const d = code(`${MX}/pagesAdvD.tsx`);
-    assert.match(d, /BS\.1770-STYLE ESTIMATES/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item AM-02): the
+    // standard's name moved under the plain idea, on its own line; still on screen.
+    assert.match(d, /on-device estimates of the ITU-R BS\.1770 procedure/);
     assert.match(code(`${MX}/pagesAdvB.tsx`), /CREST \$\{\(m\.peakDb - m\.rmsDb\)\.toFixed\(1\)\} dB/);
   });
 });
@@ -329,7 +332,8 @@ describe('6. the what’s-left screen’s guide (ADVANCED_MIXING_END_GUIDE)', ()
     assert.match(ENDSCREEN, /label="PRACTICE AGAIN FROM THE START"/);
     assert.match(endCall, /onPracticeAgain=\{\(\) => goTo\(0\)\}/);
     assert.match(endCall, /onDone=\{\(\) => safeGoBack\(navigation\)\}/);
-    assert.match(endCall, /noun="page"/);
+    // Owner decision 3 (quick pick, 2026-11-14): "One name per unit of progress in each lab … used everywhere" — PagedLab's end screen takes the lab's unitNoun (default module), never a fixed "page".
+    assert.match(endCall, /noun=\{unitNoun\}/);
     for (const n of ['REVIEW ▾', 'HIDE ▴']) assert.ok(ENDSCREEN.includes(n), n);
     for (const n of ['DONE · BACK TO LABS', 'PRACTICE AGAIN FROM THE START', 'REVIEW ▾', 'HIDE ▴', 'Before You Begin']) assert.ok(ET.includes(n), `the guide never names "${n}"`);
     assert.equal(ADVANCED_MIXING_GUIDE_PAGE_TITLES.p1, 'Before You Begin');
@@ -350,10 +354,12 @@ describe('6. the what’s-left screen’s guide (ADVANCED_MIXING_END_GUIDE)', ()
     assert.equal(defs.length, 20);
     for (const d of defs) assert.match(d, /manualDone: true/, d);
     assert.match(PAGED, /if \(!pagesWithCheck\[from\]\?\.manualDone\) markDone\(\);/);
-    assert.match(code(`${MX}/kit.tsx`), /export const HANDS_ON_DETAIL = 'This page counts as done once the goals at the foot of the page are met\. NEXT moves on without counting it\.';/);
+    // Pinned wording moved on purpose (owner 2026-11-14: "Begin fixing all bugs found and do obvious (my decision is not required) fixes as you suggestted in the report"; checker C2): the rule says goals must be met in ONE visit.
+    assert.match(code(`${MX}/kit.tsx`), /export const HANDS_ON_DETAIL = 'A page counts once all its goals are met in one visit; leaving a page before then clears its marks\. NEXT moves on without counting it\.';/);
     assert.match(SCREEN, /handsOnDetail=\{HANDS_ON_DETAIL\}/);
-    assert.ok(ET.includes('It counts once the goal chips at the foot of that page are done'));
-    assert.match(ET, /NEXT and FINISH move you on, but they don’t mark the page done/);
+    // Pinned wording moved on purpose (owner 2026-11-14: "Begin fixing all bugs found and do obvious (my decision is not required) fixes as you suggestted in the report"; lab fix round phase 2, F4): the rule is said once (HOW A PAGE COUNTS), each row has its own goals.
+    assert.ok(ET.includes('with its own goals. HOW A PAGE COUNTS says once how a page is credited'));
+    assert.match(ET, /with sound off, a ▶ tap counts as looked at. NEXT and FINISH don’t mark a page done/);
   });
   it('page 1 counts when opened with Beginning Mixing complete on this device, or once its three checks are passed', () => {
     const A = code(`${MX}/pagesAdvA.tsx`);

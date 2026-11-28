@@ -13,16 +13,18 @@
  * a label and its value with nothing to press (a chooser with one choice).
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View, type LayoutChangeEvent, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, View, type LayoutChangeEvent, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 import { fitValue } from '../../../theme/legibility';
-import { LABEL_FIT_MARGIN_PX, VALUE_FIT_MARGIN_PX, dockFitSize, dockKeyNeed, dockLabelFit, dockStripFit } from './dockFit';
+import { DOCK_KEY_PAD, LABEL_FIT_MARGIN_PX, dockKeyNeed, dockLabelFit, dockStripFit, dockValueFitSize } from './dockFit';
 import * as Haptics from 'expo-haptics';
 import { colors, fonts } from '../../../theme/tokens';
 import { hapticsEnabled } from '../../../features/settings/store';
 
 /** What DockStrip hands each key: its width when the keys are not equal, and
- *  where to report the least width its words need. */
-export type DockKeyFit = { keyW?: number; onNeed: (px: number) => void };
+ *  where to report the least width its words need. `padX` (ADDITIVE,
+ *  2026-11-13): the key's side padding when a narrow dock tightened its chrome
+ *  to stay on one row (dockFit DOCK_TIGHT_STEPS); unset = the authored 4. */
+export type DockKeyFit = { keyW?: number; onNeed: (px: number) => void; padX?: number };
 
 /** The row of keys. Equal keys wherever every word fits; see dockStripFit. */
 export function DockStrip({
@@ -44,7 +46,11 @@ export function DockStrip({
   const row = useMemo(() => dockStripFit(order.split('|').map((id) => needs[id] ?? 0), stripW), [order, needs, stripW]);
   return (
     <View style={[style, row && { gap: row.gap, flexWrap: row.wrap ? 'wrap' : 'nowrap' }]} onLayout={(e: LayoutChangeEvent) => setStripW(e.nativeEvent.layout.width)}>
-      {children((id) => ({ keyW: row?.widths[ids.indexOf(id)], onNeed: (px) => note(id, px) }))}
+      {children((id) => ({
+        keyW: row?.widths[ids.indexOf(id)],
+        onNeed: (px) => note(id, px),
+        ...(row && row.padX !== DOCK_KEY_PAD ? { padX: row.padX } : null),
+      }))}
     </View>
   );
 }
@@ -64,6 +70,7 @@ export function DockButton({
   dim,
   plain,
   fit,
+  valueSpan,
 }: {
   label: string;
   /** Current value (mono amber). Key-variant buttons pass ''. */
@@ -96,6 +103,11 @@ export function DockButton({
   plain?: boolean;
   /** This key's place in the row (DockStrip). */
   fit?: DockKeyFit;
+  /** ADDITIVE (frame round 2, 2026-11-13): the widest value this key can
+   *  show (a chooser-fader's value over its whole lane, RackUnit). The key
+   *  asks for room for THAT, not for today's value, so it does not widen
+   *  under a drag ("SPEED 40%" → "SPEED 100%" moved every key sideways). */
+  valueSpan?: string;
 }) {
   const isKey = variant === 'key';
   // Toggles and actions share the flat KEY skin; only a toggle carries an LED.
@@ -143,24 +155,48 @@ export function DockButton({
   const [spacedGlyphW, setSpacedGlyphW] = useState(0);
   const [valueW, setValueW] = useState(0);
   const [valueH, setValueH] = useState(0);
-  // Inner width: the 1 px border and 4 px padding each side; a key's LED dot
-  // (8) and its gap (6) sit beside its label.
-  const inner = btnW > 0 ? btnW - 2 - 2 * 4 - (isKey && led != null ? 14 : 0) : 0;
+  const [spanW, setSpanW] = useState(0);
+  // Inner width: the 1 px border and 4 px padding each side (less on a narrow
+  // dock that tightened its chrome: DockKeyFit.padX); a key's LED dot (8) and
+  // its gap (6) sit beside its label.
+  const padX = fit?.padX ?? DOCK_KEY_PAD;
+  const inner = btnW > 0 ? btnW - 2 - 2 * padX - (isKey && led != null ? 14 : 0) : 0;
   const fitsLabel = !isKey || labelLines === 1;
   const hasGlyph = !isKey && !!glyph;
   const { fs: labelFs, tight, tracked } = fitsLabel
     ? dockLabelFit(LABEL_FS, labelW, inner, hasGlyph ? spacedW : 0, hasGlyph ? spacedGlyphW : 0, (label.length + 1) * LABEL_SPACING, LABEL_FIT_MARGIN_PX)
     : { fs: LABEL_FS, tight: false, tracked: true };
-  const valueFs = (value ? dockFitSize(VALUE_FS, valueW, inner) : VALUE_FS) ?? VALUE_FS;
+  // On the web a value keeps VALUE_FIT_MARGIN_PX inside the key, as authored
+  // or shrunk (frame round 2: "FACE 9…", "UNRE…" fitted by the half-pixel
+  // measures); on a phone, whose widths are fractional, the rule as before.
+  const valueFs = (value ? dockValueFitSize(VALUE_FS, valueW, inner, WEB) : VALUE_FS) ?? VALUE_FS;
   // A shrunk label keeps its tracking in proportion; a shrunk value keeps its
   // line height, so the key (and the dock) never changes height.
   const labelSize = labelFs !== LABEL_FS ? { fontSize: labelFs, letterSpacing: tracked ? (LABEL_SPACING * labelFs) / LABEL_FS : 0 } : null;
+  /**
+   * TWO LINES, NEVER "…" (lab fix round 1, 2026-11-14, section 3 row 8; owner:
+   * "Begin fixing all bugs found and do obvious ... fixes as you suggested in
+   * the report"): "POSITI…", "SIDE…" on six-key Miking docks (G8). Two parts:
+   *   • a value key's label is not drawn until its fit is MEASURED (the key
+   *     and the label's natural width), so the authored-size first frame
+   *     never shows a cut word while the drawing and the strip settle;
+   *   • a label that no size down to 9 pt can hold on one line (the strip
+   *     already gave its key all the room it can) wraps to two lines at 9 pt
+   *     instead of ending in "…". The key grows only in that case.
+   */
+  const labelMeasured = isKey || (btnW > 0 && labelW > 0);
+  const labelWraps = fitsLabel && !isKey && inner > 0 && labelW > 0 && labelFs === LABEL_FS && !tight && labelW > inner + 0.5 && /\s/.test(label.trim());
+  const wrapSize = labelWraps ? { fontSize: MIN_LABEL_WRAP_FS, lineHeight: MIN_LABEL_WRAP_FS + 2, letterSpacing: 0, textAlign: 'center' as const } : null;
   const valueSize = valueFs !== VALUE_FS ? { fontSize: valueFs, ...(valueH > 0 ? { lineHeight: valueH } : null) } : null;
 
   // The least width that holds these words (dockKeyNeed). A fader's value is
   // left out: it changes under the drag, and the keys must not shift with it.
+  // A key with a `valueSpan` asks for its widest value instead (never less
+  // than today's), which holds still under the drag just the same.
+  // Always at the authored padding: the strip takes a tightened row's padding
+  // off itself (dockTightRow), so the need never moves with it.
   const need = dockKeyNeed({
-    chrome: 2 + 2 * 4 + (isKey && led != null ? 14 : 0),
+    chrome: 2 + 2 * DOCK_KEY_PAD + (isKey && led != null ? 14 : 0),
     labelBase: LABEL_FS,
     label: labelW,
     spaced: hasGlyph ? spacedW : 0,
@@ -168,14 +204,18 @@ export function DockButton({
     trackPx: (label.length + 1) * LABEL_SPACING,
     lines: fitsLabel ? 1 : 2,
     valueBase: VALUE_FS,
-    value: glyph === '▪' ? 0 : valueW,
+    web: WEB,
+    // A '▪' key with a `valueSpan` is a locked fader showing its own still
+    // "not yet" words (RackUnit, SN-1 checker follow-up 2026-11-15): nothing
+    // drags, so it asks for room for them like any value key.
+    value: glyph === '▪' && !valueSpan ? 0 : valueSpan ? Math.max(valueW, spanW) : valueW,
   });
   const onNeed = fit?.onNeed;
   useEffect(() => {
     if (need > 0) onNeed?.(need);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [need]);
-  const sized = fit?.keyW != null ? { width: fit.keyW } : styles.even;
+  const sized = fit?.keyW != null ? (padX !== DOCK_KEY_PAD ? { width: fit.keyW, paddingHorizontal: padX } : { width: fit.keyW }) : styles.even;
   const onBtnLayout = (e: LayoutChangeEvent) => setBtnW(e.nativeEvent.layout.width);
 
   const face = (
@@ -199,8 +239,13 @@ export function DockButton({
           </>
         ) : null}
         {!isKey && value ? (
-          <MeasureLine style={styles.value} onWidth={(w) => setValueW(w + VALUE_FIT_MARGIN_PX)} onHeight={setValueH}>
+          <MeasureLine style={styles.value} onWidth={setValueW} onHeight={setValueH}>
             {value}
+          </MeasureLine>
+        ) : null}
+        {!isKey && value && valueSpan ? (
+          <MeasureLine style={styles.value} onWidth={setSpanW}>
+            {valueSpan}
           </MeasureLine>
         ) : null}
       </Measure>
@@ -216,7 +261,7 @@ export function DockButton({
         </View>
       ) : (
         <>
-          <Text style={[styles.label, labelSize, selected && styles.labelSel, selected && frameTint ? { color: frameTint } : null]} numberOfLines={1}>
+          <Text style={[styles.label, labelSize, wrapSize, selected && styles.labelSel, selected && frameTint ? { color: frameTint } : null, !labelMeasured && styles.unmeasured]} numberOfLines={labelWraps ? 2 : 1}>
             {tight ? `${label} ` : label}
             {glyph ? (
               <Text style={[styles.glyph, selected && styles.labelSel, selected && frameTint ? { color: frameTint } : null]}>
@@ -277,10 +322,16 @@ export function DockButton({
   );
 }
 
+/** The web's whole-pixel measures need the value margins (dockFit, frame round
+ *  2); on a phone the value fits exactly as before. */
+const WEB = Platform.OS === 'web';
+
 /** The authored sizes (styles.label / styles.value) and the label's spacing. */
 const LABEL_FS = 12;
 const LABEL_SPACING = 0.5;
 const VALUE_FS = 14;
+/** A label that wraps (row 8) is drawn at the 9 pt floor. */
+const MIN_LABEL_WRAP_FS = 9;
 
 /** A zero-size, clipped, invisible box: what is inside is laid out but never
  *  seen, touched or read aloud. */
@@ -347,6 +398,8 @@ const styles = StyleSheet.create({
   ledDotOn: { backgroundColor: colors.green },
   label: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.5, color: colors.textSub },
   labelSel: { color: colors.amber },
+  /** Not measured yet: laid out (so it can be measured) but not shown. */
+  unmeasured: { opacity: 0 },
   // The verb glyph is load-bearing (▪ binds, ▸ opens) — MIN_FONT 12, never 9.
   glyph: { fontSize: 12, color: colors.textSub },
   value: { fontFamily: fonts.mono, fontSize: 14, color: colors.amber },

@@ -235,12 +235,12 @@ export const rigLoadLevel = (p: RigPicture) => (p.output ? Math.min(1, cycleRms(
 export function rigStatusBezel(p: RigPicture, pick: ('supply' | 'heat' | 'eff' | 'load')[] = ['supply', 'heat', 'eff', 'load']): BezelItem[] {
   const items: BezelItem[] = [];
   for (const k of pick) {
-    if (k === 'supply') items.push({ k: 'SUPPLY', v: `${Math.round(p.supplyFlow * 100)}%`, tint: AMP_COLORS.supply });
-    else if (k === 'heat') items.push({ k: 'HEAT', v: heatWord(p.heat), tint: heatTint(p.heat) });
-    else if (k === 'eff' && p.efficiencyPct != null) items.push({ k: 'EFFIC.', v: `${Math.round(p.efficiencyPct)}%`, tint: colors.green });
+    if (k === 'supply') items.push({ k: 'SUPPLY', v: `${Math.round(p.supplyFlow * 100)}%`, tint: AMP_COLORS.supply, caption: 'power in' });
+    else if (k === 'heat') items.push({ k: 'HEAT', v: heatWord(p.heat), tint: heatTint(p.heat), caption: 'wasted' });
+    else if (k === 'eff' && p.efficiencyPct != null) items.push({ k: 'EFFIC.', v: `${Math.round(p.efficiencyPct)}%`, tint: colors.green, caption: 'useful %' });
     else if (k === 'load' && p.speaker) {
       const l = rigLoadLevel(p);
-      items.push({ k: 'LOAD', v: `${Math.round(l * 100)}%`, tint: levelColor(l) });
+      items.push({ k: 'LOAD', v: `${Math.round(l * 100)}%`, tint: levelColor(l), caption: 'how hard' });
     }
   }
   return items;

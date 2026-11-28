@@ -203,7 +203,8 @@ describe('1. every screen a learner reaches has a complete guide', () => {
                   if (!KNOWN_LOSS.has(k)) lost.add(`${k} (${m.id} ${pg.page})`);
                 };
                 assert.match(ctl, /In the strip under the title/, `${m.id} ${pg.page} ${step?.label ?? '—'}`);
-                if (!/The other ⓘ, beside the one you tapped/.test(ctl)) miss('the other ⓘ');
+                // F9 item 5 (lab fix round 2026-11-14, owner-approved): the chip reads ABOUT now.
+                if (!/ABOUT, beside the ⓘ you tapped/.test(ctl)) miss('the other ⓘ');
                 if (step?.layout === 'rack') {
                   rack++;
                   if (!/⤢ FULL SCREEN shows the drawing/.test(ctl)) miss('FULL SCREEN');
@@ -261,7 +262,8 @@ describe('2. every hand-written name is on the screen it describes', () => {
     'LEARN|On the instrument': [[P('PMicOnIt'), P('PMicrophone')], ['TYPE', 'PATTERN', 'POWER', 'powerOf(t).word', 'PHANTOM', 'NONE', 'BATTERY', 'OWN SUPPLY', 'VARIES', 'MOUNT']],
     'COMPARE|Patterns': [[P('PMicrophone')], ['SOURCE ANGLE', 'TYPE', 'PATTERN', 'PICKUP', 'DEEP NULL', 'NULL']],
     'LEARN|By property, not brand': [[P('PMicrophone')], ['No brand is required', 'SPEC DETAILS ▾']],
-    'WATCH|Worked example': [[P('PPlacement')], ['STEP', 'WHERE TO BEGIN', 'THE DISTANCE', 'CLEARANCE', '▸ ', 'FRONT']],
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item MK-02): the dock key is PIECE, not STEP.
+    'WATCH|Worked example': [[P('PPlacement')], ['PIECE', 'WHERE TO BEGIN', 'THE DISTANCE', 'CLEARANCE', '▸ ', 'FRONT']],
     'PLACE|Place the mic': [[P('PPlacement')], ['START', 'ZONE', 'SETUP', 'MIC TYPE', 'MEASURE FROM', 'POSITION', 'AIM', 'twoZones', 'C.variantKey', '<ZoneCard']],
     'LIVE|Aim the rejection': [[P('PContext')], ['AIM', 'PATTERN', 'MONITOR', 'LIVE', 'STUDIO', 'PICKUP', 'REJECTION', 'IN NULL', 'NULL', 'X.badgeWhere', 'Studio: no monitor.']],
     'PAIR|Pair and polarity': [[P('PTwoMic')], ['EDIT MIC ${slot}', 'MIC B POLARITY', 'SOURCE', 'PATH Δd B−A', 'DELAY Δt B−A', '1ST NOTCH', 'NO COMB', 'POLARITY', 'OVER 20 kHz', 'rear lobe: −', 'heads: −', "'switch'"]],
@@ -332,19 +334,26 @@ describe('2. every hand-written name is on the screen it describes', () => {
     const RACK = code('src/screens/lab/rack/RackUnit.tsx');
     for (const n of ['⤢  FULL SCREEN', '▴  HIDE DISPLAY', 'Shows the drawing at full size with zoom']) assert.ok(RACK.includes(n), n);
     const S = code(LESSON_SCREEN);
-    for (const n of ['`Page ${pageIdx + 1} goal: `', 'TO EARN CREDIT · ', 'This page is credited.']) assert.ok(S.includes(n), n);
+    // Changed on purpose (checker C4, lab fix round 2026-11-14): one unit word, module. Owner,
+    // 2026-11-14: "Begin fixing all bugs found and do obvious (my decision is not required) fixes".
+    for (const n of ['`Module ${pageIdx + 1} goal: `', 'TO EARN CREDIT · ', 'This module is credited.']) assert.ok(S.includes(n), n);
     const J = code(`${MIKING}/engine/journeyKit.tsx`);
     for (const n of ['BUILT ON THE FIRST TWO PAGES', '`I ALREADY MIC ${journey.noun.many.toUpperCase()} · QUICK CHECK`', 'label="OPEN"', "journey.goPage('meet', 0)", "journey.choosePath('experienced')"]) assert.ok(J.includes(n), n);
     const E = code('src/screens/lab/kit/LabEndScreen.tsx') + code('src/screens/lab/kit/labEnd.ts');
     for (const n of ['LAB COMPLETE', 'REVIEW ▾', 'PRACTICE AGAIN FROM THE START', 'DONE · BACK TO LABS']) assert.ok(E.includes(n), n);
     const H = code(HUB_SCREEN);
-    for (const n of ['pagesWord} done`', "'✓ '", 'ProgressUnreadableNote', 'starting points, not rules']) assert.ok(H.includes(n), n);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, items MK-04 / MK-06): the note
+    // and the start line are drawn from data/registry.ts (HUB_NOTE, hubStartLine).
+    for (const n of ['pagesWord} done`', "'✓ '", 'ProgressUnreadableNote', '{HUB_NOTE}', 'hubStartLine(lab.id)']) assert.ok(H.includes(n), n);
+    assert.ok(code(`${MIKING}/data/registry.ts`).includes('starting points, not rules'));
     const gt = textOf(G.MIKING_END_GUIDE as unknown as Guide) + textOf(G.mikingFoundationsGuide({ pageNum: 3, pageTitle: 'Choose the microphone', prevTitle: 'Starting setups', nextTitle: 'Placement Studio' }) as unknown as Guide);
     for (const n of ['LAB COMPLETE', 'REVIEW ▾', 'PRACTICE AGAIN FROM THE START', 'DONE · BACK TO LABS', 'BUILT ON THE FIRST TWO PAGES', 'I ALREADY MIC', 'QUICK CHECK', 'OPEN', '‹ PREV']) assert.ok(gt.includes(n), n);
   });
   it('the catalog neighbours the hub guide names are real', () => {
     const C = code('src/screens/lab/labCatalog.ts');
-    assert.match(C, /name: 'Instruments & Recording'/);
+    // Renamed by the owner 2026-11-23 ("it needs a better title than instruments & recording").
+    assert.match(C, /name: 'Miking Techniques'/);
+    assert.doesNotMatch(C, /name: 'Instruments & Recording'/);
     assert.match(C, /name: 'Microphone Selection Lab'/);
     assert.match(C, /name: 'Microphone Principles'/);
     const ht = textOf(G.mikingHubGuide() as unknown as Guide);
@@ -428,7 +437,10 @@ describe('5. wiring', () => {
     assert.match(S, /: mikingScreenGuide\(\{/);
     assert.match(S, /step: stepInfo,/);
     assert.match(S, /enginePage: enginePageOf\(page, Object\.keys\(art\.pages \?\? \{\}\)\),/);
-    assert.match(S, /right=\{<AccuracyNote compact detail=\{lesson\.accuracyDetail\} \/>\}\s*guide=\{guide\}/);
+    // Changed on purpose (lab fix round 2026-11-14, F9 item 5, D37): the header chip is the ABOUT
+    // variant (the lesson's own starting-points note only). Owner, 2026-11-14: "Begin fixing all
+    // bugs found and do obvious (my decision is not required) fixes as you suggestted in the report."
+    assert.match(S, /right=\{<AccuracyNote variant="about" label="ABOUT THESE STARTING POINTS" detail=\{aboutNote\(lesson\.accuracyDetail\)\} \/>\}\s*guide=\{guide\}/);
     assert.match(S, /const host: StepHost = \{ step: stepIdx, setStep, onSteps, onStepInfo,/);
   });
   it('a ScreenGuideHost wraps the lesson root; a module or step change closes an open guide; regions only on a rack step', () => {
@@ -446,7 +458,9 @@ describe('5. wiring', () => {
 
 describe('6. the accuracy chip', () => {
   it('KEPT on the lesson screen: real-world distances, measured as its starting-points note says', () => {
-    assert.match(code(LESSON_SCREEN), /<AccuracyNote compact detail=\{lesson\.accuracyDetail\} \/>/);
+    // Changed on purpose (lab fix round 2026-11-14, F9 item 5, D37): ABOUT variant, the note only.
+    // Owner, 2026-11-14: "Begin fixing all bugs found and do obvious (my decision is not required) fixes".
+    assert.match(code(LESSON_SCREEN), /<AccuracyNote variant="about" label="ABOUT THESE STARTING POINTS" detail=\{aboutNote\(lesson\.accuracyDetail\)\} \/>/);
     // Every lesson carries the note (the owner's ONE "about these starting
     // points" note, LESSON_JOURNEY §12).
     for (const m of Reg.LESSONS) {
@@ -557,8 +571,10 @@ describe('7. the 2026-10-31 review: each accepted finding, re-proved from the co
     assert.match(textOf(guideAt('M01', 'meet', null)), /Tap the middle readout \(MODULE, plus STEP when there are several\) for the contents/);
   });
   it('the other ⓘ: named only where the lesson header still carries the starting-points chip (never on the hub)', () => {
-    assert.match(code(LESSON_SCREEN), /right=\{<AccuracyNote compact detail=\{lesson\.accuracyDetail\} \/>\}/);
-    assert.match(G.MIKING_END_GUIDE.control.join('\n'), /The other ⓘ/);
-    assert.doesNotMatch(textOf(G.mikingHubGuide() as unknown as Guide), /The other ⓘ/);
+    // Changed on purpose (lab fix round 2026-11-14, F9 item 5): the chip reads ABOUT. Owner,
+    // 2026-11-14: "Begin fixing all bugs found and do obvious (my decision is not required) fixes".
+    assert.match(code(LESSON_SCREEN), /right=\{<AccuracyNote variant="about"/);
+    assert.match(G.MIKING_END_GUIDE.control.join('\n'), /ABOUT, beside the ⓘ you tapped/);
+    assert.doesNotMatch(textOf(G.mikingHubGuide() as unknown as Guide), /ABOUT, beside the ⓘ/);
   });
 });

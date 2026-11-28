@@ -88,7 +88,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
     {
       intro: {
         learning: 'Why more tension raises a drum’s pitch, with four times the tension giving one octave, and why a drum’s overtones never line up into a clean musical note.',
-        start: 'Tap ▶ STRIKE and read PITCH 233 Hz and 1ST OVERTONE 371 Hz. Then ride TENSION all the way left and strike again.',
+        start: 'Read PITCH 233 Hz and 1ST OVERTONE 371 Hz, then ride TENSION all the way left and watch both fall. Tap ▶ STRIKE to hear each.',
       },
       seeing: [
         'Each bar is a note the head makes, lowest on the left. The tall bar is the pitch you hear; the bars to its right are overtones.',
@@ -141,7 +141,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
     {
       intro: {
         learning: 'The four things a tuner listens for in every hit, pitch, overtones, sustain and pitch bend, and how a harder stroke or more damping changes them.',
-        start: 'Tap ▶ STRIKE at STRIKE 80 % and read BEND +35 ¢. Then ride STRIKE to 20 % and strike again: the glide almost disappears.',
+        start: 'At STRIKE 80 % read BEND +35 ¢. Ride STRIKE to 20 % and watch BEND shrink: the glide almost disappears. Tap ▶ STRIKE to hear it.',
       },
       seeing: [
         'One hit, left to right in real time. The white line in the strip below is how loud it is; a green mark shows where it has died away.',
@@ -170,7 +170,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
     {
       intro: {
         learning: 'Why turning one rod changes both the pitch near its lug and the evenness of the whole head, and how an uneven head makes a slow warble called beating.',
-        start: 'On ROD 1, set TURN to +⅛ turn and tap ▶ STRIKE. Read SPREAD and BEAT, then try +¼ turn and listen for a faster warble.',
+        start: 'On ROD 1, set TURN to +⅛ turn and read SPREAD and BEAT. Try +¼ turn and watch BEAT get faster. Tap ▶ STRIKE to hear the warble.',
       },
       seeing: [
         'You’re looking down on the drum. Each colored wedge is one rod’s pitch: blue low, yellow even, red high. The drum key sits on the rod you chose.',
@@ -300,15 +300,15 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
     {
       intro: {
         learning: 'Why a new head is seated and then brought up in an opposing star pattern, so the hoop stays level and the head rises evenly instead of wrinkling.',
-        start: 'Set LUGS to 8 and press ▶ RUN. Follow THIS ROD and NEXT as the pattern jumps across the drum, then ride STEP to walk it at your own pace.',
+        start: 'Set LUGS to 8 and press ▶ RUN. Follow THIS ROD and NEXT as the pattern jumps across the drum, then ride ORDER to walk it at your own pace.',
       },
       seeing: [
         'The drum shows the order to tighten the rods on a new head.',
-        'LUGS is how many rods the head has. STEP is where you are in the pattern; THIS ROD is the one to turn now, and NEXT the one after.',
+        'LUGS is how many rods the head has. ORDER is where you are in the pattern; THIS ROD is the one to turn now, and NEXT the one after.',
         'Below: cards on seating, on why you work across opposite rods, and the CAUTION card.',
       ],
       control: [
-        'STEP fader: walk the pattern by hand. ▶ RUN (or a tap on the display) plays it, one rod every 0.6 s; ■ PAUSE stops it.',
+        'ORDER fader: walk the pattern by hand. ▶ RUN (or a tap on the display) plays it, one rod every 0.6 s; ■ PAUSE stops it.',
         'LUGS: 6, 8 or 10 lugs — each has its own pattern.',
       ],
       changes: [
@@ -321,21 +321,21 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
       ],
       tryThis: [
         'On 8 LUGS press ▶ RUN: THIS ROD reads #1, NEXT #5 — then 3, 7, 2, 6, 4, 8.',
-        'Switch to 6 LUGS and ride STEP: three opposite pairs, 1 → 4 → 2 → 5 → 3 → 6.',
+        'Switch to 6 LUGS and ride ORDER: three opposite pairs, 1 → 4 → 2 → 5 → 3 → 6.',
       ],
     },
     // HEAR · Start from a known condition
     {
       intro: {
         learning: 'Why you start with every rod finger-tight and come up evenly: even rounds keep one pitch across the head, while random turns leave it warbling.',
-        start: 'On EVEN STEPS, ride STEP to 8 and tap ▶ STRIKE. Then flip the key to RANDOM, still at step 8, and strike again to hear the difference.',
+        start: 'On EVEN STEPS, ride TURNS to 8 and tap ▶ STRIKE. Then flip the key to RANDOM, still at 8 turns, and strike again to hear the difference.',
       },
       seeing: [
         'This is the floor tom head, brought up two ways: in even rounds or with big random turns. The wedges show each lug’s pitch.',
-        'APPROACH names the method and STEP how far you’ve gone. SPREAD is the cents between the highest and lowest lug; PITCH is the drum’s note.',
+        'APPROACH names the method and TURNS how far you’ve gone. SPREAD is the cents between the highest and lowest lug; PITCH is the drum’s note.',
       ],
       control: [
-        'STEP fader: from finger-tight (the known condition) through eight moves.',
+        'TURNS fader: from finger-tight (the known condition) through eight moves.',
         'EVEN STEPS / RANDOM key: switches the approach. ▶ STRIKE, or a tap on the display, plays the drum.',
       ],
       changes: [
@@ -347,7 +347,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
         'When a drum is a mess, back every rod off and start again rather than chase one lug.',
       ],
       tryThis: [
-        'On EVEN STEPS ride STEP to 8: SPREAD 0 ¢, PITCH 156 Hz. ▶ STRIKE: a clean note.',
+        'On EVEN STEPS ride TURNS to 8: SPREAD 0 ¢, PITCH 156 Hz. ▶ STRIKE: a clean note.',
         'Flip to RANDOM at step 8: SPREAD 880 ¢, PITCH 137 Hz. ▶ STRIKE: the warble.',
       ],
     },
@@ -365,7 +365,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
       control: [
         'INSPECT: walk the drum — HEAD, ROD 1 to ROD 10, EDGE and MAP.',
         'Tap a checklist line to flag that fault (tap again to unflag).',
-        '✓ REVEAL KEY shows the answers; ↺ NEW DRUM deals another drum.',
+        '✓ REVEAL KEY shows the answers once every spot has been looked at; ↺ NEW DRUM deals another drum.',
       ],
       changes: [
         'Each place you inspect says what is there. The map shows only when you look at it.',
@@ -411,14 +411,14 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
     {
       intro: {
         learning: 'The order of the tuning method, from seating the head to playing from the seat, and why you even out the head before you choose its pitch.',
-        start: 'Move STEP from SEAT through to OTHER and read each card. Stop at TAP and notice where the stick lands near each rod.',
+        start: 'Move STAGE from SEAT through to OTHER and read each card. Stop at TAP and notice where the stick lands near each rod.',
       },
       seeing: [
         'You’re looking at the floor tom at each stage of the tuning method: pulled apart for seating, the star order, a tap at each lug, then the stroke at the center.',
-        'STEP and DO name the stage you’re on. HEAD shows which head you’re working on: BATTER, until the last step switches to RESONANT.',
+        'STAGE and DO name the stage you’re on. HEAD shows which head you’re working on: BATTER, until the last stage switches to RESONANT.',
       ],
       control: [
-        'Move STEP through SEAT, FINGER, STAR, TAP, ADJUST, PLAY and OTHER, or tap it to open the list with one line on each stage. Read each stage’s card below the drawing as you go.',
+        'Move STAGE through SEAT, FINGER, STAR, TAP, ADJUST, PLAY and OTHER, or tap it to open the list with one line on each stage. Read each stage’s card below the drawing as you go.',
       ],
       changes: [
         'Each stage redraws the drum, and its card tells you what you do there.',
@@ -429,7 +429,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
         'Even first, the pitch you want second. An uneven head sounds two slightly different notes that warble, whatever pitch you aim for.',
       ],
       tryThis: [
-        'Move STEP to ADJUST. The map shows an uneven head; evening it out is the job of the next two steps, Tap near each lug and Tune the head.',
+        'Move STAGE to ADJUST. The map shows an uneven head; evening it out is the job of the next two steps, Tap near each lug and Tune the head.',
         'Read the CAUTION card: use a drum key and your fingers only, and stop when the pitch stops rising.',
       ],
     },
@@ -732,7 +732,10 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
     {
       intro: {
         learning: 'How tuning and damping work together to set a drum’s pitch, sustain and bend, and how a stated sound decides which way you move each one.',
-        start: 'Pick GOAL BEND with the rack tom. Lower BATTER a little, tap ▶ STRIKE, then tap ✓ CHECK and read which way it tells you to move.',
+        // The step opens on GOAL SHORT (ch5Types.tsx useState('short')), so the
+        // first instruction is the goal on screen (novice audit 2026-11-14:
+        // the intro said GOAL BEND while the page showed SHORT).
+        start: 'The step opens on GOAL SHORT: raise DAMPING, tap ✓ CHECK and read which way it tells you to move. Then tap GOAL, pick BEND with the rack tom and lower BATTER a little.',
       },
       seeing: [
         'You’re tuning toward a stated sound. The shaded zone shows where the green died-away mark has to land to meet the goal.',
@@ -991,7 +994,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
       ],
       tryThis: [
         'Before you tap the device card, say what a device can tell you about a drum and what only your ears can judge.',
-        'Before the drift card, say your answer first. Then read the explanation, right or wrong.',
+        'Before the drift card, say your answer first. Then read what the card says: the reason on a wrong pick, the explanation on the right one.',
       ],
     },
     // REVIEW
@@ -1025,7 +1028,7 @@ export const DRUM_SCREEN_GUIDES: Record<DrumChapterId, readonly ScreenGuide[]> =
 export const DRUM_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'How the seven chapters build one method: hear what a drum does, prepare it, even each head, balance both heads, tune each drum and the kit, then diagnose by ear.',
-    start: 'Tap a row under WHAT’S LEFT to open that chapter, or tap REVIEW ▾ to see the chapters marked ✓ DONE. ‹ PREV takes you back to the step you came from.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are. ‹ PREV takes you back to the step you came from.',
   },
   seeing: [
     'WHAT’S LEFT lists each chapter you haven’t completed, with what you still need to do in it. Once every chapter is complete, the title reads LAB COMPLETE.',

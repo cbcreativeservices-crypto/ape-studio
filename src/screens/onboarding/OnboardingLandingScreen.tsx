@@ -16,14 +16,14 @@
  *      clearly free — we are a learning app; a lesson is never hidden.
  *   3. LOOK AROUND — Glossary, Calculators, Labs, and TOPICS & CERTIFICATES
  *      (Explore Topics + Enroll merged, H2), then footer links: Skip to Home
- *      (H1, demoted from a big button), Watch again, Learn more.
+ *      (H1, demoted from a big button), Watch Intro Video Again, Learn more.
  *
  * Members never see the membership card (no marketing to members): it shows
  * only when upsell is allowed, the same rule as Home's corner button.
  *
  * Every choice LEAVES this page (it is shown once): it pops back to the
  * Academy menu and opens the destination from there, so Back from any of them
- * returns to the menu, never here. "Watch again" swaps this page for the video.
+ * returns to the menu, never here. "Watch Intro Video Again" swaps this page for the video.
  * Membership is the exception: the Paywall opens OVER this page and comes
  * back to it (owner 2026-10-09) — after a guest's sign-up too (H9).
  */
@@ -41,11 +41,9 @@ import type { GlossaryParams } from '../glossary/GlossaryScreen';
 import { GlassButton } from '../../components/GlassButton';
 import { AttractRing } from '../../features/onboarding/AttractCue';
 import { ResetIcon } from '../../components/ResetIcon';
-import { HomeIcon } from '../../components/HomeIcon';
-import { MethodGlyph } from '../../components/MethodIcon';
-import { LabsIcon } from '../../components/LabsIcon';
-import { MyTopicsIcon } from '../../components/MyTopicsIcon';
 import { BrandLogo } from '../../components/BrandLogo';
+import { ScreenCircleMenu } from '../../components/nav/CircleMenu';
+import { menuClearance } from '../../components/nav/circleMenuPlaces';
 import { colors, fonts } from '../../theme/tokens';
 import { COPY } from '../../lib/copy';
 import { useUpsellAllowed } from '../../features/commercial/useTier';
@@ -73,9 +71,6 @@ export function OnboardingLandingScreen({ onChoose }: { onChoose?: (choice: Onbo
   // Smallest phones (< 360 wide): no logo, the original centred title (owner 2026-10-10).
   const showLogo = width >= 360;
   const titleSize = showLogo ? Math.min(32, Math.floor((Math.min(width - 40, 560) - 41) / 9.5)) : 32;
-  // "TOPICS & CERTIFICATES" is the longest key in the browse grid: a notch
-  // smaller on narrow phones so it stays on one line beside LABS.
-  const topicsFont = width < 370 ? 12.5 : 14;
 
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
@@ -126,9 +121,11 @@ export function OnboardingLandingScreen({ onChoose }: { onChoose?: (choice: Onbo
   };
 
   return (
+    <View style={styles.root}>
     <ScrollView
       style={styles.root}
-      contentContainerStyle={[styles.content, { paddingTop: insets.top + 24, paddingBottom: insets.bottom + 24 }]}
+      // menuClearance: the footer links sit above the MENU button (owner 2026-11-22).
+      contentContainerStyle={[styles.content, { paddingTop: insets.top + 24, paddingBottom: menuClearance(insets.bottom) + 12 }]}
     >
       <View style={styles.column}>
         <View style={styles.header}>
@@ -195,38 +192,13 @@ export function OnboardingLandingScreen({ onChoose }: { onChoose?: (choice: Onbo
           </LinearGradient>
         </Pressable>
 
-        {/* 3 · LOOK AROUND */}
-        <Text style={[styles.eyebrow, styles.sectionEyebrow]}>OR JUMP RIGHT IN</Text>
-        <View style={styles.gridRow}>
-          <View style={styles.half}>
-            <GlassButton label="GLOSSARY" tint="steel" height={48} fontSize={14} icon={<MethodGlyph method="glossary" size={22} />} onPress={() => choose('glossary')} />
-          </View>
-          <View style={styles.half}>
-            <GlassButton label="CALCULATORS" tint="steel" height={48} fontSize={14} icon={<Text style={styles.sigma}>Σ</Text>} onPress={() => choose('calculators')} />
-          </View>
-        </View>
-        <View style={styles.gridRow}>
-          {/* LABS is short; TOPICS & CERTIFICATES takes the rest of the row. */}
-          <View style={styles.narrow}>
-            <GlassButton label="LABS" tint="steel" height={48} fontSize={14} icon={<LabsIcon color={colors.amber} size={18} />} onPress={() => choose('labs')} />
-          </View>
-          <View style={styles.wide}>
-            <GlassButton label={COPY.topicsAndCertificates} tint="steel" height={48} fontSize={topicsFont} icon={<MyTopicsIcon size={20} />} onPress={() => choose('topics')} />
-          </View>
-        </View>
+        {/* 3 · LOOK AROUND — the MENU button (bottom left) opens the half-screen
+            circle to every place in the Academy (owner 2026-11-22: "instead of the
+            jump right in buttons, lets now put the MENU button and have it open the
+            half screen menu circle"). The four jump-in keys are gone. */}
 
         <View style={styles.links}>
-          {/* H1: the "do nothing" choice is a link, not a primary button. */}
-          <Pressable
-            style={styles.link}
-            onPress={() => choose('home')}
-            hitSlop={10}
-            accessibilityRole="button"
-            accessibilityLabel="Skip to the Home screen"
-          >
-            <HomeIcon filled size={15} />
-            <Text style={styles.linkText}>{COPY.skipToHome}</Text>
-          </Pressable>
+          {/* Skip to Home removed (owner 2026-11-22): MENU goes Home too. */}
           <Pressable
             style={styles.link}
             onPress={() => choose('watchAgain')}
@@ -235,7 +207,7 @@ export function OnboardingLandingScreen({ onChoose }: { onChoose?: (choice: Onbo
             accessibilityLabel="Watch the intro video again"
           >
             <ResetIcon color={REPLAY_GREEN} size={15} />
-            <Text style={[styles.linkText, styles.replayText]}>Watch again</Text>
+            <Text style={[styles.linkText, styles.replayText]}>Watch Intro Video Again</Text>
           </Pressable>
           <Pressable
             style={styles.link}
@@ -249,6 +221,8 @@ export function OnboardingLandingScreen({ onChoose }: { onChoose?: (choice: Onbo
         </View>
       </View>
     </ScrollView>
+    <ScreenCircleMenu here={null} firstRun />
+    </View>
   );
 }
 
@@ -358,6 +332,4 @@ const styles = StyleSheet.create({
   link: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 6 },
   linkText: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.6, color: colors.amberLabel },
   replayText: { color: REPLAY_GREEN },
-  // The calculators' purple sigma, as on "The Academy at a glance".
-  sigma: { fontSize: 17, lineHeight: 19, fontWeight: '700', color: colors.purple },
 });

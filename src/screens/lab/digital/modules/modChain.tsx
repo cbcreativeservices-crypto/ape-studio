@@ -24,8 +24,10 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import type { DigitalModuleProps } from '../DigitalModuleScreen';
 import { Badge, ModeChips, MythReality, PanelCard, ReadoutGrid, dstyles, type ViewMode } from '../bits';
-import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
+import { VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
+import { GoalCheck } from '../../meter/moduleGoal';
 import { RackUnit } from '../../rack/RackUnit';
+import { CollapsibleSection } from '../../LabShell';
 import type { DockParam } from '../../rack/rackTypes';
 import { requireVizChain, type VizChainModule } from '../skiaGate';
 import type { AdcBlockKey } from '../vizChain';
@@ -130,6 +132,10 @@ const ADC_CHECK: CheckSpec = {
     'No clipping — rounded peaks are normal',
   ],
   correctIdx: 1,
+  why: {
+    0: 'Digital clipping is flat and sheared, and the meter would hit 0 dBFS. Here the peaks are rounded.',
+    2: 'Rounded tops mean something saturated. A healthy wave keeps its true shape.',
+  },
   reveal:
     'Rounded (not flat-topped) peaks with the digital meter never reaching 0 dBFS is the analog stage saturating — a separate event, earlier in the chain, at the preamp. Digital full-scale clipping cuts hard, flat tops exactly at 0 dBFS. Either way, the flattened information is gone before it is ever stored.',
   wrongHint: 'Look at the SHAPE of the peaks and where the digital meter topped out.',
@@ -171,15 +177,22 @@ export function AdcModule({ width, focused, help }: DigitalModuleProps) {
       stage={{
         fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'M', // gain scene pins; the chain + S&H stations read in the well
-        badge: 'ILLUSTRATIVE MODEL — level axis compressed so the noise floor stays visible; noise drawn exaggerated',
+        // S3's plain model note (phase 3, owner decision 3), not an all-caps badge.
+        modelNote: 'A model: the level axis is squeezed so the noise floor shows; noise is drawn larger.',
         onGuide: () => help('gain_staging'),
         bezel: [
           { k: 'PEAK', v: r.digitalOver ? '0.0 OVER' : `${r.recPeakDb.toFixed(1)} dBFS`, helpKey: 'gain_staging' },
-          { k: 'SNR', v: `${r.snrDb.toFixed(0)} dB`, helpKey: 'gain_staging' },
-          { k: 'HEADROOM', v: r.digitalOver ? 'none' : `${r.headroomDb.toFixed(1)} dB`, helpKey: 'gain_staging' },
+          { k: 'SNR', v: `${r.snrDb.toFixed(0)} dB`, helpKey: 'gain_staging', caption: 'over hiss' },
+          { k: 'HEADROOM', v: r.digitalOver ? 'none' : `${r.headroomDb.toFixed(1)} dB`, helpKey: 'gain_staging', caption: 'until clip' },
           {
+            // DG-02 (owner 2026-11-15: "build waves 1 thru 3", D62): CLIP on the value line and WHERE in
+            // words on the sub line (was the codes A+D CLIP / AN. CLIP), so ZONE keeps its key at 390.
             k: 'ZONE',
-            v: r.analogClip && r.digitalOver ? 'A+D CLIP' : r.analogClip ? 'AN. CLIP' : r.zone,
+            v: r.analogClip ? 'CLIP' : r.zone,
+            // Checker fix: the longer sub (analog plus digital) was cut with an ellipsis at 390 (95 px in a 67 px cell);
+            // 'both stages' (11 characters) fits, and the card says which two stages.
+            sub: r.analogClip && r.digitalOver ? 'both stages' : r.analogClip ? 'analog' : undefined,
+            vA11y: r.analogClip && r.digitalOver ? 'clipping, analog and digital' : r.analogClip ? 'clipping, analog' : undefined,
             tint: r.analogClip || r.digitalOver ? '#ff6b5e' : r.zone === 'RIGHT' ? '#5bff85' : undefined,
             helpKey: 'gain_staging',
           },
@@ -213,54 +226,58 @@ export function AdcModule({ width, focused, help }: DigitalModuleProps) {
                 : 'TOO HIGH: peaks are hot. A transient louder than expected will clip — in this lab’s model analog first (rounded), then digital full scale (flat-topped).'}
         </Text>
 
-        {/* ── The conversion chain ── */}
-        <PanelCard>
-          <Text style={dstyles.eyebrow}>THE CONVERSION CHAIN</Text>
-          <Text style={dstyles.body}>
-            Every digital recording rides this train once, left to right. Tap any block to open it up
-            — X-RAY adds what is happening along the path itself.
-          </Text>
-          <ModeChips mode={mode} onMode={setMode} />
-          {viz ? (
-            <ChainViz viz={viz} width={width} mode={mode} focused={focused} selected={selected} onSelect={(k) => setSelected(selected === k ? null : k)} onHelp={() => help('adc_chain')} />
-          ) : (
-            <VizUnavailableCard />
-          )}
-          <Badge text="ILLUSTRATIVE MODEL — block diagram, not a schematic; the waveform glyph shows the SIGNAL'S FORM at each point" />
-          {info ? (
-            <View style={styles.infoCard}>
-              <View style={styles.infoHead}>
-                <Text style={styles.infoTitle}>{info.title}</Text>
-                <Pressable onPress={() => help('adc_chain')} hitSlop={8} accessibilityRole="button" accessibilityLabel={`${info.title} — chain guide`}>
-                  <Text style={styles.infoGuide}>ⓘ GUIDE</Text>
-                </Pressable>
+        {/* DG-01 (owner 2026-11-15: "build waves 1 thru 3", D62): the page opens on gain staging;
+            the conversion chain and sample-and-hold fold under PART 2 (nothing removed). */}
+        <CollapsibleSection title="PART 2 · THE CONVERSION CHAIN AND SAMPLE & HOLD" startOpen={false}>
+          {/* ── The conversion chain ── */}
+          <PanelCard>
+            <Text style={dstyles.eyebrow}>THE CONVERSION CHAIN</Text>
+            <Text style={dstyles.body}>
+              Every digital recording rides this train once, left to right. Tap any block to open it up
+              — X-RAY adds what is happening along the path itself.
+            </Text>
+            <ModeChips mode={mode} onMode={setMode} />
+            {viz ? (
+              <ChainViz viz={viz} width={width} mode={mode} focused={focused} selected={selected} onSelect={(k) => setSelected(selected === k ? null : k)} onHelp={() => help('adc_chain')} />
+            ) : (
+              <VizUnavailableCard />
+            )}
+            <Badge text="A model: a block diagram, not a schematic; the small wave shows the signal’s form at each point." />
+            {info ? (
+              <View style={styles.infoCard}>
+                <View style={styles.infoHead}>
+                  <Text style={styles.infoTitle}>{info.title}</Text>
+                  <Pressable onPress={() => help('adc_chain')} hitSlop={8} accessibilityRole="button" accessibilityLabel={`${info.title} — chain guide`}>
+                    <Text style={styles.infoGuide}>ⓘ GUIDE</Text>
+                  </Pressable>
+                </View>
+                <Text style={dstyles.body}>{info.purpose}</Text>
+                <Text style={styles.infoIo}>{info.io}</Text>
+                <Text style={styles.infoFail}>IF IT FAILS: {info.failure}</Text>
               </View>
-              <Text style={dstyles.body}>{info.purpose}</Text>
-              <Text style={styles.infoIo}>{info.io}</Text>
-              <Text style={styles.infoFail}>IF IT FAILS: {info.failure}</Text>
-            </View>
-          ) : (
-            <Text style={dstyles.caption}>Tap a block for its purpose, its input/output, and what its failure sounds like. Long-press any block for the full chain guide.</Text>
-          )}
-        </PanelCard>
+            ) : (
+              <Text style={dstyles.caption}>Tap a block for its purpose, its input/output, and what its failure sounds like. Long-press any block for the full chain guide.</Text>
+            )}
+          </PanelCard>
 
-        {/* ── Sample-and-hold ── */}
-        <PanelCard>
-          <Text style={dstyles.eyebrow}>SAMPLE & HOLD — WATCH ONE CELL WORK</Text>
-          {viz ? <ShViz viz={viz} width={width} focused={focused} /> : <VizUnavailableCard />}
-          <Badge text="CONCEPTUAL MODEL — SLOWED ~1000×; a real converter does this tens of thousands of times per second" />
-          <Pressable onPress={() => help('sample_hold')} hitSlop={6} accessibilityRole="button" accessibilityLabel="Sample and hold — guide">
-            <Text style={styles.infoGuide}>ⓘ WHAT AM I LOOKING AT?</Text>
-          </Pressable>
-          <Text style={dstyles.body}>
-            The switch closes for an instant at each clock tick, the capacitor freezes that voltage
-            (the flat amber steps) while the quantizer decides, and the finished code is released
-            (green). This staircase is a CONVERTER operation — it is NOT what a DAC&apos;s analog
-            output looks like. Module 7 shows why the reconstructed output is smooth.
-          </Text>
-        </PanelCard>
+          {/* ── Sample-and-hold ── */}
+          <PanelCard>
+            <Text style={dstyles.eyebrow}>SAMPLE & HOLD — WATCH ONE CELL WORK</Text>
+            {viz ? <ShViz viz={viz} width={width} focused={focused} /> : <VizUnavailableCard />}
+            <Badge text="A model slowed about 1000×; a real converter does this tens of thousands of times a second." />
+            <Pressable onPress={() => help('sample_hold')} hitSlop={6} accessibilityRole="button" accessibilityLabel="Sample and hold — guide">
+              <Text style={styles.infoGuide}>ⓘ WHAT AM I LOOKING AT?</Text>
+            </Pressable>
+            <Text style={dstyles.body}>
+              The switch closes for an instant at each clock tick, the capacitor freezes that voltage
+              (the flat amber steps) while the quantizer decides, and the finished code is released
+              (green). This staircase is a CONVERTER operation — it is NOT what a DAC&apos;s analog
+              output looks like. Module 7 shows why the reconstructed output is smooth.
+            </Text>
+          </PanelCard>
+        </CollapsibleSection>
 
-        <CheckQuestion spec={ADC_CHECK} />
+        <GoalCheck spec={ADC_CHECK} />
         <LessonRow onPress={() => help()} />
       </View>
     </RackUnit>
@@ -319,10 +336,14 @@ const FLOAT_CHECK: CheckSpec = {
     'Your float master bus peaks at +4 dBFS. You render straight to a 24-bit fixed file WITHOUT trimming. What is in the file?',
   options: [
     'The intact mix — the file remembers it was float',
-    'A mix clipped flat at 0 dBFS — everything above full scale is sheared off',
+    'A mix clipped flat at 0 dBFS — the excess is sheared off',
     'The mix, automatically turned down to fit',
   ],
   correctIdx: 1,
+  why: {
+    0: 'A fixed-point file cannot store values above full scale. Compare the two panels.',
+    2: 'Nothing turns it down unless you do. That is what TRIM is for.',
+  },
   reveal:
     'Fixed point has no numbers above full scale, so everything over 0 dBFS is sheared flat at the render. The float headroom was real INSIDE the mix path — but it has to be trimmed below 0 dBFS BEFORE meeting any fixed-point stage (renders, converters, most outputs), or it clips there.',
   wrongHint: 'Fixed point simply has no way to write a number bigger than full scale.',
@@ -397,10 +418,11 @@ export function ProcessingModule({ width, focused, help }: DigitalModuleProps) {
       stage={{
         fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'L', // the two-fates bus is the star
-        badge:
+        // S3's plain model note (phase 3, owner decision 3), not an all-caps badge.
+        modelNote:
           stageView === 'float'
-            ? 'SIMPLIFIED — decimal decades for teaching, NOT the real IEEE-754 binary fields'
-            : 'ILLUSTRATIVE MODEL — one drawn bus; the fixed path clamps at full scale exactly as a 24-bit render does',
+            ? 'Simplified: decimal decades for teaching, not the real IEEE-754 binary fields.'
+            : 'A model of one bus; the fixed path clamps at full scale, as a 24-bit render does.',
         onGuide: () => help(stageView === 'float' ? 'float_vs_int' : 'gain_above_zero'),
         bezel:
           stageView === 'float'
@@ -434,7 +456,7 @@ export function ProcessingModule({ width, focused, help }: DigitalModuleProps) {
       <View style={{ gap: 12 }}>
         {/* ── Gain above zero (the star — its bus is pinned above) ── */}
         <Text style={dstyles.body}>
-          The same bus, two fates. Ride the GAIN fader, then hit TRIM and watch what each path
+          The same bus, two fates. Slide the GAIN fader, then hit TRIM and watch what each path
           gives back.
         </Text>
         <ReadoutGrid
@@ -454,42 +476,50 @@ export function ProcessingModule({ width, focused, help }: DigitalModuleProps) {
           clip only makes a quieter clipped wave. And none of this restores what the ADC clipped:
           float preserves headroom, it never resurrects information.
         </Text>
-        <CheckQuestion spec={FLOAT_CHECK} />
+        <GoalCheck spec={FLOAT_CHECK} />
 
-        {/* ── INT vs FLOAT ── */}
-        <PanelCard>
-          <Text style={dstyles.eyebrow}>INTEGER vs FLOATING POINT</Text>
-          <Text style={dstyles.body}>
-            Fixed-point formats (16/24/32-bit int) end HARD at full scale — there is simply no
-            number above 0 dBFS. Floating point trades some fine precision for an enormous range;
-            the whole strip below barely dents it.
-          </Text>
-          {viz ? <viz.IntFloatRangeView width={width} /> : <VizUnavailableCard />}
-          <Badge text="CONCEPTUAL SCALE — ranges shown in dB; the float bar continues far beyond both edges (~±770 dB for 32-bit float)" />
-          <Pressable onPress={() => help('float_vs_int')} hitSlop={6} accessibilityRole="button" accessibilityLabel="Integer versus float — guide">
-            <Text style={styles.infoGuide}>ⓘ WHY TWO NUMBER SYSTEMS?</Text>
-          </Pressable>
-        </PanelCard>
+        {/* DG-01 (owner 2026-11-15: "build waves 1 thru 3", D62): the page opens on the two fates of
+            one bus; the integer/float range and the float anatomy fold under PART 2 (the VALUE key
+            still swaps the display to the float picture). */}
+        <CollapsibleSection title="PART 2 · INTEGER vs FLOAT, AND HOW A FLOAT NUMBER WORKS" startOpen={false}>
+          {/* ── INT vs FLOAT ── */}
+          <PanelCard>
+            <Text style={dstyles.eyebrow}>INTEGER vs FLOATING POINT</Text>
+            <Text style={dstyles.body}>
+              Fixed-point formats (16/24/32-bit int) end HARD at full scale — there is simply no
+              number above 0 dBFS. Floating point trades some fine precision for an enormous range;
+              the whole strip below barely dents it.
+            </Text>
+            {viz ? <viz.IntFloatRangeView width={width} /> : <VizUnavailableCard />}
+            <Badge text="A conceptual scale in dB; the float bar runs far past both edges (about ±770 dB for 32-bit float)." />
+            <Pressable onPress={() => help('float_vs_int')} hitSlop={6} accessibilityRole="button" accessibilityLabel="Integer versus float — guide">
+              <Text style={styles.infoGuide}>ⓘ WHY TWO NUMBER SYSTEMS?</Text>
+            </Pressable>
+          </PanelCard>
 
-        {/* ── Float visualizer ── */}
-        <PanelCard>
-          <Text style={dstyles.eyebrow}>HOW A FLOAT NUMBER WORKS</Text>
-          {viz ? <viz.FloatView width={width} value01={value01} /> : <VizUnavailableCard />}
-          <Badge text="SIMPLIFIED — decimal decades for teaching, NOT the real IEEE-754 binary fields (1 sign · 8 exponent · 23 mantissa bits)" />
-          <Text style={dstyles.caption}>
-            Ride the VALUE fader in the dock through zero and watch the SIGN flip; sweep the magnitude and the EXPONENT steps decade to decade while the MANTISSA slides smoothly between steps. The exponent is why float can represent both whispers and explosions: the ruler itself rescales.
-          </Text>
-        </PanelCard>
+          {/* ── Float visualizer ── */}
+          <PanelCard>
+            <Text style={dstyles.eyebrow}>HOW A FLOAT NUMBER WORKS</Text>
+            {viz ? <viz.FloatView width={width} value01={value01} /> : <VizUnavailableCard />}
+            <Badge text="Simplified: decimal decades for teaching, not the real IEEE-754 fields (1 sign, 8 exponent and 23 mantissa bits)." />
+            <Text style={dstyles.caption}>
+              Slide the VALUE fader in the dock through zero and watch the SIGN flip; sweep the magnitude and the EXPONENT steps decade to decade while the MANTISSA slides smoothly between steps. The exponent is why float can represent both whispers and explosions: the ruler itself rescales.
+            </Text>
+          </PanelCard>
+        </CollapsibleSection>
 
         {/* ── Charter reminders ── */}
-        <MythReality
-          myth="Recording in 32-bit float means nothing can ever clip."
-          reality="Float gives enormous headroom INSIDE the digital path — after conversion. The mic, the preamp and the ADC's analog input still clip exactly as they always did; a 32-bit float file will faithfully store the already-clipped waveform they hand it. (Dual-converter '32-bit float' recorders reduce input clipping with two ADCs, not with the file format.)"
-        />
-        <MythReality
-          myth="A clipped recording can be fixed by converting the file to floating point."
-          reality="Conversion changes the container, not the contents. The flattened peaks carry no information about what the waveform used to be — no format, and no gain move, can restore what was destroyed before or during conversion."
-        />
+        {/* MYTH vs REALITY starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal). */}
+        <CollapsibleSection title="MYTH vs REALITY" startOpen={false}>
+          <MythReality
+            myth="Recording in 32-bit float means nothing can ever clip."
+            reality="Float gives enormous headroom INSIDE the digital path — after conversion. The mic, the preamp and the ADC's analog input still clip exactly as they always did; a 32-bit float file will faithfully store the already-clipped waveform they hand it. (Dual-converter '32-bit float' recorders reduce input clipping with two ADCs, not with the file format.)"
+          />
+          <MythReality
+            myth="A clipped recording can be fixed by converting the file to floating point."
+            reality="Conversion changes the container, not the contents. The flattened peaks carry no information about what the waveform used to be — no format, and no gain move, can restore what was destroyed before or during conversion."
+          />
+        </CollapsibleSection>
         <LessonRow onPress={() => help()} />
       </View>
     </RackUnit>

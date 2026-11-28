@@ -255,7 +255,7 @@ const scenarios: MikingScenario[] = [
     prompt: 'A seated singer-guitarist cannot give the mics 3:1 spacing. Is the two-mic setup then wrong?',
     options: ['No — accept some bleed, aim the nulls, or use one mic', 'Yes — two mics need 3:1, or they cannot be used at all', 'Yes — move the guitar mic a meter away to get it'],
     correct: 'No — accept some bleed, aim the nulls, or use one mic',
-    explain: '3:1 is a starting design for reducing bleed (the same sound in both mics), not a pass mark. With a performer this close, accept the bleed as part of the performance, aim each mic’s rejection at the other source — or choose one coherent mic.',
+    explain: '3:1 is a starting design for reducing bleed (the same sound in both mics), not a pass/fail rule. With a performer this close, accept the bleed as part of the performance, aim each mic’s rejection at the other source — or choose one coherent mic.',
     why: {
       'Yes — two mics need 3:1, or they cannot be used at all': 'Many fine recordings break 3:1; it is a guideline, and the mono check decides.',
       'Yes — move the guitar mic a meter away to get it': 'A meter out the guitar mic hears more room and more voice — the opposite of the aim.',
@@ -505,7 +505,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: where is the raw sound of a voice made?', options: ['In the chest', 'At the vocal folds in the throat', 'At the lips'], after: 'Now STEP through (or PLAY ONCE) and watch the breath, the folds, the throat and the mouth.' },
+  sound: { prompt: 'Before you step through: where is the raw sound of a voice made?', options: ['In the chest', 'At the vocal folds in the throat', 'At the lips'], after: 'Now go EVENT by EVENT (or PLAY ONCE) and watch the breath, the folds, the throat and the mouth.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: the vocal mic is 15 cm from the lips, the guitar mic 22 cm from the guitar. Do they meet 3:1?', options: ['Yes, easily', 'No — they are too close together', 'It depends on the patterns'], after: 'Rest a mic in two zones; the STARTING SETUPS card shows how far apart the pair is.' },
   context: { prompt: 'The guitar is just below the vocal mic. Where will a supercardioid aimed at the mouth reject it best?', options: ['With its front tilted up, the guitar off its rear', 'Level, the guitar at its side', 'Tilted down toward the guitar'], after: 'Now tilt or turn the mic with AIM (or change PATTERN) and watch REJECTION.' },

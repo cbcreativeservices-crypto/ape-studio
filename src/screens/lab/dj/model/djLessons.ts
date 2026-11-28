@@ -83,3 +83,13 @@ export function twoCopiesResult(b: Booth, oneRel: number | null, r: BoothRender 
   const delta = now - oneRel;
   return { delta, met: fullBothSides(b) && delta >= 5.5 && delta <= 6.5 };
 }
+
+/**
+ * DJ-13 (owner 2026-11-15: "build waves 1 thru 3", D62 adoption plan;
+ * checker fix): the screen-6 gain target is shown on the AVERAGE readout,
+ * the number the goal checks. A first try drew it as a band on the LED
+ * columns, but those are PEAK meters (djRender.ts), so a learner matching
+ * the column to the band set the gain far too low. On target = the goal's
+ * own test (levelSet: average in AVG_BAND, peaks under the ceiling).
+ */
+export const avgOnTarget = (l: ChanLevels): boolean => levelSet(l);

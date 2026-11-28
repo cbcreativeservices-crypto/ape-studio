@@ -244,7 +244,11 @@ describe('every workflow template offers only physically right imports', () => {
     'tpl-gain-staging': [], // was five: mic output / gains → TARGET LEVEL, HEADROOM, PREAMP MAX INPUT
     'tpl-cv-distribution': [], // was SYSTEM LOAD → AMPLIFIER RATED POWER and → TAP PER ADDED SPEAKER
     'tpl-time-align': [],
-    'tpl-treatment-plan': [], // was ABSORPTION NEEDED / TO ADD → PANEL AREA (EACH)  (bug #28)
+    // was ABSORPTION NEEDED / TO ADD → PANEL AREA (EACH)  (bug #28).
+    // owner 2026-11-25 (round 2, his go to add the RT60-now step): the room's
+    // RT60 from step 1 into the panels step's CURRENT RT60 — the same quantity,
+    // the same unit: the room's RT60 in seconds, as it decays now.
+    'tpl-treatment-plan': ['RT60 (STEP 1) → CURRENT RT60 (STEP 3)'],
     'tpl-monitor-latency': [], // was BUFFER LATENCY → EXTRA PROCESSING
     'tpl-session-storage': [], // was SESSION RATE PER MINUTE → STORAGE AVAILABLE
     'tpl-speaker-limiter': [],

@@ -34,7 +34,21 @@ import { useGuestWording } from '../../features/commercial/useTier';
 // questions was ~12.6 s of waiting on a finished answer. Reduce Motion stays 0.
 const ADVANCE_MS = 300;
 const STEM = 'How would you feel about ';
-const MILESTONE: Record<number, string> = { 6: 'A quarter done', 13: 'Halfway — 14 to go', 20: 'Last seven' };
+// Built from QUESTION_COUNT (Comp A text review 2026-11-14, Pattern 13): "Halfway — 14 to go"
+// was fixed text and would go wrong if the question count changed. For 28 questions the keys
+// stay 6 / 13 / 20 and the words stay the same; "to go" counts the questions after this one.
+const HALF = Math.floor(QUESTION_COUNT / 2);
+// Owner decision 2026-11-14 ("Remove them"): progress never shows "N of total"; it says what is left.
+// The title says "Question 7"; this line says what is left (the bar shows the rest).
+function toGoText(index: number): string {
+  const left = QUESTION_COUNT - (index + 1);
+  return left === 0 ? 'Last question' : `${left} to go`;
+}
+const MILESTONE: Record<number, string> = {
+  [Math.round(QUESTION_COUNT / 4) - 1]: 'A quarter done',
+  [HALF - 1]: `Halfway — ${QUESTION_COUNT - HALF} to go`,
+  [QUESTION_COUNT - 8]: 'Last seven',
+};
 
 export function CareerFinderQuizScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -98,7 +112,7 @@ export function CareerFinderQuizScreen() {
     setIndex(idx);
     setQuestionIndex(idx);
     scrollRef.current?.scrollTo({ y: 0, animated: animationsAllowed() });
-    AccessibilityInfo.announceForAccessibility?.(`Question ${idx + 1} of ${QUESTION_COUNT}`);
+    AccessibilityInfo.announceForAccessibility?.(`Question ${idx + 1}, ${toGoText(idx)}`);
   }, [fade]);
 
   // ONE finish (bug hunt 2026-09-30). Answering Q28 arms a 450 ms auto-finish,
@@ -140,9 +154,9 @@ export function CareerFinderQuizScreen() {
   return (
     <FinderShell
       kicker="AUDIO CAREER FINDER"
-      title={`Question ${index + 1} of ${QUESTION_COUNT}`}
+      title={`Question ${index + 1}`}
       onBack={() => safeGoBack(navigation)}
-      backLabel={saving ? (guest ? 'Leave the questions. Your answers are kept until you close the app.' : 'Leave the questions. Your answers are saved.') : 'Leave the questions. Your answers could not be saved on this phone.'}
+      backLabel={saving ? (guest ? 'Leave the questions. Your answers are kept until you close the app.' : 'Leave the questions. Your answers are saved.') : 'Leave the questions. Your answers could not be saved on this device.'}
       scrollRef={scrollRef}
       footer={
         <>
@@ -156,8 +170,8 @@ export function CareerFinderQuizScreen() {
         </>
       }
     >
-      <ProgressBar value={(index + (answeredThis ? 1 : 0)) / QUESTION_COUNT} label={`Question ${index + 1} of ${QUESTION_COUNT}`} />
-      {milestone ? <Text style={styles.milestone}>{milestone}</Text> : null}
+      <ProgressBar value={(index + (answeredThis ? 1 : 0)) / QUESTION_COUNT} label={`Question ${index + 1}, ${toGoText(index)}`} />
+      <Text style={styles.milestone}>{milestone ?? toGoText(index)}</Text>
       {q ? (
         <Animated.View style={{ opacity: fade, gap: 12 }}>
           <Text style={styles.question} accessibilityRole="header">
@@ -188,7 +202,7 @@ export function CareerFinderQuizScreen() {
             })}
           </View>
           {index === 0 || (answeredThis && current === null) ? (
-            <Text style={styles.note}>“I don’t know enough about this” is never counted as dislike. It simply marks an activity you have not met yet.</Text>
+            <Text style={styles.note}>“I don’t know enough about this” is never counted as dislike. It only marks an activity you haven’t tried yet.</Text>
           ) : null}
         </Animated.View>
       ) : null}

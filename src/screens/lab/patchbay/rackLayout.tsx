@@ -106,8 +106,8 @@ export function pairBezel(state: PairState, sourceLabel: string, destLabel: stri
   return [
     { k: 'TOP', v: state.topPlugged ? 'CORD' : 'EMPTY', tint: state.topPlugged ? PB.cord : colors.textSub },
     { k: 'BOTTOM', v: state.bottomPlugged ? 'CORD' : 'EMPTY', tint: state.bottomPlugged ? PB.cord : colors.textSub },
-    { k: 'NORMAL', v: normal, tint: !flow.hasNormal ? colors.textSub : flow.normalActive ? PB.flow : hazard ? PB.hazard : PB.break },
-    { k: 'DEST HEARS', v: dest, tint: dest === 'CLASH' ? PB.hazard : dest === 'NOTHING' ? (hazard ? PB.hazard : colors.textSub) : dest === 'PATCH' ? PB.cord : dest === 'IDLE' ? colors.textSub : PB.flow, flex: 1.2 },
+    { k: 'NORMAL', v: normal, tint: !flow.hasNormal ? colors.textSub : flow.normalActive ? PB.flow : hazard ? PB.hazard : PB.break, caption: 'inside link' },
+    { k: 'DEST HEARS', v: dest, tint: dest === 'CLASH' ? PB.hazard : dest === 'NOTHING' ? (hazard ? PB.hazard : colors.textSub) : dest === 'PATCH' ? PB.cord : dest === 'IDLE' ? colors.textSub : PB.flow, flex: 1.2, caption: 'input gets' },
   ];
 }
 
@@ -131,7 +131,7 @@ export function cutawayBezel(insertion: number): BezelItem[] {
   return [
     { k: 'INSERTION', v: `${Math.round(insertion * 100)}%`, tint: colors.textPrimary },
     { k: 'CONTACTS', v: open ? 'OPEN' : 'TOUCHING', tint: open ? PB.break : PB.flow, flex: 1.2 },
-    { k: 'NORMAL', v: open ? 'BROKEN' : 'INTACT', tint: open ? PB.break : PB.flow },
+    { k: 'NORMAL', v: open ? 'BROKEN' : 'INTACT', tint: open ? PB.break : PB.flow, caption: 'inside link' },
   ];
 }
 

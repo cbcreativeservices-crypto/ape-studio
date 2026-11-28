@@ -111,9 +111,11 @@ describe('2. each guide quotes its screen’s real names', () => {
   ].join('\n');
   const END_SRC = [code('src/screens/lab/kit/LabEndScreen.tsx'), code('src/screens/lab/kit/labEnd.ts'), code('src/components/LabUnderstandingCheck.tsx')].join('\n');
   const NAMES: Record<string, [string, string[]]> = {
-    types: [SRC, ['TAP A MICROPHONE', 'COMPARE', 'COMPARING', 'Moving-Coil Dynamic', 'Condenser', 'Shotgun / Interference-Tube', 'Contact', 'TRANSDUCER PRINCIPLE', 'DESIGN / FORM FACTOR', 'WHAT IT IS', 'MAJOR CHARACTERISTICS', 'TYPICAL APPLICATIONS', 'IMPORTANT LIMITATION', 'NOT equivalent categories', '⤢', '‹']],
-    chars: [SRC, ['Polar pattern', 'Environmental suitability', 'Sensitivity', 'Maximum SPL', 'Self-noise', 'Signal-to-noise ratio', 'Equivalent noise level', 'Weight', 'Flat is not synonymous with better.']],
-    patterns: [SRC, ['Omni', 'Cardioid', 'Supercardioid', 'Hypercardioid', 'Figure-8', 'Singer · wanted', 'Drum kit', 'Audience', 'Wedge monitor', 'Reflective wall', 'HVAC vent', 'TOP VIEW · DIRECTIONS ONLY, NOT TO SCALE', 'WHY DID YOU CHOOSE', '✓ picked up', '△ partial', '⚠ picked up', '⚠ missed', '✓ rejected', 'Need equal pickup in all directions']],
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item MS-04): the grid is
+    // split into HOW IT WORKS INSIDE / SHAPE OR JOB, which the card's class line now reads too.
+    types: [SRC, ['COMPARE', 'COMPARING', 'Moving-Coil Dynamic', 'Condenser', 'Shotgun / Interference-Tube', 'Contact', 'HOW IT WORKS INSIDE', 'SHAPE OR JOB', 'WHAT IT IS', 'MAJOR CHARACTERISTICS', 'TYPICAL APPLICATIONS', 'IMPORTANT LIMITATION', 'not equivalent categories', '⤢', '‹']],
+    chars: [SRC, [/* MS-01 */ 'HOW IT HEARS', 'LEVEL AND NOISE', 'POWER AND CABLE', 'SIZE AND BUILD', 'Polar pattern', 'Environmental suitability', 'Sensitivity', 'Maximum SPL', 'Self-noise', 'Signal-to-noise ratio', 'Equivalent noise level', 'Weight', 'Flat is not synonymous with better.']],
+    patterns: [SRC, ['Omni', 'Cardioid', 'Supercardioid', 'Hypercardioid', 'Figure-8', 'Singer · wanted', 'Drum kit', 'Audience', 'Wedge monitor', 'Reflective wall', 'HVAC vent', /* owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item SH-38) */ 'Top view · directions only, not to scale', 'WHY DID YOU CHOOSE', '✓ picked up', '△ partial', '⚠ picked up', '⚠ missed', '✓ rejected', 'Need equal pickup in all directions']],
     curves: [SRC, ['20 Hz', '20 kHz', 'Relatively flat', 'Presence rise (3–6 kHz)', 'Low-frequency rolloff', 'Extended high-frequency response', 'Strongly shaped (application-voiced)', 'EMPHASIZES', 'ATTENUATES', 'WHERE THAT IS USEFUL', 'CHECK YOURSELF', 'fictional but realistic', 'SHAPE', '▾']],
     spl: [SRC, ['Studio condenser', 'Moving-coil dynamic', 'Electret lavalier', 'THE SOURCE SCALE', 'Very quiet', 'Quiet', 'Moderate', 'Loud', 'Extremely loud', '✓ good match', '△ depends', '⚠ caution']],
     power: [SRC, ['PREAMP', '48 V', 'Passive moving-coil', 'Passive ribbon', 'Condenser']],
@@ -152,8 +154,10 @@ describe('2. each guide quotes its screen’s real names', () => {
     // curves: the part after "·"; environment: the letter before "·"
     assert.match(s, /label=\{\(x\.name\.split\('·'\)\[1\] \?\? x\.name\)\.trim\(\)\}/);
     assert.deepEqual(D.CURVES.map((c: { name: string }) => (c.name.split('·')[1] ?? c.name).trim()), ['Relatively flat', 'Presence rise (3–6 kHz)', 'Low-frequency rolloff', 'Extended high-frequency response', 'Strongly shaped (application-voiced)']);
-    assert.match(s, /label=\{s\.title\.split\('·'\)\[0\]\.trim\(\)\}/);
-    assert.deepEqual(D.ENV_SCENARIOS.map((e: { title: string }) => e.title.split('·')[0].trim()), ['A', 'B', 'C']);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item MS-03): the
+    // environment chips carry a letter AND a place, from their own `chip` field.
+    assert.match(s, /label=\{s\.chip\}/);
+    assert.deepEqual(D.ENV_SCENARIOS.map((e: { chip: string }) => e.chip), ['A · Studio', 'B · Loud stage', 'C · Outdoors']);
     // challenge variants: the first sentence of each prompt
     assert.match(s, /label=\{variantsDone\.has\(v\.key\) \? `✓ \$\{v\.prompt\.split\('\.'\)\[0\]\}` : v\.prompt\.split\('\.'\)\[0\]\}/);
     const chips = D.CHALLENGE_VARIANTS.map((v: { prompt: string }) => v.prompt.split('.')[0]);
@@ -179,7 +183,8 @@ describe('3. every verdict and count a TRY THIS quotes is what the screen comput
     assert.equal(D.MIC_TYPES.filter((m: { klass: string }) => m.klass === 'transducer').length, 4);
     assert.equal(D.MIC_TYPES.filter((m: { klass: string }) => m.klass === 'form').length, 8);
     assert.equal(D.CHARACTERISTICS.length, 16);
-    assert.match(G.types.seeing[0], /^Twelve mic types/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item MS-04): the line names the two groups.
+    assert.match(G.types.seeing[0], /^Twelve mic photos in two groups/);
     assert.match(G.chars.seeing[0], /^Sixteen characteristic chips/);
     const shotgun = D.MIC_TYPES.find((m: { key: string }) => m.key === 'shotgun');
     assert.equal(shotgun.klass, 'form');
@@ -346,7 +351,9 @@ describe('4. wiring', () => {
     assert.match(s, /<ScreenGuideHost resetKey=\{ending \? 'end' : s\.key\} regions=\{false\}>\s*(?:\{\}\s*)*<LabHeader/);
     assert.match(s, /guide=\{micSelScreenGuide\(s\.key, ending\)\}/);
     assert.match(s, /guideTitle=\{ending \? 'MICROPHONE SELECTION LAB' : s\.title\}/);
-    assert.match(s, /<\/ScrollView>\s*\)\}\s*<\/ScreenGuideHost>\s*<\/View>/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item MS-02): the scroll sits in a
+    // window View the lab measures, so a changed card can be brought into view.
+    assert.match(s, /<\/ScrollView>\s*<\/View>\s*\)\}\s*<\/ScreenGuideHost>\s*<\/View>/);
   });
 });
 
@@ -360,7 +367,8 @@ describe('5. the accuracy-chip decision', () => {
     assert.match(G.patterns.seeing.join(' '), /teaching shapes, not a real mic’s chart/);
     assert.match(G.curves.seeing.join(' '), /fictional but realistic/);
     // …and both are still said on the screens themselves
-    assert.match(code('src/screens/lab/micselect/polarStage.tsx'), /TOP VIEW · DIRECTIONS ONLY, NOT TO SCALE/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item SH-38): the note is one plain line, no longer all caps.
+    assert.match(code('src/screens/lab/micselect/polarStage.tsx'), /Top view · directions only, not to scale/);
     assert.match(s, /Every curve below is fictional but realistic/);
   });
 });
@@ -378,7 +386,8 @@ describe('guide fixes vetted against the screen (2026-10-31 review round)', () =
     // The CHECK row stays on the end screen (the check is drawn there), never back to Lesson 1.
     assert.match(s, /onJump=\{\(id\) => \{ if \(id !== UNDERSTANDING_UNIT\) goTo\(/);
     assert.match(code('src/features/lab/trainingLabKeys.ts'), /route: 'MicSelectLab', key: 'tr_mic_select', completion: 'understanding'/);
-    assert.match(END.seeing[0], /The title reads WHAT’S LEFT until every step is opened \(the optional mic locker too\) and the check is passed; then it reads LAB COMPLETE/);
+    // Changed on purpose (owner decision 1, 2026-11-14: "Done" = work done, not opened).
+    assert.match(END.seeing[0], /The title reads WHAT’S LEFT until every module’s goal is met \(the optional mic locker too\) and the check is passed; then it reads LAB COMPLETE/);
     assert.match(END.control.join(' '), /CHECK row/);
   });
   it('the shared kit never shows LAB COMPLETE above an unpassed check (re-derived with labEnd)', async () => {
@@ -398,12 +407,18 @@ describe('guide fixes vetted against the screen (2026-10-31 review round)', () =
     assert.equal(endTitle(whatsLeft(units, new Set([...keys.filter((k) => k !== 'locker'), 'understanding']))), "WHAT'S LEFT");
   });
   it('the locker row is labelled Optional but still counts toward LAB COMPLETE (owner ruling 2026-10-31)', () => {
-    assert.match(s, /detail: st\.tag === 'OPTIONAL' \? 'Optional' : undefined/);
+    // Changed on purpose (lab fix round 2026-11-14, F9 phase 2): each row names its own missing
+    // piece, the locker's says "Optional, still counts". Owner, 2026-11-14: "Begin fixing all bugs
+    // found and do obvious (my decision is not required) fixes as you suggestted in the report."
+    assert.match(s, /detail: MICSEL_MISSING\[st\.key\]/);
+    // Owner decision 1 (2026-11-14, "Done" = work done): the rows come from MICSEL_GOALS.
+    assert.match(s, /k === 'locker' \? 'Optional, still counts\. ' : ''\}Still to do: \$\{g\}\./);
     assert.doesNotMatch(s, /optional: st\.tag === 'OPTIONAL'/);
   });
   it('opened lessons sit under the collapsed REVIEW ▾, so the end TRY THIS says so', () => {
     assert.match(code('src/screens/lab/kit/LabEndScreen.tsx'), /const \[showCredited, setShowCredited\] = useState\(false\);/);
-    for (const t of END.tryThis) assert.match(t, /under REVIEW ▾ once opened/);
+    // Owner decision 1 (2026-11-14): a module is done by its goal, not by opening it.
+    for (const t of END.tryThis) assert.match(t, /under REVIEW ▾ once done/);
   });
   it('Microphone Principles is an Audio Fundamentals lab; this lab is not', () => {
     // course navigation left WHAT THIS TEACHES (owner 2026-11-08), so it never mislabels this lab's place

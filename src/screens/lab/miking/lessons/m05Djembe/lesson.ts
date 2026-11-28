@@ -534,7 +534,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: HandLesson['predictions'] = {
-  sound: { prompt: 'Before you step through: the hand pushes the head down. Where does the air in the bowl go?', options: ['Down through the waist and out of the foot', 'Up, back out through the head', 'Nowhere — the air stays still'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the air.' },
+  sound: { prompt: 'Before you step through: the hand pushes the head down. Where does the air in the bowl go?', options: ['Down through the waist and out of the foot', 'Up, back out through the head', 'Nowhere — the air stays still'], after: 'Now go EVENT by EVENT through the stroke (or PLAY ONCE) and watch the air.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the top mic from 5 cm above the head to about 40 cm away. What changes?', options: ['More of the whole drum and the room', 'More slap', 'It depends on this drum and room'], after: 'Farther tends to blend the strokes together with more room — and drums and rooms vary, so “it depends” is fair too.' },
   context: { prompt: 'Where can this mic, aimed at the head, best reject the floor wedge in front?', options: ['Straight behind the mic', 'Toward its rear, off to one side', 'At the sides of the mic'], after: 'Now tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },

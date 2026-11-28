@@ -34,6 +34,9 @@ import type { PageProps } from '../../../pages/pageTypes';
 import { MainPair, MusicStand, WedgeTop } from '../bowed/BowedSettingPage';
 import { KitTop } from '../kitScene/KitSceneArt';
 import { SaxScene } from './SaxArt';
+import { saxPlayer, saxSecond } from './saxFigureV2';
+import { CAST, castFor, type CastId } from '../figureV2/cast';
+import { planPeople } from '../brass/planPeople.ts';
 import { swingShape } from './saxModel.ts';
 import type { SaxPosture } from './saxPosture.ts';
 import { saxCue, saxFoots, saxShown, type SaxPlanLayout, type SaxPlanObject } from './saxPlanModel.ts';
@@ -100,6 +103,14 @@ export function SaxPlan({ w, h, cfg, box, scene, wedges, items, highlight, onTap
     return p;
   }, [box]);
   const shown = saxShown(cfg, scene);
+  // (cast figures 2026-11-26) the plan's neighbors: never a person already on the plan — the kit's drummer, the
+  // lesson's own player; a second player of the lesson's own horn is the plan's second person
+  const people = useMemo(() => {
+    const fixed: CastId[] = [saxPlayer(self).id];
+    if (cfg.objects.some((o) => o.kind === 'kit')) fixed.push(castFor('kit.drummer').id);
+    const near = cfg.objects.flatMap((o) => (o.kind === 'sax' && o.posture ? [{ id: o.id, want: (o.posture.row.id === self.row.id ? saxSecond() : saxPlayer(o.posture)).id }] : []));
+    return planPeople(fixed, near);
+  }, [cfg.objects, self]);
   const floor = useMemo(() => {
     const p = make();
     p.addRect(Skia.XYWHRect(box.u0, box.v0, box.u1 - box.u0, box.v1 - box.v0));
@@ -182,7 +193,7 @@ export function SaxPlan({ w, h, cfg, box, scene, wedges, items, highlight, onTap
               <Group key={o.id} transform={[{ translateX: o.at.x }, { translateY: o.at.z }, { rotate: (o.yaw ?? 0) * DEG }]}>
                 {o.kind === 'stand' ? <MusicStand /> : o.kind === 'kit' ? <KitTop keepOuts={false} dim={0.85} /> : o.kind === 'pair' ? <MainPair /> : o.kind === 'sax' && o.posture ? (
                   <Group opacity={0.7}>
-                    <SaxScene P={o.posture} view="top" />
+                    <SaxScene P={o.posture} view="top" who={people[o.id] ? CAST[people[o.id]] : undefined} />
                   </Group>
                 ) : null}
               </Group>
@@ -235,7 +246,7 @@ export function makeSaxSettingPage(cfg: SaxSettingConfig): (p: PageProps) => Rea
             if (it) pick(it.id);
           },
           format: () => (sel ? `${byId(sel)?.short ?? sel} · ${byId(sel)?.tag ?? ''}` : `step through the ${list.length} items`),
-          formatShort: () => (sel ? (byId(sel)?.short ?? sel).slice(0, 9) : 'STEP'),
+          formatShort: () => (sel ? (byId(sel)?.short ?? sel).slice(0, 9) : 'PICK'),
         },
         list.length,
         list.findIndex((q) => q.id === sel),

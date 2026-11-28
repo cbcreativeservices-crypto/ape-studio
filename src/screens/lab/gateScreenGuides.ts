@@ -59,19 +59,19 @@ export const GATE_SCREEN_GUIDES: Record<GateScreenId, ScreenGuide> = {
   explore: {
     intro: {
       learning: 'How a gate turns down sound that falls below the threshold, and how RANGE, HOLD and release decide how deep and how smoothly it closes.',
-      start: 'Tap ▶ to play CLICK 90 and watch GR drop toward 0 on each hit. Then raise THRESH to −20 dB and see GR stay at the RANGE floor.',
+      start: 'Drag THRESH up to −20 dB and back down to −50 dB, and watch how much of each hit gets through on OUT. Then tap ▶ to play CLICK 90 and watch GR drop toward 0 on each hit.',
     },
     seeing: [
       'Sound flows IN ▸, through the green GATE bar, ▸ OUT. Dashed lines on IN mark the threshold; the dotted outline is the sound untouched.',
       'The GR ladder (0 to 70 dB) grows down as the gate closes.',
       'THRESH and RANGE show your settings. GR, measured live, is how far the gate turns down (— dB when stopped).',
-      'The drawing is a TEACHING MODEL: CLICK is drawn as a longer DRUM-HIT MODEL, but GR measures the real click.',
+      'The drawing is a model: CLICK is drawn as a longer DRUM-HIT MODEL, but GR measures the real click.',
     ],
     control: [
       'Tap ▶ in the header, or tap the display, to play the SOURCE through the gate; ■ stops it. Drag the THRESH fader from −50 to −20 dB.',
       'RANGE: −20 dB GENTLE, −40 dB or −70 dB SILENCE. HOLD: 0, 10 or 100 ms. RLS (release): 20 ms CHATTER, 100 ms or 500 ms.',
-      'SOURCE: CLICK 90 or PINK NOISE. The click lasts only 5 ms, so RANGE, HOLD and RLS show on GR but you barely hear them. To hear them, use PINK NOISE with THRESH near its level.',
-      'Long-press any key or readout for its lesson entry. Below, in LAB NOTES, read the intro, the GATE ATTENUATION meter, the DESIGNED RESPONSE curve and THE AUDIO PATH, answer two CHECK YOURSELF questions or open the GUIDED LESSON.',
+      'SOURCE: CLICK or PINK NOISE. The click lasts only 5 ms, so RANGE, HOLD and RLS show on GR but you barely hear them. To hear them, use PINK NOISE with THRESH near its level.',
+      'Long-press any key or readout for its lesson entry. Below, in LAB NOTES, read the intro, the GATE ATTENUATION meter and the DESIGNED RESPONSE curve, open THE AUDIO PATH, answer two CHECK YOURSELF questions or open the GUIDED LESSON.',
     ],
     changes: [
       'Above the threshold the gate opens (GR near 0); below, it closes toward the RANGE floor (−40 dB = 40 dB quieter).',
@@ -94,11 +94,11 @@ export const GATE_SCREEN_GUIDES: Record<GateScreenId, ScreenGuide> = {
   learn: {
     intro: {
       learning: 'The language of gating (threshold, range, hold, release, hysteresis, key filter, chatter) and why a partial range often sounds more natural than full silence.',
-      start: 'Scroll to COMMON MISTAKES and read the line on release. Then switch to EXPLORE, play CLICK 90 at THRESH −50 dB, and compare RLS 20 ms CHATTER with 500 ms.',
+      start: 'Open COMMON MISTAKES and read the line on release. Then switch to EXPLORE, play CLICK 90 at THRESH −50 dB, and compare RLS 20 ms CHATTER with 500 ms.',
     },
     seeing: [
       'This is the Gate / Expander guided lesson as one page to read. Nothing on it moves, but ▶ in the header still plays the sound.',
-      'It starts with what a gate is. Then CONTROLS: THRESH, Attack, HOLD, RLS, RANGE, the GR meter and more. Attack is fixed at 1 ms here; Hysteresis, Lookahead, sidechain and key filter are on real gates, not in this lab.',
+      'It starts with what a gate is. Then CONTROLS: THRESH, Attack (fixed at 1 ms here), HOLD, RLS, RANGE and the GR meter. The last row, On real gates (for later), sums up Hysteresis, Lookahead, sidechain and key filter.',
       'It ends with COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT.',
     ],
     control: [
@@ -116,7 +116,7 @@ export const GATE_SCREEN_GUIDES: Record<GateScreenId, ScreenGuide> = {
       'How hold and a slower release keep a gate from chattering on a note that fades across the threshold.',
     ],
     tryThis: [
-      'Read the COMMON MISTAKES line on release, then on EXPLORE play CLICK 90 at THRESH −50 dB: at RLS 20 ms CHATTER GR reaches the RANGE floor between hits; at 500 ms it stays at 0.0.',
+      'Open COMMON MISTAKES and read the line on release, then on EXPLORE play CLICK 90 at THRESH −50 dB: at RLS 20 ms CHATTER GR reaches the RANGE floor between hits; at 500 ms it stays at 0.0.',
       'Read the mistake on full silence, then on EXPLORE (CLICK 90, THRESH −50 dB, RLS 20 ms CHATTER) step RANGE: between hits GR reaches 70.0 at −70 dB SILENCE, 20.0 at −20 dB GENTLE.',
     ],
   },
@@ -132,11 +132,12 @@ export const GATE_SCREEN_GUIDES: Record<GateScreenId, ScreenGuide> = {
       'A ✓ replaces a question’s number once you get it right. The line under the title says how many are still to get right.',
     ],
     control: [
-      'Tap an option. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER explains, and you pick again straight away.',
+      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says why that pick is not right; a second wrong pick also shows the explanation.',
       'Nothing is scored. Use the tabs to switch to LEARN or EXPLORE at any time to look up a gate setting.',
     ],
     changes: [
-      'Each answer shows its explanation at once, right or wrong, so a wrong pick about range or hold still teaches you something.',
+      'A wrong pick about range or hold gets its own reason, never the answer, so you still work it out.',
+      'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: what is left in this lab.',
       'Get all four right and the check is passed. A pass is kept: you never need to take the check twice.',
     ],
     teaches: [
@@ -145,7 +146,7 @@ export const GATE_SCREEN_GUIDES: Record<GateScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'Unsure about RANGE? On EXPLORE, play CLICK 90 at THRESH −50 dB with RLS 20 ms CHATTER and RANGE −40 dB: GR tops out at 40.0 dB. What does that floor mean for the sound?',
-      'Unsure about HOLD? Read the HOLD entry under CONTROLS on LEARN, or long-press the HOLD key on EXPLORE to open its lesson entry.',
+      'Unsure about HOLD? Open CONTROLS on LEARN and read the HOLD entry, or long-press the HOLD key on EXPLORE to open its lesson entry.',
     ],
   },
 };

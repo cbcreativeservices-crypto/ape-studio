@@ -27,5 +27,37 @@ export const WAVE_MODULES: { id: WaveModuleId; num: string; title: string; blurb
   { id: 'echo', num: '14', title: 'Echo Laboratory', blurb: 'Discrete echoes vs fused reflections — the ~50 ms threshold.' },
   { id: 'reverb', num: '15', title: 'Reverberation Laboratory', blurb: 'Direct → early → late → diffuse: reverb as a buildup, not a thing.' },
   // Room Builder last: it combines every concept the other modules isolate (owner 2026-08-01).
-  { id: 'builder', num: '◎', title: 'Room Builder', blurb: 'The full room model: build a room, place sources and a listener, toggle every layer.' },
+  { id: 'builder', num: '16', title: 'Room Builder', blurb: 'The full room model: build a room, place sources and a listener, toggle every layer.' },
+];
+
+/**
+ * The home list in plain words (owner 2026-11-15, "build waves 1 thru 3", D62
+ * item WA-06): four plain groups instead of one long "MODULES 1–15" list, and
+ * a few plain words under each name (the row's one-line blurb still opens on
+ * a tap). The Room Builder keeps its own heading, PUT IT ALL TOGETHER.
+ */
+export const WAVE_PLAIN: Readonly<Record<WaveModuleId, string>> = {
+  reflection: 'how sound bounces off walls',
+  absorption: 'how soft walls soak up sound',
+  diffusion: 'how bumpy walls scatter sound',
+  refraction: 'how warm and cool air bend sound',
+  diffraction: 'how sound wraps around things',
+  interference: 'how two sounds add or cancel',
+  comb: 'a sound plus its own reflection',
+  standing: 'bass notes that pile up in a room',
+  coverage: 'where one speaker’s sound reaches',
+  linearray: 'a tall column of speakers',
+  delayalign: 'making two speakers arrive together',
+  cardioidsub: 'sending bass forward, not back',
+  beamsteer: 'tilting the sound with delays',
+  echo: 'when a bounce becomes an echo',
+  reverb: 'how a room keeps ringing',
+  builder: 'every idea, in one room',
+};
+
+export const WAVE_GROUPS: readonly { title: string; ids: readonly WaveModuleId[] }[] = [
+  { title: 'SOUND MEETS A WALL', ids: ['reflection', 'absorption', 'diffusion'] },
+  { title: 'SOUND BENDS AND ADDS UP', ids: ['refraction', 'diffraction', 'interference', 'comb', 'standing'] },
+  { title: 'SPEAKERS', ids: ['coverage', 'linearray', 'delayalign', 'cardioidsub', 'beamsteer'] },
+  { title: 'ECHO AND REVERB', ids: ['echo', 'reverb'] },
 ];

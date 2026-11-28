@@ -246,7 +246,7 @@ export const STAGE_LABEL: Record<Stage, string> = {
   mixed: 'COMPETING PATTERNS',
   unstable: 'UNSTABLE MOTION',
   chaotic: 'CHAOTIC SURFACE',
-  splash: 'SPLASHING — ATOMISATION WARNING',
+  splash: 'SPLASHING — ATOMIZATION WARNING',
   damped: 'VISCOUS — NO PATTERN IN RANGE',
 };
 export const STAGE_NUM: Record<Stage, number> = { flat: 1, sloshing: 2, ripples: 3, onset: 4, stable: 5, transition: 6, mixed: 7, unstable: 8, chaotic: 9, splash: 10, damped: 0 };
@@ -276,7 +276,7 @@ export const FAMILY_LABEL: Record<PatternFamily, string> = {
   stripes: 'Stripes',
   hexagons: 'Hexagons',
   quasiperiodic: 'Quasiperiodic (superlattice)',
-  traveling: 'Travelling pattern',
+  traveling: 'Traveling pattern',
   chaotic: 'Spatiotemporal chaos',
 };
 
@@ -390,7 +390,7 @@ export function readLiquid(spec: LiquidSpec, driveHz: number, accelG: number): L
       oscHz: driveHz,
       subharmonic: false,
       why: L.shearThickening
-        ? `Shear-thickening: shaking harder raises the effective viscosity (≈ ${(nu * 1e6).toFixed(0)} cSt now), so the surface stiffens instead of organising. Holes and fingers appear only far above this rig’s range.`
+        ? `Shear-thickening: shaking harder raises the effective viscosity (≈ ${(nu * 1e6).toFixed(0)} cSt now), so the surface stiffens instead of organizing. Holes and fingers appear only far above this rig’s range.`
         : `Viscous damping dominates: onset would need ≈ ${fr.thresholdG.toFixed(1)} g, beyond this rig. The surface just follows the platform.`,
     };
   }
@@ -422,7 +422,7 @@ export function readLiquid(spec: LiquidSpec, driveHz: number, accelG: number): L
     return { stage: 'mixed', ratio, family: baseFamily, family2: successor(baseFamily), blend: 0.5, mode, envelope: 1, oscHz: fr.responseHz, subharmonic: true, why: 'Two patterns compete for the surface and neither wins — domains of each form, drift and dissolve.' };
   }
   if (ratio < 5) {
-    return { stage: 'unstable', ratio, family: 'traveling', family2: baseFamily, blend: 0.4, mode, envelope: 1, oscHz: fr.responseHz, subharmonic: true, why: 'The standing lattice breaks into slowly travelling fronts and defects. Order comes and goes.' };
+    return { stage: 'unstable', ratio, family: 'traveling', family2: baseFamily, blend: 0.4, mode, envelope: 1, oscHz: fr.responseHz, subharmonic: true, why: 'The standing lattice breaks into slowly traveling fronts and defects. Order comes and goes.' };
   }
   return { stage: 'chaotic', ratio, family: 'chaotic', family2: 'chaotic', blend: 0.5, mode, envelope: 1, oscHz: fr.responseHz, subharmonic: true, why: 'Spatiotemporal chaos: many wavevectors (wave sizes and directions) excited at once, no lasting structure. One more step and the surface starts to throw droplets.' };
 }

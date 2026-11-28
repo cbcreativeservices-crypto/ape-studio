@@ -67,7 +67,7 @@ const Panel = await (async () => {
   const typesUrl = pathToFileURL(join(ROOT, 'src/screens/lab/calc/calcTypes.ts')).href;
   const head =
     `import { isRefused } from '${typesUrl}';\n` +
-    `import { NEGATIVE_MSG, domainError, domainMsg, fmt, isNonNegativeField, listProblem, negativeInput, fmtSamples, outputUnits, parseList, parseQuantity, unitsFor, wholeCount } from '${unitsUrl}';\n`;
+    `import { NEGATIVE_MSG, domainError, domainMsg, fmt, isNonNegativeField, listProblem, negativeInput, fmtSamples, namedOutputUnit, outputUnits, parseList, parseQuantity, unitsFor, wholeCount } from '${unitsUrl}';\n`;
   const js = stripTypeScriptTypes(head + PANEL.slice(a, b));
   return import('data:text/javascript;base64,' + Buffer.from(js).toString('base64'));
 })();
@@ -419,7 +419,11 @@ describe('4. every TRY THIS number is what the screen prints', () => {
       assert.doesNotMatch(pf.replace(/\bfree-(space|air)\b/gi, ''), tier, `${b.id}: tier copy in the formula words`);
       const own = ownWords(textOf(b.gd), b);
       assert.doesNotMatch(pf ? own.split(pf).join('«»') : own, tier, `${b.id}: tier copy shown to an uncapped reader`);
-      assert.match(b.gdCapped.control.join(' '), /On this account, CALCULATE shows each new answer and uses one of this week’s calculations/);
+      // Owner 2026-11-23: "in the calculator the guest user does get an
+      // allowance per week of use" — a known guest is capped too, with no
+      // account, so the line no longer opens "On this account,".
+      assert.match(b.gdCapped.control.join(' '), /CALCULATE shows each new answer and uses one of this week’s calculations/);
+      assert.doesNotMatch(b.gdCapped.control.join(' '), /On this account/);
       assert.match(b.gdCapped.changes.join(' '), /New inputs wait until you tap CALCULATE \(one more of this week’s calculations\)/);
       const ownCapped = ownWords(textOf(b.gdCapped), b);
       assert.doesNotMatch(pf ? ownCapped.split(pf).join('«»') : ownCapped, /\bfree\b|membership/i, `${b.id}: capped copy stays neutral`);
@@ -428,7 +432,9 @@ describe('4. every TRY THIS number is what the screen prints', () => {
     // The screen's own rule the capped lines describe.
     const W = code('src/screens/lab/calc/CalcWorkspaceScreen.tsx');
     assert.match(W, /const resultUnlocked = !capped \|\| consumedSigs\.has\(inputSig\);/);
-    assert.match(W, /const capped = \(entitlement === 'free' \|\| entitlement === 'lapsed'\) && !onboardingSampling;/);
+    // Owner 2026-11-23 ("in the calculator the guest user does get an allowance
+    // per week of use"): a KNOWN guest (guestMetered) is capped as well.
+    assert.match(W, /const capped = \(\(entitlement === 'free' \|\| entitlement === 'lapsed'\) && !onboardingSampling\) \|\| guestMetered;/);
   });
   it('WHAT CHANGES says why: the calculation’s formula in words wherever the step fits', () => {
     let withWords = 0;
@@ -506,7 +512,10 @@ describe('4. every TRY THIS number is what the screen prints', () => {
     assert.equal(shown, '5 A');
     const t = STATIC.workflowRun.tryThis.join('\n');
     assert.ok(t.includes('type 40 in VOLTAGE (RMS) and 8 in IMPEDANCE on step 1: POWER reads 200 W and CURRENT reads 5 A'));
-    assert.ok(t.includes(`⤵ USE POWER (STEP 1) and type 40 in VOLTAGE (RMS): CURRENT reads ${shown}, the same current`), `CURRENT reads ${shown}`);
+    // Owner 2026-11-25, fix-first 15: the template CARRIES POWER and VOLTAGE
+    // (RMS) into step 2 (the same '200' and '40' as above), no tap or retyping.
+    assert.deepEqual(Object.keys(tpl.steps[1].carry ?? {}).sort(), ['p', 'vrms']);
+    assert.ok(t.includes(`Step 2 arrives with POWER and VOLTAGE (RMS) carried in from step 1: CURRENT reads ${shown}, the same current`), `CURRENT reads ${shown}`);
     // The import button's words, as drawn.
     assert.match(code('src/screens/lab/calc/CalcWorkflowRunScreen.tsx'), /⤵ USE \{s\.label\.toUpperCase\(\)\} \(STEP \{s\.fromStep \+ 1\}\)/);
   });
@@ -573,7 +582,11 @@ describe('4. every TRY THIS number is what the screen prints', () => {
     assert.deepEqual(links, ['RT60@1>REVERBERATION TIME (RT60)@2', 'RT60@1>REVERBERATION TIME (RT60)@3']);
     assert.match(textOf(STATIC.workflows), /RT60 comes first, then critical distance, then the direct-to-reverberant ratio/);
     assert.ok(textOf(STATIC.workflows).includes('Room Acoustics Survey'));
-    assert.ok(STATIC.workflows.tryThis.join(' ').includes('On step 2, look for ⤵ USE RT60 (STEP 1)'));
+    // owner 2026-11-25, fix-first 15 round 2: the template CARRIES RT60 into
+    // step 2 now, so no ⤵ USE button is drawn for it.
+    assert.ok(STATIC.workflows.tryThis.join(' ').includes('On step 2, RT60 arrives carried in from step 1, marked with its source'));
+    assert.ok(STATIC.workflows.intro.start.includes('On step 2, RT60 arrives carried in from step 1, marked with its source.'));
+    assert.doesNotMatch(textOf(STATIC.workflows), /look for ⤵ USE RT60/);
     assert.doesNotMatch(textOf(STATIC.workflows), /speed of sound → distance delay/i);
   });
   it('home: the lab has its own Home card, not a place in the Advanced Training Labs; most calculators hold several calculations', () => {

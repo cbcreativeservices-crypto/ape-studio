@@ -19,6 +19,7 @@
  */
 import { useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { runOnJS, useAnimatedReaction } from 'react-native-reanimated';
 import { Group, RoundedRect } from '@shopify/react-native-skia';
 import { colors } from '../../../../theme/tokens';
 import { LabChip } from '../../LabShell';
@@ -257,8 +258,21 @@ function PageHybrid({ ctx }: { ctx: PageCtx }) {
   const leader = counterBpm(booth, 1);
   const bpm = dmBpm(booth);
   const phase = dmPhase(booth);
-  // drift on INTERNAL, read now (the page re-renders with every chunk)
-  const drift = dm.sync === 'INT' && running ? dmDrift(booth, boothNow()) : null;
+  // drift on INTERNAL, read now. The page used to re-render only with each sound
+  // chunk (about every 8 s), so the drift jumped in steps; while it can drift a
+  // clock tick re-reads it 4 times a second, as Screens 10 and 11 do (round 2,
+  // 2026-11-25), so it creeps the way the drum machine does.
+  const driftLive = dm.sync === 'INT' && running;
+  const [, setDriftTick] = useState(0);
+  const bumpDrift = (v: number) => setDriftTick(v);
+  useAnimatedReaction(
+    () => (driftLive ? Math.floor(motion.clock.value * 4) : -1),
+    (n, p) => {
+      if (n !== p) runOnJS(bumpDrift)(n);
+    },
+    [driftLive],
+  );
+  const drift = driftLive ? dmDrift(booth, boothNow()) : null;
   const intArmed = useRef(false);
   const driftSeen = useRef(false);
   if (ready && startMsg === 'armedInt' && dm.sync === 'INT') intArmed.current = true;
@@ -322,8 +336,8 @@ function PageHybrid({ ctx }: { ctx: PageCtx }) {
         ),
         bezel: [
           { k: 'DECK A', v: leader == null ? '—' : leader.toFixed(1), sub: 'BPM', tint: colors.amber },
-          { k: 'MACHINE', v: bpm == null ? (dm.sync === 'EXT' ? 'NO CLOCK' : '—') : bpm.toFixed(1), sub: bpm == null ? undefined : dm.sync === 'EXT' ? 'BPM · EXT' : 'BPM · INT', tint: dm.sync === 'EXT' && !arrives ? PEAK_RED : colors.amber },
-          { k: 'ITS BAR 1', v: phaseText, sub: drift ? 'DRIFT · INT' : undefined, tint: onTheOne || (drift && Math.abs(drift.barBeats) <= 0.125) ? colors.green : colors.amber },
+          { k: 'MACHINE', caption: 'drum machine', v: bpm == null ? (dm.sync === 'EXT' ? 'NO CLOCK' : '—') : bpm.toFixed(1), sub: bpm == null ? undefined : dm.sync === 'EXT' ? 'BPM · EXT' : 'BPM · INT', tint: dm.sync === 'EXT' && !arrives ? PEAK_RED : colors.amber },
+          { k: 'ITS BAR 1', caption: 'machine’s one', v: phaseText, sub: drift ? 'DRIFT · INT' : undefined, tint: onTheOne || (drift && Math.abs(drift.barBeats) <= 0.125) ? colors.green : colors.amber },
           { k: 'IN THE ROOM', v: ch2Live ? 'AUDIBLE' : dm.audio ? (booth.ch[2].fader > 0.3 ? 'SILENT' : 'CH 2 DOWN') : 'NOT PATCHED', tint: ch2Live ? colors.green : colors.textSub },
         ],
         params: [
@@ -347,7 +361,7 @@ function PageHybrid({ ctx }: { ctx: PageCtx }) {
         {startNote ? <Note tone="try">{startNote}</Note> : null}
       </Step>
       <Step n={3}>
-        <P>Clock sets the tempo, not the bar. Press PLAY NOW off the beat and read ITS BAR 1: in tempo, out of phase. STOP, and use START ON THE NEXT BAR. Then ride TEMPO A: the drum machine follows, tick for tick.</P>
+        <P>Clock sets the tempo, not the bar. Press PLAY NOW off the beat and read ITS BAR 1: in tempo, out of phase. STOP, and use START ON THE NEXT BAR. Then slide TEMPO A: the drum machine follows, tick for tick.</P>
         <Note>Real setups differ: which device leads, whether start and stop are sent, how many ticks a beat an analog sync uses, and whether sync runs over MIDI, USB through a computer, or a network. Check both manuals. A clock from a mixer’s beat counter is only as good as its BPM reading: if the counter reads half or double time (Screen 11), the follower does too.</Note>
       </Step>
       <Step n={4}>

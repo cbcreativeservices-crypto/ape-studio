@@ -51,6 +51,7 @@
  * notes in learner text.
  */
 import type { ScreenGuide } from '../../features/lab/screenGuide/types';
+import { termWithShort } from '../../features/lab/plainTerms.ts';
 
 /** The LabShell tabs this lab offers. */
 export type ReverbScreenId = 'explore' | 'learn' | 'check';
@@ -60,17 +61,20 @@ export const REVERB_SCREEN_GUIDES: Record<ReverbScreenId, ScreenGuide> = {
   explore: {
     intro: {
       learning: 'What reverb’s main controls do: RT60 sets how long the tail takes to fall 60 dB, PRE-DELAY when it starts, damping how dark it gets, MIX how loud.',
-      start: 'Tap ▶ with SOURCE on CLICK 60 and watch the amber wash fall on OUT. Then drag RT60 from 0.40 s to 6.0 s and watch the slope change.',
+      // Rooms a beginner knows (owner 2026-11-15: "build waves 1 thru 3", D62
+      // item RV-04); the words for RT60 are the shared ones (plainTerms.ts).
+      // RT60 opens at 1.5 s, the HALL (checker 2026-11-15): down first, then up.
+      start: `Drag ${termWithShort('rt60')} down to a small room, then up toward a big hall, and watch the amber wash on OUT last longer. Then tap ▶ with SOURCE on CLICK 60 to hear the room grow.`,
     },
     seeing: [
       'The glass is a dB VIEW (level in dB). Gray clicks enter at IN ▸ and pass the green REVERB stage. ▸ OUT redraws at each click; its ruler counts seconds since the click.',
       'On OUT: the gray dry click, then the amber wash (reverb) falling as a straight slope. Dashed guides sit 30 dB apart; the dim line is the previous sweep.',
-      'RT60, PRE, MIX: your settings. TEACHING MODEL: a drawing of the idea, not a measurement.',
+      'DECAY TIME (RT60), PRE-DLY, MIX: your settings. The line below: the picture is a model.',
     ],
     control: [
       'Tap ▶ in the header, or tap the glass, to play the source through the reverb; ■ stops it. Every control works while it plays.',
       'Drag the RT60 fader, 0.40 s to 6.0 s. Tap a key for its choices: PRE-DLY (PRE-DELAY: 0, 20, 60 ms), DAMP (HF DAMPING, high-frequency damping: DARK 2k, NATURAL 5.5k, BRIGHT 12k), MIX (35%, 70%, 100% WET).',
-      'SOURCE picks CLICK 60 (a short click once a second), BURST 1 kHz or PINK NOISE. Long-press a key or readout for its lesson entry; the ⓘ after the readouts explains the display.',
+      'SOURCE picks CLICK (opens at 60 BPM, one click a second), BURST 1 kHz or PINK NOISE. Long-press a key or readout for its lesson; the ⓘ after the readouts explains the display.',
       '▴ HIDE DISPLAY and ⤢ FULL SCREEN sit under the glass. See LAB NOTES for DESIGNED RESPONSE (the decay line and its RT60 marker), THE AUDIO PATH, two CHECK YOURSELF questions and ⓘ GUIDED LESSON.',
     ],
     changes: [
@@ -86,8 +90,8 @@ export const REVERB_SCREEN_GUIDES: Record<ReverbScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'With SOURCE on CLICK 60, slide RT60 down to 0.40 s: on OUT the wash sinks to the bottom near the 0.5 s mark. At 6.0 s it falls only a little before the next click, and the tails pile up.',
-      'Open PRE-DLY and pick 60 ms: the wash now jumps up nearly one 100 ms tick mark after the gray click (60 ms plus the reverb’s 31 ms). At 0 ms it jumps up about a third of a tick after.',
-      'Bring RT60 to about 1.5 s, open DAMP and pick DARK 2k: the wash nearly reaches the bottom by the 1 s mark. DESIGNED RESPONSE stays put, because it draws RT60 alone.',
+      'Open PRE-DLY and pick 60 ms: the GAP bracket over OUT stretches to nearly one 100 ms tick mark after the gray click (60 ms plus the reverb’s 31 ms). At 0 ms it shrinks to about a third of a tick.',
+      'Bring RT60 to about 1.5 s, open DAMP and pick DARK 2k: the wash nearly reaches the bottom within about 1 s. DESIGNED RESPONSE stays put, because it draws RT60 alone.',
     ],
   },
 
@@ -119,8 +123,8 @@ export const REVERB_SCREEN_GUIDES: Record<ReverbScreenId, ScreenGuide> = {
       'Why reverb has two parts: early reflections first, then the denser tail.',
     ],
     tryThis: [
-      'Read FORMULA / CONCEPT. Then on EXPLORE, slide RT60 to 3.0 s: in DESIGNED RESPONSE the dot sits where the slope meets the dashed −60 line, labeled RT60 3.0 s on the time axis below.',
-      'Read the COMMON MISTAKES line on pre-delay. Then on EXPLORE, pick PRE-DLY 0 ms: the caption under DESIGNED RESPONSE now opens “No pre-delay: the wash starts with the dry hit…”',
+      'Open FORMULA / CONCEPT. Then on EXPLORE, slide RT60 to 3.0 s: in DESIGNED RESPONSE the dot sits where the slope meets the dashed −60 line, labeled RT60 3.0 s on the time axis below.',
+      'Open COMMON MISTAKES and read the line on pre-delay. Then on EXPLORE, pick PRE-DLY 0 ms: the caption under DESIGNED RESPONSE now opens “No pre-delay: the wash starts with the dry hit…”',
     ],
   },
 
@@ -137,12 +141,13 @@ export const REVERB_SCREEN_GUIDES: Record<ReverbScreenId, ScreenGuide> = {
     ],
     control: [
       'Tap an option to answer. Scroll down for every card.',
-      'A wrong answer costs nothing: pick again straight away. There is no score.',
+      'A wrong answer costs nothing: pick again right away.',
       'The tabs under the title go to EXPLORE or LEARN; cards already right stay right. If you leave the lab before the last right answer, they clear.',
     ],
     changes: [
       'A right answer turns its card green with ✓, shows CORRECT and the reason, and stays right.',
-      'A wrong one shows NOT QUITE — TRY ANOTHER and the reason, so you can work the answer out.',
+      'A wrong one shows NOT QUITE — TRY ANOTHER and a pointer; a second wrong pick adds the explanation.',
+      'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: what is left in this lab.',
       'Get all four right and the check is passed: a green card says so.',
     ],
     teaches: [
@@ -152,7 +157,7 @@ export const REVERB_SCREEN_GUIDES: Record<ReverbScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'Before you start: two questions offer controls as answers. Try each of those controls on EXPLORE with SOURCE on CLICK 60, and watch the gray click and the amber wash on OUT.',
-      'For the RT60 question, reread FORMULA / CONCEPT on LEARN, then come back.',
+      'For the RT60 question, open FORMULA / CONCEPT on LEARN, then come back.',
     ],
   },
 };

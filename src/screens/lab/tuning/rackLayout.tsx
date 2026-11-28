@@ -64,6 +64,12 @@ export const snapNear = (value: number, target: number, window = 0.25): number =
  *  ratios — nothing here is measured. */
 export const BADGE_EXACT = 'CALCULATED — exact ratios, nothing measured';
 export const BADGE_MODEL = 'EXPLANATORY MODEL — not a measurement';
+/** The same disclosures as one plain sentence each (Phase 3, owner decision 3,
+ *  2026-11-14: S3's `RackStage.modelNote`, which wins over the badge). */
+export const TUNING_MODEL_NOTES: Readonly<Record<string, string>> = {
+  [BADGE_EXACT]: 'Every number here is worked out from exact ratios; nothing is measured.',
+  [BADGE_MODEL]: 'This picture is a model that explains the idea, not a measurement.',
+};
 
 export type TuningRack = {
   /** The pinned display, sized by the glass. */
@@ -107,6 +113,11 @@ export function TuningRackLayout({
         render: rack.stage,
         size: rack.size ?? 'M',
         badge: rack.badge ?? BADGE_EXACT,
+        modelNote: TUNING_MODEL_NOTES[rack.badge ?? BADGE_EXACT],
+        // The sound-off line (owner 2026-11-15: "build waves 1 thru 3", D62 SH-12): shown only while sound is off.
+        // TRUE here: every chapter task is a drag, a tap or a check, and every
+        // readout is worked out from exact ratios, so nothing needs sound.
+        soundOffLine: true,
         bezel: rack.bezel,
         hideDragTag: rack.hideDragTag,
         // FULL SCREEN on every tuning stage (owner 2026-09-30): the rack owns
@@ -118,12 +129,7 @@ export function TuningRackLayout({
       initialParam={rack.initialParam}
     >
       <View style={styles.panel}>
-        {ctx.objective ? (
-          <View style={styles.objective} accessible accessibilityLabel={`In this chapter: ${ctx.objective}`}>
-            <Text style={styles.objectiveKicker}>IN THIS CHAPTER</Text>
-            <Text style={styles.objectiveText}>{ctx.objective}</Text>
-          </View>
-        ) : null}
+        {ctx.objective ? <ChapterObjective objective={ctx.objective} finish={ctx.finish} /> : null}
         {wellTop ? <View style={styles.wellTop}>{wellTop}</View> : null}
         <Text style={styles.caption}>{caption}</Text>
         <CollapsibleSection title={notesTitle}>
@@ -131,6 +137,22 @@ export function TuningRackLayout({
         </CollapsibleSection>
       </View>
     </RackUnit>
+  );
+}
+
+/**
+ * The chapter's objective and, until its task is done, what finishes it
+ * (owner 2026-11-15: "build waves 1 thru 3", D62 TU-03). A line in, a line
+ * out: the TO FINISH line takes the place of the IN THIS CHAPTER kicker
+ * (the amber rule still marks the block), and it goes once the task is done.
+ * The reading chapter (TuningLabScreen) draws the same block.
+ */
+export function ChapterObjective({ objective, finish }: { objective: string; finish?: string }) {
+  return (
+    <View style={styles.objective} accessible accessibilityLabel={`In this chapter: ${objective}${finish ? ` ${finish}` : ''}`}>
+      <Text style={styles.objectiveText}>{objective}</Text>
+      {finish ? <Text style={styles.objectiveFinish}>{finish}</Text> : null}
+    </View>
   );
 }
 
@@ -207,8 +229,8 @@ export function playKey(player: TuningPlayer, id: string, label: string, make: (
 const styles = StyleSheet.create({
   panel: { gap: 8 },
   objective: { borderLeftWidth: 2, borderLeftColor: colors.amberLabel, paddingLeft: 10, paddingVertical: 2, gap: 2 },
-  objectiveKicker: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1.5 },
   objectiveText: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18 },
+  objectiveFinish: { color: colors.amberLabel, fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17 },
   wellTop: { gap: 8 },
   notes: { gap: 12 },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: colors.textSub },

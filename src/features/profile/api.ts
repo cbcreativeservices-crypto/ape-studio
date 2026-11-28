@@ -229,6 +229,35 @@ export async function markIntroVideoSeenOnAccount(): Promise<void> {
   }
 }
 
+/**
+ * The privacy notice, once per ACCOUNT across phones (owner 2026-11-20)
+ * [MD:D72]. Same shape as the intro video's mark (Comp A:
+ * `my_privacy_notice_seen()` → boolean, `mark_privacy_notice_seen()`).
+ * null when signed out, on any error, or while the server does not have the
+ * functions yet — Home then uses this phone's per-account flag.
+ */
+export async function fetchPrivacyNoticeSeenOnAccount(): Promise<boolean | null> {
+  try {
+    if (!(await hasSafeSession(supabase.auth.getSession(), 'fetchPrivacyNoticeSeenOnAccount'))) return null;
+    const { data, error } = await supabase.rpc('my_privacy_notice_seen');
+    if (error || typeof data !== 'boolean') return null;
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+/** Mark this account's privacy notice seen. Best-effort and silent: a lost
+ *  mark only means the notice shows once more on another phone. */
+export async function markPrivacyNoticeSeenOnAccount(): Promise<void> {
+  try {
+    if (!(await hasSafeSession(supabase.auth.getSession(), 'markPrivacyNoticeSeenOnAccount'))) return;
+    await supabase.rpc('mark_privacy_notice_seen');
+  } catch {
+    // see above
+  }
+}
+
 /** The member's QR token for a PRINTED certificate (full-app run 2,
  *  2026-10-02): like fetchMyQrToken, but a read that FAILED throws instead of
  *  answering null — a certificate exported during a network blip used to print

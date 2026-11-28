@@ -169,6 +169,10 @@ export type L07Check = {
   question: string;
   options: string[];
   correctIdx: number;
+
+  /** A wrong option's own reason, by authored index (CheckSpec.why; phase 2). */
+
+  why?: Record<number, string>;
   reveal: string;
   wrongHint?: string;
 };
@@ -186,6 +190,11 @@ export const L07_CHECKS: L07Check[] = [
       'Lift the ground only until the hum is fixed properly',
     ],
     correctIdx: 1,
+    why: {
+      0: 'Lifting the safety ground makes the chassis a shock risk if a fault happens. Safety first, always.',
+      2: 'Removing the ground pin defeats the protection the same way the adapter does.',
+      3: '“Only until” is still a show with no protection. The ground stays every minute.',
+    },
     reveal:
       'Hum is solved with isolation transformers, balanced lines and proper grounding practice — such as powering the whole system from one source — never by defeating the safety ground. The ground pin is what keeps a fault from energizing the equipment chassis.',
     wrongHint: 'The safety ground is a life-safety path. Is any amount of hum worth removing it?',
@@ -202,6 +211,11 @@ export const L07_CHECKS: L07Check[] = [
       'Downgrade it to low-power duty only',
     ],
     correctIdx: 2,
+    why: {
+      0: 'Working today is not the test: a cracked coupler can expose live parts or fail under load.',
+      1: 'Tape does not restore the insulation rating. A damaged cord is not a backup.',
+      3: 'Less current does not make exposed or cracked parts safe to handle.',
+    },
     reveal:
       'Damaged power cords leave service immediately — cracked couplers, heat marks and loose strain reliefs disqualify a cord even when the equipment still powers up. “It still works” is not a safety test.',
     wrongHint: 'Powering up proves the circuit conducts. It proves nothing about what the damage does next.',
@@ -218,6 +232,11 @@ export const L07_CHECKS: L07Check[] = [
       'Only that the shapes mate — nothing else',
     ],
     correctIdx: 3,
+    why: {
+      0: 'Shapes can match across voltages. The fit does not check the supply.',
+      1: 'A plug can fit a cord rated for far less current than the load draws.',
+      2: 'Fit says nothing about damage, ratings or wiring. Check before you power up.',
+    },
     reveal:
       'A connector fitting into a receptacle does not prove the connection is correct or safe. The same coupler ships on cords of different gauges and regional voltages; identical barrels ship on supplies of different voltages and polarities. Ratings and labels govern — never the fit.',
     wrongHint: 'Identical plugs ship on very different cords and supplies. What does the shape alone actually tell you?',
@@ -233,6 +252,11 @@ export const L07_CHECKS: L07Check[] = [
       'A beginner, if a qualified person watches',
     ],
     correctIdx: 2,
+    why: {
+      0: 'Care is not qualification. Power plug wiring is qualified-person work.',
+      1: 'Availability is not qualification. This is not a who-is-free job.',
+      3: 'Watching someone does not make the work qualified. It stays with a qualified person.',
+    },
     reveal:
       'Internal wiring, termination or repair of any power plug, cord or receptacle is qualified-person work — never beginner work. Unplugging the cable makes it safe to inspect and report, not to rewire.',
     wrongHint: 'Being careful is not the standard here. Qualification is.',

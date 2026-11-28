@@ -41,6 +41,7 @@ import { BLURB_ORDER, CredentialBlurb } from './CredentialBlurb';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { readingColumn } from '../../theme/readingColumn';
 import { useUpsellAllowed } from '../../features/commercial/useTier';
+import { menuClearance, placeColor } from '../../components/nav/circleMenuPlaces';
 
 /**
  * What the Academy sets out to do.
@@ -329,7 +330,7 @@ export const CurriculumView = memo(function CurriculumView({
   // topics white · certificates full-app blue · programs purple · subjects
   // amber · the rest silver; the glossary core (green) lives in InsideStats.
   const insideGrid = useMemo((): InsideStat[] => [
-    { id: 'topics', value: academy.topics ?? (allGs.length || null), label: 'study topics', labelParts: [{ text: 'study', color: colors.blue }, { text: ' topics' }], tone: colors.textPrimary, labelTone: colors.textSecondary, onPress: () => jumpToTab('topics'), a11yLabel: `${academy.topics ?? (allGs.length || 'Loading')} study topics. Jumps to the topics list.` },
+    { id: 'topics', value: academy.topics ?? (allGs.length || null), label: 'study topics', labelParts: [{ text: 'study', color: placeColor('study') }, { text: ' topics' }], tone: colors.textPrimary, labelTone: colors.textSecondary, onPress: () => jumpToTab('topics'), a11yLabel: `${academy.topics ?? (allGs.length || 'Loading')} study topics. Jumps to the topics list.` },
     {
       id: 'certs',
       value: academy.certificates ?? (credCounts.certs || null),
@@ -350,16 +351,16 @@ export const CurriculumView = memo(function CurriculumView({
       onPress: onOpenCategory ? () => onOpenCategory('program') : undefined,
       a11yLabel: onOpenCategory ? `${academy.programs ?? (credCounts.programs || 'Loading')} full programs. Opens the Programs page.` : undefined,
     },
-    { id: 'labs', value: LAB_COUNT || null, label: 'Audio Learning\nLabs', labelParts: [{ text: 'Audio Learning\n' }, { text: 'Labs', color: colors.green }], tone: colors.textPrimary, a11yLabel: `${LAB_COUNT} audio learning labs` },
+    { id: 'labs', value: LAB_COUNT || null, label: 'Audio Learning\nLabs', labelParts: [{ text: 'Audio Learning\n' }, { text: 'Labs', color: placeColor('labs') }], tone: colors.textPrimary, a11yLabel: `${LAB_COUNT} audio learning labs` },
     { id: 'questions', value: academy.questions ?? stats.totalQuestions, label: 'practice questions', tone: SILVER },
-    { id: 'tools', value: TOOL_COUNT, label: 'pro measurement\ntools', labelParts: [{ text: 'pro measurement\n' }, { text: 'tools', color: colors.green }], tone: colors.textPrimary, a11yLabel: `${TOOL_COUNT} pro measurement tools` },
-    { id: 'calcs', value: CALC_COUNT, label: 'pro audio\ncalculators', labelParts: [{ text: 'pro audio\n' }, { text: 'calculators', color: colors.purple }], tone: colors.textPrimary, a11yLabel: `${CALC_COUNT} pro audio calculators` },
+    { id: 'tools', value: TOOL_COUNT, label: 'pro measurement\ntools', labelParts: [{ text: 'pro measurement\n' }, { text: 'tools', color: placeColor('tools') }], tone: colors.textPrimary, a11yLabel: `${TOOL_COUNT} pro measurement tools` },
+    { id: 'calcs', value: CALC_COUNT, label: 'pro audio\ncalculators', labelParts: [{ text: 'pro audio\n' }, { text: 'calculators', color: placeColor('calc') }], tone: colors.textPrimary, a11yLabel: `${CALC_COUNT} pro audio calculators` },
     { id: 'subjects', value: academy.subjects ?? (subjectsAZ.length || null), label: 'subject categories', labelParts: [{ text: 'subject', color: colors.amber }, { text: ' categories' }], tone: colors.textPrimary, labelTone: colors.textSecondary, onPress: () => jumpToTab('subjects'), a11yLabel: `${academy.subjects ?? (subjectsAZ.length || 'Loading')} subject categories. Jumps to the subjects list.` },
   ], [academy, allGs.length, subjectsAZ.length, credCounts.certs, credCounts.programs, stats.totalQuestions, onOpenCategory, jumpToTab]);
 
   return (
     <>
-    <ScrollView ref={scrollRef} style={{ flex: 1 }} contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 24 }]}>
+    <ScrollView ref={scrollRef} style={{ flex: 1 }} contentContainerStyle={[styles.scroll, { paddingBottom: menuClearance(insets.bottom) + 12 }]}>
       {/* White intro line above the counters (user request 2026-07-22). */}
       <View style={styles.discoverRow}>
         <Text style={styles.discoverHead}>Discover What’s Inside</Text>

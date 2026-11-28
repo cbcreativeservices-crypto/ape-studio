@@ -1,5 +1,5 @@
 /**
- * Module 1 — WHAT A ROOM MODEL CAN TELL YOU. A short reading module
+ * Module 2 — WHAT A ROOM MODEL CAN TELL YOU (after Create the room since RO-06, 2026-11-15). A short reading module
  * (document layout: prose only, no live display): the three kinds of number
  * in this lab, what a model can and cannot know, and the hearing-safety rule
  * for monitoring level. Ends on the shared in-flow NEXT.
@@ -34,7 +34,7 @@ export function IntroModule({ ctx }: { ctx: RoomLabCtx }) {
       </Card>
       <Card>
         <SectionTitle title="HOW THE LAB RUNS" />
-        <Caption>CREATE THE ROOM → MONITORING SETUP → EXPLORE PLACEMENT → ADD TREATMENT → REVIEW. In each live module the plan sits on top with its readouts, the controls sit below, and FULL SCREEN makes the drawing big. Drag on the plan, or slide the controls below.</Caption>
+        <Caption>CREATE THE ROOM → MONITORING SETUP → EXPLORE PLACEMENT → SUGGESTED SETUPS → ADD TREATMENT → REVIEW. In each live module the plan sits on top with its readouts, the controls sit below, and FULL SCREEN makes the drawing big. Drag on the plan, or slide the controls below.</Caption>
         <Text style={styles.note}>{ctx.guest ? (ctx.preview ? 'This lab is part of membership: design freely, but designs made in a preview are not saved.' : ctx.account ? accountDesignsLine(ctx.account) : 'You are not signed in: design freely. Nothing is saved yet — sign in before you close the app and the designs you SAVE are kept on this device.') :'Designs can be saved on this device and compared later.'}</Text>
       </Card>
       <LabNextButton />

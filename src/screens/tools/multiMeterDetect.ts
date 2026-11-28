@@ -267,7 +267,7 @@ export function analyze(input: DetectInput, state: DetectState): { raw: Detectio
       const fam = pick50 ? fam50 : fam60;
       raw.push({
         id: pick50 ? 'hum_50' : 'hum_60',
-        label: `MAINS HUM (${pick50 ? '50' : '60'} Hz)`,
+        label: `AC HUM (${pick50 ? '50' : '60'} Hz)`,
         detail: `narrow spikes at ${fam.spikes.map((f) => Math.round(f)).join(' · ')} Hz`,
         severity: fam.maxDb >= DETECT.humRedDb ? 'red' : 'amber',
       });

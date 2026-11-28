@@ -41,6 +41,7 @@ import { SceneText, useLabelMm } from '../art/sceneText';
 import { fitView, type Box } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
 import { Do, EvidenceCheck, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { micHalfway } from '../goalWords';
 import { stopKey, type Transport } from '../dock';
 import { boothNow, getBooth, updateBooth } from '../booth/boothStore';
 import { cueAtBar, useScreenSetup } from '../booth/setup';
@@ -68,7 +69,7 @@ import { PEAK_RED } from './shared';
 import { renderedSince } from './s1Guards';
 
 const TERMS = [
-  { term: 'Phantom power (+48 V)', def: 'A small DC voltage some inputs send up the mic cable to power a condenser mic. It belongs to the INPUT: on this mixer only MIC 1 has it. A balanced dynamic mic needs none and ignores it; keep +48 V off for anything not made for it (some ribbon mics, unbalanced XLR adapters, line gear on an XLR cable), and off while you patch. On most combo jacks it is on the XLR pins only: a jack plug in the center gets none.' },
+  { term: 'Phantom power (+48 V)', def: 'A small DC voltage some inputs send up the mic cable to power a condenser mic. It belongs to the INPUT: on this mixer only MIC 1 has it. A balanced dynamic mic needs none and ignores it; keep +48 V off for anything not made for it (some ribbon mics, unbalanced XLR adapters, line gear on an XLR cable), and off while you patch. On most combo jacks it is on the XLR pins only: a ¼-inch plug in the center gets none.' },
   { term: 'Talkover (ducking)', def: 'Dips the music while you speak, so the voice sits on top. Here it listens to the mic and comes back up when you stop. Real mixers differ: some dip whenever the mic is on.' },
   { term: 'Feedback', def: 'The speakers play the mic, the mic hears the speakers, round and round. When the sound comes around louder each time, it rings by itself and keeps growing — pull the mic level down at once.' },
   { term: 'Mic send', def: 'Which outputs carry the mic. MASTER always does here; BOOTH and REC only when their switch is on. Many mixers leave the mic OUT of the booth and the record output until you switch it in.' },
@@ -696,7 +697,7 @@ function PageMic({ ctx }: { ctx: PageCtx }) {
             </Scene>
           );
         },
-        bezel: [dbCell('MIC PEAK', speaking ? micPk : null), { k: 'MUSIC DIP', v: last && last.ext.duckMinDb < -0.5 ? `${last.ext.duckMinDb.toFixed(0)} dB` : '0 dB', tint: colors.amber }, marginCell, voiceCell(last)],
+        bezel: [dbCell('MIC PEAK', speaking ? micPk : null), { k: 'MUSIC DIP', caption: 'talkover dip', v: last && last.ext.duckMinDb < -0.5 ? `${last.ext.duckMinDb.toFixed(0)} dB` : '0 dB', tint: colors.amber }, marginCell, voiceCell(last)],
         params: [
           {
             kind: 'fader',
@@ -773,6 +774,8 @@ function PageMic({ ctx }: { ctx: PageCtx }) {
           // only a voice rendered AFTER the fault began: the voice still sounding
           // from before it fixed it on the spot (toddler hunt 2026-10-19)
           fixed={renderedSince(last, faultAt.current) && voiceIn(last, 'rec')}
+          // DJ-10 (owner 2026-11-15: "build waves 1 thru 3"): the second half, said at the moment the first is done
+          halfway={micHalfway(evOf(booth).mic.toRec, renderedSince(last, faultAt.current) && voiceIn(last, 'rec'))}
           hints={['Read VOICE IN on the strip: which feeds carry the mic?', 'The CROWD has it; the recording does not. What decides which outputs carry the mic?', 'Open ROUTE: the mic’s sends. Then TALK again and watch the REC meter.']}
           why="On this mixer, as on many, the mic is NOT sent to the record output (or the booth) until you switch it in. The crowd hearing the mic proves nothing about the recording: check the feed you are recording, on its own meter."
           onFixed={() => setFaultFixed(true)}

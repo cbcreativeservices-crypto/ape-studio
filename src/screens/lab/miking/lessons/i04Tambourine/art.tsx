@@ -219,7 +219,7 @@ export function TambourineArt({ view, variant }: { view: ViewId; variant: Varian
         {s.id === 'shaken' || s.id === 'crescent' ? <Shake s={s} view="top" /> : null}
         {off && H.off ? <HeldHand view="top" S={off.S} E={off.E} sk={H.off} /> : null}
         {mounted ? (
-          <HeldHand view="top" S={a.S} E={a.E} sk={H.main} cyl={H.cyl} held={<Stick a={top(s.stick!.a)} b={top(s.stick!.b)} w={13} />} />
+          <HeldHand view="top" S={a.S} E={a.E} sk={H.main} cyl={H.cyl} held={<Stick a={top(s.stick!.butt)} b={top(s.stick!.b)} w={13} />} />
         ) : (
           <HeldHand view="top" S={a.S} E={a.E} sk={H.main} cyl={H.cyl} held={<FromAbove s={s} />} />
         )}
@@ -236,7 +236,7 @@ export function TambourineArt({ view, variant }: { view: ViewId; variant: Varian
       {mounted ? (
         <>
           <EdgeOn s={s} />
-          <HeldHand view="side" S={a.S} E={a.E} sk={H.main} cyl={H.cyl} held={<Stick a={side(s.stick!.a)} b={side(s.stick!.b)} w={13} />} />
+          <HeldHand view="side" S={a.S} E={a.E} sk={H.main} cyl={H.cyl} held={<Stick a={side(s.stick!.butt)} b={side(s.stick!.b)} w={13} />} />
         </>
       ) : (
         <HeldHand view="side" S={a.S} E={a.E} sk={H.main} cyl={H.cyl} held={<EdgeOn s={s} />} />
@@ -289,7 +289,7 @@ export function tambourineHitTest(view: ViewId, variant: VariantId, u: number, v
   if (Math.abs(lu) <= rr + JOUT + tol && Math.abs(lw) <= DEPTH / 2 + tol) return Math.abs(lw) < 10 ? `tmb.jingles.${id}` : `tmb.frame.${id}`;
   if (id === 'mounted') {
     if (Math.abs(u - (-R - 30)) <= 20 + tol && v > p.c.y) return 'tmb.mount';
-    const st = s.stick!;
+    const st = { a: s.stick!.butt, b: s.stick!.b };
     const t = Math.max(0, Math.min(1, ((u - st.a.x) * (st.b.x - st.a.x) + (v - st.a.y) * (st.b.y - st.a.y)) / ((st.b.x - st.a.x) ** 2 + (st.b.y - st.a.y) ** 2)));
     if (Math.hypot(u - (st.a.x + t * (st.b.x - st.a.x)), v - (st.a.y + t * (st.b.y - st.a.y))) <= 12 + tol) return 'tmb.stick';
   }

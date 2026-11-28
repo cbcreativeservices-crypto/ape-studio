@@ -61,7 +61,7 @@ export const B11_VIEWS: Record<'coach' | 'official' | 'athlete', { side: ViewBox
 
 const W = VOICE_PART_WORDS;
 const S = SINGER_SOLIDS;
-const FIG = ill('the shared adult figure standing (players/playerPose BODY), placed round the lip point: a drawing default');
+const FIG = ill('the shared adult figure standing (players/playerPose BODY), placed around the lip point: a drawing default');
 
 const parts: Part[] = [
   { id: 'v.mouth', ...W.mouth, role: 'Where the voice leaves — almost all of it. Every distance here is measured from the lips to the front of the mic.', prov: FIG },

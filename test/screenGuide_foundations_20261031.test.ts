@@ -118,13 +118,15 @@ describe('2. each guide quotes its screen’s real names', () => {
     m4: ['AMPLITUDE', 'AMP', 'small → quiet', 'large → loud', 'LEVEL', 'THE GRAPH'],
     m5: ['FREQ B', 'A (REF)', 'B (YOURS)', 'TONE'],
     m6: ['FREQ', 'λ', 'FITS', '7 m'],
-    m7: ['THE ROOM — CAMERA FLASH', 'MIC INPUT', 'NOW', 'PROBE', 'SAME SPOT', 'FREEZE', 'MODE', 'FROZEN', 'RUN', '1 · WATCH', '2 · FREEZE', '3 · DRAG THE PROBE'],
-    m8: ['PITCH', 'OCTAVES', 'ABOVE 110', '8ve'],
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item FO-01): two steps on the display, FREEZE first; the room on a tap.
+    m7: ['THE ROOM — CAMERA FLASH', 'MIC INPUT', 'NOW', 'PROBE', 'SAME SPOT', 'FREEZE', 'MODE', 'FROZEN', 'RUN', '1 · FREEZE', '2 · DRAG THE PROBE', 'SAME WAVE, IN THE ROOM ›'],
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item FO-03): '8ve' reads 'octave(s)'.
+    m8: ['PITCH', 'OCTAVES', 'ABOVE 110', 'octaves'],
     m9: ['SEND', 'HEARD', 'YOU SEND', 'YOU HEAR', 'EAR', 'WHAT YOU HEAR — LEVEL × EAR CURVE'],
     m10: ['PHASE', 'PRESET', 'HEAR', 'ALIGNED', 'PARTIAL', 'CANCELED', 'OUT', 'INPUTS', 'SUM = A + B', 'HEAR ALIGNED — 220 / 220 Hz', 'HEAR DRIFTING — 220 / 222 Hz', 'STOP'],
     m11: ['HARMONICS', 'F0', 'SEL', 'LEVEL', 'SUM'],
     m12: ['UNMIX', 'RECIPE', 'PURE', 'HOLLOW (odd)', 'BRIGHT (all)', 'F0', 'separated'],
-    m13: ['CHAIN', 'SOURCE → AIR → MIC', 'SPL Meter', 'Frequency Counter & Tuner', 'RTA', 'Spectrogram', 'Waveform', 'RT60', 'Signal Generator', 'dBFS · uncalibrated'],
+    m13: ['CHAIN', 'SOURCE → AIR → MIC', 'SPL Meter', 'Tuner & Frequency Counter', 'RTA', 'Spectrogram', 'Waveform', 'RT60', 'Signal Generator', 'dBFS · uncalibrated'],
     m14: ['COURSE', 'COMPLETE — THE WHOLE MODEL', 'YOU BUILT THE WHOLE MODEL', 'CHECK YOURSELF', 'OPEN THE PLAYGROUND', 'FINISH ›'],
     m7cover: ['TIME', 'SPACE', 'earlier → later', 'one place → another', 'PROBE', 'FREEZE'],
     end: ['CREDITED', 'REVIEW ▾', 'PRACTICE AGAIN FROM THE START', 'DONE · BACK TO LABS', '‹ PREV'],
@@ -134,6 +136,8 @@ describe('2. each guide quotes its screen’s real names', () => {
     'SWEEP', 'CONTENT', 'SOURCE', 'SINE', 'SQUARE', 'SAW', 'TRIANGLE', 'WHITE', 'PINK', 'BROWN', 'NOISE', 'SLOW SWEEP', 'FAST SWEEP',
     'HARMONIC RICHNESS', 'ALL HARMONICS', 'FIRST 3', 'FUNDAMENTAL', 'PHASE · POLARITY', 'POLARITY +', 'POLARITY −', 'FX',
     'DELAY OFF', '30 ms', '120 ms', '400 ms', 'EQ LOW-PASS', 'LPF 2 kHz', 'LPF 500 Hz', 'Q 0.7', 'Q 4', 'PLAY', 'STOP',
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item PG-02): one MORE CONTROLS fold in the SOURCE tray.
+    'MORE CONTROLS',
   ];
   it('a name list for every course guide', () => {
     assert.deepEqual(Object.keys(NAMES).sort(), [...Object.keys(MODULES), 'm7cover', 'end'].sort());
@@ -223,7 +227,9 @@ describe('3. TRY THIS numbers are the numbers the screen prints', () => {
         assert.equal(`${((343 * tMs) / 1000).toFixed(2)} m · ${tMs.toFixed(1)} ms`, lane(c, f), `display = lane at w=${w}, c=${c}, ${f} Hz`);
       }
     }
-    assert.match(t('m7'), /The PROBE lane reads 1\.56 m/);
+    // Lab fix round 2026-11-14 (owner: "Begin fixing all bugs found and do obvious
+    // (my decision is not required) fixes"): house slang "lane" became "slider".
+    assert.match(t('m7'), /The PROBE slider reads 1\.56 m/);
     assert.doesNotMatch(t('m7'), /one wavelength, one period/);
   });
   it('M12: BRIGHT bars — the 6 px floor makes H5 and H6 the same height, and the guide says so', () => {
@@ -278,7 +284,9 @@ describe('4–5. wiring, and the accuracy chip decision (concept screens: chip o
     assert.doesNotMatch(PLAY, /useMicrophone|getUserMedia|AudioRecorder|requestRecordingPermissions|getFrame|getMeterFrame/);
     assert.match(PLAY, /const levelDb = Math\.round\(-48 \+ lvl01 \* 32\);/);
     assert.match(PLAY, /<View style=\{\[styles\.root, \{ paddingTop: insets\.top \+ 10 \}\]\}>\s*<ScreenGuideHost>\s*<ScreenGuideHintAnchor>\s*<View style=\{styles\.header\}>/);
-    assert.match(PLAY, /<ScreenGuideKey title="FOUNDATIONS PLAYGROUND" guide=\{PLAYGROUND_SCREEN_GUIDE\} \/>\s*<\/View>\s*<\/ScreenGuideHintAnchor>/);
+    // Lab fix round 2026-11-14 (owner: "Begin fixing all bugs found and do obvious
+    // (my decision is not required) fixes"): the header takes the menu tile's name.
+    assert.match(PLAY, /<ScreenGuideKey title="SOUND PLAYGROUND" guide=\{PLAYGROUND_SCREEN_GUIDE\} \/>\s*<\/View>\s*<\/ScreenGuideHintAnchor>/);
     assert.match(PLAY, /<\/ScreenGuideHost>\s*<\/View>\s*\);\s*\}/);
   });
 });

@@ -288,7 +288,10 @@ export function AuthScreen({ navigation }: Props) {
    * load path on the REAL session, so a stale broken session (e.g. an account
    * with no student record) following the guest into Main recreated the
    * load-error retry loop forever. */
-  const enterGuest = async () => {
+  // `opts.auto` = the web preview's dev auto-guest (below). It is the only
+  // caller that passes it; the button's press event never carries `auto`.
+  const enterGuest = async (opts?: { auto?: boolean }) => {
+    const auto = opts?.auto === true;
     if (!begin()) return;
     setError(null);
     // M4 (2026-09-07): the whole flow is guarded. Previously only signOut was
@@ -367,6 +370,13 @@ export function AuthScreen({ navigation }: Props) {
       // identity instead of null→'' and wiping again (QA night 2026-09-01).
       await AsyncStorage.setItem('ape:localUserId', '');
     });
+    // EVERY guest sign-in (owner 2026-11-20) [MD:D72]: the privacy notice on the
+    // main menu, then the intro video again. Not for the web preview's dev
+    // auto-guest, which runs on every browser reload.
+    if (!auto) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      (require('../../features/intro/screenIntros') as typeof import('../../features/intro/screenIntros')).oweGuestStart();
+    }
     setEntitlement('anonymous');
     // Still a guest: there is no account to buy with, so no return to the
     // Paywall (and no landing return riding along with it).
@@ -399,7 +409,7 @@ export function AuthScreen({ navigation }: Props) {
         // A read failed → no tier to restore (dev-only preview tier; the
         // auto-guest still runs instead of dying as an unhandled rejection).
         const kept = await AsyncStorage.getItem(DEV_ENTITLEMENT_KEY).catch(() => null);
-        await enterGuest();
+        await enterGuest({ auto: true });
         if (kept === 'free' || kept === 'academy' || kept === 'lapsed') setEntitlement(kept);
       })();
     }
@@ -878,7 +888,7 @@ export function AuthScreen({ navigation }: Props) {
               <View style={styles.btnStack}>
                 <StudioButton label="Create Account" variant="primary" onPress={onCreateAccount} />
                 <StudioButton label="Login" variant="secondary" onPress={onLogin} />
-                <StudioButton label="Guest Mode (Free)" variant="secondary" onPress={enterGuest} />
+                <StudioButton label="Guest Mode (Free) No Account Needed" variant="secondary" onPress={enterGuest} />
                 {/* "Browse the Glossary" removed (owner 2026-10-09): it was added on
                     2026-09-10 to keep the welcome pop-up's "no account required"
                     promise, and that pop-up is off. Guest Mode is the no-account door,

@@ -194,9 +194,12 @@ describe('4 · Modular Synth: a usable well under the tall glass', () => {
 
 describe('5 · Gain: the grouped dock keys carry the unit', () => {
   const s = read('src/screens/lab/gain/modules/modExplore.tsx');
-  it('PROCESS and LEVELS read "… dB"', () => {
-    assert.equal((s.match(/valueLabel: `\$\{g\.eq\}·\$\{g\.comp\} dB`,/g) ?? []).length, 2);
-    assert.equal((s.match(/valueLabel: `\$\{g\.fad\}·\$\{g\.bus\}·\$\{g\.out\} dB`,/g) ?? []).length, 2);
+  // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item GN-03): the dot-joined values
+  // ("-6·0 dB", "6·6·0 dB") read as a code to a beginner; the keys now name what they open. Each
+  // stage's own value, with its unit, is on its slider inside the tray.
+  it('PROCESS and LEVELS name what they open ("2 STAGES", "3 STAGES")', () => {
+    assert.equal((s.match(/valueLabel: '2 STAGES',/g) ?? []).length, 2);
+    assert.equal((s.match(/valueLabel: '3 STAGES',/g) ?? []).length, 2);
   });
   it('the widest LEVELS value still fits a 411 dp phone key at ≥ 9 pt', () => {
     // STAGE_RANGES: fad −30…10, bus −12…12, out −30…6 → "-30·-12·-30 dB".

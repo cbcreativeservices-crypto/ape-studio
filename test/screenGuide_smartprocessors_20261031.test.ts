@@ -59,7 +59,8 @@ const pageSrc = (fn: string) => {
 
 describe('1. every Smart Processors screen has a complete guide', () => {
   it('a guide per De-Esser page, in PAGES order, titles verbatim', () => {
-    const titles = [...LAB.matchAll(/\{ title: '([^']+)', short: '[^']+', Component: Page\w+ \}/g)].map((m) => m[1]);
+    // Phase 3, lab fix round (owner 2026-11-14, decision 1: "Done = work done … not when it is opened"): each page declares reading or manualDone.
+    const titles = [...LAB.matchAll(/\{ title: '([^']+)', short: '[^']+', Component: Page\w+(?:, (?:reading|manualDone): true)? \}/g)].map((m) => m[1]);
     assert.deepEqual(titles, G.DEESSER_PAGES.map((p: { title: string }) => p.title));
     assert.deepEqual(Object.keys(PAGES), G.DEESSER_PAGES.map((p: { id: string }) => p.id));
     G.DEESSER_PAGES.forEach((p: { id: string }, i: number) => assert.equal(G.deEsserPageGuide(i), PAGES[p.id]));
@@ -121,7 +122,9 @@ describe('2. every step fits its no-scroll budget', () => {
 
 describe('3. each guide quotes its screen’s real names', () => {
   const NAMES: Record<string, string[]> = {
-    home: ['Smart Processors', 'De-Esser & Sibilance Control', 'OPEN', 'CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', '‹', 'detector', 'threshold', 'gain computer'],
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, items DES-02, DES-03, DES-04):
+    // the OPEN tag is now START ›, "gain computer" left the hub, and the check is labeled for after the lab.
+    home: ['Smart Processors', 'De-Esser & Sibilance Control', 'START ›', 'AFTER THE DE-ESSER LAB', 'CHECK YOUR UNDERSTANDING', 'CORRECT', 'NOT QUITE — TRY ANOTHER', '‹', 'detector', 'threshold'],
     what: ['PHRASE', 'SPECTRUM', 'voice body', 'hiss band (2–10 kHz)', 'JUMP TO AN S', '‹', '›', 'FULL SCREEN', 'NEXT'],
     eqVs: ['STATIC EQ CUT · −', 'DE-ESSER', 'HISS BAND ALONE', 'brightness taken from everything that is not an S', 'UNDERSTANDING CHECK', 'FULL SCREEN'],
     path: ['SIGNAL PATH', 'MAIN PATH', 'SIDE CHAIN', 'NEXT BLOCK ›', 'WALK THE SIGNAL', 'STOP', 'BROADBAND', 'SPLIT-BAND', 'FULL SCREEN', 'UNDERSTANDING CHECK'],
@@ -145,11 +148,12 @@ describe('3. each guide quotes its screen’s real names', () => {
   }
   it('the drawn path-box labels the path guide quotes (pathLayout labels, drawn upper-case)', () => {
     const pl = code('src/screens/lab/deesser/pathLayout.ts');
-    for (const l of ['band-pass', 'detector', 'threshold', 'gain comp.', 'input', 'output', 'sum', 'gain']) assert.match(pl, new RegExp(`label: \\[('[a-z ·.]+', )?'${l.replace('.', '\\.')}'`), l);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, DES-03 checker fix): the block reads 'how much', not 'gain comp.'.
+    for (const l of ['band-pass', 'detector', 'threshold', 'how much', 'input', 'output', 'sum', 'gain']) assert.match(pl, new RegExp(`label: \\[('[a-z ·.]+', )?'${l.replace('.', '\\.')}'`), l);
     assert.match(pl, /label: \['band', 'split'\]/);
     assert.match(code('src/screens/lab/deesser/deEsserViz.tsx'), /\{t\.toUpperCase\(\)\}/);
     const t = textOf(PAGES.path);
-    for (const n of ['BAND-PASS', 'DETECTOR', 'THRESHOLD', 'GAIN COMP', 'BAND SPLIT', 'SUM', 'INPUT', 'OUTPUT', 'GAIN']) assert.ok(t.includes(n), n);
+    for (const n of ['BAND-PASS', 'DETECTOR', 'THRESHOLD', 'HOW MUCH', 'BAND SPLIT', 'SUM', 'INPUT', 'OUTPUT', 'GAIN']) assert.ok(t.includes(n), n);
     // WALK THE SIGNAL's order in split-band, as the guide states it
     assert.match(pl, /\['in', 'split', 'bpf', 'det', 'thr', 'gc', 'gain', 'sum', 'out'\]/);
     assert.equal(M.DEFAULTS.mode, 'split', 'the lab starts in split-band');
@@ -191,8 +195,12 @@ describe('4. every TRY THIS number is what the model prints at that setting', ()
     assert.match(pageSrc('PageEqVs'), /processPhrase\(PHRASE, \{ \.\.\.DEFAULTS, thresholdDb: -12, rangeDb: cut \}\)/);
     assert.equal(M.vowelBrightnessLossDb(M.PHRASE, eq).toFixed(1), '8.0');
     assert.equal(M.vowelBrightnessLossDb(M.PHRASE, de).toFixed(1), '0.0');
+    // owner 2026-11-25, fix-first 15 round 2: the readout is the S's DROP the strips draw
+    // (split-band, exact gain), no longer the band-centre gain reduction (7.0).
     assert.equal(M.meanSibilantGr(de).toFixed(1), '7.0');
-    assert.match(PAGES.eqVs.tryThis.join('\n'), /8\.0 dB from everything that is not an S\. Tap DE-ESSER: 0\.0 dB[\s\S]*about 7\.0 dB/);
+    assert.equal(M.meanSibilantDropDb(de).toFixed(1), '6.0');
+    assert.match(pageSrc('PageEqVs'), /const sGr = which === 'eq' \? cut : meanSibilantDropDb\(de\);/);
+    assert.match(PAGES.eqVs.tryThis.join('\n'), /8\.0 dB from everything that is not an S\. Tap DE-ESSER: 0\.0 dB[\s\S]*about 6\.0 dB/);
   });
   it('page 4: −10 all sibilants + nothing else (About right); −19 the TH; −21 the P joins; 0 nothing (Too high)', () => {
     const crossing = (t: number) => out({ ...RACK, thresholdDb: t }).filter((p: { grDb: number }) => p.grDb > 0);
@@ -243,16 +251,18 @@ describe('4. every TRY THIS number is what the model prints at that setting', ()
     assert.equal(M.meanSibilantGr(moved).toFixed(1), '1.2');
     assert.match(t, /Range down to 4\.0 dB: peak 4\.0 dB, average 3\.7 dB — Transparent/);
   });
-  it('page 7: JUMP TO AN S from frame 1 lands on frame 3 “s” at −7.2 dB; frame 8 “a” has none', () => {
+  // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item DES-05): page 7
+  // now OPENS on the first S (frame 3), instead of reaching it with JUMP TO AN S from frame 1.
+  it('page 7: opens on frame 3 “s” at −7.2 dB; frame 8 “a” has none', () => {
     const a = out(RACK);
-    assert.equal(SIB.find((i: number) => i > 0), 2);
+    assert.equal(SIB[0], 2);
     assert.equal(M.PHRASE[2].label, 's');
     assert.equal(a[2].grDb.toFixed(1), '7.2');
     assert.equal(M.PHRASE[7].label, 'a'); assert.equal(a[7].grDb, 0);
-    assert.match(pageSrc('PageMode'), /const \[step, setStep\] = useState\(0\);/);
+    assert.match(pageSrc('PageMode'), /const \[step, setStep\] = useState\(SIB\[0\]\);/);
     assert.match(pageSrc('PageMode'), /'no reduction on this frame — both modes pass it untouched'/);
     const t = PAGES.mode.tryThis.join('\n');
-    assert.match(t, /detector 6\.5 kHz, Q 1\.4, Threshold −10 dB, Range 8\.0 dB\. JUMP TO AN S lands on frame 3, “s”, at −7\.2 dB/);
+    assert.match(t, /detector 6\.5 kHz, Q 1\.4, Threshold −10 dB, Range 8\.0 dB\. The page opens on frame 3, “s”, at −7\.2 dB/);
     assert.equal(out({ ...RACK, freqHz: 4000, q: 4 })[2].grDb, 0, 'at 4.0 kHz / Q 4.0 frame 3 has none');
     assert.match(t, /frame 8, “a”: no reduction, so both modes pass it untouched/);
   });
@@ -271,7 +281,10 @@ describe('4. every TRY THIS number is what the model prints at that setting', ()
     assert.match(pageSrc('PageOver'), /threshold \$\{-Math\.round\(v \* OVER_THRESHOLD_SPAN_DB\)\} dB/);
     const t = PAGES.over.tryThis.join('\n');
     assert.match(t, /25% \(threshold −6 dB\): Transparent\. Then 45%: Controlled\. Then 75%: Lisping/);
-    assert.match(t, /100% \(threshold −24 dB\) the card reads Dull and lifeless, about 16 dB/);
+    // owner 2026-11-25, fix-first 15 round 2: the card names the gain reduction AND the drawn drop.
+    assert.equal(M.meanSibilantDropDb(out(M.overSettings(1, 'split'))).toFixed(0), '12');
+    assert.match(pageSrc('PageOver'), /ABOUT \{mean\.toFixed\(0\)\} dB GAIN REDUCTION · S’S DOWN ABOUT \{drop\.toFixed\(0\)\} dB/);
+    assert.match(t, /100% \(threshold −24 dB\) the card reads Dull and lifeless: about 16 dB of gain reduction, with the S’s down about 12 dB/);
   });
   it('page 9 + hub: the five connections, in order', () => {
     assert.deepEqual(M.CONNECTIONS.map((c: { name: string }) => c.name), ['EQ Lab', 'Compression', 'Gate / Expander', 'Visual Audio Analysis', 'Speech & Voice Lab']);
@@ -292,7 +305,9 @@ describe('5. wiring + the accuracy-chip decision', () => {
     // the shell honours all three: the end guide shows only while ending, titled WHERE YOU ARE
     assert.match(SHELL, /const guide = ending \? endGuide : def\.guide \?\? pageGuide\?\.\(page\);/);
     assert.match(SHELL, /guideTitle=\{ending \? 'WHERE YOU ARE' : def\.title\.toUpperCase\(\)\}/);
-    assert.match(SHELL, /\{accuracy \? <AccuracyNote style=\{styles\.accuracy\} detail=\{accuracyDetail\} \/> : null\}/);
+    // Lab fix round 2026-11-14 (S3's shared need, owner approval "Begin fixing all bugs found and do obvious ...
+    // fixes as you suggested in the report"): the note also takes the lab's accuracyVariant.
+    assert.match(SHELL, /\{accuracy \? <AccuracyNote style=\{styles\.accuracy\} detail=\{accuracyDetail\} variant=\{accuracyVariant\} \/> : null\}/);
   });
   it('a CONCEPT lab: nothing plays, nothing is measured, and every figure keeps its "conceptual" badge', () => {
     assert.doesNotMatch(LAB + HUB, /ApeDsp|useMicrophone|getUserMedia|AudioRecorder|startFenced/);
@@ -311,7 +326,9 @@ describe('6. the end guide is true for THIS lab’s what’s-left screen', () =>
     assert.match(END.seeing.join(' '), /WHAT'S LEFT lists each page you haven’t done[\s\S]*LAB COMPLETE[\s\S]*YOUR PROGRESS/);
   });
   it('"progress" mode: no creditLabKey / pageCreditKeys / labDoneKey, no appended check — rows read ✓ DONE, never CREDITED; the credit check is listed and drawn (D41 K8)', () => {
-    for (const p of ['creditLabKey', 'pageCreditKeys', 'labDoneKey', 'optionalPage', 'doneLabel', 'handsOnDetail', 'pageDetail']) assert.doesNotMatch(PAGED, new RegExp(p), p);
+    // Phase 3, checker K1 F-1 (owner 2026-11-14, decision 1: a page counts when its own check is met): the
+    // De-Esser now passes `pageDetail`, so each unfinished row names its page's goal. Still progress mode.
+    for (const p of ['creditLabKey', 'pageCreditKeys', 'labDoneKey', 'optionalPage', 'doneLabel', 'handsOnDetail']) assert.doesNotMatch(PAGED, new RegExp(p), p);
     assert.match(SHELL, /const creditMode: 'credit' \| 'progress' = creditLabKey \|\| pageCreditKeys\.length > 0 \? 'credit' : 'progress';/);
     assert.match(END_SCREEN, /const tag = mode === 'credit' && !isGuest \? 'CREDITED' : 'DONE';/);
     assert.match(END.seeing.join(' '), /then a CHECK row: the five Smart Processors questions\. LAB COMPLETE shows once every page is done and the check is passed/);
@@ -331,7 +348,8 @@ describe('6. the end guide is true for THIS lab’s what’s-left screen', () =>
     assert.match(SHELL, /onPracticeAgain=\{\(\) => goTo\(0\)\}/);
     assert.match(SHELL, /onJump=\{\(id\) => goTo\(Number\(id\)\)\}/);
     assert.match(SHELL, /onDone=\{\(\) => safeGoBack\(navigation\)\}/);
-    assert.match(SHELL, /noun="page"/);
+    // Owner decision 3 (quick pick, 2026-11-14): "One name per unit of progress in each lab … used everywhere" — PagedLab's end screen takes the lab's unitNoun (default module), never a fixed "page".
+    assert.match(SHELL, /noun=\{unitNoun\}/);
     // page 1 is What Sibilance Is; PRACTICE AGAIN only moves (goTo never clears marks)
     assert.match(LAB, /const PAGES: PageDef\[\] = \[\n\s*\{ title: 'What Sibilance Is'/);
     assert.match(END.control.join(' '), /PRACTICE AGAIN FROM THE START opens What Sibilance Is and clears nothing/);
@@ -345,19 +363,22 @@ describe('6. the end guide is true for THIS lab’s what’s-left screen', () =>
     assert.match(code('src/screens/lab/kit/LabNavBar.tsx'), /\{view\.pos\} \{contentsOpen \? '▴' : '▾'\}/);
     assert.match(END.control.join(' '), /‹ PREV returns to the page you came from\. WHAT'S LEFT ▾ lists every page, with START OVER \(PRACTICE\) at its foot\. START OVER asks first, then clears the page ✓ marks; a passed check stays/);
   });
-  it('what makes a page count: any control or its check (touch / markDone), or NEXT / FINISH (no manualDone page); a CONTENTS jump never', () => {
-    assert.doesNotMatch(LAB, /manualDone/);
+  // Phase 3, lab fix round (owner 2026-11-14, decision 1: "Done = work done. A page, module or lesson counts
+  // when its own goal or check is met, not when it is opened"): a page with a check is manualDone and counts
+  // on its right answer; the two pages without one are reading pages (NEXT); a control no longer counts.
+  it('what makes a page count: its check answered right (manualDone), or NEXT on a reading page; a CONTENTS jump never', () => {
     assert.match(SHELL, /if \(!pagesWithCheck\[from\]\?\.manualDone\) markDone\(\);/);
-    // pages 1–8 mark themselves on any control (touch); page 9 only on the closing question's right answer
-    for (const fn of ['PageWhat', 'PageEqVs', 'PagePath', 'PageThreshold', 'PageFrequency', 'PageGr', 'PageMode', 'PageOver']) assert.match(pageSrc(fn), /touch\(ctx\)/, fn);
-    assert.doesNotMatch(pageSrc('PageConnections'), /touch\(ctx\)/);
-    assert.match(pageSrc('PageConnections'), /onCorrect=\{\(\) => ctx\.markDone\(\)\}/);
+    assert.match(LAB, /const touch = \(_ctx: PageCtx\) => \{\};/);
+    for (const fn of ['PageEqVs', 'PagePath', 'PageThreshold', 'PageFrequency', 'PageMode', 'PageOver', 'PageConnections']) assert.match(pageSrc(fn), /onCorrect=\{\(\) => ctx\.markDone\(\)\}/, fn);
+    assert.match(LAB, /Component: PageWhat, reading: true/);
+    assert.match(LAB, /Component: PageGr, reading: true/);
+    for (const fn of ['PageEqVs', 'PagePath', 'PageThreshold', 'PageFrequency', 'PageMode', 'PageOver', 'PageConnections']) assert.match(LAB, new RegExp(`Component: ${fn}, manualDone: true`), fn);
     // goTo (CONTENTS / an end-screen row) marks nothing
     const goTo = SHELL.slice(SHELL.indexOf('const goTo = useCallback'), SHELL.indexOf('const markDone = useCallback'));
     assert.doesNotMatch(goTo, /markDone|completed/);
     const t = END.changes.join(' ');
-    assert.match(t, /use one of its controls \(not FULL SCREEN or RESET RACK TO DEFAULTS\), answer its check right, or press NEXT\. Connections & Check counts when you answer its closing question right, or tap FINISH/);
-    assert.match(t, /Opening a page from a list doesn’t count it/);
+    assert.match(t, /A page with a check counts when you answer its check right\./);
+    assert.match(t, /Opening a page, or using its controls, doesn’t count it/);
     // the two controls that do NOT count a page: FULL SCREEN (ExpandableFigure only opens) and RESET RACK TO DEFAULTS
     const fig = code('src/screens/lab/kit/ExpandableFigure.tsx');
     assert.match(fig, /onPress=\{\(\) => setFull\(true\)\}/);

@@ -100,8 +100,10 @@ describe('1. every FM screen has a complete guide', () => {
     const ci = (GUIDES.check as unknown as { intro: { learning: string; start: string } }).intro;
     const ct = [...GUIDES.check.tryThis, ci.learning, ci.start].join(' ');
     assert.doesNotMatch(ct, /INDEX to 0|carrier alone|one green stick|step RATIO and watch|\b200 Hz\b/i);
-    assert.match(GUIDES.check.tryThis[1], /On LEARN, read the INDEX entry under CONTROLS/);
-    assert.match(GUIDES.check.tryThis[0], /FC 440 and RATIO 0\.5, so FM reads 220 Hz/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(GUIDES.check.tryThis[1], /On LEARN, open CONTROLS and read the INDEX entry/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item FM-02): the readout is MOD now.
+    assert.match(GUIDES.check.tryThis[0], /FC 440 and RATIO 0\.5, so MOD reads 220 Hz/);
   });
   it('the header ▶ stays on LEARN, so LEARN never says "Nothing here plays"', () => {
     assert.match(code('src/screens/lab/LabShell.tsx'), /\{headerAction \? <View style=\{styles\.headerAction\}/);
@@ -133,9 +135,12 @@ describe('3. each guide quotes its screen’s real names', () => {
   const NAMES: Record<string, string[]> = {
     explore: [
       // the display: badge words, the legend, the axis tags
-      'SIDEBAND SPECTRUM', 'Bessel', '|J| 1', '0.5', 'Hz', 'fc', 'carrier', 'amber', 'sidebands', 'reflected below 0 Hz', 'red dashed', 'ALIASED past Nyquist',
+      // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item FM-01, FM-02, FM-03): the legend reads
+      // "green = the note · amber = new tones FM adds" plus the faint in-tune lines; the dim-dashed and
+      // red-dashed cases live in the ⓘ (guide + lesson), and the modulator readout is MOD.
+      'SIDEBAND SPECTRUM', 'Bessel', '|J| 1', '0.5', 'Hz', 'fc', 'carrier', 'amber', 'sidebands', 'the note', 'new tones FM adds', 'in-tune spots', 'red dashed',
       // bezel keys
-      'FC', 'FM', 'BW',
+      'FC', 'MOD', 'BW',
       // dock + header + rack
       'INDEX', 'RATIO', 'ENV', 'STRIKE', 'SUSTAIN', 'PLUCK', 'BELL', '110', '220', '440 Hz', '1.41 ✳', '3.5', 'LAB NOTES', 'HIDE DISPLAY', '▶', '■',
     ],
@@ -192,7 +197,8 @@ describe('4. the TRY THIS numbers are what the screen prints', () => {
     assert.match(s, /const bandTop = carrier \+ carson \/ 2;/);
     assert.match(s, /const pastNyquist = bandTop > NYQUIST;/);
     assert.match(s, /k: 'BW',\s*v: `\$\{\(carson \/ 1000\)\.toFixed\(1\)\} kHz`,\s*tint: pastNyquist \? '#ff6b5e' : undefined,/);
-    assert.match(s, /\{ k: 'FM', v: `\$\{fm\.toFixed\(0\)\} Hz`/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item FM-02): the modulator readout is MOD.
+    assert.match(s, /\{ k: 'MOD', v: `\$\{fm\.toFixed\(0\)\} Hz`/);
     assert.match(s, /onChange: \(v\) => setIndex\(Math\.round\(v \* INDEX_MAX \* 10\) \/ 10\)/); // 0.1 steps → 2.4 reachable
     assert.match(s, /format: \(\) => `I = \$\{index\.toFixed\(1\)\}`/);
     assert.match(s, /if \(a < 0\.004\) continue;/);
@@ -240,7 +246,7 @@ describe('4. the TRY THIS numbers are what the screen prints', () => {
     for (const x of sticks(220, 220, 2)) assert.ok(Math.abs(x.f / 220 - Math.round(x.f / 220)) < 1e-9, `${x.f} Hz is a multiple of 220`);
     const off = sticks(220, 220 * 1.41, 2).filter((x) => Math.abs(x.f / 220 - Math.round(x.f / 220)) > 0.05);
     assert.ok(off.length >= 4, 'at 1.41 most sticks fall between the multiples of 220 Hz');
-    assert.match(FM_SCREEN_GUIDES.explore.tryThis[1], /FM reads 220 Hz, then 310 Hz/);
+    assert.match(FM_SCREEN_GUIDES.explore.tryThis[1], /MOD reads 220 Hz, then 310 Hz/); // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item FM-02)
   });
   it('CHECK 1: FC 440 · RATIO 0.5 → FM 220 Hz; the amber pair nearest the carrier is drawn at 220 and 660 Hz (I 2.0)', () => {
     assert.equal((440 * 0.5).toFixed(0), '220');
@@ -267,7 +273,8 @@ describe('4. the TRY THIS numbers are what the screen prints', () => {
     assert.match(FM_SCREEN_GUIDES.learn.tryThis[1], /FC 440 Hz, RATIO 7 and INDEX 8: BW reads 55\.4 kHz in red, and red dashed sticks/);
   });
   it('the guide’s 24 kHz is the screen’s NYQUIST and its BW formula is the screen’s', () => {
-    assert.match(FM_SCREEN_GUIDES.explore.changes.join(' '), /BW = 2 × FM × \(I \+ 1\) estimates where most energy sits\. Weaker sticks reach past it, and any past 24 kHz fold back: aliasing\./);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item FM-02): MOD in the formula.
+    assert.match(FM_SCREEN_GUIDES.explore.changes.join(' '), /BW = 2 × MOD × \(I \+ 1\) estimates where most energy sits\. Weaker sticks reach past it, and any past 24 kHz fold back: aliasing\./);
     assert.match(FM_SCREEN_GUIDES.explore.seeing.join(' '), /red once its top passes 24 kHz/);
     // 24 kHz = half the engine's 48 kHz rate (ApeDspJni.cpp configures 48000)
     assert.match(FM_SCREEN_GUIDES.explore.seeing.join(' '), /Nyquist, 24 kHz \(half of 48 kHz\)/);
@@ -338,7 +345,10 @@ describe('5. wiring + the accuracy-chip decision', () => {
     // FC 220 / RATIO 2 / I 2: 220 Hz = J0 + J1 ≈ 0.80, 660 Hz = J1 − J2 ≈ 0.22,
     // DFT-verified 2026-10-31), so no "exact spectrum" claim (fix 2026-10-31).
     assert.match(s, /badge:\s*env\.decaySec > 0\s*\? 'SIDEBAND SPECTRUM — BESSEL AMPLITUDES Jₖ\(I\) · AT THE STRIKE'\s*: 'SIDEBAND SPECTRUM — BESSEL AMPLITUDES Jₖ\(I\) · EACH AT FC ± k·FM'/);
-    assert.match(s, /exploreCaption=\{\s*env\.decaySec > 0\s*\? '[^']*each sideband at the strike[^']*'\s*: '[^']*a dashed one merges with the stick it lands on\.'/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item FM-01): the caption drops
+    // "Bessel" and the dashed case (now in the ⓘ); PLUCK/BELL still say the sticks show the strike.
+    assert.match(s, /exploreCaption=\{\s*env\.decaySec > 0\s*\? '[^']*The sticks show the strike[^']*'\s*: '[^']*each stick is one tone[^']*'/);
+    assert.doesNotMatch(s, /exploreCaption=\{[^}]*Bessel/);
     assert.doesNotMatch(s, /exact spectrum|THE MATH THE VOICE PLAYS|EXACT BESSEL/);
     const lessons = read('src/features/lab/guidedLessons/content.ts');
     assert.doesNotMatch(lessons, /actual spectrum the voice plays/);

@@ -35,7 +35,7 @@ import { ciScreenGuide, type CiScreenKey } from './cableInstallScreenGuides';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { markLabUnit, registerLabUnits, useLabCompletion } from '../../../features/lab/labCompletion';
 import { colors, fonts } from '../../../theme/tokens';
-import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
+import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, LabNounProvider, useLabNav } from '../kit/LabNavBar';
 import { useLabEndGuest } from '../kit/LabEndScreen';
 import { ciLeftLead, ciSaveNotice, ciSaveState, ciSaveWording, type CiSaveState } from './completeCopy';
 import { useGuestWording } from '../../../features/commercial/useTier';
@@ -75,6 +75,7 @@ import { MODULE_BODIES } from './scenes';
 import { cardColumn } from '../../../theme/readingColumn';
 import { ScrollLockProvider } from '../scrollLock';
 import { safeGoBack } from '../../../lib/safeGoBack';
+import { LabRecapNext } from '../cable/labEndExtras';
 
 const STEP_KEY = 'ape:ciStep';
 const STATE_KEY = 'ape:ciState';
@@ -87,6 +88,8 @@ type CiPersisted = { dims: CiDimScores; myths: string[]; run?: string[] };
 /** Steps: 0 = intro · 1..13 = stages · 14 = completion. A pending myth
  *  interstitial renders INSTEAD of the target stage until dismissed. */
 const INTRO_STEP = 0;
+/** Where a fresh open lands (CI-04): Stage 1. */
+export const FIRST_STAGE_STEP = INTRO_STEP + 1;
 const COMPLETE_STEP = CI_MODULES.length + 1;
 
 export function CableInstallLabScreen() {
@@ -109,11 +112,16 @@ export function CableInstallLabScreen() {
   noAccountRef.current = resolved && entitlement === 'anonymous';
   const noAccount = noAccountRef.current;
 
-  const [step, setStep] = useState(INTRO_STEP);
+  // CI-04 (owner 2026-11-15: "build waves 1 thru 3"): a fresh open lands
+  // straight on Stage 1's four close-ups, not on the intro page. A saved
+  // place still restores below; the intro stays one ‹ PREV away.
+  const [step, setStep] = useState(FIRST_STAGE_STEP);
   const [dims, setDims] = useState<CiDimScores>({});
   const [shownMyths, setShownMyths] = useState<string[]>([]);
   const [pendingMyth, setPendingMyth] = useState<string | null>(null);
   const [sourceIds, setSourceIds] = useState<string[] | null>(null);
+  /** The sheet was opened from the intro: it carries the intro's long lead and the code note on top (CI-04). */
+  const [sourceLead, setSourceLead] = useState(false);
   const [showObjectives, setShowObjectives] = useState(false);
   const [showFieldCheck, setShowFieldCheck] = useState(false);
   const [width, setWidth] = useState(0);
@@ -173,7 +181,7 @@ export function CableInstallLabScreen() {
   // the stored scores and myths with what they did meanwhile. Re-read when
   // the account state changes, so a guest who signs in here gets the same.
   const readRef = useRef<'pending' | 'ok' | 'failed'>('pending');
-  const latestRef = useRef<{ step: number; dims: CiDimScores; myths: string[] }>({ step: INTRO_STEP, dims: {}, myths: [] });
+  const latestRef = useRef<{ step: number; dims: CiDimScores; myths: string[] }>({ step: FIRST_STAGE_STEP, dims: {}, myths: [] });
   latestRef.current = { step, dims, myths: shownMyths };
   // A read that follows a signed-out stretch on this mount (the guest offer's
   // SIGN IN, then back): that run was a guest's — a members-only preview,
@@ -448,6 +456,22 @@ export function CableInstallLabScreen() {
    *  it gets the full height and no ScrollView of ours; its well appends the
    *  in-flow NEXT itself (RackUnit under LabNavProvider). */
   const rackStage = !!(mod && Body && mod.rack && !myth);
+  // The INTRO drawing installs itself in about 1.5 s (introSceneArt: last
+  // reveal 740 + 620 ms after a 120 ms start). The guide card waits for it, so
+  // its "watch the drawing install itself" is not read over the drawing
+  // (S1 SN5, 2026-11-14). Reduce Motion draws it at once: no wait.
+  const ciMotion = useCiMotion();
+  const onIntro = step === INTRO_STEP && !myth;
+  const [introAnimating, setIntroAnimating] = useState(onIntro && !ciMotion.reduce);
+  useEffect(() => {
+    if (!onIntro || ciMotion.reduce) {
+      setIntroAnimating(false);
+      return;
+    }
+    setIntroAnimating(true);
+    const id = setTimeout(() => setIntroAnimating(false), 1600);
+    return () => clearTimeout(id);
+  }, [onIntro, ciMotion.reduce]);
   /** The screen the ⓘ explains: the myth card stands in for its stage; the
    *  end screen and its field check each have their own guide. */
   const guideKey: CiScreenKey = myth
@@ -473,12 +497,13 @@ export function CableInstallLabScreen() {
             : CI_TITLE.toUpperCase();
 
   return (
+    <LabNounProvider value="stage">
     <LabNavProvider value={nav}>
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
       {/* The guide overlay wraps the root's whole content (its overlay is the
           root's last child); a screen change closes an open guide. Regions
           only on the Rack Unit stage (Stage 11). */}
-      <ScreenGuideHost resetKey={guideKey} regions={rackStage}>
+      <ScreenGuideHost resetKey={guideKey} regions={rackStage} hold={introAnimating}>
       <LabHeader title={CI_TITLE.toUpperCase()} subtitle={CI_SUBTITLE} guide={ciScreenGuide(guideKey)} guideTitle={guideTitle} />
       <LabNavBar nav={nav} />
 
@@ -515,11 +540,11 @@ export function CableInstallLabScreen() {
               // A finished run's START LAB starts at stage 1, not the last
               // stage (bug hunt 2026-09-30).
               onStart={() => goTo(firstIncomplete <= CI_MODULES.length ? firstIncomplete : 1)}
-              resumeLabel={firstIncomplete > 1 && firstIncomplete <= CI_MODULES.length ? `RESUME — MODULE ${firstIncomplete}` : null}
+              resumeLabel={firstIncomplete > 1 && firstIncomplete <= CI_MODULES.length ? `RESUME — STAGE ${firstIncomplete}` : null}
               // Progress shows what is DONE, never "n of N" (owner D117; D41 C2 2026-11-01).
               progressLine={`${cleared} ${cleared === 1 ? 'unit' : 'units'} complete`}
               unreadable={progressUnreadable}
-              onSources={() => setSourceIds(['nec', 'osha', 'bldg_fire', 'ada', 'tia568', 'tia569', 'tia606', 'tia607', 'bicsi_n1', 'bicsi_itsimm', 'bicsi_tdmm', 'avixa_f502_01', 'avixa_f502_02', 'avixa_f501_01', 'avixa_verify', 'aes48', 'iso14763', 'en50174', 'nema_tray', 'mfr_cable', 'mfr_support', 'firestop_listed', 'ufgs'])}
+              onSources={() => { setSourceLead(true); setSourceIds(['nec', 'osha', 'bldg_fire', 'ada', 'tia568', 'tia569', 'tia606', 'tia607', 'bicsi_n1', 'bicsi_itsimm', 'bicsi_tdmm', 'avixa_f502_01', 'avixa_f502_02', 'avixa_f501_01', 'avixa_verify', 'aes48', 'iso14763', 'en50174', 'nema_tray', 'mfr_cable', 'mfr_support', 'firestop_listed', 'ufgs']); }}
             />
           ) : step === COMPLETE_STEP ? (
             showFieldCheck ? (
@@ -582,12 +607,19 @@ export function CableInstallLabScreen() {
       </ScrollView>
       )}
 
-      <SourceSheet sourceIds={sourceIds} onClose={() => setSourceIds(null)} />
+      <SourceSheet sourceIds={sourceIds} lead={sourceLead ? CI_INTRO_SOURCES_LEAD : undefined} onClose={() => { setSourceIds(null); setSourceLead(false); }} />
       </ScreenGuideHost>
     </View>
     </LabNavProvider>
+    </LabNounProvider>
   );
 }
+
+/** What the intro used to print above START LAB; now on top of SOURCES /
+ *  STANDARDS opened from the intro (CI-04). Nothing is lost. */
+export const CI_INTRO_LEAD =
+  'Professional cable installation is not “make the wires look neat.” It is planning the route, using the correct pathway, supporting and protecting the cable, respecting its physical limits, controlling its relationship to other systems, preserving serviceability, identifying everything — and verifying the finished installation.';
+const CI_INTRO_SOURCES_LEAD: readonly string[] = [CI_INTRO_LEAD, CI_GOVERN_NOTE];
 
 /* ── intro stage (spec §7) ──────────────────────────────────────────────── */
 function IntroStage({
@@ -616,12 +648,8 @@ function IntroStage({
   return (
     <View style={{ gap: 14 }}>
       {width > 40 ? <IntroScene w={width} /> : null}
-      <Text style={styles.introLead}>
-        Professional cable installation is not “make the wires look neat.” It is planning the route, using the correct
-        pathway, supporting and protecting the cable, respecting its physical limits, controlling its relationship to
-        other systems, preserving serviceability, identifying everything — and verifying the finished installation.
-      </Text>
-      <Text style={styles.governNote}>{CI_GOVERN_NOTE}</Text>
+      {/* CI-04: the long lead and CI_GOVERN_NOTE moved behind SOURCES /
+          STANDARDS (the sheet opened here shows both on top). */}
       <View style={{ gap: 10 }}>
         <GlassButton label={resumeLabel ?? (unreadable ? 'OPEN THE LAB' : 'START LAB')} tint="green" height={48} fontSize={14} onPress={onStart} />
         <GlassButton label="WHAT YOU’LL LEARN" tint="teal" height={44} fontSize={12.5} onPress={onToggleObjectives} />
@@ -692,6 +720,16 @@ function MasteryProfile({ dims }: { dims: CiDimScores }) {
   const overall = useCountUp(overallScore(dims), CI_MOTION.reveal);
   const rows = CI_DIMS.filter((d) => dims[d] != null);
   const worst = weakestDim(dims);
+  // Nothing scored yet: say so, never "OVERALL 0" (beginner audit
+  // 2026-11-14: a learner who walked every page read a big zero).
+  if (rows.length === 0) {
+    return (
+      <View style={styles.profileCard}>
+        <Text style={styles.profileHead}>KNOWLEDGE PROFILE · NOT SCORED YET</Text>
+        <Text style={styles.reviewLine}>Each stage you finish adds its areas here, with a score out of 100.</Text>
+      </View>
+    );
+  }
   return (
     <View style={styles.profileCard}>
       <Text style={styles.profileHead}>KNOWLEDGE PROFILE · OVERALL {overall}</Text>
@@ -820,6 +858,9 @@ function CompleteStage({
         </View>
       ) : null}
       <MasteryProfile dims={dims} />
+      {/* The recap and the next-lab card (labEndContent.ts af_cable_install, S4),
+          as the shared end screen draws them. */}
+      <LabRecapNext labId="af_cable_install" complete={done} />
       <Appear delay={CI_MOTION.base} style={{ gap: 8 }}>
         <GlassButton label="VIEW FIELD CHECK" tint="green" height={46} fontSize={13} onPress={onFieldCheck} />
         {canReview ? (

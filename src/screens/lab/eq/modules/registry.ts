@@ -36,7 +36,14 @@ export type EqModuleId =
   | 'challenges';
 
 /** Props every EQ Lab module component receives from EqModuleScreen. */
-export type EqModuleComponentProps = { width: number; focused: boolean };
+export type EqModuleComponentProps = {
+  width: number;
+  focused: boolean;
+  /** Work done (phase 3, owner's decision 1, 2026-11-14): the module calls this
+   *  when ITS OWN goal is met (its CHECK YOURSELF answered right, or its task
+   *  passed). The module counts then, never on opening. */
+  onDone?: () => void;
+};
 
 export type EqModuleDef = {
   id: EqModuleId;
@@ -48,17 +55,21 @@ export type EqModuleDef = {
 /** Modules that are BUILT — routable via EqModule { id }. Array order = the
  *  spec's lesson order (it drives the host's prev/next module nav). */
 export const EQ_MODULES: EqModuleDef[] = [
+  // EQL-01 (owner 2026-11-15: "build waves 1 thru 3", D62 adoption plan): the
+  // true beginner page, Why We Use EQ, is module 1, and the live room spectrum
+  // (mic, low-cut, bars) is module 2. Modules are credited by id, so the swap
+  // moves no earned credit.
+  {
+    id: 'whyEq',
+    title: 'Why We Use EQ',
+    blurb: 'Boost, cut, and the balance of frequency content.',
+    section: 'learn',
+  },
   {
     id: 'spectrum',
     title: 'Seeing Frequency',
     blurb:
       'Live spectrum from your phone microphone — look below 100 Hz, then cover that region with a low-cut filter.',
-    section: 'learn',
-  },
-  {
-    id: 'whyEq',
-    title: 'Why We Use EQ',
-    blurb: 'Boost, cut, and the balance of frequency content.',
     section: 'learn',
   },
   {

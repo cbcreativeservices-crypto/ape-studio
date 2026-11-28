@@ -10,7 +10,7 @@ import type { MikingLabId } from '../engine/model/types.ts';
 
 /**
  * `family` / `familyBlurb` (owner 2026-10-06): each READY lab is ONE tile on
- * the member Labs menu (labCatalog → Instruments & Recording), named by its
+ * the member Labs menu (labCatalog → Miking Techniques), named by its
  * instrument family, with a short plain line saying what is in it; the tile
  * opens that lab's lessons (MikingHub { lab }). "Those tiles … should be on
  * the member lab menu, not inside another menu." Family order IS this array's
@@ -46,7 +46,7 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'M09', labId: 'drums', title: 'Drum Overheads', subtitle: 'One mic or a pair above the kit — the floor-tom method, X/Y, ORTF and a spaced pair', status: 'ready' },
   { id: 'M10', labId: 'drums', title: 'Drum Room Mics', subtitle: 'The kit and its room — close, low in front, farther out, in the corners', status: 'ready' },
   { id: 'M11', labId: 'drums', title: 'Complete Kit Setups', subtitle: 'From one mic to every channel — plans, bleed, mono and routing', status: 'ready' },
-  { id: 'M04a', labId: 'drums', title: 'Congas', subtitle: 'A pair of hand drums: one mic or one each, top or bottom', status: 'ready' },
+  { id: 'M04a', labId: 'drums', title: 'Congas', subtitle: 'Quinto, conga and tumba: one mic, a pair, or one each — top or bottom', status: 'ready' },
   { id: 'M04b', labId: 'drums', title: 'Bongos', subtitle: 'A small pair: one mic between, two spots, or clip-ons', status: 'ready' },
   { id: 'M04c', labId: 'drums', title: 'Timbales', subtitle: 'Heads, rims and shells: one mic above, spots, or under', status: 'ready' },
   { id: 'M05', labId: 'drums', title: 'Djembe', subtitle: 'A goblet drum: one mic above first, a low mic only if it helps', status: 'ready' },
@@ -54,7 +54,7 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'M07a', labId: 'drums', title: 'Concert Bass Drum', subtitle: 'Orchestral bass drum on its stand: main pickup, one spot, never move the drum', status: 'ready' },
   { id: 'M07b', labId: 'drums', title: 'Concert Snare', subtitle: 'Orchestra and band snare: no spot, one spot, or a bottom mic', status: 'ready' },
   { id: 'M08', labId: 'drums', title: 'Headed Tambourine', subtitle: 'Head and jingles: held, shaken or mounted — one mic that covers the motion', status: 'ready' },
-  { id: 'SPK', labId: 'drums', title: 'Amplified speakers & Leslie', subtitle: 'Guitar and bass cabinets, and the rotary cabinet — from outside', status: 'ready' },
+  { id: 'SPK', labId: 'drums', title: 'Amplified Speakers and Leslie', subtitle: 'Guitar and bass cabinets, and the rotary cabinet — from outside', status: 'ready' },
   { id: 'M12', labId: 'drums', title: 'Tonbak', subtitle: 'The Persian goblet drum: one head, many strokes', status: 'ready' },
   { id: 'M13', labId: 'drums', title: 'Tabla', subtitle: 'Two drums, one instrument: the dayan and the bayan', status: 'ready' },
   // Lab 4 (strings), in catalogue order: C01, C02, C03, C04, C05A–C, C06a/b, C07, C08, C09a–c, C10, C11, C12, C13, C14, C15.
@@ -116,7 +116,7 @@ export const LESSONS: readonly LessonMeta[] = [
   { id: 'A06', labId: 'winds', title: 'Flute', subtitle: 'Metal or wooden — identify the design, then close, behind the head, in front, or a headset', status: 'ready' },
   { id: 'A07', labId: 'winds', title: 'Piccolo', subtitle: 'Half a flute, an octave up: the flute’s starting points, the ensemble first, your ears protected', status: 'ready' },
   { id: 'A08a', labId: 'winds', title: 'Clarinet', subtitle: 'The B♭ clarinet: facing the holes a third up from the bell, farther back, or a clip', status: 'ready' },
-  { id: 'A08b', labId: 'winds', title: 'Bass clarinet', subtitle: 'Bell and holes together: in front, the body-and-bell blend, the bell to compare, or a clip', status: 'ready' },
+  { id: 'A08b', labId: 'winds', title: 'Bass Clarinet', subtitle: 'Bell and holes together: in front, the body-and-bell blend, the bell to compare, or a clip', status: 'ready' },
   { id: 'A09a', labId: 'winds', title: 'Oboe', subtitle: 'Facing the holes a third up from the bell, a foot away, near the bell, or a clip', status: 'ready' },
   { id: 'A09b', labId: 'winds', title: 'Bassoon', subtitle: 'A third of the way down from the bell, a foot from the holes, high on the right, or a clip', status: 'ready' },
   { id: 'A10', labId: 'winds', title: 'Harmonica', subtitle: 'Acoustic on a stand, cupped through an amp, or the amp’s speaker — three paths', status: 'ready' },
@@ -190,6 +190,34 @@ export const LESSONS: readonly LessonMeta[] = [
 ];
 
 /** Labs with at least one ready lesson — the only ones the catalog lists. */
+/**
+ * Where a newcomer begins in each family (beginner waves 2026-11-15, MK-04;
+ * owner: "build waves 1 thru 3"). A family hub opened on a long paragraph and
+ * never said where to start; ONE line under its heading now names this lesson.
+ * A suggestion only: every lesson stays open, in any order.
+ */
+export const START_LESSON: Readonly<Record<MikingLabId, string>> = {
+  drums: 'M01',
+  percussion: 'I01a',
+  winds: 'A01',
+  strings: 'C01',
+  ensembles: 'E01',
+  field: 'F01',
+  broadcast: 'B01',
+};
+
+/** The hub's start line for a family, or '' when its start lesson is not ready. */
+export function hubStartLine(labId: MikingLabId): string {
+  const id = START_LESSON[labId];
+  const l = LESSONS.find((x) => x.id === id && x.labId === labId && x.status === 'ready');
+  return l ? `New to miking? Start with ${l.title}; modules 1 and 2 give you the foundation.` : '';
+}
+
+/** The hub's one note, right under its heading (MK-06): it used to sit under
+ *  every tile, where a beginner never scrolls, and told a silent learner to
+ *  listen. The safety point (real mics placed with the player stopped) stays. */
+export const HUB_NOTE = 'Suggested starting points, not rules. Silent drawings: no sound plays. Place real mics with the player stopped.';
+
 export function readyLabs(): MikingLabMeta[] {
   return MIKING_LABS.filter((l) => LESSONS.some((x) => x.labId === l.id && x.status === 'ready'));
 }

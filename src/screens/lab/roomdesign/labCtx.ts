@@ -10,6 +10,9 @@ export type RoomLabCtx = {
   design: RoomDesign;
   /** Functional update; the host stamps `updatedAt`. */
   update: (fn: (d: RoomDesign) => RoomDesign) => void;
+  /** Counts the module being shown as done without changing the room
+   *  (SUGGESTED SETUPS: opening a setup's report is its work). */
+  markWork: () => void;
   analysis: Analysis;
   units: Units;
   /** A signed-out guest or a members-only preview: designs are not saved,
@@ -102,4 +105,5 @@ export const BADGE = {
   exploreRect: 'CALCULATED · idealized modes of a rectangular room · ESTIMATED · reflection paths and levels',
   exploreApprox: 'ESTIMATED · modes from the smallest rectangle around the plan / mean ceiling height (not a rectangular room — less reliable) · ESTIMATED · reflections',
   treatment: 'ESTIMATED · simplified material absorption; Sabine/Eyring reverb formulas are approximations in a small room',
+  suggest: 'CALCULATED · distances and angles · ESTIMATED · bass at the seat and reflections',
 } as const;

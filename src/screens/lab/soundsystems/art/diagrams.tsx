@@ -25,7 +25,9 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { GearInSvg, INK } from './gearArt';
 import { Wedge2WayPlan, wedgeJackY } from './planArt';
 import { HeadIconSvg } from '../../../../features/lab/headIconsSvg';
-import { FigureAboveSvg } from '../../../../features/lab/figureAboveSvg';
+// (figure V2, wave 7 of D78: the performer is a cast member, the approved top view in SVG)
+import { PersonAboveSvg } from '../../../../features/lab/figureV2Svg';
+import { castFor } from '../../miking/lessons/shared/figureV2/cast';
 import { CABLE_COLORS } from './VenueView';
 
 const W = 354;
@@ -231,7 +233,7 @@ export function FeedbackLoop({ wedge, ringing, sendDb, compact, notched }: { wed
           plan figure (shoulders, arms and head — art fix 2026-10-16, was a
           lone head icon) at the wedge's own scale (a 600 mm wedge is
           WEDGE_W units across) */}
-      <FigureAboveSvg x={perf.x - 2 * S} y={perf.y} pxPerMm={WEDGE_W / 600} facingDeg={-90} />
+      <PersonAboveSvg x={perf.x - 2 * S} y={perf.y} pxPerMm={WEDGE_W / 600} facingDeg={-90} who={castFor('monitor.performer')} />
       {/* the microphone, pointing at the performer */}
       <Line x1={mic.x + 14 * S} y1={mic.y} x2={mic.x - 4 * S} y2={mic.y} stroke={INK.metalHi} strokeWidth={3.2 * S} strokeLinecap="round" />
       <Circle cx={mic.x - 6 * S} cy={mic.y} r={4 * S} fill={INK.metalMid} stroke="#000" strokeWidth={0.5} />

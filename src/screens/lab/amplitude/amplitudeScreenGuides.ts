@@ -68,7 +68,8 @@ export const AMPLITUDE_SCREEN_GUIDES: Record<AmplitudeScreenId, ScreenGuide> = {
   // ── the lab (Labs menu → Audio Fundamentals → first lab) ────────────────────
   lab: {
     intro: {
-      learning: 'How every Academy display uses one color language for level: cooler means less, warmer means more. Also how amplitude, level, peak, RMS and dB SPL differ.',
+      // AMP-04 (owner 2026-11-15, "build waves 1 thru 3", D62): one popup, one promise.
+      learning: 'This lab teaches one thing: the color key every Academy display uses for level: cooler means less, warmer means more. Shown on six displays, then three quick questions.',
       start: 'Read the color bar from LOW to HIGH. Then scroll through SIX VIEWS · ONE SIGNAL and find the short burst in WAVEFORM. Then try CHECK YOURSELF.',
     },
     seeing: [

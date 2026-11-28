@@ -24,6 +24,7 @@ import { TRIM_UNITY, dbStr, eqDb, filterQ, trimPos, type Booth, type ChannelId }
 import { alignPhase } from '../model/djDeck';
 import { filterOf } from '../engine/djDsp';
 import { useBoothKit } from './shared';
+import { eqPlotChannel, filterChannel } from './eqPlotChannel';
 
 const TERMS = [
   { term: 'EQ band', def: 'A slice of the frequency range with its own knob. This mixer has three: LOW (below about 250 Hz), MID, and HIGH (above about 2.5 kHz).' },
@@ -68,8 +69,6 @@ function PageEq({ ctx }: { ctx: PageCtx }) {
   const hits = [booth.decks.B.playing && lo2 <= 0.04, hand.current.done, hand.current.res, hand.current.far, faultFixed, check];
   const goals = GOALS_EQ.map((label, i) => ({ label, hit: hits[i] }));
   const latched = useVisitGoals(ctx, goals, 'EQ', ready);
-  const plotCh = chOf(focus);
-  const c = booth.ch[plotCh];
   // OFF as the audio hears it (djDsp.filterOf's dead zone), not "exactly 0":
   // a knob just off centre is silent, so RESONANCE stays locked and the
   // readouts say NO FILTER, matching the dock's "CH1 OFF" (toddler pass 10-19)
@@ -79,7 +78,12 @@ function PageEq({ ctx }: { ctx: PageCtx }) {
     const fs = filterOf(booth.ch[ch].filter, filterQ(booth.mixer.resonance));
     return fs.kind === 'off' ? 'OFF' : `${fs.kind === 'lp' ? 'LP' : 'HP'} ${fs.hz >= 1000 ? `${(fs.hz / 1000).toFixed(1)}k` : Math.round(fs.hz)}`;
   };
-  const filtCh: ChannelId = sel === 'f2' ? 2 : sel === 'f1' ? 1 : filterOn(2) && !filterOn(1) ? 2 : 1;
+  const filtCh: ChannelId = filterChannel(sel, filterOn(1), filterOn(2));
+  // RESONANCE plots the channel whose filter is on (owner 2026-11-25,
+  // fix-first 15): with only CH2's filter on, the plot showed CH1 and the peak
+  // never appeared. Every other knob plots its own channel.
+  const plotCh = eqPlotChannel(focus, chOf(focus), filtCh);
+  const c = booth.ch[plotCh];
   const bandDb = (v: number) => (eqDb(v) === -Infinity ? 'KILL' : dbStr(eqDb(v)));
   const shortDb = (v: number) => (eqDb(v) === -Infinity ? 'KILL' : `${Math.round(eqDb(v))}`);
   const plotH = (h: number, k = 1) => Math.round(Math.min(132 * k, h * 0.42));
@@ -153,10 +157,10 @@ function PageEq({ ctx }: { ctx: PageCtx }) {
           />
         ),
         bezel: [
-          { k: 'CH1 LOW', v: bandDb(lo1), tint: lo1 <= 0.04 ? '#ff8a7e' : colors.textPrimary },
-          { k: 'CH2 LOW', v: bandDb(lo2), tint: lo2 <= 0.04 ? '#ff8a7e' : colors.textPrimary },
+          { k: 'CH1 LOW', caption: 'bass knob', v: bandDb(lo1), tint: lo1 <= 0.04 ? '#ff8a7e' : colors.textPrimary },
+          { k: 'CH2 LOW', caption: 'bass knob', v: bandDb(lo2), tint: lo2 <= 0.04 ? '#ff8a7e' : colors.textPrimary },
           { k: `CH${filtCh} FILTER`, v: fWord(filtCh), tint: filterOn(filtCh) ? '#8fbcff' : colors.textSub },
-          { k: 'RES', v: filtersOff ? 'NO FILTER' : `${Math.round(booth.mixer.resonance * 100)}%`, tint: filtersOff ? colors.textSub : colors.amber },
+          { k: 'RES', caption: 'filter peak', v: filtersOff ? 'NO FILTER' : `${Math.round(booth.mixer.resonance * 100)}%`, tint: filtersOff ? colors.textSub : colors.amber },
         ],
         params: [
           lowKey(1),
@@ -225,7 +229,7 @@ function PageEq({ ctx }: { ctx: PageCtx }) {
         <UnderstandingCheck
           eyebrow="CHECK YOURSELF"
           question="You turn deck B’s FILTER to the right (a high-pass) and keep going. What disappears first?"
-          options={['The kick and the bass — a high-pass removes the lows first', 'The hi-hats — the highs go first', 'Everything at once, equally', 'Nothing — a filter only adds a peak']}
+          options={['The kick and the bass go first', 'The hi-hats and the cymbals go first', 'Everything fades at once, equally', 'Nothing — a filter only adds a peak']}
           correct={0}
           explain="A high-pass lets the highs through and removes everything below its edge. As you sweep it up, the edge climbs from the sub-bass: the kick and the bass go first, then the mids, leaving a thin, bright sound."
           wrong={[undefined, 'That is a low-pass (turning LEFT): it removes the highs first.', 'A filter works from one edge; it never removes all frequencies equally.', 'The peak is the resonance; the filter itself removes one side of the spectrum.']}

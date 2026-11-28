@@ -18,10 +18,12 @@
  */
 import { useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { labProbe } from '../../features/lab/labProbe';
-import { Animated, Easing, LayoutAnimation, Pressable, ScrollView, StyleSheet, Text, View, type GestureResponderEvent } from 'react-native';
+import { Animated, Easing, LayoutAnimation, Platform, Pressable, ScrollView, StyleSheet, Text, View, type GestureResponderEvent } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useAudioOutputGate } from '../../features/audio/AudioOutputGate';
+import { markSoundAsk } from '../../features/audio/soundSafetyAck';
+import { rootModalHoldMs } from '../../components/DimModal';
 import { areOverlaysSuppressed } from '../../features/dev/popupSuppressStore';
 import { GuidedLessonBody, GuidedLessonSheet, getLabLesson, type LabId } from '../../features/lab/guidedLessons';
 import { AccuracyNote } from '../../components/AccuracyNote';
@@ -34,6 +36,8 @@ import { RackUnit, useRackLeaveFull } from './rack/RackUnit';
 import { readingColumn } from '../../theme/readingColumn';
 import { fitValue } from '../../theme/legibility';
 import { LabHeader } from './kit/LabNavBar';
+import { LabCheckEnd } from './kit/LabCheckEnd';
+import { useFirstLabVisit } from './rack/learnFirstStore';
 // Screen Guide (owner 2026-10-31): opt-in header ⓘ + stepped overlay.
 import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey, type ScreenGuide } from '../../features/lab/screenGuide';
 import type { DockParam, RackStage } from './rack/rackTypes';
@@ -44,6 +48,9 @@ import { reportTrainingComplete } from '../../features/lab/trainingSignal';
 import { markLabUnit, registerLabUnits, useLabClearedUnits } from '../../features/lab/labCompletion';
 import { GuestStartReminder } from '../../features/lab/GuestStartReminder';
 import { isLabTermIntroOwed, useLabTermIntroOwed } from '../../features/intro/screenIntros';
+
+/** How long after the last touch the arrival Sound Safety ask waits (SN7). */
+export const ARRIVAL_TOUCH_QUIET_MS = 400;
 
 // The scroll-lock context moved to ./scrollLock (2026-08-23, Rack Unit kit —
 // avoids an import cycle). Re-exported here so the 30+ existing call sites
@@ -373,6 +380,19 @@ export function CollapsibleSection({
   );
 }
 
+/** The LEARN tab's fold (owner 2026-11-21: "Build all 40", collapsed-sections
+ *  proposal): CONTROLS, COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT start
+ *  CLOSED under their own titles, so the first visit reads what it is, the
+ *  outcomes and the GUIDED STEPS first. Every word is kept; nothing is
+ *  remembered (each visit starts the same). */
+function LearnFold({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <CollapsibleSection title={title} startOpen={false}>
+      {children}
+    </CollapsibleSection>
+  );
+}
+
 /** API handed to a render-prop Explore child. `setScrollLocked` lets an
  *  interactive panel disable the shell's ScrollView while a gesture is in
  *  flight, so the drag wins over scroll. */
@@ -474,8 +494,12 @@ export function LabShell({
      *  disclosure — for the task the learner arrived to perform (the guided
      *  experiment). Owner 2026-09-17: a step sheet folded inside LAB NOTES is a
      *  step sheet the learner hunts for, leaves, and comes back to. Keep this
-     *  slot short; everything that is reading, not doing, belongs in the notes. */
-    wellTop?: ReactNode;
+     *  slot short; everything that is reading, not doing, belongs in the notes.
+     *  ADDITIVE (beginner waves 2026-11-15, SN-4 from F8a HAR-01): like the
+     *  children, it may be a FUNCTION of the shell API, so a drag surface here
+     *  (Harmonics' stems) can lock the well's scroll. A plain node renders
+     *  as before. */
+    wellTop?: ReactNode | ((api: LabShellExploreApi) => ReactNode);
   };
   /** The lab's interactive Explore content. A function child receives the
    *  shell API (scroll-lock control for drag editors); a plain node renders
@@ -490,8 +514,24 @@ export function LabShell({
   const navigation = useNavigation();
   const { requestAudioOutput } = useAudioOutputGate();
   const [mode, setMode] = useState<LabMode>('explore');
+  // FIRST VISIT OPENS ON LEARN (phase 3, owner's decision 3; report section 3
+  // row 11): a rack lab's plain explanation sits on LEARN, and a newcomer
+  // landed on EXPLORE. Once known (rack/learnFirstStore), a first visit turns
+  // to LEARN unless the learner already picked a tab; later visits open on
+  // EXPLORE as before.
+  const firstVisit = useFirstLabVisit(labId, !!rack);
+  const pickedTabRef = useRef(false);
+  useEffect(() => {
+    if (firstVisit === true && !pickedTabRef.current) setMode('learn');
+  }, [firstVisit]);
   const modes = modesFor(labId);
   const hasCheck = modes.some((m) => m.key === 'check');
+  /** "Done here? Try CHECK ›" (SN-5): exactly what pressing the CHECK tab does. */
+  const openCheck = () => {
+    pickedTabRef.current = true;
+    setScrollLocked(false);
+    setMode('check');
+  };
   const shownGuide = typeof guide === 'function' ? guide(mode) : mode === 'explore' ? guide : undefined;
   /**
    * Already passed on an earlier visit?
@@ -567,11 +607,34 @@ export function LabShell({
   // fade). Asked at most once per visit.
   const labTermFirst = useLabTermIntroOwed();
   const entryAskedRef = useRef(false);
+  // S1's SN1 (lab fix round 1, 2026-11-14, row 2; owner: "Once per session
+  // (Recommended)"): the arrival ask is an `auto` ask (it never counts as a
+  // tap on ▶), and once a first-open card has closed it asks RIGHT AWAY (after
+  // any closing Modal's fade, rootModalHoldMs), so the sheet is up before the
+  // page takes a tap — never 1.2 s later, on the learner's next tap.
+  const waitedRef = useRef(false);
+  // NEVER UNDER A FINGER (S1's SN7; checker K4: on Oscillators the first
+  // EXPLORE tap raised the sheet and the tab stayed on LEARN). The fallback
+  // timer can fire while a press is in flight; the sheet's Modal then lands
+  // under the finger and the press never completes. The ask waits until no
+  // finger is down and the last one lifted ARRIVAL_TOUCH_QUIET_MS ago.
+  const touchingRef = useRef(false);
+  const touchAtRef = useRef(0);
   useEffect(() => {
-    if (labTermFirst || entryAskedRef.current) return undefined;
+    if (labTermFirst) {
+      waitedRef.current = true;
+      return undefined;
+    }
+    if (entryAskedRef.current) return undefined;
     let done = false;
+    let later: ReturnType<typeof setTimeout> | null = null;
     const ask = () => {
       if (done) return;
+      if (touchingRef.current || Date.now() - touchAtRef.current < ARRIVAL_TOUCH_QUIET_MS) {
+        if (later) clearTimeout(later);
+        later = setTimeout(ask, ARRIVAL_TOUCH_QUIET_MS + 50);
+        return;
+      }
       done = true;
       // Low-Light Production Mode (and the dev popup kill-switch): nothing
       // auto-appears — bug hunt 2026-09-29. The gate still asks when the
@@ -579,15 +642,28 @@ export function LabShell({
       if (areOverlaysSuppressed()) return;
       if (isLabTermIntroOwed()) return; // the effect re-runs when it clears
       entryAskedRef.current = true;
+      markSoundAsk('auto'); // an ask nobody tapped for (owner 2026-11-14: once per session)
       void requestAudioOutput();
     };
+    // A first-open card just closed: ask NOW (after any closing Modal's fade).
+    if (waitedRef.current) {
+      const t = setTimeout(ask, rootModalHoldMs());
+      return () => {
+        done = true;
+        clearTimeout(t);
+        if (later) clearTimeout(later);
+      };
+    }
     const unsub = (navigation as any).addListener('transitionEnd', (e: { data?: { closing?: boolean } }) => {
       if (!e?.data?.closing) setTimeout(ask, 120);
     });
-    const fallback = setTimeout(ask, 1200);
+    // The web preview sends no transitionEnd, so it asks after a short beat;
+    // iOS and Android keep the same 1200 ms fallback (platform parity).
+    const fallback = setTimeout(ask, Platform.OS === 'web' ? 150 : 1200);
     return () => {
       done = true;
       clearTimeout(fallback);
+      if (later) clearTimeout(later);
       unsub?.();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -615,7 +691,35 @@ export function LabShell({
   );
 
   return (
-    <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
+    <View
+      style={[styles.root, { paddingTop: insets.top + 10 }]}
+      onTouchStart={() => {
+        touchingRef.current = true;
+        touchAtRef.current = Date.now();
+      }}
+      onTouchEnd={() => {
+        touchingRef.current = false;
+        touchAtRef.current = Date.now();
+      }}
+      onTouchCancel={() => {
+        touchingRef.current = false;
+        touchAtRef.current = Date.now();
+      }}
+      // The browser preview has a mouse and react-native-web sends it no
+      // touch events: the same guard listens to it there (web only).
+      {...(Platform.OS === 'web'
+        ? ({
+            onMouseDown: () => {
+              touchingRef.current = true;
+              touchAtRef.current = Date.now();
+            },
+            onMouseUp: () => {
+              touchingRef.current = false;
+              touchAtRef.current = Date.now();
+            },
+          } as object)
+        : null)}
+    >
       {/* Screen Guide host (opt-in `guide`): its overlay renders as this
           root's last child; a tab switch, or an in-screen MODE that swaps
           the guide (guideIdOf), closes an open guide. Regions only when the
@@ -640,6 +744,7 @@ export function LabShell({
               style={[styles.tab, selected && { borderColor: c, backgroundColor: c + '1e' }]}
               onPress={() => {
                 // A tab press can land mid-drag; free the scroll lock too.
+                pickedTabRef.current = true;
                 setScrollLocked(false);
                 setMode(m.key);
               }}
@@ -691,7 +796,12 @@ export function LabShell({
                     reportTrainingComplete(trainingKeyForCheck(labId));
                   }}
                 />
-                {checkEnd ?? null}
+                {/* Every check ends on FINISH · SEE WHAT'S LEFT (lab fix round 1,
+                    2026-11-14, quick win 4, S2's SHARED NEED; owner: "Begin
+                    fixing all bugs found and do obvious ... fixes as you
+                    suggested in the report"): a lab that passes no checkEnd of
+                    its own gets the shared what's-left layer. */}
+                {checkEnd ?? <LabCheckEnd labId={labId} labTitle={checkTitle ?? title} />}
               </View>
             </ScrollView>
             </View>
@@ -699,10 +809,13 @@ export function LabShell({
           {mode === 'learn' ? (
             <ScrollView contentContainerStyle={[styles.scroll, readingColumn, scrollPad]}>
               <View style={styles.panel}>
-                <Text style={styles.caption}>
-                  What this lab teaches — definitions, common mistakes, pro tips, and the formula.
-                </Text>
-                <GuidedLessonBody lesson={lesson} />
+                {/* SN-5 (F7a EQ-05; owner 2026-11-15: "build waves 1 thru 3",
+                    D62): a line in, a line out. The caption that only repeated
+                    the section heads below it ("definitions, common mistakes,
+                    pro tips, and the formula") is gone; the reading ends on
+                    one step to the CHECK tab instead. */}
+                <GuidedLessonBody lesson={lesson} fold={LearnFold} />
+                {hasCheck ? <TryCheckLine onPress={openCheck} /> : null}
               </View>
             </ScrollView>
           ) : null}
@@ -723,7 +836,7 @@ export function LabShell({
                   {/* The first-move instruction stays OUTSIDE the disclosure
                       (house rule, design pass 2026-08-31): an instruction
                       inside a collapsed section is an instruction unread. */}
-                  {rack.wellTop}
+                  {typeof rack.wellTop === 'function' ? rack.wellTop(api) : rack.wellTop}
                   <Text style={styles.caption}>{exploreCaption}</Text>
                   <CollapsibleSection title="LAB NOTES" keepMounted>
                     <Text style={styles.intro}>{intro}</Text>
@@ -737,6 +850,9 @@ export function LabShell({
                     >
                       <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — long-press any control for its own entry</Text>
                     </Pressable>
+                    {/* SN-5: the notes end on one step to CHECK. Inside the
+                        disclosure, so the open well gains nothing. */}
+                    {hasCheck ? <TryCheckLine onPress={openCheck} /> : null}
                   </CollapsibleSection>
                 </View>
               )}
@@ -748,10 +864,10 @@ export function LabShell({
           <ScrollView contentContainerStyle={[styles.scroll, scrollPad]} scrollEnabled={!scrollLocked}>
             {mode === 'learn' ? (
               <View style={styles.panel}>
-                <Text style={styles.caption}>
-                  What this lab teaches — definitions, common mistakes, pro tips, and the formula.
-                </Text>
-                <GuidedLessonBody lesson={lesson} />
+                {/* SN-5: the caption that repeated the section heads is gone
+                    here too. No CHECK line: this (non-rack) branch draws no
+                    CHECK view. */}
+                <GuidedLessonBody lesson={lesson} fold={LearnFold} />
               </View>
             ) : null}
 
@@ -786,6 +902,18 @@ export function LabShell({
       <GuidedLessonSheet visible={lessonOpen} lesson={lesson} onClose={() => setLessonOpen(false)} />
       </ScreenGuideHost>
     </View>
+  );
+}
+
+/** One short step from the end of LEARN or of LAB NOTES to the CHECK tab
+ *  (SN-5 from F7a EQ-05, beginner waves 2026-11-15; owner: "build waves 1
+ *  thru 3", D62). Drawn in the CHECK tab's own blue. Only in a lab that has a
+ *  CHECK tab. */
+function TryCheckLine({ onPress }: { onPress: () => void }) {
+  return (
+    <Pressable style={styles.tryCheck} onPress={onPress} hitSlop={6} accessibilityRole="button" accessibilityLabel="Done here? Open the CHECK tab">
+      <Text style={styles.tryCheckText}>Done here? Try CHECK ›</Text>
+    </Pressable>
   );
 }
 
@@ -880,6 +1008,9 @@ const styles = StyleSheet.create({
   // Rack mode: the frame fills the shell; hidden (not unmounted) during LEARN.
   rackFill: { flex: 1 },
   rackHidden: { display: 'none' },
+  /** SN-5: "Done here? Try CHECK ›", in the CHECK tab's blue. */
+  tryCheck: { alignSelf: 'flex-start', minHeight: 44, justifyContent: 'center' },
+  tryCheckText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: MODE_COLORS.check },
 
   section: { borderRadius: 10, borderWidth: 1, borderColor: '#232329', backgroundColor: '#101014' },
   sectionHead: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12 },

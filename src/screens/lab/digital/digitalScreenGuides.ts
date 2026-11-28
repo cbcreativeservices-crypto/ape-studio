@@ -26,20 +26,20 @@ import type { DigitalModuleId } from './modules/registry';
 export const DIGITAL_HOME_GUIDE: ScreenGuide = {
   intro: {
     learning: 'How sound becomes numbers and back again: sampling measures the wave in time, bit depth measures its level, and a converter rebuilds a smooth wave from the numbers.',
-    start: 'Read the top row from SOUND to SOUND: that’s the whole chain. Then tap the first module’s name to read what it covers, and tap OPEN to start it.',
+    start: 'Read the top lines: that’s the whole chain. Then tap START: it opens the first module still to do. Or tap a module’s name to read what it covers, and tap OPEN.',
   },
   seeing: [
     'Read the top row left to right. It’s the whole chain: SOUND › ANALOG › SAMPLES › NUMBERS … › LOUDSPEAKER › SOUND.',
-    'THE EIGHT MODULES lists the lab in order, one row each. A ✓ marks a module you’ve opened.',
-    'SECONDARY TOOLS and LEARNING are shortcuts into a module or a calculator, and to the GUIDED LESSON.',
+    'THE EIGHT MODULES lists the lab in order, one row each. A ✓ marks a module whose checks you’ve answered right.',
+    'SHORTCUTS (at the foot): SECONDARY TOOLS and LEARNING jump to a module, a calculator or the GUIDED LESSON.',
     'The level, float and jitter scenes are illustrations for comparing settings.',
   ],
   control: [
-    'Tap a module’s name to read what it covers. Tap OPEN to start it.',
+    'START opens the first module still to do. A module’s name shows what it covers; OPEN starts it.',
     'Tool chips jump straight in: SAMPLE INSPECTOR opens Module 4, ALIASING EXPLORER Module 2, DITHER COMPARATOR Module 3, TRUE-PEAK EXPLORER Module 7, CLOCK & JITTER Module 8.',
     'DATA-RATE CALCULATOR, BUFFER LATENCY CALC and FFT RESOLUTION CALC open their calculators. MYTH vs REALITY and KNOWLEDGE CHECKS both open Module 8. Every module also has its own checks at the bottom.',
-    'In a module, the display is on top with readouts on its frame, and the controls sit in the dock below. Scroll down for notes and checks. Tap ⓘ beside the title to have the screen explained.',
-    'SEE WHAT’S LEFT lists the modules you haven’t opened. ‹ leaves the lab.',
+    'In a module, the display is on top with readouts on its frame, and the controls sit in the dock below. Scroll down for notes and checks.',
+    'SEE WHAT’S LEFT lists the modules still to do. ‹ leaves the lab.',
   ],
   changes: [
     'Modules 1–2 start with the analog signal, then measure it in time: sampling, Nyquist and aliasing.',
@@ -64,11 +64,11 @@ export const DIGITAL_HOME_GUIDE: ScreenGuide = {
 export const DIGITAL_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'A review of the digital chain: measuring time, measuring level, conversion, rebuilding the wave and timing errors, and which of these ideas you still have to explore.',
-    start: 'Read the list to see which modules you haven’t opened yet. Tap the first row to open it, or tap REVIEW ▾ to go back to a module you’ve already opened.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
-    'This is WHAT’S LEFT: the modules of this lab you haven’t opened yet. When none are left, the title reads LAB COMPLETE.',
-    'The modules you’ve opened fold into one ✓ CREDITED row (✓ DONE if you’re not signed in). Tap REVIEW ▾ to list them.',
+    'This is WHAT’S LEFT: the modules of this lab still to do. When none are left, the title reads LAB COMPLETE.',
+    'The modules you’ve done fold into one ✓ CREDITED row (✓ DONE if you’re not signed in). Tap REVIEW ▾ to list them.',
   ],
   control: [
     'Tap a module’s row to open it.',
@@ -76,7 +76,7 @@ export const DIGITAL_END_GUIDE: ScreenGuide = {
     'DONE · BACK TO LABS goes back one screen. If you came from FINISH on Module 8, it takes you to the lab menu. If you came from the menu, it takes you out of the lab.',
   ],
   changes: [
-    'A module counts as done as soon as you open it, and its row moves from the list into the ✓ row.',
+    'A module counts once every CHECK YOURSELF on it is answered right; then its row moves from the list into the ✓ row. Opening it is not enough.',
     'If your progress can’t be loaded, the title reads YOUR PROGRESS and every module stays listed and open.',
   ],
   teaches: [
@@ -136,7 +136,7 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
     seeing: [
       'The amber sine is the INPUT — CONTINUOUS. Each white dot is one sample, a single measurement. The green line is the sample clock.',
       'Push the input above Nyquist and it dims (TRUE INPUT (DIM) — ABOVE NYQUIST). A red ALIAS curve shows the lower tone the same dots fit.',
-      'Readouts: FS (here the sample rate, not full scale), INPUT, NYQUIST (half of FS) and READS AS, the frequency the samples really describe.',
+      'Readouts: RATE (the sample rate), INPUT, NYQUIST (half of RATE) and READS AS, the frequency the samples really describe.',
     ],
     control: [
       'FREQ fader sets the input, from 100 Hz up to 30 kHz at 48k. From 8k to 48k it can cross NYQUIST; at 96k and 192k it stops below it. ZOOM fader goes from single samples to many cycles.',
@@ -146,8 +146,8 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
     ],
     changes: [
       'Below NYQUIST the dots follow the input, so READS AS equals INPUT.',
-      'Above it, the same dots fit a lower sine exactly. READS AS turns red and shows where the input folds: the gap from INPUT to the nearest FS multiple.',
-      'A higher FS raises NYQUIST. That buys more bandwidth, not a smoother wave.',
+      'Above it, the same dots fit a lower sine exactly. READS AS turns red and shows the fold: the gap from INPUT to the nearest RATE multiple.',
+      'A higher RATE raises NYQUIST. That buys more bandwidth, not a smoother wave.',
       'The filter turns content above CUTOFF down BEFORE sampling, so less can fold. Once sampled, an alias can’t be removed.',
     ],
     teaches: [
@@ -170,8 +170,8 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
       start: 'Switch BITS from 4-BIT to 16-BIT and watch LEVELS and TH. SNR jump. Then set 8-BIT, turn ERROR on, and pull LEVEL down below −24 dBFS.',
     },
     seeing: [
-      'Two cycles of a sine and the level grid it must round to. AMBER = ORIGINAL · BLUE = SAMPLED · GREEN = STORED/RESULT · RED = ROUNDING ERROR.',
-      'Up to 4 bits you can see every level line. Above that, there are so many that they merge into a fine band.',
+      'Two cycles of a sine and the level grid it must round to. Amber is the original, blue sampled, green stored, red the rounding error.',
+      'Full scale is fixed: LEVEL moves only the sine, BITS redraws the level lines. Levels too close to draw apart (about 8 bits and up) show as a shaded band.',
       'Readouts: BITS, LEVELS, TH. SNR (theoretical signal-to-noise ratio) and PEAK (the sine’s level).',
     ],
     control: [
@@ -212,7 +212,7 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
     ],
     control: [
       'SAMPLE fader steps through the samples, #0 to #27. You can also drag across the strip itself.',
-      'RESET REG key sets the register back to 0100 0000 0000 0000 (+16,384).',
+      'RESET BITS key sets the register back to 0100 0000 0000 0000 (+16,384).',
       'Below the display, tap any of the 16 bit switches to flip it. Each one shows its weight; the MSB (top bit) reads SIGN.',
     ],
     changes: [
@@ -238,22 +238,22 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
   adc: {
     intro: {
       learning: 'How a converter turns a voltage into samples, block by block, and why gain is set before conversion: too low buries it in noise, too high clips it for good.',
-      start: 'Pull INPUT to the bottom and watch ZONE read TOO LOW. Push it to the top for A+D CLIP. Then bring it back until ZONE reads RIGHT.',
+      start: 'Pull INPUT to the bottom and watch ZONE read TOO LOW. Push it to the top for CLIP, both stages. Then bring it back until ZONE reads RIGHT.',
     },
     seeing: [
-      'A level scene: the wave between 0 dBFS (full scale) and the analog rail, above the noise floor, with ANLG and DIG meters.',
+      'A level scene: the wave between 0 dBFS (full scale) and the analog rail; ANLG (analog) and DIG (digital) meters.',
       'The strip reads TOO LOW · RIGHT · TOO HIGH; its marker shows where your level sits.',
-      'Readouts: PEAK (recorded peak, dBFS), SNR, HEADROOM (room left below 0 dBFS) and ZONE.',
+      'Readouts: PEAK (recorded peak, dBFS), SNR, HEADROOM (room left under 0 dBFS), ZONE.',
       'The noise floor here is far louder than a real converter’s, so use SNR to compare settings, not as a real figure.',
     ],
     control: [
       'INPUT fader (−54 to +12 dB) is the analog gain into the converter: the one knob in this scene.',
-      'Below the display, THE CONVERSION CHAIN: tap a block to see its job, its input and output, and what its failure sounds like. SIMPLIFIED, STANDARD and X-RAY change the detail.',
-      'Further down, SAMPLE & HOLD — WATCH ONE CELL WORK shows a sample being caught and held, slowed about 1000 times.',
+      'Open PART 2 below the display for THE CONVERSION CHAIN: tap a block to see its job, its input and output, and what its failure sounds like. SIMPLIFIED, STANDARD and X-RAY change the detail.',
+      'Also in PART 2, SAMPLE & HOLD — WATCH ONE CELL WORK shows a sample being caught and held, slowed about 1000 times.',
     ],
     changes: [
       'More INPUT lifts PEAK and SNR together and shrinks HEADROOM: the signal climbs away from a noise floor that stays put.',
-      'With INPUT just above 0 dB, the analog stage rounds the peaks (AN. CLIP). A little higher, the converter cuts flat tops (A+D CLIP).',
+      'With INPUT just above 0 dB, the analog stage rounds the peaks (ZONE: CLIP, analog). A little higher, the converter cuts flat tops too (CLIP, both stages: analog and digital).',
       'Here the preamp clips first. On most real interfaces, the converter reaches 0 dBFS first.',
     ],
     teaches: [
@@ -264,8 +264,8 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
     ],
     tryThis: [
       'At the start (INPUT −14 dB): PEAK −14.5 dBFS, SNR 46 dB in this scene, ZONE RIGHT. Pull INPUT to the bottom: −54.0 dBFS, SNR 6 dB, TOO LOW.',
-      'Push INPUT to the top (+12 dB): PEAK reads 0.0 OVER, HEADROOM none, ZONE A+D CLIP.',
-      'Ease INPUT to between +1 and +1.8 dB: ZONE reads AN. CLIP while PEAK is still just below 0 dBFS. The damage happens before the converter.',
+      'Push INPUT to the top (+12 dB): PEAK reads 0.0 OVER, HEADROOM none, ZONE CLIP, both stages.',
+      'Ease INPUT to between +1 and +1.8 dB: ZONE reads CLIP, analog, while PEAK is still just below 0 dBFS. The damage happens before the converter.',
     ],
   },
 
@@ -284,7 +284,7 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
       'GAIN fader sets the bus peak, −6.0 to +6.0 dBFS. It starts at the top.',
       'TRIM toggle turns the bus back down by the gain you added, before the output.',
       'VALUE fader picks one float number, from −3.9811 through nearly zero to +3.9811.',
-      'Scroll below the display for the INTEGER vs FLOATING POINT range bars, the float panel, a check and the myths.',
+      'Below the display: a check and the myths. Open PART 2 for the INTEGER vs FLOATING POINT range bars and the float panel.',
     ],
     changes: [
       'Float has room above 0 dBFS: an over-zero peak is just a bigger number, so TRIM brings the wave back intact.',
@@ -308,22 +308,22 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
   dac: {
     intro: {
       learning: 'How a DAC turns samples back into one smooth, continuous wave, not a staircase, and why the true peak between samples can be higher than any sample.',
-      start: 'In LAYERS, turn off SAMPLES and ZOH and compare RECONSTRUCTED with ORIGINAL. Then push ISP FREQ to the top and move PHASE to see TRUE PK rise above SAMPLE PK.',
+      start: 'In LAYERS, turn off SAMPLES and HELD STEPS and compare RECONSTRUCTED with ORIGINAL. Then push TONE FREQ to the top and move PHASE to see TRUE PK rise above SAMPLE PK.',
     },
     seeing: [
-      'Samples rebuilt into a continuous voltage, slowed down. SAMPLES are the dots. ZOH (zero-order hold) is the dim held steps inside the converter. RECONSTRUCTED is the output; ORIGINAL is what was recorded.',
+      'Samples rebuilt into a continuous voltage, slowed down. SAMPLES are the dots. HELD STEPS (ZOH) are the dim steps inside the converter. RECONSTRUCTED is the output; ORIGINAL is what was recorded.',
       'X-RAY adds DAC CLOCK ticks and a RECON LPF (low-pass filter) inset.',
-      'Readouts: FS (48 kHz), MODE, LAYERS. Move ISP FREQ or PHASE for INTER-SAMPLE PEAKS: SAMPLE PK, TRUE PK (dBTP, true-peak dB), MISSED.',
+      'Readouts: RATE (48 kHz), MODE, LAYERS. Move TONE FREQ or PHASE for INTER-SAMPLE PEAKS: SAMPLE PK, TRUE PK (dBTP, true-peak dB), MISSED.',
     ],
     control: [
-      'MODE key: SIMPLIFIED (samples and the rebuilt wave, no steps), STANDARD (adds the ZOH steps) or X-RAY (adds the DAC CLOCK ticks and the RECON LPF inset).',
-      'LAYERS key turns SAMPLES, ZOH, RECONSTRUCTED and ORIGINAL on or off. SIMPLIFIED hides ZOH.',
-      'OS RATE key: 1×, 2×, 4× or 8× oversampling. It drives the SPECTRAL IMAGES & OVERSAMPLING panel below.',
-      'ISP FREQ (19.2–23.5 kHz) and PHASE (0–180°) faders set the near-Nyquist sine of the INTER-SAMPLE PEAK EXPLORER.',
+      'MODE key: SIMPLIFIED (samples and the rebuilt wave, no steps), STANDARD (adds the HELD STEPS) or X-RAY (adds the DAC CLOCK ticks and the RECON LPF inset).',
+      'LAYERS key turns SAMPLES, HELD STEPS, RECONSTRUCTED and ORIGINAL on or off. SIMPLIFIED hides the HELD STEPS.',
+      'OVERSAMPLE RATE key: 1×, 2×, 4× or 8× oversampling. It drives the SPECTRAL IMAGES & OVERSAMPLING panel below.',
+      'TONE FREQ (19.2–23.5 kHz) and PHASE (0–180°) faders set the near-Nyquist sine of the INTER-SAMPLE PEAK EXPLORER.',
     ],
     changes: [
       'RECONSTRUCTED passes through every dot and cuts smoothly through the steps, never along their flat tops or square edges. It lies on ORIGINAL.',
-      'ZOH steps are a stage inside the converter, not the output.',
+      'Held steps are a stage inside the converter, not the output.',
       'Oversampling moves the first spectral image up (near 384 kHz at 8×), so the analog filter can be gentle. It adds no information.',
       'Every sample can sit below 0 dBFS while the wave between them rises above.',
     ],
@@ -334,9 +334,9 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
       'Peaks hide most easily near Nyquist, where only about two samples fall on each cycle.',
     ],
     tryThis: [
-      'In LAYERS, turn off SAMPLES and ZOH: RECONSTRUCTED and ORIGINAL sit right on top of each other.',
-      'Push ISP FREQ to the top and set PHASE to 45°: TRUE PK reads about +2.9 dBTP and MISSED about 3 dB, while the samples are still at −0.10 dBFS.',
-      'Keep ISP FREQ there and set PHASE to 90°: a sample lands on the crest, so TRUE PK reads −0.10 dBTP and MISSED 0.00 dB.',
+      'In LAYERS, turn off SAMPLES and HELD STEPS: RECONSTRUCTED and ORIGINAL sit right on top of each other.',
+      'Push TONE FREQ to the top and set PHASE to 45°: TRUE PK reads about +2.9 dBTP and MISSED about 3 dB, while the samples are still at −0.10 dBFS.',
+      'Keep TONE FREQ there and set PHASE to 90°: a sample lands on the crest, so TRUE PK reads −0.10 dBTP and MISSED 0.00 dB.',
     ],
   },
 
@@ -354,7 +354,7 @@ export const DIGITAL_SCREEN_GUIDES: Record<DigitalModuleId, ScreenGuide> = {
     control: [
       'JITTER fader sets the peak timing error, ±0.0 to ±8.0 ns. It starts at ±4.8 ns.',
       'Tap the JITTER key for JITTER MODE: RANDOM (each sample early or late by chance) or PERIODIC (the clock wobbles in a pattern).',
-      'Scroll down for three panels: CLOCKING — ONE MASTER, THE REST FOLLOW, then MODULE 8 · MYTH vs REALITY, then DATA RATE — THE MENTAL MATH. The checks come after them.',
+      'Scroll down for two folds. PART 2 holds MODULE 8 · MYTH vs REALITY, DATA RATE — THE MENTAL MATH and the checks; PART 3 holds CLOCKING — ONE MASTER, THE REST FOLLOW.',
     ],
     changes: [
       'Jitter is a timing error, not rounding: the right voltage measured at the wrong moment is a wrong value.',

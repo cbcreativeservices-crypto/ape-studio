@@ -49,11 +49,11 @@ export function IntroModule({ width, focused }: CymaticsModuleProps) {
           width={width}
           aspect={width / 96}
           title="PRESSURE WAVE"
-          badge="ILLUSTRATIVE — AIR MOLECULES, LONGITUDINAL WAVE"
+          badge="Illustrative: air molecules in a longitudinal wave."
           render={(w, h) => (
             <View style={{ width: w, height: h, borderRadius: 10, overflow: 'hidden' }}>
               <viz.PressureWaveStrip width={w} height={h} running={focused} />
-              <FigBadge text="ILLUSTRATIVE — AIR MOLECULES, LONGITUDINAL WAVE" />
+              <FigBadge text="Illustrative: air molecules in a longitudinal wave." />
             </View>
           )}
         />
@@ -76,7 +76,7 @@ export function IntroModule({ width, focused }: CymaticsModuleProps) {
           width={width - 26}
           aspect={1 / 0.66}
           title="SAND ON THE PLATE"
-          badge="SIMULATION · 240 mm ALUMINUM · CENTER-DRIVEN"
+          badge="A simulation: a 240 mm aluminum plate, driven at the center."
           // The page's own AT / OFF RESONANCE chips ride along, docked under
           // the plate in full screen (they share this module's state).
           controls={
@@ -88,7 +88,7 @@ export function IntroModule({ width, focused }: CymaticsModuleProps) {
           render={(w, h) => (
             <View style={{ width: w, height: h, borderRadius: 8, overflow: 'hidden' }}>
               <PlateDemo width={w} height={h} spec={spec} hz={hz} view="particles" running={focused} />
-              <FigBadge text="SIMULATION · 240 mm ALUMINUM · CENTER-DRIVEN" />
+              <FigBadge text="A simulation: a 240 mm aluminum plate, driven at the center." />
             </View>
           )}
         />
@@ -108,11 +108,11 @@ export function IntroModule({ width, focused }: CymaticsModuleProps) {
         width={width}
         aspect={1 / 0.66}
         title="PHASE VIEW"
-        badge="PHASE VIEW · AMBER RISES WHILE VIOLET FALLS"
+        badge="Phase view: amber rises while violet falls."
         render={(w, h) => (
           <View style={{ width: w, height: h, borderRadius: 10, overflow: 'hidden' }}>
             <PlateDemo width={w} height={h} spec={spec} hz={f1} view="phase" running={focused} />
-            <FigBadge text="PHASE VIEW · AMBER RISES WHILE VIOLET FALLS" />
+            <FigBadge text="Phase view: amber rises while violet falls." />
           </View>
         )}
       />

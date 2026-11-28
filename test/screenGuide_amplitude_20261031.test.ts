@@ -237,7 +237,10 @@ describe('4. the numbers in the guide are the numbers the page draws', () => {
     for (const [, gd] of allGuides) assert.ok(gd.tryThis.some((x) => /OSCILLOSCOPE[\s\S]*zero line[\s\S]*top and bottom/.test(x)));
   });
   it('the burst sits at 70% across in WAVEFORM and SPECTROGRAM', () => {
-    assert.match(SRC, /if \(t >= 0\.66 && t <= 0\.74\) \{\s*const c = 1 - Math\.abs\(\(t - 0\.7\) \/ 0\.04\);/);
+    // Lab fix round 2026-11-14 (owner: "Begin fixing all bugs found and do obvious
+    // (my decision is not required) fixes"): the burst is wider (still centred at 70%)
+    // so it can be seen at 390 wide.
+    assert.match(SRC, /if \(t >= 0\.64 && t <= 0\.76\) \{\s*const c = 1 - Math\.abs\(\(t - 0\.7\) \/ 0\.06\);/);
     assert.match(SRC, /m \+= 0\.78 \* gaussian\(t, 0\.7, 0\.022\)/);
     for (const [, gd] of allGuides) assert.ok(gd.tryThis.some((s) => /WAVEFORM[\s\S]*70%[\s\S]*SPECTROGRAM/.test(s)));
   });

@@ -53,13 +53,17 @@ const HITS: SceneHits = {
 
 const LABELS = {
   side: [
+    // (review 2026-11-24: its leader ran across your torso, and YOU's across your shoulder and face — CONTACT SENSOR
+    // is placed first, below the table's edge between you and the table, its leader rising to the sensor clear of
+    // you; YOU's dot on your back below the shoulder, its words behind you; the words and the parts they name
+    // unchanged)
+    { id: 'sensor', text: 'CONTACT SENSOR', short: 'SENSOR', u: -640, v: 320, align: 'center' as const, alts: [{ u: 470, v: HUB.y - R - 150, align: 'left' as const }, { u: -600, v: 520, align: 'center' as const }], at: { u: MX, v: HUB.y - FAN.motorR - 34 } },
     { id: 'fan.guard', text: 'GUARD', u: 230, v: HUB.y - 330, align: 'left' as const, at: { u: FAN.guardRim + 10, v: HUB.y - FAN.guardR } },
     { id: 'fan.motor', text: 'MOTOR', u: -400, v: HUB.y - 300, align: 'right' as const, at: { u: MX, v: HUB.y - FAN.motorR } },
-    { id: 'sensor', text: 'CONTACT SENSOR', short: 'SENSOR', u: -560, v: HUB.y - 560, align: 'right' as const, at: { u: MX, v: HUB.y - FAN.motorR - 34 } },
     { id: 'zone', text: 'EXCLUSION ZONE', short: 'ZONE', u: 0, v: HUB.y - R - 90, align: 'center' as const },
     { id: 'airflow', text: 'AIRFLOW', u: 1300, v: S.y - RE - 70, align: 'center' as const },
     { id: 'table', text: 'TABLE', u: 620, v: 420, align: 'left' as const, at: { u: TABLE.half, v: 300 } },
-    { id: 'op', text: 'YOU, STANDING BACK', short: 'YOU', u: OP15.x, v: TABLE.floor - 1900, align: 'center' as const, at: { u: OP15.x, v: TABLE.floor - 1640 }, alts: [{ u: OP15.x - 420, v: TABLE.floor - 1300, align: 'right' as const }] },
+    { id: 'op', text: 'YOU, STANDING BACK', short: 'YOU', u: OP15.x - 380, v: TABLE.floor - 1500, align: 'right' as const, at: { u: OP15.x - 110, v: TABLE.floor - 1330 }, alts: [{ u: OP15.x - 380, v: TABLE.floor - 1150, align: 'right' as const }] },
   ],
   top: [
     { id: 'zone', text: 'EXCLUSION ZONE', short: 'ZONE', u: 0, v: -R - 90, align: 'center' as const },

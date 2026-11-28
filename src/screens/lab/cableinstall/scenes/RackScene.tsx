@@ -139,6 +139,7 @@ import {
 } from './rackArt';
 import type { CiModuleProps } from '../registry';
 import { pathLen } from '../pathLen';
+import { CollapsibleSection } from '../../LabShell';
 
 /* ═══════════════════════ geometry (viewBox 340×366) ═══════════════════════ */
 
@@ -1912,7 +1913,7 @@ export function RackScene({ width, completed, onComplete, openSources }: CiModul
     const nx = new Set(found);
     nx.add(id);
     setFound(nx);
-    AccessibilityInfo.announceForAccessibility(`Found ${nx.size} of ${CI_RACK_ISSUES.length}: ${issue.label}.`);
+    AccessibilityInfo.announceForAccessibility(`Found: ${issue.label}.`);
     if (nx.size >= REQUIRED_FINDS && !aDone) {
       setADone(true);
       announceComplete('Phase A complete — the rack is condemned. Dressing unlocked.');
@@ -2129,9 +2130,9 @@ export function RackScene({ width, completed, onComplete, openSources }: CiModul
           />
         ))}
       </View>
-      <Text style={styles.tintNote}>
-        {`Training visualization — the cable-class colors are a teaching language only; field cable colors vary (${CI_CLASS_KEY}). The switch is reverse-racked and the patch panel is mounted jacks-to-rear, so every port faces the rear with the rest of the cabling: the building’s horizontal cable runs land on the panel’s punch-downs (the terminals the wires press into), and short patch cords join the panel to the switch. The 3U amp sits lowest, on the PDU (power distribution unit), with rear supports.`}
-      </Text>
+      {/* CI-01 (owner 2026-11-15: "build waves 1 thru 3"): the 90-word note
+          that sat here (class colors + how the rack is built) is gone; the
+          colors are in the COLOR KEY fold below the work. */}
 
       {/* ═══════════ PHASE A — inspect the bad rack ═══════════ */}
       {phase === 'a' ? (
@@ -2195,6 +2196,23 @@ export function RackScene({ width, completed, onComplete, openSources }: CiModul
             )}
             controls={aCounter}
           />
+          {/* Each find is explained next to the drawing, where the eye is
+              (CI-02, owner 2026-11-15: "build waves 1 thru 3"); it used to land
+              under the counter and the suspect list. */}
+          {missNote ? (
+            <Appear>
+              <Text style={styles.missNote}>
+                {'Nothing documented right there — inspect where cable meets gear: jacks, rails, vents, entries and label points.'}
+              </Text>
+            </Appear>
+          ) : null}
+          {lastIssue && lastMistake ? (
+            <Appear key={lastIssue.id} style={{ gap: 6 }}>
+              <Text style={styles.foundLabel}>⚑ {lastIssue.label}</Text>
+              <RuleFeedback ruleId={lastMistake.ruleId} verdict="bad" short={lastMistake.shortFeedback} openSources={openSources} />
+              <Text style={styles.fixLine}>FIX  {lastMistake.correction}</Text>
+            </Appear>
+          ) : null}
           {aCounter}
           <OptionChip
             label={listOpen ? '▾ SUSPECT LIST' : '▸ SUSPECT LIST'}
@@ -2224,20 +2242,6 @@ export function RackScene({ width, completed, onComplete, openSources }: CiModul
                 );
               })}
             </View>
-          ) : null}
-          {missNote ? (
-            <Appear>
-              <Text style={styles.missNote}>
-                {'Nothing documented right there — inspect where cable meets gear: jacks, rails, vents, entries and label points.'}
-              </Text>
-            </Appear>
-          ) : null}
-          {lastIssue && lastMistake ? (
-            <Appear key={lastIssue.id} style={{ gap: 6 }}>
-              <Text style={styles.foundLabel}>⚑ {lastIssue.label}</Text>
-              <RuleFeedback ruleId={lastMistake.ruleId} verdict="bad" short={lastMistake.shortFeedback} openSources={openSources} />
-              <Text style={styles.fixLine}>FIX  {lastMistake.correction}</Text>
-            </Appear>
           ) : null}
           {aDone ? (
             <Appear delay={CI_MOTION.quick}>
@@ -2472,6 +2476,11 @@ export function RackScene({ width, completed, onComplete, openSources }: CiModul
           ) : null}
         </CiSection>
       ) : null}
+
+      {/* The lab's one cable-class color key, below the work (CI-01). */}
+      <CollapsibleSection title="COLOR KEY · TEACHING COLORS" startOpen={false}>
+        <Text style={styles.tintNote}>{`Training visualization: the cable-class colors are a teaching language only; field cable colors vary. ${CI_CLASS_KEY}.`}</Text>
+      </CollapsibleSection>
 
       {/* ═══════════ close: principles + completion ═══════════ */}
       {dDone ? (

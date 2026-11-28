@@ -3,6 +3,7 @@
  * page and its setting plan (a chair, a vocal mic, a frame-drum player).
  */
 import type { LessonArt } from '../../engine/scene/sceneTypes.ts';
+import { figureV2On } from '../shared/figureV2/figureV2Config.ts';
 import { makeLuteArt } from '../shared/lutes/LuteArt';
 import { LUTE_SOUND_STEPS, makeLuteSoundPage } from '../shared/lutes/LuteSound';
 import { makeLutePlanPage } from '../shared/lutes/LutePlan';
@@ -14,7 +15,7 @@ export const C13_ART: LessonArt = {
   ...makeLuteArt(C13_BUILT),
   pages: {
     sound: makeLuteSoundPage(C13_BUILT),
-    setting: makeLutePlanPage(C13_BUILT, { plan: LUTE_PLANS.C13, hearing: LUTE_HEARING }),
+    setting: makeLutePlanPage(C13_BUILT, { plan: LUTE_PLANS.C13, hearing: LUTE_HEARING, v2: figureV2On('familyLutes') }),
   },
   stepCounts: { sound: LUTE_SOUND_STEPS(C13_BUILT.scene), setting: 3 },
 };

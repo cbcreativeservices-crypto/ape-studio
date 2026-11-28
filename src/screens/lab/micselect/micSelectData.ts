@@ -41,11 +41,20 @@ export type MicTypeCard = {
   limitation: string;
 };
 
+/** Lesson 1's two groups (beginner waves 2026-11-15, MS-04; owner: "build
+ *  waves 1 thru 3"): the photo grid is split by WHAT a name describes, so the
+ *  difference shows before any warning is read. The card's class line uses
+ *  the same words. */
+export const MIC_CLASS_NAMES: Readonly<Record<MicTypeCard['klass'], string>> = {
+  transducer: 'HOW IT WORKS INSIDE',
+  form: 'SHAPE OR JOB',
+};
+export const TYPES_TAP_LINE = 'Tap a mic to see what it’s good at, and what it’s not.';
+/** Shortened and moved BELOW the grid and card (MS-04): it used to open the
+ *  lesson as a dense warning before a single mic card was seen. */
 export const CLASS_NOTE =
-  'These are NOT equivalent categories. "Condenser" names the transducer principle inside; ' +
-  '"shotgun" names an acoustic directivity design; "lavalier" names a physical form factor. ' +
-  'One microphone can fit more than one — a shotgun is usually a condenser, and a lavalier ' +
-  'is usually an electret condenser.';
+  'The two groups are not equivalent categories, so one microphone can be in both: a shotgun is ' +
+  'usually a condenser inside, and a lavalier is usually an electret condenser.';
 
 export const MIC_TYPES: MicTypeCard[] = [
   {
@@ -58,7 +67,7 @@ export const MIC_TYPES: MicTypeCard[] = [
       'Passive — no power required',
       'Generally rugged',
       'Often relatively low sensitivity',
-      'Commonly handles very high SPL',
+      'Commonly handles very high sound pressure level (SPL)',
     ],
     apps: 'Live vocals, drums, guitar amplifiers, general reinforcement.',
     limitation: 'Transient and high-frequency detail is generally below a good condenser’s.',
@@ -235,9 +244,22 @@ export const MIC_TYPES: MicTypeCard[] = [
 
 export type Characteristic = { key: string; name: string; why: string[]; flag?: string };
 
+/** Lesson 2's opening line (beginner waves 2026-11-15, MS-01; owner: "build
+ *  waves 1 thru 3"): it said "tap each one" over sixteen chips at once; it now
+ *  says which ones the next modules come back to, so the rest can wait. */
 export const CHAR_INTRO =
-  '"Dynamic vs. condenser" is nowhere near enough information to choose a microphone. ' +
-  'These are the characteristics that actually drive a selection — tap each one.';
+  '"Dynamic vs. condenser" is nowhere near enough to choose a microphone. The first chips in ' +
+  'each group come back in depth in the next modules; skim the rest for now.';
+
+/** The sixteen chips in four small labeled groups (MS-01). Every key of
+ *  CHARACTERISTICS appears exactly once (test/labWaves_20261115_F9). */
+export const CHAR_GROUPS: readonly { title: string; keys: readonly string[] }[] = [
+  { title: 'HOW IT HEARS', keys: ['pattern', 'response', 'offaxis', 'proximity', 'transient'] },
+  { title: 'LEVEL AND NOISE', keys: ['sensitivity', 'maxspl', 'selfnoise', 'snr', 'enl'] },
+  // Phantom / bias first: Module 6 is about power (checker F9: "the first chips in each group").
+  { title: 'POWER AND CABLE', keys: ['power', 'impedance'] },
+  { title: 'SIZE AND BUILD', keys: ['size', 'weight', 'rugged', 'environment'] },
+];
 
 export const CHARACTERISTICS: Characteristic[] = [
   {
@@ -640,24 +662,30 @@ export const FORM_LESSON =
 // ─────────────────────────────────────────────────────────────────────────────
 // Lesson 8 — Selecting for the Environment
 
-export type EnvScenario = { key: string; title: string; sub: string; priorities: string[] };
+/** `chip`: the chip's own words, a letter AND a place (beginner waves
+ *  2026-11-15, MS-03; owner: "build waves 1 thru 3"): the chips read only
+ *  A, B and C, so nothing said which world each one opened. */
+export type EnvScenario = { key: string; title: string; chip: string; sub: string; priorities: string[] };
 
 export const ENV_SCENARIOS: EnvScenario[] = [
   {
     key: 'studio',
     title: 'A · Controlled recording studio',
+    chip: 'A · Studio',
     sub: 'The room is quiet, treated, and yours.',
     priorities: ['Tonal detail', 'Low self-noise', 'The desired frequency response', 'Controlled acoustics let you choose freely'],
   },
   {
     key: 'stage',
     title: 'B · Loud concert stage',
+    chip: 'B · Loud stage',
     sub: 'Monitors, backline, and a PA all fighting the vocal.',
     priorities: ['Feedback rejection (pattern!)', 'Well-behaved off-axis response', 'Ruggedness', 'Low handling noise', 'Bleed control'],
   },
   {
     key: 'outdoor',
     title: 'C · Outdoor interview',
+    chip: 'C · Outdoors',
     sub: 'Weather, traffic, and no acoustics at all.',
     priorities: ['Wind protection', 'Handling noise', 'Isolation from surroundings', 'Physical placement options', 'Environmental protection'],
   },
@@ -679,6 +707,58 @@ export type JobEntry = {
 };
 
 export type JobGroup = { key: string; name: string; jobs: JobEntry[] };
+
+/**
+ * Lesson 9's answer (fix round 2026-11-14, F9 item 6: the card ended on
+ * "WHICH MICROPHONE CHARACTERISTICS SATISFY THESE REQUIREMENTS?" with nothing
+ * after it). Each requirement a job card rates → the characteristic that
+ * meets it, and the lesson of this lab that shows it. Suggestions, never a
+ * named mic: "No 'correct microphone' is listed on purpose".
+ */
+export const JOB_FIT: Readonly<Record<string, string>> = {
+  'Feedback rejection': 'a directional pattern with its quiet side toward the speakers (Module 3)',
+  'Gain-before-feedback': 'a directional pattern, worked close, aimed away from the speakers (Module 3)',
+  'Room rejection': 'a directional pattern, worked close (Module 3)',
+  Isolation: 'a directional pattern aimed away from the neighbors (Module 3)',
+  Directivity: 'a tight pattern, as far as an interference tube (Modules 1 and 3)',
+  'Out-of-frame reach': 'a tight pattern that still hears from above the frame line (Modules 1 and 3)',
+  'Off-axis consistency': 'a pattern whose sides sound like its front, often a small diaphragm (Modules 1 and 2)',
+  'Proximity behavior': 'a directional mic’s bass lift up close: useful, or kept in check (Module 2)',
+  Ruggedness: 'a tough body, the moving-coil dynamic’s strength (Modules 1 and 2)',
+  'Handling noise': 'a body that isolates its capsule from hands and stands, or a cut below the voice (Modules 1 and 4)',
+  'Tonal detail': 'a response and transient behavior that keep the detail (Modules 2 and 4)',
+  'Transient detail': 'fast transient behavior, a condenser’s strength (Modules 1 and 2)',
+  'Desired voicing': 'a frequency response shaped for this voice (Module 4)',
+  'Midrange voicing': 'a frequency response with the midrange this source needs (Module 4)',
+  'Speech intelligibility': 'a presence rise where speech is understood (Module 4)',
+  'Extended highs': 'a response that reaches high, often a condenser (Modules 1 and 4)',
+  'Smooth highs': 'a gentle top end, the ribbon’s classic answer (Module 1)',
+  'Low-frequency response': 'a response that reaches low (Module 4)',
+  'Low-frequency rolloff': 'a response that rolls off the rumble (Module 4)',
+  'Self-noise': 'low self-noise, the quiet floor (Module 5)',
+  'Max SPL': 'a high maximum SPL, the loud ceiling (Module 5)',
+  Consistency: 'the same response every day: a dependable body and voicing (Modules 2 and 4)',
+  'Ease of use': 'no extra power or setup to get wrong (Module 6)',
+  'Compact mounting': 'a small body or a clip-on form (Module 7)',
+  'Discreet size': 'a slim, small body (Module 7)',
+  Invisibility: 'a lavalier or headworn form (Module 7)',
+  Weight: 'a light body: it is held for hours (Modules 2 and 7)',
+  'Sweat/wear tolerance': 'a body made for the environment it lives in (Modules 2 and 8)',
+  'Wind tolerance': 'a body and windscreen made for outdoors (Modules 2 and 8)',
+  'Wind protection': 'a windscreen or windjammer over the capsule (Modules 1 and 8)',
+  'Stereo pairing': 'a matched pair, often small-diaphragm (Module 1)',
+  'Stereo imaging': 'a matched pair (Module 1)',
+  'Even coverage': 'a wide pattern, or a boundary mic on the table (Modules 1 and 3)',
+  'Speech clarity': 'a presence rise where speech is understood (Module 4)',
+  'Bleed control': 'a directional pattern, worked close (Module 3)',
+  'Flat response': 'a flat frequency response (Module 4)',
+  Calibration: 'a measurement mic and its calibration (Module 1)',
+  'Omni pattern': 'an omni pattern (Module 3)',
+  Voicing: 'a shaped frequency response (Module 4)',
+  'Extended response': 'a response that reaches both low and high (Module 4)',
+  'Environmental toughness': 'a body made for weather, damp and cold (Modules 2 and 8)',
+  'Power flexibility': 'a mic that runs on little or no power (Module 6)',
+};
 
 export const JOB_GROUPS: JobGroup[] = [
   {

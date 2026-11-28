@@ -133,7 +133,9 @@ describe('Module 8: the QC card claims "Delivered" only when the module is', () 
   it('every QC line ticked with a track decision open reads QC complete and names what is open', () => {
     const s = strip(read(`${DIR}/modules/mod8Project.tsx`));
     assert.match(s, /const openDecisions = PROJECT_TRACKS\.filter\(\(t\) => !\(t\.issue\.id in recorded\)\)\.length;/);
-    assert.match(s, /title=\{!qcDone \? `\$\{qc\.size\} of \$\{PROJECT_QC\.length\}` : openDecisions === 0 \? 'Delivered' : 'QC complete'\}/);
+    // Owner's decision 2, 2026-11-14: no "N of total" progress counters; a
+    // count of what is LEFT stays. The title now counts the QC lines left.
+    assert.match(s, /title=\{!qcDone \? `\$\{PROJECT_QC\.length - qc\.size\} line\$\{PROJECT_QC\.length - qc\.size === 1 \? '' : 's'\} left to check` : openDecisions === 0 \? 'Delivered' : 'QC complete'\}/);
     assert.doesNotMatch(s, /qc\.size === PROJECT_QC\.length \? 'Delivered'/);
   });
 });

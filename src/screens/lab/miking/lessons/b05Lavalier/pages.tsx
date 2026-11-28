@@ -22,13 +22,41 @@ import { makeBroadcastSetting, makeBroadcastSound, useRoutingStep } from '../sha
 import { useBodyTurnStep, useBreathStep, useCableStep } from '../shared/broadcast/bodyWornPages';
 import { MovePresenter } from '../shared/broadcast/BodyWornArt';
 import type { RoutingPlan } from '../shared/broadcast/routing.ts';
-import { B05Scene, Presenter } from './scene';
+import { B05Scene, Presenter, V2 } from './scene';
 import { HEADSET, LAPEL, STERNUM } from './geometry.ts';
+import { castFor } from '../shared/figureV2/cast';
+import { personPlan } from '../shared/figureV2/personV2';
+import { clipOnCloth, jacketSidePlan } from '../shared/figureV2/jacketPlan';
+import { CHEST_X, MOVE_POSES, NECK_Y, type MoveId } from '../shared/broadcast/bodyWorn.ts';
+import type { Vec3 } from '../../engine/model/types.ts';
+
+/** (figure V2) the sternum clip's grip on Ruth's shirt in the jacket's V in each move (her drawn plan, as
+ *  MovePresenter draws her), and her shirt's front against the old figure's (the cable runs down it). The
+ *  capsule (STERNUM.at) does not move: every readout is unchanged. */
+const clothCache = new Map<MoveId, { grip: Vec3; dx: number }>();
+function gripOnCloth(move: MoveId): { grip: Vec3; dx: number } {
+  const hit = clothCache.get(move);
+  if (hit) return hit;
+  const who = castFor('presenter');
+  const pose = MOVE_POSES[move];
+  const plan = personPlan(pose, who, { lip: { u: 0, v: 0 }, rest: move === 'sit' || move === 'gesture' ? 'restFlat' : 'restSide', jacket: true });
+  const J = jacketSidePlan(plan, who.body, pose.posture === 'standing');
+  const g = clipOnCloth(plan, J, STERNUM.grip, 'shirt');
+  const chest = clipOnCloth(plan, J, { x: CHEST_X, y: NECK_Y + 200 }, 'shirt');
+  const out = { grip: { x: g.u, y: STERNUM.grip.y, z: STERNUM.grip.z }, dx: chest.u - 1 - CHEST_X };
+  clothCache.set(move, out);
+  return out;
+}
 
 type PageFn = (p: PageProps) => ReactNode;
 
+/** (figure V2) the wearer in each move, in the new look. */
+const MovePresenterV2 = ({ move }: { move: MoveId }) => <MovePresenter move={move} v2 />;
+
 function useTools() {
   const turn = useBodyTurnStep({
+    v2: V2,
+    who: 'presenter',
     mics: [
       { id: 'sternum', label: 'The lav on the sternum', short: 'STERNUM LAV', p: STERNUM.at, rides: 'chest', art: 'lavalier', r: 3, len: 12 },
       { id: 'lapel', label: 'The lav on the lapel', short: 'LAPEL LAV', p: LAPEL.at, rides: 'chest', art: 'lavalier', r: 3, len: 12 },
@@ -49,7 +77,8 @@ function useTools() {
   const cable = useCableStep({
     mount: STERNUM,
     standing: true,
-    side: (_px, move) => <MovePresenter move={move} />,
+    ...(V2 ? { onCloth: gripOnCloth } : {}),
+    side: (_px, move) => (V2 ? <MovePresenterV2 move={move} /> : <MovePresenter move={move} />),
     box: { u0: -560, u1: 420, v0: -260, v1: 760 },
     words: {
       subject: 'presenter',
@@ -57,6 +86,8 @@ function useTools() {
     },
   });
   const breath = useBreathStep({
+    v2: V2,
+    who: 'presenter',
     top: () => <Presenter view="top" headless />,
     box: { u0: -240, u1: 360, v0: -220, v1: 220 },
     home: HEADSET.at,
@@ -66,6 +97,9 @@ function useTools() {
 }
 
 const B05Sound = makeBroadcastSound({
+  v2: V2,
+  jacket: true,
+  who: 'presenter',
   useTools: () => useTools(),
   highs: 'The voice’s highest frequencies go out ahead of the mouth: a chest mic below the chin hears a little less of them, and a capsule beside the mouth a little less than one in front. In words only — the shape of that spread is not drawn.',
   silentNote: 'This lab never plays a sound and draws no frequency curve for a voice: how a real presenter sounds depends on the voice, the mic, the clothes and the room. The pictures show where the sound comes from and where it goes.',

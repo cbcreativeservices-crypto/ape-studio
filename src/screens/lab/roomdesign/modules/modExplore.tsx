@@ -122,7 +122,7 @@ export function ExploreModule({ ctx }: { ctx: RoomLabCtx }) {
 
   const bezel: BezelItem[] = [
     { k: 'MODE', v: mode ? fmtHz(mode.f) : '—', flex: 1.1 },
-    { k: 'AT EARS', v: `${Math.round(pAtEars * 100)} %`, tint: fieldLevelColor(pAtEars) },
+    { k: 'AT EARS', v: `${Math.round(pAtEars * 100)}%`, tint: fieldLevelColor(pAtEars) },
     { k: 'EARLY <15ms', v: `${early.length}`, flex: 1.1 },
     { k: '1ST', v: first ? `+${first.delayMs.toFixed(1)} ms` : '—' },
   ];
@@ -220,7 +220,7 @@ export function ExploreModule({ ctx }: { ctx: RoomLabCtx }) {
         <View style={{ gap: 6 }}>
           {mode ? (
             <Text style={styles.line}>
-              {`${mode.kind} mode (${mode.nx},${mode.ny},${mode.nz}) at ${fmtHz(mode.f)}: the listener sits at ${Math.round(pAtEars * 100)} % of its maximum pressure — ${pAtEars > 0.8 ? 'a peak; that frequency will be heavy here' : pAtEars < 0.2 ? 'a null; that frequency nearly disappears here' : 'between peak and null'}. The map shows the mode's shape, not how strongly the speakers excite it.`}
+              {`${mode.kind} mode (${mode.nx},${mode.ny},${mode.nz}) at ${fmtHz(mode.f)}: the listener sits at ${Math.round(pAtEars * 100)}% of its maximum pressure — ${pAtEars > 0.8 ? 'a peak; that frequency will be heavy here' : pAtEars < 0.2 ? 'a null; that frequency nearly disappears here' : 'between peak and null'}. The map shows the mode's shape, not how strongly the speakers excite it.`}
             </Text>
           ) : null}
           {traced ? (

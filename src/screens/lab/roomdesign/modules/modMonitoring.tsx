@@ -11,6 +11,7 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { lanePos, laneVal } from '../../soundsystems/rackLayout';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
 import { BADGE, type RoomLabCtx } from '../labCtx';
+import { CollapsibleSection } from '../../LabShell';
 import { RoomRackLayout } from '../rackLayout';
 import { RoomPlanView } from '../RoomPlanView';
 import { RoomSideView } from '../RoomSideView';
@@ -266,13 +267,13 @@ export function MonitoringModule({ ctx }: { ctx: RoomLabCtx }) {
   return (
     <RoomRackLayout
       rack={{ stage, badge: BADGE.monitoring, bezel, params, initialParam: 'spread', hideDragTag: true }}
-      caption="Drag the speakers and the listener on the plan (tap SIDE VIEW for heights), or ride SPREAD (it sets the pair evenly about the room's center line), FRONT, SEAT (the listener) and HEIGHT (HEIGHT opens the side view). SETUP picks stereo, stereo + sub or multichannel, nearfield or midfield (printed under the listening angle, amber when the speakers sit outside that distance), and toe-in."
+      caption="Drag the speakers and the listener on the plan (tap SIDE VIEW for heights), or slide SPREAD (it sets the pair evenly about the room's center line), FRONT, SEAT (the listener) and HEIGHT (HEIGHT opens the side view). SETUP picks stereo, stereo + sub or multichannel, nearfield or midfield (printed under the listening angle, amber when the speakers sit outside that distance), and toe-in."
       captionFirst
       wellTop={
         <View style={{ gap: 6 }}>
           {st && !st.inFront ? (
             <Text style={styles.warn}>
-              {`No stereo triangle: the listener is not in front of both speakers — they face away from the seat (L ${fmtLen(st.distL, units)} · R ${fmtLen(st.distR, units)} from the ears). Ride SEAT farther into the room, or FRONT toward the front wall, until the seat is ahead of the speakers.`}
+              {`No stereo triangle: the listener is not in front of both speakers — they face away from the seat (L ${fmtLen(st.distL, units)} · R ${fmtLen(st.distR, units)} from the ears). Slide SEAT farther into the room, or FRONT toward the front wall, until the seat is ahead of the speakers.`}
             </Text>
           ) : st ? (
             <Text style={styles.line}>
@@ -315,12 +316,15 @@ export function MonitoringModule({ ctx }: { ctx: RoomLabCtx }) {
       <Body>
         A good starting point, not a law: the two speakers and your head form an equilateral triangle (a 60° listening angle), the two speakers sit at the same distance from their side walls and from the front wall, and the listening position is on the room's center line. Matched left and right geometry is what the makers of monitors ask for first, because the two early-reflection sets then arrive alike and the center image stays put.
       </Body>
-      <Body>
-        Nearfield monitors are meant to be heard from about 1–1.5 m, midfields from about 2–4 m; farther away the room takes over from the speaker. Tweeters at or slightly above ear height, with the speakers toed in so their axes cross at or just behind your head, is where most people begin — then they listen, and move things.
-      </Body>
       <Caption>A stand must be rated for the monitor's mass with a wide or weighted base; midfields and anything on a wall bracket go into structure with rated hardware. Route cables along the wall; if one must cross a walkway, use a cable ramp or tape it flat.</Caption>
       <Caption>{SAFETY_LEVEL_NOTE}</Caption>
-      <Caption>{`The cancellation guide above comes from the image-source path difference at the seat: the bounce arrives Δ = path − direct late and cancels where Δ is half a wavelength, f = c ÷ (2 × Δ). Only straight out from the wall does that reduce to the familiar c ÷ (4 × distance).`}</Caption>
+      {/* owner 2026-11-21: "build the second-pass collapse fixes too": the method behind the task starts CLOSED, one tap away, every word kept. */}
+      <CollapsibleSection title="MORE DETAIL · DISTANCE, HEIGHT AND THE CANCELLATION GUIDE" startOpen={false}>
+        <Body>
+          Nearfield monitors are meant to be heard from about 1–1.5 m, midfields from about 2–4 m; farther away the room takes over from the speaker. Tweeters at or slightly above ear height, with the speakers toed in so their axes cross at or just behind your head, is where most people begin — then they listen, and move things.
+        </Body>
+        <Caption>{`The cancellation guide above comes from the image-source path difference at the seat: the bounce arrives Δ = path − direct late and cancels where Δ is half a wavelength, f = c ÷ (2 × Δ). Only straight out from the wall does that reduce to the familiar c ÷ (4 × distance).`}</Caption>
+      </CollapsibleSection>
     </RoomRackLayout>
   );
 }

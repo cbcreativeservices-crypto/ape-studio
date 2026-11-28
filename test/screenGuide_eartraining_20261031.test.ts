@@ -141,6 +141,7 @@ describe('2. each guide quotes its screen’s real names', () => {
     [
       'src/screens/lab/eartraining/EarModuleScreen.tsx',
       'src/screens/lab/eartraining/EarTrainingLabScreen.tsx',
+      'src/screens/lab/eartraining/earHubGroups.ts', // D62 ET-02 (owner 2026-11-15): the hub's group names
       'src/screens/lab/eartraining/SeeItView.tsx',
       'src/screens/lab/eartraining/earLabEnd.ts',
       'src/screens/lab/ModuleAccordionRow.tsx',
@@ -155,7 +156,8 @@ describe('2. each guide quotes its screen’s real names', () => {
   );
   const DRILL = ['NEXT TRIAL ›', 'FULL SCREEN', 'FINISH · SEE WHAT’S LEFT ›'];
   const NAMES: Record<string, string[]> = {
-    home: ['MODULES', 'OPEN', 'FINISH · SEE WHAT’S LEFT ›', 'NEXT TRIAL ›', 'Frequency Recognition'],
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item ET-02): four group headings, not MODULES.
+    home: ['TONE', 'LEVEL AND DYNAMICS', 'TIME AND SPACE', 'FAULTS AND PITCH', 'START HERE', 'OPEN', 'FINISH · SEE WHAT’S LEFT ›', 'NEXT TRIAL ›', 'Frequency Recognition'],
     end: ['WHAT’S LEFT', 'REVIEW ▾', 'LAB COMPLETE', 'CARRY ON · ', 'DONE · BACK TO THE MODULE LIST', 'DONE · BACK TO LABS', 'PRACTICE AGAIN FROM THE START', 'Frequency Recognition'],
     frequency: [...DRILL, 'LISTEN FOR', 'NEXT ROUND ›', 'SEE IT', 'SPECTRUM', 'Which tone is higher?', 'My playback can’t reproduce sub-bass'],
     eq: [...DRILL, 'SOURCE', 'Synth', 'Piano', 'Guitar', 'Boost', 'Cut', 'Is B boosted or cut?', 'wide bell (Q 1.4)', 'narrow bell (Q 4.0)', 'SEE IT'],
@@ -196,7 +198,9 @@ describe('2. each guide quotes its screen’s real names', () => {
     assert.deepEqual(['defect', 'stereo', 'pitch'].map(num), ['5', '6', '11']);
     assert.deepEqual(['loudness', 'compression', 'clipping'].map(num), ['7', '10', '14']);
     assert.deepEqual(['delay', 'reverb', 'polarity', 'comb'].map(num), ['8', '9', '12', '13']);
-    assert.ok(EAR_HOME_GUIDE.changes[0].includes('7, 10, 14 level, compression, clipping; 8, 9, 12, 13 time'));
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item ET-02): the hub's groups carry the numbering now;
+    // the guide names the one order that matters, Comb Filtering after Delay and Polarity.
+    assert.ok(EAR_HOME_GUIDE.changes[0].includes('Comb Filtering sits after Delay and Polarity & Phase'));
   });
   it('the related labs the guides point to exist under those names', () => {
     const cat = code('src/screens/lab/labCatalog.ts');
@@ -466,7 +470,9 @@ describe('4. wiring: the guide key in both headers, a host around each root', ()
     assert.match(HOME, /<\/ScrollView>\s*\)\}\s*<\/ScreenGuideHost>\s*<\/View>\s*\);\s*\}/);
   });
   it('the module screen keeps its accuracy pill (last-20 score) beside the ⓘ', () => {
-    assert.match(MOD, /<Text style=\{styles\.statSub\}>last 20<\/Text>/);
+    // Fix round 2026-11-14 (owner: "Begin fixing all bugs found and do obvious … fixes"):
+    // under 20 answers the pill says how many answers its score rests on.
+    assert.match(MOD, /<Text style=\{styles\.statSub\}>\{accuracy != null \? earScoreWindowLabel\(scoreAnswers\)\.sub : 'last 20'\}<\/Text>/);
   });
 });
 
@@ -511,9 +517,13 @@ describe('6. vetted review fixes (2026-10-31): each claim re-proved from the cod
     assert.ok(EAR_HOME_GUIDE.changes[1].includes('judged only on answers at your current level'));
   });
   it('drill readouts the guides name are on the screen: the “last 20” pill, the level subtitle, the trial/streak line', () => {
-    assert.match(MOD, /<Text style=\{styles\.statSub\}>last 20<\/Text>/);
-    assert.match(MOD, /subtitle=\{`Level \$\{level\}\/\$\{mod\.levels\}/);
-    assert.match(MOD, /Trial \{trialNo\} of \{ROUND\} · Streak \{streak\}\s*<\/Text>\s*<Text style=\{styles\.question\}>/, 'the trial/streak line sits above the question');
+    // Fix round 2026-11-14 (owner: "Begin fixing all bugs found and do obvious … fixes"):
+    // under 20 answers the pill says how many answers its score rests on.
+    assert.match(MOD, /<Text style=\{styles\.statSub\}>\{accuracy != null \? earScoreWindowLabel\(scoreAnswers\)\.sub : 'last 20'\}<\/Text>/);
+    // Phase 3 (owner 2026-11-14: "N of total" progress counters removed): the level and the
+    // trial are named alone, without "/4" or "of 10".
+    assert.match(MOD, /subtitle=\{`Level \$\{level\} · /);
+    assert.match(MOD, /Trial \{trialNo\} · Streak \{streak\}\s*<\/Text>\s*<Text style=\{styles\.question\}>/, 'the trial/streak line sits above the question');
     const withHeader = Object.entries(GUIDES).filter(([, gd]) => gd.seeing.includes(HEADER)).map(([id]) => id);
     assert.ok(withHeader.includes('frequency'), `header readouts named in ${withHeader.join(', ') || 'no drill'}`);
   });
@@ -554,7 +564,9 @@ describe('6. vetted review fixes (2026-10-31): each claim re-proved from the cod
   });
   it('Reverb: the Reverb lab’s controls are RT60, pre-delay, HF damping and mix — no size', () => {
     const fx = code('src/screens/lab/fxLabConfigs.tsx');
-    for (const l of ['RT60 (DECAY TIME)', 'PRE-DELAY', 'HF DAMPING', "label: 'MIX'"]) assert.ok(fx.includes(l), l);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item RV-01): the RT60 key's full name now leads
+    // with the shared plain words, DECAY TIME (RT60), built from PLAIN_TERMS.rt60.
+    for (const l of ['label: `${REVERB_RT60_WORDS} (${PLAIN_TERMS.rt60.term})`', "short: 'RT60'", 'PRE-DELAY', 'HF DAMPING', "label: 'MIX'"]) assert.ok(fx.includes(l), l);
     assert.ok(GUIDES.reverb.teaches.join(' ').includes('you set RT60, pre-delay, damping and mix'));
     assert.doesNotMatch(textOf(GUIDES.reverb), /\bsize\b/);
   });
@@ -576,7 +588,8 @@ describe('6. vetted review fixes (2026-10-31): each claim re-proved from the cod
       const silent = t.clips.findIndex((c: { buf: Float32Array }) => c.buf.every((v) => v === 0));
       assert.ok(silent === 0 || silent === 1, `seed ${seed}: one clip is all zeros`);
       const label = t.clips[silent].label;
-      assert.ok(t.seeIt.caption.startsWith(`Clip ${label} cancelled to total silence`), t.seeIt.caption);
+      // owner 2026-11-21: American English in learner text (cancelled -> canceled)
+      assert.ok(t.seeIt.caption.startsWith(`Clip ${label} canceled to total silence`), t.seeIt.caption);
       assert.doesNotMatch(t.seeIt.caption, /unmistakable/);
     }
     // Levels 2–3 keep the hole caption (partial cancellation is real there).

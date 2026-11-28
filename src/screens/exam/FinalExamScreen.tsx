@@ -59,6 +59,7 @@ import {
 import type { RootStackParamList } from '../../navigation/types';
 import { readingColumn } from '../../theme/readingColumn';
 import { safeGoBack } from '../../lib/safeGoBack';
+import { holdUpdateReload } from '../../features/updates/autoUpdate';
 
 /**
  * The waiting state for the exam — with a way out once it stops being brief.
@@ -414,6 +415,12 @@ export function FinalExamScreen({ navigation, route }: Props) {
     }, 250);
     return () => clearInterval(t);
   }, [deadline, doSubmit]);
+
+  // An exam in progress is never restarted by a background OTA reload (update audit 2026-11-27).
+  useEffect(() => {
+    if (!payload) return;
+    return holdUpdateReload('exam');
+  }, [payload]);
 
   /* ---- focus-void handling (2s grace; 1st warn, 2nd void) ---- */
   useEffect(() => {

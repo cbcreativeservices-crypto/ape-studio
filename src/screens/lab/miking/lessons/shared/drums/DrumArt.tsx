@@ -36,7 +36,7 @@ import { BlurMask, Circle, DashPathEffect, FillType, Group, LinearGradient, Path
 import { frameOf, hoopRadii, rodAngles, type DrumSpec, type PlacedDrum } from './drumSpec.ts';
 import { CymbalSide as FamilyCymbalSide, HiHatSide as FamilyHiHatSide } from '../cymbals/CymbalArt';
 import { CYMBAL_SPECS, KIT_PLACED_CYMBALS } from '../cymbals/cymbalSpec.ts';
-import { KIT_FLOOR_Y } from '../kitPlanModel.ts';
+import { KIT_FLOOR_Y, hihatPedalGeom } from '../kitPlanModel.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 
@@ -70,6 +70,35 @@ function seg(p: SkPath, a: number, b: number, c: number, d: number) {
   p.lineTo(c, d);
   return p;
 }
+/**
+ * A LUG CASING face-on (owner 2026-11-23: "make the lugs on the drums longer,
+ * they are usually not that short and immediate right below the drum rims"):
+ * a rounded, slightly tapered chrome body from y0 to y1, `hw` its half-width
+ * at the middle, narrower toward its rounded ends.
+ */
+export function lugCasing(p: SkPath, x: number, y0: number, y1: number, hw: number) {
+  const e = Math.min(hw * 1.2, (y1 - y0) * 0.25);
+  const m = (y0 + y1) / 2;
+  p.moveTo(x - hw * 0.72, y0 + e);
+  p.quadTo(x, y0 - e * 0.4, x + hw * 0.72, y0 + e);
+  p.quadTo(x + hw * 1.08, m, x + hw * 0.72, y1 - e);
+  p.quadTo(x, y1 + e * 0.4, x - hw * 0.72, y1 - e);
+  p.quadTo(x - hw * 1.08, m, x - hw * 0.72, y0 + e);
+  p.close();
+  return p;
+}
+/** The lug rows along a drum's shell (from its batter head plane, y = 0):
+ *  each [top, bottom] of a casing, and where the rods enter it. */
+export function lugRows(spec: DrumSpec, reso: boolean): { y0: number; y1: number; rodTop: boolean; rodBottom: boolean }[] {
+  const D = spec.depth.mm;
+  const li = spec.lug.inset.mm;
+  const ll = spec.lug.len.mm;
+  if (spec.lug.double) return [{ y0: li, y1: D - li, rodTop: true, rodBottom: reso }];
+  const rows = [{ y0: li, y1: li + ll, rodTop: true, rodBottom: false }];
+  if (reso) rows.push({ y0: D - li - ll, y1: D - li, rodTop: false, rodBottom: true });
+  return rows;
+}
+
 function oval(p: SkPath, cx: number, cy: number, rx: number, ry: number) {
   p.addOval(Skia.XYWHRect(cx - rx, cy - ry, rx * 2, ry * 2));
   return p;
@@ -155,23 +184,24 @@ function buildSection(spec: DrumSpec, o: SectionOpts) {
   const batter = rect(make(), -R - 1, -3, R + 1, 3);
   const reso = o.reso ? rect(make(), -R - 1, D - 3, R + 1, D + 3) : null;
   const sheen = seg(make(), -R * 0.92, -1.2, R * 0.6, -1.2);
-  // Silhouette hardware: a lug per head, its rod down from the hoop's ear.
+  // Silhouette hardware: the lug casings (a rounded profile standing off the
+  // shell, set down from the hoop), each tension rod from the hoop's ear down
+  // into its lug's end; a highlight down each casing.
   const lugs = make();
+  const lugHi = make();
   const rods = make();
   const ears = make();
   const lo = spec.lug.out.mm;
-  const ll = spec.lug.len.mm;
-  const li = spec.lug.inset.mm;
   const rodX = R + lo * 0.55;
   for (const { sgn } of sectionRods(spec)) {
-    rrect(lugs, sgn * R, li, sgn * (R + lo), li + ll, 4);
-    rrect(ears, sgn * hOut, -up + 1, sgn * (rodX + 5), -up + 6, 1.2);
-    seg(rods, sgn * rodX, -up + 2, sgn * rodX, li + ll * 0.55);
-    if (o.reso) {
-      rrect(lugs, sgn * R, D - li - ll, sgn * (R + lo), D - li, 4);
-      rrect(ears, sgn * hOut, D + up - 6, sgn * (rodX + 5), D + up - 1, 1.2);
-      seg(rods, sgn * rodX, D + up - 2, sgn * rodX, D - li - ll * 0.55);
+    for (const row of lugRows(spec, !!o.reso)) {
+      rrect(lugs, sgn * R, row.y0, sgn * (R + lo), row.y1, Math.min(11, lo * 0.45));
+      seg(lugHi, sgn * (R + lo * 0.72), row.y0 + 7, sgn * (R + lo * 0.72), row.y1 - 7);
+      if (row.rodTop) seg(rods, sgn * rodX, -up + 2, sgn * rodX, row.y0 + 5);
+      if (row.rodBottom) seg(rods, sgn * rodX, D + up - 2, sgn * rodX, row.y1 - 5);
     }
+    rrect(ears, sgn * hOut, -up + 1, sgn * (rodX + 5), -up + 6, 1.2);
+    if (o.reso) rrect(ears, sgn * hOut, D + up - 6, sgn * (rodX + 5), D + up - 1, 1.2);
   }
   // Snare wires (under the snare-side head), cords, strainer and butt.
   let wires: null | { band: SkPath; coils: SkPath; plates: SkPath; cords: SkPath; strainer: SkPath; lever: SkPath; butt: SkPath; y: number } = null;
@@ -198,7 +228,7 @@ function buildSection(spec: DrumSpec, o: SectionOpts) {
     cords.lineTo(-sx * (R + 11), D * 0.9);
     wires = { band, coils, plates, cords, strainer, lever, butt, y };
   }
-  return { R, D, rIn, hIn, hOut, up, cavity, grain, shadeTop, shadeBot, wallL, wallR, plyLines, outerEdge, innerEdge, gloss, hoopFar, hoopCut, batter, reso, sheen, lugs, rods, ears, wires };
+  return { R, D, rIn, hIn, hOut, up, cavity, grain, shadeTop, shadeBot, wallL, wallR, plyLines, outerEdge, innerEdge, gloss, hoopFar, hoopCut, batter, reso, sheen, lugs, lugHi, rods, ears, wires };
 }
 
 function sectionPaths(spec: DrumSpec, o: SectionOpts): SectionPaths {
@@ -276,6 +306,7 @@ export function DrumSection({ spec, reso = true, wires = null }: { spec: DrumSpe
         <LinearGradient start={vec(-R - 24, 0)} end={vec(R + 24, 0)} colors={CHROME} />
       </Path>
       <Path path={g.lugs} style="stroke" strokeWidth={0.7} color={INK} />
+      <Path path={g.lugHi} style="stroke" strokeWidth={2} strokeCap="round" color="#ffffff" opacity={0.55} />
       <Path path={g.rods} style="stroke" strokeWidth={3.4} strokeCap="round" color="#2a2c32" />
       <Path path={g.rods} style="stroke" strokeWidth={1.1} strokeCap="round" color="#d9dde5" opacity={0.85} />
       <Path path={g.ears} color="#b6bbc5" />
@@ -326,24 +357,24 @@ function buildExterior(spec: DrumSpec, reso: boolean) {
   const lips = make();
   seg(lips, -hOut - 3, -up, hOut + 3, -up);
   if (reso) seg(lips, -hOut - 3, D + up, hOut + 3, D + up);
-  // Near-side lugs (sin θ > 0), foreshortened by sin θ; rods from the hoop.
+  // Near-side lugs (sin θ > 0), foreshortened by sin θ: rounded, tapered
+  // casings set down from the hoop, each rod from the hoop into its lug's end.
   const lugs = make();
+  const lugHi = make();
   const rods = make();
-  const li = spec.lug.inset.mm;
-  const ll = spec.lug.len.mm;
   for (const th of rodAngles(spec)) {
     const a = th * DEG;
     if (Math.sin(a) <= 0.05) continue;
     const x = R * Math.cos(a);
-    const hw = 6 * Math.sin(a) + 1.5;
-    rrect(lugs, x - hw, li, x + hw, li + ll, 3);
-    seg(rods, x, -up + 2, x, li + ll * 0.5);
-    if (reso) {
-      rrect(lugs, x - hw, D - li - ll, x + hw, D - li, 3);
-      seg(rods, x, D + up - 2, x, D - li - ll * 0.5);
+    const hw = 8 * Math.sin(a) + 2;
+    for (const row of lugRows(spec, reso)) {
+      lugCasing(lugs, x, row.y0, row.y1, hw);
+      seg(lugHi, x - hw * 0.3, row.y0 + 6, x - hw * 0.3, row.y1 - 6);
+      if (row.rodTop) seg(rods, x, -up + 2, x, row.y0 + 4);
+      if (row.rodBottom) seg(rods, x, D + up - 2, x, row.y1 - 4);
     }
   }
-  return { R, D, hOut, up, shell, shadow, hoopTop, hoopBot, lips, lugs, rods };
+  return { R, D, hOut, up, shell, shadow, hoopTop, hoopBot, lips, lugs, lugHi, rods };
 }
 
 /**
@@ -375,6 +406,7 @@ export function DrumExterior({ spec, reso = true, dim = 1 }: { spec: DrumSpec; r
         <LinearGradient start={vec(-R, 0)} end={vec(R, 0)} colors={CHROME} />
       </Path>
       <Path path={g.lugs} style="stroke" strokeWidth={0.6} color={INK} />
+      <Path path={g.lugHi} style="stroke" strokeWidth={1.6} strokeCap="round" color="#ffffff" opacity={0.5} />
       <Path path={g.rods} style="stroke" strokeWidth={3} strokeCap="round" color="#2a2c32" />
       <Path path={g.rods} style="stroke" strokeWidth={1} strokeCap="round" color="#d9dde5" opacity={0.8} />
       <Path path={g.hoopTop}>
@@ -420,8 +452,11 @@ export function KickFromAbove({ spec, u0, z, pedal, dim = 1 }: { spec: DrumSpec;
     // The hardware on the upper half (seen from above): at every rod angle φ
     // (from the bottom toward +z, the M01 convention) with cos φ ≤ 0, a lug on
     // the shell, a T-rod from the claw on the hoop to it, and the T handle —
-    // both ends. Real sizes: lug ≈ 16 × 32 mm standing 24 mm off the shell,
-    // rod axis ≈ 16 mm off the shell, claw ≈ 14 mm wide, T bar ≈ 28 mm.
+    // both ends. Drawing defaults: the lug casing from the spec (a bass drum's
+    // ≈ 80 mm, its top 60 mm in from the head), 16 mm wide, standing 24 mm off
+    // the shell; rod axis ≈ 16 mm off the shell, claw ≈ 14 mm wide, T bar ≈ 28 mm.
+    const li = spec.lug.inset.mm;
+    const ll = spec.lug.len.mm;
     const rods = make();
     const lugs = make();
     const claws = make();
@@ -436,8 +471,8 @@ export function KickFromAbove({ spec, u0, z, pedal, dim = 1 }: { spec: DrumSpec;
       const zl1 = (R + 24) * sn + 8 * Math.abs(Math.cos(a)) * Math.sign(sn || 1);
       for (const end of [0, 1] as const) {
         const X = (x: number) => (end === 0 ? x : L - x);
-        seg(rods, X(-up - 6), zr, X(60), zr);
-        rrect(lugs, X(44), Math.min(zl0, zl1), X(76), Math.max(zl0, zl1), 6);
+        seg(rods, X(-up - 6), zr, X(li + 6), zr);
+        rrect(lugs, X(li), Math.min(zl0, zl1), X(li + ll), Math.max(zl0, zl1), 7);
         rrect(claws, X(-up - 3), zr - 7, X(spec.hoop.below.mm + 2), zr + 7, 2);
         rrect(tees, X(-up - 13), zr - 14, X(-up - 7), zr + 14, 2.5);
       }
@@ -481,10 +516,14 @@ export function KickFromAbove({ spec, u0, z, pedal, dim = 1 }: { spec: DrumSpec;
 }
 
 /** A drumstick (ILLUSTRATIVE: no source gives a stick; a common 16 in
- *  hickory stick drawn), from its butt to its tip bead. */
-export function Stick({ from, to, dim = 1 }: { from: { x: number; y: number }; to: { x: number; y: number }; dim?: number }) {
-  const ang = Math.atan2(to.y - from.y, to.x - from.x);
-  const len = Math.hypot(to.x - from.x, to.y - from.y);
+ *  hickory stick drawn), from its butt to its tip bead. Never longer than
+ *  the real 406 mm stick (stick technique fix 2026-11-22: a longer from → to
+ *  is drawn 406 mm back from the bead, never stretched). A stick a player
+ *  holds is the kit drummer's (kitScene/stickPlayer), not this one. */
+export function Stick({ from: given, to, dim = 1 }: { from: { x: number; y: number }; to: { x: number; y: number }; dim?: number }) {
+  const ang = Math.atan2(to.y - given.y, to.x - given.x);
+  const len = Math.min(406, Math.hypot(to.x - given.x, to.y - given.y));
+  const from = { x: to.x - Math.cos(ang) * len, y: to.y - Math.sin(ang) * len };
   const p = useMemo(() => {
     // A tapered dowel along +x: Ø 14 at the butt to a shoulder, a bead tip.
     const body = make();
@@ -789,7 +828,18 @@ export function HiHatSide({ cx, cy, d, floorY, dim = 1 }: { cx: number; cy: numb
     const legs = make();
     seg(legs, cx, floorY - 150, cx - 170, floorY);
     seg(legs, cx, floorY - 150, cx + 170, floorY);
-    return { tube: seg(make(), cx, cy + 40, cx, floorY - 40), rod: seg(make(), cx, cy - 60, cx, cy + 40), legs, pedal: rrect(make(), cx - 260, floorY - 46, cx - 20, floorY - 30, 6) };
+    return { tube: seg(make(), cx, cy + 40, cx, floorY - 40), rod: seg(make(), cx, cy - 60, cx, cy + 40), legs, pedal: (() => {
+      // the pedal angled toward the throne (kitPlanModel.hihatPedalGeom), seen
+      // foreshortened from the side
+      const g = hihatPedalGeom();
+      const q = make();
+      q.moveTo(cx + (g.heel.u - g.rod.u), floorY - g.heelH);
+      q.lineTo(cx + (g.toe.u - g.rod.u), floorY - g.toeH);
+      q.lineTo(cx + (g.toe.u - g.rod.u) + 6, floorY - g.toeH + 12);
+      q.lineTo(cx + (g.heel.u - g.rod.u) + 4, floorY - g.heelH + 10);
+      q.close();
+      return q;
+    })() };
   }, [cx, cy, floorY]);
   // At the kit's own hi-hat (14 in, at its height over the floor) this is the
   // cymbal family's: the pair, clutch and pull rod, seat, two-stage stand,

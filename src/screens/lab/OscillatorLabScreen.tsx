@@ -64,7 +64,9 @@ import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
 import { CheckQuestion } from './foundations/bits';
+import { GoDeeper } from './foundations/GoDeeper';
 import { LabShell, HeaderPlayButton } from './LabShell';
+import { LabCheckEnd } from './kit/LabCheckEnd';
 import { oscillatorScreenGuide } from './oscillatorScreenGuides';
 import { useStageTextScale } from './rack/stageAspect';
 import { additivePayload, buildPreset, effectiveAmp, synthWaveform, type PresetKey } from './harmonicModel';
@@ -95,6 +97,13 @@ const WAVES: { key: PresetKey; label: string; lessonKey: string }[] = [
 ];
 
 const F0_CHOICES = [110, 220, 440, 880];
+/** SH-76 (owner 2026-11-15, "build waves 1 thru 3"): each F0 choice says what it is, in one line. */
+const F0_BLURBS: Record<number, string> = {
+  110: 'A low A. Each step up doubles the number: one octave higher.',
+  220: 'One octave above 110 Hz. The bars keep their pattern; only the pitch moves.',
+  440: 'The A that orchestras tune to, two octaves above 110 Hz.',
+  880: 'The highest choice, one octave above 440 Hz.',
+};
 
 const INTRO =
   'Generate the classic waveforms, watch their shape and harmonic content, and ' +
@@ -246,10 +255,14 @@ export function OscillatorLabScreen() {
   return (
     <LabShell
       labId="oscillator"
+      // FINISH · SEE WHAT'S LEFT under the CHECK; opening it stops the tone (fix round 2026-11-14, S2).
+      checkEnd={<LabCheckEnd labId="oscillator" labTitle="Oscillator Lab" onOpen={stopTone} />}
       title="OSCILLATOR LAB"
       subtitle="Waveforms · Spectra · Harmonic recipes"
       intro={INTRO}
-      exploreCaption="Pick a waveform and fundamental — the shape, the harmonic recipe, and the sound stay in lockstep."
+      // OSC-03 (owner 2026-11-15, "build waves 1 thru 3"): the first line under the display now says
+      // what the twelve bars ARE, in plain words (it replaces the old caption: a line in, a line out).
+      exploreCaption="Each bar is one pure tone: bar 1 is the note, bars 2 to 12 add its color."
       // Screen Guide (2026-10-31): one guide per tab. A CONCEPT lab — no mic,
       // no real-world measurement (the display is the analytic model) — so
       // the AccuracyNote chip gives its spot to the ⓘ.
@@ -267,6 +280,8 @@ export function OscillatorLabScreen() {
         initialParam: 'wave', // the teaching-central param (no faders here — the lane stays dark)
         onHelp: openLesson,
         stage: {
+          // The silent learner's line (fix round 2026-11-14, S3 §1): every EXPLORE step here works with sound off.
+          soundOffLine: 'Sound off? Every wave still shows its harmonic bars: watch which ones light.',
           size: 'L', // strip + bars stacked — the pair earns the tall glass
           fullScreen: true, // the rack's ⤢ FULL SCREEN (legibility pass 2026-09-26)
           // Honesty badge stays per-display and dynamic: reference model vs
@@ -274,11 +289,16 @@ export function OscillatorLabScreen() {
           badge: speakerView
             ? `PHONE SPEAKER OUTPUT — ${SPEAKER_HPF_HZ} Hz HPF APPLIED`
             : 'ANALYTIC MODEL — NOT A MEASUREMENT',
+          // Phase 3 (owner decision 3, 2026-11-14, S3 §2): the disclosure as one plain sentence.
+          modelNote: speakerView
+            ? `This is the phone-speaker version: a ${SPEAKER_HPF_HZ} Hz high-pass filter is applied.`
+            : 'This picture is worked out from the math of the wave, not measured.',
           onGuide: () => openLesson('display'),
           bezel: [
             { k: 'WAVE', v: waveLabel, flex: 1.3, helpKey: WAVES.find((w) => w.key === wave)!.lessonKey },
-            { k: 'F0', v: `${f0} Hz`, helpKey: 'frequency' },
-            { k: 'VIEW', v: speakerView ? 'SPEAKER' : 'IDEAL', helpKey: 'display' },
+            // Plain-word captions on the first visit (fix round 2026-11-14, S3 §4).
+            { k: 'F0', v: `${f0} Hz`, helpKey: 'frequency', caption: 'the pitch' },
+            { k: 'VIEW', v: speakerView ? 'SPEAKER' : 'IDEAL', helpKey: 'display', caption: 'drawn as' },
           ],
           render: (w, h) => {
             // Split the glass budget: traveling strip on top, harmonic bars
@@ -321,7 +341,7 @@ export function OscillatorLabScreen() {
             id: 'f0',
             label: 'F0',
             valueLabel: `${f0} Hz`,
-            options: F0_CHOICES.map((hz) => ({ id: String(hz), label: `${hz} Hz` })),
+            options: F0_CHOICES.map((hz) => ({ id: String(hz), label: `${hz} Hz`, blurb: F0_BLURBS[hz] })),
             selectedId: String(f0),
             onSelect: (id) => pickF0(Number(id)),
             sticky: true, // octave-hop while sounding (and watch the HPF curve move)
@@ -341,6 +361,40 @@ export function OscillatorLabScreen() {
       }}
     >
       {!engineReady ? <EngineGate state={gate} /> : null}
+
+      {/* OSC-04 (owner 2026-11-15, "build waves 1 thru 3"): the two friendly check questions
+          come first; the engineer notes (THE SOUND, FM · AM) fold under GO DEEPER, nothing removed.
+          Retrieval (learning pass 2026-08-31) — NEW COPY, owner review. */}
+      <CheckQuestion
+        spec={{
+          question: 'The display shows ONLY odd harmonics, dying away fast (1/n²). Which wave?',
+          options: ['Triangle', 'Square', 'Sawtooth'],
+          correctIdx: 0,
+          // Checker C2 (2026-11-14): a reason per wrong option, by authored index; never the answer.
+          why: {
+            1: 'The square is odd-only too, but its bars fall slowly (1/n). Compare the bar heights in the WAVE tray.',
+            2: 'The sawtooth has every harmonic, the even ones included. Look for the empty even bars.',
+          },
+          reveal:
+            'Odd harmonics + a steep 1/n² rolloff = TRIANGLE — smooth and flute-like. The square also skips the evens but its harmonics fall slowly (1/n), which is why it buzzes.',
+          wrongHint: 'A/B TRIANGLE and SQUARE in the WAVE tray and compare how fast the bars shrink.',
+        }}
+      />
+      <CheckQuestion
+        spec={{
+          question: 'Every harmonic present, each 1/n of the fundamental. Which wave?',
+          options: ['Sawtooth', 'Sine', 'Triangle'],
+          correctIdx: 0,
+          // Checker C2 (2026-11-14): a reason per wrong option, by authored index; never the answer.
+          why: {
+            1: 'A sine has exactly one bar. Tap SINE in the WAVE tray and count.',
+            2: 'The triangle skips the even harmonics. Look for gaps among the bars.',
+          },
+          reveal:
+            'The full harmonic series falling 1/n is the SAWTOOTH — the buzziest and brightest of the classics, and the favorite raw material for filters. A sine has exactly one bar.',
+          wrongHint: 'Tap SAW and count the bars.',
+        }}
+      />
 
       <View style={{ gap: 6 }}>
         <Text style={styles.sectionHead}>WHAT YOU’RE SEEING</Text>
@@ -363,58 +417,38 @@ export function OscillatorLabScreen() {
             ? `SPKR is ON — showing the signal AFTER the ${SPEAKER_HPF_HZ} Hz high-pass, what actually reaches the built-in speaker.`
             : `Reference (ideal) view. Audio is high-passed for speaker safety — the SPKR key flips the display to the speaker output.`}
         </Text>
+        {/* OSC-04 (owner 2026-11-15, "build waves 1 thru 3"): the speaker advisory and any
+            sound error stay in view; only THE SOUND's engine notes fold under GO DEEPER. */}
+        {engineReady ? <Text style={styles.advisory}>{LOW_FREQ_ADVISORY}</Text> : null}
+        {engineReady && genError ? <Text style={styles.error}>{genError}</Text> : null}
       </View>
 
-      <View style={{ gap: 6 }}>
-        <Text style={styles.sectionHead}>THE SOUND</Text>
-        {engineReady ? (
-          <>
+      <GoDeeper hint="How the sound is made, and why FM and AM are not here.">
+        <View style={{ gap: 6 }}>
+          <Text style={styles.sectionHead}>THE SOUND</Text>
+          {engineReady ? (
             <Text style={styles.caption}>
               {additiveReady
                 ? `PLAY (header ▶) outputs ${GEN_LEVEL_DB} dBFS · uncalibrated. Band-limited by construction: any harmonic at or above Nyquist would be left out, never aliased. Here every harmonic stays well below it — the highest is 12 × 880 Hz = 10,560 Hz, and Nyquist is at least 22,050 Hz.`
                 : __DEV__
                   ? `This engine build predates the additive generator — audio is the fundamental SINE only; square/saw/triangle/pulse stay visual until the v3 dev build is installed.`
-                  : `This version of the app plays the fundamental SINE only; square, saw, triangle and pulse stay visual. Update the app to hear them.`}
+                  : `This version of the app plays the fundamental SINE only; square, saw, triangle and pulse stay visual.`}
             </Text>
-            <Text style={styles.advisory}>{LOW_FREQ_ADVISORY}</Text>
-            {genError ? <Text style={styles.error}>{genError}</Text> : null}
-          </>
-        ) : null}
-      </View>
+          ) : null}
+        </View>
 
-      {/* FM / AM — honest status, no dead controls (§1.7). */}
-      <View style={styles.devNote}>
-        <Text style={styles.devNoteHead}>{__DEV__ ? 'FM · AM — NEEDS NEW NATIVE DSP' : 'FM · AM — NOT IN THIS LAB'}</Text>
-        <Text style={styles.caption}>
-          {__DEV__
-            ? 'Frequency and amplitude modulation are not in the current ape-dsp engine, so they have no controls here yet. '
-            : 'Frequency and amplitude modulation have no controls in this lab. '}
-          The theory is in this lab’s lesson (ⓘ) — sidebands at fc ± n·fm (FM, Bessel amplitudes) vs
-          one pair at fc ± fm (AM).
-        </Text>
-      </View>
-
-{/* Retrieval (learning pass 2026-08-31) — NEW COPY, owner review. */}
-      <CheckQuestion
-        spec={{
-          question: 'The display shows ONLY odd harmonics, dying away fast (1/n²). Which wave?',
-          options: ['Triangle', 'Square', 'Sawtooth'],
-          correctIdx: 0,
-          reveal:
-            'Odd harmonics + a steep 1/n² rolloff = TRIANGLE — smooth and flute-like. The square also skips the evens but its harmonics fall slowly (1/n), which is why it buzzes.',
-          wrongHint: 'A/B TRIANGLE and SQUARE in the WAVE tray and compare how fast the bars shrink.',
-        }}
-      />
-      <CheckQuestion
-        spec={{
-          question: 'Every harmonic present, each 1/n of the fundamental. Which wave?',
-          options: ['Sawtooth', 'Sine', 'Triangle'],
-          correctIdx: 0,
-          reveal:
-            'The full harmonic series falling 1/n is the SAWTOOTH — the buzziest and brightest of the classics, and the favorite raw material for filters. A sine has exactly one bar.',
-          wrongHint: 'Tap SAW and count the bars.',
-        }}
-      />
+        {/* FM / AM — honest status, no dead controls (§1.7). */}
+        <View style={styles.devNote}>
+          <Text style={styles.devNoteHead}>{__DEV__ ? 'FM · AM — NEEDS NEW NATIVE DSP' : 'FM · AM — NOT IN THIS LAB'}</Text>
+          <Text style={styles.caption}>
+            {__DEV__
+              ? 'Frequency and amplitude modulation are not in the current ape-dsp engine, so they have no controls here yet. '
+              : 'Frequency and amplitude modulation have no controls in this lab. '}
+            The theory is in this lab’s lesson (ⓘ) — sidebands at fc ± n·fm (FM, Bessel amplitudes) vs
+            one pair at fc ± fm (AM).
+          </Text>
+        </View>
+      </GoDeeper>
 
       <GuidedLessonSheet
         visible={lessonOpen}

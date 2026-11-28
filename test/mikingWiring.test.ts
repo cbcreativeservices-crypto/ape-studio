@@ -54,9 +54,9 @@ const { LAB_CATEGORIES, isMemberOnlyLabRoute, labRouteName, categoryLeaves, miki
 const REGISTRY = await import('../src/screens/lab/miking/data/registry.ts');
 const { readyLabs, LESSONS } = REGISTRY;
 
-describe('listing (owner: Training Labs → Instruments & Recording, members only)', () => {
+describe('listing (owner: Training Labs → Miking Techniques, members only)', () => {
   const cat = (LAB_CATEGORIES as { id: string; section: string; families?: { name: string; labs: { name: string; route?: string; params?: { lab?: string }; member?: boolean }[] }[] }[]).find((c) => c.id === 'instruments')!;
-  it('a "Miking Labs" family in the training-section Instruments & Recording category', () => {
+  it('a "Miking Labs" family in the training-section Miking Techniques category', () => {
     assert.equal(cat.section, 'training');
     const fam = cat.families?.find((f) => f.name === 'Miking Labs');
     assert.ok(fam, 'the family exists');
@@ -121,7 +121,10 @@ describe('the family tiles (owner 2026-10-06: a tile per family on the Labs menu
     // `count` = n once the record is read, '—' before / when unreadable (2026-10-13).
     assert.match(hub, /\{\.\.\.fitValue\(12\)\}>\{`\$\{count\} \$\{pagesWord\} done`\}/);
     assert.match(hub, /\{unreadable \? <ProgressUnreadableNote \/> : null\}/);
-    assert.match(hub, /starting points, not rules/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item MK-06): the note moved to
+    // the top of the hub, its words in data/registry.ts (HUB_NOTE).
+    assert.match(hub, /<Text style=\{styles\.note\}>\{HUB_NOTE\}<\/Text>/);
+    assert.match(readFileSync('src/screens/lab/miking/data/registry.ts', 'utf8'), /starting points, not rules/);
   });
 });
 
@@ -158,7 +161,9 @@ describe('the host and its pages', () => {
     assert.match(host, /useLabNav\(/);
     assert.match(host, /<LabEndScreen\b/);
     assert.match(host, /mode="progress"/);
-    assert.match(host, /noun="page"/);
+    // Changed on purpose (checker C4, lab fix round 2026-11-14): one unit word, as the strip says.
+    // Owner, 2026-11-14: "Begin fixing all bugs found and do obvious (my decision is not required) fixes".
+    assert.match(host, /noun="module"/);
     assert.match(host, /START OVER \(PRACTICE\)/);
     assert.match(host, /<ProgressUnreadableNote\b/);
     assert.match(host, /setMikingSaveBlocked\(!canSave\)/);

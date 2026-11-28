@@ -17,7 +17,7 @@ import { VizUnavailableCard } from '../../foundations/bits';
 import { powerSpectrumDb } from '../../../../features/ear/earDsp';
 import { faderParam, flipFader, optionsParam } from '../MasteringRack';
 import { ModuleSteps } from '../steps';
-import { Body, Card, KeyTerms, PlaybackStatus, Point, ScenarioDeck, SectionTitle, levelTint, lufsTint, matchBezel, measureBezel, unmatchedWarning } from '../kit';
+import { Body, Card, GoDeeper, KeyTerms, PlaybackStatus, Point, ScenarioDeck, SectionTitle, levelTint, lufsTint, matchBezel, measureBezel, unmatchedWarning } from '../kit';
 import { KEY_TERMS, LOUDNESS_SCENARIOS } from '../masteringContent';
 import { PLAYBACK_SYSTEMS, TRANSLATION_ASPECT, TranslationStage, WAVE_ASPECT, WaveOverviewStage } from '../stages';
 import { programmeIfRendered, useDrawProgramme, useMasterPlayback, type MasterVariant } from '../useMasterPlayback';
@@ -47,20 +47,22 @@ const METER_KINDS: readonly { key: MeterKind; label: string; short: string; blur
  *  at 390 wide two faces side by side would be unreadable, so the three
  *  numbers share the BEZEL instead). The loudness meter is drawn WITHOUT its
  *  −14 target line (targetLufs null) and WITH the lab's additive gain. */
-function MetersStage({ width, height, signal, gainDb, kind }: { width: number; height: number; signal: SignalKey; gainDb: number; kind: MeterKind }) {
+function MetersStage({ width, height, signal, gainDb, kind, truePeakDbtp }: { width: number; height: number; signal: SignalKey; gainDb: number; kind: MeterKind; truePeakDbtp?: number }) {
   const viz = requireVizMeters();
   const focused = useIsFocused();
   if (!viz) return <View style={{ width, height, justifyContent: 'center' }}><VizUnavailableCard /></View>;
-  return <MetersStageInner viz={viz} width={width} height={height} signal={signal} gainDb={gainDb} focused={focused} kind={kind} />;
+  return <MetersStageInner viz={viz} width={width} height={height} signal={signal} gainDb={gainDb} focused={focused} kind={kind} truePeakDbtp={truePeakDbtp} />;
 }
-function MetersStageInner({ viz, width, height, signal, gainDb, focused, kind }: { viz: NonNullable<ReturnType<typeof requireVizMeters>>; width: number; height: number; signal: SignalKey; gainDb: number; focused: boolean; kind: MeterKind }) {
+function MetersStageInner({ viz, width, height, signal, gainDb, focused, kind, truePeakDbtp }: { viz: NonNullable<ReturnType<typeof requireVizMeters>>; width: number; height: number; signal: SignalKey; gainDb: number; focused: boolean; kind: MeterKind; truePeakDbtp?: number }) {
   const phase = viz.usePhaseClock(focused, 0.6);
   return (
     <View style={{ width, height }}>
       {kind === 'peak' ? (
         <viz.PeakMeterView width={width} height={height} signal={signal} gain={Math.pow(10, gainDb / 20)} phase={phase} />
       ) : (
-        <viz.LoudnessView width={width} height={height} signal={signal} phase={phase} targetLufs={null} gainDb={gainDb} />
+        // The face's TP reads the bezel's TRUE PK (F4/F6 fix round 2026-11-14:
+        // Kick's face said −5.0 dBTP beside the bezel's corrected value).
+        <viz.LoudnessView width={width} height={height} signal={signal} phase={phase} targetLufs={null} gainDb={gainDb} truePeakDbtp={truePeakDbtp} />
       )}
     </View>
   );
@@ -119,7 +121,14 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
   const teach = useMemo(() => {
     const sim = simulateLoudness(signal);
     const peak = linDb(peakOf(renderSignal(signal)));
-    return { peak, tp: sim.truePeakDbtp, lufs: sim.integratedLufs };
+    // True peak is the waveform reconstructed BETWEEN the samples, so it can
+    // never read below the sample peak. TRUE PK used to be the loudness
+    // story's own number, built on a different peak from the PEAK beside it:
+    // Kick read PEAK +1.6 / TRUE PK −5.0, Organ −5.7 / −8.8, Speech −2.6 /
+    // −7.6 (novice audit G4, 2026-11-14). The story's inter-sample overshoot
+    // now rides on the sample peak this bezel shows.
+    const overshoot = Math.max(0, sim.truePeakDbtp - sim.samplePeakDbfs);
+    return { peak, tp: peak + overshoot, lufs: sim.integratedLufs };
   }, [signal]);
   // The programme's third-octave-ish spectrum for the translation picture —
   // free if a LISTEN page already rendered it; DRAW MIX renders it on request
@@ -150,14 +159,14 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
         {
           key: 'numbers', title: 'The four numbers', kind: 'LEARN', layout: 'rack',
           rack: {
-            render: (w, h) => <MetersStage width={w} height={h} signal={signal} gainDb={meterGain} kind={meterKind} />,
+            render: (w, h) => <MetersStage width={w} height={h} signal={signal} gainDb={meterGain} kind={meterKind} truePeakDbtp={teach.tp} />,
             aspect: 360 / 230,
             size: 'L',
             badge: 'SYNTHESIZED TEACHING SIGNAL · MODEL meters (Visual Audio Analysis lab)',
             bezel: [
-              { k: 'PEAK', v: `${(teach.peak + meterGain).toFixed(1)}`, tint: levelTint(teach.peak + meterGain) },
-              { k: 'TRUE PK', v: `${(teach.tp + meterGain).toFixed(1)}`, tint: levelTint(teach.tp + meterGain) },
-              { k: 'LUFS', v: `${(teach.lufs + meterGain).toFixed(1)}`, tint: lufsTint(teach.lufs + meterGain) },
+              { k: 'PEAK', v: `${(teach.peak + meterGain).toFixed(1)}`, tint: levelTint(teach.peak + meterGain), caption: 'highest sample' },
+              { k: 'TRUE PK', v: `${(teach.tp + meterGain).toFixed(1)}`, tint: levelTint(teach.tp + meterGain), caption: 'smoothed peak' },
+              { k: 'LUFS', v: `${(teach.lufs + meterGain).toFixed(1)}`, tint: lufsTint(teach.lufs + meterGain), caption: 'how loud' },
               { k: 'GAIN', v: `${meterGain > 0 ? '+' : ''}${meterGain.toFixed(1)} dB`, tint: colors.amber },
               { k: 'FACE', v: meterKind === 'peak' ? 'PEAK' : 'LUFS' },
             ],
@@ -201,14 +210,25 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
               { kind: 'action', id: 'stop', label: '■ STOP', onPress: pb.stop, tint: colors.green },
             ],
             initialParam: 'drive',
+            soundOffLine: 'Sound off? Push DRIVE and watch GR and PLR change; the comparison by ear needs sound.',
           },
           well: (
             <>
               <PlaybackStatus versions={variants} active={pb.active} pending={pb.pending} failed={pb.failed} rendering={pb.status === 'rendering'} matched={matched} matchDb={m?.matchDb} labels="▶ QUIETER or ▶ LOUDER" />
-              <Body>DRIVE pushes the mix into a peak limiter whose ceiling is {CEILING} dBFS. QUIETER is the same limiter with no drive. With MATCH LEVEL on, both are played at the loudness of the quieter one: the louder version is turned down by the difference between the two loudness estimates (BS.1770-style, K-weighted), in LU (1 LU = 1 dB), so what remains is the dynamics. The gain-reduction strip shows where the limiter worked; TRUE PK shows what a sample-peak ceiling lets through between samples.</Body>
+              {/* MA-01 (owner 2026-11-15: "build waves 1 thru 3", D62): the
+                  plain habit and what to listen for lead; the loudness-estimate
+                  mechanics, the measured numbers and the three faceplate /
+                  honesty notes fold under GO DEEPER (Module 1 step 3's pattern).
+                  Every word is kept; only the order and the fold change. */}
+              <Card tone="accent">
+                <Point title="There is no fixed target in this lab">The correct loudness depends on the content and the destination. A dense rock mix and a solo piano piece do not share a number; destinations publish their requirements and change them. The lab shows you the trade; the spec sheet of the day gives you the number.</Point>
+              </Card>
+              <Body>DRIVE pushes the mix into a peak limiter whose ceiling is {CEILING} dBFS. QUIETER is the same limiter with no drive. With MATCH LEVEL on, both are played at the loudness of the quieter one, so what remains is the dynamics.</Body>
               <Card tone="warn">
                 <Point title="Before you switch MATCH off">{unmatchedWarning(current ? q?.lufs : undefined, current ? l?.lufs : undefined, 'LOUDER')} Unmatched, nothing replays by itself after a DRIVE change — you press ▶ each time.</Point>
               </Card>
+              <GoDeeper title="HOW THIS COMPARISON WORKS">
+              <Body>With MATCH LEVEL on, the louder version is turned down by the difference between the two loudness estimates (BS.1770-style, K-weighted), in LU (1 LU = 1 dB). The gain-reduction strip shows where the limiter worked; TRUE PK shows what a sample-peak ceiling lets through between samples.</Body>
               {fresh && q && l ? (
                 <Card tone="accent">
                   <SText style={{ color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 13.5, lineHeight: 18 }}>
@@ -219,8 +239,8 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
               <Card>
                 <Point title="The faceplate on the glass">The limiter at the settings the shown version used: INPUT is DRIVE (0 dB for QUIETER), CEILING {CEILING} dBFS, RELEASE 80 ms; GR lights to the deepest gain reduction.</Point>
                 <Point title="This lab's limiter, honestly">A miniature: a plain sample-peak clamp with no look-ahead. It watches only the samples, which is why TRUE PK can read over the ceiling. Most mastering limiters add look-ahead and true-peak detection (oversampling), often as a mode you switch on — that is what holds a −1 dBTP ceiling in practice.</Point>
-                <Point title="There is no fixed target in this lab">The correct loudness depends on the content and the destination. A dense rock mix and a solo piano piece do not share a number; destinations publish their requirements and change them. The lab shows you the trade; the spec sheet of the day gives you the number.</Point>
               </Card>
+              </GoDeeper>
             </>
           ),
         },
@@ -249,7 +269,7 @@ export function Mod6Loudness({ onAnswered }: ModuleProps) {
             badge: MODEL_BADGE,
             bezel: [
               { k: 'SYSTEM', v: system.name.toUpperCase().split(' (')[0], flex: 2 },
-              { k: 'FOLD', v: system.mono ? 'MONO' : 'STEREO', tint: system.mono ? colors.orange : colors.green },
+              { k: 'FOLD', caption: 'one speaker?', v: system.mono ? 'MONO' : 'STEREO', tint: system.mono ? colors.orange : colors.green },
             ],
             params: [
               flipFader({ id: 'sys', label: 'SYSTEM', items: PLAYBACK_SYSTEMS, selectedId: systemId, onSelect: setSystemId, name: (s) => s.name, short: (s) => s.name.split(' ')[0].toUpperCase(), blurb: (s) => s.note, title: 'PLAYBACK SYSTEM', sticky: true }),

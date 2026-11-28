@@ -13,13 +13,18 @@
  * that grants credit and also makes people feel stupid gets abandoned, and an
  * abandoned test blocks a credential.
  *
- * The explanation shows on EVERY answer, right or wrong — it is the teaching
- * moment, and hiding it on a correct answer would punish knowing the answer.
+ * The explanation shows on a RIGHT answer — hiding it there would punish
+ * knowing the answer — and after a SECOND miss (lab fix round 2026-11-14,
+ * report section 3 row 4; owner approval: "Begin fixing all bugs found and do
+ * obvious ... fixes as you suggested in the report", suggested order item 5).
+ * It usually names the answer, so on the FIRST miss the card shows that
+ * option's own reason (`why`), the question's `hint`, or a plain nudge back to
+ * the lab instead (features/lab/checkFeedback, unit-tested).
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { StudioButton } from './StudioButton';
 import type { UnderstandingQuestion } from '../features/lab/understanding';
+import { addMiss, checkFeedback } from '../features/lab/checkFeedback';
 import { colors, fonts } from '../theme/tokens';
 
 /** Deterministic per question id: the options hold still across a re-render and
@@ -65,6 +70,9 @@ export function LabUnderstandingCheck({
   const [correct, setCorrect] = useState<Set<string>>(() => new Set(passed ? questions.map((q) => q.id) : []));
   /** The option currently picked per question, for showing feedback. */
   const [picked, setPicked] = useState<Record<string, string>>({});
+  /** The DIFFERENT wrong options tried per question: the second one opens the
+   *  explanation (a repeat tap on the same wrong option is not a new miss). */
+  const [misses, setMisses] = useState<Record<string, string[]>>({});
   const [fired, setFired] = useState(!!passed);
   // `passed` can turn true AFTER mount (shared hunt 12, 2026-10-04): the
   // completion store and the paged progress are read asynchronously, and a
@@ -85,7 +93,10 @@ export function LabUnderstandingCheck({
     (q: UnderstandingQuestion, option: string) => {
       if (correct.has(q.id)) return; // already earned; re-reading is free
       setPicked((p) => ({ ...p, [q.id]: option }));
-      if (option !== q.correct) return;
+      if (option !== q.correct) {
+        setMisses((m) => ({ ...m, [q.id]: addMiss(m[q.id], option) }));
+        return;
+      }
       setCorrect((prev) => {
         if (prev.has(q.id)) return prev;
         const next = new Set(prev);
@@ -109,10 +120,18 @@ export function LabUnderstandingCheck({
     <View style={s.wrap}>
       <Text style={s.eyebrow}>CHECK YOUR UNDERSTANDING</Text>
       <Text style={s.title}>{labTitle}</Text>
+      {/* The no-score line lives HERE, on every check (SH-75, beginner waves
+          2026-11-15; owner 2026-11-15: "build waves 1 thru 3", D62 adoption
+          plan): "Nothing is lost and there is no score." is the wording the
+          lab screen guides already use, as its own plain sentence, so a lab
+          need not say it separately. A line in, a line out: the lead got
+          SHORTER around it ("Get one wrong and you can try it again straight
+          away;" became "Get one wrong? Try again."), so the card does not
+          grow. Still ONE Text element. */}
       <Text style={s.lead}>
         {done
           ? 'Every question answered correctly — the check is passed.'
-          : `Answer all ${questions.length} correctly to pass the check. Get one wrong and you can try it again straight away; nothing is lost and there is no score.`}
+          : `Answer all ${questions.length} correctly to pass the check. Get one wrong? Try again. Nothing is lost and there is no score.`}
       </Text>
 
       {!done ? (
@@ -124,7 +143,7 @@ export function LabUnderstandingCheck({
       {questions.map((q, i) => {
         const got = correct.has(q.id);
         const chose = picked[q.id];
-        const wrong = !!chose && !got;
+        const feedback = checkFeedback(q, chose, misses[q.id] ?? [], got);
         const options = seededOrder(q.options, q.id);
         return (
           <View key={q.id} style={[s.card, got && s.cardDone]}>
@@ -151,13 +170,21 @@ export function LabUnderstandingCheck({
                 );
               })}
             </View>
-            {/* Shown on EVERY answer. On a wrong one it is the nudge; on a
-                right one it is the confirmation — hiding it would punish
-                knowing the answer. */}
-            {got || wrong ? (
-              <View style={[s.explain, got ? s.explainOk : s.explainTry]}>
-                <Text style={s.explainHead}>{got ? 'CORRECT' : 'NOT QUITE — TRY ANOTHER'}</Text>
-                <Text style={s.explainBody}>{q.explanation}</Text>
+            {/* Right: CORRECT + the explanation (hiding it would punish
+                knowing the answer). Wrong: NOT QUITE — TRY ANOTHER + that
+                option's reason / the hint / the nudge; the explanation, which
+                usually names the answer, only after a second miss
+                (checkFeedback, 2026-11-14). */}
+            {feedback ? (
+              <View style={[s.explain, got ? s.explainOk : s.explainTry]} accessibilityLiveRegion="polite">
+                <Text style={s.explainHead}>{feedback.right ? 'CORRECT' : 'NOT QUITE — TRY ANOTHER'}</Text>
+                {feedback.line ? <Text style={s.explainBody}>{feedback.line}</Text> : null}
+                {feedback.explanation ? (
+                  <>
+                    {feedback.line ? <Text style={[s.explainHead, s.explainSub]}>THE EXPLANATION</Text> : null}
+                    <Text style={s.explainBody}>{feedback.explanation}</Text>
+                  </>
+                ) : null}
               </View>
             ) : null}
           </View>
@@ -215,6 +242,7 @@ const s = StyleSheet.create({
   explainOk: { backgroundColor: '#0d1f12', borderWidth: 1, borderColor: 'rgba(55,224,95,.3)' },
   explainTry: { backgroundColor: '#1d1708', borderWidth: 1, borderColor: 'rgba(255,180,0,.3)' },
   explainHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.4, color: colors.textSubAlt },
+  explainSub: { marginTop: 6 },
   explainBody: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 20, color: colors.textSecondary },
 
   doneCard: { borderWidth: 1, borderColor: 'rgba(55,224,95,.4)', backgroundColor: '#0e1a12', borderRadius: 10, padding: 12 },

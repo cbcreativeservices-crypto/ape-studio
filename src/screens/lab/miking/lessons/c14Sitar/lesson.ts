@@ -339,7 +339,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: what moves most of the air when a sitar string is plucked?', options: ['The string itself', 'The board, driven by the bridge', 'The sympathetic strings'], after: 'Now STEP through the pluck (or PLAY ONCE) and watch what each event drives.' },
+  sound: { prompt: 'Before you step through: what moves most of the air when a sitar string is plucked?', options: ['The string itself', 'The board, driven by the bridge', 'The sympathetic strings'], after: 'Now go EVENT by EVENT through the pluck (or PLAY ONCE) and watch what each event drives.' },
   placement: { prompt: 'Predict: you move the mic from low by the bridge to high by the neck. What changes?', options: ['More body', 'More string character and shimmer', 'It depends on this sitar'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   ...STRINGS_PREDICT,
 };

@@ -151,9 +151,9 @@ export function Ch11Systems({ ctx }: ChapterProps) {
           // The spelling rides on the KEY line (review 2026-09-30): meantone's
           // "B 5^(5/4)/4" is 11 mono characters in a ~83 px cell — it cropped
           // to an ellipsis on a 390 phone, and a readout never drops its number.
-          { k: `NOTE ${note.spelling}`, v: note.value.exactLabel, tint: colors.cyanBright, flex: 1.15 },
-          { k: 'Hz', v: `${hz(note.value.numericRatio).toFixed(2)} Hz`, flex: 1.1 },
-          { k: 'VS EQUAL', v: Math.abs(dev) < 0.05 ? '0 ¢' : `${dev > 0 ? '+' : ''}${dev.toFixed(2)} ¢`, tint: Math.abs(dev) < 0.05 ? colors.green : Math.abs(dev) < 10 ? colors.gold : colors.orange },
+          { k: `NOTE ${note.spelling}`, v: note.value.exactLabel, tint: colors.cyanBright, flex: 1.15, caption: 'its ratio' },
+          { k: 'Hz', v: `${hz(note.value.numericRatio).toFixed(2)} Hz`, flex: 1.1, caption: 'frequency' },
+          { k: 'VS EQUAL', v: Math.abs(dev) < 0.05 ? '0 ¢' : `${dev > 0 ? '+' : ''}${dev.toFixed(2)} ¢`, tint: Math.abs(dev) < 0.05 ? colors.green : Math.abs(dev) < 10 ? colors.gold : colors.orange, caption: 'off equal' },
           soundCell(status),
         ],
         stage: (w, h) => (

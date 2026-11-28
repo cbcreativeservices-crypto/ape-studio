@@ -79,7 +79,9 @@ describe('R4-SS-01: the festival "who hears" readouts follow the in-ear pack', (
   });
   it('the page draws the filtered list, and the bus readout value shrinks to fit (never under 9 pt)', () => {
     const b = src('screens/lab/soundsystems/pagesBuild.tsx');
-    assert.match(b, /\{hearsShown\(ui\.hears, b\.system, b\.walk\)\.map\(\(h\) => \(/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item SS-10): capstones 7, 8 and 10
+    // draw the same filtered list one console step at a time, so the call sits behind `steps ? null :`.
+    assert.match(b, /hearsShown\(ui\.hears, b\.system, b\.walk\)\.map\(\(h\) => \(/);
     assert.doesNotMatch(b, /\{ui\.hears\.map\(/);
     const p = src('screens/lab/soundsystems/art/ConsolePanel.tsx');
     assert.match(p, /<Text style=\{styles\.busDb\} \{\.\.\.fitValue\(11\)\}>/);

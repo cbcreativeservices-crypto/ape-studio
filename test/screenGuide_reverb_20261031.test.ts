@@ -134,7 +134,8 @@ describe('3. each guide quotes its screen’s real names', () => {
   const NAMES: Record<string, string[]> = {
     explore: [
       // the glass (fxAnim ReverbFlow) + the badge strip
-      'IN ▸', '▸ OUT', 'REVERB', 'TEACHING MODEL',
+      // Phase 3, lab fix round (owner 2026-11-14, decision 3: a plain one-line model note instead of all-caps badges).
+      'IN ▸', '▸ OUT', 'REVERB', 'is a model',
       // bezel readouts, dock keys, tray heads + choices (literal in the source)
       'RT60', 'PRE', 'MIX', 'PRE-DLY', 'DAMP', 'SOURCE', 'PRE-DELAY', 'HF DAMPING', 'DARK 2k', 'NATURAL 5.5k', 'BRIGHT 12k', '35%', '70%', '100% WET', 'BURST 1 kHz', 'PINK NOISE',
       // the rack, the header and LAB NOTES
@@ -171,16 +172,23 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.match(ex, /PRE-DLY \(PRE-DELAY: 0, 20, 60 ms\)/);
     assert.match(ex, /DAMP \(HF DAMPING, high-frequency damping: DARK 2k, NATURAL 5\.5k, BRIGHT 12k\)/);
     assert.match(ex, /MIX \(35%, 70%, 100% WET\)/);
-    assert.match(ex, /SOURCE picks CLICK 60 \(a short click once a second\), BURST 1 kHz or PINK NOISE/);
+    // owner 2026-11-25, click tempo: the CLICK's tempo can move, so the guide names its opening 60 BPM.
+    assert.match(ex, /SOURCE picks CLICK \(opens at 60 BPM, one click a second\), BURST 1 kHz or PINK NOISE/);
     assert.match(REVERB, /sources: \[srcClick\(60\),/); // CLICK 60 = 60 per minute: once a second
-    assert.match(REVERB, /label: 'RT60 \(DECAY TIME\)', short: 'RT60'/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item RV-01): the words lead, from the shared PLAIN_TERMS.rt60.
+    assert.match(CONFIGS, /const REVERB_RT60_WORDS = PLAIN_TERMS\.rt60\.short\.toUpperCase\(\);/);
+    assert.match(REVERB, /label: `\$\{REVERB_RT60_WORDS\} \(\$\{PLAIN_TERMS\.rt60\.term\}\)`, short: 'RT60'/);
     assert.match(REVERB, /label: 'PRE-DELAY', short: 'PRE-DLY'/);
     assert.match(REVERB, /label: 'HF DAMPING', short: 'DAMP'/);
-    assert.match(REVERB, /bezel: \[\s*\{ k: 'RT60', paramId: P\.rt60 \},\s*\{ k: 'PRE', paramId: P\.preDelayMs \},\s*\{ k: 'MIX', paramId: P\.reverbMix \},\s*\]/);
+    // Phase 2, lab fix round (owner 2026-11-14: "Begin fixing all bugs found and do obvious ... fixes"): a bezel cell may carry its first-visit caption.
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item RV-01): the cell reads DECAY TIME (RT60), DECAY TIME when narrow.
+    assert.match(REVERB, /bezel: \[[\s\S]*?\{ k: `\$\{REVERB_RT60_WORDS\} \(\$\{PLAIN_TERMS\.rt60\.term\}\)`, kNarrow: REVERB_RT60_WORDS, paramId: P\.rt60 \},\s*\{ k: 'PRE-DLY', paramId: P\.preDelayMs(?:, caption: '[^']*')? \},\s*\{ k: 'MIX', paramId: P\.reverbMix(?:, caption: '[^']*')? \},\s*\]/);
     // the glass labels the guide describes: 100 ms ticks, a "0.5 s" mark, guides every 30 dB
-    assert.match(ANIM, /for \(let ms = 100; ms < 5000; ms \+= 100\)/);
-    assert.match(ANIM, /const major = ms % 500 === 0;/);
-    assert.match(ANIM, /`\$\{\(ms \/ 1000\)\.toFixed\(1\)\} s`/);
+    // owner 2026-11-25, click tempo: the ruler's names step with the tempo's window (0.5 or 1 s); the ticks stay
+    // 100 ms, so at the opening CLICK 60 it is still 100 ms ticks named every 0.5 s; test/fxClickTempo_20261125 pins the steps.
+    assert.match(ANIM, /const labelMs = Math\.max\(500, rulerStepMs\(500, winScale\)\);\s*const tickMs = 100;/);
+    assert.match(ANIM, /for \(let ms = tickMs; ms < 20000; ms \+= tickMs\)/);
+    assert.match(ANIM, /marks\.push\(\{ x, s: fmtSeconds\(ms\) \}\)/);
     assert.match(ANIM, /for \(let d = 30; d < REV_RANGE_DB; d \+= 30\)/);
     assert.match(ANIM, /<DashPathEffect intervals=\{\[2, 4\]\} \/>/);
   });
@@ -263,7 +271,8 @@ describe('4. the TRY THIS numbers are what the screen draws', () => {
     const g0 = onsetAt(0);
     assert.ok(g60 >= 88 && g60 <= 95, `60 ms gap = ${g60}`);
     assert.ok(g0 >= 28 && g0 <= 36, `0 ms gap = ${g0}`);
-    assert.match(REVERB_SCREEN_GUIDES.explore.tryThis[1], /the wash now jumps up nearly one 100 ms tick mark after the gray click \(60 ms plus the reverb’s 31 ms\)\. At 0 ms it jumps up about a third of a tick after/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item RV-03): the GAP bracket marks it on the glass.
+    assert.match(REVERB_SCREEN_GUIDES.explore.tryThis[1], /the GAP bracket over OUT stretches to nearly one 100 ms tick mark after the gray click \(60 ms plus the reverb’s 31 ms\)\. At 0 ms it shrinks to about a third of a tick/);
   });
   it('EXPLORE 3: RT60 ≈ 1.5 s with DARK 2k → nearly at the floor by the 1 s mark (NATURAL stays well up); DESIGNED RESPONSE ignores damping', () => {
     for (const rt of [1.4, 1.5, 1.6]) {
@@ -273,7 +282,8 @@ describe('4. the TRY THIS numbers are what the screen draws', () => {
       assert.ok(nat > -RANGE + 18, `RT60 ${rt} NATURAL at 990 ms: ${nat.toFixed(1)} dB`);
     }
     assert.match(REVERB, /Hero: \(v\) => <DecayCurveGraph rt60=\{v\[P\.rt60\]\} preDelayMs=\{v\[P\.preDelayMs\]\} spanS=\{DECAY_SPAN_S\} \/>/);
-    assert.match(REVERB_SCREEN_GUIDES.explore.tryThis[2], /DARK 2k: the wash nearly reaches the bottom by the 1 s mark\. DESIGNED RESPONSE stays put, because it draws RT60 alone/);
+    // owner 2026-11-25, click tempo: the ruler's names move with the tempo, so the step names the time (≈ 990 ms), not "the 1 s mark".
+    assert.match(REVERB_SCREEN_GUIDES.explore.tryThis[2], /DARK 2k: the wash nearly reaches the bottom within about 1 s\. DESIGNED RESPONSE stays put, because it draws RT60 alone/);
   });
   it('LEARN 1: RT60 3.0 s → the marker reads "RT60 3.0 s" on the dashed −60 line (and the fader can land on 3.0)', () => {
     assert.match(VIZ, /`RT60 \$\{fmt2sig\(rt60\)\} s`/);
@@ -320,7 +330,8 @@ describe('4. the TRY THIS numbers are what the screen draws', () => {
     const ck = REVERB_SCREEN_GUIDES.check as unknown as Guide & { intro: { learning: string; start: string } };
     const all = [textOf(ck), ck.intro.learning, ck.intro.start].join('\n');
     assert.doesNotMatch(all, /−60|60 dB|fall(s)? by|soft surfaces|darker|lower the (reverb )?MIX|opens a (short )?gap/i);
-    assert.match(ck.tryThis[1], /For the RT60 question, reread FORMULA \/ CONCEPT on LEARN/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(ck.tryThis[1], /For the RT60 question, open FORMULA \/ CONCEPT on LEARN/);
   });
   it('LEARN 2: PRE-DLY 0 ms → the caption opens "No pre-delay: the wash starts with the dry hit…" (no "0 ms … separates")', () => {
     assert.match(REVERB, /v\[P\.preDelayMs\] === 0\s*\? `No pre-delay: the wash starts with the dry hit, gluing the source to the tail\. Then the tail falls 60 dB in \$\{v\[P\.rt60\]\} s\.`\s*: `\$\{v\[P\.preDelayMs\]\} ms pre-delay separates the dry hit from the wash/);

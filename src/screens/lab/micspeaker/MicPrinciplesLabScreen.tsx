@@ -43,6 +43,11 @@ import { levelColor, levelColorForDb, rampColors } from '../../../features/tools
 // header's accuracy chip gives its spot to the ⓘ "this screen, explained" key.
 import { ScreenGuideHost } from '../../../features/lab/screenGuide';
 import { MIC_END_GUIDE, MIC_SCREEN_GUIDES, type MicSectionId } from './micSpeakerScreenGuides';
+import { goalCounts, moduleGoalDetail } from '../foundations/endRows';
+import { CheckCreditScope } from '../foundations/CheckCredit';
+
+/** The two modules with no CHECK YOURSELF card: they count on NEXT (phase 3). */
+const MIC_NO_CHECK: ReadonlySet<string> = new Set(['capsule', 'pop']);
 import type { RootStackParamList } from '../../../navigation/types';
 import { LabChip, CollapsibleSection } from '../LabShell';
 import { markLabUnit, registerLabUnits, useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
@@ -51,7 +56,11 @@ import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '
 import { MIC_PRINCIPLES_LAB_KEY, MIC_PRINCIPLES_UNITS } from './units';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../features/lab/guidedLessons';
 import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../foundations/bits';
-import { RackUnit } from '../rack/RackUnit';
+import { captionedRack } from '../foundations/captionedRack';
+import { MIC_CAPTIONS } from '../foundations/bezelCaptions';
+
+/** Every section's rack with first-visit bezel captions (phase 2, 2026-11-14). */
+const RackUnit = captionedRack(MIC_CAPTIONS, { modelNotes: true, drawingPlaceholder: true });
 import type { DockParam } from '../rack/rackTypes';
 import { StageAspectReport, StageInFullScreen, useStageTextScale } from '../rack/stageAspect';
 import { GlassShape, useGlassSize, type GlassSize } from '../glassShape';
@@ -327,7 +336,8 @@ const MISTAKES: { kind: 'correct' | 'grille' | 'cup' | 'away' | 'far' | 'switch'
 // ── Small shared bits ────────────────────────────────────────────────────────
 
 function IllustrationBadge({ text }: { text?: string }) {
-  return <Text style={styles.badge}>{text ?? 'ILLUSTRATIVE MODEL — DRAWN FROM THE EQUATIONS, NOT A MEASUREMENT'}</Text>;
+  // One plain sentence-case note (owner's decision 3, 2026-11-14; checker K1).
+  return <Text style={styles.modelNote}>{text ?? 'An illustrative model drawn from the equations. It is not a measurement.'}</Text>;
 }
 
 /** A thin labeled meter bar (RN — works on every client). */
@@ -397,15 +407,16 @@ function CapsuleSection({ focused, help, wellTop, wellBottom }: SectionProps) {
               width={width}
               aspect={MIC_ASPECT}
               render={(w) => <MicCutaway width={w} running={focused} />}
-              badge="MOVING-COIL DYNAMIC CUTAWAY — ILLUSTRATIVE MODEL · coil travel exaggerated ~1,000× · amber = induced current"
+              badge="A model cutaway: the coil’s travel is exaggerated about 1,000×; amber is the induced current."
               title="INSIDE THE CAPSULE"
             />
-            <IllustrationBadge text="MOVING-COIL DYNAMIC CUTAWAY — ILLUSTRATIVE MODEL · coil travel exaggerated ~1,000× · amber = induced current (⊗/⊙ mark its direction, and flip as it reverses)" />
+            <IllustrationBadge text="A moving-coil dynamic cutaway, an illustrative model: the coil’s travel is exaggerated about 1,000×; amber is the induced current (⊗/⊙ mark its direction, and flip as it reverses)." />
             <DisplayGuideButton onPress={() => help('capsule')} />
             <Text style={styles.readout}>e = B · l · v (field × wire length × speed) — voltage tracks the coil’s VELOCITY</Text>
-            <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('capsule')}>
+            {/* Starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal): extra reading, one tap away. */}
+            <CollapsibleSection title="WHAT'S HAPPENING" startOpen={false} onHelp={() => help('capsule')}>
               <Text style={styles.caption}>
-                A dynamic mic is a tiny generator — a speaker run in reverse. Sound pressure moves the diaphragm, the diaphragm moves a coil of wire through the magnet’s gap, and moving a wire through a magnetic field induces a voltage — e = B·l·v. The output follows the coil’s SPEED, not its position: it peaks when the coil moves fastest and reverses every half-cycle (watch the ⊗/⊙ current markers flip and the glow pulse). The little humbucking coil outside the gap cancels stray hum. The rear port and phase-shift felt (felt that slows sound coming in the rear port) are what make it directional — the same parts you meet again in POLAR, PROXIMITY, and the cupping cutaway.
+                A dynamic mic is a tiny generator — a speaker run in reverse. Sound pressure moves the diaphragm, the diaphragm moves a coil of wire through the magnet’s gap, and moving a wire through a magnetic field induces a voltage — e = B·l·v. The output follows the coil’s SPEED, not its position: it peaks when the coil moves fastest and reverses every half-cycle (watch the coil: the glow is brightest as it passes the middle, and the ⊗/⊙ markers flip where it stops and turns back). The little humbucking coil outside the gap cancels stray hum. The rear port and phase-shift felt (felt that slows sound coming in the rear port) are what make it directional — the same parts behind POLAR, PROXIMITY and the cupping cutaway you met earlier.
               </Text>
             </CollapsibleSection>
           </View>
@@ -515,11 +526,15 @@ function PolarSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
       }}
     >
       {wellTop}
+      {/* Stays OPEN (owner 2026-11-21 build of the collapsed-sections proposal): it glosses
+          "monitor wedge" before the check asks about it (MI-03), so it is not folded. */}
       <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('polar_pattern')}>
         <Text style={styles.caption}>
-          The pattern is the mic’s sensitivity by direction. Cardioid rejects the rear (monitor
-          wedges live there). Figure-8 has two lobes and two deep side nulls. Omni hears everything —
-          no up-close bass boost (proximity effect), no null to aim.
+          The pattern is the mic’s sensitivity by direction. Cardioid rejects the rear, where the monitor
+          wedge (a floor speaker pointing back at the performer) lives. Figure-8 has two lobes and two deep side nulls. Omni hears everything —
+          no up-close bass boost (proximity effect), no null to aim. These shapes are drawn as if no
+          wall reflected any sound. In a real room, reflections reach the null too, so a cardioid’s
+          rear is often only 10–20 dB down, not silent.
         </Text>
       </CollapsibleSection>
       <CheckQuestion
@@ -530,9 +545,10 @@ function PolarSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
             'Behind the mic, in the null',
             'Anywhere — the mic cannot hear a wedge',
           ],
+          why: { 0: 'In front is where the mic hears best, so the wedge would feed straight back. Drag the speaker there and read PICKUP.', 2: 'Drag the speaker around: PICKUP changes with direction, so the mic hears a wedge almost everywhere.' },
           correctIdx: 1,
           reveal:
-            'Cardioid’s null points straight behind the mic — that is where the wedge lives, which is why cardioid rules the stage. Cover the rear ports (HAND GRIP shows how) and that null disappears.',
+            'Cardioid’s null points straight behind the mic — that is where the wedge lives, which is why cardioid rules the stage. Cover the rear ports (the small openings behind the grille that make it directional; HAND GRIP shows how) and that null disappears.',
           wrongHint: 'Drag the speaker behind the mic and watch the PICKUP cell hit NULL.',
         }}
       />
@@ -737,13 +753,15 @@ function DistanceSection({ viz, focused, help, wellTop, wellBottom }: SectionPro
             'The balance flips — the room overtakes the direct sound',
             'The pitch drops as distance grows',
           ],
+          why: { 0: 'Watch the two bars: getting quieter is not all that changes. One bar overtakes the other.', 2: 'Distance does not change pitch. Watch the DIRECT and ROOM bars instead.' },
           correctIdx: 1,
           reveal:
             'Direct sound obeys the inverse-square law; the room’s reverberant level barely changes. Past the crossing point (the critical distance, ~12 in here) the room wins — and gain cannot fix it, because turning up brings the room up with it.',
           wrongHint: 'Move the DISTANCE fader across 12 inches and watch which bar overtakes the other.',
         }}
       />
-      <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('distance')}>
+      {/* Starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal): extra reading, one tap away. */}
+      <CollapsibleSection title="WHAT'S HAPPENING" startOpen={false} onHelp={() => help('distance')}>
         <Text style={styles.caption}>
           Halving the distance gains ~6 dB of DIRECT sound while the room’s reverberant energy stays
           put — so what changes is the BALANCE, and that ratio is what “close” sounds like. The two
@@ -768,9 +786,10 @@ const PROX_CHECK: CheckSpec = {
   question: 'Which microphone gets BASSIER as you move in close?',
   options: [
     'Any microphone — closeness always adds bass',
-    'Directional mics (cardioid, figure-8) — omnis do not have proximity effect',
-    'Only large-diaphragm mics',
+    'Directional mics only — omnis have no proximity effect',
+    'Only large-diaphragm studio mics',
   ],
+  why: { 0: 'Switch MIC to OMNI and watch the curve: does closeness still add bass?', 2: 'Diaphragm size is not the cause. Flip the pattern tray and watch which design keeps a flat curve.' },
   correctIdx: 1,
   reveal:
     'Proximity effect comes from the PRESSURE-GRADIENT design that makes a mic directional — the same rear ports that create the cardioid pattern create the up-close bass boost. An omni is a pure pressure mic: no ports, no gradient, no proximity effect.',
@@ -778,12 +797,14 @@ const PROX_CHECK: CheckSpec = {
 };
 
 function ProximitySection({ viz, focused, help, wellTop, wellBottom }: SectionProps) {
-  // Distance is a continuous control (owner 2026-08-05): ride the DISTANCE
-  // lane to bring the mic in toward the mouth and watch the low-shelf grow.
-  // d01 = 0 far (12 in) → 1 close (1 in).
-  const [d01, setD01] = useState(0);
+  // Distance is a continuous control (owner 2026-08-05): slide DISTANCE to
+  // bring the mic in toward the mouth and watch the low-shelf grow.
+  // SAME DIRECTION AS MODULE 3 (lab fix round 2026-11-14, G1 module 4: here
+  // right moved the mic IN, in Module 3 right moved it OUT): d01 = 0 close
+  // (1 in) → 1 far (12 in), starting far, so right = farther in both.
+  const [d01, setD01] = useState(1);
   const [directional, setDirectional] = useState(true);
-  const inches = Math.round((12 - d01 * 11) * 10) / 10;
+  const inches = Math.round((1 + d01 * 11) * 10) / 10;
   const boostDb = proxBoostForInches(inches);
   const glass = useGlassSize();
 
@@ -863,7 +884,8 @@ function ProximitySection({ viz, focused, help, wellTop, wellBottom }: SectionPr
       }}
     >
       {wellTop}
-      <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('proximity')}>
+      {/* Starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal): extra reading, one tap away. */}
+      <CollapsibleSection title="WHAT'S HAPPENING" startOpen={false} onHelp={() => help('proximity')}>
         <Text style={styles.caption}>
           Radio-voice warmth IS this effect, used on purpose. It is also why a singer who swallows
           the mic turns muddy — and one reason most channel strips have a high-pass filter, which cuts
@@ -976,7 +998,8 @@ function OffAxisSection({ viz, help, wellTop, wellBottom }: SectionProps) {
       }}
     >
       {wellTop}
-      <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('off_axis')}>
+      {/* Starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal): extra reading, one tap away. */}
+      <CollapsibleSection title="WHAT'S HAPPENING" startOpen={false} onHelp={() => help('off_axis')}>
         <Text style={styles.caption}>
           Off-axis sound isn’t just QUIETER — it’s DULLER: the highs fall off faster than the lows.
           That’s why a singer drifting off-mic changes tone before they change level, and why good
@@ -991,6 +1014,7 @@ function OffAxisSection({ viz, help, wellTop, wellBottom }: SectionProps) {
             'The voice gets duller — the highs go before the level does',
             'Nothing, until they leave the pattern entirely',
           ],
+          why: { 0: 'Compare @100 Hz and @8 kHz at 60°: they do not drop by the same amount.', 2: 'At 60° both readouts already move. Watch @8 kHz as you turn the mic.' },
           correctIdx: 1,
           reveal:
             'High frequencies fall off faster off-axis than lows, so tone changes before level. That is why drifting singers sound muffled first — and why smooth off-axis response is a mark of a great microphone.',
@@ -1142,7 +1166,8 @@ function ShockSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
     >
       {wellTop}
       <MeterBar label="VIBRATION TRANSMITTED INTO THE MIC" frac={shock ? 0.15 : 0.9} />
-      <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('shock_mount')}>
+      {/* Starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal): extra reading, one tap away. */}
+      <CollapsibleSection title="WHAT'S HAPPENING" startOpen={false} onHelp={() => help('shock_mount')}>
         <Text style={styles.caption}>
           Footsteps, cable tugs and stand knocks travel THROUGH solids into the capsule as
           low-frequency thumps. A shock mount is a soft spring between stand and mic — the vibration
@@ -1157,6 +1182,7 @@ function ShockSection({ viz, focused, help, wellTop, wellBottom }: SectionProps)
             'Through the floor and stand — vibration conducted through solids',
             'Electrical interference from the lighting rig',
           ],
+          why: { 0: 'The stage is quiet, so the air carries little. Watch INTO MIC as you switch mounts.', 2: 'Lights can hum, but they do not thump in step with footsteps. Watch the stand shake travel up.' },
           correctIdx: 1,
           reveal:
             'Vibration travels through solids straight into the capsule — no air required. That is what the shock mount is for: the cradle shakes with the stand while the elastic soaks up the difference.',
@@ -1247,6 +1273,7 @@ function StereoSection({ viz, help, wellTop, wellBottom }: SectionProps) {
             'AB — its time differences become phase cancellation',
             'Mid-Side — the side mic cancels the mid',
           ],
+          why: { 0: 'XY capsules sit at one spot, so their sound arrives together. Read its IN MONO line.', 2: 'Mid-Side is built to fold down: the side parts cancel and the mid stays. Read its IN MONO line.' },
           correctIdx: 1,
           reveal:
             'AB makes stereo from TIME differences, and summed to one speaker those become comb filtering — the sound goes hollow and phasey. XY differs only in level, so it folds down clean; Mid-Side collapses to the MID mic alone, which is why it is the one-take safety choice.',
@@ -1263,10 +1290,11 @@ function StereoSection({ viz, help, wellTop, wellBottom }: SectionProps) {
 const CUP_CHECK: CheckSpec = {
   question: 'Cupping a cardioid mic’s grille makes feedback MORE likely because…',
   options: [
-    'The hand reflects sound back into the mic',
-    'Blocking the rear ports collapses the pattern toward OMNI — the null aimed at the monitor disappears',
-    'It boosts the microphone’s output level',
+    'The hand reflects the monitor’s sound back into the mic',
+    'It turns the pattern toward omni, so the null facing the monitor is gone',
+    'It boosts the microphone’s output level, so it runs hotter',
   ],
+  why: { 0: 'A hand is too small and close to send much back. Watch the rear of the polar panel at FULL CUP.', 2: 'Output level is not the issue. Watch what happens to the null at the back of the pattern.' },
   correctIdx: 1,
   reveal:
     'The cardioid null is what lets the mic sit near a monitor wedge without howling. The rear ports CREATE that null — cover them and the mic hears in every direction (toward omni), the monitor pours straight in, and the engineer must pull the fader down. Cupped mic = quieter in the mix AND worse tone.',
@@ -1427,7 +1455,7 @@ function WhyCutaway({ viz, width, blocked, help }: { viz: MsVizModule | null; wi
   return (
     <View style={{ gap: 8 }}>
       {viz ? <CutawayViz viz={viz} width={width} blocked={blocked} /> : <VizUnavailableCard />}
-      <IllustrationBadge text="CUTAWAY — diaphragm · front entry (top) · rear ports (sides). Green dots = sound reaching each entry" />
+      <IllustrationBadge text="A cutaway: the diaphragm, the front entry (top) and the rear ports (sides). Green dots are sound reaching each entry." />
       <Pressable accessibilityHint="Press and hold for an explanation." onLongPress={() => help('cupping_why')} delayLongPress={300}>
         <Text style={styles.caption}>
           A cardioid is a PRESSURE-GRADIENT design: sound reaches the diaphragm from the front AND
@@ -1472,7 +1500,8 @@ function MistakesSection({ viz, help, wellTop, wellBottom }: SectionProps) {
                 ))}
               </View>
             </ScrollView>
-            <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help('mistakes')}>
+            {/* Starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal): extra reading, one tap away. */}
+            <CollapsibleSection title="WHAT'S HAPPENING" startOpen={false} onHelp={() => help('mistakes')}>
               <Text style={styles.caption}>
                 Swipe through — these habits apply immediately in live sound, presentations, theater,
                 houses of worship, and broadcast.
@@ -1538,9 +1567,11 @@ function SpotTheMistake({ viz }: { viz: MsVizModule }) {
 
 // `reading`: a plain-scroll page (no RackUnit), so the host's wellBottom draws
 // the in-flow NEXT / FINISH that a rack would append itself.
+// MI-04 (owner 2026-11-15, "build waves 1 thru 3", D62): the lab opens on the
+// hands-on PICKUP PATTERNS; INSIDE THE CAPSULE moves to the end, "for the
+// curious". Units are key-based, so banked credit is untouched by the order.
 const SECTIONS: { key: MicSectionId; label: string; title: string; blurb: string; Comp: (p: SectionProps) => React.JSX.Element; reading?: boolean }[] = [
-  { key: 'capsule', label: 'CAPSULE', title: 'INSIDE THE CAPSULE', blurb: 'Before the patterns: how a dynamic mic turns sound into voltage — a coil moving in a magnetic gap.', Comp: CapsuleSection, reading: true },
-  { key: 'polar', label: 'POLAR', title: 'PICKUP PATTERNS', blurb: 'A microphone doesn’t hear equally in every direction — the pattern is its map of sensitivity.', Comp: PolarSection },
+  { key: 'polar', label: 'POLAR', title: 'PICKUP PATTERNS', blurb: 'A microphone hears some directions better than others. Drag the speaker around the mic and watch PICKUP: the pattern is its map of sensitivity.', Comp: PolarSection },
   { key: 'distance', label: 'DISTANCE', title: 'DISTANCE & THE ROOM', blurb: 'Move in and the direct sound wins; back off and the room takes over.', Comp: DistanceSection },
   { key: 'proximity', label: 'PROXIMITY', title: 'PROXIMITY EFFECT', blurb: 'Directional mics get bassier as you move in — a tool AND a trap.', Comp: ProximitySection },
   { key: 'offaxis', label: 'OFF-AXIS', title: 'OFF-AXIS RESPONSE', blurb: 'Turn the mic away and the sound gets quieter — and duller.', Comp: OffAxisSection },
@@ -1553,6 +1584,7 @@ const SECTIONS: { key: MicSectionId; label: string; title: string; blurb: string
   { key: 'shock', label: 'HANDLING', title: 'HANDLING NOISE & ISOLATION', blurb: 'Vibration travels through solids into the capsule — decouple it.', Comp: ShockSection },
   { key: 'hand', label: 'HAND GRIP', title: 'HOW YOUR HAND CHANGES THE MIC', blurb: 'Everyone has seen a singer cup the mic. Here is exactly what that does.', Comp: HandSection },
   { key: 'mistakes', label: 'MISTAKES', title: 'COMMON HANDHELD MISTAKES', blurb: 'A field guide — what to do, and the six habits to unlearn.', Comp: MistakesSection, reading: true },
+  { key: 'capsule', label: 'CAPSULE', title: 'FOR THE CURIOUS: INSIDE THE CAPSULE', blurb: 'How a dynamic mic turns sound into voltage — a coil moving in a magnetic gap.', Comp: CapsuleSection, reading: true },
 ];
 
 if (__DEV__ && SECTIONS.map((x) => x.key).join(',') !== MIC_PRINCIPLES_UNITS.join(',')) {
@@ -1587,17 +1619,19 @@ export function MicPrinciplesLabScreen() {
   useEffect(() => {
     registerLabUnits(MIC_PRINCIPLES_LAB_KEY, MIC_PRINCIPLES_UNITS);
   }, []);
-  useEffect(() => {
-    markLabUnit(MIC_PRINCIPLES_LAB_KEY, SECTIONS[sectionIdx].key);
-  }, [sectionIdx]);
+  // "DONE = WORK DONE" (owner's decision 1, 2026-11-14): a module counts when
+  // its CHECK YOURSELF card(s) are answered right (MISTAKES: all three picture
+  // rounds), not when it is opened. CAPSULE and PLOSIVES have no card: they
+  // count when the learner moves on from them with NEXT. Stored credit stays.
+  const creditSection = (i: number) => markLabUnit(MIC_PRINCIPLES_LAB_KEY, SECTIONS[i].key);
 
   /**
    * THE LAB ENDS ON THE WHAT'S-LEFT SCREEN (owner 2026-09-29: "every lab ends
    * with a 'what's left' screen"; keep credit, always allow a redo). FINISH ›
    * on the strip (MISTAKES), the WHAT'S LEFT row in CONTENTS and the in-flow
    * FINISH at the foot of MISTAKES swap LabEndScreen in for the section:
-   * sections not yet credited, a jump to each, PRACTISE AGAIN from CAPSULE
-   * (clears nothing) and DONE.
+   * sections not yet credited, a jump to each, PRACTISE AGAIN from PICKUP
+   * PATTERNS (clears nothing) and DONE.
    */
   const [ending, setEnding] = useState(false);
   const banked = useLabClearedUnits(MIC_PRINCIPLES_LAB_KEY);
@@ -1616,8 +1650,16 @@ export function MicPrinciplesLabScreen() {
     units: SECTIONS.map((sec) => ({ id: sec.key, title: sec.title, done: banked.has(sec.key) })),
     index: sectionIdx,
     ending,
-    go: openSection,
-    finish: () => setEnding(true),
+    go: (i: number) => {
+      if (i === sectionIdx + 1 && MIC_NO_CHECK.has(SECTIONS[sectionIdx].key)) creditSection(sectionIdx);
+      openSection(i);
+    },
+    // CAPSULE, now the last module, has no card: FINISH at its foot counts it,
+    // as NEXT does on any other module without one (MI-04).
+    finish: () => {
+      if (sectionIdx === SECTIONS.length - 1 && MIC_NO_CHECK.has(SECTIONS[sectionIdx].key)) creditSection(sectionIdx);
+      setEnding(true);
+    },
     unEnd: () => setEnding(false),
   });
 
@@ -1668,18 +1710,21 @@ export function MicPrinciplesLabScreen() {
         {ending ? (
           <LabEndScreen
             labTitle="Microphone Principles"
-            units={SECTIONS.map((sec) => ({ id: sec.key, label: sec.title }))}
+            labId="af_mic_principles"
+            units={SECTIONS.map((sec) => ({ id: sec.key, label: sec.title, detail: moduleGoalDetail(MIC_NO_CHECK.has(sec.key) ? 'next' : 'check', MIC_SCREEN_GUIDES[sec.key]?.intro?.learning) }))}
+            howItCounts={goalCounts({ next: true })}
             cleared={banked}
             unreadable={progressUnreadable}
             mode="credit"
-            noun="section"
             onJump={(id) => openSection(Math.max(0, SECTIONS.findIndex((sec) => sec.key === id)))}
             onPracticeAgain={() => openSection(0)}
             onDone={() => safeGoBack(navigation)}
             bottomInset
           />
         ) : (
-          <s.Comp key={s.key} viz={viz} focused={focused} help={help} wellTop={wellTop} wellBottom={wellBottom} />
+          <CheckCreditScope key={s.key} onComplete={() => creditSection(sectionIdx)}>
+            <s.Comp key={s.key} viz={viz} focused={focused} help={help} wellTop={wellTop} wellBottom={wellBottom} />
+          </CheckCreditScope>
         )}
       </View>
       <GuidedLessonSheet
@@ -1709,6 +1754,7 @@ const styles = StyleSheet.create({
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   badge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1, lineHeight: 13, color: colors.textSub },
+  modelNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16, color: colors.textSub },
   readout: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 0.5, color: colors.amber },
   readoutBad: { color: '#ff6b5e' },
   meterLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1.1, color: colors.textSecondary },

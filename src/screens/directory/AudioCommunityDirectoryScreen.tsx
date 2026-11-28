@@ -37,6 +37,9 @@ import { NO_OPEN_TO_LINE, contactOffer, requestsLeftLine } from '../../features/
 import { cardColumn } from '../../theme/readingColumn';
 import { safeGoBack } from '../../lib/safeGoBack';
 import { HomeOrBackKey } from '../../components/nav/HomeOrBackKey';
+import { ScreenCircleMenu, goHome } from '../../components/nav/CircleMenu';
+import { PlaceArt } from '../../components/nav/CircleMenuPanel';
+import { menuClearance } from '../../components/nav/circleMenuPlaces';
 import { setSampleDirectory } from '../../features/directory/sampleThreads';
 import { setSampleForum } from '../../features/forum/sampleSwitch';
 import { ChannelBadge } from './ChannelBadge';
@@ -128,23 +131,32 @@ export function AudioCommunityDirectoryScreen() {
   );
 
   return (
-    <View style={[st.root, { paddingTop: insets.top }]}>
+    // The panes end above the MENU button (owner 2026-11-20).
+    <View style={[st.root, { paddingTop: insets.top, paddingBottom: menuClearance(insets.bottom) - 8 }]}>
       <View style={st.header}>
         {/* Large text (build 36 tester, "Can't get back to main screen"): the
             ‹ grew past its fixed key and showed as a sliver. HomeOrBackKey
             caps the glyph (BACK_GLYPH_MAX_SCALE) and shows HOME when this
             back step lands on Home; the key never shrinks, the title wraps. */}
         <HomeOrBackKey
-          onPress={() => safeGoBack(navigation)}
+          alwaysHome
+          onPress={() => goHome(navigation)}
           hitSlop={10}
           style={st.back}
           backStyle={st.backGlyph}
         />
         <View style={st.titleCol}>
+          <View style={st.titleRow}>
+            {/* The section's menu icon leads the title, as on the hubs (owner 2026-11-20). */}
+            <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+              <PlaceArt place="comm" size={26} />
+            </View>
           <Text accessibilityRole="header" style={st.title}>
             Audio Community
           </Text>
-          <Text style={st.sub}>Pro Audio Training Academy</Text>
+          </View>
+          {/* Names the four tabs below (owner 2026-11-24); was the Academy's name. */}
+          <Text style={st.sub}>Directory · forum · your profile · requests</Text>
         </View>
       </View>
 
@@ -196,6 +208,10 @@ export function AudioCommunityDirectoryScreen() {
           onOpenedThread={() => setOpenThreadId(null)}
         />
       ) : null}
+
+      {/* The circle menu's MENU button (owner 2026-11-20), lit on this place.
+          It lets every other touch through. */}
+      <ScreenCircleMenu here="comm" />
 
       <MemberSheet
         token={memberToken}
@@ -750,6 +766,7 @@ const st = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', paddingLeft: 6, paddingRight: 18, paddingTop: 6, paddingBottom: 12 },
   back: { minWidth: 44, minHeight: 44, marginRight: 2, flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
   titleCol: { flex: 1, minWidth: 0 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   backGlyph: { fontFamily: fonts.barlowRegular, fontSize: 26, color: P.sub },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 19, letterSpacing: 0.76, color: P.text },
   sub: { fontFamily: fonts.barlowMedium, fontSize: 12, color: P.muted, marginTop: 1 },

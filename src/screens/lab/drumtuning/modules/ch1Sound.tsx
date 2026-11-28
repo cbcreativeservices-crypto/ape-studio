@@ -17,7 +17,7 @@ import { faderParam, flipFader, optionsParam, pitchFaderParam } from '../DrumRac
 import { ChapterSteps } from '../steps';
 import { Body, Card, DrumScenarioDeck, DrumStatus, Feedback, KeyTerms, Landing, Point, RecallCard, SectionTitle, WhyCard, YourRun, fmtHz, levelTint, noteName } from '../kit';
 import { DRUM_KEY_TERMS, SOUND_SCENARIOS } from '../drumContent';
-import { DRUMS, beatRateHz, bendCents, evenHead, evenness, fundamentalHz, lugTapHz, spreadCents, strikePartials, tensionForHz, upperRatio, type HeadState, type StrikeParams } from '../drumEngine';
+import { DRUMS, beatRateHz, bendCents, evenHead, evenness, fundamentalHz, lugTapHz, meanTension, spreadCents, strikePartials, tensionForHz, upperRatio, type HeadState, type StrikeParams } from '../drumEngine';
 import { ANAT_ASPECT, AnatomyStage, DrumTopStage, EDGES, EDGE_ASPECT, EdgeStage, PARTS, TOP_ASPECT, type DrumPart, type EdgeProfile } from '../stagesDrum';
 import { PART_ASPECT, PITCH_ASPECT, PartialsStage, PitchStage, VIB_ASPECT, VibrationStage, WAVE_ASPECT, WaveStage } from '../stagesSignal';
 import { MODEL_BADGE, RENDER_BADGE, VIB_BADGE, fmtCents, fmtS, fmtTurn, soloPair, syncOf, tensionWord, useStrike, useTap, type ChapterProps } from './shared';
@@ -63,7 +63,11 @@ export function Ch1Sound({ onAnswered, answers }: ChapterProps) {
   const tap = useTap(head, lug, DRUM);
   const rodSolo = soloPair(rod, tap);
   const rodParts = useMemo(() => strikePartials(rodParams), [rodParams]);
-  const rodF0 = fundamentalHz(SPEC.diameterIn, head.tension, SPEC.sigmaBatter);
+  // The head's (0,1) pitch from its MEAN tension, turns included: the pitch
+  // traces are drawn in cents from this same pitch (renderStrike), so the
+  // dashed reso line stays true as a rod turns (round 2, 2026-11-25; it used
+  // the starting tension and sat ~28 cents off after one full turn).
+  const rodF0 = fundamentalHz(SPEC.diameterIn, meanTension(head), SPEC.sigmaBatter);
   const spread = spreadCents(head);
   const beat = beatRateHz(head, SPEC.diameterIn, SPEC.sigmaBatter);
   const even = evenness(head, prevSpread);
@@ -271,7 +275,7 @@ export function Ch1Sound({ onAnswered, answers }: ChapterProps) {
             <>
               <YourRun lines={[
                 turned ? `You turned a rod ${turned} time${turned === 1 ? '' : 's'}; the head now reads ${spread.toFixed(0)} ¢ spread${beat >= 0.05 ? ` with a ${beat.toFixed(1)} Hz beat` : ''}.` : 'You have not turned a rod yet — the ADJUST step is worth a visit.',
-                reached ? `Decisions: ${reached} of ${SOUND_SCENARIOS.length} reached, ${rightFirst} right first time.` : 'Decisions: none answered yet.',
+                reached ? `Decisions: ${reached} reached, ${rightFirst} right first time.` : 'Decisions: none answered yet.',
               ]} />
               <SectionTitle>SAY IT BEFORE YOU READ IT</SectionTitle>
               <RecallCard q="What does turning ONE rod change besides that lug's pitch?" a="The head's balance: an uneven head makes two slightly different notes at once, and they beat as a warble." />

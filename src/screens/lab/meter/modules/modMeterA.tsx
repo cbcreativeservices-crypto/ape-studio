@@ -32,11 +32,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { CollapsibleSection } from '../../LabShell';
-import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
-import { Badge, ListeningSoonCard, MythReality, PanelCard, ReadoutGrid, dstyles } from '../../digital/bits';
+import { VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
+import { GoalCheck } from '../moduleGoal';
+import { ListeningSoonCard, MythReality, PanelCard, ReadoutGrid, dstyles } from '../../digital/bits';
 import { levelColor } from '../../../../features/tools/levelColor';
 import { colors, fonts } from '../../../../theme/tokens';
 import { RackUnit } from '../../rack/RackUnit';
+import { useFirstLabVisit } from '../../rack/learnFirstStore';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
 import {
   SIGNAL_LABELS,
@@ -49,6 +51,8 @@ import {
   rmsOf,
   simulateLoudness,
   vuStep,
+  VU_LINEUP_DB,
+  VU_REF_DBFS,
   type SignalKey,
 } from '../meterEngine';
 import { requireVizMeters, type VizMetersModule } from '../skiaGate';
@@ -141,16 +145,20 @@ function signalParam(
   };
 }
 
+/** COMMON MISTAKES starts CLOSED (owner 2026-11-21: "Build all 40",
+ *  collapsed-sections proposal): extra reading, one tap away. Its title moved
+ *  from the card's eyebrow to the fold's header; every line is kept. */
 function MistakesCard({ items }: { items: string[] }) {
   return (
-    <PanelCard>
-      <Text style={dstyles.eyebrow}>COMMON MISTAKES</Text>
-      {items.map((m) => (
-        <Text key={m} style={dstyles.body}>
-          {'•'} {m}
-        </Text>
-      ))}
-    </PanelCard>
+    <CollapsibleSection title="COMMON MISTAKES" startOpen={false}>
+      <PanelCard>
+        {items.map((m) => (
+          <Text key={m} style={dstyles.body}>
+            {'•'} {m}
+          </Text>
+        ))}
+      </PanelCard>
+    </CollapsibleSection>
   );
 }
 
@@ -251,7 +259,7 @@ function VuHost({
 }) {
   const phase = viz.usePhaseClock(focused, 0.7);
   // The SPL tool's photoreal VU face (owner 2026-10-10: the two must look the same).
-  return <viz.VuSkinView width={width} height={height} signal={signal} gain={gainLin(gainDb)} phase={phase} running={focused} />;
+  return <viz.VuSkinView width={width} height={height} signal={signal} gain={gainLin(gainDb)} phase={phase} running={focused} rms0={Math.pow(10, VU_REF_DBFS / 20)} />;
 }
 
 function LoudnessHost({
@@ -301,8 +309,13 @@ const WAVEFORM_CHECKS: CheckSpec[] = [
       'Nothing wrong — silence can sit anywhere on the axis',
     ],
     correctIdx: 1,
+    why: {
+      0: 'Clipping shears the PEAKS flat at the rails. This flat line sits in the quiet gaps, between the phrases.',
+      2: 'Room tone is small random noise around the center line, not a flat line lifted off it.',
+      3: 'Digital silence is zeros, and zero is drawn on the center line. Look at where this line sits.',
+    },
     reveal:
-      'True digital silence is zeros, drawn AT the center line. A flat line OFF center means a constant (DC) voltage was added to every sample: it steals headroom from one side and clicks or thumps at every edit point. Ride the DC lane in the dock and watch the whole picture ride up without getting any "louder".',
+      'True digital silence is zeros, drawn AT the center line. A flat line OFF center means a constant (DC) voltage was added to every sample: it steals headroom from one side and clicks or thumps at every edit point. Slide the DC lane in the dock and watch the whole picture ride up without getting any "louder".',
     wrongHint: 'Where must true digital silence sit on the vertical axis?',
   },
   {
@@ -310,11 +323,16 @@ const WAVEFORM_CHECKS: CheckSpec[] = [
       'You clipped a peak while recording, then pull the file down 6 dB afterwards. The flat-topped peak…',
     options: [
       'Rounds back into shape — gain works both ways',
-      'Stays flat — now just a quieter flat top; the shape above full scale was never stored',
+      'Stays flat, just quieter — that shape was never stored',
       'Repairs itself when you normalize',
       'Comes back if you export at 32-bit float',
     ],
     correctIdx: 1,
+    why: {
+      0: 'Turning down scales what was stored. The samples above full scale were never stored, so there is nothing to round back.',
+      2: 'Normalizing is only gain. It moves the flat top up or down; it cannot invent the missing shape.',
+      3: 'Float matters while you mix inside the computer. This clip happened at the converter, before any file existed.',
+    },
     reveal:
       'The converter could only write values up to full scale, so every sample above it was stored as the SAME maximum value. The curve that used to be there was discarded at capture — later gain just scales what survived, flat top included. That is why clip damage is unrecoverable and headroom is cheap insurance.',
     wrongHint: 'What did the converter actually write for the samples above full scale?',
@@ -342,12 +360,15 @@ export function WaveformModule(p: MeterModuleProps) {
   const dcPct = dcOf(clipped) * 100;
   const bezel: BezelItem[] = [
     { k: 'PEAK', v: fmtDbC(db(peakOf(clipped))), helpKey: 'waveform_read' },
-    { k: 'RMS', v: fmtDbC(db(rmsOf(clipped))), helpKey: 'waveform_read' },
-    { k: 'CREST', v: `${crestDb(clipped).toFixed(1)}dB`, helpKey: 'waveform_read' },
-    { k: 'DC', v: `${dcPct >= 0 ? '+' : ''}${dcPct.toFixed(1)}%`, helpKey: 'dc_offset' },
+    { k: 'RMS', v: fmtDbC(db(rmsOf(clipped))), helpKey: 'waveform_read', caption: 'average' },
+    { k: 'CREST', v: `${crestDb(clipped).toFixed(1)}dB`, helpKey: 'waveform_read', caption: 'spiky?' },
+    { k: 'DC', v: `${dcPct >= 0 ? '+' : ''}${dcPct.toFixed(1)}%`, helpKey: 'dc_offset', caption: 'shift' },
     {
-      k: 'CLIP',
-      v: overSamples > 0 ? `+${overDriveDb.toFixed(1)} OVER` : 'CLEAN',
+      k: 'CLIP', caption: 'clipped?',
+      // The word OVER on its own sub line keeps the CLIP key at 390 (beginner
+      // audit 2026-11-14: "+5.4 OVER" lost its key).
+      v: overSamples > 0 ? `+${overDriveDb.toFixed(1)}` : 'CLEAN',
+      sub: overSamples > 0 ? 'OVER' : undefined,
       tint: overSamples > 0 ? RED : undefined,
       helpKey: 'clipping_view',
       flex: 1.2,
@@ -389,7 +410,7 @@ export function WaveformModule(p: MeterModuleProps) {
       stage={{
         size: 'L', // the picture IS the module
         fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
-        badge: 'SYNTHESIZED TEACHING SIGNAL · LEVELS IN dBFS',
+        modelNote: SIGNAL_NOTE,
         bezel,
         onGuide: () => p.help('waveform_read'),
         render: (w, h) =>
@@ -411,7 +432,7 @@ export function WaveformModule(p: MeterModuleProps) {
     >
       <View style={{ gap: 12 }}>
         <Text style={dstyles.body}>
-          Ride the GAIN lane into the rails, slide DC off center, flip the Ø POL key — the readout
+          Slide the GAIN lane into the rails, slide DC off center, flip the Ø POL key — the readout
           numbers are computed from exactly the signal the picture draws.
         </Text>
 
@@ -438,8 +459,8 @@ export function WaveformModule(p: MeterModuleProps) {
         </CollapsibleSection>
 
         <MistakesCard items={WAVEFORM_MISTAKES} />
-        <CheckQuestion spec={WAVEFORM_CHECKS[0]} />
-        <CheckQuestion spec={WAVEFORM_CHECKS[1]} />
+        <GoalCheck spec={WAVEFORM_CHECKS[0]} />
+        <GoalCheck spec={WAVEFORM_CHECKS[1]} />
         <LessonRow onPress={() => p.help()} />
       </View>
     </RackUnit>
@@ -468,12 +489,17 @@ const PEAK_CHECK: CheckSpec = {
   question:
     'A snare hit and a sustained organ chord both read exactly the same peak on this meter. Are they equally loud?',
   options: [
-    'Yes — same peak, same loudness',
-    'No — the snare’s energy is a millisecond spike, the organ’s is continuous: same peak, wildly different average',
+    'Yes — the same peak means the same loudness',
+    'No — same peak, very different average energy',
     'Yes, but only if both are mono',
     'The meter must be broken',
   ],
   correctIdx: 1,
+  why: {
+    0: 'Peak shows only the single highest point. Compare the RMS and CREST readouts for the two sounds.',
+    2: 'Mono or stereo does not change how much energy each sound carries over time.',
+    3: 'The meter is doing its one job: showing the highest point. Loudness lives in the average.',
+  },
   reveal:
     'A peak meter answers exactly one question: "will it clip?" Loudness lives in the AVERAGE energy. Flip between KICK/SNARE and ORGAN at the same peak and compare the RMS and CREST readouts — more than 10 dB apart. Module 3’s VU needle turns that difference into something you can watch move.',
   wrongHint: 'Peak is one sample’s worth of information. What did the other thousand samples do?',
@@ -500,21 +526,26 @@ export function PeakModule(p: MeterModuleProps) {
   const bezel: BezelItem[] = [
     {
       k: 'PEAK',
-      v: rawPeakDb >= 0 ? `+${rawPeakDb.toFixed(1)} OVR` : fmtDbC(rawPeakDb),
+      // Over full scale the word OVR rides on its own sub line, so the key
+      // stays at 390 (beginner audit 2026-11-14: PEAK and PK HOLD lost their
+      // keys exactly when the card says to watch them).
+      v: rawPeakDb >= 0 ? `+${rawPeakDb.toFixed(1)}` : fmtDbC(rawPeakDb),
+      sub: rawPeakDb >= 0 ? 'OVR' : undefined,
       tint: rawPeakDb >= 0 ? RED : undefined,
       helpKey: 'peak_meter',
     },
     {
-      k: 'PK HOLD',
-      v: peakHold === -Infinity ? '—' : peakHold >= 0 ? `+${peakHold.toFixed(1)} OVR` : fmtDbC(peakHold),
+      k: 'PK HOLD', caption: 'max yet',
+      v: peakHold === -Infinity ? '—' : peakHold >= 0 ? `+${peakHold.toFixed(1)}` : fmtDbC(peakHold),
+      sub: peakHold >= 0 && peakHold !== -Infinity ? 'OVR' : undefined,
       tint: peakHold >= 0 ? RED : undefined,
       helpKey: 'peak_hold',
       // Read-only (owner rule 2026-10-10): the RESET HOLD dock key clears it.
       flex: 1.1,
     },
-    { k: 'OVERS', v: `${overs}`, tint: overs > 0 ? RED : undefined, helpKey: 'peak_meter', flex: 0.7 },
-    { k: 'RMS', v: fmtDbC(db(rmsOf(proc))), helpKey: 'rms_vs_peak' },
-    { k: 'CREST', v: `${crestDb(proc).toFixed(1)}dB`, helpKey: 'rms_vs_peak' },
+    { k: 'OVERS', v: `${overs}`, tint: overs > 0 ? RED : undefined, helpKey: 'peak_meter', flex: 0.7, caption: 'clips' },
+    { k: 'RMS', v: fmtDbC(db(rmsOf(proc))), helpKey: 'rms_vs_peak', caption: 'average' },
+    { k: 'CREST', v: `${crestDb(proc).toFixed(1)}dB`, helpKey: 'rms_vs_peak', caption: 'spiky?' },
   ];
 
   const params: DockParam[] = [
@@ -544,7 +575,7 @@ export function PeakModule(p: MeterModuleProps) {
       stage={{
         size: 'L',
         fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
-        badge: 'SYNTHESIZED TEACHING SIGNAL · LEVELS IN dBFS',
+        modelNote: SIGNAL_NOTE,
         bezel,
         onGuide: () => p.help('peak_meter'),
         render: (w, h) =>
@@ -557,7 +588,7 @@ export function PeakModule(p: MeterModuleProps) {
     >
       <View style={{ gap: 12 }}>
         <Text style={dstyles.body}>
-          Ride the GAIN lane and drive the columns into the OVER lamp; tap RESET HOLD to clear
+          Slide the GAIN lane and drive the columns into the OVER lamp; tap RESET HOLD to clear
           the PK HOLD reading, and switch signals in the SIGNAL tray to compare while the meter reacts.
         </Text>
 
@@ -580,7 +611,7 @@ export function PeakModule(p: MeterModuleProps) {
         </CollapsibleSection>
 
         <MistakesCard items={PEAK_MISTAKES} />
-        <CheckQuestion spec={PEAK_CHECK} />
+        <GoalCheck spec={PEAK_CHECK} />
         <LessonRow onPress={() => p.help()} />
       </View>
     </RackUnit>
@@ -611,11 +642,16 @@ const VU_CHECKS: CheckSpec[] = [
       'Snare and organ are set to the SAME peak level, yet the needle barely stirs on the snare while it rides high on the organ. Why?',
     options: [
       'The needle mechanism is faulty on percussive material',
-      'The needle averages ~300 ms: the snare’s energy is gone before it can move, while the organ feeds it continuously',
+      'It averages ~300 ms, so the snare is gone before it moves',
       'The organ is simply louder at its peak',
       'The snare is out of phase with the meter',
     ],
     correctIdx: 1,
+    why: {
+      0: 'The needle is fine. Watch it on the organ: it climbs and sits. Think about how fast it can move.',
+      2: 'The question set both to the SAME peak. Something else must explain the needle.',
+      3: 'Phase needs two signals compared. One meter on one snare has nothing to be out of phase with.',
+    },
     reveal:
       'A needle with ~300 ms of ballistic inertia physically cannot reach a millisecond spike — and that is the design. It reads sustained average energy, which is what loudness feels like. Watch the peak LED: it flashes just as hard on both signals. Only the needle knows they are completely different programs.',
     wrongHint: 'How long does each signal keep pushing energy at the needle?',
@@ -623,12 +659,17 @@ const VU_CHECKS: CheckSpec[] = [
   {
     question: 'The needle rests right on 0 VU. What is the meter telling you?',
     options: [
-      'You are clipping — back off immediately',
-      'The program is at NOMINAL operating level — the calibrated reference the system is built around, with headroom above',
+      'You are clipping — back off the level immediately',
+      'Nominal level: the calibrated reference, with headroom above',
       'The program measures exactly −14 LUFS',
       'Nothing — 0 means silence on a VU scale',
     ],
     correctIdx: 1,
+    why: {
+      0: 'A VU scale runs above 0 into the red. Zero is not the ceiling on this meter.',
+      2: 'LUFS is a different meter with its own window. A VU needle never reads LUFS.',
+      3: 'Silence drops the needle to the far left, well below 0. Look at where the needle rests at rest.',
+    },
     reveal:
       '0 VU is a REFERENCE, not a ceiling: the calibrated sweet spot (classically +4 dBu through analog gear) where headroom sits above you and the noise floor sits well below. Clipping lives many dB higher — and the digital 0 dBFS ceiling is a different scale entirely.',
     wrongHint: 'Is VU zero a ceiling or a calibration mark?',
@@ -641,14 +682,16 @@ export function VuModule(p: MeterModuleProps) {
   const [gainDb, setGainDb] = useState(0);
 
   const sig = useMemo(() => renderSignal(signal), [signal]);
-  const proc = useMemo(() => processed(sig, gainDb), [sig, gainDb]);
+  // The learner's GAIN rides on top of the signal's line-up trim.
+  const driveDb = gainDb + (VU_LINEUP_DB[signal] ?? 0);
+  const proc = useMemo(() => processed(sig, driveDb), [sig, driveDb]);
   const needleDb = useMemo(() => db(needleMaxOf(proc)), [proc]);
 
   const bezel: BezelItem[] = [
     { k: 'PEAK', v: fmtDbC(db(peakOf(proc))), helpKey: 'rms_vs_peak' },
-    { k: 'RMS', v: fmtDbC(db(rmsOf(proc))), helpKey: 'rms_vs_peak' },
-    { k: 'CREST', v: `${crestDb(proc).toFixed(1)}dB`, helpKey: 'rms_vs_peak' },
-    { k: 'NDL MAX', v: fmtDbC(needleDb), helpKey: 'ballistics', flex: 1.1 },
+    { k: 'RMS', v: fmtDbC(db(rmsOf(proc))), helpKey: 'rms_vs_peak', caption: 'average' },
+    { k: 'CREST', v: `${crestDb(proc).toFixed(1)}dB`, helpKey: 'rms_vs_peak', caption: 'spiky?' },
+    { k: 'NDL MAX', v: fmtDbC(needleDb), helpKey: 'ballistics', flex: 1.1, caption: 'needle’s top' },
   ];
 
   const params: DockParam[] = [
@@ -675,12 +718,12 @@ export function VuModule(p: MeterModuleProps) {
       stage={{
         size: 'L', // the flagship face rendered LARGE
         fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
-        badge: 'SYNTHESIZED TEACHING SIGNAL · dBFS · NEEDLE ~300 ms — BY DESIGN',
+        modelNote: VU_NOTE,
         bezel,
         onGuide: () => p.help('vu_meter'),
         render: (w, h) =>
           viz ? (
-            <VuHost viz={viz} width={w} height={h} focused={p.focused} signal={signal} gainDb={gainDb} />
+            <VuHost viz={viz} width={w} height={h} focused={p.focused} signal={signal} gainDb={driveDb} />
           ) : (
             <StageUnavailable w={w} h={h} />
           ),
@@ -688,19 +731,20 @@ export function VuModule(p: MeterModuleProps) {
     >
       <View style={{ gap: 12 }}>
         <Text style={dstyles.body}>
-          Ride the GAIN lane and switch signals in the SIGNAL tray while the needle answers — NDL MAX in the
+          Slide the GAIN lane and switch signals in the SIGNAL tray while the needle answers — NDL MAX in the
           readouts shows how far the ~300 ms ballistics ever get.
         </Text>
 
         <CollapsibleSection title="THE LESSON — WATCH THE NEEDLE LOSE TO THE LED">
           <Text style={dstyles.body}>
-            Select SNARE: the peak LED flashes hard on every hit while the needle barely stirs — by
-            the time 300 ms of ballistics get it moving, the hit is long over. The NDL MAX readout
-            shows how little of the peak it ever reaches. Now select ORGAN: at GAIN +0.0 dB its
-            peaks stay under the LED, which stays dark, yet the needle climbs and SITS there, because
-            the energy never stops arriving. Lower peak, higher needle — that is RMS versus peak made
-            physical, and it is the single most
-            important metering lesson in this lab.
+            Start with PINK NOISE: lined up, the needle sits steady on 0 VU (−18 dBFS average) and
+            the PEAK lamp stays dark — its peaks are still about 9 dB below full scale. Select SNARE:
+            the needle only flicks to about 0 VU, yet its PEAK readout is far higher — by the time
+            300 ms of ballistics get the needle moving, the hit is long over. Raise GAIN about +4 dB
+            and the lamp starts flashing on every hit while the needle is barely into the red. Now
+            select ORGAN: its peaks are 10 dB lower than the snare’s, yet the needle climbs and SITS,
+            because the energy never stops arriving. Lower peak, higher needle — that is RMS versus
+            peak made physical, and it is the single most important metering lesson in this lab.
           </Text>
           <Text style={dstyles.eyebrow}>WHY ENGINEERS STILL TRUST IT</Text>
           <Text style={dstyles.body}>
@@ -711,14 +755,17 @@ export function VuModule(p: MeterModuleProps) {
           </Text>
         </CollapsibleSection>
 
-        <MythReality
-          myth="The VU meter is slow because it's old tech."
-          reality="The 300 ms ballistic is a DESIGNED average — it reads like ears, not like converters."
-        />
+        {/* MYTH vs REALITY starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal). */}
+        <CollapsibleSection title="MYTH vs REALITY" startOpen={false}>
+          <MythReality
+            myth="The VU meter is slow because it's old tech."
+            reality="The 300 ms ballistic is a DESIGNED average — it reads like ears, not like converters."
+          />
+        </CollapsibleSection>
 
         <MistakesCard items={VU_MISTAKES} />
-        <CheckQuestion spec={VU_CHECKS[0]} />
-        <CheckQuestion spec={VU_CHECKS[1]} />
+        <GoalCheck spec={VU_CHECKS[0]} />
+        <GoalCheck spec={VU_CHECKS[1]} />
         <LessonRow onPress={() => p.help()} />
       </View>
     </RackUnit>
@@ -736,8 +783,11 @@ const LOUDNESS_HELP: Partial<Record<SignalKey, string>> = {
   kick: 'lra',
 };
 
-const LOUDNESS_MODEL_BADGE =
-  'SIMPLIFIED BS.1770-STYLE TEACHING MODEL — not a compliance meter (ITU-R BS.1770-5 measurement needs real DSP)';
+/** The stages' plain model notes (S3's RackStage.modelNote, phase 3 2026-11-14):
+ *  what each picture is and is not, in one sentence. */
+const SIGNAL_NOTE = 'A built-in teaching signal, levels in dBFS, not a measurement of real audio.';
+const VU_NOTE = 'Teaching signal in dBFS, 0 VU = −18 dBFS; the needle takes about 300 ms on purpose.';
+const LOUDNESS_MODEL_NOTE = 'A simplified BS.1770-style teaching model, not a compliance loudness meter.';
 
 const LOUDNESS_MISTAKES = [
   'Mastering "as loud as possible" for streaming — most platforms turn it back DOWN to their integrated target; you traded dynamics for nothing.',
@@ -751,11 +801,16 @@ const LOUDNESS_CHECKS: CheckSpec[] = [
     question: 'You upload a track to a streaming platform. Which number does its loudness normalization act on?',
     options: [
       'Sample peak (dBFS)',
-      'Integrated loudness (LUFS) over the whole program',
+      'Integrated loudness (LUFS), whole program',
       'The momentary loudness maximum',
       'The loudness range (LRA)',
     ],
     correctIdx: 1,
+    why: {
+      0: 'Sample peak is a safety ceiling, not a loudness measure. Two tracks with equal peaks can sound very different in level.',
+      2: 'A momentary maximum is one loud instant. Normalization needs one number for the whole track.',
+      3: 'LRA measures how much the level varies, not how loud the track is.',
+    },
     reveal:
       'Platforms measure ONE gated, K-weighted (weighted roughly like human hearing) average across the entire program — integrated LUFS — and turn the whole track up or down to their target (commonly around −14 LUFS). Peaks matter as a true-peak safety ceiling (−1 dBTP is commonly quoted; lossy delivery often uses −2; check the destination’s current spec). Master louder than the target and the platform simply turns it down — minus the dynamics you crushed.',
     wrongHint: 'Which of these numbers describes the WHOLE program with one value?',
@@ -765,11 +820,16 @@ const LOUDNESS_CHECKS: CheckSpec[] = [
       'The DAW shows sample peak −0.5 dBFS, but the true-peak meter reads +0.4 dBTP. What happened?',
     options: [
       'One of the two meters is mis-calibrated',
-      'The reconstructed analog waveform rises above the samples between them — an intersample peak',
+      'The analog wave peaks above the samples, between them',
       'The file was quietly normalized during export',
       'dBTP always reads exactly 1 dB above dBFS',
     ],
     correctIdx: 1,
+    why: {
+      0: 'Both meters can be right: they measure different things. Look at what TP GAP is in the readouts.',
+      2: 'Normalizing would move BOTH numbers together. Here they disagree with each other.',
+      3: 'The gap changes with the material. Switch SIGNAL and watch TP GAP move.',
+    },
     reveal:
       'Samples are dots; the DAC draws the smooth curve through them — and between two high samples that curve can swing higher than either. True-peak meters oversample to estimate the reconstructed curve. "No clipped samples" is not "no clipping": the overshoot distorts DACs and lossy codecs, which is exactly why delivery specs set a true-peak ceiling: many platforms ask −1 dBTP; broadcast (ATSC A/85) −2.',
     wrongHint: 'What does the DAC reconstruct BETWEEN two adjacent samples?',
@@ -778,29 +838,46 @@ const LOUDNESS_CHECKS: CheckSpec[] = [
 
 export function LoudnessModule(p: MeterModuleProps) {
   const viz = useState(() => requireVizMeters())[0];
-  const [signal, setSignal] = useState<SignalKey>('music');
+  const [signal, setSignalRaw] = useState<SignalKey>('music');
+  // MT-03 (owner 2026-11-15: "build waves 1 thru 3", D62): on the learner's FIRST visit (per device,
+  // the shared ape:intro:* first-visit list) the strip opens on the one big INTEGRATED number; LRA,
+  // SAMPLE PK, TRUE PK and TP GAP join after the first move (a SIGNAL pick). A failed read shows all five.
+  const firstVisit = useFirstLabVisit('meter-loudness', true);
+  const [moved, setMoved] = useState(false);
+  const oneNumber = firstVisit !== false && !moved;
+  const setSignal = (k: SignalKey) => {
+    setSignalRaw(k);
+    setMoved(true);
+  };
 
   const sim = useMemo(() => simulateLoudness(signal), [signal]);
   const momMin = Math.min(...sim.momentary);
   const momMax = Math.max(...sim.momentary);
   const tpOver = sim.truePeakDbtp > -1;
 
+  // The unit rides on its own sub line under the number, so each cell keeps
+  // its key at 390 wide (beginner audit 2026-11-14: "-15.9 LUFS" and its
+  // neighbours dropped 4 of the 5 keys, TP GAP — the one the card names —
+  // included). The number is never cut (D36).
   const bezel: BezelItem[] = [
-    { k: 'INTEGRATED', v: `${sim.integratedLufs.toFixed(1)}LUFS`, helpKey: 'integrated', flex: 1.4 },
-    { k: 'LRA', v: `${sim.lraLu.toFixed(1)}LU`, helpKey: 'lra', flex: 0.9 },
-    { k: 'SAMPLE PK', v: `${sim.samplePeakDbfs.toFixed(1)}dBFS`, helpKey: 'true_peak_meter', flex: 1.2 },
+    { k: 'INTEGRATED', kNarrow: 'INTEG.', v: sim.integratedLufs.toFixed(1), sub: 'LUFS', helpKey: 'integrated', flex: 1.3, caption: 'overall' },
+    { k: 'LRA', v: sim.lraLu.toFixed(1), sub: 'LU', helpKey: 'lra', flex: 0.8, caption: 'range' },
+    { k: 'SAMPLE PK', kNarrow: 'SAMPLE', v: sim.samplePeakDbfs.toFixed(1), sub: 'dBFS', helpKey: 'true_peak_meter', flex: 1.2, caption: 'highest' },
     {
-      k: 'TRUE PK',
-      v: `${sim.truePeakDbtp >= 0 ? '+' : ''}${sim.truePeakDbtp.toFixed(1)}dBTP`,
+      k: 'TRUE PK', caption: 'real top',
+      v: `${sim.truePeakDbtp >= 0 ? '+' : ''}${sim.truePeakDbtp.toFixed(1)}`,
+      sub: 'dBTP',
       tint: tpOver ? RED : undefined,
       helpKey: 'true_peak_meter',
-      flex: 1.2,
+      flex: 1.1,
     },
     {
-      k: 'TP GAP',
-      v: `+${(sim.truePeakDbtp - sim.samplePeakDbfs).toFixed(1)}dB`,
+      k: 'TP GAP', caption: 'extra',
+      kNarrow: 'GAP',
+      v: `+${(sim.truePeakDbtp - sim.samplePeakDbfs).toFixed(1)}`,
+      sub: 'dB',
       helpKey: 'true_peak_meter',
-      flex: 0.9,
+      flex: 1,
     },
   ];
 
@@ -816,8 +893,8 @@ export function LoudnessModule(p: MeterModuleProps) {
       stage={{
         size: 'L', // taller face + bigger fonts (owner 2026-08-05)
         fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
-        badge: LOUDNESS_MODEL_BADGE,
-        bezel,
+        modelNote: LOUDNESS_MODEL_NOTE,
+        bezel: oneNumber ? [bezel[0]] : bezel,
         onGuide: () => p.help('lufs'),
         render: (w, h) =>
           viz ? (
@@ -828,9 +905,9 @@ export function LoudnessModule(p: MeterModuleProps) {
       }}
     >
       <View style={{ gap: 12 }}>
-        {/* Full honesty wording readable in the well (the one-line badge strip
-            may ellipsize on narrow phones — the disclosure must not). */}
-        <Badge text={LOUDNESS_MODEL_BADGE} />
+        {/* The model disclosure is printed ONCE, on the stage's badge strip
+            (two lines with a shrink floor, RackUnit.tsx), never again here
+            (beginner audit 2026-11-14: it read twice in a row). */}
         <ReadoutGrid
           items={[{ k: 'MOMENTARY RANGE', v: `${momMin.toFixed(1)} … ${momMax.toFixed(1)} LUFS` }]}
           help={p.help}
@@ -858,8 +935,8 @@ export function LoudnessModule(p: MeterModuleProps) {
         <ListeningSoonCard what="Level-matched loudness A/B comparison (same integrated LUFS, different crest and dynamics)" />
 
         <MistakesCard items={LOUDNESS_MISTAKES} />
-        <CheckQuestion spec={LOUDNESS_CHECKS[0]} />
-        <CheckQuestion spec={LOUDNESS_CHECKS[1]} />
+        <GoalCheck spec={LOUDNESS_CHECKS[0]} />
+        <GoalCheck spec={LOUDNESS_CHECKS[1]} />
         <LessonRow onPress={() => p.help()} />
       </View>
     </RackUnit>

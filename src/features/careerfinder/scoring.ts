@@ -76,7 +76,9 @@ export type Clarity = 'clear' | 'broad' | 'developing';
 /** Display names. "Developing" is the bottom band of most school rubrics, so
  *  the third state is shown as EARLY (learning review 2026-09-04) — the
  *  internal key keeps the brief's name. */
-export const CLARITY_LABEL: Record<Clarity, string> = { clear: 'Clear Profile', broad: 'Broad Profile', developing: 'Early Profile' };
+// Sentence case (Comp A text review 2026-11-14, CF-A0562–A0564): the About screen calls them
+// Clear, Broad and Early; Title Case was used only here. The results header upper-cases it.
+export const CLARITY_LABEL: Record<Clarity, string> = { clear: 'Clear profile', broad: 'Broad profile', developing: 'Early profile' };
 
 /** Thresholds (Beta; provisional until real response data exists). */
 export const CLARITY_RULES = {
@@ -115,15 +117,18 @@ export function clarity(responses: Responses, dims: DimensionScores): Clarity {
 export function clarityCopy(c: Clarity, dims: DimensionScores): string {
   const scores = rated(dims);
   const strong = scores.filter((s) => s >= CLARITY_RULES.strong).length;
-  if (c === 'developing') return 'Many activities were new to you, so the picture is incomplete rather than wrong. Seeing more of the work will teach you more than more questions would — open one family you said you didn’t know enough about, then answer again.';
+  // Comp A text review 2026-11-14: CF-A0565 ("more than more questions"), CF-A0570 ("these
+  // directions rest on real preferences" overstated a provisional tool; "leans on"), CF-A0572
+  // ("could suit you" implied a fit the About screen says is not measured).
+  if (c === 'developing') return 'Many activities were new to you, so the picture is incomplete, not wrong. Learning about the work will tell you more than extra questions would. Open one family you said you didn’t know enough about, then answer again.';
   if (c === 'clear') {
     const n = strong === 1 ? 'One activity' : strong === 2 ? 'Two activities' : strong === 3 ? 'Three activities' : 'Several activities';
-    return `${n} stood out clearly and the rest sat lower, so these directions rest on real preferences. Open your top two and compare what each one leans on.`;
+    return `${n} stood out clearly and the rest were lower, so these results reflect clear preferences. Open your top two and compare which activities each one draws on.`;
   }
   if (scores.length && scores.every((s) => s < 0.5)) {
     return 'You rated most activities on the dislike side. That usually means the activities you would enjoy are not in this set yet, or that you answered on whether you would be good at them rather than whether you would enjoy them. Browse the families, then answer again for enjoyment only.';
   }
-  return 'You rated many activities similarly. That is common, and it means more than one direction could suit you — trying things is the fastest way to tell them apart.';
+  return 'You rated many activities similarly. That is common, and it means more than one family could interest you. Trying things is the fastest way to tell them apart.';
 }
 
 /* ── what the user is drawn to ─────────────────────────────────────────── */
@@ -154,9 +159,10 @@ function list(items: string[]): string {
  * qualification, success, perfection, or that another career should be
  * avoided; a low rating is a trade-off to notice, never a caution.
  *
- *   rank ≤ 2 → "Leans on Record & Capture and Edit & Refine — your strongest
+ *   rank ≤ 2 → "Draws most on Record & Capture and Edit & Refine, your strongest
  *              interests. It also draws on Create & Perform, which you rated
- *              lower — notice how much of each family that is as you compare."
+ *              lower. When you compare families, check how big a part of each
+ *              one that is."  (wording: Comp A text review 2026-11-14)
  *   otherwise → "This appeared because you showed strong interest in … ."
  *   primary low → "Its main activity is X, which you rated lower. It still
  *              appeared because you showed … ."
@@ -190,17 +196,37 @@ export function explainFamily(family: CareerFamily, dims: DimensionScores, opts:
     sentence = `Its main activity is ${primaryLabel}, which you rated lower.`;
     sentence += because ? ` It still appeared because you showed ${because}.` : ' It still appeared because it ranked highest against your answers overall.';
   } else if ((opts.rank ?? 99) <= 2 && strong.length) {
-    sentence = `Leans on ${list(strong)} — ${strong.length === 1 ? 'your strongest interest' : 'your strongest interests'}.`;
+    sentence = `Draws most on ${list(strong)}, ${strong.length === 1 ? 'your strongest interest' : 'your strongest interests'}.`;
     if (some.length) sentence += ` You also showed some interest in ${list(some)}.`;
     if (neutral.length) sentence += ` You were neutral about ${list(neutral)}.`;
   } else {
     sentence = because ? `This appeared because you showed ${because}.` : 'This appeared because it ranked highest against your answers overall.';
   }
   const lowOthers = little.filter((l) => l !== primaryLabel || !primaryLow);
-  if (lowOthers.length && !primaryLow) sentence += ` It also draws on ${list(lowOthers)}, which you rated lower — as you compare families, notice how big a part of each one that is.`;
-  else if (lowOthers.length && primaryLow) sentence += ` ${list(lowOthers)} ${lowOthers.length === 1 ? 'is' : 'are'} part of this work too, rated lower as well.`;
+  if (lowOthers.length && !primaryLow) sentence += ` It also draws on ${list(lowOthers)}, which you rated lower. When you compare families, check how big a part of each one that is.`;
+  else if (lowOthers.length && primaryLow) sentence += ` ${list(lowOthers)} ${lowOthers.length === 1 ? 'is' : 'are'} also part of this work. You rated ${lowOthers.length === 1 ? 'it' : 'them'} lower too.`;
   if (none.length) sentence += ` You said you did not know enough about ${list(none)} yet, so that part is unexplored rather than ruled out.`;
   return sentence;
+}
+
+/**
+ * The "I don’t know" line under WHAT THESE MEAN (Comp A text review 2026-11-14, CF-A0108–A0110,
+ * must fix). It read "1 of 28 answers were …" with one such answer. Every count is branched for
+ * one vs many: the answers, the activities they touch (two answers can be the same activity) and
+ * the dashed bars (an activity with BOTH answers "I don’t know" has no rating). Null when none.
+ */
+export function unknownNote(responses: Responses): string | null {
+  const unknownQs = QUESTIONS.filter((q) => responses[q.id] === null);
+  const n = unknownQs.length;
+  if (!n) return null;
+  const activities = new Set(unknownQs.map((q) => q.dimension)).size;
+  const dashed = Object.values(dimensionScores(responses)).filter((d) => d.insufficient).length;
+  // Owner decision 2026-11-14 ("Remove them"): no "N of total"; the count stands alone, branched.
+  let s = `You chose “I don’t know enough about this” for ${n} ${n === 1 ? 'question' : 'questions'}.`;
+  s += activities === 1 ? ' That activity is unexplored, not disliked.' : ' Those activities are unexplored, not disliked.';
+  if (dashed === 1) s += ' The dashed bar has no rating.';
+  else if (dashed > 1) s += ' The dashed bars have no rating.';
+  return s;
 }
 
 /* ── the whole result ──────────────────────────────────────────────────── */

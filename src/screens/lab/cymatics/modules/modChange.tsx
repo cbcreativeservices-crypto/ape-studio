@@ -11,7 +11,7 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
-import { DEFAULT_PLATE, effectiveQ, plateModes, readResonance, sampleField, type PlateShape, type PlateSpec } from '../../../../features/cymatics/plateModes';
+import { DEFAULT_PLATE, effectiveQ, plateModes, plateRefQ, readResonance, sampleField, type PlateShape, type PlateSpec } from '../../../../features/cymatics/plateModes';
 import { formatHz } from '../../../../features/cymatics/music';
 import type { DockParam } from '../../rack/rackTypes';
 import type { PlateViewMode } from '../vizPlate';
@@ -47,11 +47,12 @@ const VARIABLES: Variable[] = [
     { label: 'Low', short: 'Low', patch: { damping: 0.1 } }, { label: 'Medium', short: 'Med', patch: { damping: 0.4 } }, { label: 'High', short: 'High', patch: { damping: 0.85 } },
   ] },
 ];
-const VIEWS: { id: PlateViewMode; label: string; short: string }[] = [
-  { id: 'overlay', label: 'Sand + heat', short: 'S+H' },
-  { id: 'heat', label: 'Heat map', short: 'Heat' },
-  { id: 'nodes', label: 'Node lines', short: 'Nodes' },
-  { id: 'particles', label: 'Sand', short: 'Sand' },
+// Each choice carries a one-line meaning (owner 2026-11-15, D62 SH-76), in the Plate studio's words.
+const VIEWS: { id: PlateViewMode; label: string; short: string; blurb: string }[] = [
+  { id: 'overlay', label: 'Sand + heat', short: 'Sand+heat', blurb: 'Both at once: the heat map under the sand.' },
+  { id: 'heat', label: 'Heat map', short: 'Heat', blurb: 'How much each point moves: dark = still, red = the most.' },
+  { id: 'nodes', label: 'Node lines', short: 'Nodes', blurb: 'The still lines of the nearest mode, where sand would gather.' },
+  { id: 'particles', label: 'Sand', short: 'Sand', blurb: 'Sand on the plate, settling on the still lines.' },
 ];
 const BASE: PlateSpec = { ...DEFAULT_PLATE };
 
@@ -61,7 +62,7 @@ function useSide(spec: PlateSpec, hz: number) {
   return useMemo(() => {
     const modes = plateModes(spec, 16);
     const Q = effectiveQ(spec.material, spec.damping);
-    const res = readResonance(hz, modes, Q);
+    const res = readResonance(hz, modes, Q, plateRefQ(spec.material)); // fixed reference: damping weakens (fix-first 15)
     return { res, Q, grid: sampleField(spec, modes, hz, Q, N) };
   }, [spec, hz]);
 }
@@ -141,15 +142,15 @@ export function ChangeModule({ focused, help }: CymaticsModuleProps) {
     },
     { kind: 'options', id: 'a', label: 'A', valueLabel: optA.short, options: variable.options.map((o, i) => ({ id: `${i}`, label: o.label })), selectedId: `${a}`, onSelect: (id) => setA(Number(id)), sticky: true, helpKey: 'change_one' },
     { kind: 'options', id: 'b', label: 'B', valueLabel: optB.short, options: variable.options.map((o, i) => ({ id: `${i}`, label: o.label })), selectedId: `${b}`, onSelect: (id) => { setB(Number(id)); setBMoved(true); }, sticky: true, helpKey: 'change_one' },
-    { kind: 'options', id: 'view', label: 'VIEW', valueLabel: VIEWS.find((v) => v.id === view)!.short, options: VIEWS.map((v) => ({ id: v.id, label: v.label })), selectedId: view, onSelect: (id) => setView(id as PlateViewMode), sticky: true, helpKey: 'display' },
+    { kind: 'options', id: 'view', label: 'VIEW', valueLabel: VIEWS.find((v) => v.id === view)!.short, options: VIEWS.map((v) => ({ id: v.id, label: v.label, blurb: v.blurb })), selectedId: view, onSelect: (id) => setView(id as PlateViewMode), sticky: true, helpKey: 'display' },
   ];
 
   const plate = (w: number, h: number, spec: PlateSpec, side: ReturnType<typeof useSide>) =>
     viz ? (
-      <viz.PlateView width={w} height={h} spec={spec} grid={side.grid} N={N} strength={side.res.strength} amplitude={0.8} view={view} running={focused} slowMo={false} particleCount={1100} particleSize={0.4} friction={0.4} resetToken={0} sectionY={0.5} dragTarget={null} />
+      <viz.PlateView width={w} height={h} spec={spec} grid={side.grid} N={N} strength={side.res.strength} near={side.res.near} amplitude={0.8} view={view} running={focused} slowMo={false} particleCount={1100} particleSize={0.4} friction={0.4} resetToken={0} sectionY={0.5} dragTarget={null} />
     ) : (
       <View style={{ width: w, height: h, alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={P.caption}>Update the app to see this plate.</Text>
+        <Text style={P.caption}>This plate can’t be drawn on this device.</Text>
       </View>
     );
 
@@ -158,13 +159,14 @@ export function ChangeModule({ focused, help }: CymaticsModuleProps) {
       rack={{
         size: 'L',
         badge: 'SIMULATION · one locked tone, two plates — APPROXIMATED (Ritz / Bessel) · CALCULATED (solved shapes)',
+        modelNote: 'A simulation: one locked tone on two plates, approximated; the shapes are solved.',
         onHelp: help,
         onGuide: () => help('change_one'),
         initialParam: 'a', // no fader: the drive is locked on purpose
         bezel: [
-          { k: 'LOCKED', v: formatHz(hz), helpKey: 'change_one', flex: 1.1 },
-          { k: `A · ${optA.short}`, v: A.res.state.toUpperCase(), tint: RES_TINT[A.res.state], helpKey: 'resonance', flex: 1.2 },
-          { k: `B · ${optB.short}`, v: B.res.state.toUpperCase(), tint: RES_TINT[B.res.state], helpKey: 'resonance', flex: 1.2 },
+          { k: 'LOCKED', v: formatHz(hz), helpKey: 'change_one', flex: 1.1, caption: 'the one tone' },
+          { k: `A · ${optA.short}`, v: A.res.state.toUpperCase(), tint: RES_TINT[A.res.state], helpKey: 'resonance', flex: 1.2, caption: 'plate A' },
+          { k: `B · ${optB.short}`, v: B.res.state.toUpperCase(), tint: RES_TINT[B.res.state], helpKey: 'resonance', flex: 1.2, caption: 'plate B' },
         ],
         stage: (w, h) => (
           <PairStage w={w} h={h} tagA={`A · ${optA.label.toUpperCase()}`} tagB={`B · ${optB.label.toUpperCase()}`} plateA={(pw, ph) => plate(pw, ph, specA, A)} plateB={(pw, ph) => plate(pw, ph, specB, B)} />
@@ -184,7 +186,7 @@ export function ChangeModule({ focused, help }: CymaticsModuleProps) {
       {revealed && bMoved ? (
         <>
           <Text style={P.h}>READ IT</Text>
-          <View style={P.bullet}><Text style={P.dot}>•</Text><Text style={[P.body, { flex: 1 }]}>AT RESONANCE with a bright, full heat map: this plate has a mode at the locked frequency. BETWEEN with a dark map: the same tone finds nothing to excite.</Text></View>
+          <View style={P.bullet}><Text style={P.dot}>•</Text><Text style={[P.body, { flex: 1 }]}>AT RESONANCE with sand on the lines: this plate has a mode at the locked frequency (its heat map is bright unless damping has lowered the peak). BETWEEN with a dark map: the same tone finds nothing to excite.</Text></View>
           <View style={P.bullet}><Text style={P.dot}>•</Text><Text style={[P.body, { flex: 1 }]}>If B goes dark, the frequency did not change — the plate did. That is the lab’s central discovery, and you just made it.</Text></View>
           <View style={P.bullet}><Text style={P.dot}>•</Text><Text style={[P.body, { flex: 1 }]}>Damping is the exception worth noticing: it does not move the resonance, it blurs and weakens it. Steel is the near miss: about three times stiffer and three times denser, so its modes land only about 1% below aluminum’s — yet a resonance this sharp is still missed, and B goes dark.</Text></View>
         </>

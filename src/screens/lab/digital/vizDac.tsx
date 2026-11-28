@@ -41,6 +41,7 @@ import { usePhaseClock } from '../foundations/viz';
 import { fonts } from '../../../theme/tokens';
 import { useStageTextScale } from '../rack/stageAspect';
 import { SText } from '../stageScale';
+import { heldSegments, jitterOf, sampleInstants, thetaAtU } from './timeBase';
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 
 const BG = '#0c0c0f';
@@ -141,13 +142,18 @@ export function ReconstructionView({
   const amp = h * 0.3;
   const x0 = 8;
   const x1 = w - 8;
-  const CYC = 2.0; // cycles across the window → 8.5 samples/cycle (well-sampled)
-  const NS = 17; // sample instants
-  const k = (2 * Math.PI * CYC) / (x1 - x0);
-  const xs = useMemo(
-    () => Array.from({ length: NS }, (_, n) => x0 + (n / (NS - 1)) * (x1 - x0)),
-    [x1],
-  );
+  const CYC = 2.0; // cycles across the window → 8 samples/cycle (well-sampled)
+  const SPAN = 2 * Math.PI * CYC;
+  const DT = SPAN / 16; // one sample period (17 instants across the window)
+  const pw = x1 - x0;
+
+  // ONE time base (timeBase.ts): the newest signal leaves the DAC at the LEFT
+  // and travels right. The samples are moments in signal time (θ_k = k·DT),
+  // so each dot, stem, held step and clock tick travels WITH its piece of the
+  // wave and keeps its value (owner 2026-11-22: "Once a wave form has happend,
+  // it should not become some other waveform later in time"). They used to
+  // sit at fixed glass positions while the wave slid under them, so every
+  // stored value changed as it was watched.
 
   // ③/④ — the continuous band-limited curve (exact for sine content).
   const recon = useDerivedValue(() => {
@@ -155,58 +161,64 @@ export function ReconstructionView({
     const p = Skia.Path.Make();
     const N = 150;
     for (let i = 0; i <= N; i++) {
-      const x = x0 + (i / N) * (x1 - x0);
-      const y = mid - amp * Math.sin(ph - k * (x - x0));
-      if (i === 0) p.moveTo(x, y);
-      else p.lineTo(x, y);
+      const u = i / N;
+      const y = mid - amp * Math.sin(thetaAtU(u, ph, SPAN, -1));
+      if (i === 0) p.moveTo(x0 + u * pw, y);
+      else p.lineTo(x0 + u * pw, y);
     }
     return p;
-  }, [phase, x1, mid, amp, k]);
+  }, [phase, pw, mid, amp]);
 
   // ② — zero-order hold: each value HELD until the next clock edge. Corners
   // deliberately square; the smooth curve visibly never touches them.
   const zoh = useDerivedValue(() => {
-    const ph = phase.value;
+    const segs = heldSegments(phase.value, SPAN, -1, DT, (_k, th) => Math.sin(th), 0);
     const p = Skia.Path.Make();
-    for (let n = 0; n < xs.length; n++) {
-      const y = mid - amp * Math.sin(ph - k * (xs[n] - x0));
-      if (n === 0) p.moveTo(xs[0], y);
-      else p.lineTo(xs[n], y);
-      if (n < xs.length - 1) p.lineTo(xs[n + 1], y);
+    let prevY = mid;
+    for (let i = 0; i < segs.length; i += 4) {
+      const xa = x0 + segs[i] * pw;
+      const y = mid - amp * segs[i + 2];
+      if (i === 0) p.moveTo(xa, y);
+      else {
+        p.lineTo(xa, prevY);
+        p.lineTo(xa, y);
+      }
+      p.lineTo(x0 + segs[i + 1] * pw, y);
+      prevY = y;
     }
     return p;
-  }, [phase, xs, mid, amp, k]);
+  }, [phase, pw, mid, amp]);
 
-  // ① — stems + dots (two paths: stroke vs fill).
+  // ① — stems + dots (two paths: stroke vs fill), one per sample instant.
   const stems = useDerivedValue(() => {
-    const ph = phase.value;
+    const s = sampleInstants(phase.value, SPAN, -1, DT);
     const p = Skia.Path.Make();
-    for (let n = 0; n < xs.length; n++) {
-      const y = mid - amp * Math.sin(ph - k * (xs[n] - x0));
-      p.moveTo(xs[n], mid);
-      p.lineTo(xs[n], y);
+    for (let i = 0; i < s.length; i += 3) {
+      const x = x0 + s[i] * pw;
+      p.moveTo(x, mid);
+      p.lineTo(x, mid - amp * Math.sin(s[i + 1]));
     }
     return p;
-  }, [phase, xs, mid, amp, k]);
+  }, [phase, pw, mid, amp]);
   const dots = useDerivedValue(() => {
-    const ph = phase.value;
+    const s = sampleInstants(phase.value, SPAN, -1, DT);
     const p = Skia.Path.Make();
-    for (let n = 0; n < xs.length; n++) {
-      const y = mid - amp * Math.sin(ph - k * (xs[n] - x0));
-      p.addCircle(xs[n], y, 3.4);
-    }
+    for (let i = 0; i < s.length; i += 3) p.addCircle(x0 + s[i] * pw, mid - amp * Math.sin(s[i + 1]), 3.4);
     return p;
-  }, [phase, xs, mid, amp, k]);
+  }, [phase, pw, mid, amp]);
 
-  // X-ray chrome (static): DAC clock ticks + filter-response inset.
-  const clockTicks = useMemo(() => {
+  // X-ray chrome: the DAC clock ticks (they mark the sample instants, so they
+  // travel with them) + the filter-response inset (static).
+  const clockTicks = useDerivedValue(() => {
+    const s = sampleInstants(phase.value, SPAN, -1, DT);
     const p = Skia.Path.Make();
-    for (const x of xs) {
+    for (let i = 0; i < s.length; i += 3) {
+      const x = x0 + s[i] * pw;
       p.moveTo(x, h - 10);
       p.lineTo(x, h - 4);
     }
     return p;
-  }, [xs, h]);
+  }, [phase, pw, h]);
   const inset = useMemo(() => {
     const bx = w - 88;
     const by = 6;
@@ -696,17 +708,13 @@ export function JitterView({
   const ts = useStageTextScale();
   const w = width / ts;
   const h = height / ts;
-  const NT = 13;
   const x0 = 10;
-  const xs = useMemo(() => Array.from({ length: NT }, (_, n) => x0 + (n / (NT - 1)) * (w - 20)), [w]);
+  const pw = w - 20;
+  const SPAN = 2 * Math.PI * 1.7; // 1.7 cycles across the window
+  const DT = SPAN / 12; // one sample period (13 clock ticks across)
   const MAXD = 11; // px — the exaggerated deviation at amount = 1
-  const deltas = useMemo(
-    () =>
-      xs.map((_, n) =>
-        mode === 'random' ? (hashJs(n * 127.3 + 7.7) * 2 - 1) * MAXD * amount : Math.sin((n / NT) * Math.PI * 5) * MAXD * amount,
-      ),
-    [xs, amount, mode],
-  );
+  const dPx = MAXD * amount; // the drawn peak timing error, px
+  const periodic = mode === 'periodic';
 
   // Strips moved down 6 (emulator pass 2026-10-14): the 9 pt "IDEAL CLOCK"
   // label (top 0) was drawn over the ideal ticks (they started at y 10).
@@ -715,58 +723,82 @@ export function JitterView({
   const waveTop = 74;
   const mid = waveTop + (h - waveTop - 10) / 2;
   const amp = (h - waveTop - 10) * 0.42;
-  const k = (2 * Math.PI * 1.7) / (w - 20);
 
-  const strips = useMemo(() => {
+  // ONE time base (timeBase.ts): the newest signal at the LEFT, travelling
+  // right. Clock ticks are moments in signal time (θ_k = k·DT) and each one
+  // carries ITS OWN timing error (jitterOf(k)), so a tick, its whisker and its
+  // dots travel with the wave and keep their values (owner 2026-11-22: "Once
+  // a wave form has happend, it should not become some other waveform later
+  // in time"). They used to stay at fixed glass positions while the wave
+  // slid under them, so each sample was re-measured on every frame.
+  const idealTicks = useDerivedValue(() => {
+    const s = sampleInstants(phase.value, SPAN, -1, DT);
     const ideal = Skia.Path.Make();
-    const jit = Skia.Path.Make();
-    const drift = Skia.Path.Make();
-    for (let n = 0; n < xs.length; n++) {
-      ideal.moveTo(xs[n], yIdeal - 6);
-      ideal.lineTo(xs[n], yIdeal + 6);
-      jit.moveTo(xs[n] + deltas[n], yJit - 6);
-      jit.lineTo(xs[n] + deltas[n], yJit + 6);
-      drift.moveTo(xs[n], yIdeal + 6);
-      drift.lineTo(xs[n] + deltas[n], yJit - 6);
+    for (let i = 0; i < s.length; i += 3) {
+      const x = x0 + s[i] * pw;
+      ideal.moveTo(x, yIdeal - 6);
+      ideal.lineTo(x, yIdeal + 6);
     }
-    return { ideal, jit, drift };
-  }, [xs, deltas]);
+    return ideal;
+  }, [phase, pw, periodic, dPx]);
+  const jitTicks = useDerivedValue(() => {
+    const s = sampleInstants(phase.value, SPAN, -1, DT);
+    const jit = Skia.Path.Make();
+    for (let i = 0; i < s.length; i += 3) {
+      const xj = x0 + s[i] * pw + jitterOf(s[i + 2], periodic) * dPx;
+      jit.moveTo(xj, yJit - 6);
+      jit.lineTo(xj, yJit + 6);
+    }
+    return jit;
+  }, [phase, pw, periodic, dPx]);
+  const drift = useDerivedValue(() => {
+    const s = sampleInstants(phase.value, SPAN, -1, DT);
+    const p = Skia.Path.Make();
+    for (let i = 0; i < s.length; i += 3) {
+      const x = x0 + s[i] * pw;
+      p.moveTo(x, yIdeal + 6);
+      p.lineTo(x + jitterOf(s[i + 2], periodic) * dPx, yJit - 6);
+    }
+    return p;
+  }, [phase, pw, periodic, dPx]);
 
   const wave = useDerivedValue(() => {
     const ph = phase.value;
     const p = Skia.Path.Make();
     const N = 150;
     for (let i = 0; i <= N; i++) {
-      const x = x0 + (i / N) * (w - 20);
-      const y = mid - amp * Math.sin(ph - k * (x - x0));
-      if (i === 0) p.moveTo(x, y);
-      else p.lineTo(x, y);
+      const u = i / N;
+      const y = mid - amp * Math.sin(thetaAtU(u, ph, SPAN, -1));
+      if (i === 0) p.moveTo(x0 + u * pw, y);
+      else p.lineTo(x0 + u * pw, y);
     }
     return p;
-  }, [phase, w, mid, amp, k]);
+  }, [phase, pw, mid, amp]);
 
   // Amplitude-error whiskers: value read at the WRONG instant vs the right
-  // one. Biggest where the wave is steepest — error ≈ slope × Δt, live.
+  // one. Biggest where the wave is steepest — error ≈ slope × Δt. A tick
+  // drawn d px later on the glass (to the right, i.e. OLDER signal here) read
+  // the wave at θ − d·SPAN/pw.
   const whiskers = useDerivedValue(() => {
-    const ph = phase.value;
+    const s = sampleInstants(phase.value, SPAN, -1, DT);
     const p = Skia.Path.Make();
-    for (let n = 0; n < xs.length; n++) {
-      const yI = mid - amp * Math.sin(ph - k * (xs[n] - x0));
-      const yJ = mid - amp * Math.sin(ph - k * (xs[n] + deltas[n] - x0));
-      p.moveTo(xs[n], yI);
-      p.lineTo(xs[n], yJ);
-      p.addCircle(xs[n], yJ, 2.5);
+    for (let i = 0; i < s.length; i += 3) {
+      const x = x0 + s[i] * pw;
+      const th = s[i + 1];
+      const yI = mid - amp * Math.sin(th);
+      const yJ = mid - amp * Math.sin(th - ((jitterOf(s[i + 2], periodic) * dPx) / pw) * SPAN);
+      p.moveTo(x, yI);
+      p.lineTo(x, yJ);
+      p.addCircle(x, yJ, 2.5);
     }
     return p;
-  }, [phase, xs, deltas, mid, amp, k]);
+  }, [phase, pw, periodic, dPx, mid, amp]);
   const idealDots = useDerivedValue(() => {
-    const ph = phase.value;
+    const s = sampleInstants(phase.value, SPAN, -1, DT);
     const p = Skia.Path.Make();
-    for (let n = 0; n < xs.length; n++) {
-      p.addCircle(xs[n], mid - amp * Math.sin(ph - k * (xs[n] - x0)), 2);
-    }
+    for (let i = 0; i < s.length; i += 3) p.addCircle(x0 + s[i] * pw, mid - amp * Math.sin(s[i + 1]), 2);
     return p;
-  }, [phase, xs, mid, amp, k]);
+  }, [phase, pw, mid, amp]);
 
   return (
     <View style={{ width, height }}>
@@ -774,9 +806,9 @@ export function JitterView({
         <Group transform={[{ scale: ts }]}>
         <SkLine p1={{ x: x0, y: yIdeal }} p2={{ x: w - 10, y: yIdeal }} color={GHOST} strokeWidth={1} />
         <SkLine p1={{ x: x0, y: yJit }} p2={{ x: w - 10, y: yJit }} color={GHOST} strokeWidth={1} />
-        <Path path={strips.ideal} color={GREEN} style="stroke" strokeWidth={1.6} opacity={0.9} />
-        <Path path={strips.drift} color={withAlpha(RED, 0.3)} style="stroke" strokeWidth={1} />
-        <Path path={strips.jit} color={RED} style="stroke" strokeWidth={1.6} opacity={0.9} />
+        <Path path={idealTicks} color={GREEN} style="stroke" strokeWidth={1.6} opacity={0.9} />
+        <Path path={drift} color={withAlpha(RED, 0.3)} style="stroke" strokeWidth={1} />
+        <Path path={jitTicks} color={RED} style="stroke" strokeWidth={1.6} opacity={0.9} />
         <SkLine p1={{ x: 0, y: mid }} p2={{ x: w, y: mid }} color={GHOST} strokeWidth={1} />
         <GlowStroke path={wave} color={WAVE} width={2.2} />
         <Path path={whiskers} color={RED} style="stroke" strokeWidth={1.6} />

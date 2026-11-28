@@ -115,7 +115,8 @@ describe('3. each guide quotes its screen’s real names', () => {
       'IN ▸', '▸ OUT', 'GATE', 'GR', 'THRESH', 'RANGE', '— dB',
       '−20 dB GENTLE', '−40 dB', '−70 dB SILENCE', 'HOLD', 'RLS', '20 ms CHATTER', '100 ms', '500 ms', 'SOURCE', 'CLICK 90', 'PINK NOISE',
       'LAB NOTES', 'GATE ATTENUATION', 'DESIGNED RESPONSE', 'GUIDED LESSON', 'THE AUDIO PATH',
-      'TEACHING MODEL', 'DRUM-HIT MODEL',
+      // Phase 3, lab fix round (owner 2026-11-14, decision 3: a plain one-line model note instead of all-caps badges).
+      'is a model', 'DRUM-HIT MODEL',
     ],
     learn: ['LEARN', 'EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'THRESH', 'Attack', 'HOLD', 'RLS', 'RANGE', 'Hysteresis', 'Lookahead', 'CLICK 90', '20 ms CHATTER', '−70 dB SILENCE', '−20 dB GENTLE'],
     // '−20 dB GENTLE' left the CHECK guide (decision 6, 2026-11-08): it was the range-partial answer's setting
@@ -137,7 +138,8 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.match(GUIDES.explore.control.join(' '), /THRESH fader from −50 to −20 dB/);
     assert.match(GATE, /choices: \[0, 10, 100\]\.map\(\(ms\) => \(\{ label: `\$\{ms\} ms`, value: ms \}\)\)/);
     assert.match(GUIDES.explore.control.join(' '), /HOLD: 0, 10 or 100 ms/);
-    assert.match(GATE, /bezel: \[\s*\{ k: 'THRESH', paramId: P\.thresholdDb \},\s*\{ k: 'RANGE', paramId: P\.rangeDb \},\s*\]/);
+    // Phase 2, lab fix round (owner 2026-11-14: "Begin fixing all bugs found and do obvious ... fixes"): a bezel cell may carry its first-visit caption.
+    assert.match(GATE, /bezel: \[\s*\{ k: 'THRESH', paramId: P\.thresholdDb(?:, caption: '[^']*')? \},\s*\{ k: 'RANGE', paramId: P\.rangeDb(?:, caption: '[^']*')? \},\s*\]/);
     assert.match(GATE, /pollGr: 'gate'/);
     assert.match(code('src/screens/lab/FxLabScreen.tsx'), /maxDb=\{pollGr === 'gate' \? 70 : 30\}/);
     assert.match(GUIDES.explore.seeing.join(' '), /0 to 70 dB/);
@@ -285,7 +287,8 @@ describe('4. the TRY THIS numbers follow from the lab and the engine', () => {
     assert.match(GATE, /the gate opens on each hit/);
     assert.match(GUIDES.learn.tryThis[0], /at RLS 20 ms CHATTER GR reaches the RANGE floor between hits; at 500 ms it stays at 0\.0/);
     // CHECK (decision 6, 2026-11-08): HOLD is the hold-meaning answer itself, so the line points to where it is taught
-    assert.match(GUIDES.check.tryThis[1], /Read the HOLD entry under CONTROLS on LEARN, or long-press the HOLD key on EXPLORE/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(GUIDES.check.tryThis[1], /Open CONTROLS on LEARN and read the HOLD entry, or long-press the HOLD key on EXPLORE/);
     assert.match(GATE, /label: 'HOLD', paramId: P\.holdMs, lessonKey: 'hold',/);
     assert.doesNotMatch(GUIDES.check.tryThis[1], /HOLD 0 ms|100 ms|minimum|stays open|GR (rests|stays)/);
     assert.match(GUIDES.learn.tryThis[1], /THRESH −50 dB, RLS 20 ms CHATTER\) step RANGE: between hits GR reaches 70\.0 at −70 dB SILENCE, 20\.0 at −20 dB GENTLE/);

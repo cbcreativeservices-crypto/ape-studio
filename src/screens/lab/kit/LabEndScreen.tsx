@@ -26,6 +26,12 @@
  *     always enabled.
  *   • a CHECK row whose check is drawn on this screen (`shownHereId`, the
  *     host's `extra`) moves the screen to it instead of leaving (D41 K6).
+ *   • ADDITIVE (lab fix round 2026-11-14, S2; report section 3 row 5): a
+ *     state-aware WHERE TO START card (labEnd.whereToStart); the lab's RECAP
+ *     (WHAT YOU LEARNED on top once complete, WHAT THIS LAB COVERS under the
+ *     rows before that) and a NEXT-LAB card, both from
+ *     features/lab/labEndContent by `labId` or from props; the rule many
+ *     rows share said ONCE (`howItCounts`, quick win 17). Row labels wrap.
  *
  * Nothing here auto-appears (Low-Light Production Mode): it only ever renders
  * because the learner pressed FINISH / DONE / the WHAT'S LEFT chip, and it has
@@ -33,6 +39,7 @@
  */
 import { useRef, useState, type ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
 import { readingColumn } from '../../../theme/readingColumn';
@@ -41,8 +48,10 @@ import { isGuestTier } from '../../../features/commercial/tier';
 import { useGuestWording, useTier } from '../../../features/commercial/useTier';
 import { useLabPreview } from '../../../features/lab/labPreviewStore';
 import { sessionCarryOpen } from '../../../features/lab/sessionCarry';
-import { endLead, endNote, endTitle, whatsLeft, type LabEndRow, type LabEndUnit } from './labEnd';
-import { LabNextButton, claimLabLeave } from './LabNavBar';
+import { endLead, endNote, endTitle, howItCountsHeading, nextHeading, recapHeading, whatsLeft, whereToStart, type LabEndRow, type LabEndUnit } from './labEnd';
+import { labEndContentFor, type LabEndNext } from '../../../features/lab/labEndContent';
+import { runSoon } from '../../../lib/afterInteractions';
+import { LabNextButton, claimLabLeave, useLabNoun } from './LabNavBar';
 import { ProgressUnreadableNote } from './ProgressUnreadableNote';
 import { DiscussLabLink } from '../../directory/forum/DiscussLabLink';
 
@@ -65,7 +74,7 @@ export function LabEndScreen({
   units,
   cleared,
   mode,
-  noun = 'module',
+  noun: nounProp,
   onJump,
   onPracticeAgain,
   onDone,
@@ -77,6 +86,11 @@ export function LabEndScreen({
   unreadable,
   shownHereId,
   startOver,
+  labId,
+  recap: recapProp,
+  next: nextProp,
+  howItCounts,
+  beforeLeave,
 }: {
   labTitle: string;
   /** Every unit of the lab, in lab order (checks last). */
@@ -120,8 +134,27 @@ export function LabEndScreen({
    *  (PRACTICE), which clears its ticks — the closing note says so, so
    *  "practicing never clears" is never told where it would be false. */
   startOver?: boolean;
+  /** ADDITIVE (lab fix round 2026-11-14, S2): the lab's id in
+   *  features/lab/labEndContent — its RECAP and NEXT-LAB lines are read from
+   *  there. No entry = nothing extra drawn. */
+  labId?: string;
+  /** ADDITIVE (2026-11-14): recap lines; win over the labEndContent entry. */
+  recap?: readonly string[];
+  /** ADDITIVE (2026-11-14): the next-lab card; wins over the entry. */
+  next?: LabEndNext;
+  /** ADDITIVE (2026-11-14, quick win 17): the rule many rows share, printed
+   *  ONCE above the list (never repeated under every row). */
+  howItCounts?: string;
+  /** ADDITIVE (2026-11-14): run before the NEXT-LAB card leaves (a host in
+   *  a Modal layer closes it first — never two screens at once). */
+  beforeLeave?: () => void;
 }) {
   const insets = useSafeAreaInsets();
+  // The lab's ONE unit noun (owner decision 3, 2026-11-14): a host's own
+  // `noun` prop wins (LabCheckEnd's "check", ReviewLabEnd's "step");
+  // otherwise the noun the lab gave its LabNounProvider (default 'module').
+  const labNoun = useLabNoun();
+  const noun = nounProp ?? labNoun;
   // WORDING, not behaviour (tier sweep 2026-10-03): "You are not signed in"
   // is said to a KNOWN guest only. A signed-in learner whose membership read
   // failed reads 'guest' on the resolved-based tier — the lab still holds /
@@ -133,7 +166,13 @@ export function LabEndScreen({
   // A members-only preview is told it earns nothing; a signed-out guest that
   // signing in before closing the app keeps the work (owner 2026-10-01).
   const inPreview = useLabPreview().active;
+  const navigation = useNavigation();
+  const content = labEndContentFor(labId);
+  const recap = recapProp ?? content.recap;
+  const next = nextProp ?? content.next;
   const w = whatsLeft(units, cleared);
+  // State-aware WHERE TO START (2026-11-14): never shown over an unreadable record.
+  const start = whereToStart(w, { noun, unreadable, hasNext: !!next });
   const title = unreadable ? 'YOUR PROGRESS' : w.complete && completeTitle ? completeTitle : endTitle(w);
   const [showCredited, setShowCredited] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
@@ -151,6 +190,33 @@ export function LabEndScreen({
     if (!claimLabLeave()) return;
     onDone();
   };
+  // The NEXT-LAB card leaves this lab for another (the same shared one-exit
+  // window as DONE and the header ‹), off this tap, after the host's layer
+  // (if any) has started to close.
+  const openNext = () => {
+    if (!next || !claimLabLeave()) return;
+    beforeLeave?.();
+    runSoon(() => (navigation as unknown as { navigate: (route: string) => void }).navigate(next.route));
+  };
+  const jumpTo = (id: string) => (shownHereId !== undefined && id === shownHereId && extra != null ? toShownHere() : onJump(id));
+  const recapBlock =
+    recap && recap.length > 0 ? (
+      <View style={styles.recap} accessibilityRole="summary">
+        <Text style={styles.sectionHead}>{recapHeading(w)}</Text>
+        {recap.map((line) => (
+          <View key={line} style={styles.recapRow}>
+            <Text style={styles.recapDot}>•</Text>
+            <Text style={styles.recapText}>{line}</Text>
+          </View>
+        ))}
+      </View>
+    ) : null;
+  const startBody = start ? (
+    <View style={{ flex: 1, gap: 2 }}>
+      <Text style={styles.sectionHead}>WHERE TO START</Text>
+      <Text style={styles.startText}>{start.text}</Text>
+    </View>
+  ) : null;
   // A guest banks nothing to an account, so their rows never read CREDITED.
   const tag = mode === 'credit' && !isGuest ? 'CREDITED' : 'DONE';
 
@@ -168,9 +234,8 @@ export function LabEndScreen({
           {r.kind === 'check' ? 'CHECK' : String(r.num).padStart(2, '0')}
         </Text>
         <View style={{ flex: 1, gap: 2 }}>
-          <Text style={styles.rowLabel} numberOfLines={2}>
-            {r.label}
-          </Text>
+          {/* Wraps, never cut (G1 Amplitude: its one step was cut at 390). */}
+          <Text style={styles.rowLabel}>{r.label}</Text>
           {r.detail ? <Text style={styles.rowDetail}>{r.detail}</Text> : null}
         </View>
         {r.credited ? <Text style={styles.rowTag}>✓ {tag}</Text> : null}
@@ -189,11 +254,29 @@ export function LabEndScreen({
       <Text style={[styles.title, w.complete && !unreadable && { color: colors.green }]} accessibilityRole="header">
         {title}
       </Text>
+      {/* The recap opens the screen once the lab is done (WHAT YOU LEARNED);
+          before that it follows the rows (WHAT THIS LAB COVERS). */}
+      {w.complete && !unreadable ? recapBlock : null}
       {unreadable ? (
         <ProgressUnreadableNote />
       ) : (
         <Text style={styles.lead}>{endLead(w, { mode, noun, guest: isGuest, preview: inPreview, carry: sessionCarryOpen(), account })}</Text>
       )}
+      {start && start.jumpId !== undefined ? (
+        <Pressable
+          onPress={() => jumpTo(start.jumpId!)}
+          style={styles.start}
+          accessibilityRole="button"
+          accessibilityLabel={`Where to start. ${start.text}`}
+        >
+          {startBody}
+          <Text style={styles.rowGo}>›</Text>
+        </Pressable>
+      ) : start ? (
+        <View style={styles.start} accessibilityLabel={`Where to start. ${start.text}`}>
+          {startBody}
+        </View>
+      ) : null}
       {shownHereId !== undefined && extra != null ? (
         <View collapsable={false} onLayout={(e) => { extraY.current = e.nativeEvent.layout.y; }}>
           {extra}
@@ -201,6 +284,14 @@ export function LabEndScreen({
       ) : (
         extra
       )}
+
+      {/* The rule many rows share, ONCE (quick win 17, 2026-11-14). */}
+      {howItCounts && w.left.length > 0 ? (
+        <View style={styles.howItCounts}>
+          <Text style={styles.sectionHead}>{howItCountsHeading(noun)}</Text>
+          <Text style={styles.howItCountsText}>{howItCounts}</Text>
+        </View>
+      ) : null}
 
       {w.left.length > 0 ? (
         <View style={styles.list} accessibilityLabel={unreadable ? `${w.left.length} to open` : `${w.left.length} still to do`}>
@@ -225,7 +316,7 @@ export function LabEndScreen({
             accessibilityRole="button"
             accessibilityState={{ expanded: showCredited }}
             aria-expanded={showCredited}
-            accessibilityLabel={`${w.credited.length} ${tag.toLowerCase()}. ${showCredited ? 'Hide' : 'Show'} them to review`}
+            accessibilityLabel={`${w.credited.length} ${tag.toLowerCase()}. ${showCredited ? 'Hide them' : 'Show them to review'}`}
           >
             {/* What is done, never "n OF N" (owner rule D117; D41 K1). */}
             <Text style={styles.creditedText}>
@@ -237,6 +328,24 @@ export function LabEndScreen({
         </>
       ) : null}
 
+      {!w.complete || unreadable ? recapBlock : null}
+
+      {next ? (
+        <Pressable
+          onPress={openNext}
+          style={styles.next}
+          accessibilityRole="button"
+          accessibilityLabel={`${nextHeading(w)}: ${next.title}${next.why ? `, ${next.why}` : ''}. Leaves this lab and opens it.`}
+        >
+          <View style={{ flex: 1, gap: 2 }}>
+            <Text style={styles.sectionHead}>{nextHeading(w)}</Text>
+            <Text style={styles.nextTitle}>{next.title}</Text>
+            {next.why ? <Text style={styles.rowDetail}>{next.why}</Text> : null}
+          </View>
+          <Text style={styles.rowGo}>›</Text>
+        </Pressable>
+      ) : null}
+
       <View style={styles.actions}>
         <GlassButton label="PRACTICE AGAIN FROM THE START" tint="gold" height={46} fontSize={12.5} onPress={onPracticeAgain} />
         <GlassButton label={doneLabel} tint="green" height={46} fontSize={12.5} onPress={done} />
@@ -245,7 +354,7 @@ export function LabEndScreen({
       <Text style={styles.note}>
         {isGuest
           ? 'Practicing again, reviewing and leaving are always open.'
-          : endNote(mode, !!startOver)}
+          : endNote(mode, !!startOver, noun)}
       </Text>
     </ScrollView>
   );
@@ -287,6 +396,17 @@ const styles = StyleSheet.create({
   rowDetail: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16 },
   rowTag: { color: colors.green, fontFamily: fonts.mono, fontSize: 10, letterSpacing: 1 },
   rowGo: { color: colors.amber, fontFamily: fonts.oswaldSemiBold, fontSize: 18 },
+  sectionHead: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1.4 },
+  recap: { gap: 6, borderWidth: 1, borderColor: 'rgba(55,224,95,.3)', borderRadius: 10, backgroundColor: '#0f1d14', padding: 12 },
+  recapRow: { flexDirection: 'row', gap: 8, alignItems: 'flex-start' },
+  recapDot: { color: colors.green, fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 20 },
+  recapText: { flex: 1, color: colors.textPrimary, fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20 },
+  start: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 48, borderWidth: 1, borderColor: 'rgba(255,180,0,.45)', borderRadius: 10, backgroundColor: '#1d1708', paddingVertical: 10, paddingHorizontal: 12 },
+  startText: { color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 14, lineHeight: 19 },
+  howItCounts: { gap: 3, paddingHorizontal: 2 },
+  howItCountsText: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18 },
+  next: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 48, borderWidth: 1, borderColor: '#2a2a2e', borderRadius: 10, backgroundColor: '#141416', paddingVertical: 10, paddingHorizontal: 12 },
+  nextTitle: { color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 15, lineHeight: 20 },
   optionalHead: { color: colors.textSub, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1.2, marginTop: 4 },
   creditedHead: {
     flexDirection: 'row',

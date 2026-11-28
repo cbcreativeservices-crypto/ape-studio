@@ -149,7 +149,11 @@ describe('2. each guide quotes its step’s real names', () => {
     'what:fits': ['IN THIS MODULE', 'RECORDING', 'EDITING', 'MIXING', 'MASTERING', 'RELEASE', 'STAGE', 'NAME', 'WORKS ON', 'TRACKS', 'STEREO', 'FILES', 'REC', 'EDIT', 'MIX', 'MASTER', '‹ PREV', 'NEXT ›', '⏮', 'HIDE DISPLAY', 'FULL SCREEN'],
     'what:can': ['WHAT MASTERING CAN ADDRESS', 'WHAT IT CANNOT DO', 'THE PURPOSE OF OBJECTIVITY'],
     'what:listen': ['INPUT', 'CEILING', 'RELEASE', 'GR', 'BYP', 'PEAK', 'TRUE PK', 'LUFS', 'PLR', 'MATCH dB', '▶ MIX', '▶ LOUDER', '■ STOP', 'MATCH LEVEL', 'THE MIX', 'LOUDER'],
-    'what:practice': ['Mastering adjustment', 'Mix revision', 'More information from the client', 'Your FIRST answer on each card is the one recorded', '‹ PREV CARD', 'NEXT CARD ›'],
+    // 'Ask the client first' was 'More information from the client' until 2026-11-14
+    // (owner: "Begin fixing all bugs found and do obvious (my decision is not
+    // required) fixes as you suggestted in the report"; checker C2: the right
+    // answer was always the longest option).
+    'what:practice': ['Mastering adjustment', 'Mix revision', 'Ask the client first', 'Your FIRST answer on each card is the one recorded', '‹ PREV CARD', 'NEXT CARD ›'],
     'what:review': ['KEY IDEAS', 'KEY TERMS', 'Mastering', 'Stereo master', 'Mix revision', 'TAKEAWAY', 'START OVER (PRACTICE)'],
     'roles:table': ['IN THIS MODULE', 'MIXING ENGINEER', 'MASTERING ENGINEER', 'The roles can overlap', 'Mastering is not simply'],
     'roles:control': ['REQUEST', 'ADDRESSED BY', 'A CLIENT REQUEST', 'VOCAL', 'SNARE', 'FORMAT', 'WIDTH', 'BUS COMP', 'FADES', 'MIXING', 'MASTERING', 'EITHER'],
@@ -160,7 +164,9 @@ describe('2. each guide quotes its step’s real names', () => {
     'room:path': ['NEXT ›', 'COMPLETE', 'WORKS · MINIMAL', 'CHECK THE CHAIN', 'STAGES', 'TO ADD', 'PATH', 'EMPTY', 'CHECK', 'MINIMAL', 'DEVICE', 'DAW', 'DAC', 'MON CTL', 'AMP', 'PASSIVE', 'ACTIVE', '+ CONNECT', '✓ PLACED', 'SLOTS FULL', '‹ UNDO', 'CLEAR'],
     'room:practice': ['‹ PREV CARD', 'NEXT CARD ›'],
     'room:review': ['KEY IDEAS', 'KEY TERMS', 'TAKEAWAY'],
-    'tools:groups': ['Playback and editing', 'Analog equipment (optional)', 'Meters and analysis'],
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item MA-02):
+    // one name per group, the same as the dock and the TOOL readout.
+    'tools:groups': ['Editing', 'Analog (optional)', 'Meters'],
     'tools:shelf': ['TOOL', 'TILT', 'RATIO', 'WIDTH', 'LEVEL', 'OUT AT 0 IN', 'CORRELATION', 'LUFS (I)', 'MODEL', 'MEASURED', 'EDITING', 'MONITORS', 'EQ', 'DYNAMICS', 'STEREO', 'METERS', 'ANALOG', '▶ DRAW MIX'],
     'tools:analog': ['ANALOG EQUIPMENT (OPTIONAL)', 'What it is', 'What it is not', 'How to compare honestly'],
     'tools:practice': ['‹ PREV CARD', 'NEXT CARD ›'],
@@ -239,26 +245,18 @@ describe('3. every number TRY THIS quotes is what the step prints', () => {
     assert.match(t, /BASS reads −5\.3 dB and TREBLE −1\.1 dB/);
     assert.match(t, /88 dB: PER DAY reads 4 h and READING HOT\. At 91 dB it’s 2 h and UNSAFE/);
   });
-  it('Module 3 path: five presses of + CONNECT walk DAW → DAC → MON CTL → AMP → PASSIVE and grade COMPLETE; an AMP before ACTIVE grades CHECK', () => {
+  // Pinned behaviour changed on purpose (owner 2026-11-14: "Begin fixing all
+  // bugs found and do obvious (my decision is not required) fixes as you
+  // suggestted in the report"). The auto-advance to the next unplaced device
+  // made five presses of + CONNECT build the correct chain with no decision
+  // (novice audit G4); the selection now stays on the placed device.
+  it('Module 3 path: the learner picks every DEVICE (no auto-advance); DAW → DAC → MON CTL → AMP → PASSIVE grades COMPLETE; an AMP before ACTIVE grades CHECK', () => {
     const m = code(`${MA}/modules/mod3Room.tsx`);
     const order = [...m.matchAll(/\{ key: '(\w+)', label: PATH_DEVICE_NAMES\.\w+, short: '([^']+)'/g)].map((x) => x[1]);
     assert.deepEqual(order, ['daw', 'dac', 'monitorCtl', 'amp', 'passive', 'active']);
-    // The page's own auto-advance: the next device not yet in the chain.
-    const firstUnplaced = (chain: string[], after: string) => {
-      const start = order.indexOf(after);
-      for (let i = 1; i <= order.length; i++) {
-        const k = order[(start + i) % order.length];
-        if (!chain.includes(k)) return k;
-      }
-      return after;
-    };
-    let chain: string[] = [];
-    let next = 'daw';
-    for (let i = 0; i < 5; i++) {
-      chain = [...chain, next];
-      next = firstUnplaced(chain, next);
-    }
-    assert.deepEqual(chain, ['daw', 'dac', 'monitorCtl', 'amp', 'passive']);
+    assert.doesNotMatch(m, /firstUnplaced/);
+    assert.match(m, /const add = \(\) => setChain\(\(c\) => \(c\.length >= 5 \|\| c\.includes\(next\) \? c : \[\.\.\.c, next\]\)\);/);
+    const chain = ['daw', 'dac', 'monitorCtl', 'amp', 'passive'];
     assert.equal(E.checkMonitorPath(chain).grade, 'complete');
     assert.equal(E.checkMonitorPath(['daw', 'dac', 'monitorCtl', 'amp', 'active']).grade, 'fail');
     assert.match(m, /verdict\.grade === 'fail' \? 'CHECK'/);
@@ -365,7 +363,11 @@ describe('4. wiring: the step’s guide reaches the header; the host wraps the s
   it('LabHeader carries the step’s guide and title — or, on the what’s-left screen, MASTERING_END_GUIDE titled WHAT’S LEFT; the host resets per step and measures regions only on rack steps', () => {
     assert.match(S, /<LabHeader[\s\S]*?guide=\{endState \? MASTERING_END_GUIDE : stepGuide\?\.guide\}\s*guideTitle=\{endState \? 'WHAT’S LEFT' : stepGuide\?\.title\.toUpperCase\(\)\}\s*\/>/);
     assert.match(S, /<ScreenGuideHost resetKey=\{endState \? 'end' : `\$\{mod\.id\}:\$\{stepIdx\}`\} regions=\{!!stepGuide\?\.rack\}>/);
-    assert.match(S, /<\/ScreenGuideHost>\n\s*<\/View>\s*(\{\})?\s*<ProNoteIntro \/>/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item BM-04):
+    // the pro note no longer opens by itself, so no ProNoteIntro follows the
+    // host; the first-step link (ProNoteButton) stays.
+    assert.match(S, /<\/ScreenGuideHost>\n\s*<\/View>/);
+    assert.doesNotMatch(S, /<ProNoteIntro/);
   });
 });
 
@@ -417,15 +419,20 @@ describe('6. the what’s-left END guide (MASTERING_END_GUIDE) is true of the en
   it('progress mode, noun module: rows and the folded line read ✓ DONE (never CREDITED); REVIEW ▾ unfolds them', () => {
     assert.match(END, /mode="progress"/);
     assert.doesNotMatch(END, /noun=/);
-    assert.match(LES, /noun = 'module'/);
+    // Owner decision 3 (quick pick, 2026-11-14): "One name per unit of progress in each lab … used everywhere" — PagedLab's end screen takes the lab's unitNoun (default module), never a fixed "page". Default 'module' now comes from LabNounProvider.
+    assert.match(LES, /const noun = nounProp \?\? labNoun;/);
+    assert.match(read('src/screens/lab/kit/LabNavBar.tsx'), /createContext<UnitNoun>\('module'\)/);
     assert.match(LES, /const tag = mode === 'credit' && !isGuest \? 'CREDITED' : 'DONE';/);
     assert.match(LES, /showCredited \? 'HIDE ▴' : 'REVIEW ▾'/);
     assert.ok(T.includes('✓ DONE') && T.includes('REVIEW ▾'));
     assert.doesNotMatch(T, /CREDITED/);
   });
   it('one row per module, each with what finishes it; Module 8 = four track decisions + the QC checklist', () => {
-    assert.match(END, /units=\{MASTERING_MODULES\.map\(\(x\) => \(\{ id: x\.id, label: x\.title, detail: x\.id === 'project' \? 'Four track decisions \+ the QC checklist' : `\$\{scenariosForModule\(x\.id\)\.length\} decisions on the PRACTICE step` \}\)\)\}/);
-    assert.equal(C.scenariosForModule('project').length, 4);
+    // Pinned wording moved on purpose (owner 2026-11-14: "Begin fixing all bugs
+    // found and do obvious (my decision is not required) fixes as you
+    // suggestted in the report"; lab fix round phase 2, F4): each row now
+    // counts what is LEFT in its module (endDetail).
+    assert.match(END, /units=\{MASTERING_MODULES\.map\(\(x\) => \(\{ id: x\.id, label: x\.title, detail: endDetail\(x\.id, endState\) \}\)\)\}/);    assert.equal(C.scenariosForModule('project').length, 4);
     assert.match(T, /the decisions on its PRACTICE step, or for Module 8, the four track decisions and the QC checklist/);
   });
   it('a row opens the step that finishes it (PRACTICE deck; Module 8 decisions, then QC once all four are in); a finished module opens at step 1', () => {

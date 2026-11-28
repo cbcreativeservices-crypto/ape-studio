@@ -313,6 +313,7 @@ describe('2. the wipe still resets every store (behavioural)', () => {
  */
 const GATE_AT_HEAD: Record<string, [boolean, string | null]> = {
   About: [false, null],
+  AcademyMessage: [false, null], // the academy's message, free for everyone (owner 2026-11-17) [MD:D68]
   Achievements: [false, null],
   AchievementsHome: [false, null],
   AdvancedMixingLab: [true, 'Advanced Mixing'],
@@ -371,6 +372,9 @@ const GATE_AT_HEAD: Record<string, [boolean, string | null]> = {
   DrumTuningLab: [true, 'Drum Tuning Lab'],
   // DJ Systems Lab (2026-10-18): members-only (Live Sound Reinforcement).
   DJSystemsLab: [true, 'DJ Systems Lab'],
+  // Listed 2026-11-13 [MD:D60]: members-only (Game Audio; Live Sound Reinforcement).
+  GameAudioLab: [true, 'Game Audio Lab'],
+  StagePlotLab: [true, 'Stage Plot and Channel Designer'],
   DspDebug: [false, null],
   EarLab: [false, null],
   EarModule: [true, 'Ear Training Lab'],
@@ -406,7 +410,7 @@ const GATE_AT_HEAD: Record<string, [boolean, string | null]> = {
   Main: [false, null],
   MasteringLab: [true, 'Mastering Lab: From Final Mix to Release'],
   Matching: [false, null],
-  MeterLab: [true, 'Visual Audio Analysis'],
+  MeterLab: [false, 'Visual Audio Analysis'], // freed 2026-11-21 (owner: the free first Signal lab)
   MeterModule: [true, 'Signal Detective'],
   MicLab: [true, 'Microphone Principles'],
   MikingHub: [true, 'Miking Labs'], // one catalog tile per family (owner 2026-10-06); the shared route is named for the whole set
@@ -446,7 +450,8 @@ const GATE_AT_HEAD: Record<string, [boolean, string | null]> = {
   Rta: [false, null],
   Scenarios: [false, null],
   Settings: [false, null],
-  SignalChainLab: [true, 'Signal Chain Builder'],
+  // Free since 2026-11-21 (owner: the first lab of every Fundamentals category is free, D74).
+  SignalChainLab: [true, 'Signal Chain Builder'], // members-only again 2026-11-21 (owner)
   SignalGen: [false, null],
   SmartProcessorsLab: [true, 'Smart Processors Lab'],
   SoundSystemsBuild: [true, 'Sound Systems Lab'],
@@ -485,14 +490,16 @@ const GATE_AT_HEAD: Record<string, [boolean, string | null]> = {
 };
 /** The Lab landing's row labels at HEAD, and the grand total. */
 const COUNTS_AT_HEAD: Record<string, string> = {
-  sound: '4 Labs', acoustics: '3 Labs', signal: '9 Labs', mixingworkflow: '4 Labs', production: '2 Labs',
-  livesound: '2 Labs', equalization: '2 Labs', dynamics: '4 Labs', timefx: '2 Labs', modulation: '3 Labs',
-  saturation: '1 Lab', phase: '1 Lab', synthesis: '6 Labs', spatial: '2 Labs', pitch: '3 Labs',
+  // D74 (owner 2026-11-21): Speaker Placement + Cable Dressing -> livesound; Patchbay + Room Design -> production.
+  sound: '4 Labs', acoustics: '1 Lab', signal: '7 Labs', mixingworkflow: '4 Labs', production: '4 Labs',
+  // livesound: +1 Stage Plot and Channel Designer; gameaudio: a new subject (2026-11-13, MD:D60).
+  livesound: '5 Labs', gameaudio: '1 Lab', equalization: '2 Labs', dynamics: '4 Labs', timefx: '2 Labs', modulation: '3 Labs',
+  saturation: '1 Lab', phase: '1 Lab', synthesis: '6 Labs', spatial: '2 Labs', pitch: '4 Labs', // +1 Bass Guitar Physics, moved from instruments (owner 2026-11-23)
   // instruments: +1 for Miking Lab 6's family tile (Foley, Field & Scientific; Lab 6 group 4, 2026-10-08).
-  visualization: '2 Labs', instruments: '8 Labs', voice: '1 Lab', electronics: '2 Labs', eartraining: '1 Lab',
+  visualization: '2 Labs', instruments: '7 Labs', voice: '1 Lab', electronics: '2 Labs', eartraining: '1 Lab',
   calculators: '166 Calculators', // 163 + the 3 Conductor Ampacity (NEC) functions (owner 2026-10-04, receipt calcAmpacity)
 };
-const TOTAL_AT_HEAD = 228; // was 217 before the ampacity calculator; +1 Miking Labs 1-4 (2026-10-04/05); +1 Mixing Guides (2026-10-07, preview state); +1 Miking Lab 5: Voice & Ensemble (2026-10-07); +1 Miking Lab 6: Foley, Field & Scientific (2026-10-08); +1 DJ Systems Lab (2026-10-18)
+const TOTAL_AT_HEAD = 230; // +2 Game Audio Lab, Stage Plot and Channel Designer (2026-11-13); was 217 before the ampacity calculator; +1 Miking Labs 1-4 (2026-10-04/05); +1 Mixing Guides (2026-10-07, preview state); +1 Miking Lab 5: Voice & Ensemble (2026-10-07); +1 Miking Lab 6: Foley, Field & Scientific (2026-10-08); +1 DJ Systems Lab (2026-10-18)
 /** Lab 6 group 1 (2026-10-08): a Miking lab is listed once it has a ready lesson, so the
  *  instruments row and the total follow the registry's ready labs (6 when the counts above
  *  were taken) instead of a hard-coded lab total. */
@@ -515,12 +522,12 @@ describe('3. the members-only gate decides exactly as before', () => {
     assert.deepEqual(new Set(reached), before);
   });
 
-  it('GUARD: same membersOnly decision and same lab name for all 151 routes (147 + ProductionPacket, 2026-10-04; + MixingGuides, MixingGuide, 2026-10-07; + DJSystemsLab, 2026-10-18)', async () => {
+  it('GUARD: same membersOnly decision and same lab name for all 153 routes (147 + ProductionPacket, 2026-10-04; + MixingGuides, MixingGuide, 2026-10-07; + DJSystemsLab, 2026-10-18; + GameAudioLab, StagePlotLab, 2026-11-13)', async () => {
     const cat = await import('../src/screens/lab/labCatalog.ts');
     const now: Record<string, [boolean, string | null]> = {};
     for (const r of Object.keys(GATE_AT_HEAD)) now[r] = [cat.isMemberOnlyLabRoute(r), cat.labRouteName(r) ?? null];
     assert.deepEqual(now, GATE_AT_HEAD);
-    assert.equal(Object.values(now).filter(([m]) => m).length, 78, '78 members-only routes (72 + ProductionPacket + MikingHub + MikingLesson + MixingGuides + MixingGuide + DJSystemsLab)');
+    assert.equal(Object.values(now).filter(([m]) => m).length, 79, '79 members-only routes (72 + ProductionPacket + MikingHub + MikingLesson + MixingGuides + MixingGuide + DJSystemsLab + GameAudioLab + StagePlotLab, - MeterLab freed 2026-11-21 D74; SignalChainLab members-only again)');
   });
 
   it('GUARD: every route the catalog and the navigator name is in that comparison', () => {
@@ -540,7 +547,7 @@ describe('3. the members-only gate decides exactly as before', () => {
     for (const c of cat.LAB_CATEGORIES) now[c.id] = cat.categoryCountLabel(c);
     const { readyLabs } = await import('../src/screens/lab/miking/data/registry.ts');
     const more = readyLabs().length - MIKING_READY_AT_HEAD;
-    const instruments = 8 + more;
+    const instruments = 7 + more; // 8 before Bass Guitar Physics moved to Pitch & Tuning (owner 2026-11-23)
     assert.deepEqual(now, { ...COUNTS_AT_HEAD, instruments: `${instruments} Labs` });
     assert.equal(cat.totalLabCount(), TOTAL_AT_HEAD + more);
   });

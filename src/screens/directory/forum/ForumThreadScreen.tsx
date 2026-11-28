@@ -899,7 +899,7 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
     (post: ForumPost) => {
       confirmDialog(
         'Flag a safety concern?',
-        'Use this when advice about AC power, rigging or hearing could hurt someone. It is reviewed straight away.',
+        'Use this when advice about AC power, rigging or hearing could hurt someone. It is reviewed right away.',
         'FLAG',
         () => void sendFlag(post),
       );
@@ -1030,13 +1030,13 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
         items.push({
           key: 'safety',
           label: 'Flag a safety concern',
-          note: 'AC power, rigging or hearing: reviewed straight away',
+          note: 'AC power, rigging or hearing: reviewed right away',
           onPress: () => flag(p),
         });
       }
       // Never on the Academy's own posts (owner rule 2026-11-08).
       if (canReportOrBlock(p.author)) {
-        items.push({ key: 'report', label: 'Report post', note: 'Reviewed straight away', onPress: () => setReportOf(p) });
+        items.push({ key: 'report', label: 'Report post', note: 'Reviewed right away', onPress: () => setReportOf(p) });
         items.push({
           key: 'block',
           label: 'Block member',
@@ -1259,7 +1259,7 @@ function Thread({ topicId, jumpTo, unreadMark }: { topicId: string; jumpTo: stri
           {/* No maxLength on the box: a long paste keeps every word, and this
               says how much to cut before SEND (UI-3-01). */}
           {replyTooLong ? <Text style={st.tooLong}>{replyTooLong}</Text> : null}
-          {draftSaved ? <Text style={st.draftNote}>Draft saved on this phone.</Text> : null}
+          {draftSaved ? <Text style={st.draftNote}>Draft saved on this device.</Text> : null}
         </View>
       )}
 

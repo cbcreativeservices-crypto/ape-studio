@@ -443,7 +443,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: what decides the note a trombone plays?', options: ['How hard the lips buzz', 'The tube’s air column', 'The bell alone'], after: 'Now STEP through (or PLAY ONCE) and watch the lips, the tube and the bell.' },
+  sound: { prompt: 'Before you step through: what decides the note a trombone plays?', options: ['How hard the lips buzz', 'The tube’s air column', 'The bell alone'], after: 'Now go EVENT by EVENT (or PLAY ONCE) and watch the lips, the tube and the bell.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: can a stand mic go straight in front of the bell, 40 cm out?', options: ['Yes, that is the usual place', 'No — the slide is in the way', 'Only with a short stand'], after: 'Try it, then rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front of the player. Where will a supercardioid aimed at the bell reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },

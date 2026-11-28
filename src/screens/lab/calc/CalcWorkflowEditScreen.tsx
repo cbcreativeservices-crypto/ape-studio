@@ -20,6 +20,7 @@ import type { Workflow, WorkflowStep } from './workflowModel';
 import { workflowLimitsFor } from './workflowModel';
 import { workflowGeneration, workflowListUnreadable, workflowStore } from './workflowStore';
 import { listCalculators, resolveStep, type CatalogEntry } from './workflowCatalog';
+import { reindexCarry } from './workflowCarry';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
 import { cardColumn } from '../../../theme/readingColumn';
@@ -142,8 +143,11 @@ export function CalcWorkflowEditScreen() {
     );
   }, [catalog, deferredSearch]);
 
+  // ▲ / ▼ / ✕ and the notes all pass here: a customized copy's carried
+  // values follow their source steps (round 2, 2026-11-25) — renumbered, or
+  // dropped once the source is gone or no longer comes first.
   const mutate = (fn: (s: WorkflowStep[]) => WorkflowStep[]) => {
-    setSteps(fn);
+    setSteps((s) => reindexCarry(s, fn(s)));
     setDirty(true);
   };
   // Stable (setters only) so the memoised picker rows below skip re-rendering
@@ -211,7 +215,7 @@ export function CalcWorkflowEditScreen() {
       notify(
         tierReadFailed ? 'Membership not confirmed' : 'One moment',
         tierReadFailed
-          ? 'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.'
+          ? 'Couldn’t confirm your membership on this device. Check your connection and reopen the app.'
           : 'Still checking your account. Tap SAVE again in a moment.',
       );
       return;

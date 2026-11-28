@@ -62,7 +62,10 @@ export function peakCell(k: string, db: number | null): BezelItem {
 export function peakShort(k: string, db: number | null, flex?: number): BezelItem {
   if (db == null || db === -Infinity) return { k, v: '—', tint: colors.textSub, flex };
   if (db >= 0) return { k, v: 'CLIP', tint: PEAK_RED, flex };
-  return { k, v: db.toFixed(1), vA11y: `${db.toFixed(1)} dBFS`, sub: /PEAK/.test(k) ? 'dBFS' : 'dBFS PEAK', tint: levelColorForDb(db, -40, 0), flex };
+  // The unit is on the sub line, which the spoken label reads after the
+  // value — so the value is not given the unit again ("−8.4 dBFS dBFS",
+  // lab fix round 2026-11-14, F2).
+  return { k, v: db.toFixed(1), sub: /PEAK/.test(k) ? 'dBFS' : 'dBFS PEAK', tint: levelColorForDb(db, -40, 0), flex };
 }
 
 /** The sound status in a word, for the bezel. */

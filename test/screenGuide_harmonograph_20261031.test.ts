@@ -150,8 +150,10 @@ describe('3. each guide quotes the screen’s real names', () => {
     assert.doesNotMatch(t, /3:2|closes (into|its)|stable,? repeating|precess|rotates|spirals? in/i);
     // no line sends the student to set the asked-about control on EXPLORE and watch the result
     assert.doesNotMatch(t, /tap the RATIO chip, DETUNE or DAMPING|try it on the machine/);
-    assert.match(c.tryThis[0], /Switch to LEARN and reread the CONTROLS entry on the idea the question is about/);
-    assert.match(c.intro!.start, /Switch to LEARN and reread that idea under CONTROLS/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(c.tryThis[0], /Switch to LEARN, open CONTROLS and reread the entry on the idea the question is about/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(c.intro!.start, /Switch to LEARN, open CONTROLS and reread that idea/);
   });
   it('the lesson describes THIS machine: OSC 1 / OSC 2, amplitude as an idea (no key), ROTARY = arms + an orbiting paper platform', () => {
     const lesson = read('src/features/lab/guidedLessons/content.ts');
@@ -236,8 +238,13 @@ describe('4. the numbers in the guide are the screen’s own', () => {
     assert.match(M, /if \(m\.azr > 0\) \{\s*const g = m\.azr \* phi \* \(1 \+ m\.det\);/);
     assert.match(M, /sB = AMP \* Math\.sin\(m\.ayr \* phi \* \(1 \+ m\.det\) \+ Math\.PI \/ 2\) \* env;/);
     assert.match(textOf(GUIDES.explore), /DETUNE moves OSC 2 in LATERAL, the platform in ROTARY \(so PLAT must be on\)/);
-    // A wrong pick shows the same q.explanation as a right one — never called a "hint".
-    assert.match(code('src/components/LabUnderstandingCheck.tsx'), /\{got \? 'CORRECT' : 'NOT QUITE — TRY ANOTHER'\}<\/Text>\s*<Text style=\{s\.explainBody\}>\{q\.explanation\}<\/Text>/);
+    // The check card's wrong-pick feedback — never called a "hint" in the guide.
+    // Lab fix round 2026-11-14 (S2, report section 3 row 4), owner approval: "Begin fixing all bugs found and do
+    // obvious ... fixes as you suggested in the report". A FIRST wrong pick no longer shows the explanation (it
+    // usually names the answer): it shows that option's reason / the hint / a nudge; the explanation follows a
+    // SECOND miss, and every right answer. Both heads stay word for word in the card.
+    assert.match(code('src/components/LabUnderstandingCheck.tsx'), /\{feedback\.right \? 'CORRECT' : 'NOT QUITE — TRY ANOTHER'\}<\/Text>/);
+    assert.match(code('src/features/lab/checkFeedback.ts'), /return misses\.length >= MISSES_BEFORE_EXPLANATION\s*\? \{ right: false, line, explanation: q\.explanation \}\s*: \{ right: false, line \};/);
     assert.doesNotMatch(textOf(GUIDES.check), /\bhint\b/);
   });
   it('ROTARY with PLAT OFF: DETUNE draws nothing, so the caption and TUNE key never claim a detune', () => {

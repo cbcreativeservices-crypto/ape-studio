@@ -291,6 +291,30 @@ describe('preview lanes (onCommit) do not set React state in onChange', () => {
     }
     assert.deepEqual(bad, []);
   });
+  it('live picture, re-render only on a changed shown value: the five useAimRide pages (owner 2026-11-25, fix-first 15, round 2 M1)', () => {
+    // "Aim the rejection": the inset's dot and OFF AXIS / PICKUP / REJECTION follow
+    // the AIM ride through useAimRide (pages/PContext.tsx). The lane's onChange
+    // only marks the ride and writes the preview — no React state — and the page
+    // hears of the shared pose through a reaction that compares the SHOWN pose
+    // (whole degrees), so a glide's fractional sub-steps never re-render it.
+    // This is not an allowlist entry: the ratchet above still holds for them.
+    const P = readFileSync('src/screens/lab/miking/pages/PContext.tsx', 'utf8').replace(/\r\n/g, '\n');
+    assert.match(P, /useAnimatedReaction\(\s*\(\) => sv\.value,\s*\(p, prev\) => \{\s*if \(!prev \|\| !samePose\(shownPose\(p\), shownPose\(prev\)\)\) scheduleOnRN\(see, p\);/);
+    assert.match(P, /export function shownPose\(p: MicPose\): MicPose \{\s*'worklet';\s*return \{ p: \{ x: Math\.round\(p\.p\.x\), y: Math\.round\(p\.p\.y\), z: Math\.round\(p\.p\.z\) \}, az: Math\.round\(p\.az\), el: Math\.round\(p\.el\) \};/);
+    for (const f of [
+      'src/screens/lab/miking/pages/PContext.tsx',
+      'src/screens/lab/miking/lessons/shared/handdrums/pages/HContext.tsx',
+      'src/screens/lab/miking/lessons/spk/pages.tsx',
+      'src/screens/lab/miking/lessons/shared/electric/ampPages.tsx',
+      'src/screens/lab/miking/lessons/shared/hand/handPages.tsx',
+    ]) {
+      const s = readFileSync(f, 'utf8').replace(/\r\n/g, '\n');
+      assert.match(s, /const aimLive = useAimRide\(rig\);/, `${f}: reads the live aim`);
+      const rides = previewOnChanges(s).filter((b) => /aimLive\.ride\(\);/.test(b));
+      assert.equal(rides.length, 1, `${f}: one AIM lane rides`);
+      assert.doesNotMatch(rides[0], /\bset[A-Z]\w*\(/, `${f}: the AIM lane sets no React state`);
+    }
+  });
 });
 
 describe('the collision broad phase is exact', () => {

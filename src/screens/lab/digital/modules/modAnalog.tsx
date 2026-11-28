@@ -31,6 +31,7 @@ import { GlassButton } from '../../../../components/GlassButton';
 import { useAudioOutputGate } from '../../../../features/audio/AudioOutputGate';
 import { noteAudioActivity } from '../../../../features/audio/audioOutputStore';
 import { startFenced } from '../../../../features/audio/startFenced';
+import { NeedsSoundTag } from '../../rack/silentPath';
 import { guardToneLevelForEngine } from '../../../../features/audio/speakerSafety';
 import { DisplayGuideButton } from '../../../../features/lab/guidedLessons';
 import { levelColor } from '../../../../features/tools/levelColor';
@@ -38,12 +39,14 @@ import { colors, fonts } from '../../../../theme/tokens';
 import { EngineGate } from '../../../tools/EngineGate';
 import type { EngineState } from '../../../../features/tools/engine/useDspEngine';
 import { LabChip, CollapsibleSection } from '../../LabShell';
-import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
+import { VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
+import { GoalCheck } from '../../meter/moduleGoal';
 import { Badge, MythReality, PanelCard, ReadoutGrid, dstyles } from '../bits';
 import { RackUnit } from '../../rack/RackUnit';
 import type { DockParam } from '../../rack/rackTypes';
 import { requireVizSignal, type VizSignalModule } from '../skiaGate';
 import { samplingZoom } from '../samplingZoom';
+import { samplingFreqMax, samplingFreqOf, samplingFreqOnRate, samplingPosOf } from '../samplingFreq';
 import type { WaveKind } from '../vizSignal';
 import type { DigitalModuleProps } from '../DigitalModuleScreen';
 import { useStopWhenSilenced } from '../../../../features/audio/useStopWhenSilenced';
@@ -56,6 +59,14 @@ import { useStopOnClose } from '../../../../features/audio/useStopOnBlur';
 function fmtHz(f: number): string {
   if (f >= 1000) return `${Number((f / 1000).toFixed(2))} kHz`;
   return `${Math.round(f)} Hz`;
+}
+
+/** A bezel value as number + unit line (BezelItem `v` + `sub`), so a long
+ *  frequency keeps its key at 390 wide (beginner audit 2026-11-14: INPUT and
+ *  READS AS lost their keys at "14.27 kHz"). */
+function hzCell(f: number, extra = ''): { v: string; sub: string } {
+  if (f >= 1000) return { v: `${Number((f / 1000).toFixed(2))}`, sub: `kHz${extra}` };
+  return { v: `${Math.round(f)}`, sub: `Hz${extra}` };
 }
 
 /** Compact ≤7-char frequency for the dock button. */
@@ -139,6 +150,11 @@ const ANALOG_CHECK: CheckSpec = {
     'Nothing measurable until the converter clocks it',
   ],
   correctIdx: 1,
+  why: {
+    0: 'Numbers only exist after the converter. The question is one microsecond BEFORE it.',
+    2: 'Steps come from sampling, inside the converter. Before it, nothing has been sampled yet.',
+    3: 'The microphone and preamp are already making a voltage. Look at the third view in the display.',
+  },
   reveal:
     'Analog all the way: the microphone and preamp produce a voltage that varies continuously in ' +
     'time and in level — infinitely many values between any two instants. No numbers exist ' +
@@ -282,8 +298,8 @@ export function AnalogModule(p: DigitalModuleProps) {
               onLongPress={() => p.help('source')}
             />
           </View>
-          {distOn ? <Badge text="DISTORTION = A SOFT (tanh) BEND OF THE VOLTAGE SHOWN — A SIMPLE MODEL OF GENTLE ANALOG OVERDRIVE" /> : null}
-          {noiseOn ? <Badge text="NOISE = SMALL BROADBAND FUZZ (±0.05 FS) ADDED TO THE VOLTAGE SHOWN" /> : null}
+          {distOn ? <Badge text="Distortion here is a soft (tanh) bend of the voltage: a simple model of gentle analog overdrive." /> : null}
+          {noiseOn ? <Badge text="Noise here is a small broadband fuzz (±0.05 FS) added to the voltage." /> : null}
         </View>
       ),
     },
@@ -297,16 +313,14 @@ export function AnalogModule(p: DigitalModuleProps) {
       stage={{
         fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'L', // the three phase-locked views ARE the lesson
-        badge:
-          // Shortened (emulator pass 2026-10-14): the two-line strip cut the
-          // old wording after "(blue quiet →", losing the colour key's end.
-          'ILLUSTRATIVE MODEL, SLOWED · ONE EVENT, 3 VIEWS IN STEP: PRESSURE → DIAPHRAGM → VOLTAGE · COLOR = LOUDNESS (blue quiet → red full scale)',
+        // S3's plain model note (phase 3, owner decision 3), not an all-caps badge.
+        modelNote: 'A slowed model: one sound, three views; color is loudness, blue quiet to red full.',
         onGuide: () => p.help('waveform_view'),
         bezel: [
           { k: 'FREQ', v: wave === 'noise' ? 'broadband' : `${freq} Hz`, helpKey: 'source' },
-          { k: 'PERIOD', v: wave === 'noise' ? '—' : `${(1000 / freq).toFixed(2)} ms`, helpKey: 'waveform_view' },
-          { k: 'PEAK', v: stats ? `${stats.peak.toFixed(2)} FS` : '—', helpKey: 'waveform_view' },
-          { k: 'RMS', v: stats ? `${stats.rms.toFixed(2)} FS` : '—', helpKey: 'waveform_view' },
+          { k: 'PERIOD', v: wave === 'noise' ? '—' : `${(1000 / freq).toFixed(2)} ms`, helpKey: 'waveform_view', caption: 'one cycle' },
+          { k: 'PEAK', v: stats ? `${stats.peak.toFixed(2)} FS` : '—', helpKey: 'waveform_view', caption: 'top of 1.0' },
+          { k: 'RMS', v: stats ? `${stats.rms.toFixed(2)} FS` : '—', helpKey: 'waveform_view', caption: 'average' },
         ],
         render: (w, h) =>
           viz ? (
@@ -347,22 +361,29 @@ export function AnalogModule(p: DigitalModuleProps) {
           </Text>
         </CollapsibleSection>
 
-        <Badge text="PEAK · RMS · CREST ARE MEASURED FROM THE WAVE ON SCREEN" />
-        <ReadoutGrid
-          help={p.help}
-          helpKey="waveform_view"
-          items={[
-            { k: 'CREST FACTOR', v: stats ? `${stats.crestDb.toFixed(1)} dB` : '—' },
-            { k: 'POLARITY', v: inverted ? 'INVERTED' : 'NORMAL' },
-          ]}
-        />
-        <Badge text="SQUARE · SAW · TRIANGLE · IMPULSE ARE SHOWN BAND-LIMITED (12 HARMONICS) — REAL SHAPES, NOT PERFECTLY SHARP CORNERS" />
+        {/* DG-01 / DG-05 (owner 2026-11-15: "build waves 1 thru 3", D62): the page opens on its one
+            core idea; crest, polarity and the band-limited note fold away under MORE DETAIL. */}
+        <CollapsibleSection title="MORE DETAIL" startOpen={false}>
+          <Badge text="Peak, RMS and crest are measured from the wave on screen." />
+          <ReadoutGrid
+            help={p.help}
+            helpKey="waveform_view"
+            items={[
+              { k: 'CREST FACTOR', v: stats ? `${stats.crestDb.toFixed(1)} dB` : '—' },
+              { k: 'POLARITY', v: inverted ? 'INVERTED' : 'NORMAL' },
+            ]}
+          />
+          <Badge text="Square, saw, triangle and impulse are band-limited (12 harmonics): real shapes, without perfectly sharp corners." />
+        </CollapsibleSection>
 
-        <MythReality
-          myth="A microphone converts sound into digital data — ones and zeros come out of the mic."
-          reality="A microphone capsule creates a continuously varying voltage that mirrors air pressure. Everything on this screen is analog; numbers only appear when a converter measures this voltage — that story starts in Module 2."
-        />
-        <CheckQuestion spec={ANALOG_CHECK} />
+        {/* MYTH vs REALITY starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal). */}
+        <CollapsibleSection title="MYTH vs REALITY" startOpen={false}>
+          <MythReality
+            myth="A microphone converts sound into digital data — ones and zeros come out of the mic."
+            reality="A microphone capsule creates a continuously varying voltage that mirrors air pressure. Everything on this screen is analog; numbers only appear when a converter measures this voltage — that story starts in Module 2."
+          />
+        </CollapsibleSection>
+        <GoalCheck spec={ANALOG_CHECK} />
         <LessonRow onPress={() => p.help()} />
       </View>
     </RackUnit>
@@ -375,7 +396,6 @@ export function AnalogModule(p: DigitalModuleProps) {
 const RATE_CHIPS = [8000, 16000, 22050, 32000, 44100, 48000, 96000, 192000];
 const CYC_CHIPS = [4, 3, 2.5, 2, 1.7];
 const SLOPE_CHIPS = [12, 24, 48];
-const F2_MIN = 100;
 const LEVEL_DB = -22;
 /** Honest playable window for the generator demo (hearing + speaker safety). */
 const PLAY_MIN_HZ = 40;
@@ -393,6 +413,11 @@ const CHECK_ALIAS: CheckSpec = {
     'A 6 kHz alias (30k − 24k)',
   ],
   correctIdx: 2,
+  why: {
+    0: 'Push FREQ past NYQUIST and watch READS AS: the tone does not vanish, it lands somewhere.',
+    1: 'At 48 kHz nothing above 24 kHz can be stored as itself. Check NYQUIST.',
+    3: 'The fold is measured from the nearest multiple of the sample RATE, not from Nyquist.',
+  },
   reveal:
     '30 kHz is above Nyquist (24 kHz), so the sample points fit a lower sinusoid exactly: ' +
     '|30,000 − 48,000| = 18,000 Hz. Folded around Nyquist: 24k − (30k − 24k) = 18 kHz. Try it with ' +
@@ -404,11 +429,16 @@ const CHECK_AA: CheckSpec = {
   question: 'Why must the anti-aliasing filter sit BEFORE the sampler instead of after it?',
   options: [
     'It protects the microphone from ultrasonic damage',
-    'After sampling, an alias is an ordinary in-band signal — no filter can tell it from real audio',
+    'After sampling, an alias looks like real audio — no filter can split them',
     'Filters only work on analog signals, never on digital ones',
     'It is cheaper to build the electronics that way',
   ],
   correctIdx: 1,
+  why: {
+    0: 'A microphone is not harmed by ultrasound. The filter protects the RECORDING.',
+    2: 'Digital filters exist and are everywhere. The question is what they can still tell apart.',
+    3: 'Cost is not the reason. Think about what an alias looks like once it is stored.',
+  },
   reveal:
     'Once folded, an alias lands inside the audio band and is mathematically identical to a real ' +
     'recording at that frequency — the damage is permanent and unremovable. The only place to ' +
@@ -568,7 +598,12 @@ function SamplingHero({
 export function SamplingModule(p: DigitalModuleProps) {
   const viz = useState(() => requireVizSignal())[0];
   const [rateMode, setRateMode] = useState<RateMode>({ kind: 'abs', fs: 48000 });
-  const [freqV, setFreqV] = useState(() => Math.log(1000 / F2_MIN) / Math.log(30000 / F2_MIN));
+  // The input tone is kept in Hz (owner 2026-11-25, fix-first 15): a new RATE
+  // leaves it where the student set it (samplingFreq.ts). It used to be kept
+  // as a fader POSITION, so RATE moved the tone (1 kHz became 914 Hz at 32k).
+  const [f, setF] = useState(1000);
+  // Set when a new RATE's fader range could not reach the tone, so it was lowered.
+  const [clampedFrom, setClampedFrom] = useState<number | null>(null);
   const [zoomV, setZoomV] = useState(0.3);
   const [recon, setRecon] = useState(false);
   const [filterOn, setFilterOn] = useState(false);
@@ -576,9 +611,20 @@ export function SamplingModule(p: DigitalModuleProps) {
   const [slope, setSlope] = useState(24);
 
   // Input frequency — the NYQUIST SWEEP fader. Range adapts so the sweep can
-  // actually cross Nyquist at studio rates (96k/192k get the honest caption).
-  const fMax = rateMode.kind === 'abs' ? Math.min(rateMode.fs * 0.75, 30000) : 8000;
-  const f = Math.round(F2_MIN * Math.pow(fMax / F2_MIN, freqV));
+  // actually cross Nyquist at studio rates (96k/192k get the honest caption);
+  // the fader shows the kept Hz at its position on THIS rate's range.
+  const fMax = samplingFreqMax(rateMode);
+  const freqV = samplingPosOf(f, fMax);
+  const setFreqV = (v: number) => {
+    setF(samplingFreqOf(v, fMax));
+    setClampedFrom(null);
+  };
+  const pickRate = (m: RateMode) => {
+    const next = samplingFreqOnRate(f, samplingFreqMax(m));
+    setRateMode(m);
+    setF(next.fHz);
+    setClampedFrom(next.clampedFrom);
+  };
   const fs = rateMode.kind === 'abs' ? rateMode.fs : f * rateMode.mult;
   const nyq = fs / 2;
   const spc = fs / f;
@@ -650,7 +696,7 @@ export function SamplingModule(p: DigitalModuleProps) {
                 key={r}
                 label={`${r / 1000}k`}
                 selected={rateMode.kind === 'abs' && rateMode.fs === r}
-                onPress={() => setRateMode({ kind: 'abs', fs: r })}
+                onPress={() => pickRate({ kind: 'abs', fs: r })}
                 onLongPress={() => p.help('sample_rate')}
               />
             ))}
@@ -661,12 +707,17 @@ export function SamplingModule(p: DigitalModuleProps) {
                 key={m}
                 label={`${m} /CYC`}
                 selected={rateMode.kind === 'cyc' && rateMode.mult === m}
-                onPress={() => setRateMode({ kind: 'cyc', mult: m })}
+                onPress={() => pickRate({ kind: 'cyc', mult: m })}
                 onLongPress={() => p.help('samples_per_cycle')}
               />
             ))}
           </View>
-          <Badge text="DEMO MODES: SAMPLE RATE SET RELATIVE TO THE INPUT FREQUENCY — FOR VISUALIZATION, NOT A REAL CONVERTER SETTING" />
+          {clampedFrom != null ? (
+            <Text style={dstyles.caption}>
+              {`At this RATE the FREQ fader only reaches ${fmtHz(f)}, so your ${fmtHz(clampedFrom)} tone was lowered to ${fmtHz(f)}.`}
+            </Text>
+          ) : null}
+          <Badge text="Demo modes set the sample rate relative to the input frequency, to show the idea; not a real converter setting." />
           {/* RECONSTRUCTED curve — was its own RECON key; folded in here so
               the dock keeps five whole keys now that ALIAS and CUTOFF joined
               it (owner rule 2026-10-10: every lab control lives in the dock). */}
@@ -689,7 +740,16 @@ export function SamplingModule(p: DigitalModuleProps) {
       helpKey: 'aliasing',
       render: () => (
         <View style={{ gap: 10 }}>
-          <Text style={dstyles.eyebrow}>HEAR THE FOLD</Text>
+          <Text style={dstyles.eyebrow}>
+            HEAR THE FOLD <NeedsSoundTag />
+          </Text>
+          {/* The can't-listen path (phase 2, S3): what the two buttons would
+              play, read off the screen. */}
+          <Text style={dstyles.caption}>
+            {`Can’t listen now? INPUT plays ${fmtHz(f)}; PREDICTED ALIAS plays ${fmtHz(alias)}, the READS AS number. ${
+              aliased ? 'They differ: the red curve on the display is the lower tone you would hear.' : 'Below NYQUIST they are the same tone.'
+            }`}
+          </Text>
           {!engineReady ? (
             <EngineGate state={gate} />
           ) : (
@@ -755,18 +815,24 @@ export function SamplingModule(p: DigitalModuleProps) {
       stage={{
         fullScreen: true, // the rack's FULL SCREEN, dock inside it; the scene zooms with the step (D35, 2026-09-30)
         size: 'L', // the sampling scene is the star
-        badge:
-          'EVERY DOT IS A MEASUREMENT OF THE CONTINUOUS SIGNAL — NOT A BLOCK OF SOUND. BELOW NYQUIST THE DOTS DESCRIBE IT COMPLETELY.',
+        // S3's plain model note (phase 3, owner decision 3), not an all-caps badge.
+        modelNote: 'Each dot measures the continuous signal; below Nyquist the dots describe it fully.',
+        // SH-12 (owner 2026-11-15: "build waves 1 thru 3", D62): only while sound is off; true here, as the
+        // one listening step (HEAR THE FOLD) is tagged NEEDS SOUND and says what it would play.
+        soundOffLine: 'Sound off? Every step still works: READS AS and the red ALIAS curve show the fold you would hear.',
         onGuide: () => p.help('sample_rate'),
         bezel: [
+          // RATE, never FS (beginner audit 2026-11-14): FS means FULL SCALE on
+          // module 1 ("0.75 FS"); the sample rate is RATE, as on the dock key.
           {
-            k: 'FS',
-            v: rateMode.kind === 'abs' ? fmtHz(fs) : `${fmtHz(fs)} (${rateMode.mult}×f)`,
+            k: 'RATE', caption: 'a second',
+            ...hzCell(fs, rateMode.kind === 'abs' ? '' : ` (${rateMode.mult}×f)`),
+            vA11y: rateMode.kind === 'abs' ? fmtHz(fs) : `${fmtHz(fs)} (${rateMode.mult}×f)`,
             helpKey: 'sample_rate',
           },
-          { k: 'INPUT', v: fmtHz(f), helpKey: 'nyquist' },
-          { k: 'NYQUIST', v: fmtHz(nyq), helpKey: 'nyquist' },
-          { k: 'READS AS', v: fmtHz(alias), tint: aliased ? '#ff6b5e' : undefined, helpKey: 'aliasing' },
+          { k: 'INPUT', ...hzCell(f), vA11y: fmtHz(f), helpKey: 'nyquist' },
+          { k: 'NYQUIST', ...hzCell(nyq), vA11y: fmtHz(nyq), helpKey: 'nyquist', caption: 'top freq' },
+          { k: 'READS AS', ...hzCell(alias), vA11y: fmtHz(alias), tint: aliased ? '#ff6b5e' : undefined, helpKey: 'aliasing', caption: 'heard as' },
         ],
         render: (w, h) =>
           viz ? (
@@ -792,7 +858,7 @@ export function SamplingModule(p: DigitalModuleProps) {
     >
       <View style={{ gap: 12 }}>
         {recon && !aliased ? (
-          <Badge text="RECONSTRUCTION OF A PURE SINE IS THE SINE ITSELF — THE CURVE THROUGH THE DOTS IS EXACT BAND-LIMITED MATH, NOT SMOOTHING" />
+          <Badge text="Rebuilding a pure sine gives the sine itself: the curve through the dots is exact band-limited math, not smoothing." />
         ) : null}
         {sweepBlocked ? (
           <Text style={dstyles.caption}>
@@ -827,7 +893,7 @@ export function SamplingModule(p: DigitalModuleProps) {
           <Text style={dstyles.eyebrow}>ALIAS AUDIO — HEAR THE FOLD</Text>
           <Text style={dstyles.body}>
             Open ALIAS in the dock: play the input tone, then the alias the math predicts for it. Hold PLAY PREDICTED ALIAS
-            and ride the FREQ fader up through Nyquist — the pitch folds back down while the
+            and slide the FREQ fader up through Nyquist — the pitch folds back down while the
             input keeps rising.
           </Text>
           {!engineReady ? (
@@ -850,49 +916,54 @@ export function SamplingModule(p: DigitalModuleProps) {
               ) : null}
             </View>
           )}
-          <Badge text="SYNTHESIZED PREDICTION — THE GENERATOR PLAYS THE TONE THE MATH PREDICTS; A REAL CONVERTER WITHOUT AN ANTI-ALIAS FILTER WOULD PRODUCE IT" />
+          <Badge text="A synthesized prediction: the generator plays the tone the math predicts, which a real converter with no anti-alias filter would make." />
         </PanelCard>
 
-        <PanelCard>
-          <Text style={dstyles.eyebrow}>ANTI-ALIASING FILTER</Text>
-          <Text style={dstyles.body}>
-            A low-pass BEFORE the sampler turns down content above Nyquist so little of it can fold
-            down. Filter off: an above-Nyquist input reaches the sampler and the alias appears in the
-            sampled data above. Filter on: the input is cut before measurement, so the alias drops or
-            vanishes — how much depends on the slope. Honest cost: real signal near the cutoff is cut too.
-          </Text>
-          {/* FILTER ON/OFF, the slopes and CUTOFF are dock controls now (ALIAS
-              tray + CUTOFF key — owner rule 2026-10-10). */}
-          {viz ? (
-            <viz.AAFilterView
-              width={p.width}
-              sampleRate={fs}
-              cutoffHz={cutoffHz}
-              slopeDbOct={slope}
-              freqHz={f}
-              filterOn={filterOn}
-            />
-          ) : (
-            <VizUnavailableCard />
-          )}
-          <ReadoutGrid
-            help={p.help}
-            helpKey="aa_filter"
-            items={[
-              { k: 'CUTOFF', v: fmtHz(cutoffHz) },
-              { k: 'SLOPE', v: `${slope} dB/oct` },
-              { k: 'INPUT ATTEN', v: filterOn ? `${attenDb >= 0.05 ? `−${attenDb.toFixed(1)}` : '0.0'} dB` : '0 dB (off)' },
-            ]}
+        {/* MYTH vs REALITY starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal). */}
+        <CollapsibleSection title="MYTH vs REALITY" startOpen={false}>
+          <MythReality
+            myth="More samples per second makes the waveform smoother — 192 kHz audio has smoother curves than 48 kHz."
+            reality="Below Nyquist the samples uniquely describe ONE band-limited signal, and reconstruction returns exactly that signal — turn on RECONSTRUCTED (in the RATE tray) at 3 samples per cycle and watch the curve hug the original. A higher sample rate buys BANDWIDTH (a higher Nyquist), not smoothness."
           />
-          <Badge text="SIMPLE MODEL OF HOW THE FILTER TURNS DOWN HIGH FREQUENCIES — NOT EVERY DETAIL OF A REAL FILTER" />
-        </PanelCard>
-
-        <MythReality
-          myth="More samples per second makes the waveform smoother — 192 kHz audio has smoother curves than 48 kHz."
-          reality="Below Nyquist the samples uniquely describe ONE band-limited signal, and reconstruction returns exactly that signal — turn on RECONSTRUCTED (in the RATE tray) at 3 samples per cycle and watch the curve hug the original. A higher sample rate buys BANDWIDTH (a higher Nyquist), not smoothness."
-        />
-        <CheckQuestion spec={CHECK_ALIAS} />
-        <CheckQuestion spec={CHECK_AA} />
+        </CollapsibleSection>
+        <GoalCheck spec={CHECK_ALIAS} />
+        {/* Two lessons on one page (phase 3, owner decision 5): sampling and aliasing first, the filter that prevents it folded here. The dock keeps every control. */}
+        <CollapsibleSection title="PART 2 · THE ANTI-ALIASING FILTER" startOpen={false}>
+          <PanelCard>
+            <Text style={dstyles.eyebrow}>ANTI-ALIASING FILTER</Text>
+            <Text style={dstyles.body}>
+              A low-pass BEFORE the sampler turns down content above Nyquist so little of it can fold
+              down. Filter off: an above-Nyquist input reaches the sampler and the alias appears in the
+              sampled data above. Filter on: the input is cut before measurement, so the alias drops or
+              vanishes — how much depends on the slope. Honest cost: real signal near the cutoff is cut too.
+            </Text>
+            {/* FILTER ON/OFF, the slopes and CUTOFF are dock controls now (ALIAS
+                tray + CUTOFF key — owner rule 2026-10-10). */}
+            {viz ? (
+              <viz.AAFilterView
+                width={p.width}
+                sampleRate={fs}
+                cutoffHz={cutoffHz}
+                slopeDbOct={slope}
+                freqHz={f}
+                filterOn={filterOn}
+              />
+            ) : (
+              <VizUnavailableCard />
+            )}
+            <ReadoutGrid
+              help={p.help}
+              helpKey="aa_filter"
+              items={[
+                { k: 'CUTOFF', v: fmtHz(cutoffHz) },
+                { k: 'SLOPE', v: `${slope} dB/oct` },
+                { k: 'INPUT ATTEN', v: filterOn ? `${attenDb >= 0.05 ? `−${attenDb.toFixed(1)}` : '0.0'} dB` : '0 dB (off)' },
+              ]}
+            />
+            <Badge text="A simple model of how the filter turns down high frequencies, not every detail of a real filter." />
+          </PanelCard>
+          <GoalCheck spec={CHECK_AA} />
+        </CollapsibleSection>
         <LessonRow onPress={() => p.help()} />
       </View>
     </RackUnit>

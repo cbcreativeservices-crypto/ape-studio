@@ -223,7 +223,7 @@ export function useBoundaryStep({ onInteractive, done, prediction, source = { x:
           <Point title="AT THE SURFACE">The capsule in its intended boundary geometry: the paths are the same length, so the first notch leaves the audio band. Its usable range still depends on the surface’s size and nearby edges.</Point>
           <Point title="NOT A BOUNDARY MIC">A shotgun laid on foam on the floor is not a boundary mic. A soft mat is not a large hard surface. Footfalls and impacts can shake the surface itself.</Point>
         </Card>
-        {seen.size === HEIGHTS.length ? <Note tone="ok">{`The lower the capsule, the higher the first notch — and at the surface it is gone from the audio band. Low profile does not mean safe for athlete contact: a floor position is a safety decision too. ${predicted ? `You predicted “${predicted}”.` : ''}`}</Note> : <Body>{`Heights tried: ${seen.size} of ${HEIGHTS.length}.`}</Body>}
+        {seen.size === HEIGHTS.length ? <Note tone="ok">{`The lower the capsule, the higher the first notch — and at the surface it is gone from the audio band. Low profile does not mean safe for athlete contact: a floor position is a safety decision too. ${predicted ? `You predicted “${predicted}”.` : ''}`}</Note> : <Body>{`Heights still to try: ${HEIGHTS.length - seen.size}.`}</Body>}
       </>
     ),
   };

@@ -42,8 +42,13 @@ export type DrumSpec = {
   plies: number;
   hoop: { kind: HoopKind; t: Dim; above: Dim; below: Dim; gap: Dim };
   rods: { n: Dim; phaseDeg: Dim };
-  /** One lug per rod per head (two-piece lugs), drawn on the shell. */
-  lug: { len: Dim; out: Dim; inset: Dim };
+  /** One lug casing per rod per head, drawn on the shell: `len` its length
+   *  along the shell, `out` how far it stands off it, `inset` from the head
+   *  plane to its top (so it starts a little way down the shell, below the
+   *  hoop); `double`: ONE double-ended casing per rod position spanning the
+   *  shell from `inset` to depth − `inset` (a snare of ordinary depth), both
+   *  heads' rods running into its two ends. */
+  lug: { len: Dim; out: Dim; inset: Dim; double?: boolean };
   batter: HeadFinish;
   reso: HeadFinish | null;
   /** Snare wires under the resonant (snare-side) head. */
@@ -61,7 +66,22 @@ const tripleHoop = (t: Dim): DrumSpec['hoop'] => ({
   below: dd(14, 'how far a triple-flange hoop runs down past the head (its skirt)'),
   gap: dd(3, 'gap between the shell and the hoop'),
 });
-const twoPieceLug = (): DrumSpec['lug'] => ({ len: dd(30, 'lug length along the shell'), out: dd(24, 'how far a lug stands off the shell'), inset: dd(8, 'lug distance from the shell edge') });
+/**
+ * LUG CASINGS (owner 2026-11-23: "make the lugs on the drums longer, they are
+ * usually not that short and immediate right below the drum rims"). Drawing
+ * defaults, not maker figures: a tom or snare casing is commonly 45–65 mm
+ * long and a bass drum's 70–90 mm, mounted a little way down the shell (its
+ * top 25–60 mm below the hoop) with the tension rod running from the hoop's
+ * ear into its top; a deep drum has one row per head with bare shell between,
+ * a snare of ordinary depth one double-ended casing per rod. (They were 30 mm
+ * blocks 8 mm from the shell edge, right under the hoop.)
+ */
+const lugCasing = (len: number, inset: number, why: string, double = false): DrumSpec['lug'] => ({
+  len: dd(len, `lug casing length along the shell (${why})`),
+  out: dd(24, 'how far a lug stands off the shell'),
+  inset: dd(inset, 'from the head plane to the lug’s top: the lug starts below the hoop, a little way down the shell'),
+  ...(double ? { double: true } : {}),
+});
 
 /** The 14 × 5.5 in snare (YMH-SCB SBS-1455, YMH-TCS TMS-1455, YMH-RCS RBS-1455). */
 export const SNARE_14x55: DrumSpec = {
@@ -73,7 +93,7 @@ export const SNARE_14x55: DrumSpec = {
   plies: 6,
   hoop: tripleHoop({ mm: 2.3, prov: trial('YMH-TC', 'TT / FT : 2.3 mm — a Tour Custom tom hoop, not the snare’s own figure') }),
   rods: { n: { mm: 10, prov: src('YMH-TCS', 'Inverse DynaHoop (10 hole)') }, phaseDeg: dd(18, 'tension-rod phase on the snare') },
-  lug: twoPieceLug(),
+  lug: lugCasing(5.5 * IN - 80, 40, 'a double-ended casing spanning the shell between the hoops', true),
   batter: 'coated',
   reso: 'snareSide',
   wires: {
@@ -99,7 +119,7 @@ export const TOM_10x7: DrumSpec = {
   plies: 6,
   hoop: tripleHoop({ mm: 2.3, prov: src('YMH-TC', 'TT / FT : 2.3 mm') }),
   rods: { n: dd(6, 'rack-tom tension rods per head (the maker table is unusable, D-T2)'), phaseDeg: dd(30, 'rack-tom rod phase') },
-  lug: twoPieceLug(),
+  lug: lugCasing(45, 40, 'one row per head, bare shell between'),
   batter: 'coated',
   reso: 'clear',
 };
@@ -111,6 +131,7 @@ export const TOM_12x8: DrumSpec = {
   name: '12 × 8 in rack tom',
   d: { mm: 12 * IN, prov: src('YMH-TC', 'TMT-1208 12"×8"') },
   depth: { mm: 8 * IN, prov: trial('YMH-TC', '8 in nominal depth') },
+  lug: lugCasing(50, 45, 'one row per head, bare shell between'),
 };
 
 /** Floor tom, 16 × 16 in (TAMA-SSC "16"x16" Floor Tom"). */
@@ -121,6 +142,7 @@ export const FLOOR_16x16: DrumSpec = {
   d: { mm: 16 * IN, prov: src('TAMA-SSC', '16"x16" Floor Tom') },
   depth: { mm: 16 * IN, prov: trial('TAMA-SSC', '16 in nominal depth') },
   rods: { n: { mm: 8, prov: src('YMH-RC', 'RBF-1615 tuning bolts 8 (read per head)') }, phaseDeg: dd(22.5, 'floor-tom rod phase') },
+  lug: lugCasing(60, 55, 'one row per head, bare shell between'),
   legs: { n: dd(3, 'floor-tom leg count'), phaseDeg: dd(30, 'floor-tom leg angles'), spread: dd(120, 'how far a leg foot stands out past the shell'), r: dd(6.5, 'leg radius') },
 };
 
@@ -135,7 +157,7 @@ export const KICK_22x18: DrumSpec = {
   plies: 8,
   hoop: { kind: 'wood', t: { mm: 8, prov: trial('YMH-TC', 'BD : 8.0 mm') }, above: dd(19, 'kick hoop past the head (M01: 25 − 6)'), below: dd(6, 'kick hoop inset (M01)'), gap: dd(3, 'kick hoop gap (M01)') },
   rods: { n: { mm: 10, prov: src('YMH-RC', 'No. of Tuning Bolts 10 (per head; owner-confirmed 2026-10-04)') }, phaseDeg: dd(18, 'kick rod phase (M01)') },
-  lug: twoPieceLug(),
+  lug: lugCasing(80, 60, 'a bass drum’s longer casing, one row per head, the T-rod from the claw into its top'),
   batter: 'coated',
   reso: 'ebony',
 };

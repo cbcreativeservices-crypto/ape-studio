@@ -33,10 +33,10 @@ describe('C2 Cable Install + Cable lab: units counted without a total', () => {
     assert.match(src, /progressLine=\{`\$\{cleared\} \$\{cleared === 1 \? 'unit' : 'units'\} complete`\}/);
     assert.doesNotMatch(src, /of \$\{total\} units complete/);
   });
-  it('Cable lab tag row reads "n UNIT(S) CLEARED", label and a11y alike', () => {
+  it('Cable lab tag row reads "n LESSON(S) DONE" (the lab\'s one word since phase 3, K3 F-5), label and a11y alike', () => {
     const src = read('src/screens/lab/cable/CableLabScreen.tsx');
-    assert.match(src, /\{`\$\{cleared\} \$\{cleared === 1 \? 'UNIT' : 'UNITS'\} CLEARED`\}/);
-    assert.match(src, /accessibilityLabel=\{`\$\{cleared\} lab \$\{cleared === 1 \? 'unit' : 'units'\} cleared`\}/);
+    assert.match(src, /\{`\$\{lessonsDone\} \$\{lessonsDone === 1 \? 'LESSON' : 'LESSONS'\} DONE`\}/);
+    assert.match(src, /accessibilityLabel=\{`\$\{lessonsDone\} \$\{lessonsDone === 1 \? 'lesson' : 'lessons'\} done`\}/);
     assert.doesNotMatch(src, /\$\{cleared\}\/\$\{total\} UNITS/);
     assert.doesNotMatch(src, /of \$\{total\} lab units/);
   });

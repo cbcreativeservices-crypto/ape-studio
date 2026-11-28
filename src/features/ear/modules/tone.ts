@@ -296,7 +296,8 @@ export const M3_BAND: EarModule = {
   // NEW COPY
   listenFor: 'Name the region, not a number: boom (Bass), mud (Low Mid), honk (Mid), bite (Upper Mid), edge (Presence), sparkle (Brilliance).',
   levels: 4,
-  levelNames: ['±12 dB, 4 coarse bands', '±9 dB, all 8 bands', '±6 dB, all 8', '±4 dB, exact only'],
+  // Plain words, no ± (owner 2026-11-15, D62 ET-03); the trials are unchanged.
+  levelNames: ['12 dB up or down, 4 broad bands', '9 dB up or down, all 8 bands', '6 dB up or down, all 8', '4 dB up or down, exact band only'],
   hasSubBassTrials: true,
   realSources: true,
   makeTrial: (level, seed, opts) => {

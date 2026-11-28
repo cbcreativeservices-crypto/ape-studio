@@ -43,6 +43,29 @@ import { fonts } from '../../../theme/tokens';
 import { rampColors } from '../../../features/tools/levelColor';
 import { useStageTextScale } from '../rack/stageAspect';
 import { SText } from '../stageScale';
+import {
+  CHAIN_SAMPLE_DT,
+  CHAIN_SPAN,
+  GAIN_NOISE_STEPS,
+  GAIN_SPAN,
+  HEADROOM_SPAN,
+  SH_DT,
+  SH_RELEASE,
+  SH_SPAN,
+  chainAmped,
+  chainRaw,
+  chainSmooth,
+  chainSnap,
+  gainAnalog,
+  gainNoise,
+  gainSignal,
+  headroomAt,
+  heldSegments,
+  rigidTrace,
+  sampleInstants,
+  shCode,
+  thetaAtU,
+} from './timeBase';
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 
 const BG = '#0c0c0f';
@@ -302,8 +325,8 @@ function buildGlyph(key: AdcBlockKey): { line: SkPathT; accent: SkPathT; fill: S
 /**
  * AdcChainView — the Module 5 hero: MIC → PREAMP → AA FILTER → S&H →
  * QUANTIZER → ENCODER → PCM as illustrated tiles on a signal path, with an
- * energy pulse riding the path and the waveform glyph morphing per stage
- * above it. Tiles are tappable (amber ring = selected); X-RAY adds the S&H
+ * energy pulse riding the path and, above each tile, the same stretch of
+ * signal as that stage leaves it (one time base: it travels, never reshapes). Tiles are tappable (amber ring = selected); X-RAY adds the S&H
  * hold windows, the quantizer's level rungs and the encoder's binary framing
  * drawn along the path.
  */
@@ -360,7 +383,13 @@ export function AdcChainView({
     return p;
   }, [tiles, w, pathY]);
 
-  // ── The morphing waveform strip (per-frame worklets on the phase clock) ────
+  // ── The per-stage waveform strip (per-frame worklets on the phase clock) ───
+  // ONE signal on ONE time base (timeBase.ts): every tile shows the same
+  // window of signal time, newest at the right, so a stretch keeps its shape
+  // as it travels left (owner 2026-11-22: "Once a wave form has happend, it
+  // should not become some other waveform later in time"). It used to add a
+  // second partial at phase × 1.6, and to hold samples at FIXED glass
+  // positions while the wave slid under them, so the shapes kept changing.
   const buildStrip = (kinds: WaveKind[]) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks -- called a fixed 3× per render
     return useDerivedValue(() => {
@@ -370,56 +399,45 @@ export function AdcChainView({
         if (!kinds.includes(t.wave)) continue;
         const x0 = t.x + 2;
         const sw2 = t.w - 4;
-        const N = 22;
-        if (t.wave === 'bits') {
-          const cellN = 6;
-          const step = sw2 / cellN;
-          let prevY = 0;
-          for (let i = 0; i < cellN; i++) {
-            const bit = hash01(i + Math.floor(ph * 0.6) * 7) > 0.5;
-            const y = stripMid + (bit ? -1 : 1) * stripAmp * 0.62;
-            const xa = x0 + i * step;
+        if (t.wave === 'stream') {
+          // handled by the fill strip below (cells); draw the carrier line
+          p.moveTo(x0, stripMid);
+          p.lineTo(x0 + sw2, stripMid);
+        } else if (t.wave === 'held' || t.wave === 'snap' || t.wave === 'bits') {
+          // Held values on the fixed sample grid (bits: one cell per word),
+          // drawn as a staircase that travels with the wave.
+          const kind = t.wave;
+          const segs = heldSegments(
+            ph,
+            CHAIN_SPAN,
+            1,
+            kind === 'bits' ? CHAIN_SPAN / 6 : CHAIN_SAMPLE_DT,
+            (k, th) => (kind === 'bits' ? (hash01(k * 7.3 + 1.1) > 0.5 ? 0.62 : -0.62) : kind === 'snap' ? chainSnap(chainSmooth(th)) : chainSmooth(th)),
+            0,
+          );
+          let prevY = stripMid;
+          for (let i = 0; i < segs.length; i += 4) {
+            const xa = x0 + segs[i] * sw2;
+            const xb = x0 + segs[i + 1] * sw2;
+            const y = stripMid - segs[i + 2] * stripAmp;
             if (i === 0) p.moveTo(xa, y);
             else {
               p.lineTo(xa, prevY);
               p.lineTo(xa, y);
             }
-            p.lineTo(xa + step, y);
+            p.lineTo(xb, y);
             prevY = y;
           }
-        } else if (t.wave === 'stream') {
-          // handled by the fill strip below (cells); draw the carrier line
-          p.moveTo(x0, stripMid);
-          p.lineTo(x0 + sw2, stripMid);
         } else {
-          let prevY = stripMid;
-          for (let i = 0; i <= N; i++) {
-            const u = i / N;
-            let v = 0;
-            if (t.wave === 'raw') {
-              v = 0.62 * Math.sin(Math.PI * 2 * 2.1 * u + ph) + 0.28 * Math.sin(Math.PI * 2 * 5.3 * u + 1.3 + ph * 1.6);
-              v *= 0.55;
-            } else if (t.wave === 'amped') {
-              const r = 0.62 * Math.sin(Math.PI * 2 * 2.1 * u + ph) + 0.28 * Math.sin(Math.PI * 2 * 5.3 * u + 1.3 + ph * 1.6);
-              v = Math.tanh(1.5 * r);
-            } else if (t.wave === 'smooth') {
-              v = 0.85 * Math.sin(Math.PI * 2 * 2.1 * u + ph);
-            } else if (t.wave === 'held') {
-              const uq = Math.floor(u * 7) / 7;
-              v = 0.85 * Math.sin(Math.PI * 2 * 2.1 * uq + ph);
-            } else if (t.wave === 'snap') {
-              const uq = Math.floor(u * 7) / 7;
-              v = Math.round(0.85 * Math.sin(Math.PI * 2 * 2.1 * uq + ph) * 2) / 2;
-            }
-            const x = x0 + u * sw2;
-            const y = stripMid - v * stripAmp;
+          const kind = t.wave;
+          const pts = rigidTrace(ph, CHAIN_SPAN, 1, CHAIN_SPAN / 22, (_j, th) =>
+            kind === 'raw' ? chainRaw(th) : kind === 'amped' ? chainAmped(th) : chainSmooth(th),
+          );
+          for (let i = 0; i < pts.length; i += 2) {
+            const x = x0 + pts[i] * sw2;
+            const y = stripMid - pts[i + 1] * stripAmp;
             if (i === 0) p.moveTo(x, y);
-            else if (t.wave === 'held' || t.wave === 'snap') {
-              // staircase: horizontal run to x at the held level, then jump
-              p.lineTo(x, prevY);
-              p.lineTo(x, y);
-            } else p.lineTo(x, y);
-            prevY = y;
+            else p.lineTo(x, y);
           }
         }
       }
@@ -533,7 +551,7 @@ export function AdcChainView({
       <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
         {/* Signal path + traveling energy pulse */}
         <Path path={connectors} color={GRID} style="stroke" strokeWidth={1.6 * sw} />
-        {/* Morphing waveform glyph riding above the path */}
+        {/* The signal's form at each stage, riding above the path */}
         <GlowStroke path={waveBlue} color={BLUE} width={1.7 * sw} />
         <GlowStroke path={waveAmber} color={AMBER} width={1.7 * sw} />
         <Path path={waveGreen} color={withAlpha(GREEN, 0.55)} style="stroke" strokeWidth={1.2 * sw} />
@@ -656,28 +674,35 @@ export function SampleHoldView({
   const mid = (top + bot) / 2;
   const amp = (bot - top) / 2 - 6;
   const plotW = w - PL - PR;
-  const TICKS = 9;
-  const T = plotW / TICKS;
   const sw = Math.max(1, w / 380);
 
-  const grid = useMemo(() => {
+  // ONE time base (timeBase.ts, owner 2026-11-22: "Once a wave form has
+  // happend, it should not become some other waveform later in time"): the
+  // newest signal enters at the RIGHT edge and travels left. The clock ticks
+  // are moments in signal time (θ_k = k·SH_DT), so they travel with the wave;
+  // each held step and each released code belongs to ITS tick. They used to
+  // sit at fixed glass positions and jump to a newly measured sine on every
+  // tick, so a step already drawn changed value.
+  const frame = useMemo(() => {
     const p = Skia.Path.Make();
-    for (let i = 0; i <= TICKS; i++) {
-      const x = PL + i * T;
+    p.moveTo(PL, mid);
+    p.lineTo(PL + plotW, mid);
+    return p;
+  }, [mid, plotW]);
+
+  /** The sample clock's ticks (one per sample instant), travelling with the wave. */
+  const grid = useDerivedValue(() => {
+    const ticks = sampleInstants(phase.value, SH_SPAN, 1, SH_DT);
+    const p = Skia.Path.Make();
+    for (let i = 0; i < ticks.length; i += 3) {
+      const x = PL + ticks[i] * plotW;
       p.moveTo(x, bot);
       p.lineTo(x, bot + 5);
       p.moveTo(x, top);
       p.lineTo(x, bot);
     }
-    p.moveTo(PL, mid);
-    p.lineTo(PL + plotW, mid);
     return p;
-  }, [T, bot, top, mid, plotW]);
-
-  const sigAt = (x: number, ph: number) => {
-    'worklet';
-    return Math.sin(((x - PL) / plotW) * Math.PI * 2 * 1.45 + ph);
-  };
+  }, [phase, plotW, top, bot]);
 
   /** Input: the continuous analog sine, scrolling on the phase clock. */
   const inputPath = useDerivedValue(() => {
@@ -685,53 +710,49 @@ export function SampleHoldView({
     const p = Skia.Path.Make();
     const N = 90;
     for (let i = 0; i <= N; i++) {
-      const x = PL + (i / N) * plotW;
-      const y = mid - sigAt(x, ph) * amp;
-      if (i === 0) p.moveTo(x, y);
-      else p.lineTo(x, y);
+      const u = i / N;
+      const y = mid - Math.sin(thetaAtU(u, ph, SH_SPAN, 1)) * amp;
+      if (i === 0) p.moveTo(PL + u * plotW, y);
+      else p.lineTo(PL + u * plotW, y);
     }
     return p;
   }, [phase, plotW, mid, amp]);
 
-  /** Held: flat segments frozen at the LAST clock event (staircase). */
+  /** Held: each tick's voltage, frozen until the next tick (staircase). */
   const heldPath = useDerivedValue(() => {
-    const ph = phase.value;
-    const evPerRev = TICKS;
-    const phQ = (Math.floor((ph / (2 * Math.PI)) * evPerRev) / evPerRev) * 2 * Math.PI;
+    const segs = heldSegments(phase.value, SH_SPAN, 1, SH_DT, (_k, th) => Math.sin(th), 0);
     const p = Skia.Path.Make();
-    for (let i = 0; i < TICKS; i++) {
-      const x = PL + i * T;
-      const y = mid - sigAt(x, phQ) * amp;
-      p.moveTo(x, y);
-      p.lineTo(x + T, y);
-      if (i < TICKS - 1) {
-        const yn = mid - sigAt(x + T, phQ) * amp;
-        p.lineTo(x + T, yn);
+    let prevY = mid;
+    for (let i = 0; i < segs.length; i += 4) {
+      const xa = PL + segs[i] * plotW;
+      const y = mid - segs[i + 2] * amp;
+      if (i === 0) p.moveTo(xa, y);
+      else {
+        p.lineTo(xa, prevY);
+        p.lineTo(xa, y);
       }
+      p.lineTo(PL + segs[i + 1] * plotW, y);
+      prevY = y;
     }
     return p;
-  }, [phase, T, mid, amp]);
+  }, [phase, plotW, mid, amp]);
 
-  /** Code out: quantized to 8 levels, released a quarter-period later. */
+  /** Code out: that tick's held value rounded to 8 levels, released 0.3 tick later. */
   const codePath = useDerivedValue(() => {
-    const ph = phase.value;
-    const evPerRev = TICKS;
-    const phC = (Math.floor((ph / (2 * Math.PI)) * evPerRev - 0.3) / evPerRev) * 2 * Math.PI;
+    const segs = heldSegments(phase.value, SH_SPAN, 1, SH_DT, (_k, th) => shCode(Math.sin(th)), SH_RELEASE);
     const p = Skia.Path.Make();
-    for (let i = 0; i < TICKS; i++) {
-      const x = PL + i * T;
-      const v = Math.round(sigAt(x, phC) * 3.5) / 3.5;
-      const y = mid - v * amp;
-      p.moveTo(x + T * 0.3, y);
-      p.lineTo(x + T, y);
+    for (let i = 0; i < segs.length; i += 4) {
+      const y = mid - segs[i + 2] * amp;
+      p.moveTo(PL + segs[i] * plotW, y);
+      p.lineTo(PL + segs[i + 1] * plotW, y);
     }
     return p;
-  }, [phase, T, mid, amp]);
+  }, [phase, plotW, mid, amp]);
 
-  /** The switch: snaps closed at each clock event, open while holding. */
+  /** The switch: closed for an instant as each tick reaches "now" (the right edge). */
   const switchPath = useDerivedValue(() => {
     const ph = phase.value;
-    const local = fract((ph / (2 * Math.PI)) * TICKS);
+    const local = fract(ph / SH_DT);
     const closed = local < 0.18;
     const p = Skia.Path.Make();
     const x0 = PL + 6;
@@ -752,6 +773,7 @@ export function SampleHoldView({
     <View style={{ width: w, height: h }}>
       <Canvas style={{ position: 'absolute', width: w, height: h, backgroundColor: BG }}>
         <Path path={grid} color={GHOST} style="stroke" strokeWidth={1} />
+        <Path path={frame} color={GHOST} style="stroke" strokeWidth={1} />
         <GlowStroke path={inputPath} color={BLUE} width={1.8 * sw} />
         <GlowStroke path={heldPath} color={AMBER} width={2 * sw} />
         <Path path={codePath} color={GREEN} style="stroke" strokeWidth={1.6 * sw} strokeCap="round" />
@@ -887,24 +909,25 @@ export function GainStagingView({
     return p;
   }, [mid, half, plotR]);
 
-  const sigAt = (u: number, ph: number) => {
-    'worklet';
-    return 0.72 * Math.sin(Math.PI * 2 * 2.2 * u + ph) + 0.28 * Math.sin(Math.PI * 2 * 5.8 * u + 1.1 + ph * 1.5);
-  };
+  // ONE program signal on ONE time base (timeBase.ts): gainSignal(θ), newest
+  // at the right edge, travelling left; every vertex sits on a fixed grid of
+  // signal time, so a stretch keeps its shape until it leaves the glass
+  // (owner 2026-11-22: "Once a wave form has happend, it should not become
+  // some other waveform later in time"). It used to add a partial riding
+  // phase × 1.5 against one riding phase, and re-seed the noise every third
+  // of a radian, so the drawn shape kept changing. INPUT re-processes the
+  // whole window (what this stage does to this signal). The signal's true
+  // peak is 1, so PEAK and the DIG / ANLG meters are the drawn wave's peak.
+  const GRID_DT = GAIN_SPAN / 120;
 
   /** Recorded (post analog-saturation, post digital clamp) waveform. */
   const wavePath = useDerivedValue(() => {
-    const ph = phase.value;
     const g = Math.pow(10, driveDb / 20);
+    const pts = rigidTrace(phase.value, GAIN_SPAN, 1, GRID_DT, (_j, th) => Math.max(-1, Math.min(1, gainAnalog(gainSignal(th), g, rail))));
     const p = Skia.Path.Make();
-    const N = 120;
-    for (let i = 0; i <= N; i++) {
-      const u = i / N;
-      const s = sigAt(u, ph);
-      const ya = rail * Math.tanh((g * s) / rail);
-      const yd = Math.max(-1, Math.min(1, ya));
-      const x = PL + u * plotW;
-      const y = yOfLin(yd);
+    for (let i = 0; i < pts.length; i += 2) {
+      const x = PL + pts[i] * plotW;
+      const y = yOfLin(pts[i + 1]);
       if (i === 0) p.moveTo(x, y);
       else p.lineTo(x, y);
     }
@@ -913,34 +936,28 @@ export function GainStagingView({
 
   /** Ghost of the un-clipped signal — what the flattened peaks used to be. */
   const ghostPath = useDerivedValue(() => {
-    const ph = phase.value;
     const g = Math.pow(10, driveDb / 20);
     const p = Skia.Path.Make();
     if (driveDb <= GAIN_MODEL.analogClipDb) return p;
-    const N = 120;
-    for (let i = 0; i <= N; i++) {
-      const u = i / N;
-      const s = sigAt(u, ph);
-      const x = PL + u * plotW;
-      const y = yOfLin(Math.max(-rail * 1.03, Math.min(rail * 1.03, g * s)));
+    const pts = rigidTrace(phase.value, GAIN_SPAN, 1, GRID_DT, (_j, th) => Math.max(-rail * 1.03, Math.min(rail * 1.03, g * gainSignal(th))));
+    for (let i = 0; i < pts.length; i += 2) {
+      const x = PL + pts[i] * plotW;
+      const y = yOfLin(pts[i + 1]);
       if (i === 0) p.moveTo(x, y);
       else p.lineTo(x, y);
     }
     return p;
   }, [phase, driveDb, plotW, mid, half]);
 
-  /** Red overlay on the digitally flattened segments. */
+  /** Red overlay on the digitally flattened segments (same vertices as the wave). */
   const clipPath = useDerivedValue(() => {
-    const ph = phase.value;
     const g = Math.pow(10, driveDb / 20);
+    const pts = rigidTrace(phase.value, GAIN_SPAN, 1, GRID_DT, (_j, th) => gainAnalog(gainSignal(th), g, rail));
     const p = Skia.Path.Make();
-    const N = 120;
     let inSeg = false;
-    for (let i = 0; i <= N; i++) {
-      const u = i / N;
-      const s = sigAt(u, ph);
-      const ya = rail * Math.tanh((g * s) / rail);
-      const x = PL + u * plotW;
+    for (let i = 0; i < pts.length; i += 2) {
+      const ya = pts[i + 1];
+      const x = PL + pts[i] * plotW;
       if (Math.abs(ya) >= 0.998) {
         const y = yOfLin(Math.sign(ya));
         if (!inSeg) {
@@ -952,16 +969,14 @@ export function GainStagingView({
     return p;
   }, [phase, driveDb, plotW, mid, half]);
 
-  /** Analog noise floor — drawn (exaggerated) fuzz band around zero. */
+  /** Analog noise floor — drawn (exaggerated) fuzz band around zero; each
+   *  grid point keeps its own value as it travels (never re-seeded). */
   const noisePath = useDerivedValue(() => {
-    const ph = phase.value;
+    const pts = rigidTrace(phase.value, GAIN_SPAN, 1, GAIN_SPAN / GAIN_NOISE_STEPS, (j) => gainNoise(j));
     const p = Skia.Path.Make();
-    const N = 90;
-    const seed = Math.floor(ph * 3);
-    for (let i = 0; i <= N; i++) {
-      const u = i / N;
-      const x = PL + u * plotW;
-      const y = mid + (hash01(i * 1.7 + seed * 13.1) * 2 - 1) * 5;
+    for (let i = 0; i < pts.length; i += 2) {
+      const x = PL + pts[i] * plotW;
+      const y = mid + pts[i + 1] * 5;
       if (i === 0) p.moveTo(x, y);
       else p.lineTo(x, y);
     }
@@ -1325,23 +1340,25 @@ export function FloatHeadroomView({
     trimSv.value = withTiming(trim ? 1 : 0, { duration: 750, easing: Easing.inOut(Easing.cubic) });
   }, [trim, trimSv]);
 
-  const sigAt = (u: number, ph: number) => {
-    'worklet';
-    return 0.62 * Math.sin(Math.PI * 2 * 1.8 * u + ph) + 0.38 * Math.sin(Math.PI * 2 * 3.4 * u + 2.1 + ph * 1.4);
-  };
+  // ONE bus signal on ONE time base (timeBase.ts) for BOTH panes: the same
+  // signal time sits at the same u in each, so the fixed pane's flat tops are
+  // exactly where the float pane's peaks cross full scale, and a stretch keeps
+  // its shape as it travels left (owner 2026-11-22: "Once a wave form has
+  // happend, it should not become some other waveform later in time"). It
+  // used to add a partial riding phase × 1.4 against one riding phase. GAIN
+  // and TRIM re-process the whole window. The signal's true peak is 1, so the
+  // bus peak is −6 dBFS + GAIN, as FLOAT BUS reads.
+  const GRID_DT = HEADROOM_SPAN / 74;
 
   /** Float bus: intact wave (gain, then animated trim — restores perfectly). */
   const floatPath = useDerivedValue(() => {
-    const ph = phase.value;
     const gLin = Math.pow(10, gainDb / 20);
     const tLin = Math.pow(10, (-gainDb * trimSv.value) / 20);
+    const pts = rigidTrace(phase.value, HEADROOM_SPAN, 1, GRID_DT, (_j, th) => headroomAt(th, gLin, tLin).float);
     const p = Skia.Path.Make();
-    const N = 74;
-    for (let i = 0; i <= N; i++) {
-      const u = i / N;
-      const v = 0.5 * sigAt(u, ph) * gLin * tLin;
-      const x = x0 + u * paneW;
-      const y = mid - (v / DISP) * half;
+    for (let i = 0; i < pts.length; i += 2) {
+      const x = x0 + pts[i] * paneW;
+      const y = mid - (pts[i + 1] / DISP) * half;
       if (i === 0) p.moveTo(x, y);
       else p.lineTo(x, y);
     }
@@ -1350,16 +1367,13 @@ export function FloatHeadroomView({
 
   /** Fixed render: clamped at full scale FIRST, then trimmed — still flat. */
   const fixedPath = useDerivedValue(() => {
-    const ph = phase.value;
     const gLin = Math.pow(10, gainDb / 20);
     const tLin = Math.pow(10, (-gainDb * trimSv.value) / 20);
+    const pts = rigidTrace(phase.value, HEADROOM_SPAN, 1, GRID_DT, (_j, th) => headroomAt(th, gLin, tLin).fixed);
     const p = Skia.Path.Make();
-    const N = 74;
-    for (let i = 0; i <= N; i++) {
-      const u = i / N;
-      const v = Math.max(-1, Math.min(1, 0.5 * sigAt(u, ph) * gLin)) * tLin;
-      const x = x1 + u * paneW;
-      const y = mid - (v / DISP) * half;
+    for (let i = 0; i < pts.length; i += 2) {
+      const x = x1 + pts[i] * paneW;
+      const y = mid - (pts[i + 1] / DISP) * half;
       if (i === 0) p.moveTo(x, y);
       else p.lineTo(x, y);
     }
@@ -1368,16 +1382,15 @@ export function FloatHeadroomView({
 
   /** The fixed pane's flattened segments, highlighted red (persist post-trim). */
   const fixedClip = useDerivedValue(() => {
-    const ph = phase.value;
     const gLin = Math.pow(10, gainDb / 20);
     const tLin = Math.pow(10, (-gainDb * trimSv.value) / 20);
+    // The untrimmed bus value at each vertex: over full scale = flattened.
+    const pts = rigidTrace(phase.value, HEADROOM_SPAN, 1, GRID_DT, (_j, th) => headroomAt(th, gLin, 1).float);
     const p = Skia.Path.Make();
-    const N = 74;
     let inSeg = false;
-    for (let i = 0; i <= N; i++) {
-      const u = i / N;
-      const raw = 0.5 * sigAt(u, ph) * gLin;
-      const x = x1 + u * paneW;
+    for (let i = 0; i < pts.length; i += 2) {
+      const raw = pts[i + 1];
+      const x = x1 + pts[i] * paneW;
       if (Math.abs(raw) > 1) {
         const y = mid - ((Math.sign(raw) * tLin) / DISP) * half;
         if (!inSeg) {

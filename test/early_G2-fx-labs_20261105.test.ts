@@ -93,7 +93,8 @@ describe('2 + 5. Stereo Imaging Lab: BASS-MONO and PAN are said and shown', () =
   });
   it('the setting reaches the bezel and the stage', () => {
     const c = configOf('stereoConfig');
-    assert.match(c, /\{ k: 'BASS', paramId: P\.bassMonoHz \}/);
+    // Phase 2, lab fix round (owner 2026-11-14): a bezel cell may carry its first-visit caption.
+    assert.match(c, /\{ k: 'BASS', paramId: P\.bassMonoHz(?:, caption: '[^']*')? \}/);
     assert.match(c, /bassMonoHz: v\[P\.bassMonoHz\],/);
     assert.match(ANIM, /bassMonoHz=\{model\.bassMonoHz\}/);
     assert.match(ANIM, /const bassOn = flavor === 'width' && bassMonoHz > 0;/);
@@ -120,14 +121,16 @@ describe('3. Compression and Limiter: a steady source points at CLICK', () => {
     assert.doesNotMatch(hit('compressor', 0), /TRY CLICK/);
   });
   it('the words under the display name the transient, keyed on the real source labels', () => {
-    for (const [name, control] of [['compConfig', 'ATK/REL'], ['limiterConfig', 'RLS']] as const) {
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item CMP-02): the Compression key is SPEED.
+    for (const [name, control] of [['compConfig', 'SPEED'], ['limiterConfig', 'RLS']] as const) {
       const c = configOf(name);
       for (const label of ['SINE 440 Hz', 'PINK NOISE']) {
         const line = c.match(new RegExp(`'${label}': '([^']+)'`))?.[1];
         assert.ok(line, `${name} ${label}`);
         assert.ok(line.includes(control), line);
         assert.match(line, /transient/);
-        assert.match(line, /CLICK 120/);
+        // owner 2026-11-25, click tempo: "the CLICK" (its label follows the tempo the student sets), not "CLICK 120".
+        assert.match(line, /[Cc]hoose the CLICK\./);
       }
       // `SINE ${hz} Hz` is what the screen looks the caption up by.
       assert.match(c, /sources: \[.*srcSine\(440\)/);
@@ -136,7 +139,8 @@ describe('3. Compression and Limiter: a steady source points at CLICK', () => {
   });
   it('the source orders stay as recorded', () => {
     assert.match(configOf('compConfig'), /sources: \[srcClick\(120\), srcSine\(440\), SRC_PINK\]/);
-    assert.match(configOf('limiterConfig'), /sources: \[srcSine\(440\), srcClick\(120\), SRC_PINK\]/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item LIM-05): the Limiter now opens on CLICK 120.
+    assert.match(configOf('limiterConfig'), /sources: \[srcClick\(120\), srcSine\(440\), SRC_PINK\]/);
   });
 });
 

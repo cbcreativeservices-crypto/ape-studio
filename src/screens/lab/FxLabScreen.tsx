@@ -18,6 +18,10 @@
  *           params as STICKY option trays (A/B while the glass reacts) + the
  *           shared SOURCE tray. Configs with >4 params fold 2–3 interacting
  *           ones into a single group tray so the dock stays ≤5 keys.
+ *           While the source is a CLICK, the SOURCE key is the house
+ *           chooser-fader (owner 2026-11-25, click tempo, D85): tap = the same
+ *           source tray, closing it hands the lane to the CLICK's tempo
+ *           (30–240 BPM, − / + = 1 BPM, double-tap = the lab's own tempo).
  *   WELL  — teaching prose only: the static analytic hero (which ALWAYS
  *           renders — it is the response-curve source of truth), the dynamic
  *           caption, and the audio-path / honest engine notes.
@@ -58,20 +62,40 @@ import { GrLadder, GrMeter } from '../../features/lab/fxViz';
 import { EngineGate } from '../tools/EngineGate';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import { colors, fonts } from '../../theme/tokens';
-import { HeaderPlayButton, LabChip, LabShell, type LabMode } from './LabShell';
+import { CollapsibleSection, HeaderPlayButton, LabChip, LabShell, type LabMode } from './LabShell';
 import { LabCheckEnd } from './kit/LabCheckEnd';
 import { STEREO_END_GUIDE } from './stereoScreenGuides';
+import { useSoundOff } from './rack/silentPath';
 import type { ScreenGuide } from '../../features/lab/screenGuide';
 import { skiaAvailable } from './foundations/skiaGate';
 import { CheckQuestion, type CheckSpec } from './foundations/bits';
 import type { BezelItem, DockParam } from './rack/rackTypes';
 import { StageAspectReport, StageInFullScreen, useStageTextScale } from './rack/stageAspect';
+import { ModelNote } from './rack/ModelNote';
 import type { FxAnimModel } from './fxAnim';
 import { useStopOnAudioMute } from '../../features/audio/useStopOnAudioMute';
 import { useStopWhenSilenced } from '../../features/audio/useStopWhenSilenced';
 import { useStopOnClose } from '../../features/audio/useStopOnBlur';
+import {
+  clampClickBpm,
+  clickTempoBlurb,
+  clickTempoFromPos,
+  clickTempoPos,
+  clickTempoRange,
+  clickTempoReadout,
+  clickTempoShort,
+  clickTempoSteps,
+  liveClickSource,
+  clickPeriodMs,
+  anchorAtStart,
+  anchorAfterTempoWrite,
+  GEN_RETRIGGER_DIP_MS,
+  type ClickAnchor,
+} from './fxClickTempo';
 
 const GEN_LEVEL_DB = -20;
+/** A bezel value the current settings ignore (ignoredBy) — EQ Lab module 6's gray. */
+const IGNORED_TINT = '#7a7f8a';
 const ACTIVITY_MS = 500;
 // 20 Hz (owner 2026-09-11, gear design pass). Was 100 ms / 10 Hz, which is
 // thin for a meter whose whole purpose is showing HOW FAST a processor grabs.
@@ -107,6 +131,51 @@ function requireFxAnim(): FxAnimModule | null {
  *  Plain words (art grading 2026-10-16: "EXACT JS MIRROR OF THE DSP MATH"
  *  was programmer jargon on a learner's screen). */
 const ANIM_BADGE = 'TEACHING MODEL · DRAWN FROM THE SAME MATH AS THE AUDIO · NOT A MEASUREMENT';
+
+/**
+ * The line under a dynamics lab's GAIN REDUCTION meter (lab fix round
+ * 2026-11-14, report §7 + pattern 10). One GR truth: it says which number is
+ * measured (the GR readout and this meter, only while ▶ plays) and which is
+ * drawn (the compressor drawing's GR PEAK, worked out from the settings). It
+ * never tells a learner to "update the app" — the developer line it replaced.
+ */
+function grMeterCaption(
+  running: boolean,
+  fxReady: boolean,
+  kind: 'comp' | 'gate' | 'limiter',
+  soundOff = false,
+  /** The GR cell is showing the MODEL value right now (sound off + a steady
+   *  source: BezelItem.silent swaps it in). The words must say the same. */
+  modelShown = false,
+): string {
+  if (running) return 'Measured from the live audio — watch how fast it grabs and how it lets go.';
+  const drawn = kind === 'comp' ? ' On CLICK, the GR PEAK in the drawing is worked out from your settings, so it shows even while stopped.' : '';
+  const measure = fxReady
+    ? ' With sound on, ▶ measures the real one here.'
+    : Platform.OS === 'web'
+      ? ' In the phone app, with sound on, ▶ measures the real one.'
+      : '';
+  // Sound off (phase 2, S3; checker C4 FAIL-1): the words follow what the GR
+  // cell shows in EVERY state — MODEL on a steady tone, "— dB" otherwise.
+  if (soundOff && modelShown) {
+    return `Sound is off, so nothing is measured: on this steady tone the GR readout shows MODEL, the reduction your settings are designed to give.${measure}`;
+  }
+  if (soundOff) {
+    return `Sound is off, so nothing is measured and GR reads — dB: a click or noise has no steady level to model.${measure}${drawn}`;
+  }
+  if (fxReady) {
+    return `Tap ▶ to measure the real reduction: this meter and the GR readout on the display then follow the live audio. Stopped, GR reads — dB.${drawn}`;
+  }
+  return Platform.OS === 'web'
+    ? `On the web the effect audio can’t play, so nothing is measured here and GR reads — dB. In the phone app, ▶ plays the source and this meter shows the real reduction.${drawn}`
+    : `The effect audio can’t play on this device, so nothing is measured here and GR reads — dB. The drawing and the lessons still work.${drawn}`;
+}
+
+/** "STEREO IMAGING LAB" → "Stereo Imaging Lab": the end layer names the lab
+ *  as the learner reads it (LabCheckEnd `labTitle`). */
+function labTitleWords(title: string): string {
+  return title.toLowerCase().replace(/(^|\s)([a-z])/g, (_m, sp: string, c: string) => sp + c.toUpperCase());
+}
 
 /** The SOURCE_LESSON control key for a generator source, from its mode. */
 function sourceKeyForGen(gen: GenParams): string {
@@ -151,6 +220,11 @@ export type FxFaderSpec = {
    *  inventing a home for a delay time would teach a relationship that does
    *  not exist. */
   home?: number;
+  /** How many equal steps the lane has (rack `DockParam.steps`): the lane's
+   *  − / + keys then move exactly one step per tap. Phase's DELAY R: 100
+   *  steps of 0.1 ms over 0–10 ms, so the 1.1 ms and 2.3 ms the steps quote
+   *  can be set exactly (owner 2026-11-15: "build waves 1 thru 3", D62 PH-06). */
+  steps?: number;
 };
 
 export type FxParamSpec = {
@@ -161,6 +235,10 @@ export type FxParamSpec = {
   paramId: number;
   /** Guided-lesson control key (content.ts) — omitted = opens the lab lesson. */
   lessonKey?: string;
+  /** A few plain words after the section head inside a GROUP tray, on the same
+   *  line ("ATTACK · how fast it grabs"; owner 2026-11-15: "build waves 1 thru
+   *  3", D62 CMP-02). No new element: it rides inside the head's Text. */
+  hint?: string;
   /** Per-choice tray blurb (owner 2026-08-28) — author for CONCEPTUAL choices
    *  (filter types, modes); numeric teaching values stay label-only. */
   choices: { label: string; value: number; blurb?: string }[];
@@ -192,6 +270,10 @@ export type FxSourceSpec = {
    *  engine 10): L == R, so the side is zero — the hero draws it that way
    *  ("nothing to widen") instead of the stereo test tone. */
   monoCompare?: boolean;
+  /** Set by liveClickSource on a CLICK whose tempo the student moved: the
+   *  lab's opening tempo, so a drawing scales its window by opening ÷ live
+   *  and keeps step with the sound (owner 2026-11-25). */
+  clickOpenBpm?: number;
 };
 
 /** Every generator write from an effect lab: the lab level, the stereo spread
@@ -202,12 +284,22 @@ function genParamsFor(src: FxSourceSpec): GenParams {
   return { levelDb: GEN_LEVEL_DB, stereoSpreadRad: 0, ...src.gen };
 }
 
+/** The lab's own tempo for a CLICK source, or undefined for any other source
+ *  (owner 2026-11-25, click tempo). */
+function clickPresetOf(src: FxSourceSpec | undefined): number | undefined {
+  return src?.gen.mode === GEN_MODES.click ? clampClickBpm(src.gen.clickBpm) : undefined;
+}
+
 export type FxLabConfig = {
   labId: LabId;
   /** Screen Guide (owner 2026-10-31): the ⓘ per tab (explore / learn / check). */
   guide?: (mode: LabMode) => ScreenGuide | undefined;
   /** false = a concept lab: the ⓘ takes the accuracy chip's spot (chip rule, D37). */
   accuracy?: boolean;
+  /** The silent learner's line (lab fix round 1, 2026-11-14, row 3; rack
+   *  `RackStage.soundOffLine`): shown at the top of the well while sound is
+   *  off. Only where the picture really shows what the ear would hear. */
+  soundOffLine?: boolean | string;
   /** fx::Id of this lab's node. */
   fxId: number;
   title: string;
@@ -229,7 +321,15 @@ export type FxLabConfig = {
   fixed?: { paramId: number; value: number }[];
   /** Bezel legend cells (short ALL-CAPS keys, ≤4 — keep 3 where the LIVE GR
    *  cell auto-appends via `pollGr`; the SOURCE reads on its dock key). */
-  bezel: { k: string; paramId: number }[];
+  bezel: {
+    k: string;
+    paramId: number;
+    /** First-visit plain words (S3 `BezelItem.caption`, ≤ 14 chars). */
+    caption?: string;
+    /** A shorter key for a cell too narrow for `k` (rack `BezelItem.kNarrow`;
+     *  Reverb's DECAY TIME (RT60) → DECAY TIME, owner 2026-11-15 D62 RV-01). */
+    kNarrow?: string;
+  }[];
   /** 2–3 INTERACTING params folded into ONE group tray so the dock stays ≤5
    *  keys. Grouped params drop their individual dock buttons. */
   dockGroups?: {
@@ -243,24 +343,59 @@ export type FxLabConfig = {
   /** The hero teaching visual, rendered from the current param values. */
   Hero: (values: Record<number, number>, src?: FxSourceSpec) => ReactNode;
   heroBadge: string;
-  heroCaption?: (values: Record<number, number>) => string;
+  /** Phase 3 (owner's decision 3, S3 `RackStage.modelNote`): ONE plain
+   *  sentence, sentence case, saying what the moving picture is and is not —
+   *  drawn where the all-caps ANIM_BADGE was. */
+  modelNote?: string;
+  /** Phase 3: the same for the DESIGNED RESPONSE curve in the well (instead
+   *  of the all-caps heroBadge there). */
+  curveNote?: string;
+  /** `ctx` (owner 2026-11-25, click tempo): the selected source as it plays
+   *  now, and the live tempo of this lab's CLICK (when it has one), so a
+   *  caption that names the tempo names the one the student set. */
+  heroCaption?: (values: Record<number, number>, ctx?: { source?: FxSourceSpec; clickBpm?: number }) => string;
   /** The ANIMATED signal-flow hero: maps the CURRENT param values to a fxAnim
    *  model. Optional — labs without an authored animation (or clients without
    *  Skia) pin the static Hero on the stage, exactly as before. */
   anim?: (values: Record<number, number>, src?: FxSourceSpec) => FxAnimModel;
   /** Poll the live GR readout while running (which field to show). */
   pollGr?: 'comp' | 'gate' | 'limiter';
+  /** The GR the settings are DESIGNED to give on a steady source (the transfer
+   *  curve's own number), shown on the GR cell marked MODEL while sound is off
+   *  (phase 2, S3 `BezelItem.silent`). undefined = no honest model (a click or
+   *  noise source): the cell keeps "— dB". */
+  grModel?: (values: Record<number, number>, src: FxSourceSpec) => number | undefined;
   /** Optional honest note under the audio section. */
   note?: string;
   /** Retrieval checks rendered after THE AUDIO PATH (learning pass
    *  2026-08-31: the FX fleet was the app's sole zero-retrieval holdout —
    *  35 other lab files import CheckQuestion). Auto-shuffled. */
   checks?: CheckSpec[];
+  /** A control the current settings IGNORE (Equalizer: GAIN on a pass filter,
+   *  Q on the high-pass): return the plain reason, and the bezel cell reads
+   *  "—" in gray while the dock key shows LOCKED, dimmed, and prints the
+   *  reason on a tap (rackTypes `locked`) — EQ Lab module 6's grey-out, copied
+   *  (lab fix round 2026-11-14, quick win 16). The value is kept, so it is
+   *  back as it was when the shape uses it again.
+   *  ADDITIVE (GATE-02, owner 2026-11-15: "build waves 1 thru 3", D62): it also
+   *  gets the selected source and whether sound is off, and may return
+   *  `{ why, value }` for a control that WORKS but shows nothing in this state:
+   *  the key reads `value` instead of LOCKED (rack `lockedValue`, "not yet"),
+   *  a tap prints `why`, and the bezel keeps the setting. Never "ignored". */
+  ignoredBy?: (
+    paramId: number,
+    values: Record<number, number>,
+    ctx: { source?: FxSourceSpec; soundOff: boolean },
+  ) => string | { why: string; value: string } | undefined;
   /** While a `monoCompare` source is selected, text that only holds for the
    *  stereo sources is left out (owner 2026-10-24, Stereo lab): the badge, the
    *  caption in the states `caption` returns true for, and the wrong-answer
    *  hint of the listed check indexes. No replacement text. */
   monoCompareHides?: { badge?: boolean; caption?: (values: Record<number, number>) => boolean; wrongHintChecks?: number[] };
+  /** A lower top for the CLICK tempo than twice the opening tempo, where this
+   *  lab's drawing cannot follow the sound any faster (owner 2026-11-25, click
+   *  tempo; the Gate). `why` is the plain line the tray says. */
+  clickTempoMax?: { bpm: number; why: string };
 };
 
 /** The currently selected choice's chip label (bezel/valueLabel source). */
@@ -403,6 +538,8 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
   // Seeded with a 390-wide phone's 'S' glass; the glass reports its own.
   const [glassShape, setGlassShape] = useState(368 / 158);
   const focused = useIsFocused();
+  /** The app's audio output is off (S3 silent path). */
+  const soundOff = useSoundOff();
 
   const [gate] = useState<EngineState>(() => {
     if (!ApeDsp.isAvailable()) return 'absent';
@@ -411,16 +548,43 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
   const engineReady = gate === 'idle';
   const fxReady = engineReady && ApeDsp.fxAvailable();
   // The source list this build can actually play (engine 10 stereo sources).
-  const sources = useMemo(
+  const presetSources = useMemo(
     () => (config.stereoSources && ApeDsp.stereoSpreadAvailable() ? config.stereoSources : config.sources),
     [config.stereoSources, config.sources],
   );
+  /** The student's CLICK tempo, by source index (owner 2026-11-25, click tempo,
+   *  D85). Screen state only, like every other dock value here: it lasts while
+   *  this lab screen is open and is never saved, so the next visit opens at
+   *  the lab's own tempo. Unset = the preset. */
+  const [clickTempo, setClickTempoState] = useState<Record<number, number>>({});
+  // The sources AS THEY PLAY NOW — the one source of truth for the sound
+  // (genParamsFor), every drawing (anim / Hero), the captions and the dock.
+  // At the lab's own tempo each is the very same object as the preset.
+  const sources = useMemo(
+    () => presetSources.map((s, i) => liveClickSource(s, clickPresetOf(s), clickTempo[i])),
+    [presetSources, clickTempo],
+  );
+  /** The live tempo of this lab's CLICK (the first, the only one any lab has). */
+  const labClickIdx = presetSources.findIndex((s) => clickPresetOf(s) != null);
+  const labClickBpm = labClickIdx >= 0 ? clampClickBpm(sources[labClickIdx].gen.clickBpm) : undefined;
 
   const [sourceIdx, setSourceIdx] = useState(0);
   const [values, setValues] = useState<Record<number, number>>(() =>
     Object.fromEntries(config.params.map((p) => [p.paramId, p.initial])),
   );
   const [running, setRunning] = useState(false);
+  /** THE CLICK ANCHOR (third pass, 2026-11-25; owner: "what you hear should
+   *  match what you see"): the heard clicks sit at t0 + k·P in wall-clock time
+   *  (performance.now()). Set when the click starts sounding (▶, or choosing
+   *  the CLICK while playing) and moved on every tempo write, at the moment of
+   *  the write (anchorAfterTempoWrite mirrors the generator's timer). Every
+   *  drawing maps it onto the wall clock each frame (fxAnim useHitGrid), so a
+   *  remount, a lost focus or a stalled frame never parts picture and sound.
+   *  While nothing sounds it still moves with the tempo, so the picture stays
+   *  continuous. */
+  const [clickAnchor, setClickAnchor] = useState<ClickAnchor>(() => anchorAtStart(clickPeriodMs(labClickBpm), performance.now()));
+  /** The tempo last written per source, ahead of the render (a drag sends many). */
+  const writtenTempoRef = useRef<Record<number, number>>({});
   // Something else can silence this lab — backgrounding, shake-to-mute, the
   // idle auto-mute. Without this the transport stayed lit over silence.
   useStopOnAudioMute(setRunning);
@@ -460,6 +624,14 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
   const wantRef = useRef(false);
   const latestRef = useRef({ sourceIdx, values });
   latestRef.current = { sourceIdx, values };
+  /** The live sources, for a CLICK tempo moved while a start is in flight. */
+  const sourcesRef = useRef(sources);
+  sourcesRef.current = sources;
+  /** The lab's own CLICK tempo while the student's differs (else null): stop
+   *  writes it back, so a slowed click never outlives this lab in the native
+   *  generator. (Every other CLICK in the app also sets its own tempo.) */
+  const clickHomeRef = useRef<number | null>(null);
+  clickHomeRef.current = labClickIdx >= 0 && sources[labClickIdx] !== presetSources[labClickIdx] ? clickPresetOf(presetSources[labClickIdx])! : null;
 
   const pushAllParams = useCallback(
     (vals: Record<number, number>) => {
@@ -494,13 +666,34 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
         isCurrent: () => gen === genRef.current,
       });
       if (fenced.status !== 'started') return;
+      /** The native start has just returned and the click plays at once from
+       *  silence (Generator.hpp applyTrigger): this is the heard click's time,
+       *  to within the start call's return (a few ms) and the output latency.
+       *  (Not taken before the fence: it may wait on a notice first.) */
+      const startedAt = performance.now();
       // A source/fader moved while the start was in flight skipped its live
       // push (running was still false) — send the newest now, so the display
       // and the audio agree (bug hunt 2026-09-30 day; Oscillator's fix).
       const latest = latestRef.current;
-      if (latest.sourceIdx !== sourceIdx) ApeDsp.genSet(genParamsFor(sources[latest.sourceIdx]));
+      let retriggered = false;
+      if (latest.sourceIdx !== sourceIdx) {
+        ApeDsp.genSet(genParamsFor(sources[latest.sourceIdx]));
+        retriggered = true;
+      }
+      // …and a CLICK tempo moved meanwhile (owner 2026-11-25, click tempo).
+      const liveNow = sourcesRef.current[latest.sourceIdx];
+      if (liveNow !== sources[latest.sourceIdx]) {
+        ApeDsp.genSet(genParamsFor(liveNow));
+        retriggered = true;
+      }
       if (latest.values !== values) pushAllParams(latest.values);
       setRunning(true);
+      // The click sounds from the start; a write with a mode now (above) re-arms
+      // it after the 10 ms dip (Generator.hpp renderInto), so it restarts then.
+      if (labClickIdx >= 0) {
+        const P = clickPeriodMs(sourcesRef.current[labClickIdx].gen.clickBpm);
+        setClickAnchor(retriggered ? anchorAtStart(P, performance.now(), GEN_RETRIGGER_DIP_MS) : anchorAtStart(P, startedAt));
+      }
       noteAudioActivity();
     } catch (e) {
       if (gen === genRef.current) setGenError(AUDIO_UNAVAILABLE_MESSAGE);
@@ -520,6 +713,9 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
     // natively, and a tool that never heard of it must get mono. Cleared
     // during the 10 ms fade — the native crossfade keeps that click-free.
     ApeDsp.genSet({ stereoSpreadRad: 0 });
+    // A moved CLICK tempo goes back to the lab's own (owner 2026-11-25, click
+    // tempo): the generator keeps its tempo natively, like the spread.
+    if (clickHomeRef.current != null) ApeDsp.genSet({ clickBpm: clickHomeRef.current });
     setRunning(false);
     setGrDb(0);
   }, []);
@@ -562,9 +758,42 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
     });
   };
   const pickSource = (i: number) => {
+    // Re-tapping the chosen source changes nothing, so nothing is sent: a
+    // write with a mode re-arms the generator (Generator.hpp setMode) and
+    // would restart the click off the drawn beat (third pass, item 3).
+    if (i === sourceIdx) return;
     setSourceIdx(i);
     if (running) {
       ApeDsp.genSet(genParamsFor(sources[i]));
+      noteAudioActivity();
+      // The new mode restarts the click after the 10 ms dip: anchor it there.
+      if (clickPresetOf(presetSources[i]) != null) {
+        setClickAnchor(anchorAtStart(clickPeriodMs(sources[i].gen.clickBpm), performance.now(), GEN_RETRIGGER_DIP_MS));
+      }
+    }
+  };
+  /** The selected CLICK's tempo (owner 2026-11-25, click tempo, D85). Live while
+   *  sounding through the same genSet path as every source write — only the
+   *  tempo changes, so the click keeps running (no restart). Sound off or
+   *  stopped, only the state moves, and the drawing follows it. */
+  const setClickTempo = (bpm: number) => {
+    const preset = clickPresetOf(presetSources[sourceIdx]);
+    if (preset == null) return;
+    const b = clampClickBpm(bpm, clickTempoRange(preset, config.clickTempoMax?.bpm));
+    // The tempo last WRITTEN (a drag sends many writes per render).
+    const was = writtenTempoRef.current[sourceIdx] ?? clampClickBpm(sources[sourceIdx].gen.clickBpm);
+    if (b === was) return;
+    writtenTempoRef.current[sourceIdx] = b;
+    setClickTempoState((prev) => (prev[sourceIdx] === b ? prev : { ...prev, [sourceIdx]: b }));
+    // Set now, not on the next render, so a stop in the same frame still
+    // gives the generator back the lab's own tempo (checker nit, item 5).
+    clickHomeRef.current = b !== preset ? preset : null;
+    // The anchor moves AT the write, from the time of the genSet below (third
+    // pass, item 2: an effect-time rebase was up to a period off the sound).
+    const writeMs = performance.now();
+    setClickAnchor((a) => anchorAfterTempoWrite(a, clickPeriodMs(b), writeMs));
+    if (running) {
+      ApeDsp.genSet({ clickBpm: b });
       noteAudioActivity();
     }
   };
@@ -575,16 +804,49 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
   const compactValue = (p: FxParamSpec) =>
     p.fader ? (p.fader.formatShort ?? p.fader.format)(values[p.paramId]) : shortChoice(choiceLabel(p, values[p.paramId]));
 
+  /** The designed GR on a steady source (grModel), or undefined. */
+  const grModelDb = config.pollGr ? config.grModel?.(values, sources[sourceIdx]) : undefined;
+  /** What ignoredBy says about this param right now: a plain string = the
+   *  settings IGNORE it; `{ why, value }` = it works but cannot be SEEN in this
+   *  state (GATE-02, owner 2026-11-15: "build waves 1 thru 3", D62). */
+  const ignoredInfo = (paramId: number): { why: string; value?: string } | undefined => {
+    const r = config.ignoredBy?.(paramId, values, { source: sources[sourceIdx], soundOff });
+    return r == null ? undefined : typeof r === 'string' ? { why: r } : r;
+  };
+  /** Why the current settings ignore this param, or undefined (bezel "—", grayed tray section). */
+  const ignored = (paramId: number) => {
+    const i = ignoredInfo(paramId);
+    return i && !i.value ? i.why : undefined;
+  };
+  /** A param that works but shows nothing in this state: its key reads `value`
+   *  (rack `lockedValue`, "not yet") and a tap prints the true reason; its
+   *  bezel cell keeps the setting. */
+  const quiet = (paramId: number) => {
+    const i = ignoredInfo(paramId);
+    return i?.value ? (i as { why: string; value: string }) : undefined;
+  };
   const bezel: BezelItem[] = [
     ...config.bezel.map((b) => {
       const p = paramById(b.paramId);
-      return { k: b.k, v: compactValue(p), helpKey: p.lessonKey };
+      return ignored(b.paramId)
+        ? { k: b.k, kNarrow: b.kNarrow, v: '—', tint: IGNORED_TINT, helpKey: p.lessonKey, caption: b.caption }
+        : { k: b.k, kNarrow: b.kNarrow, v: compactValue(p), helpKey: p.lessonKey, caption: b.caption };
     }),
     // LIVE measured GR (dynamics labs) — fxGrStatus, never simulated.
     ...(config.pollGr
       ? // "— dB" whenever nothing is measured; the well says why (no audio
         // engine in this build, or nothing playing) — "NO ENG" was jargon.
-        [{ k: 'GR', v: running ? `${grDb.toFixed(1)} dB` : '— dB', helpKey: 'gain_reduction' }]
+        [
+          {
+            k: 'GR',
+            v: running ? `${grDb.toFixed(1)} dB` : '— dB',
+            helpKey: 'gain_reduction',
+            // First visit: what the code means (phase 2, S3 bezel captions).
+            caption: 'turned down',
+            // Sound off: the designed GR on a steady tone, marked MODEL.
+            ...(grModelDb != null ? { silent: { v: `${grModelDb.toFixed(1)} dB`, sub: 'MODEL' } } : {}),
+          },
+        ]
       : []),
   ];
 
@@ -606,10 +868,18 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
           <View style={{ gap: 10 }}>
             {g.paramIds.map((pid) => {
               const gp = paramById(pid);
+              // A member the settings ignore (ignoredBy) is grayed with its
+              // reason in the hint's place (owner 2026-11-15: "build waves 1
+              // thru 3", D62 SH-64, as the Equalizer's dock keys do). Its
+              // chips still answer a tap, so the value is ready when it counts.
+              const why = ignored(pid);
               return (
                 <View key={pid} style={{ gap: 8 }}>
-                  <Text style={styles.sectionHead}>{gp.label}</Text>
-                  <View style={styles.chipRow}>
+                  <Text style={styles.sectionHead}>
+                    {gp.label}
+                    {why ? <Text style={styles.sectionHint}> · {why}</Text> : gp.hint ? <Text style={styles.sectionHint}> · {gp.hint}</Text> : null}
+                  </Text>
+                  <View style={[styles.chipRow, why ? styles.chipRowIgnored : null]}>
                     {gp.choices.map((c) => (
                       <LabChip
                         key={c.label}
@@ -637,13 +907,18 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
         format: () => s.format(values[p.paramId]),
         formatShort: s.formatShort ? () => s.formatShort!(values[p.paramId]) : undefined,
         home: s.home != null ? faderPos(s, s.home) : undefined,
+        steps: s.steps,
         helpKey: p.lessonKey,
+        locked: ignored(p.paramId) ?? quiet(p.paramId)?.why,
+        lockedValue: quiet(p.paramId)?.value,
       });
     } else {
       dockParams.push({
         kind: 'options',
         id: String(p.paramId),
         label: p.short ?? p.label,
+        locked: ignored(p.paramId) ?? quiet(p.paramId)?.why,
+        lockedValue: quiet(p.paramId)?.value,
         valueLabel: shortChoice(choiceLabel(p, values[p.paramId])),
         options: p.choices.map((c) => ({
           id: String(c.value),
@@ -659,27 +934,71 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
     }
   }
   // SOURCE tray last — swapping the test signal while listening IS a lesson.
-  dockParams.push({
-    kind: 'options',
-    id: 'src',
-    label: 'SOURCE',
-    valueLabel: sources[sourceIdx].short ?? sources[sourceIdx].label,
-    options: sources.map((s, i) => ({
+  // A CLICK's blurb ends with how to set its tempo, this lab's range, that the
+  // picture keeps step, and (Gate) why the range stops early.
+  const sourceOptions = sources.map((s, i) => {
+    const preset = clickPresetOf(presetSources[i]);
+    return {
       id: String(i),
       label: s.label,
-      blurb: s.blurb,
+      blurb:
+        preset == null
+          ? s.blurb
+          : `${s.blurb ? `${s.blurb} ` : ''}${clickTempoBlurb(clickTempoRange(preset, config.clickTempoMax?.bpm), config.clickTempoMax?.why)}`,
       onLongPress: () => openSourceHelp(s.gen),
-    })),
-    selectedId: String(sourceIdx),
-    onSelect: (id) => pickSource(Number(id)),
-    sticky: true,
-    helpKey: 'src',
+    };
   });
+  const clickPreset = clickPresetOf(presetSources[sourceIdx]);
+  if (clickPreset != null) {
+    // A CLICK is selected: the SAME key is the house chooser-fader (owner
+    // 2026-11-25, click tempo, D85: "Add a way to change BPM in the lab screens
+    // that show the waveform going by"). A tap opens the same sticky source
+    // tray; closing it with ✕ hands the lane to the click's TEMPO (rack: a
+    // chooser fader binds on close). − / + = 1 BPM (steps), hold = the lab's
+    // lowest or highest tempo, double-tap = the lab's own tempo (home). The key
+    // reads "TEMPO 45" (it names what its fader sets, visible without opening
+    // anything), the lane and the screen reader "CLICK TEMPO 45 BPM".
+    const range = clickTempoRange(clickPreset, config.clickTempoMax?.bpm);
+    const bpm = clampClickBpm(sources[sourceIdx].gen.clickBpm, range);
+    dockParams.push({
+      kind: 'fader',
+      id: 'src',
+      label: 'SOURCE',
+      value: clickTempoPos(bpm, range),
+      onChange: (pos) => setClickTempo(clickTempoFromPos(pos, range)),
+      format: (pos) => clickTempoReadout(clickTempoFromPos(pos, range)),
+      formatShort: (pos) => clickTempoShort(clickTempoFromPos(pos, range)),
+      home: clickTempoPos(clickPreset, range),
+      steps: clickTempoSteps(range),
+      helpKey: 'src',
+      chooser: {
+        title: 'SOURCE',
+        options: sourceOptions,
+        selectedId: String(sourceIdx),
+        onSelect: (id) => pickSource(Number(id)),
+        sticky: true,
+      },
+    });
+  } else {
+    dockParams.push({
+      kind: 'options',
+      id: 'src',
+      label: 'SOURCE',
+      valueLabel: sources[sourceIdx].short ?? sources[sourceIdx].label,
+      options: sourceOptions,
+      selectedId: String(sourceIdx),
+      onSelect: (id) => pickSource(Number(id)),
+      sticky: true,
+      helpKey: 'src',
+    });
+  }
 
   const faderParam = config.params.find((p) => p.fader);
   const AnimHero = animOnStage ? fxAnim!.FxAnimHero : null;
   const sourceCaption = config.exploreCaptionBySource?.[sources[sourceIdx]?.label] ?? config.exploreCaption;
   const captionExtra = config.captionExtra?.(values, sources[sourceIdx]);
+  /** What a tempo-naming caption needs: the live source and the live CLICK tempo. */
+  const captionCtx = { source: sources[sourceIdx], clickBpm: labClickBpm };
 
   return (
     <LabShell
@@ -692,10 +1011,16 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
       accuracy={config.accuracy ?? true}
       // The what's-left screen under the CHECK (every lab ends on one; D41):
       // Stereo Imaging for now; the other effect labs are a separate change.
+      // FINISH · SEE WHAT'S LEFT after the check, in EVERY effect lab (phase 2,
+      // S2's FINISH API; quick win 4): onOpen stops the effect's sound when
+      // the end layer opens. Stereo keeps its own end guide.
       checkEnd={
-        config.labId === 'stereo' ? (
-          <LabCheckEnd labId="stereo" labTitle="Stereo Imaging Lab" onOpen={stop} endGuide={STEREO_END_GUIDE} />
-        ) : undefined
+        <LabCheckEnd
+          labId={config.labId}
+          labTitle={labTitleWords(config.title)}
+          onOpen={stop}
+          endGuide={config.labId === 'stereo' ? STEREO_END_GUIDE : undefined}
+        />
       }
       headerAction={
         <HeaderPlayButton
@@ -715,8 +1040,11 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
           // Honesty badge verbatim (§1.7). The strip may ellipsize the long
           // animated-model badge — its full text prints in the well below.
           badge: animOnStage ? ANIM_BADGE : heroBadgeText,
+          // The plain sentence wins over the all-caps badge (S3 phase 3).
+          modelNote: config.modelNote,
           onGuide: () => openLesson('display'),
           bezel,
+          soundOffLine: config.soundOffLine,
           // FULL SCREEN (owner 2026-09-30, D35): the rack's button + viewer,
           // with the dock docked, the bezel (incl. the live GR cell) across
           // the top and the tray rising above. FxStage draws the same picture
@@ -733,7 +1061,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
               running={running}
               pollGr={config.pollGr}
               grDb={grDb}
-              anim={AnimHero ? <AnimHero model={config.anim!(values, sources[sourceIdx])} active={focused} grDb={running ? grDb : 0} /> : null}
+              anim={AnimHero ? <AnimHero model={config.anim!(values, sources[sourceIdx])} active={focused} grDb={running ? grDb : 0} clickAnchor={labClickIdx >= 0 ? clickAnchor : undefined} /> : null}
               staticHero={AnimHero ? null : config.Hero(values, sources[sourceIdx])}
             />
           ),
@@ -763,25 +1091,27 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
           <Text style={styles.sectionHead}>
             {config.pollGr === 'gate' ? 'GATE ATTENUATION' : 'GAIN REDUCTION'}
           </Text>
-          <GrMeter
-            grDb={running ? grDb : 0}
-            // The gate's range is the outlier — it closes far harder than a
-            // compressor reduces, and a 24 dB scale would peg instantly.
-            maxDb={config.pollGr === 'gate' ? 70 : 30}
-            // The meter names the PROCESSOR, not the quantity — the section
-            // header above already says what is being measured, and printing
-            // "GAIN REDUCTION" twice in two lines was the first draft's flaw.
-            // It also matches the Signal Chain lab, where three of these sit
-            // side by side and the name is the only thing telling them apart.
-            label={config.pollGr === 'gate' ? 'GATE' : config.pollGr === 'limiter' ? 'LIMITER' : 'COMPRESSOR'}
-          />
-          <Text style={styles.caption}>
-            {running
-              ? 'Measured from the live audio — watch how fast it grabs and how it lets go.'
-              : fxReady
-                ? 'Play the source to see the reduction. The meter reads zero while nothing is sounding.'
-                : 'This version of the app can’t measure the reduction yet; update the app to see it.'}
-          </Text>
+          {/* ONE GR TRUTH (lab fix round 2026-11-14, report §7: "GR PEAK 5.5
+              dB" / "GR — dB" / "0.0 dB" on one screen). The meter is drawn
+              only while it measures something: stopped, it printed "0.0 dB"
+              beside the bezel's "— dB" and the drawing's GR PEAK, three
+              numbers for one quantity. Stopped, a sentence says which number
+              is which instead. */}
+          {running ? (
+            <GrMeter
+              grDb={grDb}
+              // The gate's range is the outlier — it closes far harder than a
+              // compressor reduces, and a 24 dB scale would peg instantly.
+              maxDb={config.pollGr === 'gate' ? 70 : 30}
+              // The meter names the PROCESSOR, not the quantity — the section
+              // header above already says what is being measured, and printing
+              // "GAIN REDUCTION" twice in two lines was the first draft's flaw.
+              // It also matches the Signal Chain lab, where three of these sit
+              // side by side and the name is the only thing telling them apart.
+              label={config.pollGr === 'gate' ? 'GATE' : config.pollGr === 'limiter' ? 'LIMITER' : 'COMPRESSOR'}
+            />
+          ) : null}
+          <Text style={styles.caption}>{grMeterCaption(running, fxReady, config.pollGr, soundOff, grModelDb != null)}</Text>
         </View>
       ) : null}
 
@@ -796,40 +1126,46 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
               its own heroBadge (device pass 2026-09-14b: the animated badge was
               printing twice on every Skia FX-rack lab). */}
           <Text style={styles.sectionHead}>DESIGNED RESPONSE</Text>
-          {heroBadgeText ? <Text style={styles.badge}>{heroBadgeText}</Text> : null}
+          {heroBadgeText ? (
+            config.curveNote ? <ModelNote text={config.curveNote} style={styles.curveNote} /> : <Text style={styles.badge}>{heroBadgeText}</Text>
+          ) : null}
           {config.Hero(values, sources[sourceIdx])}
-          {showCaption ? <Text style={styles.caption}>{config.heroCaption!(values)}</Text> : null}
+          {showCaption ? <Text style={styles.caption}>{config.heroCaption!(values, captionCtx)}</Text> : null}
         </View>
       ) : showCaption ? (
         <View style={{ gap: 6 }}>
           <Text style={styles.sectionHead}>WHAT YOU’RE SEEING</Text>
-          <Text style={styles.caption}>{config.heroCaption!(values)}</Text>
+          <Text style={styles.caption}>{config.heroCaption!(values, captionCtx)}</Text>
         </View>
       ) : null}
 
-      {/* THE AUDIO PATH — status + honest engine notes. */}
-      <View style={{ gap: 6 }}>
-        <Text style={styles.sectionHead}>THE AUDIO PATH</Text>
-        {engineReady ? (
-          fxReady ? (
-            <>
+      {/* THE AUDIO PATH — status + honest engine notes. It starts CLOSED
+          (owner 2026-11-21: "Build all 40", collapsed-sections proposal), but
+          a sound error, or the line saying the effect audio cannot play here,
+          stays in view above it (OSC-04: an error is never folded away). */}
+      {engineReady && fxReady && genError ? <Text style={styles.error}>{genError}</Text> : null}
+      {engineReady && !fxReady ? (
+        <Text style={styles.caption}>
+          {Platform.OS === 'web'
+            ? 'On the web, the effect audio can’t play — it plays in the phone app. The visuals and lessons above work fully.'
+            : __DEV__
+              ? 'Effect AUDIO needs the v6 engine build — this dev client predates the effects path. The visuals and lessons above are fully live; install the next dev build to hear it.'
+              : // Plain words, no "update the app" (lab fix round 2026-11-14, pattern 10).
+                'The effect audio can’t play on this device. The visuals and lessons above work fully.'}
+        </Text>
+      ) : null}
+      {(engineReady && fxReady) || config.note ? (
+        <CollapsibleSection title="THE AUDIO PATH" startOpen={false}>
+          <View style={{ gap: 6 }}>
+            {engineReady && fxReady ? (
               <Text style={styles.caption}>
                 {`▶ (top right) plays real audio: ${sources[sourceIdx].label.toLowerCase()} → ${config.title.replace(' LAB', '').toLowerCase()} → output. ${GEN_LEVEL_DB} dBFS · uncalibrated. Change any control while it plays.`}
               </Text>
-              {genError ? <Text style={styles.error}>{genError}</Text> : null}
-            </>
-          ) : (
-            <Text style={styles.caption}>
-              {Platform.OS === 'web'
-                ? 'On the web, the effect audio can’t play — it plays in the phone app. The visuals and lessons above work fully.'
-                : __DEV__
-                  ? 'Effect AUDIO needs the v6 engine build — this dev client predates the effects path. The visuals and lessons above are fully live; install the next dev build to hear it.'
-                  : 'This version of the app cannot play the effect audio yet. The visuals and lessons above work fully; update the app to hear it.'}
-            </Text>
-          )
-        ) : null}
-        {config.note ? <Text style={styles.caption}>{config.note}</Text> : null}
-      </View>
+            ) : null}
+            {config.note ? <Text style={styles.caption}>{config.note}</Text> : null}
+          </View>
+        </CollapsibleSection>
+      ) : null}
 
       {config.checks?.length ? (
         // Each card now carries its own collapsible CHECK YOURSELF header
@@ -853,8 +1189,12 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
 
 const styles = StyleSheet.create({
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  chipRowIgnored: { opacity: 0.45 },
   sectionHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 1.5, color: colors.amber },
+  sectionHint: { fontFamily: fonts.barlowMedium, fontSize: 12.5, letterSpacing: 0, color: colors.textSecondary },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   error: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: '#ff6b5e' },
   badge: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 1.2, color: colors.textSub },
+  // The well's plain curve note sits left, like the captions around it.
+  curveNote: { textAlign: 'left', paddingHorizontal: 0 },
 });

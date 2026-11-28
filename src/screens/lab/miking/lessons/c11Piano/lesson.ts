@@ -556,7 +556,7 @@ const setupTasks: SetupTask[] = [
 
 /** One ungraded prediction before each rack activity (try before tell). */
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: on most keys, what stops a piano note when the key comes up?', options: ['The hammer presses the string', 'A damper falls onto the strings', 'The soundboard stops by itself'], after: 'Now STEP through the key (or PLAY ONCE) and watch the hammer and the damper.' },
+  sound: { prompt: 'Before you step through: on most keys, what stops a piano note when the key comes up?', options: ['The hammer presses the string', 'A damper falls onto the strings', 'The soundboard stops by itself'], after: 'Now go EVENT by EVENT through the key (or PLAY ONCE) and watch the hammer and the damper.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move a mic back along the strings, away from the hammers. What changes?', options: ['More attack', 'A softer attack', 'It depends on this piano'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will this mic, looking down into the piano, reject a side-fill speaker best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
@@ -787,7 +787,7 @@ export const C11_LESSON: Lesson = {
     { text: 'The upright’s inside: the soundboard 28–40 mm behind the strings, the hammer line 950 mm up, the panels, the open top lid leaning back 12°, a wall 40 cm behind.', dims: [] },
     { text: 'The octave span (164 mm) comes from a museum Bechstein (ca. 1893); the black keys are drawn centered on their white keys’ boundary.', dims: [] },
     { text: 'The pianist and bench (proposal §5): bench 760 × 360 at 480, head 1250 up, hands over the keys, feet on the pedals — drawn illustratively.', dims: [] },
-    { text: 'The bands round the guides’ single figures (±5 cm), the outside pair’s 30 cm–1 m and its height, the under-the-piano 15–45 cm, the sound-hole 12–30 cm, the upright top 3–25 cm and inside 5–25 cm, the panel-off 6–20 cm — the lab’s drawing.', dims: [] },
+    { text: 'The bands around the guides’ single figures (±5 cm), the outside pair’s 30 cm–1 m and its height, the under-the-piano 15–45 cm, the sound-hole 12–30 cm, the upright top 3–25 cm and inside 5–25 cm, the panel-off 6–20 cm — the lab’s drawing.', dims: [] },
     { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],
   live: { wedges },

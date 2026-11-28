@@ -18,7 +18,7 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { useState } from 'react';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
-import { DIGITAL_MODULES, type DigitalModuleId } from './modules/registry';
+import { DIGITAL_MODULES, digitalLeftDetail, type DigitalModuleId } from './modules/registry';
 import { LabEndLink, LabEndScreen } from '../kit/LabEndScreen';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
@@ -26,12 +26,19 @@ import { cardColumn } from '../../../theme/readingColumn';
 import { useWideOnTablet } from '../../../theme/useIsTablet';
 import { TabletGrid } from '../../../components/TabletGrid';
 import { safeGoBack } from '../../../lib/safeGoBack';
+import { CollapsibleSection } from '../LabShell';
 
 // DG-R2-01 (wiring round 2): the reconstructed voltage is not sound yet — an
 // amplifier and a loudspeaker turn it back into air.
 const PATH = ['SOUND', 'ANALOG', 'SAMPLES', 'NUMBERS', 'PROCESSING', 'RECONSTRUCTION', 'AMPLIFIER', 'LOUDSPEAKER', 'SOUND'];
 
 /** The static signal-path labels — the lab's chain in one row. */
+/** The home's first line (DG-04): the plain picture before any term. It keeps the wiring
+ *  order of the arrow chain it replaced (DG-01 2026-10-20: mic then preamp; DG-R2-01: the
+ *  path ends in an amplifier and a loudspeaker), in plain words. */
+export const DIGITAL_HOME_LEAD =
+  'Your voice is moving air. A microphone and its preamp turn it into electricity, a converter turns that into numbers, and on the way out a converter, an amplifier and a loudspeaker turn the numbers back into air. The eight short modules below follow it, one step at a time.';
+
 function SignalPathBanner() {
   return (
     <View style={styles.pathRow}>
@@ -68,6 +75,12 @@ export function DigitalLabHomeScreen() {
   const [openId, setOpenId] = useState<DigitalModuleId | null>(null);
   const clearedUnits = useLabClearedUnits('af_digital_audio');
   const unreadable = useLabCompletionUnreadable();
+  // START opens the first module not yet done (Module 1 on a first visit, or when progress could not
+  // be read: an unreadable list is never taken as "all done").
+  const startIdx = unreadable ? 0 : Math.max(0, DIGITAL_MODULES.findIndex((m) => !clearedUnits.has(m.id)));
+  const startModule = DIGITAL_MODULES[startIdx];
+  const startNum = startIdx + 1;
+  const startLabel = !unreadable && clearedUnits.size > 0 ? 'CONTINUE' : 'START';
 
   return (
     <View style={[styles.root, { paddingTop: insets.top + 10 }]}>
@@ -90,8 +103,12 @@ export function DigitalLabHomeScreen() {
       />
       {ending ? (
         <LabEndScreen
+          // The recap and next-lab card (labEndContent.ts, S4).
+          labId="af_digital_audio"
           labTitle="Digital Audio Sampling & Conversion Lab"
-          units={DIGITAL_MODULES.map((m) => ({ id: m.id, label: m.title }))}
+          units={DIGITAL_MODULES.map((m) => ({ id: m.id, label: m.title, detail: digitalLeftDetail(m.id) }))}
+          // Phase 2 end screen (2026-11-14): the rule every row shares, said once.
+          howItCounts="A module counts once every CHECK YOURSELF on it is answered right. Opening it again, or practicing, never removes it."
           cleared={clearedUnits}
           unreadable={unreadable}
           mode="credit"
@@ -103,11 +120,19 @@ export function DigitalLabHomeScreen() {
       ) : (
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: 34 + insets.bottom }]}>
         <SignalPathBanner />
-        <Text style={styles.body}>
-          Follow the complete chain — acoustic sound → microphone → preamp (analog voltage) →
-          anti-aliasing filter → sampling → quantization → binary data → processing → reconstruction → amplifier → loudspeaker → sound —
-          in eight connected modules. Take them in order, or jump straight to what you need.
-        </Text>
+        {/* DG-04 (owner 2026-11-15: "build waves 1 thru 3", D62): the home opens on the plain picture
+            (it replaces the 13-arrow paragraph), one big START, then the eight short modules; the
+            shortcut chips fold away at the foot. */}
+        <Text style={styles.body}>{DIGITAL_HOME_LEAD}</Text>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`${startLabel}: opens Module ${startNum}, ${startModule.title}`}
+          style={styles.startBtn}
+          onPress={() => open(startModule.id)}
+        >
+          <Text style={styles.startText}>{startLabel} ›</Text>
+          <Text style={styles.startSub}>MODULE {startNum} · {startModule.title.toUpperCase()}</Text>
+        </Pressable>
         <Text style={styles.sectionTitle}>THE EIGHT MODULES</Text>
         {/* UNREADABLE is not "not started" (owner 2026-10-03, "do 2"; D51):
             no ✓ on a row is a stand-in when the banked units could not be
@@ -128,6 +153,7 @@ export function DigitalLabHomeScreen() {
         ))}
         </TabletGrid>
         <LabEndLink label="SEE WHAT’S LEFT ›" onPress={() => setEnding(true)} />
+        <CollapsibleSection title="SHORTCUTS · TOOLS AND REVIEW" startOpen={false}>
         <Text style={styles.sectionTitle}>SECONDARY TOOLS</Text>
         <View style={styles.toolWrap}>
           <ToolChip label="DATA-RATE CALCULATOR" onPress={() => navigation.navigate('CalcWorkspace', { id: 'filesize' })} />
@@ -149,6 +175,7 @@ export function DigitalLabHomeScreen() {
           Every module carries its own checks; the misconceptions panel lives in Module 8 and is
           the heart of this lab — digital audio is NOT made of stair steps.
         </Text>
+        </CollapsibleSection>
       </ScrollView>
       )}
       <GuidedLessonSheet visible={lessonOpen} lesson={getLabLesson('digital')} onClose={() => setLessonOpen(false)} />
@@ -175,6 +202,9 @@ const styles = StyleSheet.create({
   cardTag: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, color: colors.amber, width: 24, textAlign: 'center' },
   cardName: { fontFamily: fonts.oswaldMedium, fontSize: 15.5, letterSpacing: 0.5, color: colors.textPrimary },
   toolWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  startBtn: { borderRadius: 10, borderWidth: 1, borderColor: 'rgba(255,198,77,.6)', backgroundColor: '#1d1708', paddingVertical: 12, paddingHorizontal: 14, alignItems: 'center', gap: 2, minHeight: 56, justifyContent: 'center' },
+  startText: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, letterSpacing: 1.6, color: colors.amber },
+  startSub: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 0.9, color: colors.textSecondary, textAlign: 'center' },
   // 44pt tall (design pass 2026-08-31 — the chips measured 34pt, under the
   // house touch standard).
   toolChip: { borderRadius: 8, borderWidth: 1, borderColor: '#2c2c33', paddingHorizontal: 11, paddingVertical: 13, backgroundColor: '#17171c' },

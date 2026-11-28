@@ -86,7 +86,7 @@ export function Mod3Bias() {
   );
   // The zoom figure's control for ITS full-screen dock — the same bias the
   // lane sets; docked under the zoom there, never drawn on the page.
-  const ppBiasSlider = <ControlSlider label="Output-stage bias (overlap)" value={ppBias} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setPpBias} />;
+  const ppBiasSlider = <ControlSlider label="BIAS · output-stage overlap" value={ppBias} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setPpBias} />;
 
   const singlePic: RigPicture = {
     input: smallAudio,
@@ -129,7 +129,7 @@ export function Mod3Bias() {
             rig: singlePic,
             bezel: [
               { k: 'REGION', v: single.region === 'cutoff' ? 'CUTOFF' : single.region === 'saturation' ? 'SATUR.' : 'LINEAR', tint: single.region === 'linear' ? colors.green : colors.gold },
-              { k: 'IDLE', v: `${Math.round(single.idleCurrent * 100)}%`, tint: AMP_COLORS.pos },
+              { k: 'IDLE', v: `${Math.round(single.idleCurrent * 100)}%`, tint: AMP_COLORS.pos, caption: 'at rest' },
               ...rigStatusBezel(singlePic, ['supply', 'heat']),
             ],
             params: [faderParam({ id: 'bias', label: 'BIAS', value: bias, min: 0, max: 1, step: 0.01, format: (v) => `${Math.round(v * 100)}%`, onChange: setBias })],
@@ -179,10 +179,11 @@ export function Mod3Bias() {
                 label: 'ANGLE',
                 value: angle,
                 options: [
-                  { key: 90, label: '90° · C', short: '90°' },
-                  { key: 180, label: '180° · B', short: '180°' },
-                  { key: 270, label: '270° · AB', short: '270°' },
-                  { key: 360, label: '360° · A', short: '360°' },
+                  // One-line meanings (SH-76, owner 2026-11-15: "build waves 1 thru 3").
+                  { key: 90, label: '90° · C', short: '90°', blurb: 'On for a quarter of each cycle: short pulses, the least energy drawn.' },
+                  { key: 180, label: '180° · B', short: '180°', blurb: 'On for half of each cycle; a second device has to carry the other half.' },
+                  { key: 270, label: '270° · AB', short: '270°', blurb: 'On for more than half the cycle, so two devices overlap around the handoff.' },
+                  { key: 360, label: '360° · A', short: '360°', blurb: 'On for the whole cycle: never switches off, the most energy drawn.' },
                 ],
                 onChange: setAngle,
               }),
@@ -218,7 +219,7 @@ export function Mod3Bias() {
               // OVERBIAS, not HOT: the handoff IS clean there — the stage is
               // over-biased, and the HEAT cell beside it already says hot.
               { k: 'HANDOFF', v: taskSolved ? 'CLEAN' : tooHot ? 'OVERBIAS' : 'NOTCH', tint: taskSolved ? colors.green : tooHot ? colors.gold : colors.red },
-              { k: 'IDLE', v: `${idlePct}%`, tint: tooHot ? colors.gold : AMP_COLORS.pos },
+              { k: 'IDLE', v: `${idlePct}%`, tint: tooHot ? colors.gold : AMP_COLORS.pos, caption: 'at rest' },
               ...rigStatusBezel(ppPic, ['supply', 'heat']),
             ],
             params: [faderParam({ id: 'ppbias', label: 'BIAS', value: ppBias, min: 0, max: 1, step: 0.01, format: (v) => `${Math.round(v * 100)}%`, onChange: setPpBias })],

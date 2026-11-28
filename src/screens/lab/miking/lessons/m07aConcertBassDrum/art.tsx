@@ -14,12 +14,19 @@
 import { BlurMask, Circle, Group, LinearGradient, Path, RadialGradient, vec } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel } from '../../engine/scene/sceneTypes.ts';
-import { Mallet } from '../shared/concert/Mallets';
+import { Mallet, MALLET_SIZES } from '../shared/concert/Mallets';
+import { MalletInBackHand } from '../shared/figureV2/malletHeld';
 import { CAVITY, CHROME, CHROME_DARK, FLOOR, HEAD_CALF, HEAD_COATED, HOOP_CUT, HOOP_FAR, INK, PLY, PLY_LINE, make, oval, rect, rrect, seg } from '../shared/concert/paths.ts';
 import { HOOP, HOOP_X, MALLET, STAND } from './geometry.ts';
 import { D, FLOOR_Y, MID_X, R, SPEC } from './model.ts';
 import { metalSidePose, metalTopPose } from '../shared/metal/metalFigure.ts';
 import { PlayerBehind, PlayerInFront } from '../shared/players/PlayerFigure';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+import { PlayerSideV2, PlayerTopV2 } from '../shared/figureV2/playersV2';
+import { BASS_DRUMMER, BASS_FULCRUM, BASS_NEAR_POSE, bassSidePlan, bassTopPlan } from './playerV2.ts';
+
+/** The new look (figure V2, wave 3 set 3b): the player is Ruth of the cast, the mallet in her left hand. */
+export const V2 = figureV2On('sidePlayers');
 
 /** THE PLAYER (art grading fix 2026-10-16: the mallet hung in mid-air beside
  *  the drum with a "PLAYER →" arrow): the house figure standing beyond the
@@ -82,8 +89,11 @@ function build(view: ViewId) {
       const out = HOOP_X.playing[1];
       rrect(claws, X(out + 4), sg * (HOOP.rOut + 1), X(-6), sg * (HOOP.rOut + 6), 1.5);
       rrect(tees, X(out + 16), sg * (rr - 8), X(out + 8), sg * (rr + 8), 2);
-      seg(rods, X(out + 9), sg * rr, X(-60), sg * rr);
-      rrect(lugs, X(-48), sg * R, X(-84), sg * (R + 26), 7);
+      // A bass drum's lug casing (drawing default, owner 2026-11-23: "make the
+      // lugs on the drums longer"): ≈ 80 mm, its end 60 mm in from the head,
+      // the T-rod from the claw into its end (was a 36 mm block).
+      seg(rods, X(out + 9), sg * rr, X(-66), sg * rr);
+      rrect(lugs, X(-60), sg * R, X(-140), sg * (R + 26), 10);
     }
   }
   // The stand (drawing defaults), as the cut leaves it visible.
@@ -127,14 +137,21 @@ function StandArt({ g }: { g: Built }) {
   );
 }
 
-export function ConcertBassDrumArt({ view }: { view: ViewId; variant: VariantId }) {
+export function ConcertBassDrumArt({ view, v2 = V2 }: { view: ViewId; variant: VariantId; /** (the study page compares the old look) */ v2?: boolean }) {
   const g = get(view);
   const side = view === 'side';
+  const mallet = side ? (
+    <Mallet kind="bass" grip={{ x: MALLET.grip.x, y: MALLET.grip.y }} head={{ x: MALLET.head.x, y: MALLET.head.y }} />
+  ) : (
+    <Mallet kind="bass" grip={{ x: MALLET.grip.x, y: MALLET.grip.z }} head={{ x: MALLET.head.x, y: MALLET.head.z }} />
+  );
   return (
     <Group>
-      <Group transform={side ? SIDE_XF : TOP_XF}>
-        <PlayerBehind pose={side ? SIDE_POSE : TOP_POSE} dim={0.6} />
-      </Group>
+      {v2 ? null : (
+        <Group transform={side ? SIDE_XF : TOP_XF}>
+          <PlayerBehind pose={side ? SIDE_POSE : TOP_POSE} dim={0.6} />
+        </Group>
+      )}
       {side ? (
         <>
           <Path path={g.floor}>
@@ -203,14 +220,37 @@ export function ConcertBassDrumArt({ view }: { view: ViewId; variant: VariantId 
         <>
           <Circle cx={MID_X} cy={0} r={22} color="#2a2c32" opacity={0.85} />
           <Circle cx={MID_X} cy={0} r={22} style="stroke" strokeWidth={2} color="#8a8f99" opacity={0.85} />
-          <Mallet kind="bass" grip={{ x: MALLET.grip.x, y: MALLET.grip.y }} head={{ x: MALLET.head.x, y: MALLET.head.y }} />
+          {v2 ? null : mallet}
         </>
-      ) : (
-        <Mallet kind="bass" grip={{ x: MALLET.grip.x, y: MALLET.grip.z }} head={{ x: MALLET.head.x, y: MALLET.head.z }} />
+      ) : v2 ? null : (
+        mallet
       )}
-      <Group transform={side ? SIDE_XF : TOP_XF}>
-        <PlayerInFront pose={side ? SIDE_POSE : TOP_POSE} dim={0.6} />
-      </Group>
+      {/* THE NEW LOOK: the player beyond the playing head (clear of the drum), the mallet through her fist */}
+      {v2 ? (
+        side ? (
+          // (owner 2026-11-24, "Raise the hands") her left hand is the approved mallet hand, mirrored and re-lit
+          <PlayerSideV2
+            plan={bassSidePlan()}
+            who={BASS_DRUMMER}
+            dim={0.6}
+            nearStick={
+              BASS_NEAR_POSE ? (
+                <MalletInBackHand grip={BASS_FULCRUM} head={MALLET.head} mirror shaftR={MALLET_SIZES.bass.shaftR}>
+                  {mallet}
+                </MalletInBackHand>
+              ) : (
+                mallet
+              )
+            }
+          />
+        ) : (
+          <PlayerTopV2 plan={bassTopPlan()} hollow who={BASS_DRUMMER} dim={0.6} farStick={mallet} />
+        )
+      ) : (
+        <Group transform={side ? SIDE_XF : TOP_XF}>
+          <PlayerInFront pose={side ? SIDE_POSE : TOP_POSE} dim={0.6} />
+        </Group>
+      )}
     </Group>
   );
 }

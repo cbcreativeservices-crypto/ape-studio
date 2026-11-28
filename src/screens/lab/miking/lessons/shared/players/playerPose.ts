@@ -96,6 +96,12 @@ export type PlayerPose = {
   footL: Pt;
   /** The floor's v (front views); null from above. */
   floor: number | null;
+  /** The LEFT shoe set on something (a drummer's left foot on a hi-hat pedal
+   *  angled toward the throne, 2026-11-23): side view — `along` the shoe's
+   *  foreshortening (cos of its turn out of the picture), `slope` the sole's
+   *  rise toward the toe (radians); from above — `yaw`, the toe's direction
+   *  in the authored frame (radians, 0 = straight forward). */
+  shoeL?: { along?: number; slope?: number; yaw?: number };
   /** A strap over the left shoulder to this point (a standing player). */
   strapTo?: Pt | null;
   /** 'side' view: the way the player faces along u (default +1, toward +u).

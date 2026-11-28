@@ -1,0 +1,279 @@
+/**
+ * spIssueActions — what each ANSWER in the review list does (must-do D60).
+ * spReview names the answers an issue offers (`SpIssueAction`); this file is
+ * the one place that turns an answer into an edit of the project or a jump to
+ * the row, so the same answer does the same thing in every work area.
+ *
+ * Two kinds of answer:
+ *   • A DECISION the band can make from the list ("it is acoustic", "no
+ *     monitor is intended", "the audience is meant to hear it"): one spModel
+ *     edit, which UNDO reverses.
+ *   • A JUMP to where the work is done ("place on the stage", "choose its
+ *     mix", "add a monitor mix"): the area opens with the row selected.
+ *     Nothing is changed.
+ *
+ * Nothing here guesses: an answer that would need a choice the band has not
+ * made (which mix, which devices, what happens to a stereo DI device) is a
+ * jump to the place that asks, never a silent pick.
+ *
+ * AN ANSWER THAT RENUMBERS A REVISION THAT MAY HAVE BEEN SENT ASKS FIRST. The lab screen hands
+ * this file its question popup (`setSpIssueAsk`, the house confirmDialog); a
+ * file that node tests load cannot import it. With no popup set, the answer
+ * runs directly (the tests).
+ *
+ * Pure apart from the editor it is handed (tests pass a small stand-in).
+ */
+import { spAutoAssignBoxes, spPairRestore, spPairToMono, spPatch, spRenumber, spSetReserved, spUpdateDevice, spUpdateInput, spUpdateObject, spUpdatePerformer, spUpdateSource } from '../../../features/stageplot/spModel.ts';
+import type { SpIssue, SpIssueAction } from '../../../features/stageplot/spReview.ts';
+import type { SpProject } from '../../../features/stageplot/spTypes.ts';
+import type { SpEditor, SpSelection } from './spContext.tsx';
+import { STAGE_NEW_SPOT, stagePlace } from './stage/stageLinks.ts';
+
+/** The part of the editor an answer needs. */
+export type SpIssueEditor = Pick<SpEditor, 'project' | 'apply' | 'goTo'>;
+
+/** A yes / cancel question: title, body, the word on the yes button, and
+ *  what yes does. */
+export type SpIssueAsk = (title: string, body: string, yesText: string, yes: () => void) => void;
+let askFirst: SpIssueAsk | null = null;
+/** Set once by the lab screen (the house confirmDialog); null runs an answer
+ *  without asking. */
+export function setSpIssueAsk(ask: SpIssueAsk | null): void {
+  askFirst = ask;
+}
+
+/** True when this revision was marked ready, printed or shared: the
+ *  next change starts the next revision. */
+export const spRevisionShared = (p: Pick<SpProject, 'revision' | 'frozenRevision'>): boolean => p.frozenRevision >= p.revision;
+
+/** The row an issue is about, as a selection in its work area. */
+export function spIssueSelection(issue: SpIssue): SpSelection {
+  const { kind, id } = issue.target;
+  if (!id) return null;
+  if (kind === 'project') return null;
+  // A patch issue (a duplicate channel number) points at one of its inputs.
+  if (kind === 'patch') return { kind: 'input', id };
+  return { kind, id };
+}
+
+/** A Setup question is about a FIELD, not a row, and a selection cannot name
+ *  a field. So "Go to" leaves the question's rule here, and Setup takes it
+ *  when it opens and brings that field into view (the title for
+ *  `example-title`, the band name for `no-band-name`, the contact block for
+ *  `no-contact`). Taken once. */
+let setupAsk: string | null = null;
+export function takeSpSetupAsk(): string | null {
+  const rule = setupAsk;
+  setupAsk = null;
+  return rule;
+}
+/** Which part of Setup a question's rule is answered in. */
+export function spSetupField(rule: string | null): 'title' | 'band' | 'contact' | 'performers' | null {
+  if (rule === 'example-title') return 'title';
+  if (rule === 'no-band-name') return 'band';
+  if (rule === 'no-contact') return 'contact';
+  if (rule === 'empty') return 'performers';
+  return null;
+}
+
+/** "Go to": open the issue's own area with its row selected (for Setup, its
+ *  field brought into view). */
+export function goToIssue(ed: Pick<SpEditor, 'goTo'>, issue: SpIssue): void {
+  if (issue.area === 'setup') setupAsk = issue.rule;
+  ed.goTo(issue.area, spIssueSelection(issue));
+}
+
+/** "Go to Setup" for ONE part of it, from a button that is not a review
+ *  question (Export's "Contact shown in the packet … Change it in SETUP").
+ *  It leaves that part's rule as a review "Go to" does, so Setup opens the
+ *  part if it is folded and brings it into view. Without this the button
+ *  landed at the top of Setup with the contact block folded away (seen on
+ *  screen, lab fix round phase 3). */
+export function goToSetupPart(ed: Pick<SpEditor, 'goTo'>, rule: 'no-contact'): void {
+  setupAsk = rule;
+  ed.goTo('setup');
+}
+
+/** The words on an answer's button, in capitals as every button is. */
+export function spIssueActionLabel(action: SpIssueAction, issue?: SpIssue): string {
+  switch (action) {
+    case 'locate':
+      // "Locate" only for something that IS on the stage (an object outside it).
+      return issue?.rule === 'performer-unplaced' || issue?.rule === 'source-unplaced' ? 'PLACE ON THE STAGE' : 'LOCATE ON THE STAGE';
+    case 'mark-offstage':
+      return 'IT IS OFF THE STAGE ON PURPOSE';
+    case 'mark-acoustic':
+      return 'IT IS ACOUSTIC: NO INPUT NEEDED';
+    case 'mark-self-contained':
+      return 'IT IS SELF-CONTAINED: NO INPUT NEEDED';
+    case 'add-inputs':
+      return 'ADD ITS INPUTS';
+    case 'mark-visual':
+      return 'IT IS ONLY A DRAWING';
+    case 'link-source':
+      return 'LINK IT TO SOMETHING IN YOUR LISTS';
+    case 'pair-restore':
+      return 'PUT THE OTHER SIDE BACK';
+    case 'pair-mono':
+      return 'MAKE IT A MONO REQUEST';
+    case 'assign-mix':
+      return 'CHOOSE ITS MIX';
+    case 'mark-self-contained-device':
+      return 'IT IS PART OF THE BAND MONITOR RIG';
+    case 'add-mix':
+      return 'ADD A MONITOR MIX';
+    case 'mark-no-monitor':
+      return 'NO MONITOR IS INTENDED';
+    case 'object-offstage-ok':
+      return 'IT IS OFF THE STAGE ON PURPOSE';
+    case 'renumber':
+      return 'RENUMBER THIS LIST';
+    case 'unreserve':
+      return 'STOP KEEPING THIS CHANNEL FREE';
+    case 'cue-audience-ok':
+      return 'THE AUDIENCE IS MEANT TO HEAR IT';
+    case 'box-auto':
+      return 'AUTO-ASSIGN SOCKETS';
+    case 'edit':
+      return 'GO TO IT';
+  }
+}
+
+/** PLACE ON THE STAGE, pressed in Setup, Inputs, Monitors or a review
+ *  question: the button DOES what it says (lab fix round 2026-11-14;
+ *  beginner audit G5: "'PLACE ON THE STAGE' under a new performer switches
+ *  to the STAGE tab but does not place the performer … and needs a second
+ *  press"). ONE edit draws the row at a free place near downstage center
+ *  (stageLinks `stagePlace`, the same edit the Stage area's own button
+ *  makes: a drawing only, nothing added to any list), then the Stage area
+ *  opens with the new symbol selected, ready to be dragged. A row that
+ *  cannot be drawn is handed to the Stage area as before, which says so.
+ *  Returns the new object's id, or null. */
+export function placeOnStage(ed: Pick<SpEditor, 'apply' | 'goTo'>, sel: NonNullable<SpSelection>): string | null {
+  let id: string | null = null;
+  // `apply` runs the edit before it returns (spContext)
+  ed.apply((q) => {
+    const r = stagePlace(q, sel, STAGE_NEW_SPOT);
+    if (!r) return q;
+    id = r.id;
+    return r.p;
+  });
+  ed.goTo('stage', id ? { kind: 'object', id } : sel);
+  return id;
+}
+
+/** Carry out one answer. An answer that does not fit the issue's row does
+ *  nothing (the list was made for another state of the project). */
+export function runIssueAction(ed: SpIssueEditor, issue: SpIssue, action: SpIssueAction): void {
+  const { kind, id } = issue.target;
+  const sel = spIssueSelection(issue);
+  switch (action) {
+    case 'edit':
+      goToIssue(ed, issue);
+      return;
+
+    /* ── jumps ── */
+    case 'locate':
+      // "PLACE ON THE STAGE" (spIssueActionLabel) places: a source or a
+      // performer that has no symbol yet is drawn, then shown.
+      if ((issue.rule === 'performer-unplaced' || issue.rule === 'source-unplaced') && sel && (sel.kind === 'performer' || sel.kind === 'source')) {
+        placeOnStage(ed, sel);
+        return;
+      }
+      ed.goTo('stage', sel);
+      return;
+    case 'link-source':
+      // The stage shows the object that has no link yet.
+      ed.goTo('stage', sel);
+      return;
+    case 'add-inputs':
+      ed.goTo('inputs', sel);
+      return;
+    case 'assign-mix':
+      ed.goTo('monitors', sel);
+      return;
+    case 'add-mix':
+      // The same door as the ADD A MIX button: Monitors opens with this
+      // performer selected and proposes the mix WITH its usual devices before
+      // anything is added. Nothing is added from here.
+      if (kind === 'performer' && id) ed.goTo('monitors', { kind: 'performer', id });
+      return;
+
+    /* ── decisions ── */
+    case 'mark-offstage':
+      if (kind === 'source' && id) ed.apply((p) => spUpdateSource(p, id, { offstage: true }));
+      return;
+    case 'mark-acoustic':
+      if (kind === 'source' && id) ed.apply((p) => spUpdateSource(p, id, { connection: 'none', noneReason: 'acoustic' }));
+      return;
+    case 'mark-self-contained':
+      if (kind === 'source' && id) ed.apply((p) => spUpdateSource(p, id, { connection: 'none', noneReason: 'self-contained' }));
+      return;
+    case 'mark-visual':
+      if (kind === 'object' && id) ed.apply((p) => spUpdateObject(p, id, { visualOnly: true }));
+      return;
+    case 'object-offstage-ok':
+      if (kind === 'object' && id) ed.apply((p) => spUpdateObject(p, id, { offstageOk: true }));
+      return;
+    case 'pair-restore':
+      if (kind === 'input' && id) ed.apply((p) => spPairRestore(p, id).p);
+      return;
+    case 'pair-mono': {
+      if (kind !== 'input' || !id) return;
+      // The side that is left sits on a STEREO DI device: whether the band
+      // keeps that device for one channel is theirs to say (handoff §11). The
+      // input's own editor asks it, so this answer opens that editor.
+      const left = ed.project.inputs.find((i) => i.id === id);
+      const device = left?.diDeviceId ? ed.project.diDevices.find((d) => d.id === left.diDeviceId) : undefined;
+      if (device && device.channels === 2) {
+        ed.goTo('inputs', { kind: 'input', id });
+        return;
+      }
+      ed.apply((p) => spPairToMono(p, id));
+      return;
+    }
+    case 'mark-self-contained-device':
+      if (kind === 'device' && id) ed.apply((p) => spUpdateDevice(p, id, { selfContained: true }));
+      return;
+    case 'mark-no-monitor':
+      if (kind === 'performer' && id) ed.apply((p) => spUpdatePerformer(p, id, { noMonitor: true }));
+      return;
+    case 'cue-audience-ok':
+      // The band says the audience is meant to hear this click or cue. The
+      // routing is not changed; the question is answered.
+      if (kind === 'input' && id) ed.apply((p) => spUpdateInput(p, id, { cueAudienceOk: true }));
+      return;
+    case 'box-auto':
+      // In channel order, on the nearest box; a socket chosen by hand never
+      // moves, and one UNDO puts every socket back.
+      ed.apply((p) => spAutoAssignBoxes(p).p);
+      return;
+    case 'unreserve': {
+      // The band no longer keeps this input's channel free: that number
+      // leaves the reserved list. The input keeps its number.
+      const patchId = issue.target.patchId ?? 'house';
+      const patch = spPatch(ed.project, patchId);
+      const n = patch && id ? patch.numbers[id] : null;
+      if (patch && n != null) ed.apply((p) => spSetReserved(p, patchId, patch.reserved.filter((r) => r !== n)));
+      return;
+    }
+    case 'renumber': {
+      const patchId = issue.target.patchId ?? 'house';
+      // Numbered again in the list's own order; reserved channels stay free.
+      const run = () => ed.apply((p) => spRenumber(p, patchId, { keepReserved: true }));
+      const p = ed.project;
+      // Never renumber a revision that already went out without asking first.
+      if (askFirst && spRevisionShared(p)) {
+        askFirst(
+          'Renumber a stage plot that may have been sent?',
+          `Revision ${p.revision} was marked ready or shared. Renumbering starts revision ${p.frozenRevision + 1} as a draft, and its channel numbers will differ from the ones in revision ${p.revision}.`,
+          'Renumber',
+          run,
+        );
+        return;
+      }
+      run();
+      return;
+    }
+  }
+}

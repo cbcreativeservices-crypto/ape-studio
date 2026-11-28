@@ -180,7 +180,7 @@ export function useChainStep({ spec, drawPart, words, prediction, onPass, initia
     })),
   ];
   const bezel: BezelItem[] = [
-    { k: 'LINKS', v: `${spec.slots.filter((s) => picks[s.id]).length} / ${spec.slots.length}`, flex: 0.8 },
+    { k: 'TO LINK', v: `${spec.slots.length - spec.slots.filter((s) => picks[s.id]).length} left`, flex: 0.8 },
     { k: 'REFUSED', v: String(check.refused.length), tint: check.refused.length ? RED : undefined, flex: 0.8 },
     { k: 'RESULT', v: check.pass ? 'PASSES' : check.complete ? 'NOT YET' : '—', tint: check.pass ? GREEN : undefined, flex: 1.2 },
   ];

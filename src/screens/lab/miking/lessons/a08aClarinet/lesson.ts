@@ -360,7 +360,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: WindLesson['predictions'] = {
-  sound: { prompt: 'Before you step through: where does most of a middle note’s sound leave the clarinet?', options: ['The bell', 'An open hole on the body', 'The mouthpiece'], after: 'Now STEP through (or PLAY ONCE), then try the notes on the next step.' },
+  sound: { prompt: 'Before you step through: where does most of a middle note’s sound leave the clarinet?', options: ['The bell', 'An open hole on the body', 'The mouthpiece'], after: 'Now go EVENT by EVENT (or PLAY ONCE), then try the notes on the next step.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from 15–20 cm out to about a meter. What changes?', options: ['More room and blend', 'More key clicks', 'It depends on this room'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front. Where will a supercardioid aimed back at the clarinet reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
@@ -480,7 +480,7 @@ const copy: Partial<LessonCopy> = {
     workedAim: 'Aim it at the holes on the lower joint — the lab counts it while the mic points within about {tol}° of them, so the bell is heard too. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of every part — the hands and thumbs, the keys, the bell as the player moves, the player’s face and knees. Clearance comes first, before any number, and the player stops before a real mic moves.',
     blocked: {},
-    reveal: 'Farther tends to bring more of the room and a better blend of holes and bell; closer, more key detail and more of one spot. Rooms vary, so “it depends on this room” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
+    reveal: 'Farther tends to bring more of the room and a better blend of holes and bell; closer, more key detail and more of one spot. Rooms vary, so “it depends on this room” is fair too. Each zone’s TENDS TO HEAR line is an idea to check by ear.',
     typeNotes: {
       sdcCard: 'Ideas to try: begin facing the holes a third of the way up from the bell; then move one thing at a time — the distance, the height, the angle toward the bell — and play the low, throat and high notes each time.',
       wwMini: 'Ideas to try with a miniature: keep its strap where it is made to go, just above the bell; change only the capsule’s angle — farther up toward the upper joint for a more even range.',
@@ -630,7 +630,7 @@ export const A08A_LESSON: WindLesson = {
   unknowns: [
     { text: 'The player’s height above the floor and the 35° hold — drawing defaults — so no HEIGHT readout is shown.', dims: ['yFloor'] },
     { text: 'The 629 mm body is a 1924 museum clarinet used as a modern size; the mouthpiece (88 mm), barrel, joint split, bell Ø 65 and key layout are drawing defaults; the tone holes sit where the semitone rule puts them (a simplified picture).', dims: [] },
-    { text: 'The hands, arms, head and the bell’s movement — illustrative keep-outs (a 20 mm margin round the clarinet).', dims: [] },
+    { text: 'The hands, arms, head and the bell’s movement — illustrative keep-outs (a 20 mm margin around the clarinet).', dims: [] },
     { text: 'The section spot’s box beside the player, the clip’s 3–13 cm and the miniature’s size and reach — drawing defaults to check on the real instrument.', dims: [] },
     { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],

@@ -27,12 +27,12 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
   l01_what_travels: {
     intro: {
       learning: 'Twelve different things travel on cables in an audio system, from a mic’s tiny signal to AC power, and you name which one before you choose any connector.',
-      start: 'Tap MIC-LEVEL AUDIO, then LOUDSPEAKER-LEVEL AUDIO, and compare the two cards. Then go to WHAT MUST TRAVEL HERE? and pick what has to travel for the first pair.',
+      start: 'Read the line just above WHAT MUST TRAVEL HERE?, then pick what has to travel for the first pair. Below it, tap MIC-LEVEL AUDIO, then LOUDSPEAKER-LEVEL AUDIO, and compare the two cards.',
     },
     seeing: [
       'The amber banner is this lab’s first rule: a connector’s shape doesn’t prove the connection is correct or safe.',
-      'Under WHAT CAN TRAVEL THROUGH A CABLE?, twelve chips run from MIC-LEVEL AUDIO to POWER + DATA TOGETHER. The card below explains the one you tapped.',
-      'WHAT MUST TRAVEL HERE? gives you nine source → destination pairs, one at a time. The heading keeps count.',
+      'WHAT MUST TRAVEL HERE? comes first: nine source → destination pairs, one at a time. The heading keeps count.',
+      'Under WHAT CAN TRAVEL THROUGH A CABLE?, twelve chips sit in three groups, AUDIO, DATA and POWER, from MIC-LEVEL AUDIO to POWER + DATA TOGETHER. The card below explains the one you tapped.',
     ],
     control: [
       'Tap any category chip to read its card. MIC-LEVEL AUDIO is open first.',
@@ -96,16 +96,16 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
   l03_analog: {
     intro: {
       learning: 'What each contact on the common analog connectors does, why XLR doesn’t always mean mic or TRS always mean stereo, and how a balanced line cancels noise.',
-      start: '3-PIN XLR is open: read CONTACTS & USES. Then tap 1/4-INCH TRS and count its wirings. Scroll down to BALANCED VS UNBALANCED to see the noise cancel.',
+      start: '3-PIN XLR is picked: tap CONTACTS & USES to open it. Then tap 1/4-INCH TRS and count its wirings. Scroll down to BALANCED VS UNBALANCED to see the noise cancel.',
     },
     seeing: [
       'THE ANALOG FAMILY draws seven connectors at one scale, so you see their real sizes side by side. PINOUT INK KEY colors each contact; always read it with the printed label.',
       'Then WHY THIS ONE MATTERS and the connector card: photo, ⚠ cautions, and sections from CONTACTS & USES to INSPECT & TEST.',
-      'BALANCED VS UNBALANCED shows noise cancelling. Four questions and ALSO RECOGNIZE follow.',
+      'BALANCED VS UNBALANCED shows noise canceling. Four questions and ALSO RECOGNIZE follow.',
     ],
     control: [
       'Tap a chip or a connector in the drawing: 3-PIN XLR (open first), 1/4-INCH TS, 1/4-INCH TRS, 3.5 MM TRS, 3.5 MM TRRS, RCA, COMBO XLR/TRS.',
-      'Tap a section title to open or close it; CONTACTS & USES starts open. MALE / FEMALE / CABLE switch the photo where shown.',
+      'Tap a section title to open or close it; every section starts closed. MALE / FEMALE / CABLE switch the photo where shown.',
       'Tap ⤢ FULL SCREEN under a drawing to enlarge it.',
       'Solve all four questions; wrong picks stay open. ALSO RECOGNIZE browses patch, multipin and compact connectors.',
     ],
@@ -162,7 +162,7 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
   // ── Lesson 5 ──────────────────────────────────────────────────────────────
   l05_loudspeaker: {
     intro: {
-      learning: 'Line level, speaker level and AC power are three separate jobs around one loudspeaker, and a powered loudspeaker is fed differently from a passive one.',
+      learning: 'Line level, speaker level and AC power are three separate jobs around one loudspeaker, met in four connections, and a powered loudspeaker is fed differently from a passive one.',
       start: 'Read THE FOUR DIFFERENT CONNECTIONS first. Then compare the two cut ends under INSTRUMENT CABLE VS LOUDSPEAKER CABLE, and work the first scenario in ROUTING PICKS.',
     },
     seeing: [
@@ -202,7 +202,7 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
     seeing: [
       'The amber note at the top: matching ports do not prove two devices compatible.',
       'THE CONNECTORS — BROWSE ALL TEN: family chips, connector chips, an ink key, the connector card and ALSO RECOGNIZE.',
-      'WHAT THE CARDS TEACH: seven short cards, like USB — THE PLUG DOES NOT DEFINE THE CABLE or MIDI — INSTRUCTIONS, NOT AUDIO. They always show in full.',
+      'WHAT THE CARDS TEACH: seven short cards, like USB — THE PLUG DOES NOT DEFINE THE CABLE or MIDI — INSTRUCTIONS, NOT AUDIO. Each shows its first paragraph; GO DEEPER ▾ opens the rest.',
       'KNOWLEDGE CHECK: four questions.',
     ],
     control: [
@@ -238,7 +238,7 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
       'TWO KINDS OF POWER sets AC POWER beside LOW-VOLTAGE DC.',
       'THREE CONDUCTORS, THREE ROLES: a drawn North American wall-plug face (NEMA 5-15) and a role card for the part you tap.',
       'POWER CONNECTOR BROWSER · 10 CONNECTORS: three families, and every card opens with its ⚠ cautions.',
-      'THE NEVER LIST in red, RECOGNIZE — NEVER HANDLE, then five questions.',
+      'THE NEVER LIST in red (four rules, then GO DEEPER ▾ for the rest), RECOGNIZE — NEVER HANDLE, then five questions.',
     ],
     control: [
       'Tap a blade or the pin on the drawing, or its chip: NARROW BLADE (first), WIDE BLADE, ROUND PIN.',
@@ -337,7 +337,7 @@ export const CABLE_SCREEN_GUIDES: Record<CableLessonId, ScreenGuide> = {
     },
     seeing: [
       'VIRTUAL CABLE TESTER: eight cables on a bench, with a count of those cleared. The badge says it’s simulated: a training model, not a live measurement.',
-      'Once a test runs: INSIDE THE CABLE, a drawn wiring trace, and the continuity map — PATH, EXPECTED and MEASURED.',
+      'Once a test runs: INSIDE THE CABLE, a drawn wiring trace, one key line (CLOSED = connected, OPEN = a gap), and the continuity map — PATH, EXPECTED and MEASURED.',
       'A ✓ marks a reading that matches; ✕ … FAULT marks one that does not.',
     ],
     control: [

@@ -98,6 +98,9 @@ const KEEP: ReadonlySet<string> = new Set<string>([
    * sign out → sign back in (or Guest Mode) → go offline handed a free account
    * five fresh offline calculations, as often as it liked. It holds a count
    * and a week-start, nothing about who or what — a rate limit, not user memory.
+   * Since 2026-11-23 it is also a KNOWN guest's own weekly count (owner: "in
+   * the calculator the guest user does get an allowance per week of use"), so
+   * keeping it is what stops a sign-in or sign-out handing a guest a fresh week.
    */
   'ape:calc:usageLocal',
   /**

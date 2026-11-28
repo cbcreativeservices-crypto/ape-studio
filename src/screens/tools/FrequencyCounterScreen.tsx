@@ -79,12 +79,14 @@ const DISCLAIMER =
   'capabilities. This tool is intended for education and general troubleshooting, not calibrated ' +
   'laboratory measurement.';
 
+// Order on the landing (owner 2026-11-20): the purple Tuner first, above the
+// green Sound counter; Light Pulse last.
 const MODES: { key: Mode; name: string; blurb: string }[] = [
-  { key: 'sound', name: 'Sound', blurb: 'Use the microphone to estimate the frequency of a steady sound.' },
-  { key: 'light', name: 'Light Pulse', blurb: 'Use the camera to estimate the repetition rate of a flashing or flickering light.' },
-  { key: 'tap', name: 'Tap', blurb: 'Tap along with a repeating sound, light, or event to calculate its frequency and tempo.' },
   // Tuner mode (merged tool, spec 2026-07-23): same engine, musical interpretation.
   { key: 'tuner', name: 'Tuner', blurb: 'Interpret a sustained note musically — note name, octave, and cents against a selectable A4 reference.' },
+  { key: 'sound', name: 'Sound', blurb: 'Use the microphone to estimate the frequency of a steady sound.' },
+  { key: 'tap', name: 'Tap', blurb: 'Tap along with a repeating sound, light, or event to calculate its frequency and tempo.' },
+  { key: 'light', name: 'Light Pulse', blurb: 'Use the camera to estimate the repetition rate of a flashing or flickering light.' },
 ];
 
 // Landing-row accent per mode (owner 2026-08-05): Sound green · Light Pulse
@@ -99,6 +101,22 @@ const MODE_COLOR: Record<Mode, string> = {
 // A long pause starts a fresh measurement; only the most recent taps average in.
 const TAP_RESET_GAP_MS = 2500;
 const MAX_TAPS = 16;
+
+/** AVG (5 s) blanks 5 s after the last tap, but never while HOLD is on: HOLD
+ *  freezes every Tap result (round 2, 2026-11-25). Returns the clear timer's
+ *  delay, or null for no timer (held). After a release it is only what is left
+ *  of the 5 s, so a hold never extends the average's life. */
+export function tapAvgClearDelayMs(lastTapMs: number, nowMs: number, held: boolean): number | null {
+  if (held) return null;
+  return Math.max(0, 5000 - Math.max(0, nowMs - lastTapMs));
+}
+
+/** Is the AVG (5 s) window still live (under 5 s since the last tap)? Only then
+ *  is the average recomputed: HOLD re-runs the effect and must freeze what is
+ *  on screen, never bring back an average that already blanked. */
+export function tapAvgWindowLive(lastTapMs: number, nowMs: number): boolean {
+  return nowMs - lastTapMs < 5000;
+}
 
 type TapStats = {
   freq: number; // Hz
@@ -1165,18 +1183,22 @@ function TapMode({ onOpenLibrary, help, helpAll }: { onOpenLibrary: () => void; 
   );
 
   // Recompute the 5 s trailing average whenever the taps change, and (re)arm the
-  // 5 s clear timer so it holds for 5 s past the last tap.
+  // 5 s clear timer so it holds for 5 s past the last tap. HOLD freezes it too
+  // (round 2, 2026-11-25): while held no clear timer runs; on release the
+  // timer gets only what is left of the 5 s (see tapAvgClearDelayMs).
   useEffect(() => {
     if (taps.length < 2) return; // keep the last value visible until the timer clears it
     const last = taps[taps.length - 1];
     const recent = taps.filter((t) => last - t <= 5000);
-    if (recent.length >= 2) {
+    if (recent.length >= 2 && tapAvgWindowLive(last, Date.now())) {
       const span = recent[recent.length - 1] - recent[0];
       if (span > 0) setAvg5s((recent.length - 1) / (span / 1000)); // events/sec = Hz
     }
     if (avgClearTimer.current) clearTimeout(avgClearTimer.current);
-    avgClearTimer.current = setTimeout(() => setAvg5s(null), 5000);
-  }, [taps]);
+    avgClearTimer.current = null;
+    const delay = tapAvgClearDelayMs(last, Date.now(), held);
+    if (delay != null) avgClearTimer.current = setTimeout(() => setAvg5s(null), delay);
+  }, [taps, held]);
 
   const onTap = useCallback(() => {
     if (held) return;
@@ -1451,8 +1473,9 @@ export function FrequencyCounterScreen({ navigation }: Props) {
           <Text style={styles.backBtnText}>‹ BACK</Text>
         </Pressable>
         <View style={{ flexShrink: 1, flexGrow: 1 }}>
-          <Text style={styles.title}>FREQUENCY COUNTER & TUNER</Text>
-          <Text style={styles.subtitle}>{modeMeta ? modeMeta.name : 'Hz Counter · Pitch Tuner'}</Text>
+          {/* Tuner first (owner 2026-11-20), as on the hub tile. */}
+          <Text style={styles.title} accessibilityRole="header">TUNER & FREQUENCY COUNTER</Text>
+          <Text style={styles.subtitle}>{modeMeta ? modeMeta.name : 'Pitch Tuner · Hz Counter'}</Text>
         </View>
         <AccuracyNote compact detail="This tool runs on your phone’s UNCALIBRATED microphone and audio path — read it as RELATIVE (dBFS), for learning. For accurate, absolute measurements use a calibrated SPL meter, measurement mic, or a dedicated instrument." />
       </View>

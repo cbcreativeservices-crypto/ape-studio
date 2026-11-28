@@ -33,7 +33,7 @@ export const FC = {
   drop: placeholder(60, 'how far above the edge is dropped from'),
   /** DANCE: the hands' usual height, the movement envelope and the route are drawing defaults. */
   danceH: placeholder(1550, 'the dancer’s hands’ usual height'),
-  danceR: placeholder(700, 'the dance envelope’s radius round the dancer'),
+  danceR: placeholder(700, 'the dance envelope’s radius around the dancer'),
   danceTop: placeholder(2050, 'the top of the dance envelope (raised hands)'),
   route: placeholder(1500, 'half the dancer’s route across the stage'),
   /** Shure's general percussion floor: "a gap of at least 12” / 30cm". */

@@ -11,6 +11,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { colors } from '../../../../theme/tokens';
 import { faderParam, optionsParam } from '../DrumRack';
+import { NeedsSoundTag } from '../../rack/silentPath';
 import { ChapterSteps } from '../steps';
 import { Body, Card, CompareTable, DrumScenarioDeck, DrumStatus, Feedback, KeyButton, KeyTerms, Landing, Point, RecallCard, SectionTitle, WhyCard, YourRun } from '../kit';
 import { DRUM_KEY_TERMS, TROUBLE_SCENARIOS } from '../drumContent';
@@ -34,6 +35,10 @@ type Sim = {
   fixed: string[];
   /** Readouts at the moment of the last fix, for the verdict's before → after. */
   before: { spread: number; beat: number; t60: number | null } | null;
+  /** CAN'T LISTEN NOW (novice audit 2026-11-14): the case is worked from the
+   *  readouts alone. The picture still teaches; the case only COUNTS toward
+   *  credit when it was listened to (↺ RESET CASE, then LISTEN). */
+  silent: boolean;
 };
 
 function startCase(id: SymptomId): Sim {
@@ -41,7 +46,7 @@ function startCase(id: SymptomId): Sim {
   const spec = DRUMS[c.drum];
   const mid = (spec.usefulHz[0] + spec.usefulHz[1]) / 2;
   const even = (hz: number, which: 'batter' | 'reso') => headAtHz(c.drum, hz, which);
-  const base = { strikes: 0, tapped: [] as number[], hypothesis: null, hypothesisRight: null, fixed: [] as string[], before: null };
+  const base = { strikes: 0, tapped: [] as number[], hypothesis: null, hypothesisRight: null, fixed: [] as string[], before: null, silent: false };
   switch (id) {
     case 'warble':
       return { ...base, batter: { ...randomUnevenHead(even(mid, 'batter').tension, spec.lugs, 0x77a1, 0.5) }, reso: even(mid * 1.12, 'reso'), damping: 0, strainer: 0, drift: false };
@@ -102,7 +107,7 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
   // The three stages of the strategy.
   const struck = sim.strikes > 0;
   const tappedEnough = sim.tapped.length >= c.tapsNeeded;
-  const investigated = struck && tappedEnough;
+  const investigated = (struck && tappedEnough) || sim.silent;
   const hypothesised = sim.hypothesis != null;
 
   // Every strike counts as evidence (on the press); on the drift case the
@@ -143,7 +148,9 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
       strikeRef.current = { id: ring.id, n: ring.n + 1, k: ring.k + 1 };
       setSims((all) => ({ ...all, [ring.id]: { ...all[ring.id], strikes: all[ring.id].strikes + 1 } }));
     }
-    solo.strike();
+    void solo.strike().then((ok) => {
+      if (!ok) setNoSound(true);
+    });
   };
   // A lug counts as tapped when its tap SOUNDED (toddler pass 3): counted on
   // the press, a refused audio gate still met "tap N lugs" and unlocked
@@ -161,8 +168,17 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
   };
 
   useEffect(() => {
-    if (!present && !cleared.has(caseId) && sim.fixed.length > 0) setCleared((x) => new Set([...x, caseId]));
-  }, [present, caseId, cleared, sim.fixed.length]);
+    // A case worked from the readouts alone (CAN'T LISTEN NOW) never counts:
+    // the chapter's rule is LISTEN → WHERE → FIX.
+    if (!present && !sim.silent && !cleared.has(caseId) && sim.fixed.length > 0) setCleared((x) => new Set([...x, caseId]));
+  }, [present, caseId, cleared, sim.fixed.length, sim.silent]);
+  /** A strike or tap that did not sound (sound off) offers the silent path. */
+  const [noSound, setNoSound] = useState(false);
+  const workSilently = () => {
+    const id = caseId;
+    setSims((all) => ({ ...all, [id]: { ...all[id], silent: true } }));
+    setWhereNote(`Working from the readouts: ${evidence()} Now open WHERE? and name the area you suspect.`);
+  };
   useEffect(() => {
     if (cleared.size >= SYMPTOMS.length && !reported.current) {
       reported.current = true;
@@ -275,7 +291,7 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
   // labels: a dock key has ~10 characters of room.
   const tapsLeft = c.tapsNeeded - sim.tapped.length;
   const stageKey = !investigated
-    ? { kind: 'action' as const, id: 'locked', label: !struck ? 'HIT 1ST' : `${tapsLeft} TO TAP`, onPress: () => setWhereNote(!struck ? 'Strike first. Then say where the fault is, then fix it.' : `Tap around the lugs first — ${sim.tapped.length} of ${c.tapsNeeded} needed. Listen for the odd ones out.`), tint: colors.textMuted }
+    ? { kind: 'action' as const, id: 'locked', label: !struck ? 'HIT 1ST' : `${tapsLeft} TO TAP`, onPress: () => setWhereNote(!struck ? 'Strike first. Then say where the fault is, then fix it.' : `Tap around the lugs first — ${tapsLeft} more needed. Listen for the odd ones out.`), tint: colors.textMuted }
     : !hypothesised
       ? optionsParam({ id: 'where', label: 'WHERE?', value: '', options: c.areas.map((a) => ({ key: a, label: a, short: a.split(' ')[0].toUpperCase() })), onChange: nameArea, sticky: false })
       : optionsParam({ id: 'fix', label: 'FIX', value: lastFix ?? '', options: c.fixes.map((f) => ({ key: f.id, label: f.label, short: f.id.toUpperCase() })), onChange: applyFix, sticky: false });
@@ -341,9 +357,15 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
             <>
               <Landing looking={`a ${spec.name} with a fault; the readouts are your evidence (use VIEW below for the waveform or the partials).`} prompt={!investigated ? `▶ STRIKE${c.tapsNeeded ? ' and ▶ TAP around the lugs' : ''} first, then say where the fault is.` : !hypothesised ? 'Now say WHERE the fault is — then the FIX tray opens.' : 'Pick a FIX, then strike again and read what changed.'} />
               <DrumStatus playing={pb.playing || tap.playing} pending={pb.pending || tap.pending} failed={pb.failed || tap.failed} rendering={pb.status === 'rendering' || tap.status === 'rendering'} idle={`stopped · ${!struck ? 'press ▶ STRIKE to begin' : !tappedEnough ? `▶ TAP ${c.tapsNeeded - sim.tapped.length} more lug${c.tapsNeeded - sim.tapped.length === 1 ? '' : 's'}` : !hypothesised ? 'open WHERE? and name the area' : 'pick a FIX and strike again'}`} label={tap.playing || tap.pending ? `the tap at lug ${lug + 1}` : 'the strike'} />
-              <Feedback tone="warn">{`${c.title}: ${c.symptom} (cleared ${cleared.size} of ${SYMPTOMS.length})`}</Feedback>
+              <Feedback tone="warn">{`${c.title}: ${c.symptom} (${SYMPTOMS.length - cleared.size} case${SYMPTOMS.length - cleared.size === 1 ? '' : 's'} still to clear)`}</Feedback>
               {whereNote && !fixInfo ? <Feedback tone={sim.hypothesisRight === false ? 'warn' : 'info'}>{whereNote}</Feedback> : null}
+              {noSound && !investigated ? (
+                <KeyButton label="◉ CAN'T LISTEN NOW · USE THE READOUTS" onPress={workSilently} tint={colors.amber} />
+              ) : null}
               {fixInfo ? <Feedback tone={present ? 'warn' : 'ok'}>{fixVerdict()}</Feedback> : null}
+              {sim.silent && !present && fixInfo ? (
+                <Feedback tone="info">Solved from the readouts. It counts toward credit once you have listened to it: when you can play sound, ↺ RESET CASE and start with ▶ STRIKE.</Feedback>
+              ) : null}
               <Card>
                 <Point title={`Step ${!investigated ? '1 · LISTEN' : !hypothesised ? '2 · WHERE IS IT?' : '3 · FIX'}`}>
                   {!investigated
@@ -354,7 +376,8 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
                 </Point>
               </Card>
               <WhyCard title="CREDIT · and a fresh case">
-                <Body>{`Clear all five cases — ${cleared.size} of ${SYMPTOMS.length} so far. The review counts how many you named right on the first hypothesis. ↺ RESET CASE deals the case again for practice; credit stays.`}</Body>
+                {/* A case counts only when it was listened to (fix round 2026-11-14, S3 §2). */}
+                <Body><NeedsSoundTag />{` Clear all five cases — ${SYMPTOMS.length - cleared.size} still to clear. The review counts how many you named right on the first hypothesis. ↺ RESET CASE deals the case again for practice; credit stays.`}</Body>
                 <KeyButton label="↺ RESET CASE" onPress={resetCase} />
               </WhyCard>
             </>
@@ -369,8 +392,9 @@ export function Ch7Trouble({ onAnswered, onInteractive, answers }: ChapterProps)
           body: (
             <>
               <YourRun lines={[
-                `Cleared ${cleared.size} of ${SYMPTOMS.length}; first hypothesis right on ${firstRight} of ${hypothesised_n} named.`,
-                reached ? `Decisions: ${reached} of ${TROUBLE_SCENARIOS.length} reached, ${rightFirst} right first time.` : 'Decisions: none answered yet.',
+                // "right on 0 of 0 named" read as a riddle to a learner who had not named one (novice audit 2026-11-14).
+                hypothesised_n ? `Cases cleared: ${cleared.size}; first guesses right: ${firstRight}.` : `Cases cleared: ${cleared.size}; you have not named a cause yet.`,
+                reached ? `Decisions: ${reached} reached, ${rightFirst} right first time.` : 'Decisions: none answered yet.',
               ]} />
               <SectionTitle>SAY IT BEFORE YOU READ IT</SectionTitle>
               <RecallCard q="A drum will not hold tuning — name two hardware causes before you retune." a="A rod backing out under vibration (fit a nylon washer or lug lock); a worn washer, stripped insert or damaged lug." />

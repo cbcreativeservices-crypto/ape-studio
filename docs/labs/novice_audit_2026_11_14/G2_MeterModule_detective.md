@@ -1,0 +1,24 @@
+# G2 · MeterModule 'detective' (Signal Detective, Visual Audio Analysis Lab module 11) — beginner orientation audit
+
+Walked 2026-11-14 at 390 px wide (390 x 780 frame, see G2_PROGRESS.md), sound OFF. `#labpreview/MeterModule/detective`. Walked case 1 (questions 1 and 2) and opened case 2.
+
+## Page: Module 11 · Signal Detective · `#labpreview/MeterModule/detective`
+
+| Field | Finding |
+|---|---|
+| First look | Intro card, then an unlabelled display (case 1: a pale sine riding high, with rails at top and bottom) and below it a purple "CHECK YOURSELF — WHAT METER IS THIS?" box with four answers. Thinks: "a quiz". Right, and that is a relief: a quiz is a familiar format. |
+| Overwhelm | 2. The display, three readouts (CASE / QUESTION / SOLVED), a four-option question, and only two dock keys (‹ CASE, CASE ›). The calmest page in the lab. |
+| Knows what it is learning? | Yes. Card: "How each fault leaves its own picture in level, frequency, time or stereo, and why you name the display and read its axes before judging what's wrong." The well heading "THE GRADUATION EXERCISE" tells them this is the final test. |
+| Knows what to do first? | Yes. Card: "Answer WHAT METER IS THIS? first: say what runs across and what runs up before you tap." The "say it before you tap" instruction is a great learning habit. Did it: tapped a wrong answer (spectrum analyzer) → the option turned red and a hint appeared: "The horizontal axis here is TIME, and there is a center zero line." Tapped the right one (waveform) → green ✓ with a plain explanation ("The DAW picture: amplitude on the vertical axis, time running left to right…"), SOLVED went 0 → 1. Question 2 ("WHAT DOES IT SHOW?") followed in the same box. |
+| Words they would not know | goniometer, loudness history, spectrogram, correlation meter, VU, digital peak meter (all answer options — fine if they did modules 1–10, hard if they jumped here), dBFS rails, DAW (in the reveal). |
+| Follows / continues? | Mostly. Three friction points: (1) the hint for a wrong answer appears BELOW the four options, so on a phone it is under the fold of the small scroll well (about 230 px tall between the display and the dock); the student sees only a red box and must scroll to learn why. (2) NEXT QUESTION › is also below the fold. (3) After CASE ›, the well keeps its old scroll position, so case 2's question title is scrolled out of sight and only the last option ("A digital peak meter") shows; a newcomer may not notice a new question has started. |
+| What works | (1) Wrong answers teach: the hint names the axis clue, not just "wrong". (2) The four-step method (name the meter → read it → spot the problem → prescribe the fix), stated in the well and enforced by question order. (3) Only two dock keys; the page is about thinking, not controls. (4) "Wrong guesses teach as much as right ones" — removes fear of failing. |
+| Hidden giveaway | The case 1 display still shows the Waveform module's own overlay text ("PK -0.9 RMS -5.6 CREST 4.7 dB · DC +0.35"); case 2 shows "CREST 7.3 dB" and "dBFS" on the bars. A hobbyist reads the meter name from these labels instead of from the picture. A beginner will not notice, so it does not hurt them, but it weakens the test. |
+| Suggestions | 1. (S) Show the wrong-answer hint ABOVE the options (or as a line right under the tapped option) so it is visible without scrolling. 2. (S) When CASE › or NEXT QUESTION › is pressed, scroll the well back to the top of the question. 3. (S) Put NEXT QUESTION › in the dock (or make the answered box end with it in view); today the only always-visible keys are ‹ CASE / CASE ›, which skip the remaining questions. 4. (S) Hide the per-module overlay text (PK/RMS/CREST/DC, CREST, dBFS) on detective displays so the picture alone carries the clue. 5. (S) If the student arrives here without modules 1–10 (deep link or skipping), one line: "Best after Modules 1–10; each answer links back to its module." with the reveal offering "Review: Module 1 Waveform ›". 6. (M) On a fully solved case, a one-line "Case closed: DC offset, fix = high-pass / DC removal" summary card, so each case ends with a takeaway. |
+| Hobbyist | The best page for them: a fast, self-checking drill. They will notice the overlay giveaway. |
+
+## Verdict (this module)
+
+The right ending for the lab: a quiz with honest feedback that rewards reading the axes. The only orientation problems are mechanical (hint and NEXT under the fold, scroll position kept across cases) and one giveaway label. A total beginner who did the modules in order will feel smart here; one who jumped in cold will meet the meter names as a wall, so a back-link to each module in the reveal would help.
+
+**First 30 seconds rewrite:** "No labels here. Look at the picture: what runs left to right? what runs up? Then pick the meter. Wrong answers show you the clue." Then the first question, with the hint slot directly under the options.

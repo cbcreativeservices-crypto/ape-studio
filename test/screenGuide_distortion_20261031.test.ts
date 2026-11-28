@@ -125,7 +125,8 @@ describe('3. each guide quotes its screen’s real names', () => {
       ['IN ▸', ANIM], ['▸ OUT', ANIM], ['IN = −20 dBFS sine', ANIM], ['DRIVEN (before clip)', ANIM], ['0 dBFS', ANIM],
       // the stage name, the readouts, the dock keys and their choices
       ["case 'distortion': return 'DRIVE';", ANIM, 'green DRIVE stage'], ["k: 'TYPE'", DIST, 'TYPE'], ["k: 'DRIVE'", DIST, 'DRIVE'], ["k: 'MIX'", DIST, 'MIX'],
-      ['HARD CLIP', DIST], ['SOFT (TANH)', DIST], ['TUBE (ASYM)', DIST], ["short: 'OS'", DIST, 'OS (oversampling) picks'], ['ON (CLEAN)', DIST], ['OFF (ALIASING)', DIST],
+      // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item DS-03): the choices and the key in plain words.
+      ['HARD (FLAT TOPS)', DIST], ['SOFT (ROUNDED)', DIST], ['TUBE (LOPSIDED)', DIST], ["label: 'OVERSAMPLING', paramId", DIST, 'OVERSAMPLING: ON'], ['ON (CLEAN)', DIST], ['OFF (ALIASING)', DIST],
       ["label: '100%'", DIST, '100%'], ['50% PARALLEL', DIST], ["label: 'SOURCE'", FXSCREEN, 'SOURCE picks'], ['PINK NOISE', CONFIGS], ['SINE ${hz} Hz', CONFIGS, 'SINE 220 Hz'],
       // the fader range and the caption's −8 dBFS
       ['min: 6, max: 36', DIST, '+6 to +36 dB'], ['lifts the −20 dBFS sine to', DIST, '−8 dBFS'],
@@ -140,12 +141,14 @@ describe('3. each guide quotes its screen’s real names', () => {
       // Oversampling / Mix became TYPE / DRIVE / OS / MIX — pinned from the dock config, so the
       // check holds before and after the Part A lesson load. 'level-match' is checked below.
       ['"What the display shows"', LESSON_DIST, 'What the display shows'], ["k: 'TYPE'", DIST, 'TYPE (clip shape)'], ["k: 'DRIVE'", DIST, 'DRIVE (+6 … +36 dB)'],
-      ["short: 'OS'", DIST, 'OS (oversampling)'], ["k: 'MIX'", DIST, 'MIX'], ['"+6 … +36 dB"', LESSON_DIST, '+6 … +36 dB'],
+      ["label: 'OVERSAMPLING', paramId", DIST, 'OVERSAMPLING'], ["k: 'MIX'", DIST, 'MIX'], ['"+6 … +36 dB"', LESSON_DIST, '+6 … +36 dB'],
       ['THD', LESSON_DIST], ['DC offset', LESSON_DIST], ['Bitcrush', LESSON_DIST + DIST], ["'▶'", SHELL, '▶'],
-      ['HARD CLIP', DIST], ['TUBE (ASYM)', DIST], ["k: 'DRIVE'", DIST, 'DRIVE'],
+      ['HARD (FLAT TOPS)', DIST], ['TUBE (LOPSIDED)', DIST], ["k: 'DRIVE'", DIST, 'DRIVE'],
     ],
     check: [
-      ['CHECK YOUR UNDERSTANDING', UNDERSTAND], ['CORRECT', UNDERSTAND], ['NOT QUITE — TRY ANOTHER', UNDERSTAND], ['no score', UNDERSTAND], ['✓', UNDERSTAND],
+      // 'no score' dropped (owner 2026-11-15: "build waves 1 thru 3", D62 adoption plan, item SH-75): the shared
+      // check card now says "Nothing is lost and there is no score." itself, so the guide no longer repeats it.
+      ['CHECK YOUR UNDERSTANDING', UNDERSTAND], ['CORRECT', UNDERSTAND], ['NOT QUITE — TRY ANOTHER', UNDERSTAND], ['✓', UNDERSTAND],
       // 'certificate and program' dropped: credit bookkeeping left student text (decision 5, 2026-11-08);
       // HARD CLIP / TUBE (ASYM) dropped: the CHECK no longer walks to that comparison (decision 6) — see section 4.
       ['the check is passed', UNDERSTAND, 'the check is passed'],
@@ -181,8 +184,10 @@ describe('3. each guide quotes its screen’s real names', () => {
     // oversampling: aliasing / fold back not stated; what-is-added: "harmonics created" not stated
     assert.doesNotMatch(all, /aliasing|fold(s)? back|new frequencies/i);
     // the new lines send the student to where it is taught
-    assert.match(ck.tryThis[0], /On LEARN, reread the COMMON MISTAKES line on how the top and bottom of the wave bend/);
-    assert.match(ck.tryThis[1], /Read the MIX entry on LEARN, then on EXPLORE step MIX between 100% and 50% PARALLEL and listen/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(ck.tryThis[0], /On LEARN, open COMMON MISTAKES and reread the line on how the top and bottom of the wave bend/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(ck.tryThis[1], /Open CONTROLS on LEARN and read the MIX entry, then on EXPLORE step MIX between 100% and 50% PARALLEL and listen/);
   });
   it('the sources, keys and readouts are exactly the ones the guide lists', () => {
     assert.match(DIST, /sources: \[srcSine\(220\), SRC_SINE_5K, SRC_PINK\],/);
@@ -203,7 +208,8 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.match(DISTORTION_SCREEN_GUIDES.explore.seeing.join(' '), /On PINK NOISE a sine is drawn instead, labeled NOISE · SINE DRAWN\./);
     // OVERSAMPLING reaches neither drawing — the guide says it changes the sound only
     assert.doesNotMatch(DIST.slice(DIST.indexOf('Hero:'), DIST.indexOf('heroBadge')), /oversample/);
-    assert.match(DISTORTION_SCREEN_GUIDES.explore.control.join(' '), /OS \(oversampling\) picks ON \(CLEAN\) or OFF \(ALIASING\): heard on SINE 5 kHz, not drawn/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item DS-03)
+    assert.match(DISTORTION_SCREEN_GUIDES.explore.control.join(' '), /OVERSAMPLING: ON \(CLEAN\) or OFF \(ALIASING\), heard on SINE 5 kHz, not drawn/);
   });
   it('the OS copy promises only what a 220 Hz sine can show (verified 2026-10-31: aliasing is faint, HARD CLIP only; no FFT, no high sine)', () => {
     // 24000 / 220 = 109.1 and 22050 / 220 = 100.2: the first folded harmonic is past the 100th
@@ -326,7 +332,8 @@ describe('4. the numbers follow from the lab’s own math', () => {
     assert.ok(thd(cycle('soft', 12)) > 0.01, 'SOFT +12: already bent');
     assert.ok(thd(cycle('tube', 12)) > 0.05, 'TUBE +12: clearly bent');
     assert.ok(Math.max(...cycle('soft', 20)) < 0.8, 'SOFT +20: bending without reaching 0 dBFS');
-    assert.match(DISTORTION_SCREEN_GUIDES.explore.changes[0], /^On HARD CLIP, DRIVE \+12 dB/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item DS-03): HARD CLIP reads HARD (FLAT TOPS); the line says HARD for the room.
+    assert.match(DISTORTION_SCREEN_GUIDES.explore.changes[0], /^On HARD, DRIVE \+12 dB/);
     assert.match(DISTORTION_SCREEN_GUIDES.explore.changes[0], /SOFT and TUBE bend gently long before\./);
   });
   it('the readouts ⓘ opens the lesson display entry (the moving display first, then the LAB NOTES waveshape); SOURCE notes open on a long-press', () => {

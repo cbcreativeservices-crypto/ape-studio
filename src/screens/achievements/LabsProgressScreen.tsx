@@ -15,6 +15,7 @@
 import { useCallback } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { menuClearance } from '../../components/nav/circleMenuPlaces';
 import { useNavigation } from '@react-navigation/native';
 import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
 import { StudioButton } from '../../components/StudioButton';
@@ -32,6 +33,9 @@ const SECTIONS: { id: CreditLab['section']; head: string }[] = [
 
 export function LabsProgressScreen() {
   const insets = useSafeAreaInsets();
+  // The circle menu's MENU button floats over the bottom-left corner (owner
+  // 2026-11-20): the content ends above it (circleMenuPlaces.menuClearance).
+  const menuClear = menuClearance(insets.bottom);
   const navigation = useNavigation<any>();
   const wide = useWideOnTablet();
   const { state, retry } = useCompletedLabs();
@@ -42,7 +46,7 @@ export function LabsProgressScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: menuClear }]}>
         <View style={styles.headerRow}>
           <Pressable onPress={leave} hitSlop={10} accessibilityRole="button" accessibilityLabel="Back" style={styles.backBtn}>
             <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>

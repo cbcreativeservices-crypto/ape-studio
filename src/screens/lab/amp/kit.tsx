@@ -31,6 +31,12 @@ import { useScrollLock } from '../scrollLock';
 import type { AmpCheck, Misconception } from '../../../features/amp/ampContent';
 import { FAULT_COPY } from '../../../features/amp/ampContent';
 import { hashSeed, shuffledIndices, type FaultId } from '../../../features/amp/ampModel';
+import { AMP_CHECK_WHY } from '../../../features/amp/ampCheckWhy';
+
+/** A wrong pick's own reason (AMP_CHECK_WHY), else a pointer back to the lab. */
+export function ampWrongLine(id: string, option: number | null): string {
+  return (option != null && AMP_CHECK_WHY[id]?.[option]) || 'Look back at what the module showed you, then try another answer.';
+}
 
 export const AMP_COLORS = {
   input: colors.cyan,
@@ -518,6 +524,11 @@ export function CheckCard({
   );
   const [picked, setPicked] = useState<number | null>(null); // authored index
   const [attempts, setAttempts] = useState(0);
+  // Distinct wrong options tried (phase 2 check card, 2026-11-14): the first
+  // miss shows THAT option's reason (AMP_CHECK_WHY), never the explanation,
+  // which names the answer; from the second different miss the explanation
+  // shows too.
+  const [missed, setMissed] = useState<ReadonlySet<number>>(new Set());
   const reported = useRef(false);
   const answered = picked != null;
   const correct = picked === check.correct;
@@ -537,11 +548,12 @@ export function CheckCard({
                 const ok = i === check.correct;
                 setPicked(i);
                 setAttempts((a) => a + 1);
+                if (!ok) setMissed((m) => (m.has(i) ? m : new Set([...m, i])));
                 if (!reported.current) {
                   reported.current = true;
                   onAnswered?.(ok);
                 }
-                AccessibilityInfo.announceForAccessibility?.(ok ? 'Correct.' : 'Not quite — read the explanation, then choose again.');
+                AccessibilityInfo.announceForAccessibility?.(ok ? 'Correct.' : `Not quite. ${ampWrongLine(check.id, i)}`);
               }}
               style={[styles.checkOpt, isRight && styles.checkRight, isWrongPick && styles.checkWrong]}
               accessibilityRole="button"
@@ -561,7 +573,7 @@ export function CheckCard({
         <Text style={[styles.checkExplain, { color: correct ? colors.green : colors.gold }]}>
           {correct
             ? `✓ ${check.explain}${attempts > 1 ? ' (Got there on the retry — the first pick is what the summary records.)' : ''}`
-            : `✗ Not quite. ${check.explain} — now choose the option that fits.`}
+            : `✗ Not quite — try another. ${ampWrongLine(check.id, picked)}${missed.size >= 2 ? ` ${check.explain}` : ''}`}
         </Text>
       ) : null}
     </Card>

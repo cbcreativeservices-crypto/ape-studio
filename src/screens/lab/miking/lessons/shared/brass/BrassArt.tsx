@@ -33,6 +33,9 @@ import type { VariantId, Vec3, ViewBox, ViewId } from '../../../engine/model/typ
 import type { ArtLabel } from '../../../engine/scene/sceneTypes.ts';
 import { add, scale } from '../../../engine/geometry/vec.ts';
 import { PaintItem, bbox, circlePts, hull, playerGroups, polyPath, type Group3, type Item, type PlayerOpts } from '../bowed/BowedArt';
+import { figureV2On } from '../figureV2/figureV2Config.ts';
+import type { CastMember } from '../figureV2/cast';
+import { brassFigureGroups } from './brassFigureV2';
 import { bellProfile, bellRadius, type BrassSpec } from './brassSpec.ts';
 import type { HornPose, Tube } from './brassPosture.ts';
 
@@ -320,9 +323,10 @@ function brassHands(P: HornPose, view: ViewId): PlayerOpts['hands'] {
 }
 
 /** The horn and its player for one engine view, far to near. */
-export function sceneGroups(P: HornPose, view: ViewId): Group3[] {
+export function sceneGroups(P: HornPose, view: ViewId, opts: { /** (the study page) old or new whatever the switch */ v2?: boolean; /** (a plan's neighbor) another cast member */ who?: CastMember } = {}): Group3[] {
   const horn = hornGroups(P, PROJ[view]);
-  const player = playerGroups({ player: P.player }, view, true, { hands: brassHands(P, view) });
+  // (figure roll-out wave 5: the player in the approved look)
+  const player = (opts.v2 ?? figureV2On('familyBrass')) ? brassFigureGroups(P, view, horn, opts.who) : playerGroups({ player: P.player }, view, true, { hands: brassHands(P, view) });
   return [...player, ...horn].sort((a, b) => a.depth - b.depth);
 }
 

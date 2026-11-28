@@ -1,3 +1,4 @@
+// 2026-11-21 owner (tester on a tablet): learner text says "this device", never "this phone".
 /**
  * Labs group B — "toddler + cat" bug hunt of 2026-09-30. Pure-module tests
  * where the fix is logic (production store, packet author), source guards
@@ -58,7 +59,9 @@ test('production screens: START AGAIN confirms; SHARE is single-flight; rename c
   const act = read('src/screens/lab/production/ProductionActivityScreen.tsx');
   assert.match(act, /confirmDialog\(\s*'Start this exercise again\?'/);
   assert.doesNotMatch(act, /onPress=\{\(\) => void restart\(\)\}/);
-  assert.match(act, /PATHWAY_LABEL\[project\?\.pathway \?\? pathway\]/);
+  // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item PO-03): the line also names the
+  // exercise's own setting; it still reads the RESUMED attempt's pathway first (the 2026-09-30 rule).
+  assert.match(act, /exerciseSettingLine\(activityId, project\?\.pathway \?\? pathway\)/);
   const lab = read('src/screens/lab/production/ProductionLabScreen.tsx');
   // 2026-10-04: SHARE moved to the packet screen (design review #5). It is
   // single-flight there through the house latch, and the lab home has no
@@ -178,7 +181,7 @@ test('tuning saves build on the newest progress; its accuracy note no longer cla
   const t = read('src/screens/lab/tuning/TuningLabScreen.tsx');
   assert.match(t, /const base = progressRef\.current;/);
   assert.doesNotMatch(t, /persist\(\{ \.\.\.progress,/);
-  assert.doesNotMatch(t, /read through this phone's microphone/);
+  assert.doesNotMatch(t, /read through this device's microphone/);
 });
 
 test('mixing QC pages stop their staged renders on leave and lock same-frame double taps', () => {
@@ -189,7 +192,8 @@ test('mixing QC pages stop their staged renders on leave and lock same-frame dou
 
 test('tube: visits persist only once the tier is known; card re-fits on rotation; coverage rack keyed per section', () => {
   const v = read('src/screens/lab/tube/VacuumTubeLabScreen.tsx');
-  assert.match(v, /if \(!entResolved\) return;\n\s*markLabVisit\('tube'/);
+  // Since phase 3 (2026-11-14, owner decision 1) a module is marked when its goal is met, still only once the tier is known.
+  assert.match(v, /if \(!entResolved\) return;\n\s*goalsMet\.forEach\(\(key\) => markLabVisit\('tube'/);
   assert.match(read('src/screens/lab/tube/TubeCardScreen.tsx'), /\}, \[area\.w, area\.h\]\);/);
   assert.match(read('src/screens/lab/micspeaker/SpeakerCoverageLabScreen.tsx'), /<RackUnit key=\{s\.key\}/);
 });

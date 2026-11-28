@@ -193,8 +193,9 @@ function PageWelcome({ ctx }: { ctx: PageCtx }) {
       }}
     >
       <Step n={1}>
+        {/* DJ-06 (owner 2026-11-15: "build waves 1 thru 3"): the lab's big idea comes first, in place of the lab summary it now carries. */}
+        <P>{DJ_FOUR_JOBS}</P>
         <Look>You are looking at the DJ booth from above: deck A on the left, the two-channel mixer in the middle, deck B on the right. Underneath, who you are listening as.</Look>
-        <P>In this lab you put together a two-deck DJ booth on screen, learn what each part does, and see how a working DJ finds faults — all on ONE booth that stays set up from screen to screen.</P>
         <P>The music is the lab’s own, made inside the app. Your hearing comes first: loudness and time add up, and a few hours in a loud booth can use more than a whole day’s safe allowance.</P>
         <Terms items={TERMS} />
       </Step>
@@ -217,9 +218,9 @@ function PageWelcome({ ctx }: { ctx: PageCtx }) {
           eyebrow="CHECK YOURSELF"
           question="A friend’s phone shows its volume at 60 %. Is that a safe level for a two-hour session?"
           options={[
-            'You cannot tell from the setting: it depends on the headphones and the phone, so keep it low and limit the time',
-            'Yes — anything under 70 % is safe',
-            'No — anything over 50 % is dangerous',
+            'You cannot tell: it depends on the phone and the headphones',
+            'Yes — anything under 70 % is safe for that long',
+            'No — anything over 50 % is dangerous to the ear',
             'Yes, as long as the music is quiet at the start',
           ]}
           correct={0}
@@ -260,5 +261,8 @@ const styles = StyleSheet.create({
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   dose: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, letterSpacing: 0.4 },
 });
+
+/** The lab's big idea, the first line of screen 1 (DJ-06; screen 2 teaches it). */
+export const DJ_FOUR_JOBS = 'Every DJ setup does four jobs: PLAY the music, MIX it, let YOU hear the next track, and let the ROOM hear the mix. In this lab, one two-deck booth does all four, and it stays set up from screen to screen.';
 
 export const P01: PageDef = { title: 'Welcome and safe operation', short: 'WELCOME', Component: PageWelcome, manualDone: true, rack: true };

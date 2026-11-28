@@ -1,13 +1,13 @@
 /**
  * TuningLabScreen — the paced chapter shell (spec Stage 1 §5–6): the SHARED
  * LAB NAVIGATION strip (kit/LabNavBar, owner 2026-09-30 — ⏮ / ‹ PREV /
- * MODULE n / 14 ▾ / NEXT ›, FINISH › on the last chapter, CONTENTS from the
+ * CHAPTER n ▾ / NEXT ›, FINISH › on the last chapter, CONTENTS from the
  * readout), Basic View / See the Math in the header, sound status + Stop on
  * the reading chapter and the end screen (rack chapters carry ■ STOP in the
  * dock). One TuningPlayer for the whole lab, disposed on unmount; switching
  * Basic/Math never remounts the chapter (the chapter component is the same
- * element, only ctx changes). The strip calls a chapter a MODULE; the
- * chapter eyebrows inside the content keep their word.
+ * element, only ctx changes). The strip says CHAPTER too (LabNounProvider,
+ * owner decision 3, 2026-11-14: one name per unit of progress).
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -27,11 +27,12 @@ import { TuningPlayer, type PlayerStatus } from '../../../features/tuning/tuning
 import { holdTuningProgress, isTuningProgressUnreadable, loadTuningProgress, saveTuningProgress, setTuningChapterCount, tuningResetForPractice, type TuningProgress } from '../../../features/tuning/tuningProgress';
 import { ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { peekSessionWork } from '../../../features/lab/sessionCarry';
-import { CHAPTERS, CHAPTER_COUNT } from './chapters';
+import { CHAPTERS, CHAPTER_COUNT, CHAPTER_FINISH, DEEPER_CHAPTERS, DEEPER_MARK, chapterFinishLine } from './chapters';
+import { ChapterObjective } from './rackLayout';
 import type { LabCtx } from './labCtx';
 import { confirmDialog } from '../../../lib/confirm';
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
-import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
+import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, LabNounProvider, useLabNav } from '../kit/LabNavBar';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 // Tablet (owner 2026-09-29): a reading surface - capped at the reading column
 // and centred instead of running 990 pt wide. No-op on a phone.
@@ -255,7 +256,8 @@ export function TuningLabScreen() {
   const def = CHAPTERS.find((c) => c.index === chapter) ?? CHAPTERS[0];
   const isDone = !!progress?.completed.includes(chapter);
 
-  const ctx: LabCtx = { rootHz, setRootHz, mathView, reduceMotion, player, markDone, isDone, objective: def.objective };
+  // The chapter names its own task until it is done (D62 TU-03).
+  const ctx: LabCtx = { rootHz, setRootHz, mathView, reduceMotion, player, markDone, isDone, objective: def.objective, finish: isDone ? undefined : chapterFinishLine(def.index) };
   const Chapter = def.Component;
   // RACK CHAPTERS (owner, TestFlight build 32, 2026-09-30: "poor arrangement
   // of controls above displays … do a proper rack system"): a chapter that
@@ -283,21 +285,35 @@ export function TuningLabScreen() {
   // 1-based (MODULE 3 / 14); `chapter` stays the 0-based registry index. The
   // hook persists nothing — `goTo` keeps the stop-on-leave and the save.
   const units = useMemo(
-    () => CHAPTERS.map((c) => ({ id: String(c.index), title: c.title, done: !!progress?.completed.includes(c.index) })),
+    // CONTENTS marks the deeper chapter (D62 TU-05); it still counts like every chapter.
+    () => CHAPTERS.map((c) => ({ id: String(c.index), title: DEEPER_CHAPTERS.has(c.index) ? `${c.title} · ${DEEPER_MARK}` : c.title, done: !!progress?.completed.includes(c.index) })),
     [progress],
   );
   const navGo = useCallback((i: number) => goTo(CHAPTERS[i]?.index ?? 0), [goTo]);
+  // NEXT / FINISH off a chapter that completes on a plain acknowledgement
+  // (ChapterDef.ackDone) is that acknowledgement (novice audit 2026-11-14).
+  // Every other chapter still completes only on its own task.
+  const beforeAdvance = useCallback(
+    (from: number) => {
+      if (CHAPTERS[from]?.ackDone && CHAPTERS[from].index === chapter) markDone();
+    },
+    [chapter, markDone],
+  );
   const nav = useLabNav({
     units,
     index: CHAPTERS.findIndex((c) => c.index === chapter),
     ending,
     go: navGo,
+    beforeAdvance,
     finish,
     unEnd,
     reset: { label: 'START OVER (PRACTICE)', run: confirmReset },
   });
 
   return (
+    // ONE unit noun (owner decision 3, 2026-11-14): the strip, CONTENTS and the
+    // end screen all say CHAPTER, as the chapters themselves do.
+    <LabNounProvider value="chapter">
     <LabNavProvider value={nav}>
     <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
       {/* Screen Guide host: the overlay is this root's last child; a chapter
@@ -330,9 +346,13 @@ export function TuningLabScreen() {
 
       {ending ? (
         <LabEndScreen
+          labId="tuning"
           labTitle="Tuning & Temperament Lab"
           unreadable={unreadable}
-          units={CHAPTERS.map((c) => ({ id: String(c.index), label: c.title }))}
+          // Each unfinished row names its own task (fix round 2026-11-14, S2 §4); a
+          // finished row carries none, and the rule they share is said once.
+          units={CHAPTERS.map((c) => ({ id: String(c.index), label: c.title, detail: endCleared.has(String(c.index)) ? undefined : CHAPTER_FINISH[c.index] }))}
+          howItCounts="A chapter counts once its own task is done, not when it is opened; the line under each chapter names that task."
           cleared={endCleared}
           mode="progress"
           noun="chapter"
@@ -352,12 +372,7 @@ export function TuningLabScreen() {
         </View>
       ) : (
       <ScrollView ref={scrollRef} contentContainerStyle={[styles.scroll, readingColumn, { paddingBottom: 24 }]}>
-        {def.objective ? (
-          <View style={styles.objective} accessible accessibilityLabel={`In this chapter: ${def.objective}`}>
-            <Text style={styles.objectiveKicker}>IN THIS CHAPTER</Text>
-            <Text style={styles.objectiveText}>{def.objective}</Text>
-          </View>
-        ) : null}
+        {def.objective ? <ChapterObjective objective={def.objective} finish={ctx.finish} /> : null}
         <Chapter ctx={ctx} />
         {/* The reading chapter has no rack, so it draws the in-flow NEXT itself. */}
         <LabNextButton />
@@ -381,6 +396,7 @@ export function TuningLabScreen() {
       </ScreenGuideHost>
     </View>
     </LabNavProvider>
+    </LabNounProvider>
   );
 }
 
@@ -397,9 +413,6 @@ const styles = StyleSheet.create({
   rackFill: { flex: 1 },
   unreadable: { marginHorizontal: 12, marginBottom: 6 },
   creditKept: { color: colors.green, fontFamily: fonts.barlowMedium, fontSize: 13, lineHeight: 18 },
-  objective: { borderLeftWidth: 2, borderLeftColor: colors.amberLabel, paddingLeft: 10, paddingVertical: 2, gap: 2 },
-  objectiveKicker: { color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1.5 },
-  objectiveText: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18 },
   footer: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingTop: 8, borderTopWidth: 1, borderTopColor: colors.hairlineDim, backgroundColor: colors.screenBgDeep },
   sound: { flex: 1, color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 12 },
   stopBtn: { minHeight: 44, paddingHorizontal: 10, borderRadius: 10, borderWidth: 1, borderColor: '#4a2020', justifyContent: 'center', backgroundColor: '#1a0f10' },

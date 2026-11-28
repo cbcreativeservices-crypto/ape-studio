@@ -250,7 +250,7 @@ function PageEffects({ ctx }: { ctx: PageCtx }) {
         render: (w, h) => <FxStage w={w} h={h} booth={booth} motion={motion} segs={segs} focus={focus} flow={audio.flowMotion} loop={loop} />,
         bezel: [
           { k: 'EFFECT', v: `${fx.type} ${fx.on ? 'ON' : 'OFF'}`, tint: fx.on ? colors.amber : colors.textSub, flex: 1.3 },
-          { k: 'SITS ON', v: routeWord, tint: loop ? '#ff8a7e' : colors.textPrimary },
+          { k: 'SITS ON', caption: 'effect place', v: routeWord, tint: loop ? '#ff8a7e' : colors.textPrimary },
           { k: 'TIME', v: fx.type === 'REVERB' ? fxTimeWord(fx.type, fx.time) : `${Math.round(fxTimeSec(fx, bpm) * 1000)} ms`, sub: fx.type === 'REVERB' ? 'DECAY' : fxTimeWord(fx.type, fx.time), tint: colors.textPrimary },
           peakShort('BUS PEAK', busPk == null ? null : busPk <= -59.9 ? -Infinity : busPk),
         ],

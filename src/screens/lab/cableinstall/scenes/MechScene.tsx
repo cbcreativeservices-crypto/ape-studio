@@ -331,11 +331,19 @@ const BendArt = memo(function BendArt({
   );
 });
 
+/** A CHECK BEND verdict speaks for the bend it was checked at, and only that
+ *  bend (owner 2026-11-25, fix-first 15): once the slider or GENTLER/TIGHTER
+ *  moves the bend, the old "Meets the spec" / "Too tight" card and the MEETS
+ *  SPEC ✓ lock no longer describe what is drawn, so they clear until the next
+ *  check. Credit already earned is kept (the card's ✓ header stays). */
+export function bendCheckIsCurrent(verdict: 'good' | 'bad' | null, checkedT: number | null, t: number): boolean {
+  return verdict != null && checkedT != null && Math.abs(checkedT - t) < 1e-9;
+}
+
 /* ── A — one bend exercise (owns its slider so a drag re-renders one card) ─ */
 function BendCard({
   ex,
   index,
-  total,
   w,
   initialT,
   done,
@@ -345,7 +353,6 @@ function BendCard({
 }: {
   ex: (typeof CI_BEND_EXERCISES)[number];
   index: number;
-  total: number;
   w: number;
   initialT: number;
   done: boolean;
@@ -355,6 +362,11 @@ function BendCard({
 }) {
   const m = useCiMotion();
   const [t, setT] = useState(initialT);
+  // The bend the shown verdict was checked at (a completed stage arrives checked
+  // at its starting bend). See bendCheckIsCurrent.
+  const [checkedT, setCheckedT] = useState<number | null>(verdict ? initialT : null);
+  const verdictCurrent = bendCheckIsCurrent(verdict, checkedT, t);
+  const locked = done && verdictCurrent; // MEETS SPEC ✓ only beside the bend that met it
   const [dragging, setDragging] = useState(false);
   const dragRef = useRef(false);
 
@@ -425,7 +437,9 @@ function BendCard({
           accessibilityRole="button"
           accessibilityLabel={`${ex.cableName}: ease the bend — larger radius`}
         >
-          <Text style={styles.nudgeText}>− EASE</Text>
+          {/* No − / + (beginner audit 2026-11-14): "− EASE" made the ×dia
+              number go UP. The words say what happens to the bend. */}
+          <Text style={styles.nudgeText}>◂ GENTLER</Text>
         </Pressable>
         <Pressable
           style={styles.nudgeBtn}
@@ -433,18 +447,22 @@ function BendCard({
           accessibilityRole="button"
           accessibilityLabel={`${ex.cableName}: tighten the bend — smaller radius`}
         >
-          <Text style={styles.nudgeText}>+ TIGHTEN</Text>
+          <Text style={styles.nudgeText}>TIGHTER ▸</Text>
         </Pressable>
         <Pressable
-          style={[styles.checkBtn, done && styles.checkBtnDone]}
-          onPress={() => !done && onCheck(diaRef.current)}
-          disabled={done}
+          style={[styles.checkBtn, locked && styles.checkBtnDone]}
+          onPress={() => {
+            if (locked) return;
+            setCheckedT(t);
+            onCheck(diaRef.current);
+          }}
+          disabled={locked}
           accessibilityRole="button"
-          accessibilityState={{ disabled: done }}
-          aria-disabled={done}
-          accessibilityLabel={done ? `${ex.cableName}: bend meets its specification` : `Check the ${ex.cableName} bend against its specification`}
+          accessibilityState={{ disabled: locked }}
+          aria-disabled={locked}
+          accessibilityLabel={locked ? `${ex.cableName}: bend meets its specification` : `Check the ${ex.cableName} bend against its specification`}
         >
-          <Text style={[styles.checkText, done && { color: '#0a1a0f' }]}>{done ? 'MEETS SPEC ✓' : 'CHECK BEND'}</Text>
+          <Text style={[styles.checkText, locked && { color: '#0a1a0f' }]}>{locked ? 'MEETS SPEC ✓' : 'CHECK BEND'}</Text>
         </Pressable>
       </View>
   );
@@ -452,7 +470,7 @@ function BendCard({
   return (
     <View style={[styles.card, done && styles.cardDone]}>
       <Text style={styles.cardHead}>
-        {done ? '✓ ' : ''}BEND {index + 1} OF {total} — {ex.cableName.toUpperCase()}
+        {done ? '✓ ' : ''}BEND {index + 1} — {ex.cableName.toUpperCase()}
       </Text>
       <SpecCard text={ex.specText} />
       {ex.note ? <Text style={styles.exNote}>{ex.note}</Text> : null}
@@ -498,7 +516,7 @@ function BendCard({
         onDragActive={onDragActive}
       />
       {nudgeRow}
-      {verdict ? (
+      {verdict && verdictCurrent ? (
         <Appear>
           <RuleFeedback
             ruleId="mech-bend-radius"
@@ -981,7 +999,10 @@ export function MechScene({ width, completed, onComplete, openSources }: CiModul
   const checkBend = (i: number, dia: number) => {
     const ex = CI_BEND_EXERCISES[i];
     const ok = dia + 1e-6 >= ex.minRadiusDia;
-    if (!ok) badBendRef.current += 1;
+    // Only a bend that has not yet met its spec scores a miss: since a bend can be
+    // re-checked after it passed (fix-first 15), a later "Too tight" try is
+    // practice and must not lower the stage score (owner 2026-11-25, round 2).
+    if (!ok && !bendDone[i]) badBendRef.current += 1;
     const nextDone = bendDone.map((v, j) => (j === i ? v || ok : v));
     setBendDone(nextDone);
     setBendVerdict((arr) => arr.map((v, j) => (j === i ? (ok ? 'good' : 'bad') : v)));
@@ -1022,7 +1043,8 @@ export function MechScene({ width, completed, onComplete, openSources }: CiModul
       <CiSection title="A · BEND RADIUS — MEET EACH CABLE'S SPEC">
         <Text style={styles.lead}>
           Same corner, four cables. For each one: read its documentation, then set BEND TIGHTNESS until the drawn bend
-          meets THAT cable's minimum radius (the dashed arc is the spec minimum). Tighter than spec = the bend strains.
+          meets THAT cable's minimum radius (the dashed arc is the spec minimum, counted in OD: the cable's outside
+          diameter). Tighter than spec = the bend strains.
         </Text>
         <Text style={styles.tintNote}>Cable colors here are training tints — field colors vary.</Text>
         {CI_BEND_EXERCISES.map((ex, i) => (
@@ -1030,7 +1052,6 @@ export function MechScene({ width, completed, onComplete, openSources }: CiModul
             <BendCard
               ex={ex}
               index={i}
-              total={CI_BEND_EXERCISES.length}
               w={artW}
               initialT={completed ? tForDia(Math.min(R_MAX_DIA, ex.minRadiusDia + 2)) : START_T}
               done={bendDone[i]}
@@ -1042,7 +1063,7 @@ export function MechScene({ width, completed, onComplete, openSources }: CiModul
         ))}
         <Text style={styles.progressLine} accessibilityLiveRegion="polite">
           {bendsDone >= CI_BEND_EXERCISES.length ? '✓ ' : ''}
-          {bendsDone} of {CI_BEND_EXERCISES.length} bends meet their spec
+          {bendsDone === CI_BEND_EXERCISES.length ? 'Every bend has met its spec' : `${CI_BEND_EXERCISES.length - bendsDone} bend${CI_BEND_EXERCISES.length - bendsDone === 1 ? '' : 's'} still outside spec`}
         </Text>
         {bendsDone >= CI_BEND_EXERCISES.length ? (
           <Appear>
@@ -1077,7 +1098,7 @@ export function MechScene({ width, completed, onComplete, openSources }: CiModul
           Conceptual meter for judgment training — not an engineering pull calculation. Real pulls are planned from the
           cable's documentation.
         </Text>
-        <Text style={styles.lead}>Try all four pull events and watch what each does to tension:</Text>
+        <Text style={styles.lead}>Try all four pull events (moments while cable is pulled through its route) and watch what each does to tension:</Text>
         <View style={styles.chipWrap}>
           {CI_PULL_SPEC.events.map((ev) => (
             <OptionChip
@@ -1090,7 +1111,7 @@ export function MechScene({ width, completed, onComplete, openSources }: CiModul
         </View>
         <Text style={styles.progressLine} accessibilityLiveRegion="polite">
           {pullSeen.size >= CI_PULL_SPEC.events.length ? '✓ ' : ''}
-          {pullSeen.size} of {CI_PULL_SPEC.events.length} pull events explored
+          {pullSeen.size >= CI_PULL_SPEC.events.length ? 'Every pull event explored' : `${CI_PULL_SPEC.events.length - pullSeen.size} pull events still to explore`}
         </Text>
         {activePull ? (
           <Appear key={activePull.id}>

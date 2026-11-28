@@ -189,7 +189,8 @@ const READY_TERMS_METER = [
   'VU Meter (Volume Unit Meter)', 'Meter Ballistics', 'Metering', 'Peak Hold',
   'RMS', 'Crest factor', 'DC offset', 'Transient', 'Dynamic Range', 'Headroom',
   'LUFS', 'Loudness', 'Momentary loudness measurement', 'True Peak',
-  'Real-time analyzer', 'Spectrogram', 'Waterfall analysis', 'Waterfall Plot (CSD)',
+  // Fix31 (server, 2026-11-14) merged "Real-time analyzer" into this card.
+  'RTA (Real-Time Analyzer)', 'Spectrogram', 'Waterfall analysis', 'Waterfall Plot (CSD)',
   'Oscilloscope', 'Goniometer', 'Phase scope', 'Correlation', 'Stereo Image',
 ];
 

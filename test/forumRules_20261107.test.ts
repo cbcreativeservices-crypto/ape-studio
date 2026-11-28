@@ -748,7 +748,7 @@ describe('the sample never runs in production', () => {
 });
 
 describe('house rules', () => {
-  it('stays off: the one switch is still false', () => {
+  it('the one switch is on (owner 2026-11-07, forum by OTA)', () => {
     assert.match(read('src/config/communityVisible.ts'), /export const COMMUNITY_VISIBLE = true;/);
   });
 

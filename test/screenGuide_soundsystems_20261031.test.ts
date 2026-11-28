@@ -157,10 +157,15 @@ describe('2. each guide quotes its screen’s real names', () => {
   const CAP = ['PART', 'OUTPUT', 'PLACED', 'CABLES', 'LIVE', 'REQS', 'PASS'];
   const NAMES: Record<string, { exact: string[]; upper?: string[] }> = {
     hub: { exact: ['LEARN', 'BUILD', 'ROUTE', 'OPERATE', 'TROUBLESHOOT', 'WHAT IS LEFT', 'UNDERSTANDING CHECK', 'START OVER (PRACTICE)', 'SOUND SYSTEMS LAB — COMPLETE'] },
-    end: { exact: ["WHAT'S LEFT", 'LAB COMPLETE', 'REVIEW ▾', 'PRACTICE AGAIN FROM THE START', 'DONE · BACK TO SOUND SYSTEMS', 'LAB NOTES'] },
+    // Lab fix round 2026-11-14 (F2), owner: "Begin fixing all bugs found and do
+    // obvious (my decision is not required) fixes as you suggestted in the
+    // report." — a finished MODE reads "<MODE> COMPLETE" (SsPagedLab
+    // modeCompleteTitle), never "LAB COMPLETE" after one of five modes.
+    end: { exact: ["WHAT'S LEFT", 'COMPLETE', 'REVIEW ▾', 'PRACTICE AGAIN FROM THE START', 'DONE · BACK TO SOUND SYSTEMS', 'LAB NOTES'] },
     check: { exact: ['CORRECT', 'NOT QUITE — TRY ANOTHER'] },
     'The complete system': { exact: ['STAGE', 'CONSOLE · RACKS', 'LOUDSPEAKERS', 'STAGE IN', 'HOUSE', 'STATION', 'Analog snake', 'Digital stagebox', 'Passive + amps', 'Powered boxes', 'LAB NOTES', 'MULTICORE', 'NETWORK', 'Powered tops', 'Powered sub', 'SUB OUT', 'MAIN L/R', 'Snake', 'Stagebox', 'Processor', 'Amps'] },
-    'Trace the signal': { exact: ['NEXT', 'RESET', 'LIT', 'LAST', 'THREAD', 'WRONG', 'COMPLETE', 'OK', 'Source', 'Amplifier'] },
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item SS-11): the dock key is STATION, not NEXT.
+    'Trace the signal': { exact: ['STATION', 'RESET', 'LIT', 'LAST', 'THREAD', 'WRONG', 'COMPLETE', 'OK', 'Source', 'Amplifier'] },
     'Ten kinds of system': { exact: ['TYPE', 'BOXES', 'TEN KINDS OF SYSTEM', 'CHOSEN BY THE VENUE', 'A WAY TO BUILD ANY OF THEM', 'WHEN', 'NOT WHEN', 'Large-format line-array system', 'Distributed loudspeaker system', 'Small powered-loudspeaker PA', 'Outdoor performance system'] },
     'Match the venue': { exact: [] },
     'Output configurations': { exact: ['CONFIG', 'POSITIONS', 'FEEDS', 'SUBS', 'NONE', 'MONO', 'STEREO', 'THIRTEEN OUTPUT CONFIGURATIONS', 'BUSES', 'Mono', 'Stereo', 'Stereo mains with mono subwoofers', 'Stereo subwoofers', 'Lobby, recording and broadcast feeds'] },
@@ -180,7 +185,8 @@ describe('2. each guide quotes its screen’s real names', () => {
     'Processing and tuning': { exact: ['Input EQ vs system EQ', 'Parametric EQ', 'Graphic EQ', 'Limiters', 'RTA', 'SPL meter', 'Spectrogram'] },
     'Feedback control': { exact: ['SEND', 'WEDGE', 'In the live angle', 'In the null', 'NOTCH', 'LOOP LIMIT', 'MARGIN', 'LOOP', 'STABLE', 'RINGING', 'OVER'] },
     'The source-forward method': { exact: ['WALK', '▶ RUN', 'WALK AGAIN', 'START', 'READ', 'LAST', 'FAULT', 'FOUND', 'NO SIGNAL', 'OK'] },
-    'What you can now do': { exact: ['Lab home — what is left', 'NEXT'] },
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, F2 checker fix): the page title claims knowledge, not skills.
+    'What you now know': { exact: ['Lab home — what is left', 'NEXT'] },
     'The empty venue': { exact: ['PART', 'THE PARTS BIN', 'OUTPUT', 'REMOVE', 'CLEAR', 'PLACED', 'CABLES', 'LIVE', 'SILENT'] },
     'Capstone 1 · Speech system': { exact: [...CAP, 'MAIN L', 'MAIN R', 'MAIN MONO'] },
     'Capstone 2 · Small mono music system': { exact: [...CAP, 'MAIN MONO'] },
@@ -200,11 +206,11 @@ describe('2. each guide quotes its screen’s real names', () => {
     'Mute groups, solo and direct outs': { exact: ['MAIN MIX — WHO IS STILL LIVE', 'BAND MUTE', 'MAIN HEARS', 'STILL LIVE', 'CHECK', 'ALL MICS', 'MC · PB'] },
     'Matrix outputs': { exact: ['MX 2 · FRONT FILLS', 'MX 3 · LOBBY', 'MX 4 · RECORDING', 'FILLS TAKE', 'LOBBY TAKES', 'REC TAKES', 'MC → AUX 7', 'MATRICES', 'CONSOLE', 'AUX 7', 'MAIN'] },
     'Output patching': { exact: ['SOCKET', 'BUS', 'FED FROM', 'PATCHED', 'THE STAGEBOX’S LINE OUTPUTS', 'Main L', 'Main R', 'Aux 1', 'Aux 2', 'Aux 6', 'Matrix 2', 'Matrix 3', 'Wedge 1 amplifier'] },
-    'Power-up sequence': { exact: ['STEP', 'RESET', 'STEPS', 'LAST', 'ORDER', 'LIT', 'WRONG', '● ON', 'YOUR ORDER', 'Verify routing — amps OFF', 'Amps and powered boxes — LAST'] },
+    'Power-up sequence': { exact: ['STEP', 'RESET', 'STEPS', 'LAST', 'ORDER', 'LIT', 'WRONG', '● ON', 'YOUR ORDER', 'Verify routing — amps OFF', 'Amps and powered boxes'] }, // checker C1 2026-11-14 (owner: "Begin fixing all bugs found and do obvious (my decision is not required) fixes"): the STEP buttons no longer say FIRST / LAST
     'Line check': { exact: ['LINE', 'PROBE', 'MARK OK', 'MARK FAULT', 'STAGEBOX LED', 'CH METER', 'MARKED', 'LIT', 'DARK', 'MOVING', 'FLAT', 'PROC OUT', 'RIGHT FEED', 'SIGNAL', 'NONE', 'YES', 'NO', 'OUTPUTS FIRST, THEN EVERY INPUT', 'Ch 5 · Keys DI', 'Ch 7 · Backing vocal', 'Read it again'] },
     'Establish gain structure': { exact: ['PREAMP', 'WHICH STAGE', 'FADER', 'MAIN', 'PROC IN', 'PROC OUT', 'AMP', 'AT SPEAKER', 'ABOVE NOISE', 'HEADROOM', 'VERDICT', 'CLIP'], upper: ['CLIPPING', 'OK'] },
     'Ring-out and soundcheck': { exact: ['WEDGE', 'SEND', 'POSITION', 'NOTCH', 'In the live angle', 'In the null', 'W1 SINGER', 'W2 GUITAR', 'W3 BASS', 'W4 DRUMS', 'Wedge 3 · Bass', 'Wedge 1 · Singer'] },
-    'Shutdown and documentation': { exact: ['STEP', 'DOCUMENT', 'RESET', 'STEPS', 'LAST', 'ORDER', 'DARK', '○ OFF', 'YOUR ORDER', 'Console — save first', 'Mute the outputs', 'WRONG'] },
+    'Shutdown and documentation': { exact: ['STEP', 'DOCUMENT', 'RESET', 'STEPS', 'LAST', 'ORDER', 'DARK', '○ OFF', 'YOUR ORDER', 'Console', 'Mute the outputs', 'WRONG'] },
     'How the bench works': { exact: ['NO SIGNAL', 'OK', '✓✓', 'NEXT'] },
   };
   for (const g of FAULT_GROUPS as readonly { title: string }[]) NAMES[g.title] = { exact: [g.title, 'CASE', 'PROBE', 'FAULT', 'RESET', 'BENCH', 'PROBED', 'READS', 'GRADE', '✓✓'] };

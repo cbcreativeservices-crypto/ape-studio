@@ -72,7 +72,8 @@ export const M8_DELAY: EarModule = {
   title: 'Delay Recognition',
   blurb: 'Hear discrete echoes and call their time — 500 ms down to the edge of fusion.',
   phones: 'any',
-  playbackNote: 'Temporal, not spectral — any playback works.',
+  // Plain words (owner 2026-11-15, D62 ET-03): was "Temporal, not spectral".
+  playbackNote: 'This is about timing, not tone, so any speaker or headphones work.',
   // NEW COPY
   listenFor: 'Find the repeat after each pluck and feel the gap. Long gaps read as an echo; short ones blur into thickness.',
   levels: 4,
@@ -156,13 +157,15 @@ export const M13_COMB: EarModule = {
   id: 'comb',
   num: '13',
   title: 'Comb Filtering',
-  blurb: 'The phasey, hollow sound of a signal meeting a delayed copy of itself.',
+  // Says what it builds on (D62 ET-02): the hub no longer leaves that unsaid.
+  blurb: 'The phasey, hollow sound of a signal meeting a delayed copy of itself. Builds on Delay and Polarity & Phase.',
   phones: 'recommended',
   playbackNote: 'Room reflections add their own combs over speakers — genuinely confusing.',
   // NEW COPY
   listenFor: 'Hollow, phasey, "in a tube" — the comb takes evenly spaced bites out of the tone. Ignore any change in level.',
   levels: 4,
-  levelNames: ['Copy at 0 dB — deep combs', 'Copy at −3 dB', 'Copy at −6 dB', '−9 dB, ABX'],
+  // Plain words (D62 ET-03); the trials are unchanged.
+  levelNames: ['Copy as loud as the sound: deep notches', 'Copy a little quieter (−3 dB)', 'Copy quieter (−6 dB)', 'Copy much quieter (−9 dB): which one is X?'],
   makeTrial: (level, seed) => {
     const rng = rngFor(seed);
     const g = Math.pow(10, COMB_GAINS_DB[Math.min(level, 4) - 1] / 20);
@@ -227,7 +230,7 @@ export const M12_POLARITY: EarModule = {
   title: 'Polarity & Phase',
   blurb: 'Two mics on one source, summed — the snare-top/snare-bottom survival skill.',
   phones: 'recommended',
-  playbackNote: 'Hearing the low-end loss needs real LF (bass) playback; speaker-room phase is covered in the Wave lab.',
+  playbackNote: 'Hearing the low-end loss needs speakers or headphones with real bass; speaker-room phase is covered in the Wave lab.',
   // NEW COPY
   listenFor: 'Both clips are the same two mics summed — in one, a copy is flipped. Listen for the low end thinning out or vanishing.',
   levels: 3,
@@ -280,7 +283,7 @@ export const M12_POLARITY: EarModule = {
           // a hole — the caption must say so (verified 2026-10-31).
           caption:
             level === 1
-              ? `Clip ${inFirst ? 'B' : 'A'} cancelled to total silence, so its trace is a meaningless flat line, not sound. At levels 2–3 the cancellation is partial and shows as a low-frequency hole.`
+              ? `Clip ${inFirst ? 'B' : 'A'} canceled to total silence, so its trace is a meaningless flat line, not sound. At levels 2–3 the cancellation is partial and shows as a low-frequency hole.`
               : 'The flipped sum’s low-frequency hole is unmistakable once you see it.',
         },
       };
@@ -341,7 +344,8 @@ export const M9_REVERB: EarModule = {
   // NEW COPY
   listenFor: 'Ignore the notes and hear the tail: how long it lasts, how fast it blooms, and whether it wobbles.',
   levels: 5,
-  levelNames: ['Dry vs wet', 'Short / medium / long', 'Room vs hall vs plate', 'All five spaces', 'Bright vs dark'],
+  // Plain words (D62 ET-03).
+  levelNames: ['Dry vs wet (no reverb vs reverb)', 'Short / medium / long', 'Room vs hall vs plate', 'All five spaces', 'Bright vs dark'],
   makeTrial: (level, seed) => {
     const rng = rngFor(seed);
     const src = pluckPattern(rng, 0.2);

@@ -178,7 +178,8 @@ describe('every listed lab wires the shared end screen', () => {
     // Shared strip (2026-09-30): FINISH › on Module 14 runs `finish`, which
     // stops the tone and swaps the end screen in; PREV from it returns.
     assert.match(fnd, /const finish = useCallback\(\(\) => \{\s*\n\s*tone\.stop\(\);\s*\n\s*setEnding\(true\);/);
-    assert.match(fnd, /useLabNav\(\{ units: navUnits, index: step, ending, go: goTo, finish, unEnd \}\)/);
+    // Lab fix round 2026-11-14, phase 3 (owner's decision 1, "done = work done": a module counts when its own goal or check is met, not when it is opened).
+    assert.match(fnd, /useLabNav\(\{ units: navUnits, index: step, ending, go: goCredit, finish: finishCredit, unEnd \}\)/);
     assert.match(fnd, /<LabNavBar nav=\{nav\} \/>/);
   });
   it('Amp: FINISH on the last module shows the end screen in place, reachable before the final (CONTENTS → WHAT’S LEFT)', () => {

@@ -505,7 +505,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: where does a talker’s voice leave the body?', options: ['The chest', 'The mouth (and the nose)', 'The throat'], after: 'Now STEP through (or PLAY ONCE) and watch the breath, the folds, the throat and the mouth.' },
+  sound: { prompt: 'Before you step through: where does a talker’s voice leave the body?', options: ['The chest', 'The mouth (and the nose)', 'The throat'], after: 'Now go EVENT by EVENT (or PLAY ONCE) and watch the breath, the folds, the throat and the mouth.' },
   microphone: { prompt: 'Before you move anything: which mic keeps one distance from the mouth in a wide shot?', options: ['The boom', 'The body mic', 'The camera mic'], after: 'Now choose each TYPE and see where it starts.' },
   placement: { prompt: 'Predict: you bring the boom’s capsule from 110 cm to 80 cm from the lips. What changes?', options: ['More voice, less room', 'More room', 'It depends on this scene'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front of the presenter. Where will a supercardioid aimed at the mouth reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },

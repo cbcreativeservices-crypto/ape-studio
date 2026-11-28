@@ -18,6 +18,7 @@ import { TempoColumnStage } from '../art/tempoColumn';
 import { KeyStrip, PitchPlot } from '../art/keyArt';
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { waitIf } from '../goalWords';
 import { ChipRow, boothKey, stopKey } from '../dock';
 import { getBooth, updateBooth } from '../booth/boothStore';
 import { cueAtBar, useScreenSetup } from '../booth/setup';
@@ -28,6 +29,7 @@ import { pitchFor, playedBpm } from '../model/djTime';
 import { KEY_SHIFT_MAX, STRETCH_AUDIBLE, keyRelation, keyWords, playedSemis, soundingTonic, speedPlan } from '../model/djKey';
 import { useBoothKit } from './shared';
 import { Choices, EvidenceCheck, TrayNote, s2styles } from './s2kit';
+import { KEY_STAGED_NONE, keyStagedAfter, type KeyStaged } from './fixGuards';
 
 const TERMS = [
   { term: 'Key lock', def: 'The player stretches the sound in time so the tempo can move while the pitch stays. Some players call it master tempo.' },
@@ -48,7 +50,7 @@ function setB(f: (d: Booth['decks']['B']) => Partial<Booth['decks']['B']>) {
   });
 }
 
-function KeyTray() {
+function KeyTray({ onShift }: { onShift: () => void }) {
   const b = getBooth();
   const B = b.decks.B;
   const range = B.tempoRange ?? 8;
@@ -60,7 +62,7 @@ function KeyTray() {
         <LabChip label="TEMPO 0 %" selected={Math.abs(B.pitch) < 0.01} onPress={() => setB(() => ({ pitch: 0 }))} />
       </View>
       <TrayNote>MATCH sets deck B’s tempo fader so its BPM reads like deck A’s (Screen 10 shows doing it by hand).</TrayNote>
-      <Choices head="KEY SHIFT (semitones)" value={shift} items={Array.from({ length: KEY_SHIFT_MAX * 2 + 1 }, (_, i) => i - KEY_SHIFT_MAX).map((v) => ({ id: v, label: v > 0 ? `+${v}` : String(v) }))} onPick={(v) => setB(() => ({ keyShift: v as number }))} note="A shift moves the pitch only; the tempo stays where the fader is." />
+      <Choices head="KEY SHIFT (semitones)" value={shift} items={Array.from({ length: KEY_SHIFT_MAX * 2 + 1 }, (_, i) => i - KEY_SHIFT_MAX).map((v) => ({ id: v, label: v > 0 ? `+${v}` : String(v) }))} onPick={(v) => { onShift(); setB(() => ({ keyShift: v as number })); }} note="A shift moves the pitch only; the tempo stays where the fader is." />
       <Choices head="TEMPO RANGE" value={range} items={[{ id: 8, label: '±8 %' }, { id: 16, label: '±16 %' }]} onPick={(v) => setB((d) => ({ tempoRange: v as number, pitch: Math.max(-(v as number), Math.min(v as number, d.pitch)) }))} note="A wider range moves further, but every millimeter of the fader is a bigger change." />
     </View>
   );
@@ -82,6 +84,8 @@ function PageKey({ ctx }: { ctx: PageCtx }) {
   const [check, setCheck] = useState(false);
   const [faultFixed, setFaultFixed] = useState(false);
   const h = useRef({ flat: false, lock: false, stretch: false, shift: false, own: false, check: false });
+  // key lock / key shift the FAULT set, not the learner (fixGuards.keyStagedAfter)
+  const staged = useRef<KeyStaged>(KEY_STAGED_NONE);
   const A = booth.decks.A;
   const B = booth.decks.B;
   const both = A.playing && B.playing;
@@ -89,9 +93,9 @@ function PageKey({ ctx }: { ctx: PageCtx }) {
   const rel = keyRelation(A, B);
   const range = B.tempoRange ?? 8;
   if (ready && both && matched && !B.keyLock && rel === 'OUT OF TUNE') h.current.flat = true;
-  if (ready && both && matched && B.keyLock && rel !== 'OUT OF TUNE') h.current.lock = true;
+  if (ready && !staged.current.lock && both && matched && B.keyLock && rel !== 'OUT OF TUNE') h.current.lock = true;
   if (ready && B.playing && B.keyLock && B.pitch <= -12) h.current.stretch = true;
-  if (ready && B.playing && (B.keyShift ?? 0) !== 0) h.current.shift = true;
+  if (ready && !staged.current.shift && B.playing && (B.keyShift ?? 0) !== 0) h.current.shift = true;
   if (ready && B.playing && B.keyLock && Math.abs(B.pitch - 4) <= 0.3 && Math.abs(B.keyShift ?? 0) < 0.01) h.current.own = true;
   const plan = speedPlan(B);
   const stretchPct = (plan.stretch - 1) * 100;
@@ -100,7 +104,19 @@ function PageKey({ ctx }: { ctx: PageCtx }) {
   // STRETCH readout warns AUDIBLE
   if (ready && check && B.playing && B.keyLock && B.pitch <= -11.5 && audible) h.current.check = true;
   const hits = [h.current.flat, h.current.lock, h.current.stretch, h.current.shift, h.current.own, faultFixed, h.current.check];
-  const goals = GOALS_KEY.map((label, i) => ({ label, hit: hits[i] }));
+  // DJ-04 (owner 2026-11-15: "build waves 1 thru 3"): each goal set up right
+  // with its deck stopped says to press PLAY, instead of a silent ○.
+  const bStopped = !B.playing;
+  const waits = [
+    waitIf(matched && !B.keyLock && rel === 'OUT OF TUNE', !both, 'both'),
+    waitIf(!staged.current.lock && matched && !!B.keyLock && rel !== 'OUT OF TUNE', !both, 'both'),
+    waitIf(!!B.keyLock && B.pitch <= -12, bStopped, 'B'),
+    waitIf(!staged.current.shift && (B.keyShift ?? 0) !== 0, bStopped, 'B'),
+    waitIf(!!B.keyLock && Math.abs(B.pitch - 4) <= 0.3 && Math.abs(B.keyShift ?? 0) < 0.01, bStopped, 'B'),
+    undefined,
+    waitIf(check && !!B.keyLock && B.pitch <= -11.5 && audible, bStopped, 'B'),
+  ];
+  const goals = GOALS_KEY.map((label, i) => ({ label, hit: hits[i], wait: waits[i] }));
   const latched = useVisitGoals(ctx, goals, 'KEY', ready);
   const tempoKey = {
     kind: 'fader' as const,
@@ -149,15 +165,24 @@ function PageKey({ ctx }: { ctx: PageCtx }) {
           />
         ),
         bezel: [
-          { k: 'B BPM', v: bpmOf(booth, 'B').toFixed(1), sub: `A ${bpmOf(booth, 'A').toFixed(1)}`, tint: matched ? colors.green : colors.textPrimary },
-          { k: 'B PITCH', v: `${st >= 0 ? '+' : '−'}${Math.abs(st).toFixed(2)}`, vA11y: `${st >= 0 ? 'plus' : 'minus'} ${Math.abs(st).toFixed(2)} semitones`, sub: 'SEMITONES', tint: Math.abs(st - Math.round(st)) > 0.15 ? '#ff8a7e' : colors.textPrimary },
-          { k: 'B KEY', v: keyWords(B).replace(/ [+−][0-9.]+ st$/, ''), vA11y: keyWords(B), sub: keyWords(B).match(/[+−][0-9.]+ st$/)?.[0] ?? (rel ?? undefined), tint: rel === 'OUT OF TUNE' ? '#ff8a7e' : '#8fbcff' },
+          { k: 'B BPM', caption: 'beats a minute', v: bpmOf(booth, 'B').toFixed(1), sub: `A ${bpmOf(booth, 'A').toFixed(1)}`, tint: matched ? colors.green : colors.textPrimary },
+          { k: 'B PITCH', caption: 'semitones off', v: `${st >= 0 ? '+' : '−'}${Math.abs(st).toFixed(2)}`, vA11y: `${st >= 0 ? 'plus' : 'minus'} ${Math.abs(st).toFixed(2)} semitones`, sub: 'SEMITONES', tint: Math.abs(st - Math.round(st)) > 0.15 ? '#ff8a7e' : colors.textPrimary },
+          { k: 'B KEY', caption: 'musical key', v: keyWords(B).replace(/ [+−][0-9.]+ st$/, ''), vA11y: keyWords(B), sub: keyWords(B).match(/[+−][0-9.]+ st$/)?.[0] ?? (rel ?? undefined), tint: rel === 'OUT OF TUNE' ? '#ff8a7e' : '#8fbcff' },
           { k: 'STRETCH', v: B.keyLock || B.keyShift ? `${stretchPct >= 0 ? '+' : '−'}${Math.abs(stretchPct).toFixed(1)} %` : 'NONE', sub: audible ? 'AUDIBLE' : undefined, tint: audible ? '#ff8a7e' : colors.textSub },
         ],
         params: [
           tempoKey,
-          { kind: 'toggle', id: 'keylock', label: 'KEY LOCK', value: !!B.keyLock, onToggle: () => setB((d) => ({ keyLock: !d.keyLock })) },
-          { kind: 'group', id: 'key', label: 'KEY', valueLabel: `${(B.keyShift ?? 0) > 0 ? '+' : ''}${B.keyShift ?? 0} st`, valueA11y: `key shift ${B.keyShift ?? 0} semitones, tempo range ${range} percent`, render: () => <KeyTray /> },
+          {
+            kind: 'toggle',
+            id: 'keylock',
+            label: 'KEY LOCK',
+            value: !!B.keyLock,
+            onToggle: () => {
+              staged.current = keyStagedAfter(staged.current, 'lockToggle');
+              setB((d) => ({ keyLock: !d.keyLock }));
+            },
+          },
+          { kind: 'group', id: 'key', label: 'KEY', valueLabel: `${(B.keyShift ?? 0) > 0 ? '+' : ''}${B.keyShift ?? 0} st`, valueA11y: `key shift ${B.keyShift ?? 0} ${Math.abs(B.keyShift ?? 0) === 1 ? 'semitone' : 'semitones'}, tempo range ${range} percent`, render: () => <KeyTray onShift={() => (staged.current = keyStagedAfter(staged.current, 'shiftPick'))} /> },
           boothKey(booth, tr, ['A', 'B'], () => (
             <ChipRow head="LISTEN TO DECK B ALONE?" chips={[{ label: 'CH1 DOWN', on: getBooth().ch[1].fader < 0.02, onPress: () => updateBooth((x) => ({ ...x, ch: { ...x.ch, 1: { ...x.ch[1], fader: 0 } } })) }, { label: 'CH1 UP', on: getBooth().ch[1].fader > 0.5, onPress: () => updateBooth((x) => ({ ...x, ch: { ...x.ch, 1: { ...x.ch[1], fader: 0.85 } } })) }]} />
           )),
@@ -206,6 +231,7 @@ function PageKey({ ctx }: { ctx: PageCtx }) {
           symptom="Both decks are in the mix, the tempos match and the beats line up, but the melodies clash — the new track sounds wrong against the one playing."
           start={() => {
             void audio.requestSound();
+            staged.current = keyStagedAfter(staged.current, 'faultStart');
             // a DIFFERENT cause from the practice (learning review 2, p14 #1):
             // key lock is on and the tempos match, but a KEY SHIFT of +1 was
             // left over from the last blend

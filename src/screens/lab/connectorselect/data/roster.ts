@@ -73,9 +73,9 @@ export const CARD_FLAGS: Partial<Record<ConnectorId, string>> = {
 /** The four questions (Station 1 — asked before every connection, forever). */
 export const FOUR_QUESTIONS: readonly { q: string; why: string }[] = [
   { q: '1 · Does it physically fit?', why: 'Fit is the FIRST test, not the last. Passing it proves geometry, nothing else.' },
-  { q: '2 · What signal or protocol does the equipment expect?', why: 'The equipment on each end defines the job. Read the panel and the manual — not the plug.' },
+  { q: '2 · What signal or protocol (data language) does the equipment expect?', why: 'The equipment on each end defines the job. Read the panel and the manual — not the plug.' },
   { q: '3 · Is the cable construction correct?', why: 'What is inside the jacket must match the job: shielded pair, speaker gauge, 75-ohm coax, category pair, fiber.' },
-  { q: '4 · Is the connection safe?', why: 'Levels, phantom power, amplifier outputs, AC power — some wrong connections just fail; a few damage equipment.' },
+  { q: '4 · Is the connection safe?', why: 'Levels, phantom power (the +48 V a mixer sends up a mic cable), amplifier outputs, AC power — some wrong connections just fail; a few damage equipment.' },
 ];
 
 /** The lab's central lesson (owner brief, verbatim) — repeated on purpose. */

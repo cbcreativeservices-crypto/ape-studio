@@ -1,13 +1,22 @@
 /**
- * HelpKey — the consistent per-screen "?" (Pillar C, plan §4; WCAG Consistent
- * Help). A small circled key that opens the Help hub, optionally landing with
- * the search pre-filled so the answers for THIS screen surface first. Same
- * look and placement (header right) everywhere it appears.
+ * HelpKey — the consistent per-screen Help key (Pillar C, plan §4; WCAG
+ * Consistent Help). A small key that opens the Help hub, optionally landing
+ * with the search pre-filled so the answers for THIS screen surface first.
+ * Same look and placement (header right) everywhere it appears.
+ *
+ * ⛔ IT SAYS "HELP" IN WORDS (lab fix round 1, 2026-11-14, section 3 row 6 /
+ * quick win 6; owner: "Begin fixing all bugs found and do obvious ... fixes
+ * as you suggested in the report"). As a bare "?" beside the screen guide's ⓘ
+ * and the accuracy chip, "a beginner cannot tell them apart" (G2, G8, G4):
+ * one explains the screen, one opens the app's Help. The word says which.
  */
 import { Pressable, StyleSheet, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { colors, fonts } from '../theme/tokens';
 import { labProbe } from '../features/lab/labProbe';
+
+/** The key's word (row 6). */
+export const HELP_KEY_TEXT = 'HELP';
 
 export function HelpKey({ search }: { search?: string }) {
   const navigation = useNavigation<any>();
@@ -29,7 +38,7 @@ export function HelpKey({ search }: { search?: string }) {
       accessibilityRole="button"
       accessibilityLabel="Help for this screen"
     >
-      <Text style={styles.glyph}>?</Text>
+      <Text style={styles.glyph} maxFontSizeMultiplier={1.3}>{HELP_KEY_TEXT}</Text>
     </Pressable>
   );
 }
@@ -40,9 +49,11 @@ const styles = StyleSheet.create({
   // invisible on a near-black header. Now the amber ring of HelpDot, the other
   // header "?" in the app. Size and hit area unchanged; static colours, so the
   // Low-Light wash dims it.
+  // 24 pt tall as before; a word now, so the width follows it (min 24).
   key: {
-    width: 24,
+    minWidth: 24,
     height: 24,
+    paddingHorizontal: 7,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: 'rgba(255,198,77,.75)',
@@ -52,8 +63,9 @@ const styles = StyleSheet.create({
   },
   glyph: {
     fontFamily: fonts.oswaldSemiBold,
-    fontSize: 13,
-    lineHeight: 15,
+    fontSize: 11,
+    lineHeight: 14,
+    letterSpacing: 0.8,
     color: colors.amber,
   },
 });

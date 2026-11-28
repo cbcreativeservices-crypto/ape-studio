@@ -45,9 +45,11 @@ export const LABS: Record<LabKind, LabDef> = {
     lab: 'preprod',
     title: 'Audio Pre-Production',
     subtitle: 'Turn a brief into a production a crew can run.',
+    // PP-04 (owner 2026-11-15: "build waves 1 thru 3", D62): a short plain
+    // first line, then how the stages work; it replaces the long sentence.
     blurb:
-      'Everything that should happen before recording, filming, broadcasting or presenting begins. Build a plan, ' +
-      'find what is missing, and leave with a packet a crew could actually work from.',
+      'Plan a recording or a show before anyone presses record. The lab asks a producer’s questions one stage at a time, ' +
+      'names what is still missing, and leaves you with a packet a crew could work from.',
     packetName: 'Production Packet',
     newProjectNoun: 'project',
     stages: PREPROD_STAGES,
@@ -57,9 +59,12 @@ export const LABS: Record<LabKind, LabDef> = {
     lab: 'postprod',
     title: 'Audio Post-Production',
     subtitle: 'Take a folder of recordings through to a verified delivery.',
+    // PO-06 (same go): the learner is handed a folder; three chapters take it
+    // to an accepted delivery; NEXT OUTSTANDING is the way through. It
+    // replaces the old paragraph (a line in, a line out).
     blurb:
-      'Everything between a folder of recordings and a delivery somebody has accepted. Organize it, edit it, ' +
-      'build it, mix it, finish it to the specification, and prove it arrived intact.',
+      'You have been handed a folder of recordings. Three chapters (Prepare and Edit, Build and Mix, Finish and Deliver) ' +
+      'take it to a delivery somebody has accepted. In a project, follow NEXT OUTSTANDING.',
     packetName: 'Delivery Package',
     newProjectNoun: 'project',
     stages: POSTPROD_STAGES,

@@ -19,12 +19,13 @@ import { KIT } from '../shared/kitPlanModel.ts';
 import { BoomStandSide, BoomStandTop } from '../shared/cymbals/CymbalArt';
 import { KitAround, PlateGlow, kitShow, type KitPiece } from '../shared/cymbals/CymbalKitArt';
 import { StickDrummerArt, stickDrummerCovers } from '../shared/kitScene/stickPlayer';
+import { CHINA_INV, CHINA_UP } from '../shared/kitScene/kitStrokes.ts';
 import { ChinaSide, ChinaTop } from '../shared/cymbals/CymbalFxArt';
 import { kitHitTest } from '../shared/kitScene/KitSceneArt';
 import { CymbalSettingPlan } from '../shared/cymbals/CymbalSettingPlan';
 import { CYMBAL_PAGES } from '../shared/cymbals/CymbalSound';
 import { boomStandPoints } from '../shared/cymbals/cymbalSpec.ts';
-import { AREAS, CHINA_OF, R, STRIKE_INV, STRIKE_UP } from './model.ts';
+import { AREAS, CHINA_OF, R } from './model.ts';
 
 const DEG = Math.PI / 180;
 const isInv = (v: VariantId) => v === 'inverted';
@@ -33,10 +34,11 @@ const AROUND_TOP = kitShow(['crash2'], NEAR);
 
 /** The stick's bead on its spot, held by the drummer (kitScene/stickPlayer:
  *  the drawn player is also the labels' occupancy). */
-const tipOf = (variant: VariantId) => {
-  const s = isInv(variant) ? STRIKE_INV : STRIKE_UP;
-  return { x: s.x - 4, y: s.y - 4, z: s.z };
-};
+/*  Stick technique fix 2026-11-22 (owner: "It should look like normal stick
+ *  tech. usage"): a glancing blow with the stick's shoulder on the strike
+ *  spot, the real 406 mm stick (the upright China's was drawn 428 mm, longer
+ *  than any stick). kitStrokes.CHINA_UP / CHINA_INV. */
+const tipOf = (variant: VariantId) => (isInv(variant) ? CHINA_INV : CHINA_UP);
 
 export function ChinaArt({ view, variant }: { view: ViewId; variant: VariantId }) {
   const p = CHINA_OF(variant);
@@ -52,11 +54,11 @@ export function ChinaArt({ view, variant }: { view: ViewId; variant: VariantId }
   }
   return (
     <Group>
-      <StickDrummerArt view="top" tip={tipOf(variant)} part="legs" />
+      <StickDrummerArt view="top" spec={tipOf(variant)} part="legs" />
       <KitAround view="top" show={AROUND_TOP} />
       <BoomStandTop id="crash2" />
       <ChinaTop place={p} />
-      <StickDrummerArt view="top" tip={tipOf(variant)} part="upper" />
+      <StickDrummerArt view="top" spec={tipOf(variant)} part="upper" />
     </Group>
   );
 }

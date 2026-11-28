@@ -31,9 +31,15 @@ describe('Gain ChainStage keeps every column on the glass', () => {
     // Art fix 2026-10-16: `index` staggers the ripple through the chain.
     assert.match(stage, /<StageMeterV node=\{c\.node\} height=\{meterH\} shortLabel=\{shortLabel\} index=\{i\} \/>/);
   });
-  it('the short label keeps the first word ("QUIET"), the readout/FIXED tag below is untouched', () => {
+  // Changed on purpose, lab fix round 1 (owner 2026-11-14: "Begin fixing all bugs found and do
+  // obvious (my decision is not required) fixes as you suggestted in the report."): the blind first
+  // word turned TOO LOW into "TOO"; the short form keeps the word that carries the meaning.
+  it('the short label keeps the meaningful word ("QUIET", "LOW"), the readout/FIXED tag below is untouched', () => {
     const meter = body(viz, 'StageMeterV');
-    assert.match(meter, /shortLabel \? regionLabelFor\(node\)\.split\(' '\)\[0\] : regionLabelFor\(node\)/);
+    assert.match(meter, /shortLabel \? shortRegionLabel\(regionLabelFor\(node\)\) : regionLabelFor\(node\)/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, GN-02 / SH-36 checker fix): a word
+    // that fits one line (TOO LOW) is kept whole; only QUIET SOURCE shortens, to QUIET.
+    assert.match(viz, /if \(label\.length <= 8\) return label;\n  return label\.split\(' '\)\[0\];/);
     assert.match(stage, /c\.readout \? \(/);
     assert.match(stage, /<Text style=\{s\.fixedTagText\}>FIXED<\/Text>/);
   });

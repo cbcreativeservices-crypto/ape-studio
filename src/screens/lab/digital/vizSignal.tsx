@@ -37,6 +37,7 @@ import { fonts } from '../../../theme/tokens';
 import { levelColor, WAVE_LEVEL_STOPS } from '../../../features/tools/levelColor';
 import { useStageTextScale } from '../rack/stageAspect';
 import { SText } from '../stageScale';
+import { hashIndex, rigidTrace } from './timeBase';
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 
 // Lab palette (house tokens — amber signal, blue energy, green good, red problem).
@@ -466,43 +467,40 @@ export function AnalogChainView({
     [phase, wave, amp, k],
   );
 
+  // ONE time base (timeBase.ts): the voltage leaves the mic at the LEFT
+  // ("now", in step with the diaphragm) and travels right. Every vertex sits
+  // on a fixed grid of signal time, and the ADD NOISE fuzz belongs to its
+  // grid point, so a stretch keeps its shape until it leaves the glass (owner
+  // 2026-11-22: "Once a wave form has happend, it should not become some
+  // other waveform later in time"). The fuzz used to be re-drawn from screen
+  // position and a time step three times a radian, so it boiled.
   const NPTS = 150;
+  const traceSpan = cycles * 2 * Math.PI;
   const trace = useDerivedValue(() => {
-    const p = Skia.Path.Make();
-    const ph = phase.value;
-    const tq = Math.floor(ph * 3);
-    for (let i = 0; i <= NPTS; i++) {
-      const x = gx0 + (i / NPTS) * gw;
-      let v = sourceSample(wave, ph - (i / NPTS) * cycles * 2 * Math.PI) * amp;
+    const pts = rigidTrace(phase.value, traceSpan, -1, traceSpan / NPTS, (j, th) => {
+      let v = sourceSample(wave, th) * amp;
       if (distortion) v = distort(v);
       v *= polarity;
-      if (noise) v += NOISE_FUZZ * (hash(i * 31.7 + tq * 57.3) - 0.5) * 2;
-      const y = midY - v * ampPx;
+      if (noise) v += NOISE_FUZZ * (hashIndex(j * 31.7 + 5.3) - 0.5) * 2;
+      return v;
+    });
+    const p = Skia.Path.Make();
+    for (let i = 0; i < pts.length; i += 2) {
+      const x = gx0 + pts[i] * gw;
+      const y = midY - pts[i + 1] * ampPx;
       if (i === 0) p.moveTo(x, y);
       else p.lineTo(x, y);
     }
     return p;
-  }, [phase, wave, amp, distortion, polarity, noise, cycles, gx0, gw, midY, ampPx]);
+  }, [phase, wave, amp, distortion, polarity, noise, traceSpan, gx0, gw, midY, ampPx]);
 
   const traceFill = useDerivedValue(() => {
-    const p = Skia.Path.Make();
-    const ph = phase.value;
-    const tq = Math.floor(ph * 3);
-    for (let i = 0; i <= NPTS; i++) {
-      const x = gx0 + (i / NPTS) * gw;
-      let v = sourceSample(wave, ph - (i / NPTS) * cycles * 2 * Math.PI) * amp;
-      if (distortion) v = distort(v);
-      v *= polarity;
-      if (noise) v += NOISE_FUZZ * (hash(i * 31.7 + tq * 57.3) - 0.5) * 2;
-      const y = midY - v * ampPx;
-      if (i === 0) p.moveTo(x, y);
-      else p.lineTo(x, y);
-    }
+    const p = trace.value.copy();
     p.lineTo(gx0 + gw, midY);
     p.lineTo(gx0, midY);
     p.close();
     return p;
-  }, [phase, wave, amp, distortion, polarity, noise, cycles, gx0, gw, midY, ampPx]);
+  }, [trace, gx0, gw, midY]);
 
   return (
     <View style={{ width, height }}>
@@ -1009,7 +1007,7 @@ export function AAFilterView({
         </Path>
       </Canvas>
       <RNText style={[lbl.tag, { left: padL, top: 2 }]}>
-        {filterOn ? `LOW-PASS BEFORE THE SAMPLER — ${slopeDbOct} dB/OCT` : 'FILTER BYPASSED — EVERYTHING REACHES THE SAMPLER'}
+        {filterOn ? `Low-pass before the sampler: ${slopeDbOct} dB/oct` : 'Filter bypassed: everything reaches the sampler'}
       </RNText>
       <RNText style={[lbl.mono, { left: 2, top: yOf(0) - 6 }]}>0</RNText>
       <RNText style={[lbl.mono, { left: 2, top: yOf(-30) - 6 }]}>−30</RNText>

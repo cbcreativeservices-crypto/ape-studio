@@ -70,7 +70,7 @@ export const SNARE_COPY: LessonCopy = {
     workedAim: 'Aim it at the head — the lab counts it as aimed while the mic’s axis, followed down, meets the batter head. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of every part — the sticks’ path and rimshots, the hi-hat, the hoop and the rack tom. Clearance comes first, before any number, and the drummer stops before a real mic moves.',
     blocked: {},
-    reveal: 'Moving away from the rim tends to bring in more of the whole drum — and more of the kit — and drums vary, so “it depends on this drum” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear, not a promised result.',
+    reveal: 'Moving away from the rim tends to bring in more of the whole drum — and more of the kit — and drums vary, so “it depends on this drum” is fair too. Each zone’s TENDS TO HEAR line is an idea to check by ear, not a promised result.',
     typeNotes: {
       smallDynCard: 'Ideas to try: start near the rim and aim toward the center; then move one thing at a time — the rim position, the height, the angle, and which way its rear faces relative to the hi-hat.',
       clipDynCard: 'Ideas to try with a clip-on: keep the clamp where it does not hinder the rim or the tuning, then change only the angle — near 30° and near 60° from straight down give different balances of fundamental and overtones.',

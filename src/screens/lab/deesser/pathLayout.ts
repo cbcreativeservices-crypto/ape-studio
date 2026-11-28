@@ -13,7 +13,8 @@
  * (a copy of the input → band-pass → detector → threshold → gain computer) is
  * the same in both modes, and its dashed control line always lands on the
  * gain element — which in broadband mode carries the whole voice. This
- * matches deEsserModel.processFrame: split → outBody untouched, outHiss × g;
+ * matches deEsserModel.processFrame: split → outBody untouched, outHiss × the
+ * band's gain at the hiss frequency (splitBandGain; × g at the band centre);
  * broadband → both × g.
  *
  * Units are the drawing's 340-unit viewBox. Solid = audio (cyan main path,
@@ -85,7 +86,7 @@ const sideChain = (y: number, xs: [number, number, number, number], ws: [number,
   { id: 'bpf', x: xs[0], y, w: ws[0], h: PATH_BH, row: 'side', label: ['band-pass'] },
   { id: 'det', x: xs[1], y, w: ws[1], h: PATH_BH, row: 'side', label: ['detector'] },
   { id: 'thr', x: xs[2], y, w: ws[2], h: PATH_BH, row: 'side', label: ['threshold'] },
-  { id: 'gc', x: xs[3], y, w: ws[3], h: PATH_BH, row: 'side', label: ['gain comp.'] },
+  { id: 'gc', x: xs[3], y, w: ws[3], h: PATH_BH, row: 'side', label: ['how much'] }, // DES-03 checker fix: plain words (was 'gain comp.')
 ];
 const scWires = (bx: PathBox[]): PathWire[] => {
   const by = (id: PathBoxId) => bx.find((b) => b.id === id)!;

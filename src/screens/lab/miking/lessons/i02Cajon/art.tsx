@@ -15,7 +15,7 @@
  * Proportions ILLUSTRATIVE (proposal Frame J). Nothing moves.
  */
 import { useMemo } from 'react';
-import { BlurMask, DashPathEffect, Group, LinearGradient, Path, vec } from '@shopify/react-native-skia';
+import { BlurMask, DashPathEffect, Group, LinearGradient, Path, PathOp, Skia, vec } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { INK, make, oval, rrect } from '../shared/concert/paths.ts';
@@ -24,6 +24,16 @@ import { dorsalFlat, type Pt } from '../shared/smallperc/hands.ts';
 import { PlayerBehind, PlayerInFront } from '../shared/players/PlayerFigure';
 import { cajonPose } from './cajonPose.ts';
 import { poseHit } from '../shared/players/playerPose.ts';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+import { PlayerArmV2, PlayerBodyV2, PlayerSideV2, PlayerTopV2 } from '../shared/figureV2/playersV2';
+import { op, sidePaths, smoothClosed, unionOf, type SkPath } from '../shared/figureV2/paths.ts';
+import type { SidePlan } from '../shared/figureV2/sidePlan.ts';
+import { personShapes } from '../shared/figureV2/personV2';
+import { inPoly } from '../shared/figureV2/geom.ts';
+import { CAJON_PLAYER, cajonSidePlan, cajonTopPlan } from './cajonV2.ts';
+
+/** The new look (figure V2, wave 3 set 3b): the player is the drummer of the cast. */
+export const V2 = figureV2On('sidePlayers');
 import { BH, CAJ_DIMS, HX, HZ, PORT_R, stateOf, type CajState } from './model.ts';
 
 /** From above, each hand lies flat on the plate's vertical face, fingers
@@ -33,14 +43,25 @@ import { BH, CAJ_DIMS, HX, HZ, PORT_R, stateOf, type CajState } from './model.ts
  *  forward into the air past the box (clash sweep 2026-10-10). */
 const BACK = dorsalFlat(8);
 const FORESHORTEN = 0.17;
-function HandOnPlate({ x, z, right }: { x: number; z: number; right: boolean }) {
+function HandOnPlate({ x, z, right, k = FORESHORTEN }: { x: number; z: number; right: boolean; /** the foreshortening along the hand (its length seen from above) */ k?: number }) {
   // the right hand's thumb toward −z (inward), the left's toward +z
   const pl = { at: [x, z] as Pt, angle: 0, mirror: !right };
   return (
-    <Group transform={[{ translateX: x }, { scaleX: FORESHORTEN }, { translateX: -x }]}>
+    <Group transform={[{ translateX: x }, { scaleX: k }, { translateX: -x }]}>
       <Hand geo={BACK} pl={pl} />
     </Group>
   );
+}
+/**
+ * (owner 2026-11-24 on /players3b: "small paddle hands" from above) The new look: each hand at its true size
+ * (the hand-drum hand, ≈ 190 mm), its wrist ON the forearm's end (the model's wrist, just over the plate's top
+ * edge), foreshortened only as much as the hand really tilts away from the view — its own wrist → fingers line
+ * (model W → G) seen from above — so the forearm runs into the hand and the hand lies down the plate's face.
+ */
+function HandOnPlateV2({ a, right }: { a: CajState['R']; right: boolean }) {
+  const d = { x: a.G.x - a.W.x, y: a.G.y - a.W.y, z: a.G.z - a.W.z };
+  const k = Math.max(FORESHORTEN, Math.hypot(d.x, d.z) / (Math.hypot(d.x, d.y, d.z) || 1));
+  return <HandOnPlate x={a.W.x} z={a.W.z} right={right} k={k} />;
 }
 const BIRCH = ['#ecd2a2', '#d5b07a', '#b48a54', '#86622f'];
 const PLATE = ['#5b3a22', '#7a5030', '#4a2e1a'];
@@ -129,9 +150,112 @@ function BoxTop({ s }: { s: CajState }) {
 
 /* ── The seated player: the shared figure (cajonPose.ts; art fix round 3) ── */
 
-export function CajonArt({ view, variant }: { view: ViewId; variant: VariantId }) {
+const legCache = new WeakMap<SidePlan, { leg: SkPath; nearHide: SkPath; beforeFar: SkPath }>();
+/**
+ * What lies in front of each arm: `leg` the near leg's outline (thigh, knee, shin) as the figure paints it, less
+ * the shirt (over the thigh at the hip the shirt is drawn, not the leg); `beforeFar` the torso, the seat and the
+ * near leg (what the figure paints after its far arm).
+ */
+export function cajonLegRegions(plan: SidePlan): { leg: SkPath; nearHide: SkPath; beforeFar: SkPath } {
+  let r = legCache.get(plan);
+  if (!r) {
+    const P = sidePaths(plan);
+    const legNear = unionOf(smoothClosed(plan.legs.near.outline, 0.5), smoothClosed(plan.legs.near.lower, 0.4));
+    const leg = op(legNear, P.shirt, PathOp.Difference);
+    // (the near forearm lies over the thigh's top — its elbow well outside the thigh — and only the hand dives behind
+    // the leg to the plate: the leg hides what lies past the cuff's opening, a line across the wrist that IS the
+    // cuff's rim, so the occlusion never cuts the sleeve along the thigh's straight top edge)
+    const a = plan.arms.near;
+    const o = a.opening.e.c;
+    const dl = a.line[a.line.length - 1];
+    const dp = a.line[a.line.length - 2];
+    const L0 = Math.hypot(dl.u - dp.u, dl.v - dp.v) || 1;
+    const d = { u: (dl.u - dp.u) / L0, v: (dl.v - dp.v) / L0 };
+    const n = { u: -d.v, v: d.u };
+    const past = Skia.Path.Make();
+    past.moveTo(o.u + n.u * 2000, o.v + n.v * 2000);
+    past.lineTo(o.u - n.u * 2000, o.v - n.v * 2000);
+    past.lineTo(o.u - n.u * 2000 + d.u * 3000, o.v - n.v * 2000 + d.v * 3000);
+    past.lineTo(o.u + n.u * 2000 + d.u * 3000, o.v + n.v * 2000 + d.v * 3000);
+    past.close();
+    r = { leg, nearHide: op(leg, past, PathOp.Intersect), beforeFar: unionOf(P.shirt, P.trousersNear) };
+    legCache.set(plan, r);
+  }
+  return r;
+}
+
+/**
+ * THE NEAR LEG AND THE HANDS ON THE PLATE (review 2026-11-24; THE OWNER RULES — he plays the cajón). From the
+ * right the hands strike the plate BETWEEN the knees, so the near thigh and shin lie in front of them:
+ *   'trueDepth'     the near leg drawn over the hands (they show only where the leg does not cover them);
+ *   'ghostLeg'      the hands drawn, the near leg over them as a ghost (a soft outline and a faint fill), so
+ *                   the hands read through it;
+ *   'handOverKnee'  the earlier drawing: the hands over the knee.
+ * `whole`: the lesson's whole-figure views; `hands`: a picture made to SHOW the hands on the plate (a close-up).
+ */
+export const CAJON_NEAR_LEG: { whole: CajonLegMode; hands: CajonLegMode } = { whole: 'trueDepth', hands: 'ghostLeg' };
+export type CajonLegMode = 'trueDepth' | 'ghostLeg' | 'handOverKnee';
+
+export function CajonArt({ view, variant, v2 = V2, focus = 'whole' }: { view: ViewId; variant: VariantId; /** (the study page compares the old look) */ v2?: boolean; /** 'hands': a picture made to show the hands on the plate (CAJON_NEAR_LEG.hands) */ focus?: 'whole' | 'hands' }) {
   const s = stateOf(variant);
   const pose = cajonPose(view === 'top' ? 'top' : 'side', variant);
+  if (v2) {
+    // THE NEW LOOK: from above the legs, the forearms reaching to the plate, the shoulders and head, then
+    // the approved hand-drum hands on the plate; from the right the player astride the box, each hand
+    // flat on the plate's face.
+    if (view === 'top')
+      return (
+        <Group>
+          <BoxTop s={s} />
+          <PlayerTopV2 plan={cajonTopPlan(variant)} who={CAJON_PLAYER} legs bareArms />
+          <HandOnPlateV2 a={s.L} right={false} />
+          <HandOnPlateV2 a={s.R} right />
+        </Group>
+      );
+    // (review 2026-11-24: "the near hand on the plate drawn OVER the near thigh") the hands strike the plate
+    // BETWEEN the knees: from the right the near thigh and shin lie in front of the near hand (and of the far
+    // one) where they overlap — the body is drawn again, without its arms, inside the near leg's own outline
+    const plan = cajonSidePlan(variant);
+    const mode = CAJON_NEAR_LEG[focus];
+    if (mode === 'handOverKnee')
+      return (
+        <Group>
+          <BoxSide s={s} />
+          <PlayerSideV2 plan={plan} who={CAJON_PLAYER} />
+        </Group>
+      );
+    // (coordinator review 2026-11-24: "a gray hard-edged panel over the hip where the near arm meets the thigh"; "the
+    // ghost leg a translucent rectangle with a pale outline loop") — the body is no longer drawn twice. The body
+    // once, without its arms; then each arm over it, hidden only where the body truly lies in front of it: the far
+    // arm behind the torso, the seat and the near leg (as the figure itself orders it); the near arm behind the near
+    // leg alone — the leg's own outline, less the shirt that lies over the thigh at the hip (so no clip edge falls
+    // where the drawing shows no edge).
+    const L = cajonLegRegions(plan);
+    return (
+      <Group>
+        <BoxSide s={s} />
+        <PlayerBodyV2 plan={plan} who={CAJON_PLAYER} />
+        <PlayerArmV2 plan={plan} who={CAJON_PLAYER} which="far" hideIn={L.beforeFar} />
+        {mode === 'trueDepth' ? (
+          <PlayerArmV2 plan={plan} who={CAJON_PLAYER} which="near" hideIn={L.nearHide} />
+        ) : (
+          // 'ghostLeg' (a picture made to show the hands): the near arm whole, the near leg over it as a soft
+          // low-opacity veil of the trousers in the leg's own outline, with a faint soft edge
+          <Group>
+            <PlayerArmV2 plan={plan} who={CAJON_PLAYER} which="near" />
+            <Group clip={L.leg} opacity={0.3}>
+              <PlayerBodyV2 plan={plan} who={CAJON_PLAYER} />
+            </Group>
+            <Group clip={L.leg}>
+              <Path path={L.leg} style="stroke" strokeWidth={6} color="#14161b" opacity={0.35}>
+                <BlurMask blur={3} style="normal" />
+              </Path>
+            </Group>
+          </Group>
+        )}
+      </Group>
+    );
+  }
   if (view === 'top') {
     // From above: the box, then the body over its top, the forearms down to
     // the plate; each hand lies on the plate's vertical face (the back of the
@@ -173,7 +297,9 @@ export function cajonLabels(view: ViewId, variant: VariantId): ArtLabel[] {
     // The leaders land on the plate below the hands and on the wires inside
     // (they landed on the player's fingers: clash sweep 2026-10-10).
     { id: 'plate', text: 'FRONT PLATE', short: 'PLATE', u: s.plateX + 30, v: -BH + 40, align: 'left', at: { u: s.plateX - 2, v: (front ? -CAJ_DIMS.ledgeH.mm : 0) - 70 } },
-    { id: 'snares', text: 'SNARE WIRES (INSIDE)', short: 'SNARES', u: s.plateX + 30, v: -BH + 100, align: 'left', tone: 'muted', at: { u: s.plateX - 23, v: -BH + 40 }, alts: [{ u: -HX - 20, v: -BH + 60, align: 'right' }] },
+    // (second review 2026-11-24: from the plate's side its leader crossed the player's shin — the wires are named from
+    // the box's back, the leader running inside the box to them, clear of the legs)
+    { id: 'snares', text: 'SNARE WIRES (INSIDE)', short: 'SNARES', u: -HX - 20, v: -BH + 60, align: 'right', tone: 'muted', at: { u: s.plateX - 23, v: -BH + 135 }, alts: [{ u: s.plateX + 30, v: -BH + 100, align: 'left' }] },
     front ? { id: 'port', text: 'PORT ↑ (ON THE LEDGE)', short: 'PORT ↑', u: HX + 30, v: -CAJ_DIMS.ledgeH.mm + 10, align: 'left', tone: 'muted' } : { id: 'port', text: 'PORT (ON THE BACK) →', short: 'PORT →', u: -HX - 20, v: s.port.y, align: 'right', tone: 'muted', alts: [{ u: -HX - 20, v: -60, align: 'right' }] },
     { id: 'player', text: 'PLAYER, SEATED ON THE BOX', short: 'PLAYER', u: -260, v: -1250, align: 'center', tone: 'muted' },
   ];
@@ -199,6 +325,13 @@ export function cajonHitTest(view: ViewId, variant: VariantId, u: number, v: num
 
 /** The part names keep off the drawn player (side view; art fix round 3 —
  *  SNARE WIRES and FRONT PLATE sat on the hand and the knee). */
-const cajonFigureAt = (view: ViewId, variant: VariantId, u: number, v: number, tol: number) => view === 'side' && poseHit(cajonPose('side', variant), u, v, tol);
+const cajonFigureAt = (view: ViewId, variant: VariantId, u: number, v: number, tol: number) => {
+  if (view !== 'side') return false;
+  if (!V2) return poseHit(cajonPose('side', variant), u, v, tol);
+  // (the new figure: the very outlines it paints)
+  const shapes = personShapes(cajonSidePlan(variant));
+  const pts = tol > 0 ? [{ u, v }, { u: u - tol, v }, { u: u + tol, v }, { u, v: v - tol }, { u, v: v + tol }] : [{ u, v }];
+  return pts.some((q) => shapes.some((sh) => inPoly(q, sh)));
+};
 
 export const CAJ_ART: LessonArt = { Instrument: CajonArt, labels: cajonLabels, hitTest: cajonHitTest, figureAt: cajonFigureAt };

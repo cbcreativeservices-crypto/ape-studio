@@ -35,7 +35,7 @@ const PLAYER = ill('the player’s body: a drawing default (no source gives a pl
 const cap = (a: Vec3, b: Vec3, r: number): Shape3 => ({ kind: 'capsule', a, b, r });
 
 /** The slide's keep-out buffer (the lesson's "comfortable buffer"; a drawing default). */
-export const SLIDE_BUFFER: Dim = { mm: 100, prov: { kind: 'unknown', needed: 'the comfortable buffer round the slide’s travel (L45; proposal default 150, drawn 100)' }, placeholder: true };
+export const SLIDE_BUFFER: Dim = { mm: 100, prov: { kind: 'unknown', needed: 'the comfortable buffer around the slide’s travel (L45; proposal default 150, drawn 100)' }, placeholder: true };
 
 export type BrassModelOpts = {
   id: string;
@@ -126,7 +126,7 @@ export function brassModel(P: HornPose, o: BrassModelOpts): InstrumentModel {
       short: 'valve hands',
       role: 'The left hand holds the valve casings and the right hand’s fingers work the buttons, moving all the time. Keep mics, clips and cables out of this space.',
       moving: true,
-      prov: ill('env: the proposal’s 120 × 100 × 120 box round the valves, grown to hold both hands (drawing default)'),
+      prov: ill('env: the proposal’s 120 × 100 × 120 box around the valves, grown to hold both hands (drawing default)'),
       solid: { kind: 'box', min: { x: Math.min(...xsV) - 62, y: Math.min(...ys) - 45, z: pl.handL.z - 40 }, max: { x: Math.max(...xsV) + 62, y: P.valves[0].c.y + P.valves[0].h + 50, z: pl.handR.z + 40 } },
     });
   }

@@ -264,7 +264,7 @@ export const GUIDE: MixingGuide = {
   "loudness": [
     {
       "label": "Live:",
-      "text": "Lo-fi shows run from café and record-store sets (75–85 dBA) to club and festival beat sets (90–98 dBA LAeq,15min), with C-weighted levels around 100–110 dBC. The crowd often sits or sways; the goal is an immersive, warm level where people can still talk at the bar. Keep C-minus-A under about 15 dB: a sine sub that sounds polite on earbuds can boom in a room, so HPF the PA around 35–40 Hz and watch 50–80 Hz. Samplers often output consumer-level signals (−10 dBV) with noisy floors; take them through good DIs and set gain so the crackle does not become hiss. Peaks rarely need to exceed 105 dBA."
+      "text": "Lo-fi shows run from café and record-store sets (75–85 dBA) to club and festival beat sets (90–98 dBA LAeq,15min), with C-weighted levels around 100–110 dBC. The crowd often sits or sways; the goal is an immersive, warm level where people can still talk at the bar. Keep C-minus-A under about 15 dB: a sine sub that sounds tame on earbuds can boom in a room, so HPF the PA around 35–40 Hz and watch 50–80 Hz. Samplers often output consumer-level signals (−10 dBV) with noisy floors; take them through good DIs and set gain so the crackle does not become hiss. Peaks rarely need to exceed 105 dBA."
     },
     {
       "label": "Studio / streaming:",

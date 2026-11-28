@@ -20,8 +20,11 @@ import { UnderstandingCheck } from '../components/check';
 import { SPIRAL_H, SPIRAL_W, Spiral } from '../components/stageFigures';
 import { StageFit } from '../../rack/StageFit';
 import { BADGE_MODEL, TuningRackLayout, playTray, soundCell, stopKey, usePlayerStatus } from '../rackLayout';
+import { useAbHalf } from '../components/abHalf';
 
 const CHAIN = buildPythagoreanFifthChain(frac(1, 1), 12);
+/** Each single note's length (the A and B clips, and each half of A → B). */
+const NOTE_S = 1.4;
 
 export function Ch6Comma({ ctx }: ChapterProps) {
   const bSharp = fracValue(CHAIN[12].normalized); // 531441/524288 — already folded into C's octave
@@ -29,8 +32,10 @@ export function Ch6Comma({ ctx }: ChapterProps) {
   const actualHz = frequencyFromRatio(ctx.rootHz, bSharp);
   const [last, setLast] = useState<string | null>(null);
   const status = usePlayerStatus(ctx.player);
-  const a = () => renderNotes([expectedHz], 1.4, 'rich');
-  const b = () => renderNotes([actualHz], 1.4, 'rich');
+  const a = () => renderNotes([expectedHz], NOTE_S, 'rich');
+  const b = () => renderNotes([actualHz], NOTE_S, 'rich');
+  // A → B lights C, then B♯ once B sounds (audit B20; abHalf.ts).
+  const abHalf = useAbHalf(status.playing && last === 'ab', NOTE_S);
   const together = () => renderNotes([expectedHz, actualHz], 2.2, 'rich');
   const ab = () => concatWithGap(a(), b());
   usePreloadClips(ctx.player, () => [a, b, together, ab], String(ctx.rootHz));
@@ -47,15 +52,15 @@ export function Ch6Comma({ ctx }: ChapterProps) {
         // "exact ratios" badge belongs to the rails, not to this drawing.
         badge: BADGE_MODEL,
         bezel: [
-          { k: 'EXPECTED C', v: `${expectedHz.toFixed(2)} Hz`, tint: colors.green, flex: 1.2 },
-          { k: 'ACTUAL B♯', v: `${actualHz.toFixed(2)} Hz`, tint: colors.red, flex: 1.2 },
-          { k: 'GAP', v: `${PYTHAGOREAN_COMMA.cents.toFixed(2)} ¢`, tint: colors.red },
+          { k: 'EXPECTED C', v: `${expectedHz.toFixed(2)} Hz`, tint: colors.green, flex: 1.2, caption: 'where C is' },
+          { k: 'ACTUAL B♯', v: `${actualHz.toFixed(2)} Hz`, tint: colors.red, flex: 1.2, caption: 'where it lands' },
+          { k: 'GAP', v: `${PYTHAGOREAN_COMMA.cents.toFixed(2)} ¢`, tint: colors.red, caption: 'the comma' },
           soundCell(status),
         ],
         stage: (w, h) => (
           <StageFit w={w} h={h} aspect={SPIRAL_W / SPIRAL_H}>
             {/* The pick on HEAR rings the note(s) sounding — the key changes the picture. */}
-            <Spiral highlight={!status.playing && !status.rendering ? null : last === 'a' ? 'C' : last === 'b' ? 'B♯' : last ? 'both' : null} />
+            <Spiral highlight={!status.playing && !status.rendering ? null : last === 'a' ? 'C' : last === 'b' ? 'B♯' : last === 'ab' ? (abHalf === 'b' ? 'B♯' : 'C') : last ? 'both' : null} />
           </StageFit>
         ),
         params: [
@@ -79,9 +84,13 @@ export function Ch6Comma({ ctx }: ChapterProps) {
       caption={`Twelve fifths on the spiral return to C's direction but land outside it. HEAR the expected C against the actual B♯ — both in C4's register, ${expectedHz.toFixed(2)} vs ${actualHz.toFixed(2)} Hz.`}
     >
       <Lead>Twelve pure fifths almost return to the starting pitch class after seven octaves — but they miss by about {PYTHAGOREAN_COMMA.cents.toFixed(2)} cents.</Lead>
-      <FifthPath steps={CHAIN} revealed={12} dimNotes />
+      {/* The plain idea first; the fraction chain and the two formulas fold
+          under MATH (checker fix, owner 2026-11-15: "build waves 1 thru 3",
+          D62 TU-01, the same fold as the meantone chapter). */}
+      {ctx.mathView ? <FifthPath steps={CHAIN} revealed={12} dimNotes /> : null}
       <Card>
         <Eyebrow>TWO PATHS TO THE SAME PLACE — ALMOST</Eyebrow>
+        {ctx.mathView ? (
         <View style={styles.paths}>
           <View style={styles.path} accessible accessibilityLabel={`Path A, twelve fifths: three halves to the twelfth power, equals ${fracLabel(frac(Math.pow(3, 12), Math.pow(2, 12)))}`}>
             <Text style={styles.pathTitle}>PATH A · TWELVE FIFTHS</Text>
@@ -94,10 +103,24 @@ export function Ch6Comma({ ctx }: ChapterProps) {
             <Text style={styles.pathSub}>= 128</Text>
           </View>
         </View>
+        ) : (
+          <View style={styles.paths}>
+            <View style={styles.path}>
+              <Text style={styles.pathTitle}>PATH A · TWELVE FIFTHS</Text>
+              <Text style={styles.pathSub}>Twelve pure fifths up from C.</Text>
+            </View>
+            <View style={styles.path}>
+              <Text style={styles.pathTitle}>PATH B · SEVEN OCTAVES</Text>
+              <Text style={styles.pathSub}>Seven octaves up from C.</Text>
+            </View>
+          </View>
+        )}
         <Body>After twelve fifths, B♯ should represent the same pitch class as C seven octaves higher. The seven ÷2 reductions you made in Build With Pure Fifths are those seven octaves.</Body>
       </Card>
 
-      <EquationStage
+      {/* THE DERIVATION folds under MATH (owner 2026-11-15, D62 TU-01); BASIC
+          says the result in one plain line. */}
+      {ctx.mathView ? <EquationStage
         title="THE DERIVATION"
         reduceMotion={ctx.reduceMotion}
         steps={[
@@ -107,9 +130,14 @@ export function Ch6Comma({ ctx }: ChapterProps) {
           { text: `≈ ${PYTHAGOREAN_COMMA.decimalLabel}`, note: 'decimal, for reading only' },
           { text: `≈ ${PYTHAGOREAN_COMMA.cents.toFixed(2)} cents`, note: '1200 · log₂(531441/524288)', emphasis: true },
         ]}
-      />
+      /> : null}
 
-      <Body>Expected return: C at 0 ¢. Actual return: B♯ at +{PYTHAGOREAN_COMMA.cents.toFixed(2)} ¢. After seven octave reductions the expected normalized result is 1/1; the actual result is {fracLabel(CHAIN[12].normalized)}.</Body>
+      {ctx.mathView ? (
+        <Body>Expected return: C at 0 ¢. Actual return: B♯ at +{PYTHAGOREAN_COMMA.cents.toFixed(2)} ¢. After seven octave reductions the expected normalized result is 1/1; the actual result is {fracLabel(CHAIN[12].normalized)}.</Body>
+      ) : (
+        // BASIC: one plain paragraph where the chain, the derivation and the fractions were.
+        <Body>Expected return: C at 0 ¢. Actual return: B♯ at +{PYTHAGOREAN_COMMA.cents.toFixed(2)} ¢. The gap is exact, worked out with whole numbers only. MATH (top right) shows the chain of fractions and the derivation.</Body>
+      )}
 
       {ctx.mathView ? (
         <Card tone="math">
@@ -131,7 +159,7 @@ export function Ch6Comma({ ctx }: ChapterProps) {
         correct={1}
         explain="No. 3¹² = 531441 and 2¹⁹ = 524288 are different whole numbers; no power of 3/2 can ever equal a power of 2. The mismatch is exact."
         wrong={[
-          'The derivation above used whole numbers only — 531441 and 524288 — and never rounded. Where would the error come from?',
+          'Every step uses whole numbers only (MATH shows them: 531441 and 524288), and nothing is rounded. Where would the error come from?',
           undefined,
           'The chain is the same ratios from any start: 3¹² ÷ 2¹⁹ does not depend on which note you call C.',
           'Cents are only a way of READING the gap. The ratio 531441/524288 is exact before any cents are computed.',

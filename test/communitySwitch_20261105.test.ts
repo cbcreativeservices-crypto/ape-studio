@@ -18,9 +18,12 @@ describe('the one switch', () => {
     assert.equal(COMMUNITY_VISIBLE, true);
     assert.doesNotMatch(read('src/config/communityVisible.ts'), /^import /m);
   });
-  it('Home and the tab bar read it', () => {
+  it('Home and the circle menu read it (the menu replaced the tab bar, owner 2026-11-20)', () => {
     assert.match(read('src/screens/courses/CourseSelectionScreen.tsx'), /^const SHOW_COMMUNITY_ON_HOME = COMMUNITY_VISIBLE;$/m);
-    assert.match(read('src/components/nav/TabBar.tsx'), /^const SHOW_COMMUNITY_BADGE_ON_TAB = COMMUNITY_VISIBLE;$/m);
+    const menu = read('src/components/nav/CircleMenu.tsx');
+    assert.match(menu, /\{COMMUNITY_VISIBLE \? <CommunityBadge state=\{inbox\}/, 'the MENU button badge hangs on the switch');
+    assert.match(menu, /case 'comm':\n\s*if \(!COMMUNITY_VISIBLE\) return;/,'the Community circle goes nowhere while the switch is off');
+    assert.match(read('src/components/nav/CircleMenuPanel.tsx'), /circlePlaces\(COMMUNITY_VISIBLE\)/, 'the Community circle is drawn only while the switch is on');
   });
 });
 

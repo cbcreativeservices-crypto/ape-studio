@@ -19,10 +19,19 @@ import { makeHandPages, useStepper, type HandSpec } from '../shared/hand/handPag
 import { BAYAN, DAYAN, MID, TABLA_ZONES } from './geometry.ts';
 import { TablaArt, tablaHitTest, tablaLabels, tablaPose } from './art';
 import { figureCovers } from '../shared/players/PlayerFigure';
+import { personShapes } from '../shared/figureV2/personV2';
+import { inPoly } from '../shared/figureV2/geom.ts';
+import { V2 } from './art';
+import { tablaSide } from './tablaV2.ts';
 import { TablaHeads } from './TablaHeads';
 
 // figureAt: the part labels keep off the drawn player (artLabels.ts).
-export const TABLA_ART = { Instrument: TablaArt, labels: (v: 'side' | 'top') => tablaLabels(v), hitTest: tablaHitTest, figureAt: (view: 'side' | 'top', _v: string, u: number, v: number, tol: number) => figureCovers(tablaPose(view), u, v, tol) };
+export const TABLA_ART = { Instrument: TablaArt, labels: (v: 'side' | 'top') => tablaLabels(v), hitTest: tablaHitTest, figureAt: (view: 'side' | 'top', _v: string, u: number, v: number, tol: number) => (view === 'side' && V2 ? coversV2(personShapes(tablaSide().plan), u, v, tol) : figureCovers(tablaPose(view), u, v, tol)) };
+/** (figure V2) the very outlines the new player paints (side view). */
+function coversV2(shapes: { u: number; v: number }[][], u: number, v: number, tol: number): boolean {
+  const pts = tol > 0 ? [{ u, v }, { u: u - tol, v }, { u: u + tol, v }, { u, v: v - tol }, { u, v: v + tol }] : [{ u, v }];
+  return pts.some((q) => shapes.some((sh) => inPoly(q, sh)));
+}
 
 /* ═══════════════ 2 · HOW IT SOUNDS ═══════════════ */
 const n2 = (x: number, y: number) => {
@@ -55,7 +64,7 @@ function TablaSound({ lesson, answers, onAnswered, onInteractive, interactiveDon
   const d = focus === 'dayan' ? DAYAN : BAYAN;
   const pred = lesson.predictions.sound;
   const strikeBezel: BezelItem[] = [
-    { k: 'EVENT', v: `${st.shown} / ${n}`, flex: 0.8 },
+    { k: 'EVENT', v: `${st.shown}`, flex: 0.8 },
     { k: 'HEADS', v: st.shown >= 2 ? 'MOVING' : 'AT REST', flex: 1.1 },
     { k: 'BAYAN', v: st.shown >= 3 ? 'PRESSED' : '—', flex: 1.1 },
     { k: 'SOUND OUT', v: st.shown >= 4 ? 'BOTH HEADS' : '—', flex: 1.2 },
@@ -114,7 +123,7 @@ function TablaSound({ lesson, answers, onAnswered, onInteractive, interactiveDon
       well: (
         <>
           {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
-          <Landing looking="From the player’s right · the dayan in front, the bayan behind" prompt="STEP through the stroke, or PLAY ONCE — it stops at the end. Nothing here makes a sound." />
+          <Landing looking="From the player’s right · the dayan in front, the bayan behind" prompt="Go EVENT by EVENT through the stroke, or PLAY ONCE — it stops at the end. Nothing here makes a sound." />
           <Card>
             <Point title={`${st.shown} · ${stage.title.toUpperCase()}`}>{stage.text}</Point>
           </Card>

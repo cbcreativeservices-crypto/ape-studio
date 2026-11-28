@@ -29,12 +29,12 @@ import { ChapterTag, DeeperRow, GoalChips, KeyFact, LabLink, Readout, ReadoutRow
 import { GearGlyph } from './art/gearArt';
 import { benchMap, chapterOneMap, MAP_H, MAP_W, SystemMap, type MapEdge, type MapNode, type MapVariant } from './art/SystemMap';
 import { FieldKey, PLOT_H, PLOT_W, VenueView } from './art/VenueView';
-import { PLOT_BADGE, layoutToBeams, layoutToPlaced } from './plot';
+import { layoutToBeams, layoutToPlaced } from './plot';
 import { flipFader, SoundSystemsRackLayout, type SsPageDef } from './rackLayout';
 import { StageFit } from '../rack/StageFit';
 import { TitledStage } from '../rack/TitledStage';
+import { leftWord } from './fixHelpers';
 
-const MAP_BADGE = 'SYSTEM MAP — ILLUSTRATIVE · LEDs chase simulated program';
 
 /* ── 1 · The complete system ────────────────────────────────────────────── */
 
@@ -77,7 +77,7 @@ function PageSystem({ ctx }: { ctx: PageCtx }) {
       name: (n) => n.label,
       short: (n) => n.label.split(' ')[0],
       blurb: (n) => (n.kind === 'listener' ? 'The only station that cannot be replaced, moved or re-patched.' : gearSpec(n.kind).blurb),
-      empty: 'ride to inspect a station',
+      empty: 'slide to inspect a station',
     }),
     {
       kind: 'options',
@@ -133,11 +133,11 @@ function PageSystem({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
-        badge: MAP_BADGE,
+        modelNote: 'A drawing of the system; its lights follow a made-up program, not sound.',
         initialParam: 'station',
         hideDragTag: true,
         bezel: [
-          { k: 'STAGE IN', v: v.input === 'snake' ? 'SNAKE' : 'STAGEBOX', flex: 1.2 },
+          { k: 'STAGE IN', caption: 'stage input', v: v.input === 'snake' ? 'SNAKE' : 'STAGEBOX', flex: 1.2 },
           { k: 'HOUSE', v: v.house === 'passive' ? 'PASSIVE' : 'POWERED', flex: 1.2 },
           { k: 'STATION', v: node ? node.label.toUpperCase() : '—', tint: colors.cyanBright, flex: 1.5 },
           { k: 'SEEN', v: `${seen.size}`, flex: 0.7 },
@@ -149,7 +149,7 @@ function PageSystem({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Ride STATION along the signal path, or tap any station on the map. Switch the stage input and the house build and watch the map redraw — the order never changes."
+      caption="Slide STATION along the signal path, or tap any station on the map. Switch the stage input and the house build and watch the map redraw — the order never changes."
       wellTop={inspect}
     >
       <ChapterTag n={1}>UNDERSTANDING THE COMPLETE PA SYSTEM</ChapterTag>
@@ -198,7 +198,10 @@ function PageTrace({ ctx }: { ctx: PageCtx }) {
     {
       kind: 'options',
       id: 'next',
-      label: 'NEXT',
+      // SS-11 (owner 2026-11-15: "build waves 1 thru 3"): the dock key was
+      // NEXT, the same word as the page's own NEXT, so a beginner left the
+      // page by mistake. It is STATION, as on page 1.
+      label: 'STATION',
       valueLabel: last ? STATION_LABEL[last].split(' ')[0] : 'Pick',
       options: bin.map((id) => ({
         id,
@@ -218,12 +221,12 @@ function PageTrace({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
-        badge: MAP_BADGE,
+        modelNote: 'A drawing of the system; its lights follow a made-up program, not sound.',
         initialParam: 'next',
         bezel: [
-          { k: 'LIT', v: `${picked.length} / ${STATION_ORDER.length}` },
+          { k: 'LIT', v: leftWord(picked.length, STATION_ORDER.length, 'ALL LIT') },
           { k: 'LAST', v: last ? STATION_LABEL[last].toUpperCase() : '—', flex: 1.6 },
-          { k: 'THREAD', v: wrongAt >= 0 ? 'WRONG' : complete ? 'COMPLETE' : 'OK', tint: wrongAt >= 0 ? colors.red : complete ? colors.green : colors.amber },
+          { k: 'THREAD', caption: 'order so far', v: wrongAt >= 0 ? 'WRONG' : complete ? 'COMPLETE' : 'OK', tint: wrongAt >= 0 ? colors.red : complete ? colors.green : colors.amber },
         ],
         stage: (w, h) => (
           <StageFit w={w} h={h} aspect={MAP_W / MAP_H}>
@@ -232,7 +235,7 @@ function PageTrace({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Open NEXT and tap the stations in the order the signal travels — the map lights as you go, and stays open for the next one."
+      caption="Open STATION and tap the stations in the order the signal travels — the map lights as you go, and stays open for the next one."
       wellTop={
         wrongAt >= 0 ? (
           <VerdictLine ok={false}>{wrongText}</VerdictLine>
@@ -282,7 +285,7 @@ function PageSystemTypes({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
-        badge: PLOT_BADGE,
+        modelNote: 'A teaching picture of coverage, not a measurement of a real room.',
         initialParam: 'type',
         hideDragTag: true,
         // The system's NAME and SCALE were bezel cells, cropped to
@@ -292,7 +295,7 @@ function PageSystemTypes({ ctx }: { ctx: PageCtx }) {
         bezel: [
           { k: 'TYPE', v: `${SYSTEM_TYPES.indexOf(t) + 1} OF 10` },
           { k: 'BOXES', v: `${t.layout.length}`, flex: 0.7 },
-          { k: 'SEEN', v: `${seen.size}/10`, flex: 0.8 },
+          { k: 'SEEN', v: leftWord(seen.size, 10, 'ALL SEEN'), flex: 0.8 },
         ],
         stage: (w, h) => (
           <TitledStage w={w} h={h} aspect={PLOT_W / PLOT_H} title={t.name} subtitle={t.scale}>
@@ -306,7 +309,7 @@ function PageSystemTypes({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Ride TYPE through the ten systems and read each plan — where the boxes stand and what the floor gets. Eight are chosen by the venue; two are ways any of them can be built out."
+      caption="Slide TYPE through the ten systems and read each plan — where the boxes stand and what the floor gets. Eight are chosen by the venue; two are ways any of them can be built out."
     >
       <ChapterTag n={2}>PA SYSTEM TYPES</ChapterTag>
       <Body>{`${t.name} — plan view, stage at the top.`}</Body>
@@ -344,11 +347,14 @@ function PageVenueMatch({ ctx }: { ctx: PageCtx }) {
         return (
           <UnderstandingCheck
             key={v.id}
-            eyebrow={`VENUE ${i + 1} OF ${VENUE_CASES.length}`}
+            eyebrow={`VENUE ${i + 1}`}
             question={v.venue}
             options={options}
             correct={0}
             explain={v.why}
+            // each wrong pick says what THAT system is built for, so the
+            // learner compares it with the venue (lab fix 2026-11-14, phase 2, F2)
+            wrong={pool.map((k, j) => (j === 0 ? undefined : builtFor(SYSTEM_TYPES[k].when)))}
             onCorrect={() => setSolved((s) => ({ ...s, [v.id]: true }))}
           />
         );
@@ -401,7 +407,7 @@ function PageConfigs({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
-        badge: PLOT_BADGE,
+        modelNote: 'A teaching picture of coverage, not a measurement of a real room.',
         initialParam: 'config',
         hideDragTag: true,
         // The configuration's NAME cropped in its bezel cell ("TOPS AND SUBS
@@ -426,10 +432,10 @@ function PageConfigs({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Ride CONFIG through the thirteen ways the console’s outputs can reach a room: the plan shows where each loudspeaker stands, the tag beside it says what it carries, and the floor shows where that lands."
+      caption="Slide CONFIG through the thirteen ways the console’s outputs can reach a room: the plan shows where each loudspeaker stands, the tag beside it says what it carries, and the floor shows where that lands."
     >
       <ChapterTag n={3}>OUTPUT CONFIGURATIONS</ChapterTag>
-      <Body>The sectors are each loudspeaker’s nominal (−6 dB) coverage; the floor shows a simplified sum of them. Hatched floor is where two arrivals overlap and comb-filter.</Body>
+      <Body>The sectors are each loudspeaker’s nominal (−6 dB) coverage; the floor shows a simplified sum of them. Hatched floor is where two arrivals overlap: they add at some pitches and cancel at others (comb filtering), so the sound there is uneven.</Body>
       <FieldKey />
       <ReadoutRow>
         {bars.map(([feed, n]) => (
@@ -474,17 +480,25 @@ function PageChooseConfig({ ctx }: { ctx: PageCtx }) {
       {CONFIG_CASES.map((c, i) => (
         <UnderstandingCheck
           key={c.id}
-          eyebrow={`CASE ${i + 1} OF ${CONFIG_CASES.length}`}
+          eyebrow={`CASE ${i + 1}`}
           question={c.situation}
           options={[name(c.correct), ...c.distractors.map(name)]}
           correct={0}
           explain={c.why}
+          wrong={[undefined, ...c.distractors.map((d) => builtFor(OUTPUT_CONFIGS.find((o) => o.id === d)?.when))]}
           onCorrect={() => setSolved((s) => ({ ...s, [c.id]: true }))}
         />
       ))}
       <Body>{count} chosen.</Body>
     </View>
   );
+}
+
+/** A wrong pick's own line: what THAT choice is built for, to compare with
+ *  the brief (lab fix round 2026-11-14, phase 2, F2 — every wrong option used
+ *  to get the same "try again"). */
+export function builtFor(when: string | undefined): string | undefined {
+  return when ? `Not this one here. It is built for: ${when}` : undefined;
 }
 
 /* ── 7 · The routing map ────────────────────────────────────────────────── */

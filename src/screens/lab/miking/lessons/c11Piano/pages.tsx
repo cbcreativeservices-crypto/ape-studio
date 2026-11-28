@@ -15,12 +15,14 @@ import type { LessonArt } from '../../engine/scene/sceneTypes.ts';
 import type { VariantId } from '../../engine/model/types.ts';
 import { makeStringSoundPage, type RadiateOption } from '../shared/strings/PStringSound';
 import { makeStagePage } from '../shared/strings/PStagePlan';
-import { GrandPlan, Pianist, UprightPlan } from '../shared/piano/PianoArt';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+import { castFor } from '../shared/figureV2/cast';
+import { GrandPlan, Pianist, PianistHandsOver, UprightPlan } from '../shared/piano/PianoArt';
 import { GB, GS, SETUP, UP, type PianoVariant } from './model.ts';
 import { pianoAudience, pianoBoxes, pianoWideStage, pianoCue, pianoOwnFoots, pianoPlanFoots, pianoRoom, pianoSpots } from './planModel.ts';
 import { unionRect } from '../shared/planFoot.ts';
 import { PIANIST_AT } from './geometry.ts';
-import { PIANO_BASE_ART } from './art';
+import { PIANO_BASE_ART, V2 } from './art';
 import { PianoStrikeSequence } from './soundArt';
 import { PianoRadiation } from './radiateArt';
 
@@ -120,13 +122,15 @@ function OwnPlan({ variant, lit }: { variant: VariantId; lit: boolean }) {
     <Group>
       {s.kind === 'grand' ? (
         <>
-          <Pianist view="top" xKey={PIANIST_AT.grand.xKey} pedalX={PIANIST_AT.grand.pedalX} dim={0.85} />
+          <Pianist view="top" xKey={PIANIST_AT.grand.xKey} pedalX={PIANIST_AT.grand.pedalX} dim={0.85} v2={V2} />
           <GrandPlan id={s.id} lid={s.lid} />
+          <PianistHandsOver xKey={PIANIST_AT.grand.xKey} pedalX={PIANIST_AT.grand.pedalX} dim={0.85} v2={V2} />
         </>
       ) : (
         <>
-          <Pianist view="top" xKey={PIANIST_AT.upright.xKey} pedalX={PIANIST_AT.upright.pedalX} dim={0.85} />
+          <Pianist view="top" xKey={PIANIST_AT.upright.xKey} pedalX={PIANIST_AT.upright.pedalX} dim={0.85} v2={V2} />
           <UprightPlan />
+          <PianistHandsOver xKey={PIANIST_AT.upright.xKey} pedalX={PIANIST_AT.upright.pedalX} dim={0.85} v2={V2} />
         </>
       )}
       {lit ? <Path path={ownRing(variant)} style="stroke" strokeWidth={22} color="#ffc64d" /> : null}
@@ -135,6 +139,8 @@ function OwnPlan({ variant, lit }: { variant: VariantId; lit: boolean }) {
 }
 
 const SETTING = makeStagePage({
+  v2: figureV2On('sidePlayers'),
+  people: (item) => (item === 'singer' ? castFor('voice.singer') : undefined),
   Own: OwnPlan,
   ownItem: 'piano',
   ownHit: (v, u, w) => {

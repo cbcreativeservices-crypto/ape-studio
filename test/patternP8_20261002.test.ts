@@ -144,7 +144,9 @@ const STILL_TWO_STATE: Record<string, string> = {
   'screens/glossary/GlossaryScreen.tsx': 'the device-key input is passed with `resolved`; the charge is `resolved && !isMember`; capMode local is harmless before the read',
   'screens/lab/cable/CableLabScreen.tsx': 'resolved-gated noAccountRef (pinned by cableInstallComplete)',
   'screens/lab/cableinstall/CableInstallLabScreen.tsx': 'resolved-gated noAccountRef (pinned by cableInstallComplete)',
-  'screens/lab/calc/CalcWorkspaceScreen.tsx': 'resolved-gated mustSignIn',
+  // mustSignIn → guestMetered (owner 2026-11-23: "in the calculator the guest
+  // user does get an allowance per week of use"); same resolved + tierKnown gate.
+  'screens/lab/calc/CalcWorkspaceScreen.tsx': 'resolved-gated (and tierKnown-gated) guestMetered',
   'screens/lab/drumtuning/DrumTuningLabScreen.tsx': 'a comment describing the old bug; the screen uses useLabEndGuest',
   'screens/lab/foundations/FoundationsCourseScreen.tsx': 'resolved-gated noAccountRef',
   'screens/lab/kit/PagedLab.tsx': 'resolved-gated isGuest (pinned by navShellBugPass20261001; the load effect waits for resolved)',

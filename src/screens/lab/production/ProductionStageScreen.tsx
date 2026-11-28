@@ -16,12 +16,12 @@ import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../../theme/tokens';
 import type { RootStackParamList } from '../../../navigation/types';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { hiddenNoteText, labHiddenKeys, resolveLab, resolveStage } from '../../../features/production/schema';
-import type { NoticeDef } from '../../../features/production/schema';
+import type { NoticeDef, ResolvedField } from '../../../features/production/schema';
 import { StageSignalBadge } from './ReadinessMeter';
 import { readStage } from '../../../features/production/readiness';
 import { projectStore } from '../../../features/production/projectStore';
 import type { ProductionProject, FieldValue } from '../../../features/production/types';
-import { valueKey } from '../../../features/production/types';
+import { isAnswered, valueKey } from '../../../features/production/types';
 import { authoredStage, labDef } from '../../../features/production/labs';
 import { FieldRow, STATE_TINT } from './FieldRow';
 import { safeGoBack } from '../../../lib/safeGoBack';
@@ -33,9 +33,21 @@ import { reportTrainingComplete } from '../../../features/lab/trainingSignal';
 // chip, owner rule 2026-10-31); the key sits after it.
 import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
 import { productionStageGuide } from './productionScreenGuides';
+import { stageBriefLine } from './stageBriefLine';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type R = RouteProp<RootStackParamList, 'ProductionStage'>;
+
+/**
+ * The failed-write message says what happened and what to do, never a guessed
+ * cause (novice audit G4, 2026-11-14): it used to say "free up some space",
+ * and a write is also refused when the stored list cannot be read or the
+ * project is no longer there, with plenty of space free.
+ */
+const SAVE_FAILED_BANNER =
+  '⚠ THIS DEVICE COULD NOT SAVE YOUR LAST ANSWER. What you see here has not been written down. Re-enter it before you rely on this plan or export the packet; if it keeps happening, close the app and open it again.';
+const SAVE_FAILED_SPOKEN =
+  'This device could not save your last answer. What you see has not been written down. Re-enter it; if it keeps happening, close the app and open it again.';
 
 export function ProductionStageScreen() {
   const insets = useSafeAreaInsets();
@@ -187,7 +199,7 @@ export function ProductionStageScreen() {
   useEffect(() => {
     if (!saveFailed || Platform.OS !== 'ios') return;
     AccessibilityInfo.announceForAccessibility(
-      'This device could not save your last answer. What you see has not been written down — free up some space and re-enter it.',
+      SAVE_FAILED_SPOKEN,
     );
   }, [saveFailed]);
 
@@ -286,6 +298,35 @@ export function ProductionStageScreen() {
   /** This stage's guide; none for a stage this lab does not have. */
   const guide = productionStageGuide(lab, stageId);
 
+  /** The learner's own fold choice per section (phase 3; checker K2): once
+   *  they tap, their choice wins over the automatic opening. */
+  const [foldChoice, setFoldChoice] = useState<Readonly<Record<string, boolean>>>({});
+  /** One question row — drawn only once the project and stage are read. */
+  const renderField = (field: ResolvedField, sectionId: string) => {
+    if (!project || !stage || !report) return null;
+    const key = valueKey(stage.stageId, field.fieldId);
+    const fieldState = report.fields.find((f) => f.fieldId === field.fieldId)?.state ?? 'missing';
+    return (
+      <View
+        key={field.fieldId}
+        style={field.fieldId === focus ? styles.focused : undefined}
+        onLayout={(e) => {
+          fieldY.current.set(field.fieldId, { sectionId, y: e.nativeEvent.layout.y });
+          if (field.fieldId === focus) tryFocus();
+        }}
+      >
+        <FieldRow
+          field={field}
+          value={project.values[key]}
+          naReason={project.na[key]}
+          state={fieldState}
+          onChange={(v) => void setValue(field.fieldId, v)}
+          onSetNa={(reason) => void setNa(field.fieldId, reason)}
+        />
+      </View>
+    );
+  };
+
   return (
     <KeyboardAvoidingView
       style={styles.root}
@@ -326,8 +367,7 @@ export function ProductionStageScreen() {
       {saveFailed ? (
         <View style={styles.saveFailed} accessibilityRole="alert" accessibilityLiveRegion="assertive">
           <Text style={styles.saveFailedText}>
-            ⚠ THIS DEVICE COULD NOT SAVE YOUR LAST ANSWER. What you see here has not been written down — free up
-            some space and re-enter it before you rely on this plan or export the packet.
+            {SAVE_FAILED_BANNER}
           </Text>
         </View>
       ) : null}
@@ -342,7 +382,7 @@ export function ProductionStageScreen() {
               : loadState === 'unreadable'
                 ? 'This project could not be read on this device just now. Go back and open it again.'
               : loadState === 'missing'
-                ? 'This project is not on this device. Production projects are saved on the phone that created them — open it there, or start a new one from the lab home.'
+                ? 'This project is not on this device. Production projects are saved on the device that created them — open it there, or start a new one from the lab home. If you made it on this device, go back to the lab home and open it from there.'
                 : 'Opening the project…'}
           </Text>
         </View>
@@ -354,20 +394,32 @@ export function ProductionStageScreen() {
           showsVerticalScrollIndicator={false}
         >
           <Text style={styles.intro}>{stage.intro}</Text>
+          {/* PO-01 (owner 2026-11-15: "build waves 1 thru 3", D62): Stages 3 and
+              7 of Post-Production show the Stage 1 values they are checked
+              against, read-only, in one line. */}
+          {(() => {
+            const line = stageBriefLine(lab, stage.stageId, project.values);
+            return line ? <Text style={styles.briefLine}>{line}</Text> : null;
+          })()}
 
           <View style={styles.why}>
             <Text style={styles.whyHead}>WHY THIS MATTERS</Text>
             <Text style={styles.whyText}>{stage.whyItMatters}</Text>
           </View>
 
-          {stage.notices.map((n, i) => (
-            <Notice key={`stage-${i}`} notice={n} />
-          ))}
+          {/* PP-02 / PO-02 (owner 2026-11-15: "build waves 1 thru 3", D62):
+              the stage's LEGAL boxes no longer stack before the first
+              question: they fold into one line that opens them in place.
+              SAFETY and QUALIFIED PERSONNEL notices (hearing exposure, noise,
+              power, rigging) stay OPEN where they were: hearing and safety
+              text is out of this round (checker follow-up, 2026-11-15).
+              Section notices stay beside the questions they are about. */}
+          {stage.notices.length > 0 ? <StageNotices notices={stage.notices} /> : null}
 
           <View style={styles.progressRow}>
             <View style={[styles.dot, { backgroundColor: STATE_TINT[report.state] }]} />
             <Text style={styles.progressText}>
-              {`${report.answeredRequired} required decisions made · ${report.answeredAll} questions answered`}
+              {`${report.answeredRequired} required decision${report.answeredRequired === 1 ? '' : 's'} made · ${report.answeredAll} question${report.answeredAll === 1 ? '' : 's'} answered`}
             </Text>
           </View>
 
@@ -440,29 +492,43 @@ export function ProductionStageScreen() {
                   </Text>
                 )
               ) : null}
-              {section.fields.map((field) => {
-                const key = valueKey(stage.stageId, field.fieldId);
-                const fieldState = report.fields.find((f) => f.fieldId === field.fieldId)?.state ?? 'missing';
+              {(() => {
+                /* REQUIRED FIRST, THE REST FOLDED (phase 3, owner's decision 5,
+                   2026-11-14: "long pages: beginner core first … fold the depth";
+                   G4: stage 1 put 33 questions in one scroll). Each section
+                   shows its required questions, then folds its optional ones
+                   under one key. Nothing is removed. A fold is open from the
+                   start when one of its questions is already answered or
+                   marked not applicable, or when WHAT'S LEFT sent the learner
+                   to it (`focus`). */
+                const required = section.fields.filter((f) => f.required);
+                const optional = section.fields.filter((f) => !f.required);
+                const touched = (fieldId: string) => {
+                  const k = valueKey(stage.stageId, fieldId);
+                  return isAnswered(project.values[k]) || !!project.na[k]?.trim();
+                };
+                const autoOpen = optional.some((f) => f.fieldId === focus || touched(f.fieldId));
+                const moreOpen = foldChoice[section.sectionId] ?? autoOpen;
+                const rows = [...required, ...(moreOpen ? optional : [])];
                 return (
-                  <View
-                    key={field.fieldId}
-                    style={field.fieldId === focus ? styles.focused : undefined}
-                    onLayout={(e) => {
-                      fieldY.current.set(field.fieldId, { sectionId: section.sectionId, y: e.nativeEvent.layout.y });
-                      if (field.fieldId === focus) tryFocus();
-                    }}
-                  >
-                    <FieldRow
-                      field={field}
-                      value={project.values[key]}
-                      naReason={project.na[key]}
-                      state={fieldState}
-                      onChange={(v) => void setValue(field.fieldId, v)}
-                      onSetNa={(reason) => void setNa(field.fieldId, reason)}
-                    />
-                  </View>
+                  <>
+                    {rows.map((field) => renderField(field, section.sectionId))}
+                    {optional.length > 0 ? (
+                      <Pressable
+                        onPress={() => setFoldChoice((c) => ({ ...c, [section.sectionId]: !moreOpen }))}
+                        style={styles.moreKey}
+                        accessibilityRole="button"
+                        accessibilityState={{ expanded: moreOpen }}
+                        accessibilityLabel={moreOpen ? `Fold the ${optional.length} optional questions in ${section.title}` : `Show ${optional.length} more optional questions in ${section.title}`}
+                      >
+                        <Text style={styles.moreKeyText}>
+                          {moreOpen ? 'FOLD THE OPTIONAL QUESTIONS ▴' : `${optional.length} MORE QUESTION${optional.length === 1 ? '' : 'S'} · OPTIONAL · GO DEEPER ▾`}
+                        </Text>
+                      </Pressable>
+                    ) : null}
+                  </>
                 );
-              })}
+              })()}
             </View>
           ))}
 
@@ -474,7 +540,10 @@ export function ProductionStageScreen() {
                 if (focus === 'findings') tryFocus();
               }}
             >
-              <Text style={styles.findingsHead}>{lab === 'postprod' ? 'WHAT THIS PROJECT IS STILL MISSING' : 'WHAT THIS PLAN IS STILL MISSING'}</Text>
+              {/* SH-71 (owner 2026-11-15: "build waves 1 thru 3", D62): gaps are
+                  asked, Stage Plot style ("… Is that intended?"), so the list
+                  is headed as questions, not as what is missing. */}
+              <Text style={styles.findingsHead}>{lab === 'postprod' ? 'OPEN QUESTIONS IN THIS PROJECT' : 'OPEN QUESTIONS IN THIS PLAN'}</Text>
               {report.findings.map((f) => (
                 <View
                   key={f.ruleId}
@@ -507,9 +576,52 @@ export function ProductionStageScreen() {
   );
 }
 
+const noticeTint = (kind: NoticeDef['kind']) => (kind === 'qualified' ? colors.red : kind === 'safety' ? colors.orange : colors.textSub);
+const noticeHead = (kind: NoticeDef['kind']) => (kind === 'qualified' ? 'QUALIFIED PERSONNEL' : kind === 'safety' ? 'SAFETY' : 'LEGAL');
+/** Most serious first: the line's color is the first kind's. */
+const NOTICE_ORDER: readonly NoticeDef['kind'][] = ['qualified', 'safety', 'legal'];
+
+/** The one line for a stage's notices: "SAFETY · LEGAL · NOTES FOR THIS STAGE ▾". Pure. */
+export function stageNoticesLine(notices: readonly NoticeDef[], open: boolean): string {
+  const kinds = NOTICE_ORDER.filter((k) => notices.some((n) => n.kind === k)).map(noticeHead);
+  return `${kinds.join(' · ')} · ${notices.length === 1 ? 'A NOTE' : 'NOTES'} FOR THIS STAGE ${open ? '▴' : '▾'}`;
+}
+
+/** Only a LEGAL notice may fold. A SAFETY or QUALIFIED PERSONNEL notice
+ *  (hearing exposure, noise, power, rigging) is always shown open. Pure. */
+export function noticeFolds(kind: NoticeDef['kind']): boolean {
+  return kind === 'legal';
+}
+
+function StageNotices({ notices: all }: { notices: readonly NoticeDef[] }) {
+  const [open, setOpen] = useState(false);
+  const notices = all.filter((n) => noticeFolds(n.kind));
+  const shown = all.filter((n) => !noticeFolds(n.kind));
+  const first = NOTICE_ORDER.find((k) => notices.some((n) => n.kind === k)) ?? 'legal';
+  const tint = noticeTint(first);
+  return (
+    <View style={{ gap: 8 }}>
+      {shown.map((n, i) => <Notice key={`stage-open-${i}`} notice={n} />)}
+      {notices.length > 0 ? (
+      <Pressable
+        onPress={() => setOpen((o) => !o)}
+        style={[styles.notice, styles.noticeLine, { borderLeftColor: tint }]}
+        accessibilityRole="button"
+        accessibilityState={{ expanded: open }}
+        aria-expanded={open}
+        accessibilityLabel={`${notices.length === 1 ? 'A note' : `${notices.length} notes`} for this stage: ${NOTICE_ORDER.filter((k) => notices.some((n) => n.kind === k)).map((k) => noticeHead(k).toLowerCase()).join(', ')}. ${open ? 'Fold them' : 'Open them'}`}
+      >
+        <Text style={[styles.noticeHead, styles.noticeLineText, { color: tint }]}>{stageNoticesLine(notices, open)}</Text>
+      </Pressable>
+      ) : null}
+      {open ? notices.map((n, i) => <Notice key={`stage-${i}`} notice={n} />) : null}
+    </View>
+  );
+}
+
 function Notice({ notice }: { notice: NoticeDef }) {
-  const tint = notice.kind === 'qualified' ? colors.red : notice.kind === 'safety' ? colors.orange : colors.textSub;
-  const head = notice.kind === 'qualified' ? 'QUALIFIED PERSONNEL' : notice.kind === 'safety' ? 'SAFETY' : 'LEGAL';
+  const tint = noticeTint(notice.kind);
+  const head = noticeHead(notice.kind);
   return (
     <View style={[styles.notice, { borderLeftColor: tint }]}>
       <Text style={[styles.noticeHead, { color: tint }]}>{head}</Text>
@@ -559,6 +671,9 @@ const styles = StyleSheet.create({
   },
   noticeHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 0.9, marginBottom: 3 },
   noticeText: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 18, color: colors.textSub },
+  noticeLine: { minHeight: 44, justifyContent: 'center' },
+  briefLine: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 18, color: colors.textSub },
+  noticeLineText: { marginBottom: 0 },
 
   progressRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   dot: { width: 8, height: 8, borderRadius: 4 },
@@ -607,6 +722,8 @@ const styles = StyleSheet.create({
 
   /** The question WHAT'S LEFT sent the learner to. */
   focused: { borderLeftWidth: 2, borderLeftColor: colors.amber, paddingLeft: 9 },
+  moreKey: { minHeight: 44, justifyContent: 'center', borderTopWidth: 1, borderTopColor: colors.hairline, marginTop: 4 },
+  moreKeyText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1, color: colors.amber },
   hiddenNote: { fontFamily: fonts.barlowItalic, fontSize: 12, lineHeight: 17, color: colors.textMuted, marginBottom: 10 },
   leftLink: {
     marginTop: 14,

@@ -141,7 +141,7 @@ function specsFor(b: Bands): EqBandSpec[] {
   return out;
 }
 
-export function MultiBandModule(_p: EqModuleComponentProps) {
+export function MultiBandModule(p: EqModuleComponentProps) {
   const [bands, setBands] = useState<Bands>(DEFAULTS);
   const [sel, setSel] = useState<BandKey>('b1');
   const [bypass, setBypass] = useState(false);
@@ -404,7 +404,16 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
             <View style={{ width: w, height: h, justifyContent: 'center', alignItems: 'center' }}>
               <NodeDragSurface gw={gw} gh={gh} onGrab={grab} onDrag={applyDrag}>
                 {/* Every curve carries its OWN MIDI colour (set per-curve above). */}
-                <ResponseCurveGraph curves={curves} dbRange={DB_RANGE} width={gw} height={gh} />
+                {/* The selected bell's marker (owner 2026-11-25, audit B2): every band
+                    starts at 0 dB, flat, so FREQ and Q show on the glass as its
+                    centre line and half-gain bandwidth (Q), in the band's own colour. */}
+                <ResponseCurveGraph
+                  curves={curves}
+                  dbRange={DB_RANGE}
+                  width={gw}
+                  height={gh}
+                  band={selBell && selBell.on ? { f: selBell.f, q: selBell.q, color: BAND_COLOR[sel] } : undefined}
+                />
                 <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
                   pointerEvents="none"
                   style={StyleSheet.absoluteFill}
@@ -458,17 +467,24 @@ export function MultiBandModule(_p: EqModuleComponentProps) {
         </Text>
 
         {/* Retrieval (learning pass 2026-08-31) — NEW COPY, owner review. */}
+        {/* Work done (phase 3): this module counts when its check is answered right. */}
         <CheckQuestion
+          onSolved={p.onDone}
           spec={{
             question: 'Two +6 dB bells are both centered at 1 kHz. What does the signal experience there?',
             options: [
-              'More than +6 dB — the skirts add on top of each other',
-              'Exactly +6 dB — the louder band wins',
-              '+3 dB — they average',
+              'More than +6 dB: the two add up',
+              'Exactly +6 dB: the louder band wins',
+              '+3 dB: the two bands average out',
             ],
             correctIdx: 0,
             reveal:
-              'Band responses SUM. Where two boosts overlap, the composite rises above either one — which is how polite-looking bands quietly stack into an ugly bump. Read the combined curve, not the knobs.',
+              'Band responses SUM. Where two boosts overlap, the composite rises above either one — which is how modest-looking bands quietly stack into an ugly bump. Read the combined curve, not the knobs.',
+            // A reason per wrong option (phase 2, F5's `why`): names the mix-up, never the answer.
+            why: {
+              1: 'Bands do not compete; each one acts on the sound. Watch the bold combined curve.',
+              2: 'Band responses do not average. Drag two bells onto one frequency and watch the combined curve.',
+            },
             wrongHint: 'Drag two bells onto the same frequency and watch the composite line.',
           }}
         />

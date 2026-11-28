@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { PageHero, Section, BrandLine, List, CTARow } from "@/components/content";
 import { PageAtmosphere } from "@/components/Atmosphere";
 import { PHILOSOPHY } from "@/lib/brand";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
+  path: "/academy",
   title: "The Academy",
   description:
     "What Pro Audio Training Academy is: structured professional audio education combining terminology, curriculum, references, study, assessment, progress, and credentials.",
-};
+  image: "/og/og-academy.png",
+});
 
 export default function Page() {
   return (

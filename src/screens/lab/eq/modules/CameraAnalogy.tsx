@@ -28,7 +28,9 @@
 import { useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Ellipse, G, Line, Path, Polygon, Rect } from 'react-native-svg';
-import { FigureStandingFrontSvg } from '../../../../features/lab/figureBodySvg';
+// (figure V2, wave 7 of D78: the person is a cast member from the front, the approved drawing in SVG, 1.745 m as before)
+import { PersonFrontSvg } from '../../../../features/lab/figureV2Svg';
+import { castFor } from '../../miking/lessons/shared/figureV2/cast';
 import { eqResponseDb, type ResponseCurve } from '../../../../features/lab/fxViz';
 import { ResponseCurveGraph } from './eqResponseGraph';
 import { CheckQuestion, type CheckSpec } from '../../foundations/bits';
@@ -100,6 +102,11 @@ const CHECK: CheckSpec = {
   correctIdx: 1,
   reveal:
     'Zoom in = see less of the room = a narrower frequency region = HIGHER Q. Remember: Q works opposite the apparent width.',
+  // A reason per wrong option (phase 2, F5's `why`): names the mix-up, never the answer.
+  why: {
+    0: 'Zooming in shows less of the room, not more. Think about which way the band’s width moves.',
+    2: 'The analogy never maps gain: the camera only aims and zooms.',
+  },
   wrongHint: 'The analogy never maps gain — and zooming IN sees LESS of the room.',
 };
 
@@ -147,7 +154,7 @@ function RoomScene({ aimX, halfW, width }: { aimX: number; halfW: number; width:
           head): the shared standing FIGURE, front view, at the room's scale
           (≈ 37.7 units/m: an adult 1.75 m = 66 units, crown at y 50), feet
           on the floor, centred; the figure's own skin-silhouette head. */}
-      <FigureStandingFrontSvg cx={160} floorY={FLOOR_Y} px={0.0377} minContour={0.7} />
+      <PersonFrontSvg cx={160} floorY={FLOOR_Y} px={0.0377} who={castFor('eq.person')} heightMm={1745} />
 
       {/* FLOOR LAMP — base, pole, shade */}
       <Ellipse cx={214} cy={116} rx={10} ry={2.6} fill={FILL2} stroke={INK} strokeWidth={1.2} />
@@ -285,11 +292,13 @@ export function CameraAnalogyModule(p: EqModuleComponentProps) {
         size: 'L',
         fullScreen: true,
         badge: 'REAL PEAKING RESPONSE AT A FIXED +9 dB — GAIN IS NOT PART OF THE ANALOGY',
+        // Phase 3 (owner's decision 3): one plain sentence instead of an all-caps badge.
+        modelNote: 'A real bell, boosted a fixed +9 dB: on this page you only aim and zoom.',
         bezel: [
-          { k: 'EQ TYPE', v: STAGE_SHORT[stage], flex: 1.1 },
+          { k: 'EQ TYPE', caption: 'kind of EQ', v: STAGE_SHORT[stage], flex: 1.1 },
           { k: 'FREQ', v: fmtHz(eqFreq) },
-          { k: 'Q', v: stage === 0 ? 'FIXED' : q.toFixed(2) },
-          { k: 'WIDTH', v: stage === 0 ? 'FIXED' : `${bwOct.toFixed(2)} oct` },
+          { k: 'Q', caption: 'how wide', v: stage === 0 ? 'FIXED' : q.toFixed(2) },
+          { k: 'WIDTH', caption: 'zoom', v: stage === 0 ? 'FIXED' : `${bwOct.toFixed(2)} oct` },
         ],
         // One figure, two pixel-aligned panels: the room over the response, on
         // a shared log-frequency axis — held to its own shape and centred so
@@ -332,7 +341,8 @@ export function CameraAnalogyModule(p: EqModuleComponentProps) {
         a NARROWER bandwidth and a HIGHER Q. Gain (boost or cut) is the next lesson.
       </Text>
 
-      <CheckQuestion spec={CHECK} />
+      {/* Work done (phase 3, owner's decision 1): this module counts when its check is answered right. */}
+      <CheckQuestion spec={CHECK} onSolved={p.onDone} />
     </RackUnit>
   );
 }

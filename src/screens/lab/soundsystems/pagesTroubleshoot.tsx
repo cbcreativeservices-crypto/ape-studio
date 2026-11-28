@@ -25,30 +25,20 @@ import { ChapterTag, DeeperRow, GoalChips, KeyFact, LabLink, useVisitGoals, Verd
 import { benchMap, MAP_H, MAP_W, ReadingKey, SystemMap, type MapNode, type MapState } from './art/SystemMap';
 import { SoundSystemsRackLayout, type SsPageDef } from './rackLayout';
 import { TitledStage } from '../rack/TitledStage';
+import { canName, faultKeyId, mapReadout, NAME_NEEDS_A_PROBE, readoutOf } from './fixHelpers';
 
 export function stateOf(r: Reading): MapState {
   if (r.flags && r.flags.length) return r.signal === 'clip' ? 'clip' : r.signal === 'hot' ? 'hot' : 'flag';
   return r.signal === 'ok' ? 'ok' : r.signal === 'none' ? 'none' : r.signal === 'low' ? 'flag' : r.signal === 'hot' ? 'hot' : 'clip';
 }
 
-/** The short readout printed under a probed station. */
-export function readoutOf(r: Reading): string {
-  const flag = r.flags?.[0];
-  const sig = r.signal === 'ok' ? 'OK' : r.signal === 'none' ? 'NO SIGNAL' : r.signal === 'low' ? 'LOW' : r.signal === 'hot' ? 'HOT' : 'CLIP';
-  return flag ? `${sig} · ${flag.toUpperCase()}` : sig;
-}
+// The readout words, the FAULT lock and the per-case tray id are pure
+// helpers (lab fix round 2026-11-14, F2) so the tests reach them.
+export { readoutOf, mapReadout } from './fixHelpers';
 
-/** The one word printed under a probed station on the map: the flag when the
- *  station carries one (it is the diagnostic word — HUM, INTERMITTENT), else
- *  the signal. Two words side by side do not fit under neighbouring stations
- *  at a readable size; the full reading is on the bezel (READS) and in the
- *  PROBE list. */
-function mapReadout(r: Reading): string {
-  const flag = r.flags?.[0];
-  return flag ? flag.replace(/([a-z])([A-Z])/g, '$1 $2').toUpperCase() : readoutOf(r);
-}
 
-const BENCH_BADGE = 'THE BENCH — ILLUSTRATIVE · readings from sample faults';
+/** Where the bench intro's worked example stops (its answer). */
+export const BENCH_EXAMPLE_STOP: Station = 'processor';
 
 function shuffled(n: number): number[] {
   const idx = Array.from({ length: n }, (_, i) => i);
@@ -72,6 +62,11 @@ function GroupPage({ group, ctx }: { group: FaultGroup; ctx: PageCtx }) {
   /** How many probes had been taken when the current pick was made. */
   const [pickedAt, setPickedAt] = useState(0);
   const [order, setOrder] = useState<number[]>([]);
+  /** One count per case run (a new case, or RESET): the FAULT key's id
+   *  carries it, so the dock's open FAULT tray from the LAST case closes
+   *  when a new case goes on the bench — it covered NEXT and showed the
+   *  answers before any probe (lab fix round 2026-11-14, F2, quick win 10). */
+  const [run, setRun] = useState(0);
   const solvedHere = cases.filter((c) => progress.faults.includes(c.id)).length;
   const forwardHere = cases.filter((c) => progress.forward.includes(c.id)).length;
   const goals = [{ label: `Solve all ${cases.length} faults`, hit: solvedHere >= cases.length }, { label: 'Solve at least one with a source-forward walk', hit: forwardHere >= 1 }];
@@ -82,6 +77,7 @@ function GroupPage({ group, ctx }: { group: FaultGroup; ctx: PageCtx }) {
     setProbes([]);
     setLast(null);
     setPick(null);
+    setRun((n) => n + 1);
     const next = id ? cases.find((x) => x.id === id) : undefined;
     setOrder(next ? shuffled(next.options.length) : []);
   };
@@ -114,14 +110,16 @@ function GroupPage({ group, ctx }: { group: FaultGroup; ctx: PageCtx }) {
   const gradeText = grade
     ? grade.correct
       ? `Correct${grade.forward ? ' — and a source-forward walk' : ' — but not a forward walk'}. ${grade.probes} probe${grade.probes === 1 ? '' : 's'}; a disciplined walk from ${c ? label(c.startAt) : ''} needs ${grade.minimal}.`
-      : `Not this one. ${grade.sawFault ? 'You have already read the station that changed — look at that reading again.' : 'You have not yet read the station where the reading changes. Keep walking forward.'} FAULT re-opens after your next probe.`
+      : // the option's own reason first (lab fix round 2026-11-14, phase 2, F2)
+        `Not this one. ${c && pick != null && c.why?.[pick] ? `${c.why[pick]} ` : ''}${grade.sawFault ? 'You have already read the station that changed — look at that reading again.' : 'You have not yet read the station where the reading changes. Keep walking forward.'} FAULT re-opens after your next probe.`
     : null;
   const params: DockParam[] = [
     {
       kind: 'options',
       id: 'case',
       label: 'CASE',
-      valueLabel: c ? `${cases.indexOf(c) + 1}/${cases.length}` : 'Pick',
+      valueLabel: c ? `${cases.indexOf(c) + 1}` : 'Pick',
+      valueA11y: c ? c.title : 'pick a case',
       options: cases.map((f) => ({
         id: f.id,
         label: `${progress.faults.includes(f.id) ? (progress.forward.includes(f.id) ? '✓✓ ' : '✓ ') : '○ '}${f.title}`,
@@ -136,7 +134,8 @@ function GroupPage({ group, ctx }: { group: FaultGroup; ctx: PageCtx }) {
             kind: 'options',
             id: 'probe',
             label: 'PROBE',
-            valueLabel: last ? readoutOf(c.reads[last]).split(' ')[0] : `${probes.length}`,
+            valueLabel: last ? mapReadout(c.reads[last]) : `${probes.length}`,
+            valueA11y: last ? `${label(last)}: ${readoutOf(c.reads[last])}` : `${probes.length} probed`,
             options: STATION_ORDER.map((s) => ({
               id: s,
               label: `${probes.includes(s) ? `${readoutOf(c.reads[s])} · ` : ''}${label(s)}`,
@@ -148,20 +147,25 @@ function GroupPage({ group, ctx }: { group: FaultGroup; ctx: PageCtx }) {
           } as DockParam,
           {
             kind: 'options',
-            id: 'fault',
+            // A new id per case run, and once more when the case is solved:
+            // the tray closes so the debrief and NEXT are in view.
+            id: faultKeyId(run, solved),
             label: 'FAULT',
-            valueLabel: grade ? (grade.correct ? '✓' : '✗') : 'Name it',
+            valueLabel: grade ? (grade.correct ? '✓' : '✗') : probes.length === 0 ? 'Probe first' : 'Name it',
+            // Naming needs a reading (lab fix round 2026-11-14, F2: a
+            // 0-probe answer counted as solved).
+            locked: probes.length === 0 && pick == null ? NAME_NEEDS_A_PROBE : undefined,
             options: order.map((i) => ({ id: `${i}`, label: c.options[i], blurb: pick === i && gradeText ? gradeText : locked ? 'Probe another station before naming the fault again.' : 'Tap to name this as the fault.' })),
             selectedId: pick == null ? null : `${pick}`,
             onSelect: (id) => {
-              if (solved || locked) return;
+              if (!canName(solved, locked, probes.length)) return;
               setPick(Number(id));
               setPickedAt(probes.length);
             },
             sticky: true,
           } as DockParam,
           ...(probes.length || pick != null
-            ? [{ kind: 'action', id: 'reset', label: 'RESET', onPress: () => { setProbes([]); setLast(null); setPick(null); }, tint: colors.red } as DockParam]
+            ? [{ kind: 'action', id: 'reset', label: 'RESET', onPress: () => { setProbes([]); setLast(null); setPick(null); setRun((n) => n + 1); }, tint: colors.red } as DockParam]
             : []),
           { kind: 'action', id: 'bench', label: 'BENCH', onPress: () => openCase(null) } as DockParam,
         ]
@@ -192,7 +196,9 @@ function GroupPage({ group, ctx }: { group: FaultGroup; ctx: PageCtx }) {
         <Text style={styles.symptom}>{c.symptom}</Text>
         <Body>{c.setup}</Body>
       </Card>
-      <Prompt>{probes.length === 0 ? `The symptom clears everything before ${label(c.startAt).toUpperCase()}. Start there and walk forward.` : 'Keep walking forward until the reading changes — then name the fault.'}</Prompt>
+      {/* The step line follows the walk (checker C1): it went stale once a
+          reading had changed and after the case was solved. */}
+      <Prompt>{probes.length === 0 ? `The symptom clears everything before ${label(c.startAt).toUpperCase()}. Start there and walk forward.` : solved ? 'Solved. Read WHY, THE FIX and THE WALK below.' : reading && stateOf(reading) !== 'ok' ? 'This reading is not healthy. Open FAULT and name what you think changed here, or probe one more station to be sure.' : 'Keep walking forward until the reading changes — then name the fault.'}</Prompt>
       {backwards ? <VerdictLine ok={false} warn>You jumped backward. The bench still records the answer, but not as a forward walk.</VerdictLine> : null}
       {reading && last ? (
         <Card tone={stateOf(reading) === 'ok' ? 'ok' : 'warn'}>
@@ -203,14 +209,18 @@ function GroupPage({ group, ctx }: { group: FaultGroup; ctx: PageCtx }) {
       {grade && !grade.correct ? <VerdictLine ok={false}>{gradeText}</VerdictLine> : null}
       {grade && grade.correct ? (
         <>
-          <VerdictLine ok>{gradeText}</VerdictLine>
+          {/* SH-69 (owner 2026-11-15: "build waves 1 thru 3"): the fault ends
+              on its rule, as the DJ lab's "Fixed." lines do; the grade line
+              (probes against the minimum) moved into THE WALK, so the screen
+              gains no line. */}
+          <VerdictLine ok>{`Fixed. ${c.rule}`}</VerdictLine>
           <Card tone="ok">
             <Eyebrow>WHY</Eyebrow>
             <Body>{c.explain}</Body>
             <Eyebrow>THE FIX</Eyebrow>
             <Body>{c.fix}</Body>
             <Eyebrow>THE WALK</Eyebrow>
-            <Body>{c.forward}</Body>
+            <Body>{`${gradeText} ${c.forward}`}</Body>
           </Card>
         </>
       ) : null}
@@ -220,17 +230,17 @@ function GroupPage({ group, ctx }: { group: FaultGroup; ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
-        badge: BENCH_BADGE,
+        modelNote: 'A teaching model: the readings come from sample faults.',
         initialParam: 'case',
         // The case's TITLE cropped in its bezel cell ("SIGNAL REACHES THE
         // MIX…"): it prints in full above the map now, with the fault group
         // under it (owner 2026-09-29, TitledStage). The bezel
         // keeps the case number / the solved count.
         bezel: [
-          { k: 'CASE', v: c ? `${cases.indexOf(c) + 1} OF ${cases.length}` : `${solvedHere} SOLVED`, flex: 1.2 },
-          { k: 'PROBED', v: c ? `${probes.length}` : '—', flex: 0.8 },
-          { k: 'READS', v: c && last ? readoutOf(c.reads[last]) : '—', tint: c && last ? (stateOf(c.reads[last]) === 'ok' ? colors.greenBright : colors.orange) : undefined, flex: 1.3 },
-          { k: 'GRADE', v: grade ? (grade.correct ? (grade.forward ? '✓✓' : '✓') : '✗') : '—', tint: grade ? (grade.correct ? colors.green : colors.red) : undefined, flex: 0.7 },
+          { k: 'CASE', v: c ? `${cases.indexOf(c) + 1}` : `${solvedHere} SOLVED`, vA11y: c ? c.title : undefined, flex: 1.2 },
+          { k: 'PROBED', caption: 'stations read', v: c ? `${probes.length}` : '—', flex: 0.8 },
+          { k: 'READS', caption: 'what it shows', v: c && last ? readoutOf(c.reads[last]) : '—', tint: c && last ? (stateOf(c.reads[last]) === 'ok' ? colors.greenBright : colors.orange) : undefined, flex: 1.3 },
+          { k: 'GRADE', caption: 'right + walk', v: grade ? (grade.correct ? (grade.forward ? '✓✓' : '✓') : '✗') : '—', tint: grade ? (grade.correct ? colors.green : colors.red) : undefined, flex: 0.7 },
         ],
         stage: (w, h) => (
           <TitledStage w={w} h={h} aspect={MAP_W / MAP_H} title={c ? c.title : g.title} subtitle={c ? g.title : 'Pick a case to put it on the bench'}>
@@ -260,10 +270,13 @@ function GroupPage({ group, ctx }: { group: FaultGroup; ctx: PageCtx }) {
 /* ── page 1 · how the bench works ───────────────────────────────────────── */
 
 function PageBenchIntro({ ctx }: { ctx: PageCtx }) {
-  useEffect(() => {
-    if (!ctx.isDone) ctx.markDone();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // Owner decision 1, 2026-11-14 ("done" = work done): the page used to count
+  // the moment it opened. It now counts once the learner finds, on the worked
+  // example, the station where the walk stopped.
+  const [picked, setPicked] = useState<Station | null>(null);
+  const found = picked === BENCH_EXAMPLE_STOP;
+  const goals = [{ label: 'Find where the example walk stopped', hit: found }];
+  const latched = useVisitGoals(ctx, goals);
   const progress = useSoundSystemsProgress();
   const demo = useMemo(() => benchMap({}, {}), []);
   const nodes: MapNode[] = demo.nodes.map((n) => {
@@ -273,8 +286,18 @@ function PageBenchIntro({ ctx }: { ctx: PageCtx }) {
   return (
     <View style={{ gap: 12 }}>
       <ChapterTag n={14}>TESTING AND TROUBLESHOOTING · THE BENCH</ChapterTag>
-      <Body>How a case reads: the symptom cleared the first three stations, so the walk started at the console input — healthy, healthy — and stopped at the processor, which reads NO SIGNAL. That station is the answer.</Body>
-      <SystemMap nodes={nodes} edges={demo.edges.map((e) => ({ ...e, dead: STATION_ORDER.indexOf(e.to as Station) > 5 }))} running={false} a11y="An example walk: console in and console out read healthy, the processor reads no signal, everything after it is unlit." />
+      <Body>How a case reads: the symptom cleared the first three stations, so the walk started at the console input and moved forward one station at a time. Find the station where this walk stopped, and tap it on the map.</Body>
+      <SystemMap nodes={nodes} edges={demo.edges.map((e) => ({ ...e, dead: STATION_ORDER.indexOf(e.to as Station) > 5 }))} running={false} onTap={(id) => setPicked(id as Station)} selectedId={picked} a11y="An example walk: console in and console out read healthy, one station reads no signal, everything after it is unlit. Tap a station." />
+      {picked ? (
+        <VerdictLine ok={found}>
+          {found
+            ? 'Yes: the processor. Two healthy readings, then NO SIGNAL. The first reading that is not healthy is the answer.'
+            : picked === 'consoleIn' || picked === 'consoleOut'
+              ? 'That one reads OK: the signal is still healthy there. Walk on to the first reading that is not.'
+              : 'Not that one. Start where the walk started, the console input, and stop at the first reading that is not healthy.'}
+        </VerdictLine>
+      ) : null}
+      <GoalChips goals={goals} latched={latched} />
       <ReadingKey />
       <Lead>
         Twenty-two faults from real shows, in five groups. Each one hands you a symptom and a system. You probe the stations on the map — each probe reveals what a technician would read there — and then you name the fault.

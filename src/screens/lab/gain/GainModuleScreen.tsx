@@ -14,9 +14,11 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { ScrollLockProvider } from '../LabShell';
 import { markLabUnit, useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
 import { LabEndScreen } from '../kit/LabEndScreen';
+import { GAIN_LEFT } from './modules/registry';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { GlossaryLinkProvider } from '../../../features/glossary/glossaryLink';
-import { GAIN_MODULES, type GainModuleComponentProps, type GainModuleId } from './modules/registry';
+import { GAIN_HOW_IT_COUNTS, GAIN_MODULE_CHECKS, GAIN_MODULES, type GainModuleComponentProps, type GainModuleId } from './modules/registry';
+import { ModuleGoalProvider } from '../meter/moduleGoal';
 import { FaderVsGainModule, FollowModule, InputGainModule, IntroModule, LowHighModule } from './modules/modLearn';
 import { FreePlayModule, MultiStageModule, TroubleshootModule } from './modules/modExplore';
 // Tablet (owner 2026-09-29): a reading surface - capped at the reading column
@@ -58,11 +60,14 @@ export function GainModuleScreen() {
   const focused = useIsFocused();
   const meta = GAIN_MODULES.find((m) => m.id === route.params.id) ?? GAIN_MODULES[0];
   const Comp = COMPONENTS[meta.id];
-  // R6c: mark each Gain module viewed. The Troubleshoot CHALLENGE is the
-  // exception — it completes on an actual PASS, from inside TroubleshootModule.
-  useEffect(() => {
-    if (focused && meta.id !== 'troubleshoot') markLabUnit('af_gain_staging', meta.id);
-  }, [focused, meta.id]);
+  // "Done = work done" (owner's decision 1, phase 3, 2026-11-14): a module
+  // counts once its own task is done (GAIN_MODULE_CHECKS), never on opening
+  // (it used to be marked here on focus). The Troubleshoot CHALLENGE still
+  // marks itself on a PASS, from inside TroubleshootModule. Credit already
+  // banked stays.
+  const onGoalMet = () => {
+    if (meta.id !== 'troubleshoot') markLabUnit('af_gain_staging', meta.id);
+  };
   const [width, setWidth] = useState(0);
   const [scrollLocked, setScrollLocked] = useState(false);
   // Only let the page scroll when its content actually overflows the viewport.
@@ -107,8 +112,12 @@ export function GainModuleScreen() {
   });
   const endScreen = ending ? (
     <LabEndScreen
+      // The recap and next-lab card (labEndContent.ts, S4).
+      labId="af_gain_staging"
       labTitle="Gain Staging Lab"
-      units={GAIN_MODULES.map((m) => ({ id: m.id, label: m.title }))}
+      units={GAIN_MODULES.map((m) => ({ id: m.id, label: m.title, detail: GAIN_LEFT[m.id] }))}
+      // Phase 2 end screen (2026-11-14): the rule every row shares, said once.
+      howItCounts={GAIN_HOW_IT_COUNTS}
       cleared={banked}
       unreadable={progressUnreadable}
       mode="credit"
@@ -146,7 +155,7 @@ export function GainModuleScreen() {
               // Rack module: full height — the module's RackUnit pins stage +
               // dock and owns the scroll well.
               <View style={styles.rackFill} onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
-                {width > 0 ? <Comp width={width} focused={focused} /> : null}
+                {width > 0 ? (<ModuleGoalProvider need={GAIN_MODULE_CHECKS[meta.id]} onMet={onGoalMet} resetKey={meta.id}><Comp width={width} focused={focused} /></ModuleGoalProvider>) : null}
               </View>
             ) : (
               <ScrollView
@@ -157,7 +166,7 @@ export function GainModuleScreen() {
                 onContentSizeChange={(_w, h) => setContentH(Math.round(h))}
               >
                 <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
-                  {width > 0 ? <Comp width={width} focused={focused} /> : null}
+                  {width > 0 ? (<ModuleGoalProvider need={GAIN_MODULE_CHECKS[meta.id]} onMet={onGoalMet} resetKey={meta.id}><Comp width={width} focused={focused} /></ModuleGoalProvider>) : null}
                 </View>
                 {/* The in-flow NEXT at the end of the reading (a rack well gets it from RackUnit). */}
                 <LabNextButton />

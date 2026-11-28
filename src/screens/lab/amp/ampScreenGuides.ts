@@ -31,18 +31,18 @@ const STRIP = 'Use the strip under the title to move between steps and modules. 
 
 export const AMP_HOME_GUIDE: ScreenGuide = {
   intro: {
-    learning: 'The three questions this lab asks of every amplifier: what it does to the signal, what load it drives, and where its output power really comes from.',
+    learning: 'How an amplifier builds a bigger copy of your signal: the power supply pays, your signal steers, and the load decides what the amplifier must deliver.',
     start: 'Tap a module’s name in the MODULE MAP to read what it covers. New to amplifiers? Tap START · MODULE 1 › and take the modules in order.',
   },
   seeing: [
-    'You’re on the Amplifier Principles Lab menu. One question runs through every module: what is the amplifier doing, what load does it see, and where does the extra energy come from?',
+    'You’re on the Amplifier Principles Lab menu. Its first line is the lab in one sentence: the power supply pays, your signal steers.',
     'At the top: your progress line, and a START or RESUME button for your next unfinished module.',
-    'Below: the MODULE MAP (✓ on each finished module), CHECK YOUR UNDERSTANDING, SEE WHAT’S LEFT ›, a safety note and RESET LAB PROGRESS.',
+    'Below: the MODULE MAP (✓ on each finished module), ▸ FINAL CHECK: AFTER THE MODULES, SEE WHAT’S LEFT ›, a safety note and RESET LAB PROGRESS.',
   ],
   control: [
     'Tap a module’s name to read its one-line description, or tap OPEN to start it.',
     'START or RESUME · MODULE › opens the module you were in, or the first one you haven’t finished.',
-    'CHECK YOUR UNDERSTANDING is a short quiz on the whole lab.',
+    '▸ FINAL CHECK: AFTER THE MODULES opens CHECK YOUR UNDERSTANDING, a short quiz on the whole lab, for when you have done the modules.',
     'SEE WHAT’S LEFT › lists what you still have to do. RESET LAB PROGRESS starts a fresh practice run: it clears your answered checks and latest final attempt, and keeps your completed modules and best final result.',
     '‹ leaves the lab. Inside a module, tap ⓘ beside its title to have that screen explained.',
   ],
@@ -67,7 +67,7 @@ export const AMP_HOME_GUIDE: ScreenGuide = {
 export const AMP_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'Which of the lab’s ideas you still need to revisit: bias and classes, Class D, supply limits, loads and gain structure.',
-    start: 'Read the WHAT’S LEFT list and tap the first row to open it. Then answer CHECK YOUR UNDERSTANDING on this screen. A wrong pick explains itself.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
     'WHAT’S LEFT lists the modules you haven’t marked complete, the Final assessment (your best score once you submit) and, last, the CHECK row for Check your understanding.',
@@ -109,12 +109,12 @@ export const AMP_STEP_GUIDES: Record<AmpModuleId, AmpStepGuide[]> = {
         seeing: [
           'INPUT (signal) is on top and OUTPUT (to load) below. The red dashed lines are the rail limits: the furthest the power supply lets the output swing.',
           'Color shows size, blue near zero to red at the rails. A clipped peak is drawn heavier.',
-          'Readouts: OUTPUT (CLEAN or CLIP), SUPPLY (energy drawn), HEAT, EFFIC. (illustrative efficiency) and LOAD (how hard the speaker is driven).',
+          'Readouts: OUTPUT (CLEAN or CLIP) and SUPPLY (energy drawn from the power supply). HEAT, efficiency and load come in later modules.',
         ],
         control: [
           'LEVEL fader (0–100%) sets the input signal. The output is 1.5 times the input, up to the rails.',
           RUN_SLOW,
-          'Scroll below the display for IN THIS MODULE, PREDICT, THEN TRY, the SIGNAL PATH figure, three kinds of gain and an APPLIED COMPARISON.',
+          'Scroll below the display for PREDICT, THEN TRY, the SIGNAL PATH figure and an APPLIED COMPARISON; ▸ LEARN MORE holds the three kinds of gain and the watts worked out.',
           STRIP,
         ],
         changes: [
@@ -332,7 +332,7 @@ export const AMP_STEP_GUIDES: Record<AmpModuleId, AmpStepGuide[]> = {
         },
         seeing: [
           'The rig for the class you pick: INPUT, DEVICE CURRENT(S) and OUTPUT. In Class C, OUTPUT shows raw pulses; the dashed line is after the tuned circuit.',
-          'Readouts: CONDUCT. (degrees each device conducts), IDLE (current with no signal), EFFIC. (illustrative, at this level), HEAT and DISTORT.',
+          'Readouts: CONDUCT. (degrees each device conducts), EFFIC. (illustrative) and DISTORT. IDLE CURRENT is in the card below.',
           'Below: the same numbers explained, a ZERO CROSS zoom for B and AB, and SIDE BY SIDE fact cards for A, B, AB, C and D.',
         ],
         control: [
@@ -343,10 +343,10 @@ export const AMP_STEP_GUIDES: Record<AmpModuleId, AmpStepGuide[]> = {
           STRIP,
         ],
         changes: [
-          'A: one device conducts all 360°. With no signal IDLE stays 100%, HEAT hot: low efficiency.',
-          'B: each device ideally conducts half the cycle (180°). CONDUCT. reads 165°, as each needs a small turn-on voltage; that gap is the NOTCH. IDLE 0%, higher efficiency.',
+          'A: one device conducts all 360°. With no signal IDLE CURRENT stays 100%, heat high: low efficiency.',
+          'B: each device ideally conducts half the cycle (180°). CONDUCT. reads 165°, as each needs a small turn-on voltage; that gap is the NOTCH. Idle 0%, more efficient.',
           'AB: more AB BIAS overlaps the devices past zero: the notch closes, idle rises.',
-          'C: pulses ring a tuned circuit into a sine, only near its tuned frequency.',
+          'C: pulses ring a tuned circuit into a sine, only near its tuning.',
         ],
         teaches: [
           'Each class trades efficiency, heat and distortion. There is no “best” class.',
@@ -520,34 +520,60 @@ export const AMP_STEP_GUIDES: Record<AmpModuleId, AmpStepGuide[]> = {
       kind: 'read',
       guide: {
         intro: {
-          learning: 'How speaker loads add in parallel and series, what bridging really does to the load, and why twice the power is only about 3 dB louder.',
+          learning: 'How speaker loads add in parallel and series, how load sets current and power, and what bridging really does to the load.',
           start: 'With two 8 Ω cabinets in Parallel, the load builder reads Ztotal ≈ 4.00 Ω. Tap + 8 Ω once more and watch the warning appear.',
         },
         seeing: [
-          'This page is a set of worked tools: the speaker-load builder, power and current, bridged operation, watts and loudness, clipping risk, a rack inspection and a specification decoder.',
+          'This page is three worked tools: the speaker-load builder, power and current, and bridged operation. The next page carries on with loudness, risk and spec sheets.',
           'Every figure is a resistive teaching example. A real speaker’s impedance changes with frequency, so its load moves around the nominal figure.',
         ],
         control: [
           'Load builder: Parallel or Series. + 16 Ω, + 8 Ω or + 4 Ω adds a cabinet (up to four); CLEAR starts again.',
           'Power: 8 Ω, 4 Ω or 2 Ω at 28.3 Vrms. Bridge: Stereo or Bridge mode, then an 8 Ω or 4 Ω bridged load.',
+          'NEXT at the foot of the page moves on to loudness, risk and spec sheets.',
+        ],
+        changes: [
+          'Cabinets in parallel lower the total impedance; in series they raise it. Below the amp’s 4 Ω minimum, expect protection, limiting or heat.',
+          'Halve the load and the current doubles at the same voltage. Bridging doubles the voltage, but each channel sees half the load.',
+        ],
+        teaches: [
+          'How working engineers read speaker loads and bridge mode.',
+          'Why minimum-load ratings exist: a lower load draws more current and runs the amplifier hotter.',
+        ],
+        tryThis: [
+          'Two 8 Ω in parallel read Ztotal ≈ 4.00 Ω, within the minimum. Tap + 8 Ω: 2.67 Ω, and the warning appears.',
+          'In POWER AND CURRENT pick 4 Ω: 7.08 A and 200 W, against 3.54 A and 100 W at 8 Ω. Same voltage, half the load, double the current.',
+        ],
+      },
+    },
+    {
+      key: 'risk',
+      kind: 'read',
+      guide: {
+        intro: {
+          learning: 'Why twice the power is only about 3 dB louder, how clipping endangers loudspeakers, and how to read a rack and a power rating.',
+          start: 'The power ratio starts at 2.00×: read the dB it gives. Then slide it to 10× and compare.',
+        },
+        seeing: [
+          'This page is four worked tools: watts and loudness, clipping risk, a rack inspection and a specification decoder.',
+          'Every figure is a teaching example; a real rating only means something with its test conditions.',
+        ],
+        control: [
           'Watts: slide the Power ratio P2 ÷ P1 from 0.25× to 10×.',
           'Inspection: pick a Rack, then the finding you see. Decoder: pick a Sheet, check what’s missing, then tap CHECK.',
           'At the end: CHECK YOURSELF questions, the TAKEAWAY and MARK COMPLETE ›.',
         ],
         changes: [
-          'Cabinets in parallel lower the total impedance; in series they raise it. Below the amp’s 4 Ω minimum, expect protection, limiting or heat.',
-          'Halve the load and the current doubles at the same voltage. Bridging doubles the voltage, but each channel sees half the load.',
           'Twice the power is only about +3 dB. Roughly ten times the power sounds about twice as loud.',
+          'A rating without its load, bandwidth and distortion figure leaves gaps the decoder marks.',
         ],
         teaches: [
-          'How working engineers read speaker loads, bridge mode and power ratings.',
           'A power rating means little without its test conditions, such as the load it was measured into.',
           'Not every rack needs a fix: some are fine and best left alone.',
         ],
         tryThis: [
-          'Two 8 Ω in parallel read Ztotal ≈ 4.00 Ω, within the minimum. Tap + 8 Ω: 2.67 Ω, and the warning appears.',
-          'In POWER AND CURRENT pick 4 Ω: 7.08 A and 200 W, against 3.54 A and 100 W at 8 Ω. Same voltage, half the load, double the current.',
           'The power ratio starts at 2.00×: the formula reads +3.01 dB. Slide it to the top, 10.00×: +10.00 dB, about twice as loud.',
+          'In the decoder, pick a sheet, mark what is missing and tap CHECK.',
         ],
       },
     },

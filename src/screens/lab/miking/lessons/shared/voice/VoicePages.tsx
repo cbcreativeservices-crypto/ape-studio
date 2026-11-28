@@ -25,11 +25,14 @@ import { PageSteps, type MikingStep } from '../../../engine/steps';
 import { Body, Card, Landing, Note, Point, PredictCard, ScenarioList } from '../../../engine/kit';
 import type { PageProps } from '../../../pages/pageTypes';
 import { useStepper } from '../hand/handPages';
+import { castFor } from '../figureV2/cast';
 import { VoiceAir, VoiceSequence, type AirKind } from './VoiceSoundArt';
 
 type PageFn = (p: PageProps) => ReactNode;
 
 export type VoiceSoundSpec = {
+  /** (figure V2) the lesson's singer in the new look (all its figures or none). */
+  v2?: boolean;
   /** The bezel cell per stage (4 values). */
   where: readonly string[];
   /** What leaves the lips, per kind of sound (the lesson's words). */
@@ -59,7 +62,7 @@ export function makeVoiceSound(spec: VoiceSoundSpec): PageFn {
     const stage = S.stages[st.shown - 1];
     const extra = spec.useExtra?.(p) ?? null;
     const seqBezel: BezelItem[] = [
-      { k: 'STEP', v: `${st.shown} / ${n}`, flex: 0.8 },
+      { k: 'EVENT', v: `${st.shown}`, flex: 0.8 },
       { k: 'EVENT', v: stage.title.toUpperCase(), flex: 2 },
       { k: 'WHERE', v: spec.where[st.shown - 1] ?? '—', flex: 1.2 },
     ];
@@ -87,7 +90,7 @@ export function makeVoiceSound(spec: VoiceSoundSpec): PageFn {
         layout: 'rack',
         rack: {
           render: (w, h) => (
-            <VoiceSequence w={w} h={h} shown={st.shown} accessibilityLabel={`A singer in profile, the head and neck cut through the middle to show the airway, step ${st.shown} of ${n}: ${stage.title}. ${stage.text}`} />
+            <VoiceSequence w={w} h={h} shown={st.shown} who={spec.v2 ? castFor('voice.singer') : undefined} accessibilityLabel={`A singer in profile, the head and neck cut through the middle to show the airway, step ${st.shown} of ${n}: ${stage.title}. ${stage.text}`} />
           ),
           badge: 'A simplified picture: a cut through the middle of the head · the order of events, not their speed or size · silent',
           bezel: seqBezel,
@@ -97,7 +100,7 @@ export function makeVoiceSound(spec: VoiceSoundSpec): PageFn {
         well: (
           <>
             {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
-            <Landing looking="Side view · the singer from the right, cut through the middle" prompt="STEP through how breath becomes a voice — or PLAY ONCE. It stops at the end." />
+            <Landing looking="Side view · the singer from the right, cut through the middle" prompt="Go EVENT by EVENT through how breath becomes a voice — or PLAY ONCE. It stops at the end." />
             <Card>
               <Point title={`${st.shown} · ${stage.title.toUpperCase()}`}>{stage.text}</Point>
             </Card>
@@ -111,7 +114,7 @@ export function makeVoiceSound(spec: VoiceSoundSpec): PageFn {
         kind: 'TRY',
         layout: 'rack',
         rack: {
-          render: (w, h) => <VoiceAir w={w} h={h} kind={kind} accessibilityLabel={`A singer in profile with the mouth’s axis dashed straight out of the lips. ${AIR_LABEL[kind]}: ${spec.air[kind].text}`} />,
+          render: (w, h) => <VoiceAir w={w} h={h} kind={kind} v2={spec.v2} accessibilityLabel={`A singer in profile with the mouth’s axis dashed straight out of the lips. ${AIR_LABEL[kind]}: ${spec.air[kind].text}`} />,
           badge: 'A simplified picture: the air drawn as a shape — its real angle and reach vary with the singer and the word · silent',
           bezel: [
             { k: 'SOUND', v: AIR_LABEL[kind], flex: 1.2 },

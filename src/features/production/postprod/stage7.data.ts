@@ -467,6 +467,19 @@ export const STAGE7_FINISH: StageDef = {
       logicIntent: "Fire when both brief.true_peak_max and measured_true_peak are numbers and the measurement is greater than the ceiling."
     },
     {
+      // Novice audit G4 (2026-11-14): a measured +0.4 dBTP on a project with
+      // no ceiling in the brief raised nothing at all.
+      ruleId: "finish-true-peak-over-zero-no-ceiling",
+      watches: ["finish.measured_true_peak", "brief.true_peak_max"],
+      severity: "attention",
+      kind: "missing",
+      title: "True peak above 0 dBTP, with no ceiling to check it against",
+      detail: "The measured true peak is above 0 dBTP: the waveform between the samples goes past full scale, so most converters and encoders will clip it. The brief carries no true-peak ceiling, so nothing in this plan says how far below zero it has to sit.",
+      fixHint: "Record the delivery's true-peak ceiling in stage 1 (most specifications sit between −1 and −2 dBTP). Then lower the limiter's ceiling or take overall gain off, and re-measure the exported file.",
+      needsLogic: true,
+      logicIntent: "Fire when measured_true_peak is a number above 0 and brief.true_peak_max is empty."
+    },
+    {
       ruleId: "finish-measured-wrong-thing",
       watches: ["finish.measurement_source"],
       severity: "attention",
@@ -504,7 +517,7 @@ export const STAGE7_FINISH: StageDef = {
       watches: ["finish.processes_applied"],
       severity: "attention",
       kind: "missing",
-      title: "A finishing process with no stated purpose",
+      title: "A finishing process with no stated purpose. Is that intended?",
       detail: "Rows in the processing table have nothing in the purpose column. Processing applied because the stage exists is the specific way a good mix is made slightly worse and called mastered.",
       fixHint: "Write what each one is for. Any row that cannot be justified should come out, and an empty chain is a valid result.",
       needsLogic: true,
@@ -515,7 +528,7 @@ export const STAGE7_FINISH: StageDef = {
       watches: ["finish.processes_applied", "finish.comparison_set"],
       severity: "attention",
       kind: "unrealistic",
-      title: "Finishing decisions made without matching levels",
+      title: "Finishing decisions made without matching levels. Is that intended?",
       detail: "Processes are recorded as not level-matched when compared. At this stage nearly everything raises the level, so an unmatched comparison reliably chooses more processing — which is how a chain grows without anyone deciding it should.",
       fixHint: "Match the output level and switch. If the processed version still wins, it has earned its place.",
       needsLogic: true,
@@ -548,7 +561,7 @@ export const STAGE7_FINISH: StageDef = {
       watches: ["finish.dither_applied", "brief.target_bit_depth", "session.session_depth"],
       severity: "info",
       kind: "missing",
-      title: "Bit depth is dropping and dither has not been considered",
+      title: "Bit depth is dropping and dither has not been considered. Is that intended?",
       detail: "The session is deeper than the delivery, so the depth is reduced somewhere. Whether to dither is a decision worth making rather than inheriting from an export preset.",
       fixHint: "Decide, and record it. On quiet, sparse material it matters more than on dense material.",
       needsLogic: true,
@@ -581,7 +594,7 @@ export const STAGE7_FINISH: StageDef = {
       watches: ["finish.qc_log"],
       severity: "attention",
       kind: "missing",
-      title: "A QC issue with no position, owner or action",
+      title: "A QC issue with no position, owner or action. Is that intended?",
       detail: "An issue nobody owns, or that cannot be located again, is an issue that gets delivered. \"Something odd around the middle\" is not a finding.",
       fixHint: "Every row needs a position, a person and a required action. Accepted-as-is is a legitimate status and still needs a name against it.",
       needsLogic: true,
@@ -603,7 +616,7 @@ export const STAGE7_FINISH: StageDef = {
       watches: ["finish.encoded_check", "brief.required_versions"],
       severity: "attention",
       kind: "missing",
-      title: "The encoded version has not been compared with the master",
+      title: "The encoded version has not been compared with the master. Is that intended?",
       detail: "Encoding alters transients, high frequencies, stereo image and true peak. A master that sits exactly on its ceiling will often exceed it once encoded, and the file the listener actually receives has not been checked.",
       fixHint: "Encode as the platform will, and compare it with the master at matched level. Re-measure true peak on the encoded file.",
       needsLogic: true,
@@ -636,7 +649,7 @@ export const STAGE7_FINISH: StageDef = {
       watches: ["finish.speech_accessibility", "finish.access_deliverables"],
       severity: "attention",
       kind: "missing",
-      title: "Speech accessibility has not been checked",
+      title: "Speech accessibility has not been checked. Is that intended?",
       detail: "Nothing is recorded about intelligibility, masking or whether critical information survives. Most accessibility failures in audio are not exotic — they are ordinary masking that a listener with hearing loss, a small speaker or a noisy room cannot work around.",
       fixHint: "Listen on a phone speaker at low level and note anything you cannot follow. That single test catches most of it.",
       needsLogic: true,
@@ -662,7 +675,7 @@ export const STAGE7_FINISH: StageDef = {
       detail: "Programs for broadcast and on-demand services often carry captioning and audio-description duties. In the US the FCC's captioning rules (47 CFR 79.1) and the CVAA (21st Century Communications and Video Accessibility Act) apply to much television and online video; in the EU the European Accessibility Act covers access to audiovisual services; in the UK Ofcom sets access-service requirements for broadcasters. Whether any of them applies to this program is the distributor's call, not a guess made in the edit suite.",
       fixHint: "Ask the distributor or commissioner which access services they require, and keep their answer in writing with the delivery notes. If they confirm none, record who said so.",
       needsLogic: true,
-      logicIntent: "Fire when finish_type is program_finish or broadcast and access_deliverables is exactly none (none ticked on its own). Advisory only."
+      logicIntent: "Fire when finish_type is program_finish or broadcast and access_deliverables is exactly none (none checked on its own). Advisory only."
     }
   ],
   activity: {

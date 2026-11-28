@@ -122,7 +122,7 @@ describe('3. each guide quotes the screen’s real names', () => {
       in: [CFG, SOURCES, FX, STEREO_FLOW, ANIM, LISSA, SHELL].join('\n'),
       names: [
         'IN ▸', '▸ OUT', 'M/S WIDTH', 'STEREO TEST TONE · L ≠ R', 'SAME TONE IN L AND R',
-        'WIDTH', 'PAN', 'FOLD', 'STEREO', 'MONO', 'MONO CHECK', 'CENTER', 'BASS', '120 Hz', 'OFF', 'SOURCE',
+        'WIDTH', 'PAN', 'STEREO', 'MONO', 'MONO CHECK', 'ON', 'CENTER', 'BASS', '120 Hz', 'OFF', 'SOURCE',
         'PINK NOISE · STEREO', 'SINE 440 Hz · STEREO', 'PINK NOISE · MONO', 'PINK NOISE', 'SINE 440 Hz',
         'DESIGNED RESPONSE', 'CORRELATION', 'LAB NOTES', 'CHECK YOURSELF', 'ⓘ GUIDED LESSON',
       ],
@@ -131,7 +131,7 @@ describe('3. each guide quotes the screen’s real names', () => {
       // Decision 1 (2026-11-08): LEARN names the controls by their on-screen labels (PAN, WIDTH,
       // FOLD, BASS from stereoConfig), no longer the old lesson names Pan / Width / Mono-fold / Bass-Mono.
       in: SHELL + LESSON + CFG,
-      names: ['CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'ADV', 'PAN', 'WIDTH', 'Mid gain', 'Side gain', 'FOLD', 'BASS', 'ⓘ GUIDED LESSON', 'LAB NOTES', '▶'],
+      names: ['CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'ADV', 'PAN', 'WIDTH', 'Mid gain', 'Side gain', 'MONO CHECK', 'BASS', 'ⓘ GUIDED LESSON', 'LAB NOTES', '▶'],
     },
     check: {
       in: SHELL,
@@ -153,26 +153,33 @@ describe('3. each guide quotes the screen’s real names', () => {
     assert.match(CFG, /label: 'WIDTH', paramId: P\.widthPct/);
     assert.match(CFG, /fader: \{ min: 0, max: 200, .*, home: 100 \},/);
     assert.match(CFG, /label: 'BASS-MONO', short: 'BASS'/);
-    assert.match(CFG, /label: 'MONO-FOLD', short: 'FOLD'/);
-    assert.match(CFG, /\{ label: 'L', value: -1 \},\s*\{ label: 'CENTER', value: 0 \},\s*\{ label: 'R', value: 1 \},/);
-    assert.match(CFG, /\{ label: 'OFF', value: 0 \},\s*\{ label: '120 Hz', value: 120 \},/);
-    assert.match(CFG, /\{ label: 'STEREO', value: 0 \},\s*\{ label: 'MONO CHECK', value: 1 \},/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item ST-01): one name, MONO CHECK (OFF / ON), on key, tray, readout and guide.
+    assert.match(CFG, /label: 'MONO CHECK', paramId: P\.monoFold/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item SH-76): each PAN and BASS choice carries a one-line meaning.
+    assert.match(CFG, /\{ label: 'L', value: -1, blurb: '[^']+' \},\s*\{ label: 'CENTER', value: 0, blurb: '[^']+' \},\s*\{ label: 'R', value: 1, blurb: '[^']+' \},/);
+    assert.match(CFG, /\{ label: 'OFF', value: 0, blurb: '[^']+' \},\s*\{ label: '120 Hz', value: 120, blurb: '[^']+' \},/);
+    assert.match(CFG, /\{ label: 'OFF', value: 0, blurb: '[^']+' \},\s*\{ label: 'ON', value: 1, blurb: '[^']*phone speaker[^']*' \},/);
     assert.match(FX, /label: 'SOURCE',/);
     // bezel readouts WIDTH · PAN · BASS · FOLD; the FOLD cell shortens 'MONO CHECK' to 'MONO' (shortChoice)
-    assert.match(CFG, /bezel: \[\s*\{ k: 'WIDTH', paramId: P\.widthPct \},\s*\{ k: 'PAN', paramId: P\.pan \},\s*\{ k: 'BASS', paramId: P\.bassMonoHz \},\s*\{ k: 'FOLD', paramId: P\.monoFold \},\s*\],/);
+    // Phase 2, lab fix round (owner 2026-11-14: "Begin fixing all bugs found and do obvious ... fixes"): a bezel cell may carry its first-visit caption.
+    assert.match(CFG, /bezel: \[\s*\{ k: 'WIDTH', paramId: P\.widthPct(?:, caption: '[^']*')? \},\s*\{ k: 'PAN', paramId: P\.pan(?:, caption: '[^']*')? \},\s*\{ k: 'BASS', paramId: P\.bassMonoHz(?:, caption: '[^']*')? \},\s*\{ k: 'MONO CHECK', kNarrow: 'MONO', paramId: P\.monoFold(?:, caption: '[^']*')? \},\s*\],/);
     const shortChoice = (label: string) => {
       if (label.length <= 8) return label;
       const parts = label.split(' ');
       return parts.length > 1 && /^(dB|Hz|kHz|ms|s|%)$/.test(parts[1]) ? `${parts[0]} ${parts[1]}` : parts[0];
     };
     assert.match(FX, /if \(label\.length <= 8\) return label;/);
-    assert.equal(shortChoice('MONO CHECK'), 'MONO');
-    assert.equal(shortChoice('STEREO'), 'STEREO');
-    assert.match(GUIDES.explore.seeing.join(' '), /Readouts: WIDTH, PAN, BASS and FOLD \(STEREO or MONO\)/);
+    assert.equal(shortChoice('OFF'), 'OFF');
+    assert.equal(shortChoice('ON'), 'ON');
+    assert.match(GUIDES.explore.seeing.join(' '), /Readouts: WIDTH, PAN, BASS and MONO CHECK \(OFF or ON\)/);
     // the display: the width flavour's stage label, IN/OUT, the L/R legend colours
-    assert.match(ANIM, /case 'stereo': return model\.flavor === 'phase' \? 'R: Ø · DLY' : 'M\/S WIDTH';/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item PH-01): the Phase lab's stage label in words.
+    assert.match(ANIM, /case 'stereo': return model\.flavor === 'phase' \? 'FLIP · DELAY' : 'M\/S WIDTH';/);
     assert.match(CFG, /kind: 'stereo',\s*flavor: 'width',/);
-    assert.match(STEREO_FLOW, /legend=\{\[\{ label: 'L', color: AMBER \}, \{ label: 'R', color: BLUE \}\]\}/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item PH-05): the key steps aside only in the
+    // Phase lab's flip + mono silence (\`cancelled\` needs flavor 'phase'); the width lab always keeps it.
+    assert.match(STEREO_FLOW, /legend=\{cancelled \? undefined : \[\{ label: 'L', color: AMBER \}, \{ label: 'R', color: BLUE \}\]\}/);
+    assert.match(STEREO_FLOW, /const cancelled = flavor === 'phase' && invertR && monoFold && delayRms === 0;/);
     // the goniometer's graticule labels M (top), S (right), L and R (top corners)
     for (const l of ['M', 'S', 'L', 'R']) assert.match(LISSA, new RegExp(`fontFamily=\\{fonts\\.oswaldSemiBold\\}>${l}</SvgText>`));
     for (const t of ['−1', '0', '+1']) assert.ok(LISSA.includes(`<Text style={lissaStyles.corrTick}>${t}</Text>`));
@@ -212,7 +219,8 @@ describe('3. each guide quotes the screen’s real names', () => {
     const ct = [...GUIDES.check.tryThis, ...GUIDES.check.teaches, ci.learning, ci.start].join(' ');
     // mono-fold: no "fold at 200% and watch the traces merge"; correlation: no "how much a mono listener will lose"
     assert.doesNotMatch(ct, /traces merge|mono-fold question, seen|cancels|will lose|disappear|collapses|silence/i);
-    assert.match(GUIDES.check.tryThis[1], /On LEARN, read FORMULA \/ CONCEPT: how MID and SIDE are built from L and R/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(GUIDES.check.tryThis[1], /On LEARN, open FORMULA \/ CONCEPT: how MID and SIDE are built from L and R/);
     // the what's-left screen opens before a pass too
     assert.doesNotMatch(STEREO_END_GUIDE.tryThis.join(' '), /extra width disappear/);
   });
@@ -294,7 +302,7 @@ describe('4. the numbers in the guide are the numbers the screen draws', () => {
     assert.equal((20 * Math.log10(gL)).toFixed(1), '3.0');
     assert.equal(Math.cos(Math.PI / 4) * Math.SQRT2 - 1 < 1e-12, true, 'CENTER is unity');
     assert.match(GUIDES.explore.changes.join(' '), /PAN at L or R silences the other side and lifts the kept side 3 dB/);
-    assert.match(GUIDES.explore.tryThis.join(' '), /With FOLD on STEREO, set PAN to L: the blue R trace on OUT goes flat/);
+    assert.match(GUIDES.explore.tryThis.join(' '), /Back in stereo, set PAN to L: the blue R trace on OUT goes flat/);
     // 2026-10-31 review: PAN is a balance on the finished stereo signal — the R input
     // never reaches L (L = l·panL·√2), so it is muted, not moved.
     assert.match(hpp, /l \*= panL \* 1\.41421356;/);
@@ -305,7 +313,7 @@ describe('4. the numbers in the guide are the numbers the screen draws', () => {
   it('MONO CHECK: both OUT traces land on one line (the flow display), as the engine sums L and R', () => {
     assert.match(STEREO_FLOW, /const mono = \(lp \+ rp\) \/ 2;/);
     assert.match(read('modules/ape-dsp/ios/core/Effects.hpp'), /if \(fold\) \{ l = r = 0\.5 \* \(l \+ r\); \}/);
-    assert.match(GUIDES.explore.tryThis.join(' '), /At WIDTH 200%, set FOLD to MONO CHECK: the two OUT traces glide onto one line/);
+    assert.match(GUIDES.explore.tryThis.join(' '), /At WIDTH 200%, turn MONO CHECK on: the two OUT traces glide onto one line/);
   });
   it('BASS: the engine high-passes the SIDE at the crossover (lows go mono), it does not touch the MID', () => {
     const hpp = read('modules/ape-dsp/ios/core/Effects.hpp');

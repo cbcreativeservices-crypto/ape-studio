@@ -137,7 +137,9 @@ describe('DG-01 — the simplified chain keeps the preamp', () => {
     assert.deepEqual(keys.slice(0, 2), ['mic', 'preamp']);
     const home = read('src/screens/lab/digital/DigitalLabHomeScreen.tsx');
     assert.doesNotMatch(home, /microphone → analog voltage → anti-aliasing/);
-    assert.match(home, /microphone → preamp/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item DG-04): the 13-arrow paragraph
+    // became one plain lead; it still names the preamp right after the microphone.
+    assert.match(home, /A microphone and its preamp turn it into electricity/);
   });
 });
 

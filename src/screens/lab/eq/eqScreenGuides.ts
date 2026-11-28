@@ -30,24 +30,24 @@ import type { EqModuleId } from './modules/registry';
 export const EQ_HOME_GUIDE: ScreenGuide = {
   intro: {
     learning: 'Building on the one-band Equalizer: how EQ reshapes the balance of frequency content — where (frequency), how much (gain), how wide (Q) — and how to diagnose problems with it.',
-    start: 'Tap Seeing Frequency to read what it covers, then tap OPEN. Inside any module, tap ⓘ beside its title whenever you want that screen explained.',
+    start: 'Tap Why We Use EQ to read what it covers, then tap OPEN. Inside any module, tap ⓘ beside its title whenever you want that screen explained.',
   },
   seeing: [
     'This is the EQ Lab menu. Each module shows one idea about seeing, shaping or diagnosing frequency content.',
     'The top row is your path through the lab: SEE › MANIPULATE › HEAR › IDENTIFY › CORRECT.',
     'Numbered modules in four groups: LEARN, EXPLORE, TRAIN and CHALLENGE.',
     'Below them: CHECK YOUR UNDERSTANDING, SEE WHAT’S LEFT and RELATED TOOLS.',
-    'Modules 1 and 11 use the live mic; the trainers use a made-up spectrum.',
+    'Modules 2 and 11 use the live mic; the trainers use a made-up spectrum.',
   ],
   control: [
     'Tap a module’s name to read its one-line description; tap OPEN to start it.',
     'Inside most modules, the display is on top, readouts sit on its frame and the controls are in the dock at the bottom. Scroll below for notes and a check. Tap ⓘ beside a module’s title to have that screen explained.',
-    'CHECK YOUR UNDERSTANDING: answer every question correctly to complete the lab; a wrong answer can be tried again straight away.',
+    'CHECK YOUR UNDERSTANDING: answer every question correctly to complete the lab; a wrong answer can be tried again right away.',
     'RELATED TOOLS opens the SPECTRUM ANALYZER / RTA, the EQUALIZER EFFECT LAB (the one-band lab you can hear) and the Q & BANDWIDTH CALC.',
-    'SEE WHAT’S LEFT lists the modules you have not opened; ‹ leaves the lab.',
+    'SEE WHAT’S LEFT lists the modules whose goal is not met yet; ‹ leaves the lab.',
   ],
   changes: [
-    'Modules 1–3 show what frequency content looks like, what EQ is for, and the three kinds of EQ.',
+    'Modules 1–3 show what EQ is for, what frequency content looks like, and the three kinds of EQ.',
     'Modules 4–8: frequency, gain and Q, then filter shapes, slopes, and graphic against parametric EQ.',
     'Modules 9–11 run many bands at once, show what a graphic EQ really does, and draw EQ over your room’s sound.',
     'Modules 12–15 put it to work: find the frequency, match the curve, fix the signal, then boost against cut.',
@@ -60,7 +60,7 @@ export const EQ_HOME_GUIDE: ScreenGuide = {
   ],
   tryThis: [
     'New to EQ? Take the modules in order — each one introduces only what the next needs.',
-    'Start with Seeing Frequency: look below 100 Hz, then slide LOW CUT up and watch the low bars drop.',
+    'Start with Why We Use EQ: pick MID, drag GAIN above and below the middle, and read BOOST or CUT under the graph.',
     'When the modules are done, answer CHECK YOUR UNDERSTANDING on this menu.',
   ],
 };
@@ -68,20 +68,20 @@ export const EQ_HOME_GUIDE: ScreenGuide = {
 /** The what's-left screen (LabEndScreen, "progress" mode) — home and FINISH. */
 export const EQ_END_GUIDE: ScreenGuide = {
   intro: {
-    learning: 'A review of how the EQ Lab’s ideas connect: seeing frequency content, then where, how much and how wide, then filter shapes, then diagnosing real problems.',
-    start: 'Open the first module on the list and work down. To go back over one you found hard, tap REVIEW ▾ and pick it.',
+    learning: 'A review of how the EQ Lab’s ideas connect: what EQ is for and seeing frequency content, then where, how much and how wide, then filter shapes, then diagnosing real problems.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
-    'WHAT’S LEFT lists the EQ Lab modules you haven’t opened yet. The CHECK row, for the lab’s questions, is last on the list. You see LAB COMPLETE once every module is opened and the check is passed.',
-    'Modules you’ve opened, and the check once you pass it, fold into one ✓ DONE row; tap REVIEW ▾ to list them. CHECK YOUR UNDERSTANDING holds the same short quiz as the lab menu.',
+    'WHAT’S LEFT lists the EQ Lab modules whose goal is not met yet. The CHECK row, for the lab’s questions, is last on the list. You see LAB COMPLETE once every module is done and the check is passed.',
+    'Modules you’ve done, and the check once you pass it, fold into one ✓ DONE row; tap REVIEW ▾ to list them. CHECK YOUR UNDERSTANDING holds the same short quiz as the lab menu.',
   ],
   control: [
     'Tap a module’s row to open that module. Tapping the CHECK row keeps you here, because the check is on this screen.',
-    'PRACTICE AGAIN FROM THE START opens Seeing Frequency — it never clears what you have done.',
+    'PRACTICE AGAIN FROM THE START opens Why We Use EQ — it never clears what you have done.',
     'DONE · BACK TO LABS goes back one screen. If you came from FINISH on the last module, that’s the lab menu; if you came from the menu, it takes you out of the lab.',
   ],
   changes: [
-    'A module counts once you open it; its row moves from the list to the ✓ row. The check counts once every answer is right, and stays passed when you practice again.',
+    'A module counts when its own goal is met (its CHECK YOURSELF, or its task); its row then moves to the ✓ row. The check counts once every answer is right, and stays passed when you practice again.',
     'If your progress cannot be read, the title reads YOUR PROGRESS and every module stays listed and open.',
   ],
   teaches: [
@@ -89,7 +89,7 @@ export const EQ_END_GUIDE: ScreenGuide = {
     'A diagnosis is a method — where, how much, how wide — so it works on any fresh problem, not only on one answer you remember.',
   ],
   tryThis: [
-    'Open the first module on the list and work down in order.',
+    'Tap a module still listed to open it, or REVIEW ▾ to reopen one you have done.',
     'Tap REVIEW ▾ and reopen a module you found hard.',
   ],
 };
@@ -99,13 +99,13 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
   spectrum: {
     intro: {
       learning: 'A room that seems quiet still carries low-frequency energy, and a low-cut (high-pass) filter removes the unwanted low end while keeping the useful content.',
-      start: 'If the bars aren’t moving, tap MIC. Look at the bars left of the dashed line at 100 Hz, then slide LOW CUT up and watch them drop.',
+      start: 'The microphone stays off until you tap MIC. Then look at the bars left of the dashed line at 100 Hz, and slide LOW CUT up to watch them drop.',
     },
     seeing: [
       'Each bar is a 1/3-octave slice of your room’s sound, live from the phone mic, lows left. Height is dBFS (dB below full scale), 0 to −90.',
       'Color runs blue quiet to red loud; a light mark holds each recent peak. Gray slots can’t be resolved.',
       'LOW CUT off: a dashed amber line marks 100 Hz. On: an amber curve shows the filter.',
-      'Read HPF (the LOW CUT), SLOPE 12/OCT, RES 1/3 OCT (bar width), MIC (LIVE, PAUSED or —).',
+      'Read HPF (the LOW CUT), SLOPE 12/OCT, RES 1/3 OCT (bar width), MIC (OFF, LIVE, PAUSED).',
     ],
     control: [
       'Slide the LOW CUT fader from OFF through 20, 40, 60, 80, 100, 120 or 160 Hz; it snaps to those steps. It’s a high-pass filter (HPF): it lets the highs pass and cuts the lows.',
@@ -188,7 +188,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
       'FIXED: the camera is bolted on the lamp — the EQ works only at 2.00 kHz; Q and WIDTH read FIXED.',
       'SEMI-PARAMETRIC: PAN moves camera and bell together; the width stays the same.',
       'FULLY PARAMETRIC: ZOOM too. Zoom in, see less of the room — a narrower band, a HIGHER Q.',
-      'Gain is not part of this analogy — it is the next lesson.',
+      'Gain is not part of this analogy — it is the next module.',
     ],
     teaches: [
       'Fixed, semi-parametric and fully parametric EQ differ in the controls they give you.',
@@ -306,12 +306,12 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
   // ── 7 ─────────────────────────────────────────────────────────────────────
   slopes: {
     intro: {
-      learning: 'Slope is a rate: how fast a filter’s cut grows beyond its cutoff, in dB per octave. Steeper slopes cut harder but shift phase more.',
+      learning: 'Slope is a rate: how fast a filter’s cut grows beyond its cutoff, in dB per octave. Steeper slopes cut harder but shift timing (phase) more.',
       start: 'At 12 dB/OCT, read @40 Hz and @20 Hz. Then slide SLOPE up to 48 dB/OCT and down to 6 dB/OCT, and compare the two numbers each time.',
     },
     seeing: [
       'One high-pass (low-cut) filter at 80 Hz, drawn at six slopes: your chosen one bright, the other five as dashed ghosts.',
-      'Below 80 Hz the curves fall away; above it they stay near 0 dB. The line under the display names the filter’s order: its number of poles.',
+      'Below 80 Hz the curves fall away; above it they stay near 0 dB. The line under the display says how much quieter each octave down gets.',
       'Watch SLOPE, CUTOFF 80 Hz and how much is cut @40 Hz (an octave below) and @20 Hz (two octaves below) on the frame as you slide SLOPE.',
     ],
     control: [
@@ -320,9 +320,9 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
       'The cutoff never moves here — only the steepness changes.',
     ],
     changes: [
-      'Each extra 6 dB/OCT adds one pole (one filter order): the skirt, the falling part below 80 Hz, gets steeper.',
+      'Each extra 6 dB/OCT makes the skirt, the falling part below 80 Hz, steeper.',
       'The −3 dB point stays at 80 Hz at every slope; only how fast the cut grows past it changes. Crossovers (splitting sound between drivers) often sit at −6 dB there.',
-      'Steeper slopes carve harder but shift phase more near the corner. Gentle slopes are common on channel low-cuts, steep ones in crossovers.',
+      'Steeper slopes carve harder but shift timing (phase) more near the corner. Gentle slopes are common on channel low-cuts, steep ones in crossovers.',
     ],
     teaches: [
       'Slope is a RATE: how fast the cut grows beyond the cutoff, in dB per octave.',
@@ -376,8 +376,8 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
       start: 'Drag the LMF node up to +6 dB and watch its thin curve and the bold COMBINED curve. Then drag the HMF node next to it, also to +6 dB.',
     },
     seeing: [
-      'A six-band EQ: HPF, LOW, LMF (low mids), HMF (high mids), HIGH and LPF. Each band that’s on is a colored dot (node); the selected one is larger.',
-      'Each thin colored curve is one band on its own; a bell at 0 dB draws none. The bold COMBINED curve is all bands together, and its color warms with the biggest boost.',
+      'A six-band EQ: HPF (low cut), LOW, LMF (low mids), HMF (high mids), HIGH and LPF (high cut). Each band that’s on is a dot (node); the selected one is larger.',
+      'Each thin colored curve is one band alone; a bell at 0 dB draws none. The bold COMBINED curve is all bands together, warming with the biggest boost.',
       'On the frame, watch BAND, FREQ, GAIN (— on HPF/LPF), and EQ: how many bands are ACTIVE, or BYPASS.',
     ],
     control: [
@@ -417,7 +417,7 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
     ],
     control: [
       'Drag a fader: −12 to +12 dB in 0.5 dB steps.',
-      'Tap VIEW to switch between MAGNITUDE (how much each frequency is boosted or cut) and PHASE (how far each one is shifted in phase).',
+      'Tap VIEW to switch between MAGNITUDE (how much each frequency is boosted or cut) and PHASE (timing: how far each one’s wave is shifted ahead or behind).',
       'Tap FILTERS to show every band’s own bell under the combined curve, each in its own color.',
       'EXAMPLE sets 125 Hz +3, 250 Hz +6 and 500 Hz +3 dB. CLEAR returns every fader to 0 dB.',
     ],
@@ -447,18 +447,18 @@ export const EQ_SCREEN_GUIDES: Record<EqModuleId, ScreenGuide> = {
     seeing: [
       'Your room’s live 1/3-octave spectrum from the phone microphone, with your EQ drawn over it as an amber curve once you touch a band fader or pick a LOW CUT.',
       'Bars: dB below full scale (0 to −90), blue quiet to red loud, with peak marks. Gray slots: too narrow to measure.',
-      'With no EQ set, the line under the display reads dBFS · UNCALIBRATED APPROXIMATE.',
+      'With no EQ set, the line below names the uncalibrated phone mic as the source.',
       'Watch VIEW, LOW CUT, BAND (its frequency, or OFF) and MIC.',
     ],
     control: [
       'FREQ, GAIN (−8 to +8 dB) and Q (0.3–12) shape one parametric bell. Touch any of them and the band switches on.',
       'Tap LOW CUT to pick OFF, 40, 80 or 120 Hz, and a SLOPE of 12, 24 or 48 dB/OCT.',
-      'Tap VIEW for SPECTRUM ONLY, EQ ONLY or COMBINED. The same tray holds BAND ON / BAND OFF for the band, and MIC LIVE — PAUSE or MIC PAUSED — RESUME for the microphone.',
-      'Tapping the display also pauses or resumes the microphone.',
+      'Tap VIEW for SPECTRUM ONLY, EQ ONLY or BOTH. The same tray holds BAND ON / BAND OFF for the band, and the microphone key: MIC OFF — START, then MIC LIVE — PAUSE and MIC PAUSED — RESUME.',
+      'The microphone stays off until you start it. Tapping the display also starts, pauses or resumes it.',
     ],
     changes: [
-      'COMBINED: the bars are redrawn as if your room’s sound had passed through the EQ. Nothing in the room changes.',
-      'SPECTRUM ONLY hides the curve; EQ ONLY hides the bars. Moving a band fader in SPECTRUM ONLY returns to COMBINED.',
+      'BOTH: the bars are redrawn as if your room’s sound had passed through the EQ. Nothing in the room changes.',
+      'SPECTRUM ONLY hides the curve; EQ ONLY hides the bars. Moving a band fader in SPECTRUM ONLY returns to BOTH.',
       'Point the phone around: the bars change, the curve does not — it is your plan, not a measurement.',
     ],
     teaches: [

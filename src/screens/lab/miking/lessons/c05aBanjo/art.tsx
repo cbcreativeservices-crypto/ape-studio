@@ -10,15 +10,19 @@ import { makeStringSoundPage } from '../shared/guitars/StringSound';
 import { makeStagePlanPage, STRINGS_HEARING } from '../shared/guitars/StagePlan';
 import { GUITAR_PLANS } from '../shared/guitars/stagePlanModel.ts';
 import { C05A_BUILT, C05A_ZONES } from './geometry.ts';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+
+/** The new look (figure V2, wave 3 set 3c): the player as a cast member, the hands as each instrument is played. */
+export const V2 = figureV2On('sidePlayers');
 
 const sp = C05A_BUILT.scenes.reso.variant.spec;
 const pot = sp.body.pot!;
 
 export const C05A_ART: LessonArt = {
-  ...makeGuitarArt(C05A_BUILT, { zones: C05A_ZONES }),
+  ...makeGuitarArt(C05A_BUILT, { zones: C05A_ZONES, v2: V2 }),
   pages: {
     sound: makeStringSoundPage(C05A_BUILT, { membrane: { diameterMm: pot.d.mm, hooks: sp.hooks?.mm ?? 24, bridgeMm: Math.abs(pot.cx.mm), label: 'banjo head, from the front' } }),
-    setting: makeStagePlanPage(C05A_BUILT, { plan: GUITAR_PLANS.C05A, hearing: STRINGS_HEARING }),
+    setting: makeStagePlanPage(C05A_BUILT, { plan: GUITAR_PLANS.C05A, hearing: STRINGS_HEARING, v2: V2 }),
   },
   stepCounts: { sound: 5, setting: 3 },
 };

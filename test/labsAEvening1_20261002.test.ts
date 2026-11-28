@@ -77,6 +77,7 @@ describe('Envelope lab: the check page copy matches the never-blocking FINISH (P
     assert.doesNotMatch(raw, /FINISH unlocks/);
     assert.doesNotMatch(raw, /FINISH below records it/);
     assert.doesNotMatch(raw, /the lab is complete/);
-    assert.match(raw, /'This page completes when all six are answered correctly\.'/);
+    // Phase 3, owner 2026-11-14: one unit noun per lab ("module" in Envelope).
+    assert.match(raw, /'This module completes when all six are answered correctly\.'/);
   });
 });

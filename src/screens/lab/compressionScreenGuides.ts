@@ -7,7 +7,7 @@
  * three tabs, so the guides are keyed by the shell's tab id:
  *   explore — the rack: the animated flow display (IN ▸ COMP ▸ OUT) with the GR
  *             ladder, the THRESH / RATIO / GR readouts, the THRESH fader and
- *             the RATIO / ATK/REL / MAKEUP / SOURCE keys, LAB NOTES;
+ *             the RATIO / SPEED / MAKEUP / SOURCE keys, LAB NOTES;
  *   learn   — the guided lesson as one reading page;
  *   check   — CHECK YOUR UNDERSTANDING (understandingChecks.ts COMPRESSION).
  *
@@ -57,19 +57,19 @@ export const COMPRESSION_SCREEN_GUIDES: Record<CompressionScreenId, ScreenGuide>
   explore: {
     intro: {
       learning: 'How a compressor turns down only the level above the threshold, by the ratio, and how attack and release set how fast it clamps and lets go.',
-      start: 'Tap ▶ to play CLICK 120 and watch GR (gain reduction) kick on each hit. Then switch SOURCE to SINE 440 Hz, set THRESH to −30 dB, and watch GR hold at about 7 dB.',
+      start: 'Drag THRESH down and watch the amber strip under OUT hang deeper: the compressor turns each click down. Then tap ▶ to play CLICK 120 and watch GR (gain reduction) kick live on each hit.',
     },
     seeing: [
       'Sound flows IN ▸ through COMP ▸ OUT. Dashed lines mark the threshold; the dotted outline is the sound untouched.',
       'THRESH and RATIO show your settings. GR is gain reduction, the dB being turned down now (— dB if stopped); the ladder at right echoes it.',
-      'Drawn as a TEACHING MODEL, but its 5 ms CLICK is the real click. At ATTACK 5 ms its spike passes almost whole (about 1 dB lower): GR peaks as each click ends.',
+      'The drawing is a model, but its 5 ms CLICK is the real click. At ATTACK 5 ms its spike passes almost whole (about 1 dB lower): GR peaks as each click ends.',
     ],
     control: [
-      'Tap ▶ in the header, or tap the display, to play the SOURCE through the compressor; ■ stops it. Drag the THRESH fader from −50 to −10 dB.',
-      'RATIO: 2:1 GLUE, 4:1, 8:1 or 20:1 LIMIT. ATK/REL: ATTACK from 0.5 ms FAST to 100 ms, RELEASE 30, 120 or 500 ms.',
+      'Tap ▶ in the header or the display to play the SOURCE through the compressor; ■ stops it. Drag the THRESH fader from −50 to −10 dB.',
+      'RATIO: 2:1 GENTLE to 20:1 ALMOST A WALL. SPEED: ATTACK, how fast it grabs (0.5 ms FAST to 100 ms); RELEASE, how fast it lets go.',
       'On CLICK, the amber strip under OUT is the drawing’s GR: THRESH and RATIO change how deep it hangs. GR PEAK prints its deepest point; live GR can read lower.',
-      'Tap MAKEUP for 0 dB or +6 dB, and SOURCE for CLICK 120, SINE 440 Hz or PINK NOISE.',
-      'Long-press any key or readout for its lesson entry. Below, LAB NOTES holds the intro, the GAIN REDUCTION meter, the DESIGNED RESPONSE curve, THE AUDIO PATH, two CHECK YOURSELF questions and the GUIDED LESSON.',
+      'Tap MAKEUP for 0 dB or +6 dB, and SOURCE for CLICK, SINE 440 Hz or PINK NOISE.',
+      'Long-press any key or readout for its lesson entry. Below, LAB NOTES holds the GAIN REDUCTION meter, the DESIGNED RESPONSE curve, THE AUDIO PATH, two CHECK YOURSELF questions and the GUIDED LESSON.',
     ],
     changes: [
       'Only level over the threshold is turned down: at 4:1, every 4 dB over comes out as 1 (12 dB over → 3).',
@@ -84,7 +84,7 @@ export const COMPRESSION_SCREEN_GUIDES: Record<CompressionScreenId, ScreenGuide>
     ],
     tryThis: [
       'Set SOURCE to SINE 440 Hz, tap ▶ and put THRESH at −30 dB: GR holds at about 7 dB. Ride THRESH up to −20 dB: GR falls to 0.0, because the tone no longer crosses the threshold.',
-      'Back at −30 dB, step RATIO: 2:1 GLUE about 5 dB, 4:1 about 7, 8:1 about 8, 20:1 LIMIT about 9 — never past the 10 dB the tone peaks over the threshold.',
+      'Back at −30 dB, step RATIO: 2:1 GENTLE about 5 dB, 4:1 about 7, 8:1 about 8, 20:1 about 9 — never past the 10 dB the tone peaks over the threshold.',
       'On CLICK 120 at THRESH −40 dB, GR kicks on each hit, then falls to 0.0. Pick ATTACK 25 ms PUNCH: GR stays 0.0. The 5 ms click ends before the clamp builds, so the spike passes untouched.',
     ],
   },
@@ -93,7 +93,7 @@ export const COMPRESSION_SCREEN_GUIDES: Record<CompressionScreenId, ScreenGuide>
   learn: {
     intro: {
       learning: 'The language of compression, the formula behind gain reduction, and why a bigger GR number is not the goal when you compare at matched level.',
-      start: 'Scroll to FORMULA / CONCEPT and work out 12 dB over the threshold at 4:1. Then switch to EXPLORE and play SINE 440 Hz at THRESH −30 dB to see GR at work.',
+      start: 'Open FORMULA / CONCEPT and work out 12 dB over the threshold at 4:1. Then switch to EXPLORE and play SINE 440 Hz at THRESH −30 dB to see GR at work.',
     },
     seeing: [
       'This is the Compression lab’s guided lesson as one page to read. Nothing on it moves, but ▶ in the header still plays or stops the sound.',
@@ -105,7 +105,7 @@ export const COMPRESSION_SCREEN_GUIDES: Record<CompressionScreenId, ScreenGuide>
       'On EXPLORE, long-press any key or readout to open just its entry as a sheet. ⓘ GUIDED LESSON at the end of LAB NOTES opens this whole lesson.',
     ],
     changes: [
-      'Read this page beside EXPLORE: each CONTROLS entry is a fader, key or readout you can try there.',
+      'Open CONTROLS and read it beside EXPLORE: each entry is a fader, key or readout you can try there.',
       'FORMULA / CONCEPT: above the threshold, gain reduction = (input − threshold) × (1 − 1/ratio); below it, nothing changes.',
       'Most COMMON MISTAKES are a setting pushed too far — attack too fast, release too fast, too much ratio — and what you hear when it is.',
     ],
@@ -116,7 +116,7 @@ export const COMPRESSION_SCREEN_GUIDES: Record<CompressionScreenId, ScreenGuide>
     ],
     tryThis: [
       'Work the formula: 12 dB over at 4:1 → 12 × (1 − 1/4) = 9 dB of gain reduction, so the output sits 3 dB over the threshold. CHECK asks the same kind of sum.',
-      'Read the COMMON MISTAKES line on attack, then on EXPLORE play CLICK 120 at THRESH −40 dB: ATTACK 0.5 ms FAST kicks GR deeper and squeezes the drawn spike; 25 ms PUNCH leaves GR at 0.0.',
+      'Open COMMON MISTAKES and read the line on attack, then on EXPLORE play CLICK 120 at THRESH −40 dB: ATTACK 0.5 ms FAST kicks GR deeper and squeezes the drawn spike; 25 ms PUNCH leaves GR at 0.0.',
     ],
   },
 
@@ -131,11 +131,12 @@ export const COMPRESSION_SCREEN_GUIDES: Record<CompressionScreenId, ScreenGuide>
       'A ✓ replaces a question’s number once you get it right. The line under the title says how many are still to get right.',
     ],
     control: [
-      'Tap an option. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER explains, and you pick again straight away.',
+      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
       'Nothing is scored. Use the tabs to switch to LEARN or EXPLORE at any time to look up a compressor setting.',
     ],
     changes: [
-      'Each answer shows its explanation at once, right or wrong, so a wrong pick about ratio or attack still teaches you something.',
+      'A first wrong pick gets a pointer, not the answer, so you still work it out.',
+      'Below the questions, FINISH · SEE WHAT’S LEFT › opens Where you are: what is left in this lab.',
       'Get all four right and the check is passed. A pass is kept: you never need to take the check twice.',
     ],
     teaches: [
@@ -143,8 +144,8 @@ export const COMPRESSION_SCREEN_GUIDES: Record<CompressionScreenId, ScreenGuide>
       'What attack time changes about a drum hit, and what makeup gain is for.',
     ],
     tryThis: [
-      'Stuck on the ratio question? On EXPLORE, play SINE 440 Hz at THRESH −30 dB and step RATIO from 2:1 GLUE to 20:1 LIMIT: GR grows from about 5 to 9 dB, so less of the overshoot comes out.',
-      'Unsure about below the threshold? Read FORMULA / CONCEPT on LEARN, or long-press THRESH on EXPLORE to open its lesson entry.',
+      'Stuck on the ratio question? On EXPLORE, play SINE 440 Hz at THRESH −30 dB and step RATIO from 2:1 GENTLE to 20:1 ALMOST A WALL: GR grows from about 5 to 9 dB, so less of the overshoot comes out.',
+      'Unsure about below the threshold? Open FORMULA / CONCEPT on LEARN, or long-press THRESH on EXPLORE to open its lesson entry.',
     ],
   },
 };

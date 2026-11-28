@@ -9,6 +9,7 @@ import logoMark from "@/public/logo-mark.png";
 const NAV_LINKS: { href: string; label: string }[] = [
   { href: "/academy", label: "Academy" },
   { href: "/curriculum", label: "Curriculum" },
+  { href: "/career-finder", label: "Career Finder" },
   { href: "/membership", label: "Membership" },
   { href: "/credentials", label: "Credentials" },
   { href: "/verify", label: "Verify" },

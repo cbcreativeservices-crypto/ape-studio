@@ -14,8 +14,8 @@ import { StyleSheet, Text, View } from 'react-native';
 import { colors, fonts } from '../../../theme/tokens';
 import {
   CONNECTIONS, DEFAULTS, FREQ_HINTS, FREQ_MAX, FREQ_MIN, OVER_STAGES, OVER_THRESHOLD_SPAN_DB, PATH_MAIN, PATH_SIDECHAIN, PATH_SPLIT, PHRASE,
-  bandpassGain, detectorCurve, eqCut, meanSibilantGr, overSettings, overStage, processPhrase, sFrameSpectrum, vowelBrightnessLossDb,
-  type Frame, type FreqHint, type Settings,
+  bandpassGain, detectorCurve, eqCut, meanSibilantDropDb, meanSibilantGr, overSettings, overStage, processFrame, processPhrase, sFrameSpectrum, splitBandGain, toDb, vowelBrightnessLossDb,
+  type Frame, type FreqHint, type Mode, type Settings,
 } from '../../../features/deesser/deEsserModel';
 import { navigationRef } from '../../../navigation/navigationRef';
 import { PagedLab, type PageCtx, type PageDef } from '../kit/PagedLab';
@@ -65,7 +65,20 @@ function useRack(): [Settings, (patch: Partial<Settings>) => void] {
   return [s, set];
 }
 
-const touch = (ctx: PageCtx) => { if (!ctx.isDone) ctx.markDone(); };
+/** DES-01 (owner 2026-11-15: "build waves 1 thru 3", D62 adoption plan): The
+ *  Detection Path (page 3) shows the plain wiring, the main path and the side
+ *  chain's "ear", until the learner has reached Broadband vs Split-Band (page
+ *  7), where split-band is taught. From then on page 3 follows the mode chosen
+ *  there, so the BAND SPLIT and the SUM join the diagram after page 7. Reset,
+ *  like the rack, every time the lab is opened. */
+let modeTaught = false;
+
+/** WORK DONE (phase 3, owner's decision 1, 2026-11-14): using a control no
+ *  longer counts a page. A page with a check counts when its check is answered
+ *  right (manualDone + onCorrect → ctx.markDone); a page with no check is a
+ *  reading page that NEXT counts. Pages already counted keep their ✓. Kept as
+ *  a named no-op so every control's call site reads the same. */
+const touch = (_ctx: PageCtx) => {};
 
 /** Indexes of the sibilant frames. */
 const SIB = PHRASE.map((f, i) => (f.sibilant ? i : -1)).filter((i) => i >= 0);
@@ -154,7 +167,10 @@ function PageEqVs({ ctx }: { ctx: PageCtx }) {
   const de = processPhrase(PHRASE, { ...DEFAULTS, thresholdDb: -12, rangeDb: cut });
   const out = which === 'eq' ? eq : de;
   const loss = vowelBrightnessLossDb(PHRASE, out);
-  const sGr = which === 'eq' ? cut : meanSibilantGr(de);
+  // How far the S's hiss DROPS, the quantity the strips draw (owner 2026-11-25,
+  // round 2 checker): in split-band an off-centre S drops less than the gain
+  // reduction at the band centre.
+  const sGr = which === 'eq' ? cut : meanSibilantDropDb(de);
   // The live readout — shown in the card on the page and at the top of the dock in full screen.
   const lossRead = <Text style={styles.read}>brightness taken from everything that is not an S: {loss.toFixed(1)} dB · S’s reduced by about {sGr.toFixed(1)} dB</Text>;
   const toggle = (
@@ -191,7 +207,7 @@ function PageEqVs({ ctx }: { ctx: PageCtx }) {
         options={['It cannot cut deeply enough to tame a loud S', 'It is on all the time, so the vowels lose brightness too', 'EQ bands cannot be placed as high as 6 kHz', 'It adds noise to the recording every time it cuts']}
         correct={1}
         explain="The cut never switches off, so every vowel, breath and bit of air loses the same 8 dB. A de-esser acts only while the detector hears hiss."
-        onCorrect={() => touch(ctx)}
+        onCorrect={() => ctx.markDone()}
       />
     </View>
   );
@@ -201,9 +217,11 @@ function PageEqVs({ ctx }: { ctx: PageCtx }) {
 
 function PagePath({ ctx }: { ctx: PageCtx }) {
   const [rackS] = useRack();
+  // DES-01: the plain wiring until page 7 has taught split-band; then the rack's mode.
+  const mode: Mode = modeTaught ? rackS.mode : 'broadband';
   // Split-band adds the band split and the sum to the walk (DE-R2-01).
-  const ORDER = pathOrder(rackS.mode);
-  const split = rackS.mode === 'split';
+  const ORDER = pathOrder(mode);
+  const split = mode === 'split';
   const [idx, setIdx] = useState(0);
   const [auto, setAuto] = useState(false);
   useEffect(() => {
@@ -237,10 +255,10 @@ function PagePath({ ctx }: { ctx: PageCtx }) {
         ? 'Tap each block, or walk the signal. Notice that the side chain’s band-pass only listens — and that the gain element only ever sees the hiss band.'
         : 'Tap each block, or walk the signal. Notice that the voice itself never passes through the filter.'}</Prompt>
       <ExpandableFigure
-        aspect={VIZ_W / pathHeight(rackS.mode)}
+        aspect={VIZ_W / pathHeight(mode)}
         title="SIGNAL PATH"
         controls={<Dock>{reader}</Dock>}
-        render={(w, h) => <PathDiagram width={w} height={h} active={active} mode={rackS.mode} freqHz={rackS.freqHz} onSelect={(id) => { setIdx(Math.max(0, (ORDER as string[]).indexOf(id))); setAuto(false); touch(ctx); }} />}
+        render={(w, h) => <PathDiagram width={w} height={h} active={active} mode={mode} freqHz={rackS.freqHz} onSelect={(id) => { setIdx(Math.max(0, (ORDER as string[]).indexOf(id))); setAuto(false); touch(ctx); }} />}
       />
       {reader}
       <Body>{split
@@ -252,7 +270,7 @@ function PagePath({ ctx }: { ctx: PageCtx }) {
         options={['In the signal path, cutting the highs from the whole voice', 'In the side chain, shaping only what the detector listens to', 'After the gain element, cleaning up whatever is left over', 'Nowhere — the detector hears the whole voice, unfiltered']}
         correct={1}
         explain="The filter is in the side chain: it decides, it does not shape the voice. Without it, the detector would react to loud vowels as well as to hiss."
-        onCorrect={() => touch(ctx)}
+        onCorrect={() => ctx.markDone()}
       />
     </View>
   );
@@ -270,7 +288,8 @@ function PageThreshold({ ctx }: { ctx: PageCtx }) {
   const count = <Text style={styles.read}>{overSib} of {SIB.length} sibilants above threshold · {overOther} other sounds crossing</Text>;
   return (
     <View style={{ gap: 12 }}>
-      <Lead>The threshold is the level the hiss must reach before anything happens. Above it, the de-esser turns down; below it, it does nothing (in this hard-knee model).</Lead>
+      {/* DES-03 (owner 2026-11-15, D62): "(in this hard-knee model)" left the plain sentence. */}
+      <Lead>The threshold is the level the hiss must reach before anything happens. Above it, the de-esser turns down; below it, it does nothing at all.</Lead>
       <Prompt>Drag the threshold up until nothing crosses, then down until the gaps cross. Find the settings in between where only orange labels sit above the line.</Prompt>
       {thr}
       <ExpandableFigure
@@ -297,7 +316,7 @@ function PageThreshold({ ctx }: { ctx: PageCtx }) {
         options={['Working harder, which is what a bright voice needs', 'Ducking the voice on sounds that were never the problem', 'Nothing extra — vowels sit below 2 kHz and cannot trigger it', 'Adding hiss to the vowels to balance the S’s']}
         correct={1}
         explain="Reduction under a vowel means the detector heard enough energy in the band to cross the line. Now the voice dips where there was no hiss to remove — raise the threshold until only the S’s cross."
-        onCorrect={() => touch(ctx)}
+        onCorrect={() => ctx.markDone()}
       />
     </View>
   );
@@ -365,7 +384,7 @@ function PageFrequency({ ctx }: { ctx: PageCtx }) {
         options={['Increase the range so it can work harder on each word', 'Raise the threshold or re-aim the detector frequency', 'Turn the output gain down so the meter moves less', 'Add an EQ boost above the band so the S’s stand out more']}
         correct={1}
         explain="Reduction on non-sibilant words means the detector is hearing the voice, not the hiss: the threshold is too low or the band is in the wrong place. Range only limits how hard it acts once triggered."
-        onCorrect={() => touch(ctx)}
+        onCorrect={() => ctx.markDone()}
       />
     </View>
   );
@@ -384,7 +403,7 @@ function PageGr({ ctx }: { ctx: PageCtx }) {
       <ControlSlider level label="Threshold" value={s.thresholdDb} min={-40} max={0} step={1} format={(v) => `${v.toFixed(0)} dB`} onChange={(v) => { set({ thresholdDb: v }); touch(ctx); }} />
     </View>
   );
-  const peak = <Text style={styles.read}>peak reduction {max.toFixed(1)} dB · average on S’s {mean.toFixed(1)} dB · stage: {overStage(mean).name}</Text>;
+  const peak = <Text style={styles.read}>peak gain reduction {max.toFixed(1)} dB · average gain reduction on S’s {mean.toFixed(1)} dB · stage: {overStage(mean).name}</Text>;
   return (
     <View style={{ gap: 12 }}>
       {/* NEW COPY: "the only honest meter" → "the one essential display". */}
@@ -401,7 +420,7 @@ function PageGr({ ctx }: { ctx: PageCtx }) {
       <Card>
         {peak}
         {/* NEW COPY: range is a cap, not a dose — the old line said 10 dB of range was "lisp territory whatever the threshold says". */}
-        <Body>Range is the safety rail: however far above threshold an S goes, the gain never drops more than this. Most voices stay natural with the range at 4–6 dB. Open it wide and only the threshold and ratio decide how hard it works — which is how a de-esser ends up lisping.</Body>
+        <Body>Range is the safety rail: however far above threshold an S goes, the gain never drops more than this. Most voices stay natural with the range at 4–6 dB. Open it wide and only the threshold and the ratio (fixed at 4:1 in this lab) decide how hard it works — which is how a de-esser ends up lisping.</Body>
         <Body>These meters are conceptual — relative gain, not calibrated level.</Body>
       </Card>
     </View>
@@ -412,8 +431,12 @@ function PageGr({ ctx }: { ctx: PageCtx }) {
 
 function PageMode({ ctx }: { ctx: PageCtx }) {
   const [s, set] = useRack();
-  const [step, setStep] = useState(0);
+  // DES-05 (owner 2026-11-15, D62): open on the first S (frame 3, “s”), not on
+  // “th”, which has no reduction, so the first mode switch shows the difference.
+  const [step, setStep] = useState(SIB[0]);
   const [auto, setAuto] = useState(false);
+  // DES-01: split-band has now been taught; The Detection Path follows the mode from here on.
+  useEffect(() => { modeTaught = true; }, []);
   useEffect(() => {
     if (!auto || ctx.reduceMotion) return;
     const id = setInterval(() => setStep((i) => (i + 1) % PHRASE.length), 700);
@@ -425,12 +448,16 @@ function PageMode({ ctx }: { ctx: PageCtx }) {
   const inSp = sFrameSpectrum(f, 48);
   const g = Math.pow(10, -p.grDb / 20);
   const outMag = new Float64Array(inSp.mag.length);
+  // The exact split-band gain at each frequency (splitBandGain), the same the
+  // frame strip's hiss takes; broadband: everything × g.
   for (let i = 0; i < outMag.length; i++) {
-    const w = s.mode === 'broadband' ? 1 : bandpassGain(inSp.hz[i], s.freqHz, s.q);
-    outMag[i] = inSp.mag[i] * (1 - w * (1 - g));
+    outMag[i] = inSp.mag[i] * (s.mode === 'broadband' ? g : splitBandGain(inSp.hz[i], s, g));
   }
   const go = (i: number) => { setStep((i + PHRASE.length) % PHRASE.length); setAuto(false); touch(ctx); };
   const gr = p.grDb.toFixed(1);
+  // Split-band's cut on THIS frame's hiss, at its own frequency (audit B11): the
+  // band's −gr dB is at its centre; an off-centre hiss loses less.
+  const splitHissDb = (toDb(f.hiss) - toDb(processFrame(f, { ...s, mode: 'split' }).outHiss)).toFixed(1);
   const specCaption = s.mode === 'split' ? 'Gray: before · color: after · gold dashed: the band being turned down.' : 'Gray: before · color: after — the whole spectrum moves together.';
   // Mode + frame controls: on the page, and docked under either figure in full screen.
   const modeRow = (
@@ -439,7 +466,7 @@ function PageMode({ ctx }: { ctx: PageCtx }) {
       <Btn label="SPLIT-BAND" tone={s.mode === 'split' ? 'primary' : 'plain'} selected={s.mode === 'split'} onPress={() => { set({ mode: 'split' }); touch(ctx); }} />
     </Row>
   );
-  const stepRead = <Text style={styles.read}>frame {step + 1} · “{f.label}” · {p.grDb > 0 ? `−${gr} dB reduction` : 'no reduction'}</Text>;
+  const stepRead = <Text style={styles.read}>frame {step + 1} · “{f.label}” · {p.grDb > 0 ? `−${gr} dB gain reduction` : 'no reduction'}</Text>;
   const stepBtns = (
     <>
       <Wide><Btn label="‹" onPress={() => go(step - 1)} a11y="Previous frame" /></Wide>
@@ -455,7 +482,8 @@ function PageMode({ ctx }: { ctx: PageCtx }) {
   return (
     <View style={{ gap: 12 }}>
       <Lead>When the detector fires, what gets turned down? Everything (broadband) or only the hiss band (split-band). Same decision, different action.</Lead>
-      <Prompt>Step to an S and compare the cyan body bar in each mode — that is the whole difference.</Prompt>
+      {/* Checker fix (D62 DES-05): the page now opens on an S. */}
+      <Prompt>Switch the mode on this S and compare the cyan body bar — that is the whole difference.</Prompt>
       {modeRow}
       <Title>{`OUTPUT · ${s.mode.toUpperCase()} (input as ghost)`}</Title>
       <ExpandableFigure
@@ -479,7 +507,7 @@ function PageMode({ ctx }: { ctx: PageCtx }) {
         <Eyebrow>{s.mode === 'broadband' ? 'BROADBAND' : 'SPLIT-BAND'} · THIS FRAME</Eyebrow>
         {/* NEW COPY: side-by-side worked example for the current frame, so both modes are compared without toggling from memory. */}
         <Text style={styles.read}>{p.grDb > 0
-          ? `broadband → body −${gr} dB, hiss −${gr} dB · split-band → body 0 dB, hiss −${gr} dB`
+          ? `broadband → body −${gr} dB, hiss −${gr} dB · split-band → body 0 dB, hiss −${splitHissDb} dB`
           : 'no reduction on this frame — both modes pass it untouched'}</Text>
         <Body>{s.mode === 'broadband'
           ? 'Simple and natural-sounding in small doses: the whole S gets quieter, like the talker backed off for a moment. Push it and the whole voice ducks on every S — you hear it breathe.'
@@ -491,7 +519,7 @@ function PageMode({ ctx }: { ctx: PageCtx }) {
         options={['Broadband turns down only the hiss band; split-band takes the whole voice down', 'Split-band turns down only the hiss band; broadband takes the whole voice down', 'Both turn down only the hiss band; they differ in how fast they react', 'Both take the whole voice down; they differ in where the detector listens']}
         correct={1}
         explain="Same decision, different action: broadband ducks the whole voice for the moment, split-band attenuates only the band it was listening to."
-        onCorrect={() => touch(ctx)}
+        onCorrect={() => ctx.markDone()}
       />
     </View>
   );
@@ -504,10 +532,13 @@ function PageOver({ ctx }: { ctx: PageCtx }) {
   const [rackS, set] = useRack();
   const s = overSettings(amount, rackS.mode);
   const out = processPhrase(PHRASE, s);
+  // The stage reads the gain-reduction meter (the progression's scale); the S's
+  // own drop is what the strip draws (owner 2026-11-25, round 2 checker).
   const mean = meanSibilantGr(out);
+  const drop = meanSibilantDropDb(out);
   const stage = overStage(mean);
   const hard = <ControlSlider label="How hard" value={amount} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}% · threshold ${-Math.round(v * OVER_THRESHOLD_SPAN_DB)} dB`} onChange={(v) => { setAmount(v); touch(ctx); }} />;
-  const stageLine = <Eyebrow>{stage.name.toUpperCase()} · ABOUT {mean.toFixed(0)} dB ON THE S’S</Eyebrow>;
+  const stageLine = <Eyebrow>{stage.name.toUpperCase()} · ABOUT {mean.toFixed(0)} dB GAIN REDUCTION · S’S DOWN ABOUT {drop.toFixed(0)} dB</Eyebrow>;
   return (
     <View style={{ gap: 12 }}>
       {/* NEW COPY: lead names what the stages are. */}
@@ -520,7 +551,7 @@ function PageOver({ ctx }: { ctx: PageCtx }) {
         title="OUTPUT"
         badge={CONCEPTUAL}
         controls={<Dock>{stageLine}{hard}</Dock>}
-        render={(w, h) => <FrameStrip width={w} height={h} frames={PHRASE} output={out} a11y={`At this setting the sibilants are reduced by about ${mean.toFixed(0)} dB: ${stage.name}. ${stage.symptoms}`} />}
+        render={(w, h) => <FrameStrip width={w} height={h} frames={PHRASE} output={out} a11y={`At this setting the gain reduction on the sibilants is about ${mean.toFixed(0)} dB and their hiss drops about ${drop.toFixed(0)} dB: ${stage.name}. ${stage.symptoms}`} />}
       />
       <Card tone={stage.id === 'transparent' || stage.id === 'controlled' ? 'ok' : stage.id === 'off' ? 'plain' : 'warn'}>
         {stageLine}
@@ -541,7 +572,7 @@ function PageOver({ ctx }: { ctx: PageCtx }) {
         options={['The range is too small, so the S’s were never caught', 'Too much reduction — the S’s are being removed, not tamed', 'The detector band is too wide and heard the vowels', 'The microphone was too far away for the detector']}
         correct={1}
         explain="A lisp is the sound of S’s with their hiss taken away. Back off: raise the threshold or lower the range until the S’s are softened, not deleted."
-        onCorrect={() => touch(ctx)}
+        onCorrect={() => ctx.markDone()}
       />
       <Row><Btn label="RESET RACK TO DEFAULTS" onPress={() => { set({ ...LAB_DEFAULTS }); setAmount(0); }} a11y="Reset every de-esser setting to its default" /></Row>
     </View>
@@ -571,7 +602,7 @@ function PageConnections({ ctx }: { ctx: PageCtx }) {
         question="Which description of a de-esser is right?"
         options={['An EQ that cuts around 6 kHz whenever the voice gets loud', 'A compressor whose detector listens through a hiss filter', 'A gate that opens only while an S sound is present', 'A limiter set to the level of the loudest S in the take']}
         correct={1}
-        explain="It is a compressor's detector, threshold and gain computer with one addition: the detector listens to a filtered copy of the voice, so mostly hiss triggers it."
+        explain="It is a compressor's detector, threshold and how-much step with one addition: the detector listens to a filtered copy of the voice, so mostly hiss triggers it."
         onCorrect={() => ctx.markDone()}
       />
     </View>
@@ -579,21 +610,38 @@ function PageConnections({ ctx }: { ctx: PageCtx }) {
 }
 
 const PAGES: PageDef[] = [
-  { title: 'What Sibilance Is', short: 'Sibilance', Component: PageWhat },
-  { title: 'Why EQ Is Not Enough', short: 'EQ vs de-esser', Component: PageEqVs },
-  { title: 'The Detection Path', short: 'Path', Component: PagePath },
-  { title: 'Threshold', short: 'Threshold', Component: PageThreshold },
-  { title: 'Choosing the Frequency', short: 'Frequency', Component: PageFrequency },
-  { title: 'Reading Gain Reduction', short: 'GR', Component: PageGr },
-  { title: 'Broadband vs Split-Band', short: 'Mode', Component: PageMode },
-  { title: 'Over-De-Essing', short: 'Too much', Component: PageOver },
-  { title: 'Connections & Check', short: 'Check', Component: PageConnections },
+  // Work done (phase 3): a page with a check counts when it is answered right
+  // (manualDone); the two pages with no check are reading pages (NEXT counts).
+  { title: 'What Sibilance Is', short: 'Sibilance', Component: PageWhat, reading: true },
+  { title: 'Why EQ Is Not Enough', short: 'EQ vs de-esser', Component: PageEqVs, manualDone: true },
+  { title: 'The Detection Path', short: 'Path', Component: PagePath, manualDone: true },
+  { title: 'Threshold', short: 'Threshold', Component: PageThreshold, manualDone: true },
+  { title: 'Choosing the Frequency', short: 'Frequency', Component: PageFrequency, manualDone: true },
+  { title: 'Reading Gain Reduction', short: 'GR', Component: PageGr, reading: true },
+  { title: 'Broadband vs Split-Band', short: 'Mode', Component: PageMode, manualDone: true },
+  { title: 'Over-De-Essing', short: 'Too much', Component: PageOver, manualDone: true },
+  { title: 'Connections & Check', short: 'Check', Component: PageConnections, manualDone: true },
 ];
+
+/** WHAT'S LEFT: each unfinished page's own goal (checker K1; S2 `pageDetail`).
+ *  Index = PAGES order. Pages 1 and 6 are reading pages: the shared NEXT rule,
+ *  printed once above the list, is their line (no row of their own). */
+export const DEESSER_STILL_TO_DO: Readonly<Record<number, string>> = {
+  1: 'Still to do: answer its check on why a static EQ cut is a poor de-esser.',
+  2: 'Still to do: answer its check on where the band-pass filter sits.',
+  3: 'Still to do: answer its check on a threshold set too low.',
+  4: 'Still to do: answer its check on a meter that moves on every word.',
+  6: 'Still to do: answer its check on split-band against broadband.',
+  7: 'Still to do: answer its check on a singer who now lisps.',
+  8: 'Still to do: answer its closing question on what a de-esser is.',
+};
 
 export function DeEsserLabScreen() {
   // A fresh rack every time the lab is opened: settings persist across pages,
   // not across visits (the initializer runs before any page mounts).
   useState(() => { rack = { ...LAB_DEFAULTS }; return true; });
+  // DES-01: page 3 shows the plain wiring again until page 7 is reached on this visit.
+  useState(() => { modeTaught = false; return true; });
   return (
     <PagedLab
       labId="deesser"
@@ -604,6 +652,9 @@ export function DeEsserLabScreen() {
       endGuide={DEESSER_END_GUIDE}
       // D41 K8: the certificate credit is the Smart Processors check — the
       // what's-left screen lists it and draws it, so LAB COMPLETE waits for it.
+      // One progress word (phase 3, owner's decision 3): this lab's units are pages.
+      unitNoun="page"
+      pageDetail={(i) => DEESSER_STILL_TO_DO[i]}
       creditCheckLabId="smart-processors"
       creditCheckTitle="Smart Processors Lab"
       // ACCURACY CHIP RULE (owner 2026-10-31): the measurement note stays only

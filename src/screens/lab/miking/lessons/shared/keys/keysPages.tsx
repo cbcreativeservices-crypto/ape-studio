@@ -107,7 +107,7 @@ export function SpkLink({ text }: { text?: string } = {}) {
   }
   return (
     <View style={styles.link}>
-      <Text style={styles.linkText}>{text ?? 'The loudspeaker itself — cones, cabinets, how a speaker spreads its sound and why the spot on the cone matters — is covered in full in the Amplified speakers & Leslie module.'}</Text>
+      <Text style={styles.linkText}>{text ?? 'The loudspeaker itself — cones, cabinets, how a speaker spreads its sound and why the spot on the cone matters — is covered in full in the Amplified Speakers and Leslie module.'}</Text>
       {nav ? <KeyButton label="OPEN THE SPEAKER MODULE" onPress={() => nav!.dispatch(StackActions.push('MikingLesson', { id: 'SPK' }))} tint={colors.cyanBright} /> : null}
     </View>
   );
@@ -182,7 +182,7 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
                   if (p) setPartId(p.id);
                 },
                 format: () => (shown ? shown.title : 'step through the parts'),
-                formatShort: () => (shown ? shown.title.split(' ')[0].slice(0, 9) : 'STEP'),
+                formatShort: () => (shown ? shown.title.split(' ')[0].slice(0, 9) : 'PICK'),
               },
               parts.length,
               parts.findIndex((p) => p.id === partId),
@@ -237,7 +237,7 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
                   if (p) setSPart(p.id);
                 },
                 format: () => (sShown ? sShown.title : 'step through the parts'),
-                formatShort: () => (sShown ? sShown.title.split(' ')[0].slice(0, 9) : 'STEP'),
+                formatShort: () => (sShown ? sShown.title.split(' ')[0].slice(0, 9) : 'PICK'),
               },
               sParts.length,
               sParts.findIndex((p) => p.id === sPart),
@@ -404,8 +404,8 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
           'The signal goes through the instrument’s own preamp and amplifier to the speakers in the lid — the sound you will mic.',
         ];
     const mechParams: DockParam[] = [
-      { kind: 'fader', id: 'step', label: 'STEP', value: (mShown - 1) / (MECH_STEPS - 1), onChange: (v) => mGo(1 + Math.round(v * (MECH_STEPS - 1))), format: () => `${mShown} of ${MECH_STEPS} · ${mechTitles[mShown - 1].toLowerCase()}`, formatShort: () => `${mShown} / ${MECH_STEPS}` },
-      { kind: 'action', id: 'play', label: mPlaying ? 'PAUSE' : mShown >= MECH_STEPS ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: mPlay, tint: colors.green },
+      { kind: 'fader', id: 'step', label: 'EVENT', value: (mShown - 1) / (MECH_STEPS - 1), onChange: (v) => mGo(1 + Math.round(v * (MECH_STEPS - 1))), format: () => `${mechTitles[mShown - 1].toLowerCase()}`, formatShort: () => `${mShown}` },
+      { kind: 'action', id: 'play', label: mPlaying ? 'PAUSE' : mShown >= MECH_STEPS ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT EVENT', onPress: mPlay, tint: colors.green },
       { kind: 'fader', id: 'swing', label: 'SWING', value: swing, home: 0, onChange: (v) => setSwing(Math.round(v * 60) / 60), format: () => (mShown >= 3 ? 'move the bar through its swing by hand — the scope draws the signal' : 'step to ③ first, then swing the bar by hand'), formatShort: () => `${Math.round(swing * 100)}%`, locked: mShown >= 3 ? undefined : 'step to ③ first — the bar only swings once it has been struck.' },
       ...(!rhodes ? [{ kind: 'toggle' as const, id: 'trem', label: tremolo ? 'VIBRATO ON' : 'VIBRATO OFF', value: tremolo, onToggle: () => setTremolo((x) => !x) }] : []),
     ];
@@ -419,7 +419,7 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
           render: (w, h) => <MechanismDisplay w={w} h={h} kind={mechKind} reveal={mReveal} shown={mShown} swing={swing} tremolo={tremolo} accessibilityLabel={`Inside view of one note, event ${mShown} of ${MECH_STEPS}: ${mechTitles[mShown - 1]}. ${mechTexts[mShown - 1]}`} />,
           badge: 'INSIDE VIEW — never opened · the order of events, not their speed · motion drawn much larger · silent',
           bezel: [
-            { k: 'EVENT', v: `${mShown} / ${MECH_STEPS}`, flex: 0.8 },
+            { k: 'EVENT', v: `${mShown}`, flex: 0.8 },
             { k: rhodes ? 'TINE' : 'REED', v: mShown >= 3 ? 'SWINGING' : mShown === 2 ? 'STRUCK' : 'AT REST', flex: 1.2 },
             { k: 'PICKUP', v: mShown >= 4 ? 'SIGNAL' : '—', flex: 1 },
             ...(!rhodes ? [{ k: 'VIBRATO', v: tremolo ? 'LEVEL PULSES' : 'OFF', flex: 1.3 } as BezelItem] : []),
@@ -430,7 +430,7 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
         well: (
           <>
             {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
-            <Landing looking={`Inside view · one note · ${rhodes ? 'tine, tonebar and pickup' : 'reed and pickup plate'}`} prompt="STEP through the five events, or PLAY ONCE — it stops at the end. Then, from ③, move SWING by hand and watch the scope." />
+            <Landing looking={`Inside view · one note · ${rhodes ? 'tine, tonebar and pickup' : 'reed and pickup plate'}`} prompt="Go EVENT by EVENT through the five events, or PLAY ONCE — it stops at the end. Then, from ③, move SWING by hand and watch the scope." />
             <Card>
               <Point title={`${mShown} · ${mechTitles[mShown - 1].toUpperCase()}`}>{mechTexts[mShown - 1]}</Point>
             </Card>
@@ -449,14 +449,14 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
           render: (w, h) => <ConeSequence w={w} h={h} back={coneBack} reveal={reveal} shown={shown} accessibilityLabel={`A speaker cut open from the side, ${coneBack} back. Event ${shown} of ${n}: ${stage.title}. ${stageText(shown - 1)}`} />,
           badge: rhodes ? 'The order of events, not their speed · cone motion drawn much larger · silent' : 'A speaker cut open (drawn large) · the same physics in the small oval speakers · silent',
           bezel: [
-            { k: 'EVENT', v: `${shown} / ${n}`, flex: 0.8 },
+            { k: 'EVENT', v: `${shown}`, flex: 0.8 },
             { k: 'CONE', v: shown >= 2 ? 'FORWARD' : 'AT REST', flex: 1.1 },
             { k: 'FRONT AIR', v: shown >= 3 ? 'PUSHED' : '—', flex: 1.1 },
             { k: 'BACK AIR', v: shown >= 3 ? (coneBack === 'open' ? 'PULLED · OUT' : rhodes ? 'PULLED · IN BOX' : 'INTO THE CASE') : '—', flex: 1.4 },
           ],
           params: [
-            tapsWhenFew({ kind: 'fader', id: 'step', label: 'STEP', value: (shown - 1) / Math.max(1, n - 1), onChange: (v) => goTo(1 + Math.round(v * (n - 1))), format: () => `${shown} of ${n} · ${stage.title.toLowerCase()}`, formatShort: () => `${shown} / ${n}` }, n, shown - 1, (i) => `${i + 1} · ${lesson.sound.stages[i].title}`, (i) => goTo(i + 1)),
-            { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: play, tint: colors.green },
+            tapsWhenFew({ kind: 'fader', id: 'step', label: 'EVENT', value: (shown - 1) / Math.max(1, n - 1), onChange: (v) => goTo(1 + Math.round(v * (n - 1))), format: () => `${stage.title.toLowerCase()}`, formatShort: () => `${shown}` }, n, shown - 1, (i) => `${i + 1} · ${lesson.sound.stages[i].title}`, (i) => goTo(i + 1)),
+            { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT EVENT', onPress: play, tint: colors.green },
             ...(spec.backs.length > 1
               ? [
                   {
@@ -478,7 +478,7 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
         },
         well: (
           <>
-            <Landing looking={`Side view · a speaker cut open · ${coneBack} back`} prompt="STEP through the four events, or PLAY ONCE — it stops at the end." />
+            <Landing looking={`Side view · a speaker cut open · ${coneBack} back`} prompt="Go EVENT by EVENT through the four events, or PLAY ONCE — it stops at the end." />
             <Card>
               <Point title={`${shown} · ${stage.title.toUpperCase()}`}>{stageText(shown - 1)}</Point>
             </Card>
@@ -644,7 +644,7 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
                   if (it) setCSel(it.id);
                 },
                 format: () => (cs ? `${cs.short} · ${cs.tag}` : `step through the ${chainItems.length} items`),
-                formatShort: () => (cs ? cs.short.slice(0, 9) : 'STEP'),
+                formatShort: () => (cs ? cs.short.slice(0, 9) : 'PICK'),
               },
               chainItems.length,
               chainItems.findIndex((q) => q.id === cSel),
@@ -705,7 +705,7 @@ export function makeKeysPages(spec: KeysPagesSpec): Partial<Record<SourcePageId,
                   if (it) setSel(it.id);
                 },
                 format: () => (ps ? `${ps.short} · ${ps.tag}` : `step through the ${planItems.length} items`),
-                formatShort: () => (ps ? ps.short.slice(0, 9) : 'STEP'),
+                formatShort: () => (ps ? ps.short.slice(0, 9) : 'PICK'),
               },
               planItems.length,
               planItems.findIndex((q) => q.id === sel),

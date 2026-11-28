@@ -87,6 +87,7 @@ import { usePulseStyle } from '../../../features/lab/attentionPulse';
 import { FALLBACK_INSETS, LANE_CAP_W, laneDragValue, laneRawAt, laneValueAt } from './laneEdgeGuard';
 import { useEdgeGuard } from './useEdgeGuard';
 import { createLaneFeed } from './laneFeed';
+import { spokenValue } from './spokenValue';
 import { GestureExclusionZone } from '../../../../modules/ape-gesture-exclusion';
 
 const DOUBLE_TAP_MS = 320;
@@ -442,7 +443,8 @@ export function ParamLane({
       // already set it; this was not one.
       accessible
       accessibilityRole="adjustable"
-      accessibilityLabel={`${label}: ${readout}`}
+      // The readout's own repeat of the name is not read twice (spokenValue).
+      accessibilityLabel={`${label}: ${spokenValue(label, readout)}`}
       // The label carries the reading, which VoiceOver/TalkBack do announce —
       // but RNW 0.21 needs aria-valuenow on role=slider, and this is the ONE
       // fader shared by the foundations, digital, EQ, meter, tube, wave, FX,

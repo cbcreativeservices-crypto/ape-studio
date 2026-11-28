@@ -105,11 +105,11 @@ export const EXAM_OUTCOME_COPY: Record<
   string
 > = {
   pass: 'You passed. This credential has been added to your record.',
-  no_pass: 'You did not reach the pass mark this time. You can sit the Final Exam again whenever you are ready.',
+  no_pass: 'You did not reach the passing score this time. You can take the Final Exam again whenever you are ready.',
   voided:
     'This attempt was not counted because the app was left during the exam. The Final Exam is locked for fifteen minutes before you can try again.',
   timed_out:
-    'This paper arrived after the time limit, so it could not be graded. You can sit the Final Exam again whenever you are ready.',
+    'This paper arrived after the time limit, so it could not be graded. You can take the Final Exam again whenever you are ready.',
 };
 
 /**
@@ -133,7 +133,7 @@ export const EXAM_OUTCOME_COPY: Record<
  * ("…has been added to your record") is false for it.
  */
 export const EXAM_PASS_NOT_ISSUED_COPY =
-  'You passed, but your membership was not active when this exam was submitted, so the credential has not been issued. Rejoin and you may sit the Final Exam again to have it issued.';
+  'You passed, but your membership was not active when this exam was submitted, so the credential has not been issued. Rejoin and you may take the Final Exam again to have it issued.';
 
 export type ExamResult = {
   attempt_id: string;

@@ -25,6 +25,7 @@ import { HarmonicComparison, LADDER_METER_ASPECT } from '../components/harmonicL
 import { UnderstandingCheck } from '../components/check';
 import { StageFit } from '../../rack/StageFit';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
+import { CollapsibleSection } from '../../LabShell';
 import { TuningRackLayout, flipFader, lanePos, laneVal, playKey, playTray, snapNear, soundCell, stopKey, usePlayerStatus } from '../rackLayout';
 
 const MT = TUNING_SYSTEMS.meantone;
@@ -37,6 +38,13 @@ const PARTS: { id: Part; name: string; short: string; blurb: string }[] = [
   { id: 'E', name: 'E · The wolf', short: 'E WOLF', blurb: 'Where the discrepancy went: the closing interval of a twelve-note chain.' },
 ];
 const RAIL_H = 110;
+
+/** BASIC's plain version of the chapter (D62 TU-05): three sentences, and
+ *  that it is a deeper chapter to come back to. It still counts like any other. */
+export const MEANTONE_PLAIN =
+  'Pure fifths, stacked up, make major thirds that sound too wide. Meantone narrows every fifth a little, so four of them land on a pure third. The leftover has to go somewhere: one fifth, the wolf, ends up badly out of tune. This is a deeper chapter; come back to it any time.';
+/** What BASIC shows where a derivation box was (D62 TU-01). */
+const MATH_HINT = 'MATH (top right) shows how this step is worked out.';
 const MIN = 690, MAX = 705;
 
 export function Ch9Meantone({ ctx }: ChapterProps) {
@@ -83,7 +91,8 @@ export function Ch9Meantone({ ctx }: ChapterProps) {
   const fourFifths: RailMarker[] = ['C', 'G', 'D', 'A', 'E'].map((sp, k) => ({
     id: `ff${k}`,
     cents: k === 0 ? 0 : ratioToCents(normalizeRatioToOctave(Math.pow(MEANTONE_FIFTH.numericRatio, k))),
-    label: k === 0 ? 'C · 1' : k === 4 ? 'E · g⁴/4 = 5/4' : `${sp} · ${['', 'g', 'g²/2', 'g³/2'][k]}`,
+    // BASIC names the notes; MATH adds the powers (owner 2026-11-15, D62 TU-01).
+    label: !ctx.mathView ? (k === 4 ? 'E · pure 5/4' : sp) : k === 0 ? 'C · 1' : k === 4 ? 'E · g⁴/4 = 5/4' : `${sp} · ${['', 'g', 'g²/2', 'g³/2'][k]}`,
     role: k === 4 ? 'exact' : k === 0 ? 'neutral' : 'operation',
     emphasis: k === 4,
     row: k % 2,
@@ -95,7 +104,7 @@ export function Ch9Meantone({ ctx }: ChapterProps) {
     return { id: `w${i}`, cents: ratioToCents(normalizeRatioToOctave(Math.pow(MEANTONE_FIFTH.numericRatio, k))), label: sp, role: wolfEnd ? 'error' : 'neutral', emphasis: wolfEnd, row: i % 2 };
   });
   const scaleMarkers: RailMarker[] = MT.notes.slice(0, revealed).map((n, i) => ({ id: `m${i}`, cents: n.value.cents, label: n.spelling, role: i === revealed - 1 ? 'operation' : 'neutral', emphasis: i === revealed - 1, row: i % 2 }));
-  const toneMarkers: RailMarker[] = [{ id: 'C', cents: 0, label: 'C · 1', role: 'neutral' }, { id: 'D', cents: MEANTONE_TONE.cents, label: 'D · ×t', role: 'operation', emphasis: true, row: 1 }, { id: 'E', cents: JUST_MAJOR_THIRD.cents, label: 'E · 5/4', role: 'exact' }];
+  const toneMarkers: RailMarker[] = [{ id: 'C', cents: 0, label: 'C · 1', role: 'neutral' }, { id: 'D', cents: MEANTONE_TONE.cents, label: ctx.mathView ? 'D · ×t' : 'D · halfway', role: 'operation', emphasis: true, row: 1 }, { id: 'E', cents: JUST_MAJOR_THIRD.cents, label: 'E · 5/4', role: 'exact' }];
   const rail = (markers: RailMarker[]) => (w: number, h: number) => (
     <StageFit w={w} h={h} aspect={CENTS_RAIL_W / centsRailH(RAIL_H)}>
       <CentsRail markers={markers} reduceMotion={ctx.reduceMotion} height={RAIL_H} fit />
@@ -115,36 +124,45 @@ export function Ch9Meantone({ ctx }: ChapterProps) {
 
   const errTint = exact ? colors.green : Math.abs(slider.err) < 8 ? colors.gold : colors.orange;
   const bezel: BezelItem[] =
-    part === 'A' ? [
-      { k: 't = √5/2', v: MEANTONE_TONE.decimalLabel, tint: colors.gold, flex: 1.2 },
-      { k: 'D', v: `${MEANTONE_TONE.cents.toFixed(2)} ¢`, tint: colors.gold },
-      { k: 'E = t²', v: `${JUST_MAJOR_THIRD.cents.toFixed(2)} ¢`, tint: colors.green },
+    // BASIC: words, not algebra, on the keys and values (owner 2026-11-15:
+    // "build waves 1 thru 3", D62 TU-01). MATH keeps the derivation names.
+    part === 'A' && !ctx.mathView ? [
+      { k: 'D', v: `${MEANTONE_TONE.cents.toFixed(2)} ¢`, tint: colors.gold, caption: 'halfway to E' },
+      { k: 'E', v: `${JUST_MAJOR_THIRD.cents.toFixed(2)} ¢`, tint: colors.green, caption: 'pure third' },
+    ]
+    : part === 'A' ? [
+      { k: 't = √5/2', v: MEANTONE_TONE.decimalLabel, tint: colors.gold, flex: 1.2, caption: 'whole tone' },
+      { k: 'D', v: `${MEANTONE_TONE.cents.toFixed(2)} ¢`, tint: colors.gold, caption: 'D above C' },
+      { k: 'E = t²', v: `${JUST_MAJOR_THIRD.cents.toFixed(2)} ¢`, tint: colors.green, caption: 'E above C' },
     ]
     : part === 'B' ? [
-      { k: 'g = ⁴√5', v: `${MEANTONE_FIFTH.cents.toFixed(2)} ¢`, tint: colors.gold },
-      { k: 'PURE 3/2', v: `${PURE_FIFTH.cents.toFixed(2)} ¢` },
-      { k: 'NARROWER', v: `${(PURE_FIFTH.cents - MEANTONE_FIFTH.cents).toFixed(2)} ¢`, tint: colors.gold },
+      { k: ctx.mathView ? 'g = ⁴√5' : 'FIFTH', v: `${MEANTONE_FIFTH.cents.toFixed(2)} ¢`, tint: colors.gold, caption: 'tempered fifth' },
+      { k: ctx.mathView ? 'PURE 3/2' : 'PURE', v: `${PURE_FIFTH.cents.toFixed(2)} ¢`, caption: 'pure fifth' },
+      { k: 'NARROWER', v: `${(PURE_FIFTH.cents - MEANTONE_FIFTH.cents).toFixed(2)} ¢`, tint: colors.gold, caption: 'fifth shrinks' },
       soundCell(status),
     ]
     : part === 'C' ? [
-      { k: 'FIFTH', v: `${fifthCents.toFixed(2)} ¢`, tint: colors.cyanBright },
-      { k: 'g⁴/4', v: `${slider.thirdCents.toFixed(2)} ¢` },
-      { k: 'FROM 5/4', v: exact ? '0 ¢' : `${slider.err > 0 ? '+' : ''}${slider.err.toFixed(2)} ¢`, tint: errTint },
+      { k: 'FIFTH', v: `${fifthCents.toFixed(2)} ¢`, tint: colors.cyanBright, caption: 'your fifth' },
+      { k: ctx.mathView ? 'g⁴/4' : 'THIRD', v: `${slider.thirdCents.toFixed(2)} ¢`, caption: 'third it makes' },
+      { k: ctx.mathView ? 'FROM 5/4' : 'FROM PURE', v: exact ? '0 ¢' : `${slider.err > 0 ? '+' : ''}${slider.err.toFixed(2)} ¢`, tint: errTint, caption: 'off pure third' },
       soundCell(status),
     ]
     : part === 'D' ? [
       // The spelling rides on the KEY line: "B 5^(5/4)/4" is 11 mono characters
       // and cropped at a raised font size — a cropped readout may drop its
       // label, never its number (D36).
-      { k: `NOTE ${MT.notes[revealed - 1].spelling}`, v: MT.notes[revealed - 1].value.exactLabel, tint: colors.gold, flex: 1.3 },
-      { k: 'CENTS', v: `${MT.notes[revealed - 1].value.cents.toFixed(2)} ¢` },
-      { k: 'Hz', v: `${hz(MT.notes[revealed - 1].value.numericRatio).toFixed(2)} Hz`, flex: 1.1 },
+      // BASIC: the note's name, not its radical (D62 TU-01).
+      ctx.mathView
+        ? { k: `NOTE ${MT.notes[revealed - 1].spelling}`, v: MT.notes[revealed - 1].value.exactLabel, tint: colors.gold, flex: 1.3, caption: 'its ratio' }
+        : { k: 'NOTE', v: MT.notes[revealed - 1].spelling, tint: colors.gold, flex: 0.8, caption: 'newest note' },
+      { k: 'CENTS', v: `${MT.notes[revealed - 1].value.cents.toFixed(2)} ¢`, caption: 'its position' },
+      { k: 'Hz', v: `${hz(MT.notes[revealed - 1].value.numericRatio).toFixed(2)} Hz`, flex: 1.1, caption: 'frequency' },
       soundCell(status),
     ]
     : [
-      { k: 'WOLF', v: `${wolf.wolfCents.toFixed(2)} ¢`, tint: colors.red },
-      { k: 'NORMAL', v: `${wolf.normalFifthCents.toFixed(2)} ¢` },
-      { k: 'WIDER BY', v: `${wolf.widerThanNormalBy.toFixed(2)} ¢`, tint: colors.red },
+      { k: 'WOLF', v: `${wolf.wolfCents.toFixed(2)} ¢`, tint: colors.red, caption: 'the bad fifth' },
+      { k: 'NORMAL', v: `${wolf.normalFifthCents.toFixed(2)} ¢`, caption: 'usual fifth' },
+      { k: 'WIDER BY', v: `${wolf.widerThanNormalBy.toFixed(2)} ¢`, tint: colors.red, caption: 'how much worse' },
       soundCell(status),
     ];
 
@@ -157,7 +175,7 @@ export function Ch9Meantone({ ctx }: ChapterProps) {
             player: ctx.player, last, setLast,
             clips: [
               { id: 'pure', label: 'PURE FIFTH 3/2', make: () => renderNotes([root, root * 1.5], 1.4, 'rich'), name: 'pure fifth 3/2' },
-              { id: 'mt', label: 'MEANTONE FIFTH ⁴√5', make: () => renderNotes([root, root * MEANTONE_FIFTH.numericRatio], 1.4, 'rich'), name: 'meantone fifth' },
+              { id: 'mt', label: ctx.mathView ? 'MEANTONE FIFTH ⁴√5' : 'MEANTONE FIFTH', make: () => renderNotes([root, root * MEANTONE_FIFTH.numericRatio], 1.4, 'rich'), name: 'meantone fifth' },
             ],
             short: (c) => c.label.split(' ')[0],
           }),
@@ -222,22 +240,39 @@ export function Ch9Meantone({ ctx }: ChapterProps) {
     stopKey(ctx.player),
   ];
 
-  const caption: Record<Part, string> = {
+  const caption: Record<Part, string> = ctx.mathView ? {
     A: 'Two identical steps ×t from C reach the pure E 5/4 on the rail. Ride PART to move on when you have the whole tone.',
     B: 'Four identical fifths ×g, each folded, land on that same E. PLAY the pure fifth against the meantone fifth.',
     C: 'Ride FIFTH until the two compared harmonics meet — four fifths, two octaves down, on 5/4. The lane snaps gently near ⁴√5; SHOW ME lands it; double-tap the lane for 700 ¢.',
+    D: 'Ride NOTES to reveal the scale one pitch at a time — each from the same tempered fifth, folded. ▶ SCALE plays what is revealed.',
+    E: 'The chain E♭ … G♯ on the rail: eleven normal fifths and one closing interval between the two red notes. PLAY a normal fifth, then the wolf.',
+  } : {
+    // BASIC (D62 TU-01): the same moves, no algebra.
+    A: 'Two equal steps from C reach the pure E 5/4 on the rail, so D sits exactly halfway. Ride PART to move on.',
+    B: 'Four equal fifths, each folded back into the octave, land on that same E. PLAY the pure fifth against the meantone fifth.',
+    C: 'Ride FIFTH until the two compared harmonics meet: four fifths, two octaves down, on a pure third. The lane snaps gently near it; SHOW ME lands it; double-tap the lane for 700 ¢.',
     D: 'Ride NOTES to reveal the scale one pitch at a time — each from the same tempered fifth, folded. ▶ SCALE plays what is revealed.',
     E: 'The chain E♭ … G♯ on the rail: eleven normal fifths and one closing interval between the two red notes. PLAY a normal fifth, then the wolf.',
   };
 
   return (
     <TuningRackLayout ctx={ctx} rack={{ size: 'M', initialParam: 'part', hideDragTag: true, bezel, stage, params }} caption={caption[part]}>
-      <Lead>Quarter-comma meantone: narrow every fifth slightly so that selected major thirds become pure 5:4 — and see where the discrepancy goes instead.</Lead>
-      <Body>Five short parts, in order: the whole tone, the fifth it implies, a slider to find that fifth yourself, the scale it builds, and the wolf that closes it.</Body>
+      {ctx.mathView ? (
+        <>
+          <Lead>Quarter-comma meantone: narrow every fifth slightly so that selected major thirds become pure 5:4 — and see where the discrepancy goes instead.</Lead>
+          <Body>Five short parts, in order: the whole tone, the fifth it implies, a slider to find that fifth yourself, the scale it builds, and the wolf that closes it.</Body>
+        </>
+      ) : (
+        // BASIC: the idea in three plain sentences, and the chapter says it is
+        // a deeper one (owner 2026-11-15: "build waves 1 thru 3", D62 TU-05;
+        // built with TU-01, which softens the same chapter). A line in, a
+        // line out: this replaces the Lead and the five-part list.
+        <Lead>{MEANTONE_PLAIN}</Lead>
+      )}
 
       {part === 'A' ? (
         <>
-          <EquationStage
+          {ctx.mathView ? <EquationStage
             title="FIND THE WHOLE TONE"
             reduceMotion={ctx.reduceMotion}
             steps={[
@@ -247,7 +282,7 @@ export function Ch9Meantone({ ctx }: ChapterProps) {
               { text: 't = √5 / 2', emphasis: true },
               { text: `t ≈ ${MEANTONE_TONE.decimalLabel} · ${MEANTONE_TONE.cents.toFixed(2)} ¢`, note: 'both segments C→D and D→E are the same ×t' },
             ]}
-          />
+          /> : <Body>{MATH_HINT}</Body>}
           <Card>
             <Eyebrow>HALFWAY — MULTIPLICATIVELY, NOT IN HERTZ</Eyebrow>
             <MathLine>C {root.toFixed(2)} Hz · D {hz(MEANTONE_TONE.numericRatio).toFixed(2)} Hz · E {hz(1.25).toFixed(2)} Hz</MathLine>
@@ -260,9 +295,9 @@ export function Ch9Meantone({ ctx }: ChapterProps) {
         <>
           <Card>
             <Eyebrow>FOUR IDENTICAL FIFTHS</Eyebrow>
-            <Text style={styles.chain}>C ×g→ G ×g→ D ×g→ A ×g→ E</Text>
+            <Text style={styles.chain}>{ctx.mathView ? 'C ×g→ G ×g→ D ×g→ A ×g→ E' : 'C → G → D → A → E'}</Text>
           </Card>
-          <EquationStage
+          {ctx.mathView ? <EquationStage
             title="DERIVE THE MEANTONE FIFTH"
             reduceMotion={ctx.reduceMotion}
             steps={[
@@ -272,7 +307,7 @@ export function Ch9Meantone({ ctx }: ChapterProps) {
               { text: 'g = ⁴√5' },
               { text: `g ≈ ${MEANTONE_FIFTH.decimalLabel} · ${MEANTONE_FIFTH.cents.toFixed(2)} ¢` },
             ]}
-          />
+          /> : <Body>{MATH_HINT}</Body>}
           <Card>
             <MathLine>pure fifth 3/2 ≈ {PURE_FIFTH.cents.toFixed(2)} ¢</MathLine>
             <MathLine>meantone fifth ≈ {MEANTONE_FIFTH.cents.toFixed(2)} ¢</MathLine>
@@ -291,12 +326,12 @@ export function Ch9Meantone({ ctx }: ChapterProps) {
         <>
           <Prompt>Narrow the fifth until four fifths, brought down two octaves, make a pure 5:4 major third.</Prompt>
           <Body>Reference marks: pure 3/2 at {PURE_FIFTH.cents.toFixed(2)} ¢ · equal at {ET_FIFTH.cents.toFixed(0)} ¢ · quarter-comma at {MEANTONE_FIFTH.cents.toFixed(2)} ¢. The lane runs {MIN}–{MAX} ¢.</Body>
-          <Card tone="math">
+          {ctx.mathView ? <Card tone="math">
             <MathLine>fifth = {fifthCents.toFixed(2)} ¢ → g = 2^({fifthCents.toFixed(2)}/1200) = {slider.g.toFixed(6)}</MathLine>
             <MathLine>four fifths: g⁴ = {Math.pow(slider.g, 4).toFixed(6)}</MathLine>
             <MathLine>÷ 4 (two octaves down): g⁴/4 = {slider.third.toFixed(6)} → {slider.thirdCents.toFixed(2)} ¢</MathLine>
             <MathLine emphasis>{exact ? 'g⁴/4 = 5/4 — the major third is pure' : `vs 5/4 at ${JUST_MAJOR_THIRD.cents.toFixed(2)} ¢: ${slider.err > 0 ? '+' : ''}${slider.err.toFixed(2)} ¢ ${slider.err > 0 ? 'wide' : 'narrow'}`}</MathLine>
-          </Card>
+          </Card> : <Body>{exact ? 'The third is pure: four of your fifths land exactly on 5/4.' : `Your third is ${Math.abs(slider.err).toFixed(2)} ¢ ${slider.err > 0 ? 'wide' : 'narrow'} of pure.`}</Body>}
         </>
       ) : null}
 
@@ -317,15 +352,24 @@ export function Ch9Meantone({ ctx }: ChapterProps) {
           <Eyebrow>THE WOLF FIFTH · CHAIN E♭ … G♯ (ONE SELECTED MAPPING)</Eyebrow>
           <Card>
             <Text style={styles.chain}>{MEANTONE_WOLF_CHAIN.join(' → ')} ⟶ (E♭)</Text>
-            <MathLine>eleven normal fifths × {wolf.normalFifthCents.toFixed(2)} ¢ = {(11 * wolf.normalFifthCents).toFixed(2)} ¢</MathLine>
-            <MathLine>seven octaves = 8400 ¢</MathLine>
-            <MathLine emphasis>closing interval G♯ → E♭ = 8400 − {(11 * wolf.normalFifthCents).toFixed(2)} = {wolf.wolfCents.toFixed(2)} ¢</MathLine>
+            {ctx.mathView ? (
+              <>
+                <MathLine>eleven normal fifths × {wolf.normalFifthCents.toFixed(2)} ¢ = {(11 * wolf.normalFifthCents).toFixed(2)} ¢</MathLine>
+                <MathLine>seven octaves = 8400 ¢</MathLine>
+                <MathLine emphasis>closing interval G♯ → E♭ = 8400 − {(11 * wolf.normalFifthCents).toFixed(2)} = {wolf.wolfCents.toFixed(2)} ¢</MathLine>
+              </>
+            ) : (
+              <Body>Eleven normal fifths, then one closing interval that has to make up the rest: the wolf.</Body>
+            )}
           </Card>
           <Card tone="warn">
             <Text style={styles.wolf}>WOLF · {wolf.wolfCents.toFixed(2)} ¢ · {wolf.widerThanNormalBy.toFixed(2)} ¢ wider than a normal fifth · {(wolf.wolfCents - PURE_FIFTH.cents).toFixed(2)} ¢ wider than pure</Text>
             <Body>Normal meantone fifth ≈ {wolf.normalFifthCents.toFixed(2)} ¢ · pure fifth ≈ {PURE_FIFTH.cents.toFixed(2)} ¢ · this closing interval ≈ {wolf.wolfCents.toFixed(2)} ¢, spelled G♯ up to E♭.</Body>
           </Card>
-          <Body>The discrepancy has not disappeared. This twelve-note layout concentrates it into the closing interval. Other chains and spellings put the wolf between other named notes — its location is a choice, not a law.</Body>
+          {/* owner 2026-11-21: "build the second-pass collapse fixes too": the reading beside the task starts CLOSED, one tap away, every word kept. */}
+          <CollapsibleSection title="MORE DETAIL · WHERE THE WOLF GOES" startOpen={false}>
+            <Body>The discrepancy has not disappeared. This twelve-note layout concentrates it into the closing interval. Other chains and spellings put the wolf between other named notes — its location is a choice, not a law.</Body>
+          </CollapsibleSection>
           <Body>Quarter-comma meantone narrows ordinary fifths so selected major thirds become pure. A finite twelve-note layout still contains a severe closing interval — and not every major third in every key is pure.</Body>
           {/* NEW COPY — targets "meantone makes every interval pure". */}
           <UnderstandingCheck

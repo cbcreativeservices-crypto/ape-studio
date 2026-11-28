@@ -52,9 +52,11 @@ import { headAbove, FigureHead } from '../shared/players/PlayerFigure';
 import { pt } from '../shared/players/playerPose.ts';
 import { EAR_SEATED, EAR_STANDING, EVENT, LISTENER, PA_BOXES, PLAZA, WALKER_AT } from './geometry.ts';
 import { F10_SETUPS, F10_ZONES, setupsIn, type SpatialRig, type SpatialSetup } from './model.ts';
-import { RigArt, SiteArt, rigCapsules } from './scene';
+import { RigArt, SiteArt, rigCapsules, V2 } from './scene';
+import { ListenerHeadV2 } from './peopleV2';
 import { along } from '../shared/field/spatial.ts';
 import { aimShort, aimWords } from '../shared/sports/venuePlan.ts';
+import { zoneActivityLine } from '../../engine/progress/zoneActivity.ts';
 
 type PageFn = (p: PageProps) => ReactNode;
 const v3 = (x: number, y: number, z: number): Vec3 => ({ x, y, z });
@@ -523,7 +525,7 @@ function F10Setups(p: PageProps) {
         render: (w, h) => (sel ? <SetupDrawing s={sel} variant={variant} view={view} w={w} h={h} /> : <Text style={styles.missing}>No setup here.</Text>),
         badge: view === 'top' ? 'Placed for you · amber dashed = where each capsule points · white dashed = a pattern’s shape, not its range · the corner box = the rig from above' : 'Placed for you · white = its height above the ground · amber dashed = where it points',
         bezel: [
-          { k: 'SETUP', v: sel ? `${i + 1} / ${list.length}` : '—', flex: 0.8 },
+          { k: 'SETUP', v: sel ? `${i + 1}` : '—', flex: 0.8 },
           { k: 'RIG', v: rig ? ARRAYS[rig.id].short : '—', flex: 1.2 },
           { k: 'HEIGHT', v: rig ? fmtM(-rig.c.y) : '—', flex: 0.9 },
         ],
@@ -534,8 +536,8 @@ function F10Setups(p: PageProps) {
             label: 'SETUP',
             value: list.length > 1 ? i / (list.length - 1) : 0,
             onChange: (v) => setIdx(Math.round(v * (list.length - 1))),
-            format: () => (sel ? `${i + 1} of ${list.length} · ${sel.role.toLowerCase()}` : 'no setup'),
-            formatShort: () => `${i + 1} / ${list.length}`,
+            format: () => (sel ? `${sel.role.toLowerCase()}` : 'no setup'),
+            formatShort: () => `${i + 1}`,
           }),
           { kind: 'options', id: 'pick', label: 'SETUPS', valueLabel: sel ? sel.role.split(' ')[0] : '—', selectedId: sel?.id ?? null, onSelect: (id) => setIdx(Math.max(0, list.findIndex((q) => q.id === id))), sticky: true, options: list.map((q) => ({ id: q.id, label: `${q.role} · ${q.title}`, blurb: q.line })) },
           ...viewParam(view, setView),
@@ -749,9 +751,14 @@ function InEarHead({ px }: { px: number }) {
   }, []);
   return (
     <Group>
-      <Group transform={[{ rotate: -Math.PI / 2 }]}>
-        <FigureHead fill={head.fill} />
-      </Group>
+      {V2 ? (
+        // (figure V2) the listener's own head (Mei), its ears where the in-ear mics sit
+        <ListenerHeadV2 mid={{ u: -4, v: 0 }} half={85} face={0} />
+      ) : (
+        <Group transform={[{ rotate: -Math.PI / 2 }]}>
+          <FigureHead fill={head.fill} />
+        </Group>
+      )}
       <Path path={g.cable} style="stroke" strokeWidth={Math.max(2.2, 1.2 * px)} strokeCap="round" color="#0b0c0e" />
       <Path path={g.cable} style="stroke" strokeWidth={Math.max(1.2, 0.6 * px)} strokeCap="round" color="#4a4e57" />
       <Path path={g.body}>
@@ -848,6 +855,17 @@ const PLACE_ZONES: Record<'plaza' | 'event', PlaceZone[]> = {
 
 /** Where a rig's stand may not stand (the public footpath, the wall, the
  *  singer's space; the stage, the PA). */
+/** Where a ZONE pick puts the rig's center (fix round 2026-11-14, F9 phase 2:
+ *  F10 had no ZONE key). The zone's middle, at mid height, else the first
+ *  clear point of a 3 × 3 grid inside it; always inside the zone. Pure. */
+export function landInPlaceZone(z: PlaceZone, clear: (c: Vec3) => boolean): Vec3 {
+  const h = (z.h[0] + z.h[1]) / 2;
+  const at = (fx: number, fz: number) => v3(z.x[0] + (z.x[1] - z.x[0]) * fx, -h, z.z[0] + (z.z[1] - z.z[0]) * fz);
+  const f = [0.5, 0.25, 0.75];
+  for (const fz of f) for (const fx of f) if (clear(at(fx, fz))) return at(fx, fz);
+  return at(0.5, 0.5);
+}
+
 function blockedAt(variant: string, c: Vec3): string | null {
   if (isEvent(variant)) {
     if (c.x >= EVENT.stage.min.x - 300 && Math.abs(c.z) <= EVENT.stage.max.z + 300) return 'the stage';
@@ -892,6 +910,7 @@ function F10Placement(p: PageProps) {
   const [axis, setAxis] = useState<Axis>('x');
   const [view, setView] = useState<ViewId>('top');
   const [visited, setVisited] = useState<ReadonlySet<string>>(() => new Set());
+  const [pickedZone, setPickedZone] = useState<string | null>(null);
   const [predicted, setPredicted] = useState<string | null>(null);
   const cRef = useRef(c);
   cRef.current = c;
@@ -904,6 +923,19 @@ function F10Placement(p: PageProps) {
     setRest(q.rigs[0].c);
     setFace(0);
     setMoved(false);
+    setPickedZone(null);
+  };
+  // ZONE (fix round 2026-11-14, F9 phase 2): jump the rig's center into a
+  // zone; it counts like the learner's own rest, and the picked zone is the
+  // one the words report while the rig stays in it.
+  const goZone = (id: string) => {
+    const z = zones.find((q) => q.id === id);
+    if (!z) return;
+    const n = landInPlaceZone(z, (q) => !blockedAt(variant, q));
+    setC(n);
+    setRest(n);
+    setMoved(true);
+    setPickedZone(id);
   };
   const seenV = useRef(variant);
   useEffect(() => {
@@ -914,7 +946,8 @@ function F10Placement(p: PageProps) {
   const rigs: SpatialRig[] = useMemo(() => (start ? start.rigs.map((r, k) => ({ ...r, c: k === 0 ? c : v3(r.c.x + (c.x - start.rigs[0].c.x), c.y, r.c.z + (c.z - start.rigs[0].c.z)), face })) : []), [start, c, face]);
   const blocked = blockedAt(variant, c);
   const h = -c.y;
-  const zone = zones.find((z) => rest.x >= z.x[0] && rest.x <= z.x[1] && rest.z >= z.z[0] && rest.z <= z.z[1] && -rest.y >= z.h[0] && -rest.y <= z.h[1]) ?? null;
+  const inPz = (z: PlaceZone) => rest.x >= z.x[0] && rest.x <= z.x[1] && rest.z >= z.z[0] && rest.z <= z.z[1] && -rest.y >= z.h[0] && -rest.y <= z.h[1];
+  const zone = (pickedZone ? zones.find((z) => z.id === pickedZone && inPz(z)) : undefined) ?? zones.find(inPz) ?? null;
   useEffect(() => {
     if (moved && zone && !blockedAt(variant, rest)) setVisited((prev) => (prev.has(zone.id) ? prev : new Set([...prev, zone.id])));
   }, [zone?.id, rest, moved]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -976,6 +1009,7 @@ function F10Placement(p: PageProps) {
     { kind: 'options', id: 'start', label: 'START', valueLabel: (start?.role ?? '').split(' ')[0], selectedId: startId, onSelect: pickStart, options: starts.map((q) => ({ id: q.id, label: `Start from: ${q.role} · ${q.title}`, blurb: q.start })) },
     ...viewParam(view, setView),
     ...variantParam(p),
+    { kind: 'options', id: 'zone', label: 'ZONE', valueLabel: zone ? 'IN ZONE' : 'GO TO', selectedId: zone?.id ?? null, onSelect: goZone, options: zones.map((z) => ({ id: z.id, label: z.label, blurb: z.band })) },
   ];
   const zoneRects = (vw: ViewId, px: number) =>
     zones.map((z) => {
@@ -1014,7 +1048,7 @@ function F10Placement(p: PageProps) {
           { k: ex === 2 ? '▸ FRONT' : 'FRONT', v: 'SCENE FRONT', tint: ex === 2 ? AMBER : undefined, flex: 1.2 },
           { k: ex >= 3 ? '▸ FOR' : 'FOR', v: 'HEADPHONES', tint: ex >= 3 ? AMBER : undefined, flex: 1.1 },
         ],
-        params: [tapsWhenFew({ kind: 'fader', id: 'piece', label: 'STEP', value: ex / (pieces.length - 1), onChange: (v) => setEx(Math.round(v * (pieces.length - 1))), format: () => `${ex + 1} of ${pieces.length} · ${pc.title.toLowerCase()}`, formatShort: () => `${ex + 1} / ${pieces.length}` }, pieces.length, ex, (i) => `${i + 1} · ${pieces[i].title}`, setEx)],
+        params: [tapsWhenFew({ kind: 'fader', id: 'piece', label: 'PIECE', value: ex / (pieces.length - 1), onChange: (v) => setEx(Math.round(v * (pieces.length - 1))), format: () => `${pc.title.toLowerCase()}`, formatShort: () => `${ex + 1}` }, pieces.length, ex, (i) => `${i + 1} · ${pieces[i].title}`, setEx)],
         initialParam: 'piece',
       },
       well: (
@@ -1061,7 +1095,7 @@ function F10Placement(p: PageProps) {
       well: (
         <>
           {lesson.predictions.placement ? <PredictCard p={lesson.predictions.placement} value={predicted} onPick={setPredicted} /> : null}
-          <Landing looking={`${start?.title ?? ''} · ${view === 'top' ? 'from above' : 'from the side'}`} prompt="MOVE the rig (choose FRONT–BACK, ACROSS or HEIGHT) and let go to rest it; turn its FRONT. Rest it in two different blue zones." />
+          <Landing looking={`${start?.title ?? ''} · ${view === 'top' ? 'from above' : 'from the side'}`} prompt="MOVE the rig (choose FRONT–BACK, ACROSS or HEIGHT) and let go to rest it, or open ZONE to jump into one; turn its FRONT. Rest it in two different blue zones." />
           <NowLine text={nowWords} />
           {blocked ? <Note tone="warn">{`It would stand in ${blocked}. Keep the way clear and people safe: move it.`}</Note> : null}
           {zone ? (
@@ -1072,7 +1106,7 @@ function F10Placement(p: PageProps) {
             <Body>{`Not at a suggested starting point. Try: ${zones.map((z) => z.label).join('; ')}.`}</Body>
           )}
           {frontOff > 20 ? <Note>{`Its front is ${Math.round(frontOff)}° away from the front source. A spatial rig keeps its front to the scene front — turn the rig, not the scene; log the front either way.`}</Note> : null}
-          <Body>{`Zones you rested the rig in, clear of the way: ${visited.size}${visited.size ? ` (${[...visited].map((id) => zones.find((z) => z.id === id)?.label ?? id).join('; ')})` : ''}.`}</Body>
+          <Body>{zoneActivityLine([...visited].map((id) => zones.find((z) => z.id === id)?.label ?? id), 'the rig', 'clear of the way')}</Body>
           {predicted != null && visited.size >= 2 && lesson.predictions.placement ? <Note tone="ok">{lesson.predictions.placement.after}</Note> : null}
         </>
       ),
@@ -1288,9 +1322,14 @@ function DestArt({ d, px }: { d: Destination; px: number }) {
   return (
     <Group>
       {/* The listener faces the front of the layout (up), toward the speakers at 0° (round 2: it faced sideways). */}
-      <Group transform={[{ rotate: Math.PI }]}>
-        <FigureHead fill={head.fill} />
-      </Group>
+      {V2 ? (
+        // (figure V2) the listener's own head (Mei), facing up toward the speakers, the ears inside the earcups
+        <ListenerHeadV2 mid={{ u: 0, v: 10 }} half={90} face={-Math.PI / 2} />
+      ) : (
+        <Group transform={[{ rotate: Math.PI }]}>
+          <FigureHead fill={head.fill} />
+        </Group>
+      )}
       {d === 'headphones' ? (
         // Round 2 (2026-10-10): the two earcups (about 100 × 40 mm seen edge-on
         // from above) joined by the headband over the crown.

@@ -151,7 +151,9 @@ describe('3. each guide quotes the screen’s real names', () => {
     assert.match(S, /const SRC_COLORS = \['#ffc64d', '#5bff85', '#6fa8ff'\] as const;/);
     assert.match(GUIDES.explore.seeing.join(' '), /1 amber, 2 green, 3 blue[\s\S]*only 1 is ON: pink noise at −60°, 1\.5 m/);
     assert.match(S, /<G key=\{i\} opacity=\{s\.on \? 1 : 0\.5\}>/);
-    assert.match(S, /r=\{i === selected \? 12 : 10\} stroke=\{col\} strokeWidth=\{i === selected \? 2 : 1\.2\}/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item BIN-05): the rings are drawn on top of
+    // every body (wider when stacked), still thicker on the selected object.
+    assert.match(S, /r=\{rings\[i\]\} stroke=\{SRC_COLORS\[i\]\} strokeWidth=\{i === selected \? 2 : 1\.2\}/);
   });
   it('the CHECK guide names the four questions the check asks', () => {
     for (const id of ["id: 'itd'", "id: 'head-shadow'", "id: 'headphones'", "id: 'no-elevation'"]) assert.ok(CHECK.includes(id), id);
@@ -249,7 +251,9 @@ describe('4. the numbers in the guide are the numbers the screen prints', () => 
     assert.match(S, /const azSign = sel\.azDeg >= 0 \? '\+' : '';/);
   });
   it('ILD: far-ear level 0.0 dB at 0°, −6.9 dB at 60°, −8.0 dB at 90° (THE TWO CUES)', () => {
-    assert.match(S, /\{ildDb\(sel\.azDeg\) >= 0\.05 \? `−\$\{ildDb\(sel\.azDeg\)\.toFixed\(1\)\}` : '0\.0'\} dB/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item BIN-04): THE TWO CUES names the side and the
+    // far ear (binauralCues twoCuesLine), with the same ITD and level numbers.
+    assert.match(S, /\{twoCuesLine\(selected \+ 1, sel\.azDeg, itdUs\(sel\.azDeg\), ildDb\(sel\.azDeg\)\)\}/);
     assert.equal(ildDb(60).toFixed(1), '6.9');
     assert.equal(ildDb(90).toFixed(1), '8.0');
     assert.ok(ildDb(0) < 0.05);

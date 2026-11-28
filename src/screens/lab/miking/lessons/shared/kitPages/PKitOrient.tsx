@@ -76,7 +76,7 @@ export function PKitOrient({ lesson, art, variant, setVariant, hidden, journey, 
             if (p) pick(p.id);
           },
           format: () => (shownPart ? shownPart.short.toUpperCase() : 'step through the parts'),
-          formatShort: () => (shownPart ? shownPart.short.toUpperCase().slice(0, 9) : 'STEP'),
+          formatShort: () => (shownPart ? shownPart.short.toUpperCase().slice(0, 9) : 'PICK'),
         },
         parts.length,
         parts.findIndex((p) => p.id === livePart),

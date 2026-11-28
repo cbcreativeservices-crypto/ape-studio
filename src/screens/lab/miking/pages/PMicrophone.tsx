@@ -22,7 +22,7 @@ import { PolarCompare } from '../engine/scene/PolarCompare';
 import { isDishType } from '../engine/scene/MicCloseUp';
 import { PageSteps, type MikingStep } from '../engine/steps';
 import { Body, Card, Landing, Note, Point, PredictCard, ScenarioList } from '../engine/kit';
-import { gainDb, isModelled, nullAngles, PATTERN_LABELS } from '../engine/physics/polar.ts';
+import { gainDb, isModelled, nullAngles, PATTERN_BLURBS, PATTERN_LABELS } from '../engine/physics/polar.ts';
 import { fmtDb, fmtIdealPickup, isDeepNull } from '../engine/model/units.ts';
 import { MIC_TYPES, micType } from '../data/micTypes';
 import type { PageProps } from './pageTypes';
@@ -54,9 +54,15 @@ export function patternReadout(m: Pick<MicType, 'id' | 'art'>, p: MicPattern): s
   return isDishType(m) ? 'BY PITCH' : 'NOT DRAWN';
 }
 
-/** Three plain lines per mic type: what the choice needs (review M3). */
-export function plainLines(m: MicType, words: Pick<FamilyWords, 'mountStand' | 'mountClip' | 'mount'> = DRUM_WORDS): { power: string; mount: string; pattern: string } {
-  const p = m.patterns[0].id;
+/** Three plain lines per mic type: what the choice needs (review M3). The
+ *  pattern line names `pattern` when one is chosen (a mic with several
+ *  patterns, on the page's PATTERN pick: round 2, audit Appendix E row 10,
+ *  owner 2026-11-25), else the type's first pattern, as before. */
+export function plainLines(m: MicType, words: Pick<FamilyWords, 'mountStand' | 'mountClip' | 'mount'> = DRUM_WORDS, pattern?: MicPattern): { power: string; mount: string; pattern: string } {
+  const p = pattern ?? m.patterns[0].id;
+  // A card for the TYPE (no pattern picked) of a switchable mic names every
+  // pattern it has, not only its first (round 2 checker, owner 2026-11-25).
+  const switchable = pattern === undefined && m.patterns.length > 1 ? ` (switchable: ${m.patterns.map((q) => q.label.replace(/\s*\(.*\)$/, '')).join(', ')})` : '';
   return {
     power: powerOf(m).line,
     mount:
@@ -71,7 +77,7 @@ export function plainLines(m: MicType, words: Pick<FamilyWords, 'mountStand' | '
               ? words.mountClip
               : words.mountStand),
     pattern:
-      p === 'cardioid'
+      (p === 'cardioid'
         ? 'Pattern: cardioid — rejects most directly behind'
         : p === 'supercardioid'
           ? 'Pattern: supercardioid — rejects most off to each side of the rear'
@@ -85,7 +91,7 @@ export function plainLines(m: MicType, words: Pick<FamilyWords, 'mountStand' | '
                   ? 'Pattern: omni — hears every side about equally'
                   : isDishType(m)
                     ? 'Pattern: none fixed — the dish narrows as the pitch rises'
-                    : 'Pattern: open cardioid — not drawn here',
+                    : 'Pattern: open cardioid — not drawn here') + switchable,
   };
 }
 
@@ -158,7 +164,7 @@ export function PMicrophone({ lesson, answers, onAnswered }: PageProps) {
         selectedId: pat,
         onSelect: (id) => setPattern(id as MicPattern),
         sticky: true,
-        options: t.patterns.map((p) => ({ id: p.id, label: p.label })),
+        options: t.patterns.map((p) => ({ id: p.id, label: p.label, blurb: PATTERN_BLURBS[p.id] })),
       },
     ],
     [angle, pickup, t, typeId, pat, lesson.micTypeIds],

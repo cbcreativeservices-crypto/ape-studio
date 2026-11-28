@@ -127,8 +127,9 @@ export const CALC_WORKSPACE_INTRO = {
 } as const;
 
 /** The guide for one calculator, on the calculation currently picked.
- *  `capped` is the screen's own flag (a free or lapsed account, whose answer
- *  waits behind CALCULATE): only those readers get the CALCULATE lines. */
+ *  `capped` is the screen's own flag (a free or lapsed account, or a KNOWN
+ *  guest since 2026-11-23, whose answer waits behind CALCULATE): only those
+ *  readers get the CALCULATE lines. */
 export function calcWorkspaceGuide(ws: Workspace, fn: CalcFunction, ex: CalcGuideExample | null, capped = false): ScreenGuide {
   const fields = fn.inputs.map((k) => ws.fields.find((f) => f.key === k)).filter((f): f is NonNullable<typeof f> => !!f);
   const names = fields.map((f) => f.name).join(', ');
@@ -201,7 +202,9 @@ export function calcWorkspaceGuide(ws: Workspace, fn: CalcFunction, ex: CalcGuid
     picker,
     'In the answer, tap a number to see another unit. SEND → (if an input takes it) passes it on. SHARE / COPY RESULT sends the report. SIG FIGS cycles 3, 4, 5.',
   ];
-  if (capped) controlRest.push('On this account, CALCULATE shows each new answer and uses one of this week’s calculations; an input error costs nothing.');
+  // Not "On this account" (owner 2026-11-23): a known guest is capped too,
+  // with no account.
+  if (capped) controlRest.push('CALCULATE shows each new answer and uses one of this week’s calculations; an input error costs nothing.');
   const named = inputsLine(inputsAt);
   const control = [
     [named, ...controlRest].join(' ').length <= SCREEN_GUIDE_BUDGET.high ? named : inputsLine('Under INPUTS, '),
@@ -282,15 +285,15 @@ export const CALC_SCREEN_GUIDES: Record<CalcScreenId, ScreenGuide> = {
   home: {
     intro: {
       learning: 'How the everyday numbers of audio work — level, distance and time, power, rooms, digital — come from short formulas, and how one answer can feed the next.',
-      start: 'Tap WAVES & TIME, open Sound & Wave and type 100 in FREQUENCY (then CALCULATE, if it shows). PERIOD reads 10 ms. Then tap π KEY and find λ (lambda).',
+      start: 'New here? Tap a job under PICK A JOB, GET A NUMBER YOU CAN USE. Or tap WAVES & TIME, open Sound & Wave and type 100 in FREQUENCY: PERIOD reads 10 ms.',
     },
     seeing: [
       'Every calculator sits in one of ten category tiles, from WAVES & TIME to ELECTRONICS; each tile shows how many CALCULATORS it holds.',
-      'Up top: ▸ CUSTOM CALCULATOR WORKFLOWS and ▾ ABOUT THIS LAB. ⛓ CHAIN ACTIVE shows while a result you sent waits to be used.',
+      'Up top: PICK A JOB… (three jobs), ▸ CUSTOM CALCULATOR WORKFLOWS, ▸ ABOUT THIS LAB. ⛓ CHAIN ACTIVE shows while a sent result waits.',
       'π KEY opens the SYMBOL KEY; ✓ opens VERIFIED CALCULATION, how each result is computed. OPEN CALCULATORS on Home brings you back here.',
     ],
     control: [
-      'Tap a category tile to see its calculators in a popup, grouped by job. Tap one to open it; tap ✕ or outside the popup to close it.',
+      'Tap a job to run its calculators in order (members) or open its first calculator. Or tap a category tile under OR BROWSE ALL 166 CALCULATORS BY TOPIC for its popup list; ✕ closes it.',
       'Tap ▸ CUSTOM CALCULATOR WORKFLOWS for ＋ NEW WORKFLOW, MY WORKFLOWS & TEMPLATES ›, SAVED PROJECTS ›, SAVED RESULTS › and your last workflow under RECENT · TAP TO RUN.',
       'When ⛓ CHAIN ACTIVE shows, tap ✕ CLEAR to drop the result you sent.',
       'Tap π KEY to look up the Greek letters and math symbols the calculators use.',
@@ -350,7 +353,8 @@ export const CALC_SCREEN_GUIDES: Record<CalcScreenId, ScreenGuide> = {
   workflows: {
     intro: {
       learning: 'How a real audio design job chains calculations in order: in a room survey, RT60 comes first, then critical distance, then the direct-to-reverberant ratio.',
-      start: 'Tap ▶ RUN on the Room Acoustics Survey template and fill in step 1. On step 2, look for ⤵ USE RT60 (STEP 1).',
+      // Round 2 (2026-11-25): the template now CARRIES RT60 into step 2.
+      start: 'Tap ▶ RUN on the Room Acoustics Survey template and fill in step 1. On step 2, RT60 arrives carried in from step 1, marked with its source.',
     },
     seeing: [
       'CALCULATOR WORKFLOWS are guided sequences that run several calculators in order.',
@@ -374,7 +378,7 @@ export const CALC_SCREEN_GUIDES: Record<CalcScreenId, ScreenGuide> = {
       'Same unit isn’t same meaning: the voltage lost along a cable is not the voltage your supply delivers.',
     ],
     tryThis: [
-      'Tap ▶ RUN on Room Acoustics Survey and fill in step 1. On step 2, look for ⤵ USE RT60 (STEP 1): the RT60 you just worked out, ready to use.',
+      'Tap ▶ RUN on Room Acoustics Survey and fill in step 1. On step 2, RT60 arrives carried in from step 1, marked with its source: the RT60 you just worked out, already in place.',
       'Tap DUPLICATE & CUSTOMIZE on a template: your copy opens in the builder with “copy” added to its name.',
     ],
   },
@@ -414,7 +418,14 @@ export const CALC_SCREEN_GUIDES: Record<CalcScreenId, ScreenGuide> = {
   workflowRun: {
     intro: {
       learning: 'How one calculation’s answer becomes the next one’s input, and why an answer may only fill an input that means the same thing.',
-      start: 'In the Ohm’s Law template, type 40 in VOLTAGE (RMS) and 8 in IMPEDANCE on step 1. Read POWER and CURRENT, then tap CONTINUE ›.',
+      // Pixel test 2026-11-15 (D62 waves 1-3): a job from the Calculator home
+      // ("Pick a job") opens its own workflow, so the start line no longer
+      // names one template; the Ohm's Law example stays in TRY THIS.
+      // Fix-first 15 (owner 2026-11-25): a template step now arrives with the
+      // values it shares with earlier steps carried in.
+      // Round 2 (2026-11-25): templates (and copies made from them) carry; a
+      // workflow built from scratch offers ⤵ USE only.
+      start: 'Fill in step 1 and read its answer, then tap CONTINUE ›. In a template, the next step arrives with what it shares with step 1 carried in; ⤵ USE … offers anything else that fits.',
     },
     seeing: [
       'At the top: the workflow’s name, with this step’s calculation under it.',
@@ -439,7 +450,7 @@ export const CALC_SCREEN_GUIDES: Record<CalcScreenId, ScreenGuide> = {
     ],
     tryThis: [
       'In the Ohm’s Law template, type 40 in VOLTAGE (RMS) and 8 in IMPEDANCE on step 1: POWER reads 200 W and CURRENT reads 5 A.',
-      'Then CONTINUE ›. On step 2, tap ⤵ USE POWER (STEP 1) and type 40 in VOLTAGE (RMS): CURRENT reads 5 A, the same current worked out from the power.',
+      'Then CONTINUE ›. Step 2 arrives with POWER and VOLTAGE (RMS) carried in from step 1: CURRENT reads 5 A, the same current worked out from the power.',
     ],
   },
 

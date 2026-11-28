@@ -13,8 +13,10 @@
 import type { ReactElement } from 'react';
 import { Group } from '@shopify/react-native-skia';
 import type { VariantId, ViewId, Vec3 } from '../../engine/model/types.ts';
+import type { PlayerPose } from '../shared/players/playerPose.ts';
 import type { ArtLabel } from '../../engine/scene/sceneTypes.ts';
 import { voiceFigureAt, voiceHitTest } from '../shared/voice/VoiceArt';
+import { SINGER_SIDE, SINGER_TOP } from '../shared/voice/voicePose.ts';
 import { figureCovers } from '../shared/players/PlayerFigure';
 import { PaSpeaker } from '../shared/broadcast/BroadcastArt';
 import { StandingPresenter } from '../shared/broadcast/BodyWornArt';
@@ -27,6 +29,15 @@ import { operatorSide, operatorTop } from '../shared/measure/measureModel.ts';
 import { SHOTGUN_BODY } from '../shared/fieldmics/fieldMics.ts';
 import { SHOTGUN_CAPSULE_MM } from '../shared/field/fieldMics.ts';
 import { B04_VIEWS, BOOM_ABOVE, BOOM_BELOW, BOOM_WIDE, CAM_OF, FLOOR, GRIP_CLOSE, GRIP_LOW, GRIP_WIDE, HEAD_TOP, OP_FEET_CLOSE, OP_FEET_WIDE, PA_C } from './geometry.ts';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+import { castFor } from '../shared/figureV2/cast';
+import { BoomOperatorV2, type BoomRig } from '../shared/figureV2/BoomV2';
+import { PersonSideV2, PersonTopV2, personCovers, personTopCovers } from '../shared/figureV2/personV2';
+
+/** (figure V2, wave 4: the whole lesson in the new look — the presenter Ruth in her jacket, the boom operator
+ *  Mei holding the pole in both hands, B04's interviewer Kofi; in every picture of this lesson, or in none) */
+export const V2 = figureV2On('frontAndBoom');
+const OP_WHO = castFor('operator.boom');
 
 type V = 'close' | 'wide' | 'live';
 const vOf = (v: VariantId): V => (v === 'wide' ? 'wide' : v === 'live' ? 'live' : 'close');
@@ -50,6 +61,19 @@ const POLE_WIDE = poleLine(GRIP_WIDE, BOOM_WIDE);
  *  hands held low (geometry GRIP_LOW: the engine clamps that setup's pole
  *  there, Rim.zones), on behind them along the same straight line. */
 const POLE_LOW = poleLine(GRIP_LOW, BOOM_BELOW);
+/** (figure V2) the low hold's stance: LOW_STEP mm to the operator's left of the overhead stance. */
+export const LOW_STEP = 180;
+export const LOW_BACK = 150;
+/** (figure V2) held low the hands are closer on the pole: the rear hand 28 cm behind the front (a drawing default). */
+const LOW_GAP = 280;
+const LOW_FEET = (() => {
+  // (her left, facing the pole's front hand from her feet: the plan perpendicular)
+  const f = { x: GRIP_LOW.x - OP_FEET_CLOSE.x, z: GRIP_LOW.z - OP_FEET_CLOSE.z };
+  const l = Math.hypot(f.x, f.z) || 1;
+  // (facing f, her right is (−f.z, f.x)/l; her left the opposite)
+  // (…and LOW_BACK mm back, so both hands are in front of her, the rear one at her right ribs)
+  return { x: OP_FEET_CLOSE.x + (f.z / l) * LOW_STEP - (f.x / l) * LOW_BACK, y: OP_FEET_CLOSE.y, z: OP_FEET_CLOSE.z - (f.x / l) * LOW_STEP - (f.z / l) * LOW_BACK };
+})();
 export const OPERATOR = {
   // Art fix 2026-10-16 (B04 graded "the arm crosses his face"): the near arm
   // takes the rear hand on the pole, the far arm the front hand (LocationArt
@@ -57,7 +81,10 @@ export const OPERATOR = {
   close: { poses: operatorPoses(OP_FEET_CLOSE, GRIP_CLOSE, { rear: POLE_CLOSE.rear }), stub: POLE_CLOSE.stub, pole: POLE_CLOSE },
   wide: { poses: operatorPoses(OP_FEET_WIDE, GRIP_WIDE, { rear: POLE_WIDE.rear }), stub: POLE_WIDE.stub, pole: POLE_WIDE },
   // Same stance, the pole held LOW (the below-the-frame starting setup only).
-  low: { poses: operatorPoses(OP_FEET_CLOSE, GRIP_LOW, { rear: POLE_LOW.rear, low: true }), stub: POLE_LOW.stub, pole: POLE_LOW },
+  // (figure V2, FrontBoom2 2026-11-24: held low the pole passes BESIDE the operator — she stands a step to her left
+  // of the old place, so the pole runs past her right side at the ribs, never through her body; a drawing default,
+  // the grip and the mic unchanged)
+  low: { poses: operatorPoses(V2 ? LOW_FEET : OP_FEET_CLOSE, GRIP_LOW, { rear: POLE_LOW.rear, low: true }), stub: POLE_LOW.stub, pole: POLE_LOW },
 } as const;
 /** The starting setup that holds the boom low (B04_ZONES: below the frame). */
 export const LOW_HOLD_SETUP = 'b4.below';
@@ -80,6 +107,24 @@ const idlePoses = (feet: Vec3) => ({
 const IDLE = { close: idlePoses(OP_FEET_CLOSE), wide: idlePoses(OP_FEET_WIDE) } as const;
 const opOf = (v: V) => (v === 'wide' ? OPERATOR.wide : OPERATOR.close);
 
+/** (figure V2) each hold as a rig for the new operator: the lesson's own hand points on the pole, the pole
+ *  drawn from `a` (the mic's tail, or the front hand) to its rear end; the near arm (the operator's left) on
+ *  the rear hand overhead, on the front hand held low — as the old drawing chose. */
+type Op = (typeof OPERATOR)[keyof typeof OPERATOR];
+const rigOf = (op: Op, front: Vec3, a: Vec3, low: boolean): BoomRig => ({ side: op.poses.side, top: op.poses.top, front, rear: op.pole.rear, pole: { a, b: op.stub.b }, rearArm: low ? 'R' : 'L' });
+const lowRear = along(GRIP_LOW, { x: (POLE_LOW.rear.x - GRIP_LOW.x) / 420, y: (POLE_LOW.rear.y - GRIP_LOW.y) / 420, z: (POLE_LOW.rear.z - GRIP_LOW.z) / 420 }, LOW_GAP);
+const RIGS = {
+  close: { full: rigOf(OPERATOR.close, GRIP_CLOSE, OPERATOR.close.pole.tail, false), stub: rigOf(OPERATOR.close, GRIP_CLOSE, GRIP_CLOSE, false) },
+  wide: { full: rigOf(OPERATOR.wide, GRIP_WIDE, OPERATOR.wide.pole.tail, false), stub: rigOf(OPERATOR.wide, GRIP_WIDE, GRIP_WIDE, false) },
+  low: { full: { ...rigOf(OPERATOR.low, GRIP_LOW, OPERATOR.low.pole.tail, true), rear: lowRear }, stub: { ...rigOf(OPERATOR.low, GRIP_LOW, GRIP_LOW, true), rear: lowRear } },
+};
+/** (the study page draws the lesson's own rigs) */
+export const B04_V2_RIGS = RIGS;
+/** The operator standing by in the new look (arms down, the hands at rest). */
+function IdleV2({ view, poses }: { view: ViewId; poses: { side: PlayerPose; top: PlayerPose } }) {
+  return view === 'side' ? <PersonSideV2 pose={poses.side} who={OP_WHO} opts={{ rest: 'restSide' }} dim={0.82} /> : <PersonTopV2 pose={poses.top} who={OP_WHO} dim={0.82} />;
+}
+
 /** Everything round the talker, far side first. `headless`: the talker drawn
  *  without a head (a step draws it turned); `operator` false hides the
  *  operator (a step draws its own boom); `micTypes`: the mics the engine has
@@ -92,12 +137,18 @@ export function B04Scene({ view, variant, headless = false, operator = true, cam
   const mode = operatorMode(micTypes);
   const low = mode === 'stub' && v === 'close' && !!setup?.includes(LOW_HOLD_SETUP);
   const op = low ? OPERATOR.low : opOf(v);
-  const opArt =
+  const rigs = low ? RIGS.low : v === 'wide' ? RIGS.wide : RIGS.close;
+  const opArt = V2 ? (
     mode === 'idle' ? (
-      <BoomOperator view={view} poses={IDLE[v === 'wide' ? 'wide' : 'close']} />
+      <IdleV2 view={view} poses={IDLE[v === 'wide' ? 'wide' : 'close']} />
     ) : (
-      <BoomOperator view={view} poses={op.poses} stub={mode === 'full' ? { a: op.pole.tail, b: op.stub.b } : op.stub} low={low} />
-    );
+      <BoomOperatorV2 view={view === 'side' ? 'side' : 'top'} rig={mode === 'full' ? rigs.full : rigs.stub} who={OP_WHO} />
+    )
+  ) : mode === 'idle' ? (
+    <BoomOperator view={view} poses={IDLE[v === 'wide' ? 'wide' : 'close']} />
+  ) : (
+    <BoomOperator view={view} poses={op.poses} stub={mode === 'full' ? { a: op.pole.tail, b: op.stub.b } : op.stub} low={low} />
+  );
   // The scene's own boom mic (no mic placed): the short shotgun in its
   // suspension at the starting place, aimed at the mouth.
   const ownMic = operator && mode === 'full' ? <MicAt view={view} p={op.pole.tip} aim={op.pole.aim} art="shotgun" r={9.5} len={250} /> : null;
@@ -106,7 +157,7 @@ export function B04Scene({ view, variant, headless = false, operator = true, cam
       {v === 'live' ? <PaSpeaker view={view} c={PA_C} faces={1} floor={FLOOR} /> : null}
       {camera ? <FrameWedge view={view} cam={cam} reach={cam.lens.x - box.u0} headTop={HEAD_TOP} /> : null}
       {operator && view === 'side' ? opArt : null}
-      <StandingPresenter view={view} headless={headless} />
+      <StandingPresenter view={view} headless={headless} v2={V2} />
       {operator && view === 'top' ? opArt : null}
       {ownMic}
       {camera ? <BroadcastCameraRig view={view} cam={cam} floor={FLOOR} /> : null}
@@ -158,7 +209,16 @@ export function b04HitTest(view: ViewId, variant: VariantId, u: number, v: numbe
   return null;
 }
 
+/** (figure V2) the presenter's new outline (labels keep off it and the old envelope both). */
+const PRESENTER_OPTS = { lip: { u: 0, v: 0 }, rest: 'restSide' as const, jacket: true };
+function presenterCovers(view: ViewId, u: number, v: number, tol: number): boolean {
+  if (!V2) return false;
+  const who = castFor('presenter');
+  return view === 'side' ? personCovers(SINGER_SIDE, who, PRESENTER_OPTS, u, v, tol) : personTopCovers(SINGER_TOP, who, { jacket: true }, u, v, tol);
+}
+
 export function b04FigureAt(view: ViewId, variant: VariantId, u: number, v: number, tol: number): boolean {
+  if (presenterCovers(view, u, v, tol)) return true;
   if (voiceFigureAt(view, variant, u, v, tol)) return true;
   const op = opOf(vOf(variant));
   return figureCovers(view === 'side' ? op.poses.side : op.poses.top, u, v, tol);

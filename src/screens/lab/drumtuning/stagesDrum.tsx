@@ -495,7 +495,9 @@ export function AnatomyStage({ width, height, part }: { width: number; height: n
       {glow('rods', <G>{corners.map((pl, i) => <RodCut key={i} pl={pl} vEnd={HW.lugTop + 2} color={hi('rods') ?? undefined} />)}</G>)}
       {glow('hoop', <G>{corners.map((pl, i) => <HoopCut key={i} pl={pl} fill={hi('hoop') ?? undefined} />)}</G>)}
       {/* a stick at the batter, its tip bead on the head */}
-      <StickSvg x={x1 - 44} y={yT - 3} deg={-36} len={150} k={k} />
+      {/* 14° to the head, as a stick meets it at the stroke (owner 2026-11-22: "It
+          should look like normal stick tech. usage"; it stood at 36°). */}
+      <StickSvg x={x1 - 44} y={yT - 3} deg={-ANAT_STICK_DEG} len={150} k={k} />
       {/* labels */}
       <SvgText x={x0 - 16} y={yT - 10} fontSize={fs} fill={hi('batter') ?? ink.text} textAnchor="end" fontFamily={fonts.barlowMedium}>batter head</SvgText>
       <SvgText x={x0 - 16} y={yB + 8} fontSize={fs} fill={hi('reso') ?? ink.text} textAnchor="end" fontFamily={fonts.barlowMedium}>resonant head</SvgText>
@@ -618,6 +620,40 @@ export function EdgeStage({ width, height, profile }: { width: number; height: n
 /* ── snare side view (Chapter 5) ─────────────────────────────────────────── */
 
 export const SNARE_H = 200;
+
+/** The anatomy tom's stick: its angle to the head at the stroke (°). */
+export const ANAT_STICK_DEG = 14;
+/** The kick pedal's shaft off the head plane at the strike (°). */
+export const KICK_SHAFT_DEG = 8;
+/** The kick picture's axle x: the shaft from it to the felt's lower edge
+ *  meets the head nearly parallel to it at the strike (KICK_SHAFT_DEG off the
+ *  head plane), the felt face flat on the head (owner 2026-11-22, "It should
+ *  look like normal stick tech. usage": the shaft leaned 25° from an axle
+ *  88 mm behind the head). */
+export function kickAxleX(bc: { x: number; y: number }, bh: number, ay: number): number {
+  return bc.x + (ay - (bc.y + bh / 2 - 1)) * Math.tan((KICK_SHAFT_DEG * Math.PI) / 180);
+}
+
+/**
+ * The snare picture's stick for a STROKE height 0…1 (owner 2026-11-22: "It
+ * should look like normal stick tech. usage"). The hand holds the grip end
+ * still and the stick turns about it, as a wrist lifts it: at 0 (a ghost
+ * note) the bead rests on the head, the stick 9° to it; at 1 (a rimshot)
+ * the tip has lifted 15° about the grip, as high as the picture's room above
+ * the head allows. It turned about its BEAD before, the bead pinned to the
+ * head. Units of the snare picture (k = 240 / 355.6 per mm): `bead` and
+ * `grip` the stick's two ends, `deg` the SVG direction bead → grip.
+ */
+export function snareStick(strike: number): { bead: [number, number]; grip: [number, number]; deg: number; len: number } {
+  const k = 240 / 355.6;
+  const len = 130; // 193 mm drawn (a 406 mm stick seen in part)
+  const bead0: [number, number] = [180 - 25, 44 - 1 - (HW.beadD * k) / 2];
+  const a0 = (9 * Math.PI) / 180;
+  const grip: [number, number] = [bead0[0] + len * Math.cos(a0), bead0[1] - len * Math.sin(a0)];
+  const deg = -9 + 15 * Math.max(0, Math.min(1, strike));
+  const r = (deg * Math.PI) / 180;
+  return { bead: [grip[0] - len * Math.cos(r), grip[1] - len * Math.sin(r)], grip, deg, len };
+}
 export const SNARE_ASPECT = W / SNARE_H;
 
 /** A small two-tick pitch ladder beside a shell: where the batter and the
@@ -685,7 +721,8 @@ export function SnareStage({ width, height, strainer, snareSideCents, playing, b
   const lever = -110 * (1 - on); // ON: the lever up along the body; OFF: swung out and down
   const knobOut = (2 + 6 * (1 - s)) * k; // the tension knob backs out as the wires loosen
   const sc = width / W;
-  const stickA = -12 - 48 * Math.max(0, Math.min(1, strike)); // a ghost note barely lifts the stick; a rimshot comes from high up
+  const stick = snareStick(strike); // a ghost note barely lifts the stick; a rimshot comes from high up
+  const stickA = stick.deg;
   const snareHz = batterHz != null ? batterHz * Math.pow(2, snareSideCents / 1200) : null;
   const corners = ([[-1, 1], [1, 1], [-1, -1], [1, -1]] as const).map(([side, sg]) => ({ xShell: side < 0 ? x0 : x1, yHead: sg > 0 ? yT : yB, side, s: sg, k }));
   const xi0 = x0 + tSh * k;
@@ -758,7 +795,7 @@ export function SnareStage({ width, height, strainer, snareSideCents, playing, b
       <Rect x={wx0 - 2} y={wy - 0.4} width={6} height={4} rx={0.8} fill="#b9bdc6" stroke="#2a2c32" strokeWidth={0.4} />
       <Rect x={wx1 - 4} y={wy - 0.4} width={6} height={4} rx={0.8} fill="#b9bdc6" stroke="#2a2c32" strokeWidth={0.4} />
       {/* the stick: its height above the head follows the STROKE */}
-      <StickSvg x={cx + 30} y={yT - 1 - (HW.beadD * k) / 2} deg={stickA} len={170} k={k} />
+      <StickSvg x={stick.bead[0]} y={stick.bead[1]} deg={stickA} len={stick.len} k={k} />
       {/* the pitch ladder */}
       {batterHz != null && snareHz != null ? <PitchLadder x={W - 22} top={yT + 6} bot={168} lo={120} hi={700} ticks={[{ hz: batterHz, label: 'B', color: ink.cyan }, { hz: snareHz, label: 'S', color: ink.green }]} bst={bst} /> : null}
       {/* labels */}
@@ -798,7 +835,7 @@ export function KickStage({ width, height, front, damping, strike, batterHz, syn
   // 8-ply 7 mm shell; wood hoops 25 × 8 mm standing 19 mm past the head;
   // claws + T-rods, 8 per head; 5 in (127 mm) offset port. Pedal: base
   // ≈ 120 mm, footboard + heel ≈ 250 mm, toe ≈ 110 mm up at rest, axle
-  // ≈ 175 mm above the floor and ≈ 88 mm behind the head, felt beater Ø 65 ×
+  // ≈ 175 mm above the floor and ≈ 44 mm behind the head, felt beater Ø 65 ×
   // 50 mm meeting the head 1.5 in above centre. Pillow ≈ 110 mm thick.
   const k = 0.25;
   const R = 279.4;
@@ -826,12 +863,12 @@ export function KickStage({ width, height, front, damping, strike, batterHz, syn
   const corners = ([[-1, 1], [1, 1], [-1, -1], [1, -1]] as const).map(([side, sg]) => ({ xShell: side * R * k, yHead: sg > 0 ? 0 : D * k, side, s: sg, k }));
   const port = { a: 6, b: 6 + 127 * k }; // the port's span on the front head, local x (screen y below center)
   // Pedal geometry (screen).
-  const ax = x1 + 22;
   const ay = floorY - 175 * k;
   const strikeY = cy - 38 * k;
   const bw = 50 * k; // beater length along the strike
   const bh = 65 * k; // beater diameter
   const bc = { x: x1 + bw / 2, y: strikeY };
+  const ax = kickAxleX(bc, bh, ay);
   const toe = { x: x1 + 26, y: floorY - 110 * k };
   const heel = { x: x1 + 82, y: floorY - 2 };
   const ux = (heel.x - toe.x) / Math.hypot(heel.x - toe.x, heel.y - toe.y);

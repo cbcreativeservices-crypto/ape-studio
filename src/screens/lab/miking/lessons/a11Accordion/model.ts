@@ -35,7 +35,7 @@ export const TREBLE = {
   y1: -220 + ACCORDION.trebleH.mm,
   z0: -70,
   z1: -70 + ACCORDION.trebleW.mm,
-  prov: ill('the treble box placed round the grille’s center (drawing defaults)'),
+  prov: ill('the treble box placed around the grille’s center (drawing defaults)'),
 } as const;
 /** The treble grille on the front face, round A0. */
 export const GRILLE = { y0: -ACCORDION.grilleH.mm / 2, y1: ACCORDION.grilleH.mm / 2, z0: -ACCORDION.grilleW.mm / 2, z1: ACCORDION.grilleW.mm / 2 } as const;
@@ -103,5 +103,5 @@ export const BODY = {
   headC: { x: TREBLE.x0 - 70, y: -460, z: 0 },
   shoulderY: -300,
   halfW: 200,
-  prov: ill('a standing adult’s proportions round the drawn player (a drawing default)'),
+  prov: ill('a standing adult’s proportions around the drawn player (a drawing default)'),
 } as const;

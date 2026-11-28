@@ -165,7 +165,7 @@ export function Mod4Classes() {
 
   // The zoom figure's control for ITS full-screen dock (the same bias the
   // lane sets) — docked under the zoom there, never drawn on the page.
-  const abBiasSlider = <ControlSlider label="Output-stage bias — 0% is the Class B condition" value={abBias} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setAbBias} />;
+  const abBiasSlider = <ControlSlider label="AB BIAS · 0% is the Class B condition" value={abBias} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setAbBias} />;
   // The class's own control, on the dock beside CLASS and LEVEL: the Class A
   // signal switch, the Class AB bias, the Class C tuning.
   const classParam: DockParam | null =
@@ -226,11 +226,12 @@ export function Mod4Classes() {
           kind: 'rack',
           rack: {
             rig: pic,
+            // AMPL-02 (owner 2026-11-15: "build waves 1 thru 3"): the three readouts
+            // the lesson names first; IDLE CURRENT is in the card under the drawing.
             bezel: [
-              { k: 'CONDUCT.', v: `${Math.round(sim.conductionDeg)}°`, tint: AMP_COLORS.pos },
-              { k: 'IDLE', v: `${Math.round(sim.idleCurrent * 100)}%`, tint: AMP_COLORS.supply },
-              ...rigStatusBezel(pic, ['eff', 'heat']),
-              { k: 'DISTORT.', v: distortionWord, tint: distortionWarn ? colors.red : colors.green },
+              { k: 'CONDUCT.', v: `${Math.round(sim.conductionDeg)}°`, tint: AMP_COLORS.pos, caption: 'on-time' },
+              ...rigStatusBezel(pic, ['eff']),
+              { k: 'DISTORT.', v: distortionWord, tint: distortionWarn ? colors.red : colors.green, caption: 'clean?' },
             ],
             params: [
               optionsParam<Explorable>({
@@ -283,7 +284,7 @@ export function Mod4Classes() {
                             ? // NEW COPY — the model no longer conjures a recovered sine from a device that never conducted.
                               'Below the conduction threshold: the device never turns on, so there are no current pulses and the tuned circuit has nothing to ring from. Raise the input — Class C only wakes up for a signal big enough to push it past its bias.'
                             : (c?.resonanceGain ?? 1) > 0.9
-                              ? 'Tuned: the short current pulses kick a resonant circuit that rings a clean sine at the tuned frequency. The device itself never produces that sine — the tank (that tuned circuit) does. Notice the recovered level does not track the input level: Class C is built for a constant carrier, not for music that rises and falls.'
+                              ? 'Tuned: the short current pulses kick a resonant circuit that rings a clean sine at the tuned frequency. The device itself never produces that sine — the tank (that tuned circuit) does. Notice the recovered level does not follow the input in proportion: below the bias there is none, then it grows far faster than the input does. Class C is built for a constant carrier, not for music that rises and falls.'
                               : 'Mistuned: the tank no longer rings with the pulses and the recovered output collapses. There is no broadband version of this trick, which is why Class C is an RF amplifier, not an audio one.'}
                 </Body>
               </Card>

@@ -78,6 +78,10 @@ const ART: Readonly<Record<string, ImageSourcePropType>> = {
   'Vacuum Tube Fundamentals': require('../../../assets/lab-tiles/tr-61-vacuum-tube-fundamentals.webp'),
   'Amplifier Principles Lab': require('../../../assets/lab-tiles/tr-62-amplifier-principles-lab.webp'),
   'Ear Training Lab': require('../../../assets/lab-tiles/tr-63-ear-training-lab.webp'),
+  // The two labs listed 2026-11-13 [MD:D60]: the owner's images
+  // (ape-studio/assets/lab-backgrounds, 1376×768), resized the same way.
+  'Game Audio Lab': require('../../../assets/lab-tiles/tr-64-game-audio-lab.webp'),
+  'Stage Plot and Channel Designer': require('../../../assets/lab-tiles/tr-65-stage-plot-and-channel-designer.webp'),
 };
 
 /** Audio Calculator Laboratory: one image per section tile (owner 2026-10-29),

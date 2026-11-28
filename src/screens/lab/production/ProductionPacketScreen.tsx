@@ -57,6 +57,9 @@ import { authoredStage, labDef } from '../../../features/production/labs';
 // chip, owner rule 2026-10-31); the key sits after it.
 import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
 import { productionPacketGuide } from './productionScreenGuides';
+// The lab's recap and next lab (lab fix round 2026-11-14, S4; report section 3 row 5).
+import { labEndContentFor } from '../../../features/lab/labEndContent';
+import { foldsToOneLine, oneLineText } from './packetShortForm';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 type R = RouteProp<RootStackParamList, 'ProductionPacket'>;
@@ -70,6 +73,8 @@ export function ProductionPacketScreen() {
   const [project, setProject] = useState<ProductionProject | null>(null);
   /** Three faces (K2): still loading, not on this phone, and could not be read. */
   const [loadState, setLoadState] = useState<'loading' | 'ready' | 'missing' | 'unreadable'>('loading');
+  /** PP-06: untouched stages the learner has opened to their full rows. */
+  const [shownStages, setShownStages] = useState<ReadonlySet<string>>(() => new Set());
   const loadSeq = useRef(0);
 
   // Re-read on focus: the stage screens write through the store, so coming
@@ -226,7 +231,23 @@ export function ProductionPacketScreen() {
               built.left.map((g) => (
                 <View key={g.stageId} style={styles.leftGroup}>
                   <Text style={styles.leftStage} accessibilityRole="header">{`STAGE ${g.num} · ${g.title.toUpperCase()}`}</Text>
-                  {g.items.map((it, i) => (
+                  {/* PP-06 (owner 2026-11-15: "build waves 1 thru 3", D62):
+                      a stage nobody has started reads as ONE line that opens
+                      its rows here (packetShortForm.ts). */}
+                  {foldsToOneLine(project, g.stageId, g.items) && !shownStages.has(g.stageId) ? (
+                    <Pressable
+                      style={styles.leftRow}
+                      onPress={() => setShownStages((s) => new Set(s).add(g.stageId))}
+                      accessibilityRole="button"
+                      accessibilityState={{ expanded: false }}
+                      accessibilityLabel={`Stage ${g.num}, ${g.title}: not started, ${g.items.length} things still open. Show them.`}
+                    >
+                      <View style={{ flex: 1 }}>
+                        <Text style={styles.leftKind}>NOT STARTED YET</Text>
+                        <Text style={styles.leftTitle}>{oneLineText(g.items.length)}</Text>
+                      </View>
+                    </Pressable>
+                  ) : g.items.map((it, i) => (
                     <Pressable
                       key={`${it.kind}${i}`}
                       style={[styles.leftRow, it.kind === 'blocker' && styles.leftRowBlocker]}
@@ -251,6 +272,45 @@ export function ProductionPacketScreen() {
                 </View>
               ))
             )}
+
+            {/* ── RECAP + NEXT LAB (lab fix round 2026-11-14, S4; owner: "Begin
+                fixing all bugs found and do obvious ... fixes", suggested order
+                item 6 "The end screen recap"). The words live in
+                features/lab/labEndContent, keyed by this lab ('preprod' /
+                'postprod'); the same headings as the shared end screen. */}
+            {(() => {
+              const c = labEndContentFor(lab);
+              const done = built.left.length === 0 && !stale;
+              return (
+                <>
+                  {c.recap?.length ? (
+                    <>
+                      <Text style={styles.h2} accessibilityRole="header">
+                        {done ? 'WHAT YOU LEARNED' : 'WHAT THIS LAB COVERS'}
+                      </Text>
+                      {c.recap.map((l) => (
+                        <Text key={l} style={styles.para}>{`•  ${l}`}</Text>
+                      ))}
+                    </>
+                  ) : null}
+                  {c.next ? (
+                    <Pressable
+                      style={styles.leftRow}
+                      onPress={() => (navigation as unknown as { navigate: (route: string) => void }).navigate(c.next!.route)}
+                      accessibilityRole="button"
+                      accessibilityLabel={`${done ? 'Up next' : 'After this lab'}: ${c.next.title}${c.next.why ? `, ${c.next.why}` : ''}. Opens it.`}
+                    >
+                      <View style={{ flex: 1 }}>
+                        <Text style={styles.leftKind}>{done ? 'UP NEXT' : 'AFTER THIS LAB'}</Text>
+                        <Text style={styles.leftTitle}>{c.next.title}</Text>
+                        {c.next.why ? <Text style={styles.para}>{c.next.why}</Text> : null}
+                      </View>
+                      <Text style={styles.go}>›</Text>
+                    </Pressable>
+                  ) : null}
+                </>
+              );
+            })()}
 
             {/* ── SHARE, behind the honesty gate ──────────────────────────── */}
             {isPdfAvailable() ? (

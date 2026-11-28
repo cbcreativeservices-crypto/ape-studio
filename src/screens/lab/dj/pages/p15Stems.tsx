@@ -17,6 +17,7 @@ import { Scene } from '../art/Scene';
 import { StemLanes, STEM_COLOUR, type StemColumn } from '../art/stemArt';
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { waitIf } from '../goalWords';
 import { boothKey, channelFaderKey, stopKey } from '../dock';
 import { getBooth, updateBooth } from '../booth/boothStore';
 import { cueAtBar, preMatched, useScreenSetup } from '../booth/setup';
@@ -143,7 +144,18 @@ function PageStems({ ctx }: { ctx: PageCtx }) {
   if (ready && check && B.playing && (B.stemFrom ?? 'ORIGINAL') === 'SEPARATED' && gB.lead === 0) h.current.sepSeen = true;
   if (ready && check && h.current.sepSeen && B.playing && (B.stemFrom ?? 'ORIGINAL') === 'ORIGINAL' && gB.lead === 0) h.current.check = true;
   const hits = [h.current.mute, h.current.ghost, h.current.swap, h.current.bed, faultFixed, h.current.check];
-  const goals = GOALS_STEMS.map((label, i) => ({ label, hit: hits[i] }));
+  // DJ-04 (owner 2026-11-15: "build waves 1 thru 3"): "mute the melody"
+  // counts only while the deck plays; set up right with it stopped, the chip
+  // says to press PLAY instead of a silent ○.
+  const waits = [
+    waitIf(g.lead === 0 && src === 'ORIGINAL', !playing, sel),
+    waitIf(g.lead === 0 && src === 'SEPARATED', !playing, sel),
+    waitIf(gA.drums === 0 && gA.bass === 0 && gB.drums > 0 && gB.bass > 0 && booth.ch[1].fader >= 0.5 && booth.ch[2].fader >= 0.5, !(A.playing && B.playing), 'both'),
+    waitIf(gA.drums > 0 && gA.bass > 0 && gA.chords === 0 && gA.lead === 0 && booth.ch[1].fader >= 0.5, !A.playing, 'A'),
+    undefined,
+    waitIf(check && gB.lead === 0, !B.playing, 'B'),
+  ];
+  const goals = GOALS_STEMS.map((label, i) => ({ label, hit: hits[i], wait: waits[i] }));
   const latched = useVisitGoals(ctx, goals, 'STEMS', ready);
   // all four parts at full level add up to the track; a muted melody is gone
   // from the original stems and leaves a ghost in the separated ones

@@ -42,8 +42,9 @@ import { MIC_TYPES, micType } from '../data/micTypes';
 import { copyOf } from '../engine/model/copy.ts';
 import type { PageProps } from './pageTypes';
 import { viewToggle } from '../engine/scene/viewToggle.ts';
-import { roleWords } from '../engine/setups.ts';
+import { roleWords, typeForZone, zoneInVariant } from '../engine/setups.ts';
 import { useSetups } from './PSetups';
+import { zoneActivityLine } from '../engine/progress/zoneActivity.ts';
 
 /** "{line}" / "{head}" / "{tol}" in a copy line. */
 const fill = (s: string, v: Record<string, string>) => s.replace(/\{(\w+)\}/g, (_, k: string) => v[k] ?? '');
@@ -117,16 +118,21 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
   // A START FROM pick: the type first (its body changes the collision), then
   // the setup's pose and its reference surface.
   const [fromId, setFromId] = useState<string | null>(null);
+  // The rig versions a START pick produces (its type change and its jump):
+  // given poses, never counted (see CREDIT below).
+  const givenVersion = useRef(-1);
   const wanted = fromId ? setups.find((s) => s.id === fromId) ?? null : null;
   useEffect(() => {
     if (!wanted) return;
     const m = wanted.mics[0];
     if (rig.mics[0].typeId !== m.typeId) {
+      givenVersion.current = rig.version + 1;
       rig.setType('A', m.typeId);
       return;
     }
     rig.setPattern('A', m.pattern);
-    rig.jumpTo('A', m.pose);
+    givenVersion.current = rig.version + 1;
+    rig.jumpTo('A', m.pose, m.zoneId ?? undefined);
     if (rig.surfaceId !== m.surfaceId) rig.setSurfaceId(m.surfaceId);
     setFromId(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -156,7 +162,7 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
   // the mic at the zone's validated start and read from the zone's head.
   useEffect(() => {
     if (ex.variant !== variant || ex.mics[0].typeId !== exType) return;
-    ex.jumpTo('A', exZone.start);
+    ex.jumpTo('A', exZone.start, exZone.id);
     if (ex.surfaceId !== exZone.refSurface) ex.setSurfaceId(exZone.refSurface);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ex.variant, ex.mics[0].typeId, exZone.id]);
@@ -207,11 +213,11 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       {
         kind: 'fader',
         id: 'piece',
-        label: 'STEP',
+        label: 'PIECE',
         value: exStep / (worked.length - 1),
         onChange: (v) => setExStep(Math.round(v * (worked.length - 1))),
-        format: () => `${exStep + 1} of ${worked.length} · ${wk.title.toLowerCase()}`,
-        formatShort: () => `${exStep + 1} / ${worked.length}`,
+        format: () => `${wk.title.toLowerCase()}`,
+        formatShort: () => `${exStep + 1}`,
       },
       worked.length,
       exStep,
@@ -237,7 +243,12 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
   const lastVersion = useRef(-1);
   useEffect(() => {
     if (rig.version === lastVersion.current) return;
+    const given = lastVersion.current < 0 || rig.version <= givenVersion.current;
     lastVersion.current = rig.version;
+    // ONE rule in every Placement Studio (fix round 2026-11-14, checker C4):
+    // the pose the studio opens at, and a START pick, are GIVEN, never rested;
+    // only the learner's own moves (drag, fader, ZONE, SETUP) count.
+    if (given) return;
     if (r.zoneId && !r.blocked) setVisited((prev) => (prev.has(r.zoneId!) ? prev : new Set([...prev, r.zoneId!])));
   }, [rig.version, r.zoneId, r.blocked]);
   useEffect(() => {
@@ -245,6 +256,37 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
   }, [visited, interactiveDone, onInteractive]);
 
   const available = zonesAvailable(lesson.zones, variant, mic.typeId, t.mount);
+  // EVERY zone of the lesson in the ZONE key (fix round 2026-11-14, F9 phase
+  // 2): a mic type often has one zone only (E07, M10, I01d, A03, F03, F05,
+  // F07, F09, B10, B11), so the two-zone activity could not be done from the
+  // key. A zone for another mic type, or for another variant, switches the
+  // SETUP first, then the mic lands in that zone and counts.
+  const pickable = lesson.zones.filter((z) => lesson.micTypeIds.some((id) => lesson.model.variants.some((v) => zonesAvailable([z], v.id, id, MIC_TYPES[id].mount).length > 0)));
+  const ready = (z: (typeof lesson.zones)[number]) => available.some((q) => q.id === z.id);
+  const [pendingZone, setPendingZone] = useState<string | null>(null);
+  useEffect(() => {
+    if (!pendingZone) return;
+    const z = lesson.zones.find((q) => q.id === pendingZone);
+    if (!z) return setPendingZone(null);
+    if (!zoneInVariant(z, variant) || rig.variant !== variant) return; // the host and the rig are changing the variant
+    if (!available.some((q) => q.id === z.id)) {
+      const need = typeForZone(lesson, z, MIC_TYPES);
+      if (rig.mics[0].typeId !== need) rig.setType('A', need);
+      else setPendingZone(null); // nothing more to switch: give up quietly
+      return;
+    }
+    rig.jumpTo('A', z.start, z.id);
+    if (rig.surfaceId !== z.refSurface) rig.setSurfaceId(z.refSurface);
+    setPendingZone(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingZone, variant, rig.variant, rig.mics[0].typeId]);
+  const zoneSwitch = (z: (typeof lesson.zones)[number]): string => {
+    const words: string[] = [];
+    if (!zoneInVariant(z, variant)) words.push(lesson.model.variants.find((v) => zoneInVariant(z, v.id))?.label ?? '');
+    const need = typeForZone(lesson, z, MIC_TYPES);
+    if (!(z.requires?.micTypeIds ?? lesson.micTypeIds).includes(mic.typeId) || !ready(z)) words.push(MIC_TYPES[need]?.label ?? need);
+    return words.filter(Boolean).join(', ');
+  };
   const params: DockParam[] = [
     ...placementParams({ rig, slot: 'A', posAxis, setPosAxis, aimAxis, setAimAxis }),
     ...(setups.length
@@ -303,9 +345,23 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
       selectedId: zone?.id ?? null,
       onSelect: (id) => {
         const z = lesson.zones.find((q) => q.id === id);
-        if (z) rig.jumpTo('A', z.start);
+        if (!z) return;
+        if (ready(z)) {
+          rig.jumpTo('A', z.start, z.id);
+          return;
+        }
+        setPendingZone(id);
+        if (!zoneInVariant(z, variant)) {
+          const v = lesson.model.variants.find((q) => zoneInVariant(z, q.id));
+          if (v) setVariant(v.id);
+        }
       },
-      options: available.map((z) => ({ id: z.id, label: z.label, blurb: z.band })),
+      // The zones this mic can take first; the others say what they switch.
+      // One zone in the whole lesson: say so, so the key is never read as dead.
+      options: [...pickable.filter(ready), ...pickable.filter((z) => !ready(z))].map((z) => {
+        const sw = ready(z) ? '' : zoneSwitch(z);
+        return { id: z.id, label: sw ? `${z.label} · ${sw}` : z.label, blurb: pickable.length === 1 ? `${z.band} The only suggested starting point here.` : sw ? `${z.band} Picking it switches SETUP to: ${sw}.` : z.band };
+      }),
     },
   ];
 
@@ -357,7 +413,7 @@ export function PPlacement({ lesson, art, answers, onAnswered, onInteractive, in
           <NowLine text={nowText(rig, ['A'])} />
           {shown.blocked ? <Note tone="warn">{`It would touch the ${shown.blocked.label} — the mic stops there.${t.mount === 'stand' ? C.placement.blocked[variant] ?? '' : ''}`}</Note> : null}
           {zone ? <ZoneCard z={zone} /> : <Body>{`Not at a suggested starting point. ${C.placement.availableLead}: ${available.map((z) => z.label).join('; ') || `none — try another mic type or ${C.variantKey.toLowerCase()}`}.`}</Body>}
-          <Body>{`Activity: zones rested in, clear of every part — ${visited.size} so far${visited.size ? ` (${[...visited].map((id) => lesson.zones.find((z) => z.id === id)?.label ?? id).join('; ')})` : ''}.`}</Body>
+          <Body>{zoneActivityLine([...visited].map((id) => lesson.zones.find((z) => z.id === id)?.label ?? id))}</Body>
           {tried && C.placement.reveal ? <Note tone="ok">{`You predicted “${predicted}”. ${C.placement.reveal}`}</Note> : null}
           {C.placement.typeNotes[mic.typeId] ? <Note>{C.placement.typeNotes[mic.typeId]}</Note> : null}
           <Note>{C.placement.note}</Note>

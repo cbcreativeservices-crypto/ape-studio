@@ -42,12 +42,13 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
   {
     intro: {
       learning: 'Every tuning system keeps the octave at exactly 2:1, then has to decide where the notes inside it go. That choice is what this lab is about.',
-      start: 'Turn your volume down, then press HEAR IT: the root C sounds, then its octave. Read ROOT and OCTAVE, and tap SCOPE ⓘ before BEGIN LAB ›.',
+      // A first step that needs no sound (novice audit 2026-11-14), then the sound.
+      start: 'Read ROOT and OCTAVE: the octave is exactly double the root. Then turn your volume down and press HEAR IT: the root C sounds, then its octave. Tap SCOPE ⓘ before BEGIN LAB ›.',
     },
     seeing: [
       'The pitch rail runs from the root C (1:1) on the left to its octave (2:1) on the right. The eleven faint marks between are the notes still to be placed; after HEAR IT they turn to question marks.',
       'ROOT reads 261.63 Hz and OCTAVE 523.25 Hz. SOUND says ♪ PLAYING or STOPPED.',
-      'Below: IN THIS CHAPTER, a volume note, SCOPE ⓘ and BEGIN LAB ›.',
+      'Below: what the chapter is about with its To finish: line, a volume note, SCOPE ⓘ and BEGIN LAB ›.',
     ],
     control: [
       'Press HEAR IT to hear the root, then its octave; the rail lights each one as it sounds. ■ STOP silences it.',
@@ -274,8 +275,8 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
     ],
     control: [
       'Ride the NOTES fader to reveal the mapping one note at a time.',
-      'The PLAY tray is LOCKED until a second note is out. Then it plays C with the newest note. From G it adds C, E 5/4, G 3/2, CHORD 4:5:6 and ALIGNED PARTIALS, then each pure third you reveal.',
-      'TONIC (C, F, G, D) and RETUNE stay LOCKED until all eight notes are out. RETUNE rebuilds the set around the tonic. ■ STOP silences.',
+      'The PLAY key reads 2 notes, dimmed, until a second note is out. Then it plays C with the newest note. From G it adds C, E 5/4, G 3/2, CHORD 4:5:6 and ALIGNED PARTIALS, then each pure third you reveal.',
+      'TONIC (C, F, G, D) and RETUNE read all 8, dimmed, until all eight notes are out. RETUNE rebuilds the set around the tonic. ■ STOP silences.',
     ],
     changes: [
       'Small ratios give pure chords: C, E, G = 4 : 5 : 6.',
@@ -331,21 +332,21 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
   {
     intro: {
       learning: 'Quarter-comma meantone narrows every fifth by about 5.38 ¢ so its major thirds come out pure; the leftover gathers in one badly mistuned fifth, the wolf.',
-      start: 'Ride PART from A to E. In Part C, double-tap the FIFTH lane for 700 ¢, then tap SHOW ME and watch FROM 5/4 reach 0 ¢. In Part E, play the wolf.',
+      start: 'Ride PART from A to E. In Part C, double-tap the FIFTH lane for 700 ¢, then tap SHOW ME and watch FROM PURE reach 0 ¢. In Part E, play the wolf.',
     },
     seeing: [
       'You build meantone in five short parts; the display follows PART: the C·D·E rail (A), four fifths on the rail (B), harmonic ladders with a meter (C), the scale (D), the twelve-note chain with the wolf’s two ends in red (E).',
-      'The readouts change with the part: FIFTH, g⁴/4 and FROM 5/4 in Part C (g is the meantone fifth); WOLF, NORMAL and WIDER BY in Part E.',
+      'The readouts change with the part: FIFTH, THIRD and FROM PURE in Part C; WOLF, NORMAL and WIDER BY in Part E. MATH (top right) adds the algebra.',
     ],
     control: [
       'Ride PART from A to E, or tap it for the list.',
-      'In B, PLAY the pure fifth 3/2 or the meantone fifth ⁴√5.',
-      'In C, ride the FIFTH fader, 690–705 ¢. It snaps gently near ⁴√5; double-tap the lane for 700 ¢. SHOW ME lands it; ▶ C–E–G plays the triad.',
+      'In B, PLAY the pure fifth 3/2 or the meantone fifth.',
+      'In C, ride the FIFTH fader, 690–705 ¢. It snaps gently near the meantone fifth; double-tap the lane for 700 ¢. SHOW ME lands it; ▶ C–E–G plays the triad.',
       'In D, NOTES reveals the scale and ▶ SCALE plays it. In E, PLAY a normal fifth or the wolf. ■ STOP works in every part.',
     ],
     changes: [
       'Narrow every fifth a little, stack four of them, drop two octaves, and you land on a pure 5/4 third.',
-      'The fifth that does it is ⁴√5, about 5.38 ¢ narrower than pure.',
+      'The fifth that does it is about 5.38 ¢ narrower than pure.',
       'The circle still has to close, so the leftover gathers in one closing fifth: the wolf, 41.06 ¢ wider than the others.',
     ],
     teaches: [
@@ -354,8 +355,8 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
       'Chords that avoid the wolf sound sweet, with pure thirds; any chord that uses the wolf fifth sounds harsh.',
     ],
     tryThis: [
-      'Part A: the readouts give t = 1.118034 (the step from C to D) and D at 193.16 ¢ — halfway to E 5/4 by ratio, not by hertz.',
-      'Part C at 700 ¢: g⁴/4 reads 400.00 ¢, FROM 5/4 +13.69 ¢. Tap SHOW ME: FIFTH 696.58 ¢ and FROM 5/4 reads 0 ¢.',
+      'Part A: D reads 193.16 ¢, halfway to E 5/4 by ratio, not by hertz.',
+      'Part C at 700 ¢: THIRD reads 400.00 ¢, FROM PURE +13.69 ¢. Tap SHOW ME: FIFTH 696.58 ¢ and FROM PURE reads 0 ¢.',
       'Part E: WOLF 737.64 ¢, NORMAL 696.58 ¢, WIDER BY 41.06 ¢. Play the normal fifth, then the wolf.',
     ],
   },
@@ -461,7 +462,7 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
     },
     seeing: [
       'Six challenges; three of them use the display. FIGURE picks which: the Octave Elevator (1), the harmonic ladders with a meter (4) or the rail of three E’s over a fixed C (6).',
-      'Watch the readouts for each figure (for example RATIO, VALUE, REGION); DONE shows on FOLD (1) and THIRD (4), and E MOVES (6) shows the three E’s and SOUND. Below, do challenge 2 (match the rule) and answer the questions for 3, 5 and 6.',
+      'Readouts per figure (for example RATIO, VALUE, REGION); LEFT (still to do) shows on FOLD (1) and THIRD (4), and E MOVES (6) shows the three E’s and SOUND. Below, do challenge 2 (match the rule) and answer the questions for 3, 5 and 6.',
     ],
     control: [
       'FIGURE: 1 · Normalize 9/4, 4 · Align the third, 6 · Hear E move.',
@@ -488,7 +489,7 @@ export const TUNING_SCREEN_GUIDES: readonly ScreenGuide[] = [
 export const TUNING_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'How the lab’s ideas fit together: intervals are ratios, pure fifths don’t close the circle, and each tuning system decides where that leftover goes.',
-    start: 'Tap any chapter still listed under WHAT’S LEFT to open it, or open REVIEW ▾ to see the chapters you’ve finished.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are. Each row still listed says what finishes it.',
   },
   seeing: [
     'WHAT’S LEFT lists one row per chapter still to do, with its number. When every chapter is done, it reads LAB COMPLETE.',

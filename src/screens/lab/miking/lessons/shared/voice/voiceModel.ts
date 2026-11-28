@@ -15,7 +15,7 @@ import { SINGER_SOLIDS } from './voicePose.ts';
 import { mouthLine, mouthSurface, onAnchor, voiceRegions } from './voiceZones.ts';
 
 const ill = (reason: string): Provenance => ({ kind: 'illustrative', reason });
-const FIG = ill('the shared adult figure (players/playerPose BODY), placed round the lip point: a drawing default');
+const FIG = ill('the shared adult figure (players/playerPose BODY), placed around the lip point: a drawing default');
 
 /** The parts' words (a lesson may reword them). */
 export const VOICE_PART_WORDS = {

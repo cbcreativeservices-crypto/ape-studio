@@ -33,6 +33,7 @@ import { PageSteps, type MikingStep } from '../../../engine/steps';
 import { Body, Card, Landing, Note, Point, ScenarioList } from '../../../engine/kit';
 import type { PageProps } from '../../../pages/pageTypes';
 import { LowBrassScene } from './LowBrassArt';
+import { lowBrassSecond } from './lowBrassFigureV2';
 import { brassScene } from './lowBrassScene.ts';
 import type { Orient } from './lowBrassSpec.ts';
 import { lowBrassCue, lowBrassFoots, lowBrassShown, PIANO, spaceParts, type LowBrassPlanLayout, type PlanObject } from './lowBrassPlanModel.ts';
@@ -323,7 +324,7 @@ export function LowBrassPlan({ w, h, cfg, orient, box, scene, wedges, items, hig
             ) : null}
             {shown.map((o) => (
               <Group key={o.id} transform={[{ translateX: o.at.x }, { translateY: o.at.z }, { rotate: (o.yaw ?? 0) * DEG }]}>
-                {o.kind === 'stand' ? <MusicStand /> : o.kind === 'piano' ? <GrandPiano /> : o.kind === 'pair' ? <MainPair /> : o.kind === 'wall' ? <Wall len={o.r * 2} /> : o.kind === 'brass' && o.spec ? <LowBrassScene s={brassScene(o.spec, o.orient ?? o.spec.orients[0])} view="top" dim={0.7} /> : null}
+                {o.kind === 'stand' ? <MusicStand /> : o.kind === 'piano' ? <GrandPiano /> : o.kind === 'pair' ? <MainPair /> : o.kind === 'wall' ? <Wall len={o.r * 2} /> : o.kind === 'brass' && o.spec ? <LowBrassScene s={brassScene(o.spec, o.orient ?? o.spec.orients[0])} view="top" dim={0.7} who={o.spec.id === self.spec.id ? lowBrassSecond() : undefined} /> : null}
               </Group>
             ))}
             {scene === 'stage' ? wedges.filter((x) => x.glyph !== 'none').map((x) => <WedgeTop key={x.id} at={{ x: x.p.x, z: x.p.z }} faces={{ x: x.faces.x, z: x.faces.z }} />) : null}
@@ -375,7 +376,7 @@ export function makeLowBrassSettingPage(cfg: LowBrassSettingConfig): (p: PagePro
             if (it) pick(it.id);
           },
           format: () => (sel ? `${byId(sel)?.short ?? sel} · ${byId(sel)?.tag ?? ''}` : `step through the ${list.length} items`),
-          formatShort: () => (sel ? (byId(sel)?.short ?? sel).slice(0, 9) : 'STEP'),
+          formatShort: () => (sel ? (byId(sel)?.short ?? sel).slice(0, 9) : 'PICK'),
         },
         list.length,
         list.findIndex((q) => q.id === sel),

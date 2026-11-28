@@ -39,12 +39,14 @@ import { C20, EQUAL_PATH_MM, deltaTms, effectivePolarity, micGain, notchDepthDb,
 import { fmtAngle, fmtDb, fmtHz, fmtIdealPickup, fmtLen, fmtMs, isDeepNull } from '../../../engine/model/units.ts';
 import { MIC_TYPES, micType } from '../../../data/micTypes';
 import { PTroubleshoot } from '../../../pages/PReadPages';
+import { SteadyScene, useAimRide } from '../../../pages/PContext';
 import { lineFoot, workedMark, type WorkedMark } from '../../../pages/PPlacement';
 import type { PageProps } from '../../../pages/pageTypes';
 import { Chip, GMicrophone, GPractice, factsStep, micSentence, posParams, startStep, type AimAxis, type AxisWords, type MicPageSpec, type PosAxis, type PracticeSpec } from '../journeyPages';
 import { HandPlan, type HandPlanItem, type HandScene } from './HandPlan';
 import { viewToggle } from '../../../engine/scene/viewToggle.ts';
 import { tapsWhenFew } from '../../../engine/rack/fewStops.ts';
+import { zoneActivityLine } from '../../../engine/progress/zoneActivity.ts';
 
 export function useFocusedSafe(): boolean {
   try {
@@ -105,18 +107,18 @@ export function useStepper(n: number, hidden: boolean, titles?: readonly string[
       {
         kind: 'fader',
         id: 'step',
-        label: 'STEP',
+        label: 'EVENT',
         value: (shown - 1) / Math.max(1, n - 1),
         onChange: (v) => goTo(1 + Math.round(v * (n - 1))),
-        format: () => `${shown} of ${n}`,
-        formatShort: () => `${shown} / ${n}`,
+        format: () => titles?.[shown - 1] ?? `step ${shown}`,
+        formatShort: () => `${shown}`,
       },
       n,
       shown - 1,
-      (i) => (titles?.[i] ? `${i + 1} · ${titles[i]}` : `${i + 1} of ${n}`),
+      (i) => (titles?.[i] ? `${i + 1} · ${titles[i]}` : `step ${i + 1}`),
       (i) => goTo(i + 1),
     ),
-    { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: play, tint: colors.green },
+    { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT EVENT', onPress: play, tint: colors.green },
   ];
   return { shown, playing, goTo, play, params };
 }
@@ -207,7 +209,7 @@ function HandInstrument(spec: HandSpec) {
                   if (p) pick(p.id);
                 },
                 format: () => (shown ? shown.short.toUpperCase() : 'step through the parts'),
-                formatShort: () => (shown ? shown.short.toUpperCase().slice(0, 9) : 'STEP'),
+                formatShort: () => (shown ? shown.short.toUpperCase().slice(0, 9) : 'PICK'),
               },
               parts.length,
               parts.findIndex((p) => p.id === partId),
@@ -292,7 +294,7 @@ function HandSetting(spec: HandSpec) {
                   if (p) setSel(p.id);
                 },
                 format: () => (it ? `${it.short} · ${it.tag}` : `step through the ${planItems.length} items`),
-                formatShort: () => (it ? it.short.slice(0, 9) : 'STEP'),
+                formatShort: () => (it ? it.short.slice(0, 9) : 'PICK'),
               },
               planItems.length,
               planItems.findIndex((q) => q.id === sel),
@@ -451,7 +453,12 @@ function HandPlacement(spec: HandSpec) {
     const lastVersion = useRef(-1);
     useEffect(() => {
       if (rig.version === lastVersion.current) return;
+      const opening = lastVersion.current < 0;
       lastVersion.current = rig.version;
+      // ONE rule in every Placement Studio (fix round 2026-11-14, checker C4):
+      // the pose the studio opens at is GIVEN, never rested; only the learner's
+      // own moves (drag, fader, ZONE, SETUP) count.
+      if (opening) return;
       if (r0.zoneId && !r0.blocked) setVisited((prev) => (prev.has(r0.zoneId!) ? prev : new Set([...prev, r0.zoneId!])));
     }, [rig.version, r0.zoneId, r0.blocked]);
     useEffect(() => {
@@ -493,7 +500,7 @@ function HandPlacement(spec: HandSpec) {
           const z = lesson.zones.find((q) => q.id === id);
           if (z) {
             rig.setSurfaceId(z.refSurface);
-            rig.jumpTo('A', z.start);
+            rig.jumpTo('A', z.start, z.id);
           }
         },
         options: available.map((z) => ({ id: z.id, label: z.label, blurb: z.band })),
@@ -513,7 +520,7 @@ function HandPlacement(spec: HandSpec) {
           badge: 'WORKED EXAMPLE · placed for you · blue = suggested starting point · dashed lobe = pattern shape',
           bezel: exBezel,
           params: [
-            tapsWhenFew({ kind: 'fader', id: 'piece', label: 'STEP', value: exStep / (pieces.length - 1), onChange: (v) => setExStep(Math.round(v * (pieces.length - 1))), format: () => `${exStep + 1} of ${pieces.length} · ${wk.title.toLowerCase()}`, formatShort: () => `${exStep + 1} / ${pieces.length}` }, pieces.length, exStep, (i) => `${i + 1} · ${pieces[i].title}`, setExStep),
+            tapsWhenFew({ kind: 'fader', id: 'piece', label: 'PIECE', value: exStep / (pieces.length - 1), onChange: (v) => setExStep(Math.round(v * (pieces.length - 1))), format: () => `${wk.title.toLowerCase()}`, formatShort: () => `${exStep + 1}` }, pieces.length, exStep, (i) => `${i + 1} · ${pieces[i].title}`, setExStep),
             ...viewToggle({ view: exView, setView: setExView, stage: 'dual', labels: ['SIDE VIEW', 'FROM ABOVE'] }),
           ],
           initialParam: 'piece',
@@ -547,7 +554,7 @@ function HandPlacement(spec: HandSpec) {
             <NowLine text={nowLine(rig, ['A'], spec.outside)} />
             {shown.blocked ? <Note tone="warn">{`It would touch ${shown.blocked.label} — the mic stops there. The player’s space comes first.`}</Note> : null}
             {zone ? <ZoneCard z={zone} /> : <Body>{`Not at a suggested starting point. Starting points for this mic: ${available.map((z) => z.label).join('; ')}.`}</Body>}
-            <Body>{`Activity: rest the mic in 2 zones, clear of the player — done: ${visited.size}${visited.size ? ` (${[...visited].map((id) => lesson.zones.find((z) => z.id === id)?.label ?? id).join('; ')})` : ''}.`}</Body>
+            <Body>{zoneActivityLine([...visited].map((id) => lesson.zones.find((z) => z.id === id)?.label ?? id), 'the mic', 'clear of the player')}</Body>
             {tried && predicted ? <Note tone="ok">{spec.place.tried(predicted)}</Note> : null}
             {spec.place.notes ? spec.place.notes(rig) : null}
           </>
@@ -605,6 +612,14 @@ function HandContext(spec: HandSpec) {
     const db = gainDb(pattern, theta);
     const inNull = nearNull(pattern, theta, NULL_TOL);
     const nulls = nullAngles(pattern);
+    // While AIM rides: the inset's dot and the OFF AXIS / PICKUP / REJECTION
+    // cells follow the mic (fix-first 15 item 4, pages/PContext useAimRide).
+    // The credit and the read-aloud label keep the saved pose, as before.
+    const aimLive = useAimRide(rig);
+    const thetaNow = arrivalAngle(aimLive.pose, src);
+    const dbNow = gainDb(pattern, thetaNow);
+    const inNullNow = nearNull(pattern, thetaNow, NULL_TOL);
+    const wedgeArt = useMemo(() => (live ? { at: wedge.p, faces: wedge.faces, src } : null), [live, wedge, src]);
     const tried = predicted != null && aimed;
     useEffect(() => {
       if (live && wedge.id === C.creditWedge && inNull && aimed && !interactiveDone.has('wedgeInNull')) onInteractive('wedgeInNull');
@@ -627,9 +642,11 @@ function HandContext(spec: HandSpec) {
         // engine's fader contract, 2026-10-06: no page re-render per move).
         onChange: (v) => {
           const ang = Math.round((v * 2 - 1) * lim) + centre;
+          aimLive.ride();
           aimHeld.note(v, rig.preview('A', aimAxis === 'az' ? { ...pose, az: ang } : { ...pose, el: ang }));
         },
         onCommit: () => {
+          aimLive.rest();
           rig.commit('A');
           setAimed(true);
         },
@@ -674,10 +691,10 @@ function HandContext(spec: HandSpec) {
     ];
     const bezel: BezelItem[] = live
       ? [
-          { k: 'OFF AXIS', v: `≈ ${Math.round(theta / 5) * 5}°`, sub: 'monitor', flex: 1 },
-          isDeepNull(db) ? { k: 'PICKUP', v: 'DEEP NULL', flex: 1.15 } : { k: 'PICKUP', v: fmtDb(db), flex: 1.15 },
+          { k: 'OFF AXIS', v: `≈ ${Math.round(thetaNow / 5) * 5}°`, sub: 'monitor', flex: 1 },
+          isDeepNull(dbNow) ? { k: 'PICKUP', v: 'DEEP NULL', flex: 1.15 } : { k: 'PICKUP', v: fmtDb(dbNow), flex: 1.15 },
           { k: 'NULL', v: tried ? `≈ ${Math.round(nulls[0])}°` : '?', flex: 0.8 },
-          { k: 'REJECTION', v: inNull ? 'IN NULL' : 'NO', tint: inNull ? '#5bff85' : undefined, flex: 1.15 },
+          { k: 'REJECTION', v: inNullNow ? 'IN NULL' : 'NO', tint: inNullNow ? '#5bff85' : undefined, flex: 1.15 },
         ]
       : [
           { k: 'SCENARIO', v: 'STUDIO' },
@@ -694,8 +711,8 @@ function HandContext(spec: HandSpec) {
         layout: 'rack',
         rack: {
           render: (w, h) => (
-            <PatternInset w={w} h={h} typeId={rig.mics[0].typeId} pattern={pattern} view={view} box={view === 'top' ? C.plan : C.side} avoid={live ? [pose.p, wedge.p] : [pose.p]} angle={live ? theta : 0} source={live ? 'MONITOR' : null}>
-              {(sceneW) => <PlacementScene rig={rig} art={spec.art} view={view} w={sceneW} h={h} slots={['A']} showZones={false} interactive={false} boxOverride={view === 'top' ? C.plan : C.side} wedge={live ? { at: wedge.p, faces: wedge.faces, src } : null} showLabels={false} accessibilityLabel={label} />}
+            <PatternInset w={w} h={h} typeId={rig.mics[0].typeId} pattern={pattern} view={view} box={view === 'top' ? C.plan : C.side} avoid={live ? [pose.p, wedge.p] : [pose.p]} angle={live ? thetaNow : 0} source={live ? 'MONITOR' : null}>
+              {(sceneW) => <SteadyScene rig={rig} art={spec.art} view={view} w={sceneW} h={h} slots={['A']} showZones={false} interactive={false} boxOverride={view === 'top' ? C.plan : C.side} wedge={wedgeArt} showLabels={false} accessibilityLabel={label} />}
             </PatternInset>
           ),
           badge: live ? `${patternInsetBadge(true)} · counts within ±${NULL_TOL}° of a null · monitors where a stage often puts them` : patternInsetBadge(false),
@@ -871,7 +888,7 @@ function HandTwoMic(spec: HandSpec) {
             </Text>
             <NowLine text={pairNow} />
             <View onLayout={(e) => setWellW(Math.round(e.nativeEvent.layout.width))}>{wellW > 0 ? <CombPanel rig={rig} source={src} w={wellW} h={150} label={combLabel} /> : null}</View>
-            <Body>{equal ? (sEff === -1 ? `No path difference, but the sum acts as inverted: ${region.label} reaches both mics at the same instant in opposite polarity, ${eqCell === 'CANCELS' ? 'so it cancels at every frequency, as far as the two levels match' : `and its levels in the two mics differ, so it only partly cancels: about ${partDb} dB down at every frequency`}.` : `No path difference, no comb: ${region.label} reaches both mics at the same instant.`) : `Mic B hears ${region.label} ${fmtMs(dt)} ${dt >= 0 ? 'after' : 'before'} mic A. ${sEff === 1 ? 'The sum acts as same-polarity: notches at odd multiples of 1 ÷ (2 Δt).' : 'The sum acts as inverted: a low-frequency loss and notches at whole multiples of 1 ÷ Δt.'}`}</Body>
+            <Body>{equal ? (sEff === -1 ? `No path difference, but the sum acts as inverted: ${region.label} reaches both mics at the same instant in opposite polarity, ${eqCell === 'CANCELS' ? 'so it cancels at every frequency, as far as the two levels match' : `and its levels in the two mics differ, so it only partly cancels: about ${partDb} dB down at every frequency`}.` : `No path difference, no comb: ${region.label} reaches both mics at the same instant.`) : `Mic B hears ${region.label} ${fmtMs(dt)} ${dt >= 0 ? 'after' : 'before'} mic A. ${sEff === 1 ? 'Added together, the two copies cancel at a row of evenly spaced pitches: the dips in the comb drawing. The 1ST NOTCH readout is the lowest one.' : 'Added together with one copy inverted, the lowest notes thin out and the dips sit at other pitches: see the comb drawing and the 1ST NOTCH readout.'}`}</Body>
             {rearFlip ? <Note>{`${region.label} is in a mic’s rear lobe: a rear lobe is polarity-inverted, so the notches fall where the ${sEff === 1 ? 'same-polarity' : 'inverted'} sum puts them, even with the switch at ${B.polarity === 1 ? '+' : '−'}.`}</Note> : null}
             {predicted != null && flipped ? <Note tone="ok">{`You predicted “${predicted}”. Δt did not change when you flipped polarity — only moving a mic changes it. Polarity flips the sign: the notches and peaks swap places, but the delay stays.`}</Note> : null}
             <Note tone="warn">{T.warn}</Note>

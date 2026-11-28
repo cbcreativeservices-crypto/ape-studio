@@ -53,7 +53,7 @@ export const CHINA_COPY: Partial<LessonCopy> = {
     workedAim: 'Aim it at the China — the lab counts it while the mic’s axis meets the plate. On a tilted China, “above” is measured square to its rim plane.',
     workedClear: 'Clear of every part — the stick’s side, the swing after the hardest crash, the ride beside it and the player’s arm. Clearance comes first, and the drummer stops before a real mic moves.',
     blocked: {},
-    reveal: 'Toward the lip tends to bring more of the trashy edge; toward the cup a harder, more focused tone — and every China is different. Each zone’s LISTEN FOR line is an idea to check by ear.',
+    reveal: 'Toward the lip tends to bring more of the trashy edge; toward the cup a harder, more focused tone — and every China is different. Each zone’s TENDS TO HEAR line is an idea to check by ear.',
     typeNotes: {
       sdcCard: 'Ideas to try: above the China on the far side, change the height first, then the aim. Underneath, aimed up, start below the plate’s lowest point in its mount — the cup when it is turned over.',
       smallDynCard: 'Ideas to try: a dynamic above the China on the far side; a China cuts through, so distance is your friend.',
@@ -124,7 +124,7 @@ export const CHINA_CYM: CymbalExtra = {
     title: 'Strike to sound',
     badge: 'The order of events, not their speed · a simplified China profile · motion drawn much larger · silent',
     looking: 'Side view · the China cut through the stick’s line',
-    prompt: 'STEP through the stroke, or PLAY ONCE — it stops at the end. Switch SETUP to turn the China over. Nothing here makes a sound.',
+    prompt: 'Go EVENT by EVENT through the stroke, or PLAY ONCE — it stops at the end. Switch SETUP to turn the China over. Nothing here makes a sound.',
     rFrac: STRIKE.upright / R,
     rFracIn: { inverted: STRIKE.inverted / R },
     stages: [

@@ -22,6 +22,11 @@ import { CLAV_AUDIENCE, CLAV_NEAR, CLAV_PEDALS, CLAV_ROOM, CLAV_SPOTS, CLAV_WIDE
 import { unionRect } from '../shared/planFoot.ts';
 import { AmpTop, CLAV_BASE_ART, ClavinetPlan } from './art';
 import { ClavinetPath, ClavinetSequence } from './soundArt';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+
+/** (cast figures 2026-11-26) the keyboardist on the stage plan in the approved look: Mei of the cast
+ *  ('plan.clavinet', ClavinetPlan's default), where the old oval-and-head marker was. */
+const V2 = figureV2On('sidePlayers');
 
 const OPTS: readonly RadiateOption[] = [
   { id: 'mic', label: 'MIC THE AMP', blurb: 'The chain through the speaker.', card: { title: 'THROUGH THE AMP AND A MIC', text: 'Clavinet → pedals → amp → speaker → mic → console. The mic never hears the strings or the pickups: it hears the speaker, turning the signal back into sound — with the amp, the cabinet and the room in it.' } },
@@ -97,7 +102,7 @@ function ownRing(v: VariantId) {
 function OwnPlan({ variant, lit }: { variant: VariantId; lit: boolean }) {
   return (
     <Group>
-      <ClavinetPlan dim={0.9} />
+      <ClavinetPlan dim={0.9} v2={V2} />
       <AmpTop variant={variant} />
       {lit ? <Path path={ownRing(variant)} style="stroke" strokeWidth={22} color="#ffc64d" /> : null}
     </Group>

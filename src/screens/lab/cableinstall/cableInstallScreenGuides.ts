@@ -9,7 +9,7 @@
  * engine/*): the names are the on-screen names (section titles, keys, chips,
  * readout words), and every number quoted in TRY THIS is what the screen
  * prints at that setting — route scores from engine/routeEval (rankRoutes),
- * bend readouts from MechScene's radiusDia/fmtDia (start 0.95, − EASE = −0.08),
+ * bend readouts from MechScene's radiusDia/fmtDia (start 0.95, ◂ GENTLER = −0.08),
  * exposure bands from EmiScene's exposureFor, spans from the SupportsScene and
  * CeilingScene spacing checks, coil twist from FloorScene's sign sum. Change a
  * stage's labels, data or formulas → update its guide here;
@@ -35,10 +35,10 @@ export const CI_HOME_GUIDE: ScreenGuide = {
   seeing: [
     'Watch the drawing install a whole job: stage box, a floor run under a protector, wall raceway, conduit, ceiling tray and rack.',
     'Find the power feed. It runs on its own path, kept apart from the signal cables; Stage 10 shows why.',
-    'Below the drawing you read what professional installation involves. Local codes always govern the real job.',
+    'SOURCES / STANDARDS › opens what professional installation involves and the codes this lab draws on. Local codes always govern the real job.',
   ],
   control: [
-    'Tap the big button to open the first stage you haven’t finished. It reads START LAB while that is Stage 1, otherwise RESUME — MODULE and its number. With every stage done, START LAB reopens Stage 1.',
+    'Tap the big button to open the first stage you haven’t finished. It reads START LAB while that is Stage 1, otherwise RESUME — STAGE and its number. With every stage done, START LAB reopens Stage 1.',
     'WHAT YOU’LL LEARN opens or closes the objectives. SOURCES / STANDARDS › lists the codes and standards this lab draws on.',
     'In the strip under the title, ‹ PREV and NEXT › step between stages. Tap its middle for the stage list, with WHAT\'S LEFT at the end.',
     'Every stage is open at any time. Tap ⓘ on any stage to have that screen explained.',
@@ -65,18 +65,18 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
   why: {
     intro: {
       learning: 'Why a neat-looking install can still be wrong: an installation is judged on safety, reliability, signal, service, protection and workmanship together.',
-      start: 'Open all six cards under SIX THINGS RIDING ON EVERY RUN. Then study the four close-ups and approve the one you would sign off.',
+      start: 'Study the four close-ups under WHICH INSTALLATION WOULD YOU APPROVE? and approve the one you would sign off. Then open all six cards under SIX THINGS RIDING ON EVERY RUN.',
     },
     seeing: [
-      'SIX THINGS RIDING ON EVERY RUN: what every cable run puts at stake — SAFETY, RELIABILITY, SIGNAL INTEGRITY, SERVICEABILITY, MECHANICAL PROTECTION, PROFESSIONAL WORKMANSHIP.',
-      'WHICH INSTALLATION WOULD YOU APPROVE? shows four close-ups: A — THE SHOWPIECE, B — THE PROFESSIONAL, C — THE PILE, D — THE BLOCKADE.',
-      'After a pick, each close-up shows its verdict and the NEAT ≠ CORRECT card appears.',
+      'WHICH INSTALLATION WOULD YOU APPROVE? comes first: four close-ups, A to D, each with a plain look at it and no hint of its verdict.',
+      'SIX THINGS RIDING ON EVERY RUN, below: what every run puts at stake — SAFETY, RELIABILITY, SIGNAL INTEGRITY, SERVICEABILITY, MECHANICAL PROTECTION, PROFESSIONAL WORKMANSHIP.',
+      'After a pick, each close-up shows its nickname and verdict, and the NEAT ≠ CORRECT card appears.',
     ],
     control: [
       'Tap a consequence card to open it; a ✓ marks it read.',
       'Tap a close-up’s name, drawing or caption to approve it. FULL SCREEN enlarges the drawing, with its APPROVE button underneath.',
       'Under each verdict, ▸ WHY? opens the reason; the colored tag opens the sources behind it.',
-      'After a wrong pick only B stays tappable. Open all six cards and approve B to finish the stage. Approved B first? Open the rest, then tap MARK STAGE COMPLETE ✓.',
+      'After a wrong pick only the approvable close-up stays tappable. Open all six cards and approve it to finish the stage. Approved it first? Open the rest, then tap MARK STAGE COMPLETE ✓.',
     ],
     changes: [
       'A looks best, but its ties are cinched so hard the cables go oval. Crushing damages a cable inside before the outside shows it.',
@@ -109,7 +109,7 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
     control: [
       'Tap a cable’s name to open or close its card; a ✓ marks it read. Browse as much as you like; it isn’t scored, but the drill below draws on it.',
       'For each run in the drill, answer 1 · WHAT CABLE IS THIS?, 2 · TEMPORARY OR PERMANENT?, 3 · THE LIKELY PATHWAY? and 4 · THE KEY RISK?',
-      'Each answer locks when you make it; the next question opens under its verdict.',
+      'Your first call on each question is the one that scores, so it locks; its verdict names the right call, and the next question opens under it.',
       'Answer all three runs to finish the stage. Its score comes from your own calls.',
     ],
     changes: [
@@ -167,7 +167,7 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
   mech: {
     intro: {
       learning: 'Why every cable has its own minimum bend, pulling limit and safe strap tension, and how a cable is damaged inside before the outside shows it.',
-      start: 'On the coax card, tap − EASE until the bend clears the dashed arc, then tap CHECK BEND. Then try each pull event and watch the tension meter.',
+      start: 'On the coax card, tap ◂ GENTLER until the bend clears the dashed arc, then tap CHECK BEND. Then try each pull event and watch the tension meter.',
     },
     seeing: [
       'A · BEND RADIUS: one corner, four cables — mic, twisted-pair data, coaxial, fiber-optic — each with its own SIMULATED SPEC card.',
@@ -175,7 +175,7 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
       'B · PULLING: a tension meter on a relative scale, 0 to 150, limit at 100. C · RESTRAINT: a strap on a four-cable bundle, in zone LOOSE, SECURE or EXCESSIVE.',
     ],
     control: [
-      'Use each cable’s BEND TIGHTNESS fader, or − EASE / + TIGHTEN (each tap about 1.5 diameters). The readout gives the bend in cable diameters, then the spec.',
+      'Use each cable’s BEND TIGHTNESS fader, or ◂ GENTLER / TIGHTER ▸ (each tap about 1.5 diameters). The readout gives the bend in cable diameters, then the spec.',
       'CHECK BEND tests that cable against its spec; it reads MEETS SPEC ✓ when it passes.',
       'Try each pull event: Steady smooth pull, Pull harder through the snag, Hard yank around the corner, Pull it through by the connector.',
       'Set the strap with the STRAP TENSION fader, or SET LOOSE, SET SECURE, SET EXCESSIVE.',
@@ -193,7 +193,7 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
       'Ties are not banned: a restraint must hold the bundle without crushing it.',
     ],
     tryThis: [
-      'From the first-run start, tap − EASE five times on the coax card: about 9.5× — under its ≥ 10× spec. One more tap gives about 11×, and CHECK BEND passes.',
+      'From the first-run start, tap ◂ GENTLER five times on the coax card: about 9.5× — under its ≥ 10× spec. One more tap gives about 11×, and CHECK BEND passes.',
       'Tap Pull it through by the connector: the meter reads 80, under the limit, and the verdict still flags it. The force lands on the termination.',
       'Tap SET EXCESSIVE: the zone reads EXCESSIVE and the cables ovalize. Ease STRAP TENSION back into SECURE.',
     ],
@@ -217,7 +217,7 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
       'Pass the sort and meet the spacing spec to finish the stage.',
     ],
     changes: [
-      'Sag grows with the square of the unsupported span: double the span, four times the dip. Past the limit the drawing shows its deepest dip and glows strained.',
+      'Sag grows with the square of the span: double the span, four times the dip. Past the limit the dip glows strained and is drawn compressed, not to scale.',
       'The spec allows at most 4 units between supports; a longer span draws strained. Extra supports pass, but cost hardware.',
       'Pipes, tiles, grid wires and other systems’ conduit are rejected: they belong to another trade or hold up the ceiling.',
     ],
@@ -240,9 +240,9 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
       start: 'In PHASE A — INSPECT, tap the amber rings or open ▸ SUSPECT LIST and find what’s wrong. Ten finds unlock PHASE B — DRESS.',
     },
     seeing: [
-      'RACK is a rear view: patch panel between horizontal cable managers, switch, DSP (digital signal processor), interface, amplifier, power distribution, vertical cable managers.',
+      'RACK, rear view: patch panel between horizontal managers, switch, DSP (digital signal processor), interface, amplifier, power distribution, vertical managers.',
       'You work through four phases: PHASE A — INSPECT, PHASE B — DRESS, PHASE C — SERVICE, PHASE D — MAINTAIN.',
-      'In Phase A amber rings mark places to inspect. A find shows ⚑, its rule and a FIX line, and a counter tracks finds.',
+      'Phase A: amber rings mark places to inspect. A find shows ⚑, its rule and a FIX line under the drawing. COLOR KEY, at the foot, names the colors.',
     ],
     control: [
       'A: tap a spot on the rack, or open ▸ SUSPECT LIST and go location by location. 10 finds unlock RACK CONDEMNED — NOW DRESS IT RIGHT ›.',
@@ -310,7 +310,7 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
     },
     seeing: [
       'CEILING is a cutaway of a suspended ceiling: deck, joists, hanger wires, grid and tiles, a duct, the sprinkler main, conduit, a light, a tray, J-hooks.',
-      'ABOVE CEILING · AS FOUND shows a previous contractor’s work; FINISHED VIEW shows the same section done right.',
+      'ABOVE CEILING · AS FOUND: a previous contractor’s work, in this scene’s OWN COLORS (key below). FINISHED VIEW: done right.',
       'EXERCISE 1 · FIND THE PROBLEMS: eight marked defects. EXERCISE 2 · INSTALL THE ROUTE: a new run you place.',
     ],
     control: [
@@ -417,7 +417,7 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
     control: [
       'Use the dock keys: 1 DUCTED CAVITY, 2 OPEN-RETURN CAVITY, 3 RISER. Tap one to route the cable toward that space, again to clear it; ✓ = identified.',
       'Answer the selected space’s question; the verdict, ▸ WHY? and its source follow.',
-      'With all three identified, the walk-through opens: five questions at the sleeve, each answered once.',
+      'With all three identified, the walk-through opens: five questions at the sleeve. The first pick is scored; a wrong pick shows its reason, and you can try again.',
       'FULL SCREEN enlarges the section and keeps the dock with it.',
     ],
     changes: [
@@ -433,7 +433,7 @@ export const CI_SCREEN_GUIDES: Record<CiModuleId, ScreenGuide> = {
     tryThis: [
       'At 1 DUCTED CAVITY, spot the trap answer “A plenum — every ceiling cavity is one”: here the return air runs in a duct, so each space must be identified first.',
       'Tap 2 OPEN-RETURN CAVITY and compare it with space 1: here the cavity itself carries the return air, so what may run in it is limited.',
-      'At question 4, the answer “Yes — the label says fire rated” is the trap: a label is not a system. Only the listed system matched to this wall and bundle counts.',
+      'At question 4, the answer “Yes — the label on the tube says fire rated” is the trap: a label is not a system. Only the listed system matched to this wall and bundle counts.',
     ],
   },
 
@@ -542,12 +542,12 @@ export const CI_MYTH_GUIDE: ScreenGuide = {
 export const CI_COMPLETE_GUIDE: ScreenGuide = {
   intro: {
     learning: 'Where your installation judgment is strong and which area to revisit, with every area scored across the stages and Safety weighted most.',
-    start: 'Read KNOWLEDGE PROFILE · OVERALL and look for any area under 80. Tap REVIEW RESULTS to open the stage that trains it, or VIEW FIELD CHECK for the job checklist.',
+    start: 'Read KNOWLEDGE PROFILE (NOT SCORED YET until you finish a stage). An area under 80 brings a REVIEW RESULTS button to the stage that trains it; VIEW FIELD CHECK opens the job checklist.',
   },
   seeing: [
     'The end screen reads CABLE DRESSING & INSTALLATION — COMPLETE, or WHAT IS LEFT with each unfinished stage listed.',
-    'KNOWLEDGE PROFILE · OVERALL shows its number, then one row per area scored so far — Safety, Cable Protection, Routing & Support and more — with five blocks each.',
-    'The buttons are VIEW FIELD CHECK, REVIEW RESULTS, REPEAT LAB and RETURN TO TRAINING.',
+    'KNOWLEDGE PROFILE · OVERALL, then one row per area scored so far (Safety, Cable Protection and more), five blocks each. Before any score it reads NOT SCORED YET.',
+    'The buttons are VIEW FIELD CHECK, REPEAT LAB and RETURN TO TRAINING, plus REVIEW RESULTS when an area is under 80.',
   ],
   control: [
     'Tap a STAGE row to jump straight to it. CREDITED marks a stage already saved from an earlier run.',

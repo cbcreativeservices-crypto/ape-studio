@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
+  path: "/contact",
   title: "Contact",
   description:
     "Reach the Pro Audio Training Academy team for account help, credential questions, press, and partnerships.",
-};
+});
 
 const EMAIL = "info@proaudiotrainingacademy.com";
 

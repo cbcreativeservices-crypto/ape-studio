@@ -13,9 +13,15 @@ import { SiteArt } from '../shared/field/SiteArt';
 import { CREW_LINE_X, ROUTE_X, VEH_X } from '../shared/field/sites.ts';
 import { F08_SITE } from './geometry.ts';
 import { F08_PAGES, F08_STEP_COUNTS } from './pages';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+import { PoleOperatorV2 } from '../shared/fieldmics/PoleOperatorV2';
 
-function Site({ view, variant }: { view: ViewId; variant: VariantId }) {
-  return <SiteArt site={variant === 'vehicle' ? F08_SITE.vehicle : F08_SITE.walk} view={view} />;
+/** The new look (figure V2, builder Foley3): the site's people are the cast's (the walker Kofi; the vehicle
+ *  plan's crew Kofi and Mei), the tracked shotgun's operator Ruth. */
+export const V2 = figureV2On('sidePlayers');
+
+export function Site({ view, variant, v2 = V2 }: { view: ViewId; variant: VariantId; /** (the study page compares the old look) */ v2?: boolean }) {
+  return <SiteArt site={variant === 'vehicle' ? F08_SITE.vehicle : F08_SITE.walk} view={view} v2={v2} />;
 }
 
 const W = ['walk'] as const;
@@ -58,7 +64,9 @@ export const F08_ART: LessonArt = {
   labels: labelsOf(LABELS),
   hitTest: hitTestOf(HITS),
   labelsYieldToMic: true,
-  PoleOperator: PoleOperatorArt,
+  // (figure V2) the boom operator over the engine's pole, both fists on it at any slope
+  PoleOperator: V2 ? PoleOperatorV2 : PoleOperatorArt,
+  poleOperatorOver: V2,
   pages: F08_PAGES,
   stepCounts: F08_STEP_COUNTS,
 };

@@ -33,9 +33,10 @@ export const EAR_HOME_GUIDE: ScreenGuide = {
     start: 'Tap Frequency Recognition to read its description, then tap OPEN. Play one ten-trial round, then come back with ‹ and pick your next module.',
   },
   seeing: [
-    'This is the Ear Training menu: fourteen listening drills. Each plays clips, asks what changed, then shows the change measured. Two can use a recorded piano or guitar chord.',
-    'Under MODULES, each row is a drill. A tried row shows its level and recent score (for example L2 · 85% · tried). A ✓ marks a module that counts, and “tried” drops away.',
-    'FINISH · SEE WHAT’S LEFT › lists what doesn’t count yet.',
+    'This is the Ear Training menu: fourteen listening drills. Each plays clips, asks what changed, then shows it measured. Two can use a recorded piano or guitar chord.',
+    // Four groups, not one MODULES list (owner 2026-11-15: "build waves 1 thru 3", D62 ET-02).
+    'Drills sit in four groups: TONE, LEVEL AND DYNAMICS, TIME AND SPACE, FAULTS AND PITCH; module 1 says START HERE. A tried row shows L2 · 85% · tried.',
+    'A ✓ marks a module that counts. FINISH · SEE WHAT’S LEFT › lists what doesn’t count yet.',
   ],
   control: [
     'Tap a module’s name to read its description and playback note, then tap OPEN to start the drill.',
@@ -45,7 +46,7 @@ export const EAR_HOME_GUIDE: ScreenGuide = {
     'Tap FINISH · SEE WHAT’S LEFT › to see the modules that don’t count yet. Any row there opens its module.',
   ],
   changes: [
-    'By what you hear: 1–4 tone; 5 defects; 6 stereo; 7, 10, 14 level, compression, clipping; 8, 9, 12, 13 time and phase (delay, reverb, polarity, comb filtering); 11 pitch.',
+    'The groups follow what you hear. Comb Filtering sits after Delay and Polarity & Phase in TIME AND SPACE because it builds on both.',
     'Each drill has a level ladder, judged only on answers at your current level: 80 % over your last 20 answers moves you up; under 50 % drops you back one.',
     'A module counts once you clear level 2 at 80 % over 20 answers; then it stays counted.',
   ],
@@ -66,7 +67,7 @@ export const EAR_HOME_GUIDE: ScreenGuide = {
 export const EAR_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'Which kinds of sound change you can already name reliably, and which still need more listening practice.',
-    start: 'Read each row’s level and number of answers. Tap the module still left with the lowest level, and play one ten-trial round.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are. Each row shows its level and number of answers.',
   },
   seeing: [
     'WHAT’S LEFT lists every module that doesn’t count yet. Each row is a link with its state: not tried yet, or tried, with its level and number of answers.',
@@ -109,7 +110,7 @@ export const EAR_SCREEN_GUIDES: Record<EarModuleId, ScreenGuide> = {
     ],
     control: [
       '▶ plays a clip and ■ stops it. At the top level each clip allows two plays while you answer, so make the first listen count.',
-      'Tap an answer chip to answer. NEXT TRIAL › draws the next tone; after ten, NEXT ROUND › starts a new round.',
+      'Play every clip first: the answer chips open once each one has sounded. NEXT TRIAL › draws the next tone; after ten, NEXT ROUND › starts a new round.',
       'If your speaker or headphones can’t play deep bass, check “My playback can’t reproduce sub-bass.” From the next trial, tones at or below 80 Hz are skipped.',
       '⤢ FULL SCREEN enlarges the SPECTRUM with the ▶ chips under it, so you can replay a tone while you watch its peak. FINISH · SEE WHAT’S LEFT › lists what doesn’t count yet.',
     ],

@@ -17,8 +17,11 @@
  *    RPDF = uniform(−Δ/2, Δ/2), TPDF = sum of two such uniforms, noise-shaped
  *    = TPDF + first-order error feedback. Only the dither SPECTRUM strip is a
  *    simplified illustrative shape (host badges it — it is not an FFT).
- *  • Above 4 bits the level grid is drawn as a fine ruled band because the
- *    real steps are sub-pixel; the host says so instead of exaggerating.
+ *  • The level lines ARE the quantizer (quantMath.ts): 2^N codes across a
+ *    FIXED full-scale axis. When they would sit closer than QUANT_MIN_LINE_PX
+ *    on screen they are shown as one shaded band (no fake ruling, no moiré)
+ *    and the host's note says so (onGridMode). Owner 2026-11-22: "bits should
+ *    be showing vertical resolution changes but it doesnt."
  *
  * Abstract data stays abstract but styled (standards §2): gradient underfills,
  * layered glow strokes, never hairline-on-black.
@@ -33,6 +36,7 @@ import {
   BlurMask,
   Canvas,
   Circle,
+  DashPathEffect,
   Group,
   Line as SkLine,
   LinearGradient,
@@ -44,7 +48,9 @@ import {
 import { Easing, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { colors, fonts } from '../../../theme/tokens';
 import { useStageTextScale } from '../rack/stageAspect';
+import { SText } from '../stageScale';
 import { GestureExclusionZone, STAGE_BAND_DP } from '../../../../modules/ape-gesture-exclusion';
+import { quantGridMode, quantizeNorm, quantLevelValues, quantSamples, quantSine, quantStaircase, quantStep, type QuantGridMode } from './quantMath';
 
 export { usePhaseClock, useVizClock } from '../foundations/viz';
 
@@ -61,15 +67,6 @@ function hashW(n: number): number {
   'worklet';
   const s = Math.sin(n) * 43758.5453123;
   return s - Math.floor(s);
-}
-
-/** REAL mid-tread quantizer on the normalized −1..+1 axis: round to the code
- *  grid k/2^(N−1), clamped to the two's-complement range [−2^(N−1), 2^(N−1)−1].
- *  Step Δ = 1/2^(N−1) of full scale (peak). */
-function quantizeNorm(x: number, bits: number): number {
-  const half = Math.pow(2, bits - 1);
-  const code = Math.max(-half, Math.min(half - 1, Math.round(x * half)));
-  return code / half;
 }
 
 type SkPathT = ReturnType<typeof Skia.Path.Make>;
@@ -90,12 +87,21 @@ function smoothThrough(xs: number[], ys: number[]): SkPathT {
 // Module 3 hero — QuantView
 
 /**
- * The quantization scene: continuous sine, the 2^N level grid (individual
- * lines ≤ 4 bits, fine ruled band above — the honest sub-pixel treatment),
- * sampled points, ROUNDED stored values snapped to levels, error whiskers,
- * and the reconstructed-result trace. `errorOnly` hides the signal and shows
- * (original − quantized) alone, vertically zoomed ×2^N (±Δ/2 fills the panel;
- * clipping error near 0 dBFS is visually clamped at the frame edge).
+ * The quantization scene, on a FIXED full-scale axis (−1 … +1 never moves):
+ *  • the level lines ARE the quantizer: 2^N codes k/2^(N−1) (quantMath), so
+ *    3-bit shows 8 coarse steps, 4-bit 16, and the grid is redrawn when BITS
+ *    changes; closer than QUANT_MIN_LINE_PX on screen, the levels show as one
+ *    shaded band and `onGridMode` tells the host to say so;
+ *  • amber: the continuous original; LEVEL only changes its height;
+ *  • green: the original rounded to the nearest level at EVERY instant
+ *    (quantStaircase): flat runs ON the level lines, one-level risers where
+ *    the original crosses a decision threshold — amplitude rounding only, so
+ *    from about 8 bits it honestly lies on the amber;
+ *  • blue dots: the sampled values; green dots: what each one stores (on the
+ *    green trace); red: the rounding error, the gap between them.
+ * `errorOnly` hides the signal and shows (original − quantized) alone,
+ * vertically zoomed ×2^N (±Δ/2 fills the panel; clipping error near 0 dBFS is
+ * clamped at the frame edge), with the sample instants' errors as dots.
  */
 export function QuantView({
   width: fullW,
@@ -103,6 +109,7 @@ export function QuantView({
   levelDb,
   errorOnly,
   height: fullH = 184,
+  onGridMode,
 }: {
   width: number;
   bits: number;
@@ -110,6 +117,8 @@ export function QuantView({
   levelDb: number;
   errorOnly: boolean;
   height?: number;
+  /** Told whenever the level grid switches between single lines and a band. */
+  onGridMode?: (mode: QuantGridMode) => void;
 }) {
   // FULL SCREEN (D35): the grid, dots, whiskers and glows are laid out at
   // the glass size and painted through a scaled Group, so the whole picture
@@ -117,151 +126,163 @@ export function QuantView({
   const ts = useStageTextScale();
   const width = fullW / ts;
   const H = fullH / ts;
+  const padX = 10;
+  const midY = H / 2;
+  const ampPx = H / 2 - 16;
+  // One step on SCREEN is the full-scale span (2·ampPx, zoomed by ts) / 2^N.
+  const gridMode = quantGridMode(bits, 2 * ampPx * ts);
+  useEffect(() => {
+    onGridMode?.(gridMode);
+  }, [gridMode, onGridMode]);
+
   const geo = useMemo(() => {
-    const padX = 10;
     const innerW = width - padX * 2;
-    const midY = H / 2;
-    const ampPx = H / 2 - 16;
-    const amp = Math.pow(10, levelDb / 20);
-    const half = Math.pow(2, bits - 1);
-    const step = 1 / half; // Δ, in units of full-scale peak
     const yOf = (v: number) => midY - v * ampPx;
     const xOf = (t: number) => padX + t * innerW; // t 0..1
-    const cycles = 2;
-    const sig = (t: number) => amp * Math.sin(2 * Math.PI * cycles * t);
 
-    // Level grid — REAL code lines at k/2^(N−1).
+    // Level grid — the REAL code lines (only when they can be drawn apart).
     const levelLines = Skia.Path.Make();
-    const drawIndividual = bits <= 4;
-    if (drawIndividual) {
-      for (let k = -half; k <= half - 1; k++) {
-        const y = yOf(k / half);
-        levelLines.moveTo(padX, y);
-        levelLines.lineTo(width - padX, y);
-      }
-    } else {
-      // Fine ruled band: the steps are finer than these rules (host badges it).
-      for (let y = midY - ampPx; y <= midY + ampPx; y += 3.5) {
+    if (gridMode === 'lines') {
+      for (const v of quantLevelValues(bits)) {
+        const y = yOf(v);
         levelLines.moveTo(padX, y);
         levelLines.lineTo(width - padX, y);
       }
     }
+    // Full scale: ±1, where the axis ends (the top code sits a step below it).
+    const fsRails = Skia.Path.Make();
+    for (const v of [1, -1]) {
+      fsRails.moveTo(padX, yOf(v));
+      fsRails.lineTo(width - padX, yOf(v));
+    }
 
     // Continuous original signal (dense).
-    const M = 192;
+    const M = 256;
     const sigPath = Skia.Path.Make();
     for (let i = 0; i <= M; i++) {
       const t = i / M;
-      const y = yOf(sig(t));
+      const y = yOf(quantSine(t, levelDb));
       if (i === 0) sigPath.moveTo(xOf(t), y);
       else sigPath.lineTo(xOf(t), y);
     }
 
-    // Samples → stored (rounded) values → whiskers → reconstruction.
-    const NS = 23;
+    // GREEN: the original rounded to the levels at every instant — flat runs
+    // ON the level lines, a one-level riser exactly where the original crosses
+    // a decision threshold. Amplitude rounding only, never a hold in time.
+    const stored = Skia.Path.Make();
+    quantStaircase(bits, levelDb).forEach((r, i) => {
+      const yq = yOf(r.q);
+      if (i === 0) stored.moveTo(xOf(r.t0), yq);
+      else stored.lineTo(xOf(r.t0), yq);
+      stored.lineTo(xOf(r.t1), yq);
+    });
+
+    // Samples (blue) → each one's stored level (green dot, ON the green
+    // trace) → the rounding error between them (red whisker).
+    const samples = quantSamples(bits, levelDb);
     const origDots = Skia.Path.Make();
     const quantDots = Skia.Path.Make();
     const whiskers = Skia.Path.Make();
-    const qx: number[] = [];
-    const qy: number[] = [];
-    for (let i = 0; i < NS; i++) {
-      const t = i / (NS - 1);
-      const x = xOf(t);
-      const v = sig(t);
-      const q = quantizeNorm(v, bits);
-      const yv = yOf(v);
-      const yq = yOf(q);
+    for (const s of samples) {
+      const x = xOf(s.t);
+      const yv = yOf(s.v);
+      const yq = yOf(s.q);
       origDots.addCircle(x, yv, 2.2);
-      quantDots.addCircle(x, yq, 2.7);
+      quantDots.addCircle(x, yq, 2.6);
       if (Math.abs(yq - yv) >= 0.75) {
         whiskers.moveTo(x, yv);
         whiskers.lineTo(x, yq);
       }
-      qx.push(x);
-      qy.push(yq);
     }
-    const recon = smoothThrough(qx, qy);
 
     // ERROR ONLY: e(t) = original − quantized, drawn zoomed so ±Δ/2 fills the
     // panel (vertical zoom ×2^N). Clipping error (only near 0 dBFS at the last
     // code) is clamped to the frame — the host caption owns the zoom honesty.
-    const eScale = ampPx / (step / 2);
+    const eScale = ampPx / (quantStep(bits) / 2);
+    const eY = (e: number) => midY - Math.max(-ampPx, Math.min(ampPx, e * eScale));
     const errPath = Skia.Path.Make();
     const errFill = Skia.Path.Make();
     errFill.moveTo(xOf(0), midY);
     for (let i = 0; i <= M; i++) {
       const t = i / M;
-      const v = sig(t);
-      const e = v - quantizeNorm(v, bits);
-      const y = midY - Math.max(-ampPx, Math.min(ampPx, e * eScale));
+      const v = quantSine(t, levelDb);
+      const y = eY(v - quantizeNorm(v, bits));
       if (i === 0) errPath.moveTo(xOf(t), y);
       else errPath.lineTo(xOf(t), y);
       errFill.lineTo(xOf(t), y);
     }
     errFill.lineTo(xOf(1), midY);
     errFill.close();
+    const errDots = Skia.Path.Make();
+    for (const s of samples) errDots.addCircle(xOf(s.t), eY(s.v - s.q), 2.4);
 
-    return { padX, midY, ampPx, levelLines, drawIndividual, sigPath, origDots, quantDots, whiskers, recon, errPath, errFill };
-  }, [width, bits, levelDb, H]);
+    return { levelLines, fsRails, sigPath, origDots, quantDots, whiskers, stored, errPath, errFill, errDots };
+  }, [width, bits, levelDb, gridMode, midY, ampPx]);
 
-  const { padX, midY, ampPx, levelLines, drawIndividual, sigPath, origDots, quantDots, whiskers, recon, errPath, errFill } = geo;
+  const { levelLines, fsRails, sigPath, origDots, quantDots, whiskers, stored, errPath, errFill, errDots } = geo;
 
   return (
-    <Canvas style={{ width: fullW, height: fullH, backgroundColor: BG, borderRadius: 8 }}>
-      <Group transform={[{ scale: ts }]}>
-      {/* Zero / midline (both views). */}
-      <SkLine p1={{ x: padX, y: midY }} p2={{ x: width - padX, y: midY }} color="#3a3a42" strokeWidth={1} />
-      {errorOnly ? (
-        <Group>
-          {/* ±Δ/2 frame — the whole vertical range in this zoomed view. */}
-          <SkLine p1={{ x: padX, y: midY - ampPx }} p2={{ x: width - padX, y: midY - ampPx }} color={GRID} strokeWidth={1} />
-          <SkLine p1={{ x: padX, y: midY + ampPx }} p2={{ x: width - padX, y: midY + ampPx }} color={GRID} strokeWidth={1} />
-          <Path path={errFill} opacity={0.9}>
-            <LinearGradient
-              start={vec(0, midY - ampPx)}
-              end={vec(0, midY + ampPx)}
-              colors={['rgba(255,107,94,0.30)', 'rgba(255,107,94,0.05)', 'rgba(255,107,94,0.30)']}
-              positions={[0, 0.5, 1]}
-            />
-          </Path>
-          <Path path={errPath} color={ACCENT_RED} style="stroke" strokeWidth={4} opacity={0.28}>
-            <BlurMask blur={5} style="normal" />
-          </Path>
-          <Path path={errPath} color={ACCENT_RED} style="stroke" strokeWidth={1.7} />
-        </Group>
-      ) : (
-        <Group>
-          {/* Level grid — individual code lines ≤4 bits, fine ruled band above. */}
-          {!drawIndividual ? (
-            <Rect x={padX} y={midY - ampPx} width={width - padX * 2} height={ampPx * 2}>
+    <View style={{ width: fullW, height: fullH }}>
+      <Canvas style={{ width: fullW, height: fullH, backgroundColor: BG, borderRadius: 8 }}>
+        <Group transform={[{ scale: ts }]}>
+        {/* Zero / midline (both views). */}
+        <SkLine p1={{ x: padX, y: midY }} p2={{ x: width - padX, y: midY }} color="#3a3a42" strokeWidth={1} />
+        {errorOnly ? (
+          <Group>
+            {/* ±Δ/2 frame — the whole vertical range in this zoomed view. */}
+            <SkLine p1={{ x: padX, y: midY - ampPx }} p2={{ x: width - padX, y: midY - ampPx }} color={GRID} strokeWidth={1} />
+            <SkLine p1={{ x: padX, y: midY + ampPx }} p2={{ x: width - padX, y: midY + ampPx }} color={GRID} strokeWidth={1} />
+            <Path path={errFill} opacity={0.9}>
               <LinearGradient
                 start={vec(0, midY - ampPx)}
                 end={vec(0, midY + ampPx)}
-                colors={['rgba(111,168,255,0.07)', 'rgba(111,168,255,0.02)', 'rgba(111,168,255,0.07)']}
+                colors={['rgba(255,107,94,0.30)', 'rgba(255,107,94,0.05)', 'rgba(255,107,94,0.30)']}
                 positions={[0, 0.5, 1]}
               />
-            </Rect>
-          ) : null}
-          <Path path={levelLines} color={GRID} style="stroke" strokeWidth={1} opacity={drawIndividual ? 0.9 : 0.35} />
-          {/* Original continuous signal — amber, glow + crisp. */}
-          <Path path={sigPath} color={WAVE} style="stroke" strokeWidth={5} opacity={0.22}>
-            <BlurMask blur={6} style="normal" />
-          </Path>
-          <Path path={sigPath} color={WAVE} style="stroke" strokeWidth={1.8} />
-          {/* Reconstructed-result trace through the STORED values. */}
-          <Path path={recon} color={ACCENT_GREEN} style="stroke" strokeWidth={3.4} opacity={0.2}>
-            <BlurMask blur={4} style="normal" />
-          </Path>
-          <Path path={recon} color={ACCENT_GREEN} style="stroke" strokeWidth={1.4} opacity={0.95} />
-          {/* Error whiskers: original → stored. */}
-          <Path path={whiskers} color={ACCENT_RED} style="stroke" strokeWidth={1.3} opacity={0.9} />
-          {/* Sampled points (blue) and rounded stored values (green). */}
-          <Path path={origDots} color={ACCENT_BLUE} opacity={0.95} />
-          <Path path={quantDots} color={ACCENT_GREEN} />
+            </Path>
+            <Path path={errPath} color={ACCENT_RED} style="stroke" strokeWidth={4} opacity={0.28}>
+              <BlurMask blur={5} style="normal" />
+            </Path>
+            <Path path={errPath} color={ACCENT_RED} style="stroke" strokeWidth={1.7} />
+            {/* The error each SAMPLE stores (the whiskers of the main view). */}
+            <Path path={errDots} color={ACCENT_RED} />
+          </Group>
+        ) : (
+          <Group>
+            {/* The quantizer's levels: every code line, or one shaded band
+                when they are too close to draw apart (no fake ruling). */}
+            {gridMode === 'band' ? (
+              <Rect x={padX} y={midY - ampPx} width={width - padX * 2} height={ampPx * 2} color="rgba(111,168,255,0.10)" />
+            ) : (
+              <Path path={levelLines} color={GRID} style="stroke" strokeWidth={1} opacity={0.95} />
+            )}
+            {/* Full scale (±1): the fixed vertical axis. */}
+            <Path path={fsRails} color="rgba(255,107,94,0.55)" style="stroke" strokeWidth={1}>
+              <DashPathEffect intervals={[5, 4]} />
+            </Path>
+            {/* Original continuous signal — amber, glow + crisp. */}
+            <Path path={sigPath} color={WAVE} style="stroke" strokeWidth={4} opacity={0.2}>
+              <BlurMask blur={5} style="normal" />
+            </Path>
+            <Path path={sigPath} color={WAVE} style="stroke" strokeWidth={1.6} />
+            {/* STORED LEVELS: the original rounded at every instant. */}
+            <Path path={stored} color={ACCENT_GREEN} style="stroke" strokeWidth={3.2} opacity={0.18}>
+              <BlurMask blur={3} style="normal" />
+            </Path>
+            <Path path={stored} color={ACCENT_GREEN} style="stroke" strokeWidth={1.7} strokeJoin="miter" opacity={0.95} />
+            {/* Rounding error: sampled value → stored level. */}
+            <Path path={whiskers} color={ACCENT_RED} style="stroke" strokeWidth={2} opacity={0.95} />
+            {/* Sampled points (blue) and rounded stored values (green). */}
+            <Path path={quantDots} color={ACCENT_GREEN} />
+            <Path path={origDots} color={ACCENT_BLUE} opacity={0.95} />
+          </Group>
+        )}
         </Group>
+      </Canvas>
+      {errorOnly ? null : (
+        <SText style={[vstyles.fsTag, { right: padX, top: midY - ampPx - 13 }]}>0 dBFS</SText>
       )}
-      </Group>
-    </Canvas>
+    </View>
   );
 }
 
@@ -651,5 +672,7 @@ export function BitDotStrip({ width, value }: { width: number; value: number }) 
 }
 
 const vstyles = StyleSheet.create({
+  // QuantView's full-scale tag, above the top rail (glass units; SText zooms it).
+  fsTag: { position: 'absolute', fontFamily: fonts.mono, fontSize: 9, color: 'rgba(255,107,94,0.85)' },
   stripLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, lineHeight: D_LABEL_H, letterSpacing: 1.1, color: colors.textSub },
 });

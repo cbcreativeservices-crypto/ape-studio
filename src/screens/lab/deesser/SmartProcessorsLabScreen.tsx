@@ -43,7 +43,8 @@ type Nav = NativeStackNavigationProp<RootStackParamList>;
  *   Ducking & Auto-Mixing One signal deciding the level of another.
  */
 const FAMILY: { name: string; blurb: string; route?: keyof RootStackParamList }[] = [
-  { name: 'De-Esser & Sibilance Control', blurb: 'A compressor that listens only to the hiss — detection path, threshold, frequency, range, broadband vs split-band, and what over-doing it sounds like.', route: 'DeEsserLab' },
+  // DES-04 (owner 2026-11-15: "build waves 1 thru 3", D62): one plain line, not a list of topics.
+  { name: 'De-Esser & Sibilance Control', blurb: 'It softens the hissy S sounds in a voice, and only those.', route: 'DeEsserLab' },
 ];
 
 export function SmartProcessorsLabScreen() {
@@ -66,7 +67,8 @@ export function SmartProcessorsLabScreen() {
       </View>
       </ScreenGuideHintAnchor>
       <ScrollView contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + 24 }]}>
-        <Text style={styles.lead}>Ordinary processors do what their knobs say. Smart processors listen first, decide, then act — and every one of them is built from the same few ideas: a detector, a threshold, a gain computer, and a choice of what to change.</Text>
+        {/* DES-03 (owner 2026-11-15, D62): plain words instead of "a gain computer". */}
+        <Text style={styles.lead}>Ordinary processors do what their knobs say. Smart processors listen first: a detector and a threshold decide when to turn the sound down, and by how much.</Text>
         {FAMILY.map((f) => (
           <Pressable
             key={f.name}
@@ -81,15 +83,18 @@ export function SmartProcessorsLabScreen() {
             <View style={{ flex: 1, gap: 3 }}>
               <View style={styles.nameRow}>
                 <Text style={[styles.rowName, !f.route && { color: colors.textMuted }]}>{f.name}</Text>
-                {/* Open state carried by a tag as well as the border colour (not colour alone). */}
-                {f.route ? <Text style={styles.openTag}>OPEN</Text> : null}
               </View>
               <Text style={styles.rowBlurb}>{f.blurb}</Text>
               {!f.route ? <Text style={styles.devNote}>{DEV_NOTE}</Text> : null}
             </View>
-            {f.route ? <Text style={styles.chev}>›</Text> : null}
+            {/* DES-04 (owner 2026-11-15, D62): the small green OPEN tag read like a
+                status; one START › replaces it and the bare › chevron. */}
+            {f.route ? <Text style={styles.start}>START ›</Text> : null}
           </Pressable>
         ))}
+        {/* DES-02 (owner 2026-11-15, D62): the check is labeled for after the lab,
+            so a beginner does not answer it before doing the lesson. */}
+        <Text style={styles.afterLabel}>AFTER THE DE-ESSER LAB</Text>
         {/* Certificate credit (owner 2026-10-13): renders only once questions are authored. */}
         <LabUnderstandingBlock labId="smart-processors" labTitle="Smart Processors Lab" />
       </ScrollView>
@@ -110,8 +115,8 @@ const styles = StyleSheet.create({
   rowPlanned: { borderColor: colors.hairline, backgroundColor: '#0f0f11' },
   nameRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   rowName: { color: colors.textPrimary, fontFamily: fonts.oswaldMedium, fontSize: 14, letterSpacing: 0.4, flexShrink: 1 },
-  openTag: { color: colors.green, fontFamily: fonts.oswaldMedium, fontSize: 9.5, letterSpacing: 1.5, borderWidth: 1, borderColor: colors.green, borderRadius: 4, paddingHorizontal: 5, paddingVertical: 1 },
+  start: { color: colors.green, fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.2, borderWidth: 1, borderColor: colors.green, borderRadius: 6, paddingHorizontal: 10, paddingVertical: 6 },
+  afterLabel: { color: colors.textSub, fontFamily: fonts.oswaldMedium, fontSize: 11, letterSpacing: 1.5, marginTop: 16, marginBottom: -12 },
   rowBlurb: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17 },
   devNote: { color: colors.textMuted, fontFamily: fonts.barlowMedium, fontSize: 11, marginTop: 2 },
-  chev: { color: colors.green, fontSize: 24, paddingHorizontal: 4 },
 });

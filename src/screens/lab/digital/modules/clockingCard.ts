@@ -49,6 +49,8 @@ export const CLOCKING_CHECK: {
   question: string;
   options: string[];
   correctIdx: number;
+  /** A wrong option's own reason, by authored index (CheckSpec.why; phase 2). */
+  why?: Record<number, string>;
   reveal: string;
   wrongHint: string;
 } = {
@@ -59,6 +61,10 @@ export const CLOCKING_CHECK: {
     'Nothing different — the cable sorts it out',
   ],
   correctIdx: 1,
+  why: {
+    0: 'Two masters means two clocks drifting apart; the samples stop lining up.',
+    2: 'A cable carries the clock; it cannot decide which device is in charge.',
+  },
   reveal:
     'Two masters means two clocks that slowly drift apart. Samples get dropped or repeated, so you hear clicks, pops or dropouts. Pick one master, and set every other device to follow it at the same sample rate.',
   wrongHint: 'Think of two clocks that never quite agree. What happens to the samples passed between them?',

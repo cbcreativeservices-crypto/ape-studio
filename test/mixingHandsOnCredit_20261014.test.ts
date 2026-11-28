@@ -56,9 +56,18 @@ describe('#16 every Mixing page is hands-on: it marks ITSELF, NEXT never does', 
   });
   it('the what’s-left screen says why an un-done hands-on page is still listed', () => {
     const shell = read('src/screens/lab/kit/PagedLab.tsx');
-    assert.match(shell, /\{ id: String\(i\), label: p\.title, \.\.\.\(handsOnDetail && p\.manualDone \? \{ detail: handsOnDetail \} : null\) \}/);
+    // Lab fix round 2026-11-14 (S2, quick win 17), owner approval: "Begin fixing
+    // all bugs found and do obvious ... fixes as you suggested in the report".
+    // The shared HANDS_ON_DETAIL is now said ONCE above the list (howItCounts),
+    // and a row names its own missing piece only through the lab's pageDetail —
+    // Beginning Mixing printed the full sentence under all 13 rows.
+    assert.match(shell, /: \{ id: String\(i\), label: p\.title \},/);
+    // Owner decision 3 (quick pick, 2026-11-14): "One name per unit of progress in each lab … used everywhere" — PagedLab's end screen takes the lab's unitNoun (default module), never a fixed "page".
+    assert.match(shell, /leftPages\.some\(\(p\) => p\.manualDone\) \? handsOnDetail \?\? pageTaskRule\(unitNoun\) : null,/);
+    assert.match(shell, /howItCounts=\{howItCounts\}/);
     const kit = read('src/screens/lab/mixing/kit.tsx');
-    assert.match(kit, /export const HANDS_ON_DETAIL = 'This page counts as done once the goals at the foot of the page are met\. NEXT moves on without counting it\.';/);
+    // Pinned wording moved on purpose (owner 2026-11-14: "Begin fixing all bugs found and do obvious (my decision is not required) fixes as you suggestted in the report"; checker C2): the rule says goals must be met in ONE visit.
+    assert.match(kit, /export const HANDS_ON_DETAIL = 'A page counts once all its goals are met in one visit; leaving a page before then clears its marks\. NEXT moves on without counting it\.';/);
     for (const s of ['BeginningMixingLabScreen', 'AdvancedMixingLabScreen']) {
       assert.match(read(`src/screens/lab/mixing/${s}.tsx`), /pageCreditKeys=\{PAGE_KEYS\} handsOnDetail=\{HANDS_ON_DETAIL\} \/>/);
     }

@@ -15,6 +15,15 @@ import { BONGO_DIMS as D, HEMBRA, MACHO } from './model.ts';
 import { BONGO_MODEL, LEGS, STAND } from './geometry.ts';
 import { FigureMass, limb } from '../shared/players/PlayerFigure';
 import { pt } from '../shared/players/playerPose';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+import { castFor } from '../shared/figureV2/cast';
+import { Form } from '../shared/figureV2/paint';
+
+/** (cast figures 2026-11-26) the legs in the approved look: the cast member who plays the hand drums on the
+ *  lesson's Setting plan (Kofi), his own trousers and shoes, painted by the figure's own paint (Form). */
+export const V2 = figureV2On('sidePlayers');
+export const BONGO_PLAYER = castFor('plan.handDrums');
+type Axis = [{ u: number; v: number }, { u: number; v: number }];
 
 const RODS = D.lugs.mm;
 
@@ -45,9 +54,9 @@ function Block({ view }: { view: ViewId }) {
  *  NEAR leg stands in front of the drums: it is drawn as a PHANTOM — its
  *  outline in a dashed line, the technical illustrator's cut-away — so the
  *  shells and the open lower ends stay in view, never a see-through limb. */
-function Legs({ view, which, phantom = false }: { view: ViewId; which: 'L' | 'R' | 'both'; phantom?: boolean }) {
+function Legs({ view, which, phantom = false, v2 = V2 }: { view: ViewId; which: 'L' | 'R' | 'both'; phantom?: boolean; v2?: boolean }) {
   const masses = useMemo(() => {
-    const out: { path: ReturnType<typeof Skia.Path.Make>; tone: 'trousers' | 'shoe' }[] = [];
+    const out: { path: ReturnType<typeof Skia.Path.Make>; tone: 'trousers' | 'shoe'; axis: Axis; w: number }[] = [];
     const sides = which === 'both' ? (['L', 'R'] as const) : ([which] as const);
     for (const sd of sides) {
       const th = LEGS[sd === 'L' ? 'thighL' : 'thighR'];
@@ -58,17 +67,20 @@ function Legs({ view, which, phantom = false }: { view: ViewId; which: 'L' | 'R'
         const hip = pt(th.min.x + 70, tv + 4);
         const knee = pt(th.max.x - 14, tv);
         const ankle = pt((sh.min.x + sh.max.x) / 2 - 10, sh.max.y - 92);
-        out.push({ path: limb([hip, knee, ankle], [82, 62, 40]), tone: 'trousers' });
+        out.push({ path: limb([hip, knee, ankle], [82, 62, 40]), tone: 'trousers', axis: [hip, knee], w: 72 });
         // The shoe: the heel under the ankle, the toe forward, the sole on the floor.
         const f = pt(ankle.u + 40, sh.max.y);
         const P = (x: number, y: number) => pt(f.u + x, f.v + y);
-        out.push({ path: smoothPath([P(-96, -2), P(-100, -64), P(-44, -92), P(40, -62), P(140, -34), P(150, -4)]), tone: 'shoe' });
+        out.push({ path: smoothPath([P(-96, -2), P(-100, -64), P(-44, -92), P(40, -62), P(140, -34), P(150, -4)]), tone: 'shoe', axis: [P(-100, -40), P(150, -40)], w: 46 });
       } else {
         const tz = (th.min.z + th.max.z) / 2;
         // From above: the shoe's toe past the knee, then the thigh over it.
         const toe = pt(sh.max.x + 120, tz);
-        out.push({ path: limb([pt(sh.max.x - 40, tz), toe], [44, 40]), tone: 'shoe' });
-        out.push({ path: limb([pt(th.min.x + 70, tz), pt(th.max.x - 14, tz)], [82, 64]), tone: 'trousers' });
+        const heel = pt(sh.max.x - 40, tz);
+        out.push({ path: limb([heel, toe], [44, 40]), tone: 'shoe', axis: [heel, toe], w: 42 });
+        const hipT = pt(th.min.x + 70, tz);
+        const kneeT = pt(th.max.x - 14, tz);
+        out.push({ path: limb([hipT, kneeT], [82, 64]), tone: 'trousers', axis: [hipT, kneeT], w: 72 });
       }
     }
     return out;
@@ -80,6 +92,16 @@ function Legs({ view, which, phantom = false }: { view: ViewId; which: 'L' | 'R'
           <Path key={i} path={m.path} style="stroke" strokeWidth={3} color="#9aa0ab" opacity={0.8}>
             <DashPathEffect intervals={[18, 12]} />
           </Path>
+        ))}
+      </Group>
+    );
+  }
+  if (v2) {
+    const { MAT, CLOTH } = BONGO_PLAYER.look;
+    return (
+      <Group>
+        {masses.map((m, i) => (
+          <Form key={i} path={m.path} mat={m.tone === 'shoe' ? MAT.leather : CLOTH} axis={m.axis} w={m.w} rim={4} />
         ))}
       </Group>
     );

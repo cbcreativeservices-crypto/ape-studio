@@ -4,6 +4,7 @@
  * side-fill monitor).
  */
 import type { LessonArt } from '../../engine/scene/sceneTypes.ts';
+import { figureV2On } from '../shared/figureV2/figureV2Config.ts';
 import { makeLuteArt } from '../shared/lutes/LuteArt';
 import { LUTE_SOUND_STEPS, makeLuteSoundPage } from '../shared/lutes/LuteSound';
 import { makeLutePlanPage } from '../shared/lutes/LutePlan';
@@ -15,7 +16,7 @@ export const C15_ART: LessonArt = {
   ...makeLuteArt(C15_BUILT),
   pages: {
     sound: makeLuteSoundPage(C15_BUILT),
-    setting: makeLutePlanPage(C15_BUILT, { plan: LUTE_PLANS.C15, hearing: LUTE_HEARING }),
+    setting: makeLutePlanPage(C15_BUILT, { plan: LUTE_PLANS.C15, hearing: LUTE_HEARING, v2: figureV2On('familyLutes') }),
   },
   stepCounts: { sound: LUTE_SOUND_STEPS(C15_BUILT.scene), setting: 3 },
 };

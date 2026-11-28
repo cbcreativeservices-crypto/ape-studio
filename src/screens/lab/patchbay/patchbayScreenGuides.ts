@@ -55,16 +55,16 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   p1: {
     intro: {
       learning: 'What a patchbay is, and the one rule this lab builds on: signal leaves gear on the top row and enters gear on the bottom row.',
-      start: 'Read the cards from the top down. Say THE PATCHBAY MANTRA aloud, then tap NEXT at the end to meet your first pair.',
+      start: 'Look at the bay first: OUT on top, IN below. Read the cards from the top down, say THE PATCHBAY MANTRA aloud, then tap NEXT at the end to meet your first pair.',
     },
     seeing: [
-      'These cards set the one rule every bay in this lab follows. There’s nothing to patch yet.',
-      'TOP ROW = SOURCES · OUTPUTS: where signal leaves gear. BOTTOM ROW = DESTINATIONS · INPUTS: where signal enters gear.',
+      'The picture is a real studio bay, its first 8 pairs, with the top row marked OUT and the bottom row IN. There’s nothing to patch yet.',
+      'WHAT PLUGS INTO EACH ROW opens TOP ROW = SOURCES · OUTPUTS (signal leaves gear) and BOTTOM ROW = DESTINATIONS · INPUTS (signal enters gear).',
       'Read “Signal falls downhill. Top → Bottom.”, then the four questions every pair asks, and THE PATCHBAY MANTRA.',
     ],
     control: [
       'This page is for reading. Scroll down, then tap NEXT at the end.',
-      'The strip under the title moves you around the lab: ⏮ goes back to the first page, and ‹ PREV and NEXT › step one page. The readout in the middle (MODULE, with the page number and ▾) opens a list of every page. The strip calls each page a MODULE.',
+      'The strip under the title moves you around the lab: ⏮ goes back to the first page, and ‹ PREV and NEXT › step one page. The readout in the middle (PAGE and its number, with ▾) opens a list of every page.',
       'On later pages you’ll find a display on top, readouts on its frame and controls in the dock at the bottom.',
       'Tap ⓘ beside any page’s title to have that page explained.',
     ],
@@ -257,7 +257,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   p7: {
     intro: {
       learning: 'A half-normal pair starts out exactly like full-normal. Here you predict, then test, what a plug in each jack does to its normal.',
-      start: 'Answer PREDICT BEFORE PATCHING first; the jacks stay locked until you do. Then turn on TOP JACK and read NORMAL, DEST HEARS and the status line.',
+      start: 'Answer PREDICT BEFORE PATCHING first; the jacks unlock once you pick, right or wrong. Then turn on TOP JACK and read NORMAL, DEST HEARS and the status line.',
     },
     seeing: [
       'The same pair and labels, now HALF-NORMALLED. It starts exactly like full-normal: NORMAL INTACT, DEST HEARS SOURCE.',
@@ -265,9 +265,9 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'The dock stays empty and the jacks do nothing until your prediction is in.',
     ],
     control: [
-      'Answer PREDICT BEFORE PATCHING. The right answer unlocks TOP JACK and BOTTOM JACK, in the dock and on the drawing.',
-      'Goal chips: PREDICT IT (answer below) and THEN DO IT (patch the top). You need both to finish the page.',
-      'A wrong answer explains itself, and you try again.',
+      'Answer PREDICT BEFORE PATCHING. Any answer unlocks TOP JACK and BOTTOM JACK, in the dock and on the drawing, so you can test your guess.',
+      'Goal chips: PREDICT IT (answer above) and THEN DO IT (patch the top). You need both to finish the page.',
+      'A wrong answer explains itself; test it on the jacks, or pick again.',
     ],
     changes: [
       'Once your prediction is in, patch the TOP and read NORMAL and DEST HEARS: they show whether this bay’s top jack opens the normal.',
@@ -359,7 +359,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     control: [
       'Read the table, then answer the check about feeding a tuner. Wrong answers explain themselves; the right one completes the page.',
-      'Come back any time: tap the readout in the middle of the strip (MODULE, with ▾) on any page and pick this page from the list.',
+      'Come back any time: tap the readout in the middle of the strip (PAGE, with ▾) on any page and pick this page from the list.',
     ],
     changes: [
       'The three wirings differ in one thing only: when the normal survives a plug.',
@@ -441,10 +441,10 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     },
     seeing: [
       'This page closes part one. One card answers the four questions from the first page: the source, the destination, the path with no cord, and what changes when you plug in.',
-      'Below it: THE PATCHBAY MANTRA, SOURCES BEHIND THIS LAB, and PART TWO STARTS ON THE NEXT PAGE.',
+      'Below it: THE PATCHBAY MANTRA, GOOD PLACE TO STOP, SOURCES BEHIND THIS LAB (folded) and PART TWO STARTS ON THE NEXT PAGE.',
     ],
     control: [
-      'There’s nothing to patch or answer here. Read the card, then tap NEXT to start part two; leaving with NEXT also marks this page done.',
+      'There’s nothing to patch or answer here. Read the card, then tap NEXT to start part two; leaving with NEXT also marks this page done. STOP HERE · BACK TO THE LABS › leaves without marking it.',
     ],
     changes: [
       'Nothing moves on this page. It pulls part one together: source on top, destination below, the normal between them, and what a plug in each jack does to it.',
@@ -472,7 +472,7 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'Below them, read the row legend and the status line, and light the three goal chips.',
     ],
     control: [
-      'Ride the PAIR fader through 01–08, or tap it to pick a pair by name. Tapping a column on the bay selects it too.',
+      'Slide the PAIR fader through 01–08, or tap it to pick a pair by name. Tapping a column on the bay selects it too.',
       'TOP JACK and BOTTOM JACK patch the selected pair. Each pair you select starts with empty jacks.',
       'Goal chips: VISIT 4 PAIRS, FIND THE 2 THRU PAIRS and PATCH SOMETHING. Light all three to complete the page.',
     ],
@@ -782,11 +782,11 @@ export const PATCHBAY_SCREEN_GUIDES: Record<string, ScreenGuide> = {
 export const PATCHBAY_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'A review of the lab’s core idea: every pair’s behavior comes down to when its normal survives a plug, whether it is wired thru, full-normal or half-normal.',
-    start: 'Tap any page still listed to open it and finish its task. Or tap REVIEW ▾ and reopen a page you found hard, such as Patchbay detective.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
-    'Use this page to see where you are in the lab. The title reads WHAT’S LEFT, or LAB COMPLETE once you’ve finished every page.',
-    'Each page you still have to do is listed by its number and name.',
+    'The title reads WHAT’S LEFT, or LAB COMPLETE once you’ve finished every page.',
+    'Each page you still have to do is listed by its number and name, with a line naming what is still missing on it.',
     'Finished pages fold into one ✓ CREDITED line (✓ DONE if you’re not signed in).',
     'If your saved progress can’t be read, the title reads YOUR PROGRESS, and you can still open every page.',
   ],

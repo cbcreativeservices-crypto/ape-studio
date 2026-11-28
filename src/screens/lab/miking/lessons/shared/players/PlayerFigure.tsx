@@ -1670,7 +1670,7 @@ function buildAbove(pose: PlayerPose): Built {
   // the ball, the toe a little narrower.
   // The toes turn out a little (≈ 8° each), as a relaxed stance does.
   const shoes = [pose.footR, pose.footL].map((f, i) => {
-    const th = i === 0 ? 0.14 : -0.14; // R (−u) outward toward −u, L toward +u
+    const th = i === 0 ? 0.14 : pose.shoeL?.yaw ?? -0.14; // R (−u) outward toward −u, L toward +u (or along its pedal)
     const c = Math.cos(th);
     const sn = Math.sin(th);
     const P = (du: number, dv: number) => pt(f.u + du * c - dv * sn, f.v + du * sn + dv * c);
@@ -1776,18 +1776,32 @@ function buildSide(pose: PlayerPose): Built {
     0.5,
   );
   const seated = pose.posture !== 'standing';
-  const ankle = (foot: Pt) => pt(foot.u - f * 40, foot.v - 70);
-  const leg = (h: Pt, k: Pt, foot: Pt) => limb([h, k, ankle(foot)], [BODY.thighR, seated ? BODY.kneeR : BODY.kneeR - 4, BODY.ankleR]);
-  const legFar = leg(pose.hipL, pose.kneeL, pose.footL);
+  // A foot frame: (du forward along the shoe, dv down) from the ball; the
+  // left shoe may be turned out of the picture (`along`) and set on a slope.
+  const footFrame = (foot: Pt, s?: PlayerPose['shoeL']) => {
+    const k = s?.along ?? 1;
+    const sg = s?.slope ?? 0;
+    const c = Math.cos(sg);
+    const sn = Math.sin(sg);
+    return (du: number, dv: number) => pt(foot.u + f * du * k * c + f * dv * sn, foot.v - du * k * sn + dv * c);
+  };
+  const ankleOf = (foot: Pt, s?: PlayerPose['shoeL']) => footFrame(foot, s)(-40, -70);
+  const ankle = (foot: Pt) => ankleOf(foot);
+  const leg = (h: Pt, k: Pt, a: Pt) => limb([h, k, a], [BODY.thighR, seated ? BODY.kneeR : BODY.kneeR - 4, BODY.ankleR]);
+  const legFar = leg(pose.hipL, pose.kneeL, ankleOf(pose.footL, pose.shoeL));
   // The PELVIS in the trousers (figure review 2026-10-08, owner on F04: the
   // shirt hung below the hips as a bulge and the seat read as a belly): the
   // shirt is tucked in at the belt, and below it one trouser mass — a FLAT
   // front no further forward than the thigh, the seat behind, the crotch
   // under — joined to the near leg, so the hips read the way the face looks.
   const pelvis = smooth([along(0.15, 92), along(0.02, 88), along(-0.1, 80), along(-0.17, 20), along(-0.16, -64), along(-0.06, -106), along(0.06, -112), along(0.15, -100)], 0.5);
-  const legNear = union(pelvis, leg(pose.hipR, pose.kneeR, pose.footR));
-  // Shoes in profile: the heel behind the ankle, the toe forward.
-  const shoe = (foot: Pt) => smooth([pt(foot.u - f * 96, foot.v - 2), pt(foot.u - f * 100, foot.v - 64), pt(foot.u - f * 44, foot.v - 92), pt(foot.u + f * 40, foot.v - 62), pt(foot.u + f * 140, foot.v - 34), pt(foot.u + f * 150, foot.v - 4)], 0.45);
+  const legNear = union(pelvis, leg(pose.hipR, pose.kneeR, ankle(pose.footR)));
+  // Shoes in profile: the heel behind the ankle, the toe forward (a turned
+  // shoe foreshortened along its length, its sole on its slope).
+  const shoe = (foot: Pt, s?: PlayerPose['shoeL']) => {
+    const F = footFrame(foot, s);
+    return smooth([F(-96, -2), F(-100, -64), F(-44, -92), F(40, -62), F(140, -34), F(150, -4)], 0.45);
+  };
   // The arms: tapered sleeves from each shoulder, cut square at the cuff.
   const armFar = sleeveArm(pose.shoulderL, pose.elbowL, pose.handL.wrist);
   // The near arm hangs from its DELTOID: in profile the shoulder is ≈ 110 mm
@@ -1881,7 +1895,7 @@ function buildSide(pose: PlayerPose): Built {
     front,
     shoes: [
       // Barefoot on the floor: the same foot, in skin.
-      { path: shoe(pose.footL), tone: pose.posture === 'floor' ? 'skin' : 'shoe', far: true },
+      { path: shoe(pose.footL, pose.shoeL), tone: pose.posture === 'floor' ? 'skin' : 'shoe', far: true },
       { path: shoe(pose.footR), tone: pose.posture === 'floor' ? 'skin' : 'shoe' },
     ],
     foldsBehind: [

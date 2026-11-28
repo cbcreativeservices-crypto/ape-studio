@@ -143,7 +143,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Hear the actual delivery: the quietest close phrase, the strongest note, a line full of consonants, a breathy line, the loudest chorus. One held note says nothing about the peaks or the pops.',
     why: {
       'Whether they are a male or a female voice': 'Gender alone does not choose a mic: the individual voice, the style and the room do.',
-      'A single held note, to set the input level': 'A polite held note hides the peaks and the consonants. Use the real song.',
+      'A single held note, to set the input level': 'A gentle held note hides the peaks and the consonants. Use the real song.',
     },
   },
   {
@@ -472,7 +472,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: where is the raw sound of a voice made?', options: ['In the chest', 'At the vocal folds in the throat', 'At the lips'], after: 'Now STEP through (or PLAY ONCE) and watch the breath, the folds, the throat and the mouth.' },
+  sound: { prompt: 'Before you step through: where is the raw sound of a voice made?', options: ['In the chest', 'At the vocal folds in the throat', 'At the lips'], after: 'Now go EVENT by EVENT (or PLAY ONCE) and watch the breath, the folds, the throat and the mouth.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move a screened mic from 25 cm to 15 cm on the mouth’s axis. What changes?', options: ['More low end', 'More room', 'It depends on this voice'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front of the singer. Where will a supercardioid aimed at the mouth reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },

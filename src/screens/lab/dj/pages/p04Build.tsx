@@ -27,11 +27,14 @@ import { AUDIO_PLUGS, POWERED, POWER_PLUGS, PLUGS, SPEAKERS, connect, deviceLive
 import type { BoothRender } from '../engine/djRender';
 import type { BoothMotion } from '../art/motion';
 import { soundCell, useBoothKit } from './shared';
+import { leftWord } from './fixGuards';
 
 const TERMS = [
   { term: 'Signal path', def: 'The route the music takes, stage by stage: player → cable → mixer input → channel → mix → output → speaker. When something is silent, you follow it until it stops.' },
   { term: 'Powered speaker', def: 'A speaker with its own amplifier inside: it takes a line-level signal and needs its own AC power. Many have an input switch (MIC/LINE): set LINE. Its level knob is set at its marked unity point.' },
   { term: 'Power sequencing', def: 'The order you switch things on and off: sources and mixer first, amplified speakers LAST (and off FIRST), so switching bangs never reach them.' },
+  // DJ-11: what the two step-1 paragraphs said, now one tap away (the step itself is two sentences)
+  { term: 'Balanced line', def: 'MASTER OUT (to the PA, the crowd) and BOOTH OUT (to the booth monitors, you): on this lab’s mixer both are balanced lines, whose inputs reject hum picked up equally on both wires, which matters on long runs.' },
   { term: 'Safety ground', def: 'The power plug’s safety connection (the ground pin). Never remove or tape it to cure hum — it is what protects people if a fault happens.' },
 ] as const;
 
@@ -106,7 +109,7 @@ function BuildMap({ w, h, booth, last, motion, flowMotion, flash, sel, justPatch
       frame={cable ? patchBox(follow) : MAP_FRAME}
       aspect={MAP_FRAME.w / MAP_FRAME.h}
       motion={motion}
-      a11y={`${cable ? `Close up on the ${PLUGS[sel].short} cable, from behind the booth.` : LOOK} ${audioOk} of 9 audio cables and ${powerOk} of 7 devices powered.${flash ? ` A speaker just flagged a ${flash.word.toLowerCase()}.` : ''}`}
+      a11y={`${cable ? `Close up on the ${PLUGS[sel].short} cable, from behind the booth.` : LOOK} ${9 - audioOk} audio cables still to plug in, ${powerOk} devices powered.${flash ? ` A speaker just flagged a ${flash.word.toLowerCase()}.` : ''}`}
       obstacles={cable ? [] : hard}
       obstaclesAt={cable ? undefined : titleAt}
       fill
@@ -133,6 +136,13 @@ function BuildMap({ w, h, booth, last, motion, flowMotion, flash, sel, justPatch
 }
 
 const LOOK = 'You are looking at the whole booth from BEHIND, the way you reach around to wire it, so it is mirrored. At the top, the room drawn at 1:5 scale: the PA speakers on their stands at the corners (PA L on your left: house left, the crowd’s left, as on screen 20), the table with deck B, the mixer, deck A, the headphones and the booth monitors. Below, at full size, everything you plug: each speaker’s input plate, the three rear panels, the mixer’s front edge with the headphone cable (it carries on up to the headphones) and the power strip.';
+
+/** DJ-11 (owner 2026-11-15: "build waves 1 thru 3", D62 adoption plan): step
+ *  1 was about 100 words of layout before the one idea of the screen. It is
+ *  two sentences now; the layout (scale, house left, the plates, which
+ *  output feeds what) moved to the screen guide. LOOK stays the drawing's
+ *  spoken description. */
+export const LOOK_SHORT = 'You are behind the booth, so left and right are swapped. Plug in the 9 audio cables and the power cords, then switch everything on with the speakers last.';
 
 function unbuilt(b: Booth): Booth {
   const plugs = { ...b.plugs };
@@ -242,8 +252,8 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
       spec={{
         render: (w, h) => <BuildMap w={w} h={h} booth={booth} last={last} motion={motion} flowMotion={audio.flowMotion} flash={flash} sel={selPlug} justPatched={justPatched} audioOk={audioOk} powerOk={powerOk} view={view} powerTask={powerTask} />,
         bezel: [
-          { k: 'CABLES', v: `${audioOk} / 9`, tint: audioOk === 9 ? colors.green : colors.amber },
-          { k: 'POWERED', v: `${powerOk} / 7`, tint: powerOk === 7 ? colors.green : colors.amber },
+          { k: 'CABLES', v: leftWord(audioOk, 9, 'ALL IN'), tint: audioOk === 9 ? colors.green : colors.amber },
+          { k: 'POWERED', v: `${powerOk} ON`, tint: powerOk === 7 ? colors.green : colors.amber },
           { k: 'PA L · R', v: `${paL ? '✓' : '—'} · ${paR ? '✓' : '—'}`, vA11y: `PA left ${paL ? 'playing' : 'silent'}, PA right ${paR ? 'playing' : 'silent'}`, tint: paL && paR ? colors.green : paL || paR ? colors.amber : colors.textSub },
           soundCell(audio),
         ],
@@ -252,7 +262,7 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
             kind: 'group',
             id: 'patch',
             label: 'PATCH',
-            valueLabel: `${audioOk}/9`,
+            valueLabel: leftWord(audioOk, 9, 'ALL IN'),
             render: () => (
               <View style={styles.tray}>
                 {/* the VIEW switch rides in the PATCH tray (six dock keys would crop at 390) */}
@@ -275,7 +285,7 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
               </View>
             ),
           },
-          { kind: 'group', id: 'power', label: 'POWER', valueLabel: `${powerOk}/7`, render: () => <PowerTray onEvent={onPower} lastEvent={lastPower} /> },
+          { kind: 'group', id: 'power', label: 'POWER', valueLabel: `${powerOk} ON`, render: () => <PowerTray onEvent={onPower} lastEvent={lastPower} /> },
           boothKey(booth, tr),
           {
             kind: 'action',
@@ -297,9 +307,7 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
       }}
     >
       <Step n={1}>
-        <Look>{LOOK}</Look>
-        <P>Each player’s AUDIO OUT goes to a mixer LINE input on an RCA pair (white left, red right); the mixer’s MASTER OUT feeds the PA (the crowd) and its BOOTH OUT the booth monitors (you) — on this lab’s mixer both are balanced lines, whose inputs reject hum picked up equally on both wires, which matters on long runs.</P>
-        <P>The headphones plug into the mixer’s front, and every powered device needs its own power cord.</P>
+        <Look>{LOOK_SHORT}</Look>
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
@@ -321,10 +329,10 @@ function PageBuild({ ctx }: { ctx: PageCtx }) {
           eyebrow="CHECK YOURSELF"
           question="The PA speakers are on. You switch the MIXER off. What can happen, and what is the safe habit?"
           options={[
-            'A loud thump through the PA — switch the speakers off first, and on last',
+            'A loud thump in the PA: speakers off first, on last',
             'Nothing — speakers ignore what is upstream',
             'The mixer saves the PA by muting itself, always',
-            'Only the booth monitors are affected',
+            'Only the booth monitors are affected by it',
           ]}
           correct={0}
           explain="An amplified speaker that is on will reproduce whatever bang a source makes as it switches. Speakers go on LAST and off FIRST, with the levels down, so nothing upstream can reach them while it switches."

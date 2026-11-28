@@ -147,8 +147,14 @@ describe('the Sound Safety gate is wired so it cannot be passed by accident', ()
   });
 
   it('dismissing is not accepting', () => {
-    // The scrim and the hardware back key must both decline, not accept.
-    assert.match(warning, /onRequestClose=\{close\}/);
-    assert.match(warning, /onPress=\{close\}[\s\S]{0,200}Close without enabling sound/);
+    // The hardware back key declines, never accepts. CHANGED 2026-11-14 (lab
+    // fix round S1; owner approval "Begin fixing all bugs found and do obvious
+    // ... fixes", report row 2: the sheet "never vanishes on its own"): a tap
+    // on the dim now does NOTHING — neither agreement nor dismissal — because
+    // a stray tap there closed the sheet and learners saw it vanish unasked.
+    assert.match(warning, /onRequestClose=\{decline\}/);
+    assert.match(warning, /const decline = useCallback\(\(\) => \{\s*if \(arming\(\)\) return;\s*noteSoundSafetyDeclined\(\);\s*close\(\);/);
+    assert.match(warning, /<Pressable style=\{StyleSheet\.absoluteFill\} onPress=\{\(\) => \{\}\} accessible=\{false\} \/>/);
+    assert.doesNotMatch(warning, /onPress=\{onAccept\}/, 'nothing but the ticked ACCEPT accepts');
   });
 });

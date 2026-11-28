@@ -41,7 +41,7 @@ const GOOSE: VoiceZoneSpec = {
   kind: 'trial',
   src: 'LESSON-B06',
   quote: 'One per seated talker where practical; bring the capsule toward the mouth, aim across the normal speaking arc, keep the base away from page turning and knocks (the lesson L12; PRACTICE)',
-  bandProv: ill('no source gives a distance: 20–30 cm round the proposal’s 25 cm drawing default; 10–35° below the mouth’s axis is the lab’s drawing'),
+  bandProv: ill('no source gives a distance: 20–30 cm around the proposal’s 25 cm drawing default; 10–35° below the mouth’s axis is the lab’s drawing'),
   distance: { min: 200, max: 300 },
   off: { min: 10, max: 35, toward: 'down', prov: ill('a little below the mouth’s line: 10–35° below the axis (the lab’s drawing)') },
   aimTol: 20,

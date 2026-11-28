@@ -186,6 +186,18 @@ export function modelArtPlan(model: InstrumentModel, variant: VariantId, withPla
   return out;
 }
 
+/**
+ * The art's footprint turned into the plan's frame when the lesson's model
+ * frame is turned a quarter from it (HandExtra.plan.turn 'xAcross', M04a
+ * 2026-11-22: the model's (x, z) is drawn at (u, v) = (z, −x)). Absent: the
+ * same ArtPlan, untouched (every other lesson). Pure.
+ */
+export function turnArtPlan(a: ArtPlan, turn: 'xAcross' | undefined): ArtPlan {
+  if (!turn) return a;
+  const r = (q: PlanRect): PlanRect => ({ u0: q.v0, u1: q.v1, v0: -q.u1, v1: -q.u0 });
+  return { foots: a.foots.map((f) => ({ ...f, r: r(f.r) })), keepClear: a.keepClear.map(r), head: a.head ? { u: a.head.v, v: -a.head.u } : null, facing: a.facing };
+}
+
 /** Things shown in a scene ('kit' = the band view: the always-there ones). */
 export function shownThings(things: readonly PlanThing[], scene: PlanScene): PlanThing[] {
   return things.filter((t) => t.scene === 'all' || (scene !== 'kit' && t.scene === scene));

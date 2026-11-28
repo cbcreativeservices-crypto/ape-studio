@@ -14,8 +14,8 @@
  *  • MiniConsole — fader/pan/mute/Ø strips with stepper controls (44 pt,
  *    screen-reader adjustable; steppers, not drags — WCAG 2.5.7).
  */
-import { useCallback, useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
-import { AccessibilityInfo, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect, useMemo, useRef, useState, type Dispatch, type ReactNode, type SetStateAction } from 'react';
+import { AccessibilityInfo, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { colors, fonts } from '../../../theme/tokens';
 import { useAudioOutputGate } from '../../../features/audio/AudioOutputGate';
@@ -29,6 +29,7 @@ import { AUDIO_UNAVAILABLE_MESSAGE } from '../../../../modules/ape-dsp';
 import { Btn, Row, useMarkWhen } from '../tuning/components/primitives';
 import { GearButton, GearFader, GearKnob, ScribbleStrip, StripFrame } from '../kit/gear';
 import { createLaneFeed, type LaneFeed } from '../rack/laneFeed';
+import { NOT_HEARD, SoundOffLine, useSoundOff } from '../rack/silentPath';
 import type { PageCtx } from '../kit/PagedLab';
 import { persistAllowed } from '../../../features/commercial/tier';
 import { useTier } from '../../../features/commercial/useTier';
@@ -287,8 +288,13 @@ export function MixMantra() {
  * still moves on). The what's-left screen lists a page left that way with this
  * line. Already-banked credit is never removed (pinned by
  * test/mixingHandsOnCredit_20261014).
+ *
+ * Said ONCE above the what's-left list (HOW A PAGE COUNTS), so it speaks of
+ * "a page", and it says the one rule a learner could not guess (checker C2,
+ * 2026-11-14): the goal chips live only for one visit (useVisitGoals keeps
+ * them in a ref), so leaving a page before every chip is ✓ clears them.
  */
-export const HANDS_ON_DETAIL = 'This page counts as done once the goals at the foot of the page are met. NEXT moves on without counting it.';
+export const HANDS_ON_DETAIL = 'A page counts once all its goals are met in one visit; leaving a page before then clears its marks. NEXT moves on without counting it.';
 
 /** Sticky exploration goals (patchbay pattern): each goal latches once its
  *  predicate has been true; all latched → the page marks itself done. */
@@ -369,8 +375,14 @@ export interface MixPlayback {
   pending: string | null;
   /** Measurements, available once ready. */
   measured: Record<string, { peakDb: number; rmsDb: number }>;
-  /** Ids that have been listened to (for listening-goal chips). */
+  /** Ids that have been listened to, OR (sound off) pressed and looked at:
+   *  the listening-goal chips read this. THE SILENT PATH (lab fix round,
+   *  phase 2, 2026-11-14): with sound off a ▶ press used to do nothing, so 9
+   *  of Beginning Mixing's 16 pages could never be finished silently ("13
+   *  pages still to finish"). */
   heard: readonly string[];
+  /** The ids in `heard` that were only LOOKED AT, with sound off. */
+  studied: readonly string[];
   /** The variant whose requested play could not sound because its clips
    *  failed to load (K8, hunt 11 2026-10-04) — its row shows the shared
    *  AUDIO_UNAVAILABLE_MESSAGE. Cleared by the next press or a good render. */
@@ -392,7 +404,9 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
   const [active, setActive] = useState<string | null>(null);
   const [pending, setPending] = useState<string | null>(null);
   const [measured, setMeasured] = useState<Record<string, { peakDb: number; rmsDb: number }>>({});
-  const [heard, setHeard] = useState<string[]>([]);
+  const [heardBySound, setHeard] = useState<string[]>([]);
+  const [studied, setStudied] = useState<string[]>([]);
+  const heard = useMemo(() => (studied.length ? [...new Set([...heardBySound, ...studied])] : heardBySound), [heardBySound, studied]);
   const [failed, setFailed] = useState<string | null>(null);
   const playerRef = useRef<EarClipPlayer | null>(null);
   const idsRef = useRef<string[]>([]);
@@ -525,6 +539,7 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
     setPending(null);
     setMeasured({});
     setHeard([]);
+    setStudied([]);
     setFailed(null);
     idsRef.current = [];
     pendingRef.current = null;
@@ -711,7 +726,13 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
       cancelReplay();
       setFailed(null);
       void (async () => {
-        if (!(await requestAudioOutput())) return;
+        if (!(await requestAudioOutput())) {
+          // THE SILENT PATH: sound stays off, so this version is LOOKED AT
+          // (the page's drawing and notes show it; onPick already moved the
+          // drawing) and its listening goal can still be met.
+          if (aliveRef.current && !isAudioOutputEnabled()) setStudied((s) => (s.includes(id) ? s : [...s, id]));
+          return;
+        }
         if (!aliveRef.current || !focusedRef.current) return;
         // REFS, not `status`: the gate above is an await, and this closure's
         // `status` is the value from the render that created it. idsRef is set
@@ -753,8 +774,12 @@ export function useMixPlayback(variants: readonly MixVariant[]): MixPlayback {
   // blur (owner 2026-09-29; see the focus note above).
   useStopOnClose(stopAll);
 
-  return { status, play, stop, active, pending, measured, heard, failed };
+  return { status, play, stop, active, pending, measured, heard, studied, failed };
 }
+
+/** The mixing labs' own sound-off line (phase 2): it sits above every ▶ row. */
+export const MIX_SOUND_OFF_LINE =
+  'Sound off? Tap ▶ anyway: each version counts as looked at, not heard, so the page can still be finished. The drawing and the note under the buttons show what you would hear.';
 
 /** A/B(/C…) comparison row driven by useMixPlayback. The RENDERING banner
  *  shows only when the pending variant belongs to THIS row, and the pressed
@@ -775,8 +800,11 @@ export function AbPlayer({
 }) {
   const pendingHere = pb.pending != null && variants.some((v) => v.id === pb.pending);
   const failedHere = pb.failed != null && variants.some((v) => v.id === pb.failed);
+  const soundOff = useSoundOff();
+  const lookedHere = variants.filter((v) => pb.studied.includes(v.id)).map((v) => v.label);
   return (
     <View style={styles.ab}>
+      <SoundOffLine text={MIX_SOUND_OFF_LINE} />
       <Row>
         {variants.map((v) => {
           const isActive = pb.active === v.id;
@@ -807,7 +835,47 @@ export function AbPlayer({
           {AUDIO_UNAVAILABLE_MESSAGE}
         </Text>
       ) : null}
+      {soundOff && lookedHere.length ? (
+        <Text style={styles.abNote} accessibilityLiveRegion="polite">{`Looked at (${NOT_HEARD}): ${lookedHere.join(' · ')}.`}</Text>
+      ) : null}
       {note ? <Text style={styles.abNote}>{note}</Text> : null}
+    </View>
+  );
+}
+
+/**
+ * GO DEEPER ▾ (phase 3, owner's decision 5, 2026-11-14: "long pages:
+ * beginner core first … fold the depth under Go deeper ▾"). The page's main
+ * experiment comes first; its second lesson (a toolkit list) waits folded
+ * under its own title. Nothing is removed: tap to open; a goal that needs it
+ * still names it at the page's foot. Closed again on every visit.
+ *
+ * A REQUIRED STEP NEVER HIDES (checker K2, 2026-11-14): on these pages the
+ * check draws on the folded list, so `openWhen` opens the fold by itself the
+ * moment the page's first goal (its experiment) is met: the list and the
+ * check then are the next step. While closed, `note` says why to open it.
+ * After that the learner's own taps decide.
+ */
+export function GoDeeper({ title, children, openWhen, note }: { title: string; children: ReactNode; openWhen?: boolean; note?: string }) {
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (openWhen) setOpen(true);
+  }, [openWhen]);
+  return (
+    <View style={styles.deeper}>
+      <Pressable
+        onPress={() => setOpen((o) => !o)}
+        style={styles.deeperHead}
+        accessibilityRole="button"
+        accessibilityState={{ expanded: open }}
+        aria-expanded={open}
+        accessibilityLabel={`${title}. ${open ? 'Fold it away' : 'Go deeper: open it'}`}
+      >
+        <Text style={styles.deeperTitle}>{title}</Text>
+        <Text style={styles.deeperKey}>{open ? 'FOLD ▴' : 'GO DEEPER ▾'}</Text>
+      </Pressable>
+      {!open && note ? <Text style={styles.deeperNote}>{note}</Text> : null}
+      {open ? children : null}
     </View>
   );
 }
@@ -990,6 +1058,7 @@ export function MiniConsole({
   value,
   onChange,
   show = { fader: true, pan: true, mute: true, pol: false },
+  focus = null,
 }: {
   tracks: readonly TrackId[];
   value: MixSettings;
@@ -999,7 +1068,26 @@ export function MiniConsole({
    *  hunt 2026-09-29). Every caller passes its useState setter. */
   onChange: Dispatch<SetStateAction<MixSettings>>;
   show?: ConsoleShow;
+  /** BM-02 (owner 2026-11-15: "build waves 1 thru 3", D62): the channel the
+   *  page asks the learner to move. On a phone only about three strips show,
+   *  so the row scrolls to it (once per channel named, never fighting a
+   *  swipe): the anchor on page 5, GTR and KEYS on page 7. */
+  focus?: TrackId | null;
 }) {
+  const scrollRef = useRef<ScrollView>(null);
+  const stripX = useRef<Partial<Record<TrackId, number>>>({});
+  /** The channel the row last scrolled to: each named channel scrolls once. */
+  const scrolledTo = useRef<TrackId | null>(null);
+  const scrollToFocus = useCallback(() => {
+    if (!focus || scrolledTo.current === focus) return;
+    const x = stripX.current[focus];
+    if (x == null) return;
+    scrolledTo.current = focus;
+    // Instant, not animated: a smooth scroll can be dropped mid-way (seen in
+    // the web preview), and a jump never fights the learner's own swipe.
+    scrollRef.current?.scrollTo({ x: Math.max(0, x - 8), animated: false });
+  }, [focus]);
+  useEffect(scrollToFocus, [scrollToFocus]);
   const change = (id: TrackId, next: Partial<TrackSettings>) =>
     onChange((prev) => ({ ...prev, [id]: { ...FLAT, ...(prev[id] ?? {}), ...next } }));
   const anySolo = tracks.some((id) => !!value[id]?.solo);
@@ -1015,6 +1103,7 @@ export function MiniConsole({
           axes separate, so a fader's vertical pull cannot creep the channel
           row sideways while the page itself is frozen by the drag lock. */}
       <ScrollView
+        ref={scrollRef}
         horizontal
         showsHorizontalScrollIndicator
         directionalLockEnabled
@@ -1022,15 +1111,22 @@ export function MiniConsole({
         contentContainerStyle={styles.console}
       >
         {tracks.map((id) => (
-          <Strip
+          <View
             key={id}
-            id={id}
-            value={{ ...FLAT, ...(value[id] ?? {}) }}
-            onChange={change}
-            show={show}
-            anySolo={anySolo}
-            onPanGesture={setPanBusy}
-          />
+            onLayout={(e) => {
+              stripX.current[id] = e.nativeEvent.layout.x;
+              if (id === focus) scrollToFocus();
+            }}
+          >
+            <Strip
+              id={id}
+              value={{ ...FLAT, ...(value[id] ?? {}) }}
+              onChange={change}
+              show={show}
+              anySolo={anySolo}
+              onPanGesture={setPanBusy}
+            />
+          </View>
         ))}
       </ScrollView>
       {show.pol && tracks.some((id) => value[id]?.polarity) ? (
@@ -1088,6 +1184,11 @@ const styles = StyleSheet.create({
   // The stepper-column strip styles left with the stepper column itself —
   // the strip is drawn by the gear kit now (../kit/gear.tsx).
   conceptList: { gap: 8 },
+  deeper: { gap: 8 },
+  deeperHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, minHeight: 44 },
+  deeperTitle: { flex: 1, color: colors.amberLabel, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 2 },
+  deeperKey: { color: colors.amber, fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1 },
+  deeperNote: { color: colors.textSub, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17 },
   conceptRow: { gap: 4 },
   conceptNote: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17 },
 });

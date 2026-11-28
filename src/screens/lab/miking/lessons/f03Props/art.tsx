@@ -24,14 +24,63 @@ import { CHAIR, DOOR } from '../shared/foley/propGeom.ts';
 import { voiceLabelObstacles } from '../shared/voice/VoiceArt';
 import { F03_MODEL, floorOf, posesOf, TABLE } from './geometry.ts';
 import { F03_ZONES } from './model.ts';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+import { PlayerSideV2, PlayerTopV2 } from '../shared/figureV2/playersV2';
+import { personShapes } from '../shared/figureV2/personV2';
+import { inPoly, P as P2 } from '../shared/figureV2/geom.ts';
+import { FOLEY_PERFORMER, PROPS_HOLD, foleySideGrips, foleySidePlan, foleyTopGrips, foleyTopPlan, legsFromAbove } from '../shared/foley/foleyV2.ts';
+import { bodyOf } from './geometry.ts';
+
+/** The new look (figure V2, wave 3 set 3b): the Foley artist is Mei of the cast. */
+export const V2 = figureV2On('sidePlayers');
+const specOf = (v: VariantId) => PROPS_HOLD[v] ?? PROPS_HOLD.keys;
+const sideOf = (v: VariantId) => foleySidePlan(bodyOf(v), specOf(v));
+const topOf = (v: VariantId) => foleyTopPlan(bodyOf(v), specOf(v));
+const v2Covers = (variant: VariantId, u: number, v: number, tol: number) => {
+  const shapes = personShapes(sideOf(variant));
+  const pts = tol > 0 ? [P2(u, v), P2(u - tol, v), P2(u + tol, v), P2(u, v - tol), P2(u, v + tol)] : [P2(u, v)];
+  return pts.some((q) => shapes.some((sh) => inPoly(q, sh)));
+};
 
 const TOP = F03_MODEL.views.top!;
 
-export function PropsArt({ view, variant }: { view: ViewId; variant: VariantId }) {
+export function PropsArt({ view, variant, v2 = V2 }: { view: ViewId; variant: VariantId; /** (the study page compares the old look) */ v2?: boolean }) {
   const P = posesOf(variant);
   const floor = floorOf(variant);
   const live = variant === 'live';
   const booth = liveBooth(floor);
+  if (v2) {
+    // THE NEW LOOK: the props first, then the artist over them — each hand closed on what it holds (the
+    // key ring through the fist), or flat on the sheet
+    const keys = variant === 'keys' || live;
+    if (view === 'top')
+      return (
+        <Group>
+          <StageFloorPlan u0={TOP.u0 - 200} u1={TOP.u1 + 200} v0={TOP.v0 - 200} v1={TOP.v1 + 200} />
+          {live ? <BoothArt view="top" rail={booth.rail} pa={{ x: booth.pa.p.x, y: booth.pa.p.y, z: booth.pa.p.z }} /> : null}
+          {/* (cast sweep 2026-11-26) bent over the table, the seat and the shoes show behind the back from above —
+              drawn before the table, so a toe under its edge stays under the top */}
+          {legsFromAbove(bodyOf(variant)) ? <PlayerTopV2 plan={topOf(variant)} who={FOLEY_PERFORMER} part="legs" legs /> : null}
+          {variant === 'paper' ? <TableArt view="top" x0={TABLE.x0} x1={TABLE.x1} z0={TABLE.z0} z1={TABLE.z1} topY={0} floorY={floor} /> : null}
+          {variant === 'door' ? <FoleyDoor view="top" floorY={floor} /> : null}
+          {variant === 'chair' ? <Chair view="top" /> : null}
+          {variant === 'paper' ? <PaperSheet view="top" /> : null}
+          <PlayerTopV2 plan={topOf(variant)} grips={foleyTopGrips(bodyOf(variant), specOf(variant))} who={FOLEY_PERFORMER} part="upper" nearStick={keys ? <KeyRing view="top" /> : undefined} />
+        </Group>
+      );
+    const s = F03_MODEL.viewsByVariant?.[variant]?.side ?? F03_MODEL.views.side!;
+    return (
+      <Group>
+        <PitSection surface="concrete" floorY={floor} u0={s.u0 - 200} u1={s.u1 + 200} pit={false} />
+        {live ? <BoothArt view="side" floorY={floor} rail={booth.rail} pa={{ x: booth.pa.p.x, y: booth.pa.p.y, z: booth.pa.p.z }} /> : null}
+        {variant === 'chair' ? <Chair view="side" /> : null}
+        {variant === 'paper' ? <TableArt view="side" x0={TABLE.x0} x1={TABLE.x1} z0={TABLE.z0} z1={TABLE.z1} topY={0} floorY={floor} /> : null}
+        {variant === 'paper' ? <PaperSheet view="side" /> : null}
+        {variant === 'door' ? <FoleyDoor view="side" floorY={floor} /> : null}
+        <PlayerSideV2 plan={sideOf(variant)} grips={foleySideGrips(bodyOf(variant), specOf(variant))} who={FOLEY_PERFORMER} nearStick={keys ? <KeyRing view="side" /> : undefined} />
+      </Group>
+    );
+  }
   if (view === 'top') {
     return (
       <Group>
@@ -68,7 +117,8 @@ export function propsLabels(view: ViewId, variant: VariantId): ArtLabel[] {
   const out: ArtLabel[] = [];
   const live = variant === 'live';
   if (view === 'side') {
-    if (variant === 'keys' || live) out.push({ id: 'keys', text: 'KEY RING', short: 'KEYS', u: 260, v: -260, align: 'left', at: { u: 0, v: 30 } });
+    // (review 2026-11-24: its dot sat on the hand — it lands on the keys hanging below the fist)
+    if (variant === 'keys' || live) out.push({ id: 'keys', text: 'KEY RING', short: 'KEYS', u: 260, v: -260, align: 'left', at: { u: 6, v: 62 } });
     if (variant === 'paper') {
       out.push({ id: 'paper', text: 'PAPER · THE BEND', short: 'PAPER', u: 300, v: -300, align: 'left', at: { u: 60, v: -20 } });
       out.push({ id: 'table', text: 'PROP TABLE', short: 'TABLE', u: 360, v: 400, align: 'left', tone: 'muted', at: { u: TABLE.x1 - 40, v: 300 } });
@@ -126,7 +176,7 @@ export function propsHitTest(view: ViewId, variant: VariantId, u: number, v: num
     if (view === 'top' && Math.abs(u - b.pa.p.x) <= 220 + tol && Math.abs(v - b.pa.p.z) <= 300 + tol) return 'f03.pa';
     if (u >= b.rail.x - tol && u <= b.rail.x + 60 + tol) return 'f03.booth';
   }
-  if (poseCovers(view === 'side' ? P.side : P.top, u, v, tol)) return 'f03.artist';
+  if (view === 'side' && V2 ? v2Covers(variant, u, v, tol) : poseCovers(view === 'side' ? P.side : P.top, u, v, tol)) return 'f03.artist';
   return null;
 }
 
@@ -134,7 +184,7 @@ export const F03_ART: LessonArt = {
   Instrument: PropsArt,
   labels: propsLabels,
   hitTest: propsHitTest,
-  figureAt: (view, variant, u, v, tol) => poseCovers(view === 'side' ? posesOf(variant).side : posesOf(variant).top, u, v, tol),
+  figureAt: (view, variant, u, v, tol) => (view === 'side' && V2 ? v2Covers(variant, u, v, tol) : poseCovers(view === 'side' ? posesOf(variant).side : posesOf(variant).top, u, v, tol)),
   labelObstacles: voiceLabelObstacles(F03_ZONES),
   labelsYieldToMic: true,
 };

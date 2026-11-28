@@ -24,20 +24,24 @@ describe('Mixing-family "bring in a pro" note (owner 2026-10-07)', () => {
     assert.equal((body.match(/\\n\\n' \+/g) ?? []).length, 4, 'five paragraphs');
   });
 
-  it('shows on first open and links from the first page of all four Mixing-family labs', () => {
+  // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item BM-04):
+  // the note no longer opens by itself on arrival in ANY of the four labs (one
+  // shared seen-flag, so dropping it from one lab alone would only move the
+  // popup to the next lab opened). Each lab keeps its small link on page 1.
+  it('never opens by itself; links from the first page of all four Mixing-family labs', () => {
     for (const f of ['src/screens/lab/mixing/BeginningMixingLabScreen.tsx', 'src/screens/lab/mixing/AdvancedMixingLabScreen.tsx']) {
-      assert.match(src(f), /<PagedLab [^>]*\bproNote\b/, f);
+      assert.doesNotMatch(src(f), /<PagedLab [^>]*\bproNote\b/, f);
     }
+    assert.match(src('src/screens/lab/mixing/pagesA.tsx'), /function PageWhatMixingDoes[\s\S]*?<ProNoteButton \/>\s*<MixMantra \/>/);
+    assert.match(src('src/screens/lab/mixing/pagesAdvA.tsx'), /function PageGate[\s\S]*?<ProNoteButton \/>\s*<Lead>/);
     const paged = src('src/screens/lab/kit/PagedLab.tsx');
-    assert.match(paged, /page === 0 && proNote \? <ProNoteButton \/>/);
-    assert.match(paged, /proNote \? <ProNoteIntro onOwed=\{setProNoteOwed\} \/>/);
-    assert.match(paged, /hold=\{proNote && proNoteOwed\}/, 'the guest reminder waits for the note');
+    assert.match(paged, /page === 0 && proNote \? <ProNoteButton \/>/, 'the frame keeps the opt-in for any other lab');
     const mastering = src('src/screens/lab/mastering/MasteringLabScreen.tsx');
     assert.match(mastering, /idx === 0 && step === 0 \? <ProNoteButton/);
-    assert.match(mastering, /<ProNoteIntro \/>/);
+    assert.doesNotMatch(mastering, /<ProNoteIntro/);
     const guides = src('src/screens/lab/mixingGuides/MixingGuidesHubScreen.tsx');
     assert.match(guides, /<ProNoteButton \/>/);
-    assert.match(guides, /<ProNoteIntro \/>/);
+    assert.doesNotMatch(guides, /<ProNoteIntro/);
   });
 
   it('uses the shared intro seen-flag, so Low-Light and the guest wipe rules apply', () => {

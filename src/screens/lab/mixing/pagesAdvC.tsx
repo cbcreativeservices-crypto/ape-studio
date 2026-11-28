@@ -9,7 +9,7 @@ import { StyleSheet, View } from 'react-native';
 import { Body, Btn, Card, Eyebrow, Lead, Prompt, Row } from '../tuning/components/primitives';
 import { UnderstandingCheck } from '../tuning/components/check';
 import type { PageCtx, PageDef } from '../kit/PagedLab';
-import { AbPlayer, ConceptList, GoalChips, useMixPlayback, useVisitGoals, type MixVariant } from './kit';
+import { AbPlayer, ConceptList, GoDeeper, GoalChips, useMixPlayback, useVisitGoals, type MixVariant } from './kit';
 import type { MixSettings } from './audio/mixAudio.ts';
 import { BusChainArt, type BusChain } from './advFigures';
 import { AutomationLanes, DrivePlot, WidthArt, type Ride, type WidthView } from './advPlots';
@@ -53,12 +53,13 @@ function PageHarmonic({ ctx }: { ctx: PageCtx }) {
         <DrivePlot driveDb={variants.find((v) => v.id === drive)?.busDriveDb ?? 0} />
       </Card>
       <Card>
-        <Eyebrow>THE TOOLKIT</Eyebrow>
-        <ConceptList items={satItems.map((c) => ({ id: c.id, name: c.name, blurb: c.blurb }))} opened={seen} onOpen={(id) => setSeen((s) => new Set(s).add(id))} />
+        <GoDeeper title="THE TOOLKIT" openWhen={latched[0]} note="The check below draws on this list; it opens by itself once the experiment above is done.">
+          <ConceptList items={satItems.map((c) => ({ id: c.id, name: c.name, blurb: c.blurb }))} opened={seen} onOpen={(id) => setSeen((s) => new Set(s).add(id))} />
+        </GoDeeper>
       </Card>
       <UnderstandingCheck
         question="A saturation plugin makes the mix “bigger and more exciting” the instant it is enabled. The advanced reflex:"
-        options={['Ship it — bigger and exciting is the goal', 'Match the levels first; most of that instant excitement is added loudness', 'Add a second instance for twice the size', 'Automate it louder in the chorus']}
+        options={['Ship it — bigger and exciting is the goal', 'Match the levels first; most of it is added loudness', 'Add a second instance for twice the size', 'Automate it louder in the chorus']}
         correct={1}
         explain="Nonlinear stages add level and density together — the meter goes up WITH the harmonics. Match loudness, then re-judge: keep it only if the color itself, not the volume, earns its place."
         wrong={[
@@ -115,7 +116,7 @@ function PageImaging({ ctx }: { ctx: PageCtx }) {
       </Card>
       <UnderstandingCheck
         question="A stereo widener makes the pads huge, but the club’s mono system swallows them. What actually happened?"
-        options={['The club system was faulty that night', 'The widener put the pads’ energy in the SIDE channel — exactly the channel a mono fold discards', 'Mono systems cannot reproduce pads at all', 'The pads needed more reverb instead']}
+        options={['The club’s sound system was faulty or set up wrong that night', 'The widener put the pads in the SIDE channel, which mono drops', 'Mono systems cannot reproduce wide pad sounds at all', 'The pads needed more reverb instead of a widener']}
         correct={1}
         explain="Mono = mid only. Whatever a widener pushes into the side channel is energy you have bet on stereo playback. The fold collects that bet."
         wrong={[
@@ -200,12 +201,13 @@ function PageAdvAutomation({ ctx }: { ctx: PageCtx }) {
         <AutomationLanes rides={rides} />
       </Card>
       <Card>
-        <Eyebrow>THE MOVES</Eyebrow>
-        <ConceptList items={autoItems.map((c) => ({ id: c.id, name: c.name, blurb: c.blurb }))} opened={seen} onOpen={(id) => setSeen((s) => new Set(s).add(id))} />
+        <GoDeeper title="THE MOVES" openWhen={latched[0]} note="The check below draws on this list; it opens by itself once the experiment above is done.">
+          <ConceptList items={autoItems.map((c) => ({ id: c.id, name: c.name, blurb: c.blurb }))} opened={seen} onOpen={(id) => setSeen((s) => new Set(s).add(id))} />
+        </GoDeeper>
       </Card>
       <UnderstandingCheck
         question="You need the whole rhythm section to swell 2 dB into the final chorus — drums, bass, percussion, twelve tracks. The clean tool:"
-        options={['Draw twelve identical fader ramps by hand', 'Automate one VCA (or the subgroup fader) that owns those channels', 'Raise the mix bus by 2 dB at that bar', 'Compress the section harder so it feels bigger']}
+        options={['Draw twelve identical fader ramps by hand', 'Automate one VCA or subgroup fader for the section', 'Raise the mix bus by 2 dB at that bar', 'Compress the section harder so it feels bigger']}
         correct={1}
         explain="One ride on the controller that owns the family — clean to write, trivial to revise, impossible to leave one of twelve behind. Bus fader works too when the routing already sums them; the mix bus does not (it lifts EVERYTHING, vocal included)."
         wrong={[
@@ -273,11 +275,13 @@ function PageMixBus({ ctx }: { ctx: PageCtx }) {
       </Card>
       <Card tone="note">
         <Eyebrow>THE MASTERING BORDER</Eyebrow>
+        {/* AM-02 (owner 2026-11-15: "build waves 1 thru 3", D62): one plain sentence first. */}
+        <Body>The mix ends at the mix bus; mastering starts after it.</Body>
         <Body>Mix-bus processing serves THIS mix while you can still reach every fader underneath it. Mastering serves the finished stereo file against the outside world — loudness targets, translation, sequencing. The moment your bus chain chases a LUFS number, you have started mastering with a mix engineer’s hands. Stop; leave headroom; finish the mix.</Body>
       </Card>
       <UnderstandingCheck
         question="Your mix-bus limiter now does 6 dB of gain reduction “to hit a streaming number”. What is the honest description of this session?"
-        options={['A modern, loudness-ready mix workflow', 'A mix being mastered by accident, with the mix’s own tools', 'Standard bus glue, just slightly firm', 'A safe way to preview the master']}
+        options={['A modern, loudness-ready mix workflow', 'A mix mastered by accident, with the mix’s tools', 'Standard mix-bus glue, just set slightly firm', 'A safe way to preview the master']}
         correct={1}
         explain="Six dB of bus limiting IS mastering-grade processing — decided before the mix is even finished, glued permanently over every later fader move. Mix into gentle glue, deliver headroom, and let the mastering stage (even if it is you tomorrow) work on the finished thing."
         wrong={[

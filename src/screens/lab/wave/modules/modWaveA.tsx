@@ -30,10 +30,11 @@ import { Text, View } from 'react-native';
 import { ResponseCurveGraph, type ResponseCurve } from '../../../../features/lab/fxViz';
 import { LabChip } from '../../LabShell';
 import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
-import { Badge, PanelCard, ReadoutGrid, dstyles } from '../../digital/bits';
+import { PanelCard, dstyles } from '../../digital/bits';
+import { PlainModelNote } from '../../foundations/bits';
 import { useLabPhoto } from '../../labPhoto';
 import { MATERIAL_PHOTOS } from '../materialPhotos';
-import { WaveLayout } from './waveLayout';
+import { FoldedReadoutGrid, WaveLayout } from './waveLayout';
 import { StageAspectReport } from '../../rack/stageAspect';
 import {
   MATERIALS,
@@ -57,7 +58,9 @@ import {
 } from '../waveEngine';
 import { requireWaveViz, type WaveVizModule } from '../skiaGate';
 import type { WaveLayers } from '../vizWave';
+import type { NameTags } from '../sceneNameTags';
 import type { WaveModuleProps } from '../WaveModuleScreen';
+import { PLAIN_TERMS } from '../../../../features/lab/plainTerms';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared helpers (formatting + the 0.05 m snap contract — no physics here;
@@ -132,6 +135,7 @@ function RoomView({
   raysShowLoss,
   onDragSource,
   onDragListener,
+  nameTags,
 }: {
   viz: WaveVizModule;
   width: number;
@@ -154,6 +158,8 @@ function RoomView({
   raysShowLoss?: boolean;
   onDragSource?: (id: string, x: number, y: number) => void;
   onDragListener?: (x: number, y: number) => void;
+  /** On-picture names (sceneNameTags); default SPEAKER / YOU. */
+  nameTags?: NameTags;
 }) {
   const phase = viz.usePhaseClock(focused, visHzFor(freq));
   return (
@@ -173,6 +179,7 @@ function RoomView({
       raysShowLoss={raysShowLoss}
       onDragSource={onDragSource}
       onDragListener={onDragListener}
+      nameTags={nameTags}
     />
   );
 }
@@ -275,10 +282,11 @@ const REFLECTION_CHECK: CheckSpec = {
     'RAYS draws each reflection as a straight line from an "image source" mirrored behind the wall. What is that image source?',
   options: [
     'A real second sound source that the wall creates',
-    'A modeling construct that predicts the reflection’s path, arrival time and level',
+    'A modeling idea that predicts the bounce’s path, time and level',
     'The listener’s mirror image',
     'A rendering error in the simulation',
   ],
+  why: { 0: 'The wall makes no sound of its own. Count the speakers in the room.', 2: 'The listener emits nothing. The rays start behind the wall, mirrored from the speaker.', 3: 'It is drawn on purpose: it predicts where and when each bounce arrives.' },
   correctIdx: 1,
   reveal:
     'No second loudspeaker exists. Mirroring the source across the wall turns the bent reflection path into ONE straight line — handing you path length, arrival time and level in a single construction. Treating it as a real source is this module’s classic mistake.',
@@ -447,7 +455,7 @@ export function ReflectionModule(p: WaveModuleProps) {
       readouts={
         <PanelCard>
           <Text style={dstyles.eyebrow}>AT THE LISTENER</Text>
-          <ReadoutGrid items={readouts} help={p.help} helpKey="reflection" />
+          <FoldedReadoutGrid items={readouts} help={p.help} helpKey="reflection" />
         </PanelCard>
       }
       mistakes={<MistakesCard items={REFLECTION_MISTAKES} />}
@@ -478,6 +486,7 @@ const ABSORB_CHECK: CheckSpec = {
     'The boom gets louder',
     'Outside noise stops getting in',
   ],
+  why: { 0: 'Read α @ 125 Hz with ACOUSTIC FOAM: thin foam takes little of the lows.', 2: 'Foam takes energy away; it cannot add bass. Compare α 125 Hz with α 4 kHz.', 3: 'Absorption is not soundproofing: foam tames echoes, not sound passing through the walls.' },
   correctIdx: 1,
   reveal:
     'Check foam’s α row: 0.11 at 125 Hz vs 0.98–0.99 above 2 kHz. Thin porous absorbers work where air particle velocity is high — roughly a quarter wavelength off the wall. At 60 Hz that is about 1.4 m out; a 5 cm panel sits in nearly still air and does almost nothing. Bass needs thickness, depth, or tuned traps.',
@@ -594,10 +603,12 @@ export function AbsorptionModule(p: WaveModuleProps) {
         <PanelCard>
           <Text style={dstyles.eyebrow}>WHY BASS SURVIVES</Text>
           <Text style={dstyles.body}>
-            Slide the frequency down with a porous material selected (foam, fiberglass, curtains,
+            {/* WA-05 (owner 2026-11-15, "build waves 1 thru 3", D62): RT60 in the ONE shared
+                sentence (plainTerms.ts), first, before its first use; a sentence out to make room. */}
+            {PLAIN_TERMS.rt60.sentence} Slide the frequency down with a porous material selected (foam, fiberglass, curtains,
             carpet) and watch α collapse: those materials absorb by friction where air particle
             VELOCITY is high — about a quarter wavelength off the wall. At 4 kHz that is ~2 cm; at
-            125 Hz it is ~69 cm. Thin panels simply sit in still air at low frequencies. That is why
+            125 Hz it is ~69 cm. That is why
             the RT60 table stays long at 125 Hz while the mids and highs die — and why real bass
             control means thickness, air gaps, or tuned membrane/Helmholtz traps.
           </Text>
@@ -613,8 +624,8 @@ export function AbsorptionModule(p: WaveModuleProps) {
       readouts={
         <PanelCard>
           <Text style={dstyles.eyebrow}>ABSORPTION & DECAY</Text>
-          <ReadoutGrid items={readouts} help={p.help} helpKey="absorption" />
-          <Badge text="SABINE RT TREATS THE 2-D ROOM AS 3 m TALL — TEXTBOOK TEACHING α VALUES, NOT ISO 354 PRODUCT DATA" />
+          <FoldedReadoutGrid items={readouts} help={p.help} helpKey="absorption" />
+          <PlainModelNote>The reverb time (Sabine) treats this 2-D room as 3 m tall and uses textbook teaching absorption values, not ISO 354 product data.</PlainModelNote>
         </PanelCard>
       }
       mistakes={<MistakesCard items={ABSORB_MISTAKES} />}
@@ -639,8 +650,9 @@ const DIFFUSION_CHECK: CheckSpec = {
     'Drops to nearly zero — diffusers are better absorbers',
     'Stays almost the same, but spreads over many directions and times',
     'Doubles — diffusers amplify reflections',
-    'Only the bass is removed',
+    'Only the bass is removed; the highs bounce on',
   ],
+  why: { 0: 'A diffuser scatters rather than absorbs. Read ENERGY RETURNED with it on and off.', 2: 'A passive panel cannot add energy. Read ENERGY RETURNED.', 3: 'A diffuser spreads sound rather than removing it. Watch the fan of rays.' },
   correctIdx: 1,
   reveal:
     'Diffusion REDISTRIBUTES energy; absorption REMOVES it. A diffuser breaks one hard specular bounce into many weaker, time-smeared ones — the room keeps its life and energy without the harsh mirror reflection. Watch the ENERGY RETURNED readout: it does not move when you toggle the diffuser.',
@@ -730,15 +742,7 @@ export function DiffusionModule(p: WaveModuleProps) {
             <VizUnavailableCard />
           ),
         params: [
-          {
-            kind: 'fader',
-            id: 'depth',
-            label: 'DEPTH',
-            value: (depth - 0.05) / 0.55,
-            onChange: (v) => setDepth(clampSnap(0.05 + v * 0.55, 0.05, 0.6)),
-            format: () => fmtM(depth),
-            helpKey: 'diffusion_depth',
-          },
+          // SH-35 (owner 2026-11-15, "build waves 1 thru 3", D62): FREQ first, LAYERS last, on every Wave page that has them.
           {
             kind: 'fader',
             id: 'freq',
@@ -747,6 +751,15 @@ export function DiffusionModule(p: WaveModuleProps) {
             onChange: (v) => setFreq(fracLog(v, 125, 8000)),
             format: () => fmtHz(freq),
             helpKey: 'diffusion',
+          },
+          {
+            kind: 'fader',
+            id: 'depth',
+            label: 'DEPTH',
+            value: (depth - 0.05) / 0.55,
+            onChange: (v) => setDepth(clampSnap(0.05 + v * 0.55, 0.05, 0.6)),
+            format: () => fmtM(depth),
+            helpKey: 'diffusion_depth',
           },
           {
             kind: 'toggle',
@@ -789,8 +802,8 @@ export function DiffusionModule(p: WaveModuleProps) {
       readouts={
         <PanelCard>
           <Text style={dstyles.eyebrow}>DIFFUSER STATUS</Text>
-          <ReadoutGrid items={readouts} help={p.help} helpKey="diffusion" />
-          <Badge text="THE DRAWING SHOWS THE SPECULAR (MIRROR) RAY — A DIFFUSER FANS THAT SAME ENERGY INTO MANY DIM RAYS FROM THE BOUNCE POINT: SPREAD, NOT REMOVED" />
+          <FoldedReadoutGrid items={readouts} help={p.help} helpKey="diffusion" />
+          <PlainModelNote>The drawing shows the mirror (specular) ray. A diffuser fans that same energy into many dim rays from the bounce point: spread, not removed.</PlainModelNote>
         </PanelCard>
       }
       mistakes={<MistakesCard items={DIFFUSION_MISTAKES} />}
@@ -813,10 +826,11 @@ const REFRACTION_CHECK: CheckSpec = {
   question: 'An outdoor concert across a lake sounds startlingly close at night. Why?',
   options: [
     'Water reflects sound like a mirror straight to you',
-    'Cool air at the surface under warmer air bends the sound back down toward the water',
+    'Cool air near the water under warmer air bends the sound back down',
     'Night air is denser, so sound is simply louder',
     'The wind carries the sound at its own speed',
   ],
+  why: { 0: 'Water does reflect, but that is true by day too. Set GRAD to INVERSION and watch the ray.', 2: 'Denser air barely changes the level. Watch which way the ray bends with INVERSION.', 3: 'The effect happens on still nights too. Set GRAD to INVERSION and watch the ray.' },
   correctIdx: 1,
   reveal:
     'A temperature INVERSION: the water cools the air at the surface while the air above stays warm. Sound runs faster in the warm layer aloft, so wavefronts tilt and rays curve back DOWN instead of lifting away — energy that would have escaped overhead returns to ear level, kilometer after kilometer.',
@@ -931,8 +945,8 @@ export function RefractionModule(p: WaveModuleProps) {
       readouts={
         <PanelCard>
           <Text style={dstyles.eyebrow}>SOUND SPEED & RAY</Text>
-          <ReadoutGrid items={readouts} help={p.help} helpKey="refraction" />
-          <Badge text="TEACHING MODEL — AIR TEMPERATURE CHANGES EVENLY WITH HEIGHT, ±8 °C AT 60 m" />
+          <FoldedReadoutGrid items={readouts} help={p.help} helpKey="refraction" />
+          <PlainModelNote>A teaching model: the air temperature changes evenly with height, ±8 °C at 60 m.</PlainModelNote>
         </PanelCard>
       }
       mistakes={<MistakesCard items={REFRACTION_MISTAKES} />}
@@ -959,6 +973,7 @@ const DIFFRACTION_CHECK: CheckSpec = {
     'Mostly tire hiss — highs bend over the top; the lows are blocked',
     'Exactly the same as without the barrier',
   ],
+  why: { 0: 'A shadow zone is not silence. Slide FREQ and watch LOSS change.', 2: 'Check λ: the hiss has a short wavelength, far smaller than the barrier.', 3: 'Read LOSS with the barrier up: it is far from 0 dB.' },
   correctIdx: 1,
   reveal:
     'Wavelength decides. An 80 Hz rumble is ~4.3 m long — comparable to the barrier itself — and wraps over the edge losing only about 9 dB. A 4 kHz hiss is 8.6 cm and casts a real shadow. Compare the LOSS @ 80 Hz and LOSS @ 8 kHz readouts: the shadow zone is a high-frequency dimmer, never an off switch.',
@@ -1063,8 +1078,8 @@ export function DiffractionModule(p: WaveModuleProps) {
       readouts={
         <PanelCard>
           <Text style={dstyles.eyebrow}>MAEKAWA NUMBERS</Text>
-          <ReadoutGrid items={readouts} help={p.help} helpKey="diffraction" />
-          <Badge text="MAEKAWA KNIFE-EDGE · FIXED GEOMETRY: SOURCE 10 m BEFORE THE BARRIER, LISTENER 10 m BEYOND, BOTH AT 1.5 m" />
+          <FoldedReadoutGrid items={readouts} help={p.help} helpKey="diffraction" />
+          <PlainModelNote>A knife-edge barrier model (Maekawa) with fixed geometry: the source is 10 m before the barrier, the listener 10 m beyond, both at 1.5 m.</PlainModelNote>
         </PanelCard>
       }
       mistakes={<MistakesCard items={DIFFRACTION_MISTAKES} />}
@@ -1091,6 +1106,7 @@ const INTERFERENCE_CHECK: CheckSpec = {
     'All frequencies are now canceled',
     'Both speakers get louder',
   ],
+  why: { 0: 'A null depends on two path lengths. Step aside and watch Δ PATH change.', 2: 'Your step changed the paths, not the speakers. Other notes line up differently.', 3: 'The speakers did not change. Watch vs 1 SPKR as you drag the listener.' },
   correctIdx: 1,
   reveal:
     'A null is a place where the two path lengths differ by an odd half-wavelength AT THAT FREQUENCY. Step aside and the path difference changes: the 500 Hz null relocates while other frequencies null where you just stood. Drag the listener through the HEAT map and watch the bands slide under it.',
@@ -1189,6 +1205,8 @@ export function InterferenceModule(p: WaveModuleProps) {
               layers={layers}
               onDragSource={onDragSource}
               onDragListener={onDragListener}
+              // The readouts say S1 PATH / S2 PATH / POL Ø S2: the tags match.
+              nameTags={{ sources: { s1: 'SPEAKER S1', s2: 'SPEAKER S2' } }}
             />
           ) : (
             <VizUnavailableCard />
@@ -1254,8 +1272,8 @@ export function InterferenceModule(p: WaveModuleProps) {
       readouts={
         <PanelCard>
           <Text style={dstyles.eyebrow}>AT THE LISTENER</Text>
-          <ReadoutGrid items={readouts} help={p.help} helpKey="interference" />
-          <Badge text="NO REFLECTING WALLS (FREE FIELD) — ONLY THE TWO DIRECT WAVES INTERFERE · LEVEL IS dB RELATIVE TO ONE SOURCE AT 1 m" />
+          <FoldedReadoutGrid items={readouts} help={p.help} helpKey="interference" />
+          <PlainModelNote>No reflecting walls (free field): only the two direct waves interfere. Level is in dB relative to one source at 1 m.</PlainModelNote>
         </PanelCard>
       }
       mistakes={<MistakesCard items={INTERFERENCE_MISTAKES} />}
@@ -1280,8 +1298,9 @@ const COMB_CHECK: CheckSpec = {
     'Boost the notch frequencies with EQ until the response is flat',
     'Move the mic (or treat the wall) — change the geometry that sets the delay',
     'Compress it — dynamics will fill in the notches',
-    'Turn the vocal up 6 dB',
+    'Turn the vocal up 6 dB so the dips matter less',
   ],
+  why: { 0: 'EQ cannot fill a cancellation: a boost raises both copies alike. Press MIC → instead.', 2: 'A compressor works on level over time, not on dips across frequency.', 3: 'Louder keeps the very same dips. Watch the comb as you press MIC →.' },
   correctIdx: 1,
   reveal:
     'The notches exist because a delayed copy sums with the direct sound — they are set by the PATH GEOMETRY, and they move the moment the mic does. EQ boost pushes energy into frequencies that still cancel (and wrecks everything at other positions). Press ← MIC or MIC → and watch every notch jump: that is the fix, six inches of it.',
@@ -1432,15 +1451,15 @@ export function CombModule(p: WaveModuleProps) {
       readouts={
         <PanelCard>
           <Text style={dstyles.eyebrow}>AT THE MIC</Text>
-          <ReadoutGrid items={readouts} help={p.help} helpKey="comb" />
-          <Badge text="ONE SOURCE + ONE REFLECTIVE WALL (RIGHT) — THE OTHER BOUNDARIES ARE OPENINGS" />
+          <FoldedReadoutGrid items={readouts} help={p.help} helpKey="comb" />
+          <PlainModelNote>One source and one reflective wall (right); the other boundaries are openings.</PlainModelNote>
         </PanelCard>
       }
       secondary={
         <PanelCard>
           <Text style={dstyles.eyebrow}>RESPONSE AT THE MIC — 20 Hz TO 20 kHz</Text>
           <ResponseCurveGraph curves={curves} dbRange={18} height={150} samples={1600} />
-          <Badge text="COMPUTED FROM THE SCENE’S DIRECT + REFLECTED ARRIVALS · 0 dB = DIRECT SOUND ALONE" />
+          <PlainModelNote>Computed from the scene’s direct and reflected arrivals; 0 dB is the direct sound alone.</PlainModelNote>
         </PanelCard>
       }
       mistakes={<MistakesCard items={COMB_MISTAKES} />}
@@ -1455,6 +1474,17 @@ export function CombModule(p: WaveModuleProps) {
 const MODE_LIST: { nx: number; ny: number }[] = [
   { nx: 1, ny: 0 }, { nx: 0, ny: 1 }, { nx: 1, ny: 1 }, { nx: 2, ny: 0 }, { nx: 2, ny: 1 }, { nx: 3, ny: 0 },
 ];
+/** SH-76 (owner 2026-11-15, "build waves 1 thru 3", D62): each MODE choice says in
+ *  plain words what it is (first number = half-waves across the width, second =
+ *  down the depth, as the guide says). */
+const MODE_BLURB: Readonly<Record<string, string>> = {
+  '1,0': 'The lowest side-to-side note: half a wave across the width.',
+  '0,1': 'The lowest front-to-back note: half a wave down the depth.',
+  '1,1': 'Half a wave each way: a note bouncing between all four walls.',
+  '2,0': 'The second side-to-side note: one whole wave across the width.',
+  '2,1': 'One whole wave across and half a wave down the depth.',
+  '3,0': 'The third side-to-side note: one and a half waves across.',
+};
 
 const STANDING_MISTAKES = [
   'Thinking modes are about absorption — they are about DIMENSIONS/GEOMETRY.',
@@ -1467,10 +1497,11 @@ const STANDING_CHECK: CheckSpec = {
   question: 'A room mic for the kick drum ends up parked at a NODE of the room’s 80 Hz mode. The recording…',
   options: [
     'Booms at 80 Hz — nodes are the loud spots',
-    'Nearly loses 80 Hz at that spot — the mode’s pressure minimum lives there',
+    'Nearly loses 80 Hz there — the mode’s pressure minimum',
     'Loses all bass below 200 Hz',
     'Is unaffected — modes only exist at the walls',
   ],
+  why: { 0: 'A node is the quiet stripe, not the loud one. Drag the listener onto the dark band and read PRESSURE.', 2: 'One mode loses its pressure at a node; other notes have their own patterns.', 3: 'Modes fill the whole room. Drag the listener across the map and watch VERDICT.' },
   correctIdx: 1,
   reveal:
     'A node is the mode’s pressure MINIMUM: at that spot the 80 Hz component barely exists to be captured, however loud it booms elsewhere. Antinodes (walls, corners) are the maxima. Drag the listener across the map and watch the verdict flip — that is why moving a mic or a chair half a meter can transform the bass.',
@@ -1581,7 +1612,7 @@ export function StandingWaveModule(p: WaveModuleProps) {
             },
             sticky: true,
             helpKey: 'standing_wave',
-            options: MODE_LIST.map((m) => ({ id: `${m.nx},${m.ny}`, label: `(${m.nx},${m.ny})` })),
+            options: MODE_LIST.map((m) => ({ id: `${m.nx},${m.ny}`, label: `(${m.nx},${m.ny})`, blurb: MODE_BLURB[`${m.nx},${m.ny}`] })),
           },
         ],
       }}
@@ -1591,7 +1622,7 @@ export function StandingWaveModule(p: WaveModuleProps) {
           <Text style={dstyles.body}>
             At a mode frequency the room’s reflections stack into a STATIONARY pressure pattern:
             maxima at the walls and corners (antinodes), near-silence along the null lines (nodes).
-            Drag the listener across the map and watch the readout swing from MAXIMUM to QUIET without
+            Drag the listener across the map and watch VERDICT swing from ANTINODE (loudest) to NODE (quiet) without
             the source changing at all. A mic at a node simply misses that frequency; a listening
             chair at an antinode drowns in it. Resize the room and every mode frequency moves —
             modes are made of DIMENSIONS, not materials.
@@ -1610,8 +1641,8 @@ export function StandingWaveModule(p: WaveModuleProps) {
       readouts={
         <PanelCard>
           <Text style={dstyles.eyebrow}>THIS MODE</Text>
-          <ReadoutGrid items={readouts} help={p.help} helpKey="standing_wave" />
-          <Badge text="MODAL PRESSURE MAP — BRIGHT = ANTINODE (PRESSURE MAX), DARK = NODE (PRESSURE MIN) · DRAG THE LISTENER THROUGH IT" />
+          <FoldedReadoutGrid items={readouts} help={p.help} helpKey="standing_wave" />
+          <PlainModelNote>A modal pressure map: bright is an antinode (most pressure), dark is a node (least). Drag the listener through it.</PlainModelNote>
         </PanelCard>
       }
       mistakes={<MistakesCard items={STANDING_MISTAKES} />}

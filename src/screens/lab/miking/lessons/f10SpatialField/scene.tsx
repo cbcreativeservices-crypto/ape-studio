@@ -30,6 +30,12 @@ import { MicAt, uvOf } from '../shared/field/FieldStage';
 import { along } from '../shared/field/spatial.ts';
 import { EVENT, LISTENER, PA_BOXES, PLAZA, WALKER_AT, fromS, toS } from './geometry.ts';
 import type { SpatialRig } from './model.ts';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+import { ListenerTopV2, SingerV2, WalkerV2, singerCoversV2, walkerCoversV2 } from './peopleV2';
+
+/** The new look (figure V2, builder Foley3): the singer and the performer Ana, the walker Kofi, the listener
+ *  Mei — in every picture and step of this lesson. */
+export const V2 = figureV2On('sidePlayers');
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -177,6 +183,11 @@ export function listenerTop(): PlayerPose {
 const LISTENER_TOP = listenerTop();
 
 export const SINGER_POSES = facingBack(PLAZA.singerMouth);
+/** The walker where the engine's scene draws them (WALKER_AT). */
+const WALKER_DRAWN = (() => {
+  const w = along(PLAZA.walk.a, PLAZA.walk.b, WALKER_AT);
+  return walkerPoses(v3(w.x, 0, w.z));
+})();
 export const PERFORMER_POSES = facingBack(EVENT.perfMouth);
 
 function Person({ view, poses, dim = 0.92 }: { view: ViewId; poses: { side: PlayerPose; top: PlayerPose }; dim?: number }) {
@@ -312,7 +323,7 @@ function Event({ view }: { view: ViewId }) {
 
 /** The listener's point: a dashed upright from the ground (side); from
  *  above, a listener standing there (`figure`) and the scene-front arrow. */
-function ListenerMark({ view, h = -LISTENER.y, figure = true }: { view: ViewId; h?: number; figure?: boolean }) {
+function ListenerMark({ view, h = -LISTENER.y, figure = true, v2 = V2 }: { view: ViewId; h?: number; figure?: boolean; v2?: boolean }) {
   const p = useMemo(() => {
     const line = make();
     const arrow = make();
@@ -331,10 +342,14 @@ function ListenerMark({ view, h = -LISTENER.y, figure = true }: { view: ViewId; 
   return (
     <Group>
       {view === 'top' && figure ? (
-        <Group layer={<Paint opacity={0.8} />}>
-          <PlayerBehind pose={LISTENER_TOP} />
-          <PlayerInFront pose={LISTENER_TOP} hands={false} />
-        </Group>
+        v2 ? (
+          <ListenerTopV2 pose={LISTENER_TOP} />
+        ) : (
+          <Group layer={<Paint opacity={0.8} />}>
+            <PlayerBehind pose={LISTENER_TOP} />
+            <PlayerInFront pose={LISTENER_TOP} hands={false} />
+          </Group>
+        )
       ) : null}
       <Path path={p.line} style="stroke" strokeWidth={22} color={AMBER} opacity={0.7}>
         <DashPathEffect intervals={[70, 50]} />
@@ -346,15 +361,25 @@ function ListenerMark({ view, h = -LISTENER.y, figure = true }: { view: ViewId; 
 
 /** The whole scene (behind the rigs). `walkerT`: the walker's place along
  *  the footpath (0 … 1). `listener`: draw the listener's mark. */
-export function SiteArt({ view, variant, walkerT = WALKER_AT, listener = true }: { view: ViewId; variant: VariantId; walkerT?: number; /** 'arrow': the scene front only (a rig stands at the point). */ listener?: boolean | 'arrow' }): ReactElement {
+export function SiteArt({ view, variant, walkerT = WALKER_AT, listener = true, v2 = V2 }: { view: ViewId; variant: VariantId; walkerT?: number; /** 'arrow': the scene front only (a rig stands at the point). */ listener?: boolean | 'arrow'; /** (the study page compares the old look) */ v2?: boolean }): ReactElement {
   const w = along(PLAZA.walk.a, PLAZA.walk.b, walkerT);
   const walker = useMemo(() => walkerPoses(v3(w.x, 0, w.z)), [w.x, w.z]);
   return (
     <Group>
       {variant === 'event' ? <Event view={view} /> : <Plaza view={view} />}
-      {listener ? <ListenerMark view={view} figure={listener === true} /> : null}
-      {variant === 'event' ? <Person view={view} poses={PERFORMER_POSES} /> : <Person view={view} poses={SINGER_POSES} />}
-      {variant === 'plaza' ? <Person view={view} poses={walker} dim={0.8} /> : null}
+      {listener ? <ListenerMark view={view} figure={listener === true} v2={v2} /> : null}
+      {v2 ? (
+        variant === 'event' ? (
+          <SingerV2 view={view} poses={PERFORMER_POSES} mouth={EVENT.perfMouth} />
+        ) : (
+          <SingerV2 view={view} poses={SINGER_POSES} mouth={PLAZA.singerMouth} />
+        )
+      ) : variant === 'event' ? (
+        <Person view={view} poses={PERFORMER_POSES} />
+      ) : (
+        <Person view={view} poses={SINGER_POSES} />
+      )}
+      {variant === 'plaza' ? v2 ? <WalkerV2 view={view} poses={walker} /> : <Person view={view} poses={walker} dim={0.8} /> : null}
     </Group>
   );
 }
@@ -522,12 +547,12 @@ export function spatialLabels(view: ViewId, variant: VariantId): ArtLabel[] {
 export function spatialHitTest(view: ViewId, variant: VariantId, u: number, v: number, tol: number): string | null {
   if (Math.hypot(u - 0, v - (view === 'side' ? -1700 : 0)) <= 260 + tol) return 'sp.listener';
   if (variant === 'plaza') {
-    if (figureCovers(view === 'side' ? SINGER_POSES.side : SINGER_POSES.top, u, v, tol)) return 'sp.singer';
+    if (V2 ? singerCoversV2(view, SINGER_POSES, PLAZA.singerMouth, u, v, tol) : figureCovers(view === 'side' ? SINGER_POSES.side : SINGER_POSES.top, u, v, tol)) return 'sp.singer';
     const w = along(PLAZA.walk.a, PLAZA.walk.b, WALKER_AT);
-    if (figureCovers(view === 'side' ? walkerPoses(v3(w.x, 0, w.z)).side : walkerPoses(v3(w.x, 0, w.z)).top, u, v, tol)) return 'sp.walker';
+    if (V2 ? walkerCoversV2(view, WALKER_DRAWN, u, v, tol) : figureCovers(view === 'side' ? walkerPoses(v3(w.x, 0, w.z)).side : walkerPoses(v3(w.x, 0, w.z)).top, u, v, tol)) return 'sp.walker';
     if (u <= PLAZA.wallX + tol && u >= PLAZA.wallX - 400 - tol) return 'sp.wall';
   } else {
-    if (figureCovers(view === 'side' ? PERFORMER_POSES.side : PERFORMER_POSES.top, u, v, tol)) return 'sp.performer';
+    if (V2 ? singerCoversV2(view, PERFORMER_POSES, EVENT.perfMouth, u, v, tol) : figureCovers(view === 'side' ? PERFORMER_POSES.side : PERFORMER_POSES.top, u, v, tol)) return 'sp.performer';
     for (const b of PA_BOXES) if (u >= b.min.x - tol && u <= b.max.x + tol && v >= (view === 'side' ? b.min.y : b.min.z) - tol && v <= (view === 'side' ? b.max.y : b.max.z) + tol) return 'sp.pa';
     if (u >= EVENT.stage.min.x - tol && u <= EVENT.stage.max.x + tol && (view === 'top' || v >= EVENT.stage.min.y - tol)) return 'sp.stage';
   }
@@ -536,5 +561,10 @@ export function spatialHitTest(view: ViewId, variant: VariantId, u: number, v: n
 
 export function spatialFigureAt(view: ViewId, variant: VariantId, u: number, v: number, tol: number): boolean {
   const P = variant === 'event' ? PERFORMER_POSES : SINGER_POSES;
+  if (V2) {
+    // (the new outlines: head, hands, arms — and the walker's, so no label sits on a face or a hand)
+    if (singerCoversV2(view, P, variant === 'event' ? EVENT.perfMouth : PLAZA.singerMouth, u, v, tol)) return true;
+    return variant === 'plaza' && walkerCoversV2(view, WALKER_DRAWN, u, v, tol);
+  }
   return figureCovers(view === 'side' ? P.side : P.top, u, v, tol);
 }

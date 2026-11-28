@@ -23,7 +23,14 @@ import { FrontMarks, mmPerPx, type FrontMark } from '../shared/metal/metalMark';
 import { BAR_TOP, barsOf, BC, P0, RAIL_Y, type Bar } from './model.ts';
 import { STAND } from './geometry.ts';
 import { Hand } from '../shared/smallperc/Hand';
-import { dorsalFlat, type Placement } from '../shared/smallperc/hands.ts';
+import { dorsalFlat, placePt, type Placement } from '../shared/smallperc/hands.ts';
+import { handForm } from '../shared/smallperc/handForm.ts';
+import { MetalPlayerV2, MetalSwitch, metalArmCloth, OutsideSleeve } from '../shared/metal/MetalPlayerV2';
+import { BC_SWEEP_FINGERS_DOWN, bcFig } from './playerV2.ts';
+import { recedeV2 } from '../shared/figureV2/playersV2';
+
+/** The player in the approved look (figure roll-out, D78; playerV2.ts, the drummer), where the family's switch is on (MetalSwitch). */
+const ROLE = 'metal.barChimes' as const;
 
 const HALF = BC.rail.mm / 2;
 const D = BC.barD.mm;
@@ -67,7 +74,7 @@ function sideArt(v: VariantId): ReactElement {
   return (
     <Group>
       <Floor u0={-4000} u1={5000} />
-      <PlayerInk path={playerSide([hand])} head="side" />
+      <MetalSwitch v2={<MetalPlayerV2 fig={bcFig('side')} role={ROLE} dim={0.85} />} old={<PlayerInk path={playerSide([hand])} head="side" />} />
       <Rod path={polyPath([[0, 0], [0, RAIL_Y]])} d={STAND.r * 2} pal={STEEL} />
       {rows.map((x) => (
         <Group key={x}>
@@ -90,7 +97,7 @@ function topArt(v: VariantId): ReactElement {
   shadow.addRRect(Skia.RRectXY(Skia.XYWHRect(-dep / 2 + 8, -HALF + 10, dep, 2 * HALF), 8, 8));
   return (
     <Group>
-      <PlayerInk path={playerTop([[-40, -HALF + 20]])} faint head="top" />
+      <MetalSwitch v2={<MetalPlayerV2 fig={bcFig('top')} role={ROLE} dim={0.7} />} old={<PlayerInk path={playerTop([[-40, -HALF + 20]])} faint head="top" />} />
       <Circle cx={0} cy={STAND.z} r={STAND.r + 4} color="#3a3e46" />
       <Path path={polyPath([[0, STAND.z], [0, HALF - 10]])} style="stroke" strokeWidth={10} color="#5a5f6a" />
       <Path path={shadow} color="#000" opacity={0.45}>
@@ -159,8 +166,37 @@ function SweepHand({ u, v }: { u: number; v: number }): ReactElement {
   return <Hand geo={SWEEP_HAND} pl={h.pl} forearm={h.arm} />;
 }
 
+/**
+ * (figure V2) THE SWEEP from the audience, as the player really sweeps: the same approved hand turned to hang
+ * fingers DOWN (the back of the left hand toward the audience, the thumb toward the row's middle), its wrist at
+ * `(u, v)`, the fingers' backs brushing the bars from behind them; the forearm toward `elbow` (on a figure, under
+ * its sleeve) or up out of the picture toward the player's left shoulder.
+ */
+function hangAtWrist(u: number, v: number, elbow?: readonly [number, number]): { pl: Placement; arm: { from: readonly [number, number]; w: number; sleeve: number } } {
+  return { pl: { at: [u, v], angle: 90, mirror: true }, arm: elbow ? { from: elbow, w: 54, sleeve: 0 } : { from: [u + 150, v - 500], w: 54, sleeve: 330 } };
+}
+function SweepHandDown({ u, v, elbow }: { u: number; v: number; elbow?: readonly [number, number] }): ReactElement {
+  const h = useMemo(() => hangAtWrist(u, v, elbow), [u, v, elbow]);
+  return <Hand geo={SWEEP_HAND} pl={h.pl} forearm={h.arm} />;
+}
+
 /** The sweeping hand's fingertip, from the audience. */
 const HAND_AT: [number, number] = [FU(-HALF) + 30, P0.y - 10];
+/** (figure V2) the hanging hand's wrist, from the audience: the hand spans the same band below HAND_AT that the
+ *  HAND mark and its tap area cover (its fingertips ≈ 177 mm below). */
+export const WRIST_AT: [number, number] = [HAND_AT[0] + TIP[1], HAND_AT[1] - 6];
+/** (figure V2) the middle of that hand's own wrist crease on the page (its form's two wrist edges, placed): where
+ *  the player's sleeve ends, so the cuff sits over the wrist. */
+/** (figure V2) the face-on hand's placement: hanging behind the bars (BC_SWEEP_FINGERS_DOWN, the default) or the
+ *  old drawing's fingers-up hand in front of them (the owner's ruling, playerV2.ts). */
+const FRONT_PL: Placement = BC_SWEEP_FINGERS_DOWN ? hangAtWrist(WRIST_AT[0], WRIST_AT[1]).pl : handAtTip(HAND_AT[0], HAND_AT[1]).pl;
+export const WRIST_MID: [number, number] = (() => {
+  const F = handForm(SWEEP_HAND);
+  const pl = FRONT_PL;
+  const a = placePt(F.wrist[0], pl);
+  const b = placePt(F.wrist[1], pl);
+  return [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+})();
 
 /** The outline round the whole row: along the tops, then the graduated bottoms. */
 function barsOutline(variant: VariantId, pad: number): [number, number][] {
@@ -196,19 +232,40 @@ export function barChimesMark(variant: VariantId, id: string | null): FrontMark[
   }
 }
 
+/** (figure V2) the player behind the row, from the audience: the body, the left arm to the hanging hand's wrist,
+ *  and the approved hand (behind the bars: the bars are painted over it). */
+function FrontPlayerV2({ part }: { part: 'body' | 'hand' }): ReactElement | null {
+  const fig = bcFig('front', WRIST_MID);
+  const { elbow } = metalArmCloth(fig, ROLE, 'L');
+  // (fingers down: the hand behind the bars, drawn with the body; fingers up — the old picture — over the rail)
+  const handNow = BC_SWEEP_FINGERS_DOWN ? part === 'body' : part === 'hand';
+  const hand = BC_SWEEP_FINGERS_DOWN ? <SweepHandDown u={WRIST_AT[0]} v={WRIST_AT[1]} elbow={elbow} /> : <Hand geo={SWEEP_HAND} pl={FRONT_PL} forearm={{ from: elbow, w: 54, sleeve: 0 }} />;
+  return (
+    // (the person and the hand receded together: one skin)
+    <Group layer={recedeV2(0.85) as never}>
+      {part === 'body' ? <MetalPlayerV2 fig={fig} role={ROLE} /> : null}
+      {handNow ? (
+        <OutsideSleeve fig={fig} role={ROLE} side="L">
+          {hand}
+        </OutsideSleeve>
+      ) : null}
+    </Group>
+  );
+}
+
 function FrontImpl({ variant, highlight }: { variant: VariantId; highlight: string | null }): ReactElement {
   const pal = metalOf(variant);
   const bars = barsOf(variant);
   return (
     <Group>
       <Floor u0={-2400} u1={2400} />
-      <PlayerInk path={playerFront([HAND_AT])} faint head="front" />
+      <MetalSwitch v2={<FrontPlayerV2 part="body" />} old={<PlayerInk path={playerFront([HAND_AT])} faint head="front" />} />
       <Rod path={polyPath([[FU(STAND.z), 0], [FU(STAND.z), RAIL_Y], [FU(HALF) + 12, RAIL_Y]])} d={STAND.r * 2} pal={STEEL} />
       {[...bars].sort((a, b) => a.x - b.x).map((b, i) => (
         <HangingBar key={i} u={FU(b.z)} L={b.L} pal={b.x > 0 ? [pal[2], pal[2], pal[3], pal[4], pal[4]] : pal} />
       ))}
       <Rail u0={FU(HALF)} u1={FU(-HALF)} />
-      <SweepHand u={HAND_AT[0]} v={HAND_AT[1]} />
+      <MetalSwitch v2={<FrontPlayerV2 part="hand" />} old={<SweepHand u={HAND_AT[0]} v={HAND_AT[1]} />} />
       <FrontMarks marks={barChimesMark(variant, highlight)} box={frontBox(variant)} />
     </Group>
   );
@@ -285,6 +342,8 @@ export function BarChimesStrike({ w, h, variant, shown, accessibilityLabel }: { 
               <DashPathEffect intervals={[10, 8]} />
             </Path>
           ) : null}
+          {/* (figure V2) the hand behind the bars, hanging, the fingers' backs brushing them */}
+          <MetalSwitch v2={BC_SWEEP_FINGERS_DOWN ? <SweepHandDown u={FU(handZ) + TIP[1]} v={P0.y - 36} /> : null} old={null} />
           {bars.map((b, i) => (
             <Group key={i}>
               {sw[i] !== 0 && shown >= 2 ? <Circle cx={FU(b.z) + Math.sin((sw[i] * Math.PI) / 180) * b.L} cy={BAR_TOP + b.L} r={6} color="#ffc64d" opacity={shown >= 3 ? 0.55 : 0.85} /> : null}
@@ -292,7 +351,7 @@ export function BarChimesStrike({ w, h, variant, shown, accessibilityLabel }: { 
             </Group>
           ))}
           <Rail u0={FU(HALF)} u1={FU(-HALF)} />
-          <SweepHand u={FU(handZ)} v={P0.y - 30} />
+          <MetalSwitch v2={BC_SWEEP_FINGERS_DOWN ? null : <SweepHand u={FU(handZ)} v={P0.y - 30} />} old={<SweepHand u={FU(handZ)} v={P0.y - 30} />} />
         </Group>
       </Canvas>
       <StaticLabels labels={labels} xf={xf} scale={textScale} w={w} />

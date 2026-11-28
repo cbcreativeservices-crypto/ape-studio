@@ -38,19 +38,22 @@ import { markLabVisit, useLabVisits, useLabVisitsUnreadable } from '../../../fea
 import { LabEndScreen, useLabEndGuest } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, useLabNav } from '../kit/LabNavBar';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
-import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../foundations/bits';
+import { VizUnavailableCard, type CheckSpec } from '../foundations/bits';
+import { GoalCheck, ModuleGoalProvider, useMetWhen } from '../meter/moduleGoal';
 import { RackUnit } from '../rack/RackUnit';
-import type { DockParam } from '../rack/rackTypes';
+import type { DockParam, LaneNudge } from '../rack/rackTypes';
 import { GlassShape, useGlassSize, type GlassSize } from '../glassShape';
 import { requireTubeViz, type TubeVizModule } from './skiaGate';
 import { TUBE_INK } from './tubeInks';
-import { gridState, gridWord, plateCurrentFrac } from './gridModel';
+import { CUTOFF_WORDS, GRID_CUTOFF, gridState, plateCurrentFrac } from './gridModel';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { LabUnderstandingBlock } from '../../../components/LabUnderstandingBlock';
 import { useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
 import { UNDERSTANDING_UNIT, understandingFor } from '../../../features/lab/understanding';
 import type { LabEndUnit } from '../kit/labEnd';
+import { biasZone } from './biasCurve';
+import { plateCurrentShare } from './flowModel';
 
 // ── Screen-owned data (no Skia dependency) ──────────────────────────────────
 
@@ -177,7 +180,9 @@ function SectionWell({ title, blurb, help, children }: { title: string; blurb: s
         accessibilityRole="button"
         accessibilityLabel="Open the guided lesson"
       >
-        <Text style={styles.lessonRowText}>ⓘ GUIDED LESSON — every control long-presses for its own entry</Text>
+        {/* TB-01 (owner 2026-11-15: "build waves 1 thru 3"): visible help, not
+            long-press. A tray's own ⓘ opens that control's entry. */}
+        <Text style={styles.lessonRowText}>{TUBE_LESSON_ROW}</Text>
       </Pressable>
       <Text style={styles.futureNote}>🔈 This lab teaches visually — no audio playback.</Text>
     </>
@@ -185,6 +190,19 @@ function SectionWell({ title, blurb, help, children }: { title: string; blurb: s
 }
 
 const pct = (v: number) => `${Math.round(v * 100)}%`;
+
+/** The well's guided-lesson row (TB-01): a tap here, or the ⓘ in an open tray. */
+export const TUBE_LESSON_ROW = 'ⓘ GUIDED LESSON · tap here, or the ⓘ in an open tray, for each control';
+
+/** Module 1's one opening line (TB-04): what a tube is, then one instruction. */
+export const TUBE_INSIDE_BLURB =
+  'A tube is a valve for electrons: a tiny voltage controls a big flow. Open PARTS and tap a part to take it out and see what stops working.';
+
+/** Removing the control grid, said big (TB-05): the module's payoff. */
+export const NO_GRID_RESULT = 'No grid → the flow can’t be controlled → no amplifier';
+/** Where the way on is (the rack's own NEXT: ELECTRON FLOW ›), never a second link. */
+export const NO_GRID_NEXT_TRAY = 'Next, warm it up: close ✕, then NEXT: ELECTRON FLOW.';
+export const NO_GRID_NEXT_WELL = 'Next, warm it up: NEXT: ELECTRON FLOW, below.';
 
 // ── 1 · What's inside ───────────────────────────────────────────────────────
 
@@ -196,6 +214,10 @@ function InsideSection(p: SectionProps) {
   // glows (when visible) and drives the explainer note.
   const [visible, setVisible] = useState<TubePart[]>(ALL_PART_KEYS);
   const [lastTouched, setLastTouched] = useState<TubePart | null>(null);
+  // The section counts once every part has been tapped (its blurb: "tap each
+  // piece to learn its job") — owner's decision 1, phase 3: done = work done.
+  const [touched, setTouched] = useState<ReadonlySet<TubePart>>(() => new Set());
+  useMetWhen(touched.size >= PARTS.length);
   const allOn = visible.length === ALL_PART_KEYS.length;
   const sel = PARTS.find((part) => part.key === lastTouched) ?? null;
   const togglePart = (key: TubePart) => {
@@ -212,6 +234,7 @@ function InsideSection(p: SectionProps) {
       return next;
     });
     setLastTouched(key);
+    setTouched((t) => (t.has(key) ? t : new Set([...t, key])));
   };
   const toggleAll = () => {
     // HIDE ALL = glass only (owner 2026-08-10); SHOW ALL restores everything.
@@ -223,6 +246,17 @@ function InsideSection(p: SectionProps) {
   const physics = firstMissing
     ? `${PHYSICS[firstMissing.key]}  ▸ Tap ${firstMissing.label} to add it back.`
     : null;
+  // TB-05: the control grid out is the module's payoff, said in large type.
+  // Shown in the open tray AND in the well (the tray covers the well); the
+  // one way on is the rack's own NEXT: ELECTRON FLOW ›, named, never a
+  // second link (checker fix, 2026-11-15).
+  const noGrid = firstMissing?.key === 'grid';
+  const noGridResult = (where: 'tray' | 'well') => (
+    <View style={{ gap: 6 }}>
+      <Text style={styles.bigResult} accessibilityRole="header">{NO_GRID_RESULT}</Text>
+      <Text style={styles.readout}>{`▸ Tap CONTROL GRID to add it back. ${where === 'tray' ? NO_GRID_NEXT_TRAY : NO_GRID_NEXT_WELL}`}</Text>
+    </View>
+  );
 
   // Bezel physics state — mirrors the drawing's own rules (viz.tsx): emission
   // needs heater+cathode; air kills transit; no plate = no pull; G1 meters it.
@@ -237,7 +271,8 @@ function InsideSection(p: SectionProps) {
       kind: 'group',
       id: 'parts',
       label: 'PARTS',
-      valueLabel: `${visible.length}/${ALL_PART_KEYS.length}`,
+      // "Start here" on the key until a part is tapped (TB-04), then the count.
+      valueLabel: touched.size === 0 ? 'START HERE' : `${visible.length}/${ALL_PART_KEYS.length}`,
       helpKey: 'cutaway',
       // Part chips carry the reference-card INK CODE (owner 2026-08-10): each
       // chip is the same color as its element in the drawing AND on the Tube
@@ -275,7 +310,9 @@ function InsideSection(p: SectionProps) {
               );
             })}
           </View>
-          {physics ? <Text style={styles.readout}>{physics}</Text> : null}
+          {/* Checker fix (TB-05): the tray stays open while parts are toggled
+              and covers the well, so the "No grid" result shows here too. */}
+          {noGrid ? noGridResult('tray') : physics ? <Text style={styles.readout}>{physics}</Text> : null}
         </View>
       ),
     },
@@ -290,11 +327,12 @@ function InsideSection(p: SectionProps) {
       stage={{
         size: 'L',
         fullScreen: true, // full-screen build 2026-09-30: ⤢ FULL SCREEN, PARTS tray and E-VIEW ride inside
-        badge: 'ILLUSTRATIVE MODEL — SCHEMATIC CROSS-SECTION, NOT MEASURED TUBE DATA',
+        // S3's plain model note (phase 3, owner decision 3), not an all-caps badge.
+        modelNote: 'A drawn cross-section, not measured tube data.',
         onGuide: () => p.help('cutaway'),
         bezel: [
           { k: 'PARTS', v: `${visible.length}/${ALL_PART_KEYS.length}`, helpKey: 'cutaway' },
-          { k: 'EMISSION', v: emitting ? 'ON' : 'OFF', tint: emitting ? undefined : DIM, helpKey: 'cutaway' },
+          { k: 'EMISSION', v: emitting ? 'ON' : 'OFF', tint: emitting ? undefined : DIM, helpKey: 'cutaway', caption: 'electrons out' },
           { k: 'CURRENT', v: current, tint: flowing ? '#5bff85' : DIM, flex: 1.3, helpKey: 'cutaway' },
         ],
         render: stageGlass(p.viz, glass, (viz, w, h) => (
@@ -303,11 +341,16 @@ function InsideSection(p: SectionProps) {
       }}
     >
       <SectionWell title={p.title} blurb={p.blurb} help={p.help}>
-        {physics ? <Text style={styles.readout}>{physics}</Text> : null}
+        {/* TB-05 (owner 2026-11-15: "build waves 1 thru 3"): taking out the
+            control grid is the module's payoff, so it reads in large type with
+            the way on; every other missing part keeps its plain line. */}
+        {noGrid ? noGridResult('well') : physics ? <Text style={styles.readout}>{physics}</Text> : null}
         <Text style={styles.caption}>
           {sel
             ? `${sel.note}${visible.includes(sel.key) ? '' : '  (Hidden — tap its chip again to bring it back.)'}`
-            : 'Open PARTS and tap a part to REMOVE it — then turn on ⚡ E-VIEW and watch what the electrons do without it: every piece is there for a reason, and the drawing shows you why. Each part wears the SAME color it has on the Tube Reference cards. (Drawn as a pentode — the fullest version.)'}
+            : // TB-04: the second instruction that disagreed with the blurb is gone;
+              // what is left adds only what the blurb does not say.
+              'Turn on ⚡ E-VIEW to watch what the electrons do without a part. Each part wears the same color it has on the Tube Reference cards.'}
         </Text>
       </SectionWell>
     </RackUnit>
@@ -324,7 +367,9 @@ function FlowSection(p: SectionProps) {
   const [heat, setHeat] = useState(0);
   const stage = FLOW_STAGES.find((s) => heat < s.until) ?? FLOW_STAGES[4];
   const stageNum = FLOW_STAGES.indexOf(stage) + 1;
-  const current = heat > 0.7 ? (heat - 0.7) / 0.3 : 0;
+  // The section counts once the tube is warmed up to steady current (stage 5).
+  useMetWhen(stageNum === FLOW_STAGES.length);
+  const current = plateCurrentShare(heat);
   const heatWord = (v: number) => (v < 0.15 ? 'cold' : v < 0.7 ? 'warming…' : 'conducting');
   const glass = useGlassSize();
 
@@ -350,12 +395,12 @@ function FlowSection(p: SectionProps) {
       stage={{
         size: 'L',
         fullScreen: true, // full-screen build 2026-09-30: ⤢ FULL SCREEN with the WARM-UP lane docked inside
-        badge: 'CONCEPTUAL — the warm-up sequence, slowed and drawn; real electrons are invisible and countless',
+        modelNote: 'The warm-up drawn slowly; real electrons are invisible and countless.',
         onGuide: () => p.help('warm_up'),
         bezel: [
           { k: 'HEAT', v: pct(heat), helpKey: 'warm_up' },
           { k: 'STAGE', v: `${stageNum}/5`, helpKey: 'warm_up' },
-          { k: 'PLATE I', v: pct(current), tint: current > 0 ? '#5bff85' : DIM, helpKey: 'warm_up' },
+          { k: 'PLATE I', v: pct(current), tint: current > 0 ? '#5bff85' : DIM, helpKey: 'warm_up', caption: 'plate current' },
         ],
         render: stageGlass(p.viz, glass, (viz, w, h) => <FlowViz viz={viz} width={w} height={h} heat={heat} running={p.focused} />),
       }}
@@ -385,16 +430,29 @@ const GRID_CHECK: CheckSpec = {
     'It heats up and emits extra electrons',
   ],
   correctIdx: 1,
+  why: {
+    0: 'The grid is an open mesh; electrons could pass straight through. Slide GRID V and watch the field.',
+    2: 'Only the heated cathode gives off electrons. The grid works by its voltage.',
+  },
   reveal:
     'The grid is a sparse spiral — most electrons could fly right through the gaps. What stops them is its FIELD: a small negative voltage repels the (negative) electrons back toward the cathode. Nudge that voltage slightly and the entire stream swells or starves — a tiny voltage controlling a large current IS amplification.',
   wrongHint: 'Slide the GRID V fader and watch — do the grid wires move, or does something invisible change?',
 };
 
+/** GRID V's lane ends, in words (TB-02): tap = one 5 % step, hold = that end. */
+export function gridNudges(set: (next: number | ((prev: number) => number)) => void): LaneNudge[] {
+  // A functional update, so two quick taps move two steps (checker note).
+  const step = (d: number) => set((prev) => Math.max(0, Math.min(1, Math.round((prev + d) * 100) / 100)));
+  return [
+    { label: '◂ CLOSES', onPress: () => step(-0.05), onLongPress: () => set(0), a11y: 'Grid closes the flow: more negative by 5 percent; hold for fully closed' },
+    { label: 'OPENS ▸', onPress: () => step(0.05), onLongPress: () => set(1), a11y: 'Grid opens the flow: less negative by 5 percent; hold for fully open' },
+  ];
+}
+
 function GridSection(p: SectionProps) {
   const [v, setV] = useState(0.5);
   // At cutoff the readout says "cut off — no current flows" (owner hold #10,
   // 2026-10-14), and PLATE I and the electrons both read zero there.
-  const word = gridWord;
   const plateI = plateCurrentFrac(v);
   const glass = useGlassSize();
 
@@ -406,9 +464,16 @@ function GridSection(p: SectionProps) {
       value: v,
       onChange: setV,
       // Percentage first (slider pass 2026-10-14): the word alone sat still
-      // over 70 % of the travel, so the lane looked dead.
-      format: (x) => `${pct(x)} · ${word(x)}`,
+      // over 70 % of the travel, so the lane looked dead. TB-02 (owner
+      // 2026-11-15: "build waves 1 thru 3"): the % now says what it measures,
+      // OPEN, so a low number reads as "closed", and the lane's ends read in
+      // words (◂ CLOSES / OPENS ▸) instead of − / +. Same lane, same model.
+      // The state words are the bezel's own (PARTIAL / FULL FLOW); at cutoff the
+      // owner's words (hold #10) stand. Short enough to show whole at 390
+      // (SH-27 checker fix, owner 2026-11-15: "build waves 1 thru 3").
+      format: (x) => (x <= GRID_CUTOFF ? `${pct(x)} · ${CUTOFF_WORDS}` : `${pct(x)} open · ${gridState(x).toLowerCase()}`),
       formatShort: (x) => pct(x),
+      nudges: gridNudges(setV),
       helpKey: 'grid_voltage',
     },
     ...tailParams(p, true),
@@ -422,11 +487,11 @@ function GridSection(p: SectionProps) {
       stage={{
         size: 'L',
         fullScreen: true, // full-screen build 2026-09-30: ⤢ FULL SCREEN with the GRID V lane and E-VIEW docked inside
-        badge: "CONCEPTUAL — electron view adds the grid's repelling field lines; conduction is illustrative",
+        modelNote: 'Electron view adds the grid’s field lines; the conduction shown is illustrative.',
         onGuide: () => p.help('grid_voltage'),
         bezel: [
           { k: 'GRID', v: gridState(v), flex: 1.2, helpKey: 'grid_voltage' },
-          { k: 'PLATE I', v: pct(plateI), tint: plateI === 0 ? colors.textSub : plateI > 0.85 ? '#ffd76b' : '#5bff85', helpKey: 'grid_voltage' },
+          { k: 'PLATE I', v: pct(plateI), tint: plateI === 0 ? colors.textSub : plateI > 0.85 ? '#ffd76b' : '#5bff85', helpKey: 'grid_voltage', caption: 'plate current' },
         ],
         render: stageGlass(p.viz, glass, (viz, w, h) => (
           <GridViz viz={viz} width={w} height={h} cond={v} flow={plateI} electron={p.electron} running={p.focused} />
@@ -439,7 +504,7 @@ function GridSection(p: SectionProps) {
           That sentence is the entire reason vacuum tubes changed the world — read it again while
           you slide the GRID V fader.
         </Text>
-        <CheckQuestion spec={GRID_CHECK} />
+        <GoalCheck spec={GRID_CHECK} />
       </SectionWell>
     </RackUnit>
   );
@@ -451,6 +516,21 @@ function GridViz({ viz, width, height, cond, flow, electron, running }: { viz: T
 
 // ── 4 · Amplification ───────────────────────────────────────────────────────
 
+/** The section's own check (phase 3, 2026-11-14): a reading section needs a
+ *  task to count, and this is the one idea it teaches. */
+const AMPLIFY_CHECK: CheckSpec = {
+  question: 'Your signal wiggles the GRID a little. What leaves the PLATE?',
+  options: ['A bigger copy, flipped upside down', 'The same small wiggle, unchanged', 'A smaller copy, the same way up'],
+  correctIdx: 0,
+  why: {
+    1: 'The grid only gates the big cathode-to-plate stream. Compare the blue wave with the amber one.',
+    2: 'The plate stream is the large one. Look at how tall the amber wave is next to the blue.',
+  },
+  reveal:
+    'A small grid wiggle opens and chokes the much larger cathode-to-plate current, so the plate carries a bigger copy of your signal, inverted: a more positive grid means more current, and more current pulls the plate voltage down.',
+  wrongHint: 'Follow the colors: blue goes in at the grid, amber comes out of the plate.',
+};
+
 function AmplifySection(p: SectionProps) {
   const glass = useGlassSize();
   return (
@@ -461,7 +541,7 @@ function AmplifySection(p: SectionProps) {
       stage={{
         size: 'L',
         fullScreen: true, // full-screen build 2026-09-30: ⤢ FULL SCREEN
-        badge: 'ILLUSTRATIVE — gain drawn ~×7; the output is INVERTED (that sign-flip is real tube behavior)',
+        modelNote: 'Gain drawn at about ×7; the output is inverted, as in a real tube.',
         onGuide: () => p.help('amplification'),
         bezel: [
           { k: 'GAIN', v: '~×7', helpKey: 'amplification' },
@@ -484,6 +564,7 @@ function AmplifySection(p: SectionProps) {
           Most tube mic preamps, guitar amps, compressors and broadcast consoles repeat this one
           picture, with other stages (like the cathode follower) mixed in.
         </Text>
+        <GoalCheck spec={AMPLIFY_CHECK} />
       </SectionWell>
     </RackUnit>
   );
@@ -497,6 +578,8 @@ function AmplifyViz({ viz, width, height, running }: { viz: TubeVizModule; width
 
 function HighVoltSection(p: SectionProps) {
   const [highB, setHighB] = useState(false);
+  // The section counts once the high-voltage supply (B+) has been switched in.
+  useMetWhen(highB);
   const glass = useGlassSize();
 
   const params: DockParam[] = [
@@ -525,7 +608,7 @@ function HighVoltSection(p: SectionProps) {
       stage={{
         size: 'L',
         fullScreen: true, // full-screen build 2026-09-30: ⤢ FULL SCREEN with the SUPPLY tray inside
-        badge: 'CONCEPTUAL — attraction strength drawn as arrow length and electron count',
+        modelNote: 'Attraction drawn as arrow length and electron count, not measured.',
         onGuide: () => p.help('high_voltage'),
         bezel: [
           { k: 'SUPPLY', v: highB ? 'B+ HIGH' : 'SMALL', helpKey: 'high_voltage' },
@@ -610,6 +693,10 @@ const TYPES: {
 function TypesSection(p: SectionProps) {
   const [idx, setIdx] = useState(0);
   const t = TYPES[idx];
+  // The section counts once all three types have been looked at.
+  const [seenTypes, setSeenTypes] = useState<ReadonlySet<number>>(() => new Set([0]));
+  useEffect(() => setSeenTypes((v) => (v.has(idx) ? v : new Set([...v, idx]))), [idx]);
+  useMetWhen(seenTypes.size >= TYPES.length);
   const ink = TUBE_INK[t.newPart];
   const glass = useGlassSize();
 
@@ -641,7 +728,7 @@ function TypesSection(p: SectionProps) {
       stage={{
         size: 'L',
         fullScreen: true, // full-screen build 2026-09-30: ⤢ FULL SCREEN with the TYPE tray and E-VIEW inside
-        badge: "ILLUSTRATIVE — the newest grid GLOWS in its own color · in ⚡ E-VIEW, red dots = secondary emission (the tetrode's problem, the pentode's fix)",
+        modelNote: 'The newest grid glows; in ⚡ E-VIEW, red dots are secondary emission.',
         onGuide: () => p.help('tube_types'),
         bezel: [
           { k: 'TYPE', v: t.label, helpKey: 'tube_types' },
@@ -672,6 +759,10 @@ const BIAS_CHECK: CheckSpec = {
     'It gets louder, because the tube works harder',
   ],
   correctIdx: 1,
+  why: {
+    0: 'Slide BIAS far left and look at the output wave: part of it is missing.',
+    2: 'In cutoff the tube passes less, not more. Watch ZONE as you slide BIAS.',
+  },
   reveal:
     'Bias sets WHERE on the transfer curve the tube idles. Too negative and the stream is shut off for much of the swing — the input wiggles a closed valve, so part of the wave (or all of it) is lost. Correct bias parks the idle point mid-curve so the whole swing stays on the straight part. Too positive and it slams into saturation instead.',
   wrongHint: 'Slide the BIAS fader to the far left and watch the output wave on the right of the display.',
@@ -679,8 +770,11 @@ const BIAS_CHECK: CheckSpec = {
 
 function BiasSection(p: SectionProps) {
   const [b, setB] = useState(0.5);
-  const bad = b < 0.22 || b > 0.8;
-  const zone = b < 0.22 ? 'TOO NEGATIVE — CUTOFF: the bottom of the swing flatlines' : b > 0.8 ? 'TOO POSITIVE — SATURATION: the top of the swing flattens' : 'CORRECT BIAS — the swing rides the straight part of the curve';
+  // One zone rule with the drawn curve (biasCurve.ts, audit B7): CUTOFF exactly
+  // when the bottom of the swing has a flat stretch at zero current.
+  const zk = biasZone(b);
+  const bad = zk !== 'linear';
+  const zone = zk === 'cutoff' ? 'TOO NEGATIVE — CUTOFF: the bottom of the swing flatlines' : zk === 'saturation' ? 'TOO POSITIVE — SATURATION: the top of the swing flattens' : 'CORRECT BIAS — the swing rides the straight part of the curve';
   const glass = useGlassSize();
 
   const params: DockParam[] = [
@@ -690,7 +784,7 @@ function BiasSection(p: SectionProps) {
       label: 'BIAS',
       value: b,
       onChange: setB,
-      format: (x) => `${pct(x)} · ${x < 0.22 ? 'too negative' : x > 0.8 ? 'too positive' : 'correct'}`,
+      format: (x) => `${pct(x)} · ${biasZone(x) === 'cutoff' ? 'too negative' : biasZone(x) === 'saturation' ? 'too positive' : 'correct'}`,
       formatShort: (x) => pct(x),
       tint: bad ? '#ff6b5e' : undefined,
       helpKey: 'bias',
@@ -706,11 +800,11 @@ function BiasSection(p: SectionProps) {
       stage={{
         size: 'L',
         fullScreen: true, // full-screen build 2026-09-30: ⤢ FULL SCREEN with the BIAS lane docked inside
-        badge: 'ILLUSTRATIVE TRANSFER CURVE (normalized) — left: the operating point riding the curve · right: the resulting output',
+        modelNote: 'A normalized transfer curve: the operating point (left) and the output (right).',
         onGuide: () => p.help('bias'),
         bezel: [
           { k: 'BIAS', v: pct(b), helpKey: 'bias' },
-          { k: 'ZONE', v: b < 0.22 ? 'CUTOFF' : b > 0.8 ? 'SATURATION' : 'LINEAR', tint: bad ? '#ff6b5e' : '#5bff85', flex: 1.3, helpKey: 'bias' },
+          { k: 'ZONE', v: zk === 'cutoff' ? 'CUTOFF' : zk === 'saturation' ? 'SATURATION' : 'LINEAR', tint: bad ? '#ff6b5e' : '#5bff85', flex: 1.3, helpKey: 'bias' },
         ],
         render: stageGlass(p.viz, glass, (viz, w, h) => <BiasViz viz={viz} width={w} height={h} bias={b} running={p.focused} />),
       }}
@@ -724,7 +818,7 @@ function BiasSection(p: SectionProps) {
           inside an energized chassis at lethal voltage, by a qualified technician. Learn what
           bias IS here; have the work done by someone trained to do it.
         </Text>
-        <CheckQuestion spec={BIAS_CHECK} />
+        <GoalCheck spec={BIAS_CHECK} />
       </SectionWell>
     </RackUnit>
   );
@@ -739,6 +833,8 @@ function BiasViz({ viz, width, height, bias, running }: { viz: TubeVizModule; wi
 function SaturationSection(p: SectionProps) {
   const [drive, setDrive] = useState(0.2);
   const state = drive < 0.3 ? 'CLEAN' : drive < 0.7 ? 'WARMING' : 'SATURATED';
+  // The section counts once the tube has been driven into saturation.
+  useMetWhen(state === 'SATURATED');
   const glass = useGlassSize();
 
   const params: DockParam[] = [
@@ -749,7 +845,9 @@ function SaturationSection(p: SectionProps) {
       level: true,
       value: drive,
       onChange: setDrive,
-      format: (x) => `${pct(x)} · ${x < 0.3 ? 'clean — straight-line region' : x < 0.7 ? 'warming — peaks rounding' : 'saturated — soft clipping'}`,
+      // Short enough to show whole at 390 (SH-27 checker fix, owner 2026-11-15:
+      // "build waves 1 thru 3"); it was cut to "clean — straight-lin…".
+      format: (x) => `${pct(x)} · ${x < 0.3 ? 'clean' : x < 0.7 ? 'peaks rounding' : 'soft clipping'}`,
       formatShort: (x) => pct(x),
       helpKey: 'saturation',
     },
@@ -764,7 +862,7 @@ function SaturationSection(p: SectionProps) {
       stage={{
         size: 'L',
         fullScreen: true, // full-screen build 2026-09-30: ⤢ FULL SCREEN with the DRIVE lane docked inside
-        badge: 'ILLUSTRATIVE — normalized tanh (soft-clipping) curve (left, vs the straight dashed ideal) · input & output waves (right)',
+        modelNote: 'A normalized soft-clipping curve (left) and the input and output waves (right).',
         onGuide: () => p.help('saturation'),
         bezel: [
           { k: 'DRIVE', v: pct(drive), helpKey: 'saturation' },
@@ -794,6 +892,20 @@ function SatViz({ viz, width, height, drive, running }: { viz: TubeVizModule; wi
 
 // ── 9 · Tube vs transistor ──────────────────────────────────────────────────
 
+/** The section's own check (phase 3, 2026-11-14). */
+const VERSUS_CHECK: CheckSpec = {
+  question: 'Which one needs a heater warm-up and hundreds of volts to work?',
+  options: ['The tube', 'The transistor', 'Both, equally'],
+  correctIdx: 0,
+  why: {
+    1: 'A transistor moves carriers through a solid junction at a few volts, with nothing to warm up.',
+    2: 'Only one of them boils electrons off a hot cathode. Read the two columns above.',
+  },
+  reveal:
+    'The tube heats its cathode to boil electrons off, then needs hundreds of volts on the plate to pull them across the vacuum. A transistor moves carriers through a semiconductor junction at a few volts and works the instant it is powered.',
+  wrongHint: 'Which side of the drawing glows and has to warm up?',
+};
+
 function VersusSection(p: SectionProps) {
   const glass = useGlassSize();
   return (
@@ -804,7 +916,7 @@ function VersusSection(p: SectionProps) {
       stage={{
         size: 'L',
         fullScreen: true, // full-screen build 2026-09-30: ⤢ FULL SCREEN
-        badge: 'ILLUSTRATIVE — left: electrons crossing a vacuum · right: carriers crossing semiconductor junctions',
+        modelNote: 'Left: electrons cross a vacuum. Right: carriers cross a semiconductor junction.',
         onGuide: () => p.help('tube_vs_transistor'),
         bezel: [
           { k: 'TUBE', v: 'VACUUM', tint: TUBE_INK.plate, helpKey: 'tube_vs_transistor' },
@@ -829,6 +941,7 @@ function VersusSection(p: SectionProps) {
           different physics. Neither is “better”: the transistor won on size, cost and reliability;
           the tube survives wherever its soft overload behavior IS the sound.
         </Text>
+        <GoalCheck spec={VERSUS_CHECK} />
       </SectionWell>
     </RackUnit>
   );
@@ -842,8 +955,36 @@ function VersusViz({ viz, width, height, running }: { viz: TubeVizModule; width:
 // The Tube Reference library left this list (rack conversion 2026-08-23): it
 // navigates from the dock's TUBE REF action key — it is not a stage section.
 
+/** "Done = work done" (owner's decision 1, phase 3, 2026-11-14): what makes
+ *  each module count. A number is how many CHECK YOURSELF questions must be
+ *  answered right; 0 is a hands-on goal (TUBE_SECTION_GOALS says which). */
+export const TUBE_SECTION_CHECKS: Record<TubeSectionId, number> = {
+  inside: 0,
+  flow: 0,
+  grid: 1,
+  amplify: 1,
+  highv: 0,
+  types: 0,
+  bias: 1,
+  sat: 0,
+  versus: 1,
+};
+export const TUBE_SECTION_GOALS: Record<TubeSectionId, string> = {
+  inside: 'Tap every part chip once.',
+  flow: 'Warm the tube up to steady current (stage 5).',
+  grid: 'Answer its CHECK YOURSELF right.',
+  amplify: 'Answer its CHECK YOURSELF right.',
+  highv: 'Switch in the high-voltage supply (B+).',
+  types: 'Look at all three types.',
+  bias: 'Answer its CHECK YOURSELF right.',
+  sat: 'Drive the tube into saturation.',
+  versus: 'Answer its CHECK YOURSELF right.',
+};
+export const TUBE_HOW_IT_COUNTS =
+  'A module counts once its own task is done: a CHECK YOURSELF answered right, or its goal reached. Opening it again, or practicing, never removes it.';
+
 const SECTIONS: { key: TubeSectionId; label: string; title: string; blurb: string; Comp: (p: SectionProps) => React.JSX.Element }[] = [
-  { key: 'inside', label: 'INSIDE', title: 'WHAT’S INSIDE A VACUUM TUBE?', blurb: 'Glass, metal, wire, and nothing at all — open PARTS and tap each piece to learn its job.', Comp: InsideSection },
+  { key: 'inside', label: 'INSIDE', title: 'WHAT’S INSIDE A VACUUM TUBE?', blurb: TUBE_INSIDE_BLURB, Comp: InsideSection },
   { key: 'flow', label: 'FLOW', title: 'ELECTRON FLOW', blurb: 'Slide the WARM-UP fader and watch heat become electrons, and electrons become current.', Comp: FlowSection },
   { key: 'grid', label: 'GRID', title: 'THE CONTROL GRID', blurb: 'The heart of amplification: a whisper of voltage gating a river of current.', Comp: GridSection },
   { key: 'amplify', label: 'AMPLIFY', title: 'SIGNAL AMPLIFICATION', blurb: 'Your signal never touches the big current — it drives the GRID (blue). The grid is a valve: its tiny wiggle opens and chokes the tube’s much larger cathode→plate stream, and that gated stream leaves the PLATE (amber) as a big, flipped copy of the input.', Comp: AmplifySection },
@@ -897,13 +1038,18 @@ export function VacuumTubeLabScreen() {
   const progressUnreadable = visitsUnreadable || (hasCheck && completionUnreadable);
   const endUnits = useMemo(() => tubeEndUnits(hasCheck), [hasCheck]);
   const endCleared = useMemo(() => tubeEndCleared(visited, bankedUnits), [visited, bankedUnits]);
+  // "DONE = WORK DONE" (owner's decision 1, phase 3, 2026-11-14): a module
+  // counts once its own task is done (TUBE_SECTION_GOALS), never on opening —
+  // it used to be marked here whenever a section was shown, so paging through
+  // read "✓ 9 DONE". Modules already marked stay marked.
+  const [goalsMet, setGoalsMet] = useState<ReadonlySet<TubeSectionId>>(() => new Set());
   useEffect(() => {
     // Wait for the tier (bug hunt 2026-09-30): the provider boots at
-    // 'anonymous'-but-unresolved, so a cold-start guest's first section was
+    // 'anonymous'-but-unresolved, so a cold-start guest's work would be
     // PERSISTED before `guest` could turn true.
     if (!entResolved) return;
-    markLabVisit('tube', SECTIONS[sectionIdx].key, { persist: !guest });
-  }, [sectionIdx, guest, entResolved]);
+    goalsMet.forEach((key) => markLabVisit('tube', key, { persist: !guest }));
+  }, [goalsMet, guest, entResolved]);
   const openSection = (i: number) => {
     setEnding(false);
     setSectionIdx(i);
@@ -959,12 +1105,15 @@ export function VacuumTubeLabScreen() {
       <View style={styles.rackArea}>
         {ending ? (
           <LabEndScreen
+            // The recap and next-lab card (labEndContent.ts, S4).
+            labId="tube"
             labTitle="Vacuum Tube Fundamentals"
             units={endUnits}
             cleared={endCleared}
             unreadable={progressUnreadable}
             mode="progress"
-            noun="section"
+            // One word for the unit, as on the strip: module (phase 3, 2026-11-14).
+            howItCounts={TUBE_HOW_IT_COUNTS}
             // The CHECK row stays here: the check is drawn on this screen (extra).
             onJump={(id) => { if (id !== UNDERSTANDING_UNIT) openSection(Math.max(0, SECTIONS.findIndex((sec) => sec.key === id))); }}
             // D41 K6: the CHECK row moves the screen to the check drawn here (extra).
@@ -977,7 +1126,13 @@ export function VacuumTubeLabScreen() {
             extra={<LabUnderstandingBlock labId="tube" labTitle="Vacuum Tube Fundamentals" />}
           />
         ) : (
-          <s.Comp key={s.key} {...sectionProps} />
+          <ModuleGoalProvider
+            need={TUBE_SECTION_CHECKS[s.key]}
+            onMet={() => setGoalsMet((g) => (g.has(s.key) ? g : new Set([...g, s.key])))}
+            resetKey={s.key}
+          >
+            <s.Comp key={s.key} {...sectionProps} />
+          </ModuleGoalProvider>
         )}
       </View>
       <GuidedLessonSheet
@@ -995,7 +1150,8 @@ export function VacuumTubeLabScreen() {
 /** The end screen's units: every section in order, then the understanding
  *  check as a CHECK row when questions are authored for this lab (D41 J2). */
 export function tubeEndUnits(hasCheck: boolean): LabEndUnit[] {
-  const units: LabEndUnit[] = SECTIONS.map((sec) => ({ id: sec.key, label: sec.title }));
+  // Each row says what is still to do on it (phase 3: done = work done).
+  const units: LabEndUnit[] = SECTIONS.map((sec) => ({ id: sec.key, label: sec.title, detail: `Still to do: ${TUBE_SECTION_GOALS[sec.key].replace(/^./, (c) => c.toLowerCase())}` }));
   if (hasCheck) units.push({ id: UNDERSTANDING_UNIT, label: 'Check your understanding', kind: 'check', detail: 'Every answer correct — retry until you are.' });
   return units;
 }
@@ -1016,6 +1172,7 @@ const styles = StyleSheet.create({
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   readout: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 0.5, lineHeight: 18, color: colors.amber },
+  bigResult: { fontFamily: fonts.oswaldSemiBold, fontSize: 19, letterSpacing: 0.4, lineHeight: 25, color: colors.amber },
   readoutBad: { color: '#ff6b5e' },
   futureNote: {
     fontFamily: fonts.barlowMedium,

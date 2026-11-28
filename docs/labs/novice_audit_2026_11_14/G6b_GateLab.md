@@ -1,0 +1,23 @@
+# G6b · GateLab — CHECK page walked (G6 judged it from source)
+
+Walked 2026-11-14, sound OFF, `http://localhost:8142/#labpreview/GateLab`, tab-5 at 390 x 844. On arrival the SOUND SAFETY WARNING appeared again (closed with KEEP SOUND OFF; it then faded out over ~1 s while I was already tapping CHECK). EXPLORE and LEARN were walked by G6 (see G6_GateLab.md).
+
+---
+
+## Page 3 · CHECK (walked: every question wrong first, then right)
+
+| Field | Finding |
+|---|---|
+| Page | Gate Lab · CHECK tab · `#labpreview/GateLab` → CHECK |
+| First look | "CHECK YOUR UNDERSTANDING / GATE LAB / Answer all 4 correctly to pass the check… nothing is lost and there is no score." "4 still to get right". Then, ~1 s later, the WHAT YOU'RE LEARNING popup slides over question 1. Thinks: "a short quiz". |
+| Overwhelm | **2 / 5.** Four questions on one scrolling page; kind wording. |
+| Knows what it is learning? | **Yes.** Popup: "which side of the threshold it works on, what a partial range does, what causes chatter, and what hold does." |
+| Knows what to do first? | **Yes.** Popup: "Read the first question… tap an answer. If one stumps you, use the tabs to look it up on LEARN or try it on EXPLORE." Good fallback advice. |
+| Words they would not know | "threshold" (Q1, assumed) · "RANGE (floor)" · "Compresses it by a ratio" (an option that needs the Compression lab) · "−20 dB" · "chatter" (defined inside Q3's question — good) · "HOLD", "RELEASE" in capitals (control names; fine after EXPLORE) · feedback: "bleed, hum, spill", "leakage duck". |
+| Follows / continues? | Yes. My wrong picks and what came back: Q1 "Lets it through unchanged" → "NOT QUITE — TRY ANOTHER · A gate works on the other side of the threshold from a compressor: loud sound above… passes untouched, quiet sound below it… is turned down toward the floor." (assumes the learner knows compressors; also names the answer). Q2 "completely silenced" → "Range sets how far the gate turns down when closed. A partial floor lets leakage duck instead of vanishing…" (good — tells why silence is not it). Q3 "Shorten the RELEASE as far as it goes" → "HOLD keeps the gate open for a minimum time, and a longer release closes it gently…" (names the answer). Q4 "Sets the level the signal must reach" → "Hold is a minimum open time… Range is the depth, and threshold is the opening level." (best one: it tells me my pick was the threshold). **Cross-question giveaway:** Q3's feedback ("HOLD keeps the gate open for a minimum time") is word-for-word Q4's right answer, directly below it. **Wrong and right feedback are the same text** (seen again after the right pick, headed CORRECT). **End:** the last card ends with "Check passed." and nothing after it — no FINISH, no "what's next", no link back to EXPLORE (Binaural and Stereo have FINISH · SEE WHAT'S LEFT; Gate does not). The "Every question answered correctly — the check is passed." banner is only at the top, off-screen. |
+| What works | Chatter defined inside the question; Q2 and Q4 feedback explain why the tempting wrong answer is wrong; amber "not quite" (not red); live counter; nothing lost on retry. Answer lengths are more mixed than EQ's (Q3's right answer is not the longest) — less of a length tell here, though Q1, Q2, Q4 still favour the long one. |
+| Suggestions | 1. **Give wrong picks their own one-line reason that does not state the answer** (as Q4 nearly does): Q1 "Unchanged is what happens ABOVE the threshold — think about the quiet part"; Q3 "Shorter release makes it close even faster, so it flickers more." Keep the full explanation for CORRECT. **M, SHARED (check-card data shape).** 2. **Remove the Q3 → Q4 giveaway**: reword Q3 feedback ("…a short wait before closing…") or swap the order so HOLD is asked first. **S.** 3. **Q1 feedback: do not lean on "compressor"** for a learner who may arrive at Gate first; say "A gate looks after the QUIET part: anything below the line is turned down." **S.** 4. **Add an end to the check**: after the last ✓, "Check passed ✓ — back to EXPLORE to try chatter yourself, or DONE · BACK TO LABS" (as Binaural/Stereo have). **S, SHARED (frame consistency).** |
+| Hobbyist | Fair, quick, real-world (chatter on a decaying tom is a familiar pain). Will want one question on attack/look-ahead (clicks on opening). |
+
+## Lab verdict addendum — GateLab CHECK
+The check itself is gentle and well-targeted; its two weaknesses are shared with every lab I walked: the wrong-answer text gives the answer away (and here one question's feedback answers the next question), and the page simply stops at "Check passed." with no way forward on the screen.

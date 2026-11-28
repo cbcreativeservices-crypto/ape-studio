@@ -41,6 +41,9 @@ import ToolStripSignalgen from '../../../assets/tool-strips/tool_06_tone_noise_g
 import ToolStripHzcounter from '../../../assets/tool-strips/tool_07_frequency_counter_tuner_strip.svg';
 import ToolStripMultimeter from '../../../assets/tool-strips/tool_08_pro_audio_multimeter_strip.svg';
 import { HomeOrBackKey } from '../../components/nav/HomeOrBackKey';
+import { ScreenCircleMenu, goHome } from '../../components/nav/CircleMenu';
+import { PlaceArt } from '../../components/nav/CircleMenuPanel';
+import { menuClearance } from '../../components/nav/circleMenuPlaces';
 import { safeGoBack } from '../../lib/safeGoBack';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
 import { useMemberGate } from '../../features/commercial/useTier';
@@ -259,15 +262,20 @@ const POWER_TIME_SCALE = 1.13;
 const powerSeq = (v: Animated.Value, steps: PowerStep[]) =>
   Animated.sequence(steps.map((st) => Animated.timing(v, { toValue: st.to, duration: Math.round(st.ms * POWER_TIME_SCALE), easing: st.ease ?? Easing.linear, useNativeDriver: true })));
 
+/** Reading order (two columns on a wide pane). Owner 2026-11-20: Spectrogram
+ *  and Waveform swapped places, and the Tuner & Frequency Counter swapped with
+ *  the Tone / Noise Generator. Each tile keeps its own art, power-on persona,
+ *  wear seed and telemetry (all keyed by tool, never by position); only the
+ *  reading-order stagger follows the new order. */
 const TILE_ORDER: ToolKey[] = [
   'spl',
   'multimeter',
-  'waveform',
-  'rta',
   'spectrogram',
-  'signalgen',
-  'rt60',
+  'rta',
+  'waveform',
   'hzcounter',
+  'rt60',
+  'signalgen',
 ];
 
 /** Tool → card-strip component (2:1 SVG preview of the tool's display). */
@@ -290,7 +298,7 @@ const STRIP_LABEL: Record<ToolKey, string> = {
   spectrogram: 'Spectrogram: frequency content over time as a color heat map',
   rt60: 'RT60 reverb decay: decay curve falling to a noise floor with a fitted decay line',
   signalgen: 'Tone and noise generator: a sine wave giving way to broadband noise',
-  hzcounter: 'Frequency counter and tuner: tuning meter with a needle reading off center',
+  hzcounter: 'Tuner and frequency counter: tuning meter with a needle reading off center',
   multimeter: 'Pro audio multimeter: combined level bar, spectrum, spectrogram and oscilloscope',
 };
 
@@ -1096,8 +1104,19 @@ export function ToolsHubScreen({ navigation }: Props) {
             way out leads the title row, top-left: HOME when back lands on
             Home, ‹ deeper in (HomeOrBackKey, owner rule 2026-10-14). */}
           <View style={styles.titleBar}>
-            <HomeOrBackKey onPress={() => safeGoBack(navigation)} />
-            <Text style={styles.screenTitle} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>AUDIO TOOLS</Text>
+            {/* HOME, always (owner 2026-11-20): the house, back to Home. */}
+            <HomeOrBackKey alwaysHome onPress={() => goHome(navigation)} />
+            {/* The section's menu icon leads the title (owner 2026-11-20). */}
+            <View style={styles.titleArt} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+              <PlaceArt place="tools" size={26} />
+            </View>
+            {/* Title + a small line under it, the Labs screen's subtitle look
+                (owner 2026-11-24). The column shrinks before the keys do, so
+                HOME, the icon and the keys keep their places on a 375 pt phone. */}
+            <View style={styles.titleCol}>
+              <Text style={styles.screenTitle} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>AUDIO TOOLS</Text>
+              <Text style={styles.screenSubtitle} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>Measure · generate · analyze</Text>
+            </View>
             <View style={{ flex: 1 }} />
             {/* Owner 2026-11-05: it floated over the dosimeter in the hero. */}
             <AccuracyNote compact />
@@ -1112,7 +1131,8 @@ export function ToolsHubScreen({ navigation }: Props) {
           //    the last row clear of the home indicator / gesture strip. It was
           //    removed 2026-09-19 and the 24 here was left behind, so the final
           //    row ran under the indicator. Keep the inset in the style prop.
-          contentContainerStyle={[styles.scroll, hubCap, { paddingBottom: 24 + insets.bottom }]}
+          // The last row also clears the circle menu's MENU button (2026-11-20).
+          contentContainerStyle={[styles.scroll, hubCap, { paddingBottom: menuClearance(insets.bottom) }]}
           scrollEventThrottle={100}
           onLayout={(e) => {
             viewRef.current.h = e.nativeEvent.layout.height;
@@ -1255,7 +1275,7 @@ export function ToolsHubScreen({ navigation }: Props) {
       {/* Tile reveal (Pillar B, plan §3). The +72 clearance was for this
           screen's own nav bar, which is gone — it sits on the safe area now. */}
       {hubCoach.visible ? (
-        <CoachMark text="Tap any display to open the full instrument" bottom={insets.bottom + 16} />
+        <CoachMark text="Tap any display to open the full instrument" bottom={menuClearance(insets.bottom)} />
       ) : null}
 
       {/* ⛔ NO BOTTOM NAV HERE (owner 2026-09-19: "in the tool menu, do not
@@ -1269,11 +1289,16 @@ export function ToolsHubScreen({ navigation }: Props) {
           it. It is in CompactBrandBar, it uses `popTo` (see the note there),
           and the hardware back gesture still works. Do not remove it from
           the header without putting something else in its place. */}
+      {/* The circle menu's MENU button (owner 2026-11-20: Audio Tools, Calculator
+          Lab and Labs carry it too, on their landing screens only). Last, so
+          it sits over the content; it lets every other touch through. */}
+      <ScreenCircleMenu here="tools" />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  titleArt: { marginLeft: 4, marginRight: 6 },
   root: { flex: 1, backgroundColor: colors.screenBg },
   // Shares the hub's centred column (owner 2026-09-13). Left full-width, the
   //  brand pinned to the far left and GLOSSARY to the far right while the rack
@@ -1285,7 +1310,10 @@ const styles = StyleSheet.create({
   brandBarCap: { width: '100%', maxWidth: HUB_MAX_CONTENT_W, alignSelf: 'center' },
   /* Same row shape as Learning Labs and the Glossary: way out, title, help. */
   titleBar: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingLeft: 14, paddingRight: 14, paddingBottom: 8 },
+  titleCol: { flexShrink: 1 },
   screenTitle: { flexShrink: 1, fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.2, color: colors.textPrimary },
+  // The Labs screen's subtitle (AudioLearningScreen `subtitle`), owner 2026-11-24.
+  screenSubtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
   moduleTag: {
     fontFamily: fonts.oswaldSemiBold,
     fontSize: 12,

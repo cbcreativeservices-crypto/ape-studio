@@ -17,7 +17,7 @@ import { PagedLab } from '../kit/PagedLab';
 import { mixingPageKeyAt } from '../../../features/lab/trainingLabKeys';
 import { reportTrainingComplete } from '../../../features/lab/trainingSignal';
 import { retainSessionStems } from './audio/mixAudio';
-import { HANDS_ON_DETAIL, MIX_MANTRA } from './kit';
+import { HANDS_ON_DETAIL } from './kit';
 import { MIXING_PAGES_A } from './pagesA';
 import { MIXING_PAGES_B } from './pagesB';
 import { MIXING_PAGES_C } from './pagesC';
@@ -35,6 +35,35 @@ const onPageDone = (index: number) => reportTrainingComplete(mixingPageKeyAt('be
 // The same keys, so a page banked to the account reads CREDITED after START
 // OVER (PRACTICE) — credit is never shown as missing (toddler pass 2026-10-13).
 const PAGE_KEYS = PAGES.map((_, i) => mixingPageKeyAt('beg', i));
+const BEG_ACCURACY_DETAIL =
+  'In this lab: the peak and RMS meters and every level-matched comparison measure the lab’s own rendered mixes, played through this device’s uncalibrated output. Learn the decisions here; judge a real mix on calibrated monitors and meters.';
+
+/**
+ * WHAT'S LEFT, row by row (phase 2, 2026-11-14): each unfinished page names
+ * its OWN goals (the chips at its foot), never the rule every row shares (that
+ * is HANDS_ON_DETAIL, printed once above the list). With sound off a ▶ tap
+ * counts as looked at (kit.tsx, the silent path), so every goal here can be
+ * met silently. Pinned to the pages' goal labels by test/labFixes_20261114_F4.
+ */
+export const BEG_PAGE_DETAIL: readonly string[] = [
+  'Goals: open all five dimensions · choose your focal point · pass the check.',
+  'Goals: open every prep step · pass the check.',
+  'Goal: build the channel path in order.',
+  'Goals: play MIX A and MIX B, then vote blind · play the reveal · pass the check.',
+  'Goals: play the unmixed wall · commit to an anchor · shape at least five tracks · compare against the wall.',
+  'Goals: open all six moves · try three moves on the chorus · pass the check.',
+  'Goals: place three supports off-center · play the mono fold · pass the check.',
+  'Goals: play the clash · play two different fixes · pass the check.',
+  'Goals: open all five parameters · play dry, fast and slow attack · pass the check.',
+  'Goals: play dry, shared and drowned · pass the check.',
+  'Goals: open all six terms · pass the check.',
+  'Goals: pull the fader on the cue rig · solve the double-routing case · pass the check.',
+  'Goals: play static vs automated · change the chorus lift · pass the check.',
+  'Goals: open all six habits · run the mono check · pass the check.',
+  'Goals: choose rate and depth · build the file name · inspect the bounce · pass the check.',
+  'Goal: complete all eight steps of THE PROCESS.',
+];
+const pageDetail = (i: number): string | undefined => BEG_PAGE_DETAIL[i];
 
 export function BeginningMixingLabScreen() {
   // Leaving the lab releases the ~15.4 MB of synthesized stems (owner ruling
@@ -50,5 +79,17 @@ export function BeginningMixingLabScreen() {
   // an uncalibrated phone output. The note sits at the top of each reading page
   // (PagedLab draws the header chip only on rack pages, and this lab has none);
   // the ⓘ has the header to itself.
-  return <PagedLab labId="mixing-beg" title="Beginning Mixing" subtitle={MIX_MANTRA} pages={PAGES} proNote pageGuide={beginningMixingPageGuide} endGuide={BEGINNING_MIXING_END_GUIDE} onPageDone={onPageDone} pageCreditKeys={PAGE_KEYS} handsOnDetail={HANDS_ON_DETAIL} />;
+  // The note's first line says what THIS lab measures (novice audit G4,
+  // 2026-11-14: the generic list, light meters included, read as off-topic).
+  // Phase 2 (D37, owner 2026-10-31: "too repetitive and doesn't need to be on
+  // every screen"; the chip stays for labs with REAL-WORLD numbers): this
+  // lab's meters read its own rendered mixes, so the chip is the ABOUT
+  // variant, which shows only BEG_ACCURACY_DETAIL.
+  // BM-06 (owner 2026-11-15: "build waves 1 thru 3", D62): page 1 already
+  // shows the mantra in THE MIXER'S MANTRA box (pagesA), so the grey subtitle
+  // line that repeated it word for word is empty here (it read as a glitch).
+  // BM-04 (same go): no `proNote`, so "Knowing When to Bring In a Pro" no
+  // longer opens by itself on arrival; page 1 keeps its small link
+  // (pagesA, ProNoteButton).
+  return <PagedLab labId="mixing-beg" unitNoun="page" title="Beginning Mixing" subtitle="" pages={PAGES} pageGuide={beginningMixingPageGuide} endGuide={BEGINNING_MIXING_END_GUIDE} onPageDone={onPageDone} accuracyDetail={BEG_ACCURACY_DETAIL} accuracyVariant="about" pageDetail={pageDetail} pageCreditKeys={PAGE_KEYS} handsOnDetail={HANDS_ON_DETAIL} />;
 }

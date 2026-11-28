@@ -27,7 +27,7 @@ import { fitValue } from '../../../theme/legibility';
 import type { RootStackParamList } from '../../../navigation/types';
 import { GlassPanel, GlassTile } from '../../tools/GlassTile';
 import { LabHeader } from '../kit/LabNavBar';
-import { ProNoteButton, ProNoteIntro } from '../../../features/lab/ProNote';
+import { ProNoteButton } from '../../../features/lab/ProNote';
 import { ProgressLoadingNote, ProgressUnreadableNote } from '../kit/ProgressUnreadableNote';
 import { MIXING_GUIDE_INDEX, type MixingGuideEntry } from './data/index';
 import { STARTING_POINTS_LINE } from './data/types';
@@ -169,8 +169,11 @@ export function MixingGuidesHubScreen() {
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
       >
+        {/* MG-06 (owner 2026-11-15: "build waves 1 thru 3", D62): the top
+            line now says where a total beginner starts. The section list it
+            used to spell out is shorter, so the line is no longer. */}
         <Text style={[styles.intro, wide && readingText]}>
-          One guide per style: what its audience listens for, then balance, EQ, compression, effects, vocals, loudness, live versus studio, common mistakes and reference recordings.
+          One guide per style: what its audience listens for, then the mix, section by section, from balance to reference recordings. New to mixing? Open Pop first: every guide has the same layout.
         </Text>
         <Text style={[styles.note, wide && readingText]}>{STARTING_POINTS_LINE}</Text>
         {/* The Mixing-family note (owner 2026-10-07): a small link on the first page. */}
@@ -222,8 +225,9 @@ export function MixingGuidesHubScreen() {
       </ScrollView>
       </View>
       </ScreenGuideHost>
-      {/* First open of any Mixing-family lab (owner 2026-10-07): once per device. */}
-      <ProNoteIntro />
+      {/* BM-04 (owner 2026-11-15: "build waves 1 thru 3", D62): "Knowing When
+          to Bring In a Pro" no longer opens by itself on arrival; the small
+          link under the intro lines opens it. */}
     </View>
   );
 }

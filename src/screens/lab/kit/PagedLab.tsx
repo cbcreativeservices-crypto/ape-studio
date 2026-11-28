@@ -74,6 +74,13 @@ export type PageDef = {
    *  disabled until it had; since owner 2026-09-29 it opens the what's-left
    *  screen, which lists the unmarked page instead.) */
   manualDone?: boolean;
+  /** ADDITIVE (owner decision 1, 2026-11-14: "done = work done"): the page
+   *  has NO goal or check — reading it through (NEXT / FINISH at its foot) is
+   *  its work, so NEXT marks it. A page WITH a goal or check is `manualDone`
+   *  and calls ctx.markDone() only when it is met. A page that declares
+   *  neither keeps the old behavior (NEXT marks it) so nothing earned is lost;
+   *  test/labFixes_20261114_S2 lists undeclared pages per lab (shrink-only). */
+  reading?: true;
   /** ADDITIVE (2026-10-10, Patchbay rack conversion — the branch
    *  soundsystems/SsPagedLab carried locally): the page renders a RackUnit,
    *  so the shell gives it the FULL HEIGHT and no ScrollView of its own. The
@@ -117,13 +124,15 @@ const NO_KEYS: readonly string[] = [];
 /** The end-screen row of a `creditCheckLabId` check (never a page index). */
 const CREDIT_CHECK_ROW = 'credit-check';
 import { LabEndScreen, type LabEndUnit } from './LabEndScreen';
-import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav, type LabNavUnit } from './LabNavBar';
+import { pageReadRule, pageTaskRule } from './labEnd';
+import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, LabNounProvider, useLabNav, type LabNavUnit } from './LabNavBar';
+import type { UnitNoun } from './labNav';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { ProNoteButton, ProNoteIntro } from '../../../features/lab/ProNote';
 // Screen Guide (owner 2026-10-31): opt-in header ⓘ + stepped overlay.
 import { ScreenGuideHost, type ScreenGuide } from '../../../features/lab/screenGuide';
 
-export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabKey, pageCreditKeys = NO_KEYS, proNote = false, handsOnDetail, pageDetail, accuracyDetail, optionalPage, labDoneKey, creditCheckLabId, creditCheckTitle, pageGuide, endGuide, accuracy = true }: {
+export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabKey, pageCreditKeys = NO_KEYS, proNote = false, handsOnDetail, pageDetail, accuracyDetail, optionalPage, labDoneKey, creditCheckLabId, creditCheckTitle, pageGuide, endGuide, accuracy = true, accuracyVariant, unitNoun = 'module' }: {
   labId: string;
   title: string;
   subtitle: string;
@@ -149,12 +158,15 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   /** ADDITIVE (owner ruling 2026-10-14, #16): the what's-left line under a
    *  HANDS-ON page (`manualDone`, not the check) that is not done yet. NEXT
    *  still moves on — it just does not count that page — so the end screen
-   *  says plainly why it is still listed. Omitted = no line (as before). */
+   *  says plainly why it is still listed. Since the lab fix round 2026-11-14
+   *  (quick win 17) it is printed ONCE above the list (HOW A PAGE COUNTS),
+   *  never under each row. Omitted = the shared pageTaskRule(unitNoun). */
   handsOnDetail?: string;
   /** ADDITIVE (2026-10-18, DJ Systems Lab, learning review X5): the what's-
    *  left line for page `index` when it is not done — e.g. its unmet goals by
-   *  name. A string replaces `handsOnDetail` for that page; undefined keeps it.
-   *  A page that is done (or banked) shows no line at all (2026-10-19). */
+   *  name: the row's OWN "what is missing" line (2026-11-14: the only line a
+   *  row carries; undefined = no line under that row). A page that is done
+   *  (or banked) shows no line at all (2026-10-19). */
   pageDetail?: (index: number) => string | undefined;
   /** ADDITIVE (2026-10-18, DJ Systems Lab): the lab's own calibration caveat,
    *  shown emphasised at the top of the ⚖️ note (AccuracyNote `detail`) on
@@ -186,6 +198,15 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
    *  (unchanged). A CONCEPT lab with guides passes false so the ⓘ takes the
    *  chip's spot; live-mic / real-measurement labs keep it. */
   accuracy?: boolean;
+  /** ADDITIVE (lab fix round 2026-11-14, S3's shared need): which AccuracyNote
+   *  the pages show — 'tool' (the default, unchanged) or 'about' (a CONCEPT
+   *  lesson's plain scope note). Passed to both AccuracyNote calls below. */
+  accuracyVariant?: 'tool' | 'about';
+  /** ADDITIVE (owner decision 3, 2026-11-14: one name per unit of progress):
+   *  the lab's ONE unit noun — module (default) / lesson / chapter / step. The
+   *  strip, CONTENTS, the end screen (lead, WHERE TO START, HOW A … COUNTS)
+   *  all use it. Before, the strip said MODULE while the end screen said page. */
+  unitNoun?: UnitNoun;
   /** ADDITIVE (D41 K8, 2026-11-01): the lab whose understanding check is this
    *  lab's CERTIFICATE credit when this lab has no check of its own (De-Esser
    *  → 'smart-processors'). With questions authored there, the what's-left
@@ -498,10 +519,10 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   const checkCredit = !!check || !!creditCheckId;
   const confirmReset = () => {
     const message = pageCredit
-      ? `Starts ${title} again from its first page. Credited pages keep their ✓.`
+      ? `Starts ${title} again from its first ${unitNoun}. Credited ${unitNoun}s keep their ✓.`
       : checkCredit
-        ? `Starts ${title} again from its first page and clears its page check marks. Credit you have already earned stays.`
-        : `Starts ${title} again from its first page and clears its page check marks.`;
+        ? `Starts ${title} again from its first ${unitNoun} and clears its ${unitNoun} check marks. Credit you have already earned stays.`
+        : `Starts ${title} again from its first ${unitNoun} and clears its ${unitNoun} check marks.`;
     if (Platform.OS === 'web') {
       // react-native-web's Alert is a no-op: keep the guard with the browser's confirm.
       const confirm = (globalThis as unknown as { confirm?: (m: string) => boolean }).confirm;
@@ -528,8 +549,8 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
     if (banked || progress?.completed.includes(i)) endCleared.add(String(i));
   });
   if (creditCheckId && bankedCreditCheck.has(UNDERSTANDING_UNIT)) endCleared.add(CREDIT_CHECK_ROW);
-  // A lab's own per-page line (pageDetail) wins over the shared hands-on line.
-  // It is a WHAT'S-LEFT line, so a page that is already done carries none
+  // A lab's own per-page line (pageDetail) is the row's only line (the
+  // shared hands-on rule goes once into howItCounts). It is a WHAT'S-LEFT line, so a page that is already done carries none
   // (owner 2026-10-19: a redo is a fresh practice run, and its empty chips
   // are never listed as "left" under a page that keeps its mark) — the
   // shared handsOnDetail line included (D41 K4, 2026-11-01: finished rows
@@ -539,15 +560,30 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
     const d = pageDetail?.(i);
     return d ? { detail: d } : null;
   };
+  // QUICK WIN 17 (lab fix round 2026-11-14; owner approval "Begin fixing all
+  // bugs found and do obvious ... fixes as you suggested in the report"): the
+  // lab's shared `handsOnDetail` rule is printed ONCE above the list
+  // (howItCounts), never under every row — Beginning Mixing printed it 13
+  // times. A row names its own missing piece only through the lab's
+  // `pageDetail` line (phase 2 fills it in, SHARED_API.md section S2).
   const endUnits: LabEndUnit[] = pagesWithCheck.map((p, i) =>
     check && i === pages.length
       ? { id: String(i), label: 'Check your understanding', kind: 'check', detail: 'Every answer correct — retry until you are.' }
-      : { id: String(i), label: p.title, ...(handsOnDetail && p.manualDone ? { detail: handsOnDetail } : null) },
+      : { id: String(i), label: p.title },
   );
   const endRows: LabEndUnit[] = endUnits.map((u, i) => (check && i === pages.length ? u : { ...u, ...pageDetailOf(i), ...(optionalPage?.(i) ? { optional: true } : null) }));
   if (creditCheckId) {
     endRows.push({ id: CREDIT_CHECK_ROW, label: 'Check your understanding', kind: 'check', detail: 'On this screen, above — every answer correct, retry until you are.' });
   }
+  // The rules the still-listed pages share, said once (quick win 17): the
+  // reading-page rule (NEXT marks a page; a CONTENTS jump does not — G7
+  // Envelope / Speech read "not done" with no reason) and the lab's own
+  // hands-on rule.
+  const leftPages = pagesWithCheck.filter((p, i) => !(check && i === pages.length) && !endCleared.has(String(i)) && !optionalPage?.(i));
+  const howItCounts = [
+    leftPages.some((p) => !p.manualDone) ? pageReadRule(unitNoun) : null,
+    leftPages.some((p) => p.manualDone) ? handsOnDetail ?? pageTaskRule(unitNoun) : null,
+  ].filter(Boolean).join(' ') || undefined;
   const ctx: PageCtx = { reduceMotion, markDone, isDone, goTo, isPageDone: (i: number) => endCleared.has(String(i)) };
   // A lab that banks certificate credit — `p<n>` units OR one key per page
   // (Mixing, owner ruling 2026-10-14 #17) — reads CREDITED, like every other
@@ -588,6 +624,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
   const guide = ending ? endGuide : def.guide ?? pageGuide?.(page);
 
   return (
+    <LabNounProvider value={unitNoun}>
     <LabNavProvider value={nav}>
       <View style={[styles.root, { paddingTop: insets.top + 8 }]}>
         {/* Screen Guide host (opt-in): the overlay renders as this root's last
@@ -596,7 +633,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
         <ScreenGuideHost resetKey={ending ? 'end' : String(page)} regions={!!def.rack && !ending}>
         <LabHeader title={ending ? 'Where you are' : def.title}
           subtitle={title}
-          right={accuracy && def.rack && !ending ? <AccuracyNote compact detail={accuracyDetail} /> : undefined}
+          right={accuracy && def.rack && !ending ? <AccuracyNote compact detail={accuracyDetail} variant={accuracyVariant} /> : undefined}
           guide={guide}
           guideTitle={ending ? 'WHERE YOU ARE' : def.title.toUpperCase()}
         />
@@ -613,12 +650,16 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
             cleared={endCleared}
             unreadable={endUnreadable}
             mode={creditMode}
-            noun="page"
+            noun={unitNoun}
             onJump={(id) => goTo(Number(id))}
             onPracticeAgain={() => goTo(0)}
             onDone={() => safeGoBack(navigation)}
             bottomInset
             startOver
+            // Lab fix round 2026-11-14 (S2): the recap / next lab come from
+            // features/lab/labEndContent by this labId; the shared rule once.
+            labId={labId}
+            howItCounts={howItCounts}
             // The credit check's row moves to the check drawn here, never to a page (D41 K6/K8).
             shownHereId={creditCheckId ? CREDIT_CHECK_ROW : undefined}
             extra={creditCheckId ? <LabUnderstandingBlock labId={creditCheckId} labTitle={creditCheckTitle ?? title} /> : undefined}
@@ -636,10 +677,13 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
                   of them after the first sitting, never saw it again. The subtitle is
                   genuinely a first-page thing; the calibration note is a standing
                   statement about every page. */}
-              {accuracy ? <AccuracyNote style={styles.accuracy} detail={accuracyDetail} /> : null}
+              {accuracy ? <AccuracyNote style={styles.accuracy} detail={accuracyDetail} variant={accuracyVariant} /> : null}
               {holdPageBody ? null : (
                 <>
-                  {page === 0 ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+                  {/* No subtitle, no line: an empty Text can keep a line of
+                      height on Android (SN-3 from F4, 2026-11-15; Beginning
+                      Mixing passes subtitle=""). */}
+                  {page === 0 && subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
                   {page === 0 && proNote ? <ProNoteButton /> : null}
                   <Page ctx={ctx} />
                   {/* The in-flow NEXT / FINISH at the end of the reading (nothing is
@@ -654,6 +698,7 @@ export function PagedLab({ labId, title, subtitle, pages, onPageDone, creditLabK
       </View>
       {proNote ? <ProNoteIntro onOwed={setProNoteOwed} /> : null}
     </LabNavProvider>
+    </LabNounProvider>
   );
 }
 

@@ -39,7 +39,8 @@ const wm = (t: string) => index.enums.workModel[byTitle(t).wm];
 const ori = (t: string) => index.enums.orientation[byTitle(t).ori];
 const st = (t: string) => index.enums.status[byTitle(t).st];
 
-const VARIES = "Varies: portfolio/experience, certificate, associate, or bachelor's pathway";
+// Comp A Career Finder text review 2026-11-14 (owner: "assign an agent in the background to work on this"): no serial comma (Pattern 10), via `renamePreparation` / `renameWorkModel` in the overrides. Words unchanged.
+const VARIES = "Varies: portfolio/experience, certificate, associate or bachelor's pathway";
 const DEGREE = "Bachelor's degree common; portfolio/certification may supplement";
 const STAFF = 'Staff roles common; consulting/contract options vary';
 
@@ -104,7 +105,11 @@ describe('licensed roles (career_licensed_role_with_varies_prep)', () => {
   });
   it('music teachers name the teaching licence; SLPAs name their programme', () => {
     assert.match(prep('Music Teacher'), /state teaching license for public-school posts/);
-    assert.match(prep('Speech-Language Pathology Assistant'), /^Associate speech-language pathology assistant \(SLPA\) program or bachelor's in communication sciences/);
+    // Comp A Career Finder text review 2026-11-14 (CF-D0045; owner: "assign an agent in the background
+    // to work on this"): "state rules vary" hid that most US states license, register or certify SLPAs
+    // (ASHA). Owner rule: "we must be clear when other education — degrees, certifications, etc. — is
+    // required for careers. always. every time."
+    assert.match(prep('Speech-Language Pathology Assistant'), /^Associate degree from a speech-language pathology assistant \(SLPA\) program, or a bachelor's in communication sciences, plus supervised fieldwork; most US states require a license, registration or certification$/);
   });
   it('noise analysts: the unconfirmed licence flag is gone (CAN\'T CONFIRM)', () => {
     for (const t of ['Environmental Noise Analyst', 'Transportation Noise Analyst', 'Airport Noise Specialist']) {
@@ -122,12 +127,14 @@ describe('work-model template (career_staff_roles_common)', () => {
   });
   it('show and tour crew are project / tour work', () => {
     for (const t of ['Front-of-House Engineer', 'Monitor Engineer', 'Guitar Technician', 'Production Stage Manager']) {
-      assert.equal(wm(t), 'Project, venue, tour, or contract work common', t);
+      // Comp A Career Finder text review 2026-11-14 (owner: "assign an agent in the background to work on this"): no serial comma (Pattern 10), via `renamePreparation` / `renameWorkModel` in the overrides. Words unchanged.
+      assert.equal(wm(t), 'Project, venue, tour or contract work common', t);
     }
   });
   it('field broadcast and podcast engineers are staff OR freelance; station engineers stay staff', () => {
-    assert.equal(wm('REMI Audio Engineer'), 'Staff, freelance, or project-based depending on sector');
-    assert.equal(wm('Podcast Mixing Engineer'), 'Staff, freelance, or project-based depending on sector');
+    // Comp A Career Finder text review 2026-11-14 (owner: "assign an agent in the background to work on this"): no serial comma (Pattern 10), via `renamePreparation` / `renameWorkModel` in the overrides. Words unchanged.
+    assert.equal(wm('REMI Audio Engineer'), 'Staff, freelance or project-based depending on sector');
+    assert.equal(wm('Podcast Mixing Engineer'), 'Staff, freelance or project-based depending on sector');
     assert.equal(wm('Broadcast Maintenance Engineer'), STAFF);
   });
   it('postdocs are fixed-term; buskers are self-employed', () => {

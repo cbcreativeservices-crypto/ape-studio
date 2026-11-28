@@ -328,7 +328,8 @@ describe('6. the what’s-left END screen has its own guide, every fact pinned t
     assert.doesNotMatch(scr, /creditLabKey=|pageCreditKeys=|onPageDone=/);
     assert.match(pl, /const creditMode: 'credit' \| 'progress' = creditLabKey \|\| pageCreditKeys\.length > 0 \? 'credit' : 'progress';/);
     assert.match(endEl, /mode=\{creditMode\}/);
-    assert.match(endEl, /noun="page"/);
+    // Owner decision 3 (quick pick, 2026-11-14): "One name per unit of progress in each lab … used everywhere" — PagedLab's end screen takes the lab's unitNoun (default module), never a fixed "page".
+    assert.match(endEl, /noun=\{unitNoun\}/);
     assert.match(les, /const tag = mode === 'credit' && !isGuest \? 'CREDITED' : 'DONE';/);
     assert.ok(et.includes('✓ DONE'));
     assert.ok(!et.includes('CREDITED'));

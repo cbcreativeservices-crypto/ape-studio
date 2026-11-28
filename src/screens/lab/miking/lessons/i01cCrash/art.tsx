@@ -18,21 +18,25 @@ import { KIT } from '../shared/kitPlanModel.ts';
 import { BoomStandSide, BoomStandTop, CymbalSide, CymbalTop } from '../shared/cymbals/CymbalArt';
 import { KitAround, PlateGlow, SwingFan, kitShow, plateTransform, type KitPiece } from '../shared/cymbals/CymbalKitArt';
 import { StickDrummerArt, stickDrummerCovers } from '../shared/kitScene/stickPlayer';
+import { CRASH16, CRASH18 } from '../shared/kitScene/kitStrokes.ts';
 import { kitHitTest } from '../shared/kitScene/KitSceneArt';
 import { CymbalSettingPlan } from '../shared/cymbals/CymbalSettingPlan';
 import { CYMBAL_PAGES } from '../shared/cymbals/CymbalSound';
 import { boomStandPoints } from '../shared/cymbals/cymbalSpec.ts';
-import { CRASH_OF, STRIKE1, STRIKE2, TOM1, TOM2 } from './model.ts';
+import { CRASH_OF, TOM1, TOM2 } from './model.ts';
 
 const DEG = Math.PI / 180;
 const isTwo = (v: VariantId) => v === 'crash2';
 
 /** The stick's bead on the edge, held by the drummer (kitScene/stickPlayer:
  *  the drawn player is also the labels' occupancy). */
-const tipOf = (variant: VariantId) => {
-  const s = isTwo(variant) ? STRIKE2 : STRIKE1;
-  return { x: s.x - 4, y: s.y - 4, z: s.z };
-};
+/*  Stick technique fix 2026-11-22 (owner: "It should look like normal stick
+ *  tech. usage"): a glancing blow with the stick's SHOULDER on the edge at
+ *  the strike point, the tip over the plate, the arm reaching up and forward
+ *  with the real 406 mm stick (the bead used to be placed on the edge, and
+ *  the 18 in crash's stick was drawn 385 mm from a clamped fist).
+ *  kitStrokes.CRASH16 / CRASH18. */
+const tipOf = (variant: VariantId) => (isTwo(variant) ? CRASH18 : CRASH16);
 
 export function CrashArt({ view, variant }: { view: ViewId; variant: VariantId }) {
   const two = isTwo(variant);
@@ -60,11 +64,11 @@ export function CrashArt({ view, variant }: { view: ViewId; variant: VariantId }
   const above: Partial<Record<KitPiece, number>> = Object.fromEntries(Object.entries(around).filter(([k]) => ['crash1', 'crash2', 'ride'].includes(k)));
   return (
     <Group>
-      <StickDrummerArt view="top" tip={tipOf(variant)} part="legs" />
+      <StickDrummerArt view="top" spec={tipOf(variant)} part="legs" />
       <KitAround view="top" show={below} />
       <BoomStandTop id={id} />
       <CymbalTop spec={c.spec} cx={c.c.x} cz={c.c.z} tiltDeg={c.tiltDeg} areas dim={0.92} />
-      <StickDrummerArt view="top" tip={tipOf(variant)} part="upper" />
+      <StickDrummerArt view="top" spec={tipOf(variant)} part="upper" />
       <KitAround view="top" show={above} />
     </Group>
   );

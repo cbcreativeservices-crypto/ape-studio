@@ -110,7 +110,7 @@ export function SpecCard({ text }: { text: string }) {
 }
 
 /* ── sources sheet (host-level in-tree overlay; spec §5) ────────────────── */
-export function SourceSheet({ sourceIds, onClose }: { sourceIds: string[] | null; onClose: () => void }) {
+export function SourceSheet({ sourceIds, onClose, lead }: { sourceIds: string[] | null; onClose: () => void; lead?: readonly string[] }) {
   // Android back closes the SHEET, not the lab (bug hunt 2026-09-29): it is
   // an in-tree overlay, so the hardware back went straight to the navigator
   // and dropped the learner out of the lab. Handlers run newest-first.
@@ -136,6 +136,11 @@ export function SourceSheet({ sourceIds, onClose }: { sourceIds: string[] | null
           </Pressable>
         </View>
         <ScrollView style={{ flexGrow: 0 }} contentContainerStyle={{ gap: 10 }}>
+          {/* Opened from the intro: the lab's long lead and its code note
+              ride on top (CI-04, owner 2026-11-15: "build waves 1 thru 3"). */}
+          {lead?.map((t) => (
+            <Text key={t} style={styles.srcNote}>{t}</Text>
+          ))}
           {list.map((s) => (
             <View key={s.id} style={styles.srcRow}>
               <Text style={styles.srcOrg}>{s.organization}</Text>

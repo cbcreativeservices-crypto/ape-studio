@@ -42,7 +42,7 @@ import { MEMBERSHIP_NOT_CONFIRMED } from '../../../features/commercial/tier';
 // expo-image (perf hunt 2026-10-03): memory + disk cache, and its prefetch
 // fills the SAME cache the viewer reads, so a warmed neighbour paints at once.
 import { Image } from 'expo-image';
-import { TUBE_CARD_ASPECT, TUBE_FAMILY_META, TUBE_REFS, fetchTubePageCached, fetchTubePageUri, pageCountOf, type TubeFamily } from './tubeRefs';
+import { TUBE_CARD_ASPECT, TUBE_FAMILY_META, TUBE_REFS, tubeListNum, fetchTubePageCached, fetchTubePageUri, pageCountOf, type TubeFamily } from './tubeRefs';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { safeGoBack } from '../../../lib/safeGoBack';
 // Screen Guide (owner 2026-10-31): the bar's ⓘ explains the card viewer.
@@ -249,6 +249,13 @@ export function TubeCardScreen() {
           }
 
           if (Math.abs(g.dx) > 4 || Math.abs(g.dy) > 4) s.moved = true;
+          // Touch slop (owner 2026-11-22: "the double tap … is not zooming in").
+          // A finger tap on a real screen almost always reports a sub-4 px
+          // move; that used to flip the session into 'swipe' mode, and the
+          // swipe branch of Release returns before the double-tap check, so
+          // zoom-in never fired on a phone (a mouse click has no move, so the
+          // browser looked fine). Below the slop it is still a tap.
+          if (!s.moved && s.mode !== 'pinch') return;
 
           // Two fingers → one (bug hunt 2026-09-29): pinch, lift a finger, keep
           // dragging. This branch used to test `s.startScale` — the PRE-pinch
@@ -303,8 +310,10 @@ export function TubeCardScreen() {
           }
 
           // Double-tap toggles zoom.
-          if (!s.moved && now - s.downAt < 240) {
-            if (now - s.lastTapAt < 320) {
+          // Release-to-release window: the second tap's own press time counts
+          // too, so 320 ms left a real double tap only ~200 ms of gap.
+          if (!s.moved && now - s.downAt < 280) {
+            if (now - s.lastTapAt < 420) {
               s.lastTapAt = 0;
               if (cur.current.scale > 1.01) {
                 Animated.parallel([
@@ -465,7 +474,9 @@ export function TubeCardScreen() {
     <View style={[styles.root, { paddingTop: insets.top + 8, paddingBottom: insets.bottom }]}>
       {/* Screen Guide (owner 2026-10-31): no Rack Unit, so no regions; a tube
           change keeps the same screen, so the guide stays open across it. */}
-      <ScreenGuideHost regions={false} resetKey="tubeCard">
+      {/* The guide card waits while a load error shows ("needs an active Academy
+          sign-in" and the others): it never opens over an error (S1 SN5, 2026-11-14). */}
+      <ScreenGuideHost regions={false} resetKey="tubeCard" hold={failed}>
       <ScreenGuideHintAnchor>
       {/* FIXED nav bar — ABOVE the image, its own space (owner 2026-08-10). */}
       <View style={styles.navBar}>
@@ -474,13 +485,13 @@ export function TubeCardScreen() {
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text style={styles.barTitle} numberOfLines={1}>
-            {String(tube.num).padStart(2, '0')} / {TUBE_REFS.length} · {tube.short}
+            {String(tubeListNum(tube)).padStart(2, '0')} · {tube.short}
           </Text>
           <Text style={styles.barSub} numberOfLines={1}>{famTitle}</Text>
         </View>
         {/* Same reason as the list screen — this is where the ratings are
             actually read. */}
-        <AccuracyNote compact detail="This card is a STUDY REFERENCE, not a datasheet. Plate voltages, dissipation limits and substitutions vary by manufacturer and by production run, and tube circuits carry lethal voltages. Work from the manufacturer's own datasheet for anything you build, service or power up." />
+        <AccuracyNote compact variant="about" label="ABOUT THIS CARD" detail="This card is a STUDY REFERENCE, not a datasheet. Plate voltages, dissipation limits and substitutions vary by manufacturer and by production run, and tube circuits carry lethal voltages. Work from the manufacturer's own datasheet for anything you build, service or power up." />
         {/* The chip STAYS (real data-sheet ratings, owner rule 2026-10-31);
             the ⓘ sits beside it. */}
         <ScreenGuideKey title="TUBE REFERENCE CARD" guide={TUBE_CARD_GUIDE} />

@@ -333,8 +333,9 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
             // No supply / heat cells here: for a diagnosis they would be
             // decoys, not information.
             bezel: [
-              { k: 'PICTURE', v: `${diagIdx + 1} / ${DIAG_ORDER.length}`, tint: colors.textSecondary },
-              { k: 'SCORE', v: `${diagScore.right} / ${diagScore.total}`, tint: diagScore.total && diagScore.right === diagScore.total ? colors.green : AMP_COLORS.supply },
+              // Position only, never "N of total" (owner's decision 2, phase 3).
+              { k: 'PICTURE', v: `${diagIdx + 1}`, tint: colors.textSecondary },
+              { k: 'SCORE', v: `${diagScore.right} right`, tint: diagScore.total && diagScore.right === diagScore.total ? colors.green : AMP_COLORS.supply },
               { k: 'READING', v: diagPick ? (diagRight ? 'RIGHT' : 'WRONG') : '—', tint: diagPick ? (diagRight ? colors.green : colors.red) : colors.textSub },
             ],
             params: [],
@@ -345,7 +346,7 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
               <Body>Everything so far was practice. Now use it: read waveforms, choose amplifiers, kill myths, configure a system, and pass the check.</Body>
 
               {/* ── 1 waveform diagnosis ── */}
-              <SectionTitle>1 · WAVEFORM DIAGNOSIS ({diagIdx + 1} of {DIAG_ORDER.length})</SectionTitle>
+              <SectionTitle>1 · WAVEFORM DIAGNOSIS · PICTURE {diagIdx + 1}</SectionTitle>
               <Body>Read the output against the rail lines. One picture may have two correct readings — the evidence will say so.</Body>
               <View style={{ gap: 6 }}>
                 {WAVE_KINDS.map((k) => {
@@ -391,7 +392,7 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
                     </Pressable>
                   ) : (
                     <>
-                      <Text style={styles.score}>Diagnosis round: {diagScore.right} of {diagScore.total} — {diagScore.right >= DIAG_PASS ? 'you can tell these faults apart by their waveform shape.' : 'revisit Modules 3, 5 and 6 for the ones that fooled you.'}</Text>
+                      <Text style={styles.score}>Diagnosis round: {diagScore.right} right, {diagScore.total - diagScore.right} missed — {diagScore.right >= DIAG_PASS ? 'you can tell these faults apart by their waveform shape.' : 'revisit Modules 3, 5 and 6 for the ones that fooled you.'}</Text>
                       <Pressable style={styles.nextBtn} onPress={() => { diagScoredRef.current = -1; setDiagIdx(0); setDiagPick(null); setDiagScore({ right: 0, total: 0 }); }} accessibilityRole="button" accessibilityLabel="Repeat the diagnosis round">
                         <Text style={styles.nextText}>REPEAT THE ROUND ›</Text>
                       </Pressable>
@@ -409,7 +410,7 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
           body: (
             <>
               {/* ── 2 application selection ── */}
-              <SectionTitle>2 · CHOOSE AN AMPLIFIER ({appIdx + 1} of {APP_SCENARIOS.length})</SectionTitle>
+              <SectionTitle>2 · CHOOSE AN AMPLIFIER · JOB {appIdx + 1}</SectionTitle>
               <Card>
                 <Text style={styles.appTitle}>{app.title}</Text>
                 <Body>{app.brief}</Body>
@@ -439,7 +440,7 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
               ) : null}
 
               {/* ── 3 myth review ── */}
-              <SectionTitle>3 · MYTH REVIEW ({mythIdx + 1} of {MYTH_REVIEW_IDS.length})</SectionTitle>
+              <SectionTitle>3 · MYTH REVIEW · MYTH {mythIdx + 1}</SectionTitle>
               <Card>
                 <Text style={styles.mythStatement}>“{myth.statement}”</Text>
               </Card>
@@ -507,7 +508,7 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
               {chSubmitted ? (
                 <Card tone="accent">
                   <Text style={[styles.verdict, { color: challenge.passed === 6 ? colors.green : colors.gold }]}>
-                    {challenge.passed} OF 6 DIMENSIONS PASS{challenge.passed === 6 ? ' — SYSTEM READY' : ''}
+                    {challenge.passed === 6 ? 'EVERY DIMENSION PASSES — SYSTEM READY' : `${6 - challenge.passed} DIMENSION${6 - challenge.passed === 1 ? ' STILL FAILS' : 'S STILL FAIL'}`}
                   </Text>
                   {(Object.keys(challenge.dims) as Dim[]).map((d) => (
                     <View key={d} style={styles.dimRow}>
@@ -586,7 +587,7 @@ export function Mod8Apply({ onFinalSubmitted }: AmpModuleProps) {
                   <Text style={[styles.bigScore, { color: finalPct >= FINAL_STRONG_PCT ? colors.green : colors.gold }]}>{finalPct}%</Text>
                   <Body>
                     {finalPct >= 90 ? 'Outstanding work.' : finalPct >= FINAL_STRONG_PCT ? 'Strong round.' : finalPct >= 50 ? 'Good progress.' : 'You’re building the picture.'}{' '}
-                    {finalRight} of {finalItems.length} correct.
+                    {finalRight} correct, {finalItems.length - finalRight} missed.
                   </Body>
                   <Pressable style={styles.nextBtn} onPress={retakeFinal} accessibilityRole="button" accessibilityLabel="Retake with a different set">
                     <Text style={styles.nextText}>REPEAT WITH A NEW SET ›</Text>

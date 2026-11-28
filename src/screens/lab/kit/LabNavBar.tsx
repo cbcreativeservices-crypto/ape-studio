@@ -24,8 +24,9 @@
  *     </LabNavProvider>
  *   );
  * The strip enforces: ⏮ / ‹ PREV dim on unit 1; NEXT › is FINISH › on the last
- * unit, never disabled; the readout opens CONTENTS (tap only; Android BACK
- * closes it); one 400 ms tap lock; 44 pt targets; 13 pt labels, nothing under
+ * unit, never disabled; the readout opens CONTENTS — a CENTERED POPUP since
+ * the lab fix round 2026-11-14 (owner standing rule "popups, never
+ * pulldowns"; F6): ✕, a tap outside or Android BACK closes it; one 400 ms tap lock; 44 pt targets; 13 pt labels, nothing under
  * 9 pt; the row caps at READING_MAX_W on a tablet. The header ‹ ALWAYS leaves
  * the lab. Retired words: CONTINUE, COMPLETE ✓, DONE ✓, SKIP AHEAD, ‹ BACK,
  * ⏮ START (guarded by test/labNavLaw.test.ts). LabNextButton in the well
@@ -36,8 +37,10 @@ import { BackHandler, Pressable, ScrollView, StyleSheet, Text, View, useWindowDi
 import { NavigationContext, useNavigation } from '@react-navigation/native';
 import { BACK_HIT_SLOP } from '../../../components/backHitSlop';
 import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../../theme/tokens';
-import { READING_MAX_W } from '../../../theme/readingColumn';
-import { NAV, nextButtonLabel } from './labNav';
+import { READING_MAX_W, popupCard } from '../../../theme/readingColumn';
+import { Modal } from '../../../components/DimModal';
+import { useModalHandoff } from '../../../lib/confirm';
+import { NAV, nextButtonLabel, relabelView, type UnitNoun } from './labNav';
 import type { LabNav } from './useLabNav';
 import { safeGoBack } from '../../../lib/safeGoBack';
 // Screen Guide (owner 2026-10-31): the header ⓘ "this screen, explained".
@@ -45,6 +48,19 @@ import { ScreenGuideHintAnchor, ScreenGuideKey, type ScreenGuide } from '../../.
 
 export { useLabNav } from './useLabNav';
 export type { LabNav, LabNavOptions, LabNavSub, LabNavUnit } from './useLabNav';
+
+/**
+ * The lab's ONE unit noun (owner decision 3, 2026-11-14: one name per unit
+ * of progress, used everywhere). A host says it once — PagedLab's `unitNoun`
+ * prop, or <LabNounProvider value="lesson"> around a lab that builds its own
+ * screen — and the strip, CONTENTS and LabEndScreen all read it. Default
+ * 'module' (what the strip always said).
+ */
+const LabNounContext = createContext<UnitNoun>('module');
+export const LabNounProvider = LabNounContext.Provider;
+export function useLabNoun(): UnitNoun {
+  return useContext(LabNounContext);
+}
 
 /** Hosts provide their LabNav so RackUnit can append LabNextButton to the well. */
 export const LabNavContext = createContext<LabNav | null>(null);
@@ -119,12 +135,14 @@ export function LabHeader({
     safeGoBack(navigation);
   };
   const key = guide ? <ScreenGuideKey title={guideTitle ?? title.toUpperCase()} guide={guide} /> : null;
+  // The title never breaks inside a word (checker C4, 2026-11-14): its floor is its longest word.
+  const titleFloor = { minWidth: titleMinWidth(title) };
   const header = (
     <View style={styles.header} ref={headerRef} onTouchStart={onTouchStart}>
       <Pressable onPress={leave} hitSlop={BACK_HIT_SLOP} accessibilityRole="button" accessibilityLabel={backLabel}>
         <Text style={styles.back} maxFontSizeMultiplier={BACK_GLYPH_MAX_SCALE}>‹</Text>
       </Pressable>
-      <Pressable style={styles.titleBlock} onPress={onTitlePress} accessible={false} disabled={!onTitlePress}>
+      <Pressable style={[styles.titleBlock, titleFloor]} onPress={onTitlePress} accessible={false} disabled={!onTitlePress}>
         <Text style={styles.title} numberOfLines={2}>
           {title}
         </Text>
@@ -145,9 +163,33 @@ export function LabHeader({
   return guide ? <ScreenGuideHintAnchor>{header}</ScreenGuideHintAnchor> : header;
 }
 
-/** The strip + the CONTENTS dropdown. */
-export function LabNavBar({ nav }: { nav: LabNav }) {
-  const { view, contentsOpen, setContentsOpen } = nav;
+/**
+ * The title block's floor (lab fix round 2026-11-14, checker C4 / F8): the
+ * width of the title's longest word, so a narrow phone drops the header keys
+ * to a second row (header flexWrap) instead of breaking "MEMBR / ANE" or
+ * "HARMONOGRAP / H". Oswald SemiBold 16 with 1.2 tracking runs ≤ 10.7 px per
+ * capital (HARMONOGRAPH measured 126 px, 12 letters); floor 80, cap 128 so a
+ * long word never pushes the keys off a 390 row (Membrane's title there is
+ * 131 wide). Short titles (GATE LAB) keep one row even at 320.
+ */
+export function titleMinWidth(title: string): number {
+  const longest = title.split(/[\s/]+/).reduce((n, w) => Math.max(n, w.length), 0);
+  return Math.min(128, Math.max(80, Math.ceil(longest * 10.7)));
+}
+
+/** The strip + the CONTENTS popup (a centered card, never a pull-down). */
+export function LabNavBar({ nav, posLabel }: {
+  nav: LabNav;
+  /** ADDITIVE (2026-11-14, F4): the readout's lower line instead of the
+   *  unit's number, e.g. a Mixing Guide's style: GUIDE over POP. Never a
+   *  total. Omitted = the number (GUIDE over 7). */
+  posLabel?: string;
+}) {
+  const { contentsOpen, setContentsOpen } = nav;
+  // The strip speaks the lab's own unit noun (MODULE / LESSON / CHAPTER / STEP / PAGE / GUIDE / STAGE).
+  const noun = useLabNoun();
+  const labeled = relabelView(nav.view, noun);
+  const view = posLabel && !nav.ending && nav.index >= 0 ? { ...labeled, pos: posLabel } : labeled;
   const { height: winH } = useWindowDimensions();
 
   // Android BACK closes CONTENTS while it is open (registered only then).
@@ -166,8 +208,8 @@ export function LabNavBar({ nav }: { nav: LabNav }) {
     return () => sub.remove();
   }, [contentsOpen, setContentsOpen, navCtx]);
 
-  // CONTENTS is capped so the rack stage stays visible under it.
-  const listMax = Math.max(44 * 3, Math.min(Math.round(winH * 0.42), 320));
+  // The popup's list scrolls inside the card; the card never fills the screen.
+  const listMax = Math.max(44 * 3, Math.min(Math.round(winH * 0.62), 520));
 
   return (
     <View>
@@ -220,17 +262,44 @@ export function LabNavBar({ nav }: { nav: LabNav }) {
           )}
         </View>
       </View>
-      {contentsOpen ? <LabContents nav={nav} maxHeight={listMax} /> : null}
+      {/* CONTENTS as the app's centered popup (lab fix round 2026-11-14; owner
+          standing rule "popups, never pulldowns" — it used to open in-tree
+          under the strip and push the lab down). DimModal keeps Low-Light's
+          wash; onRequestClose is Android BACK while the popup is up (the
+          BackHandler above stays for the focus rule). */}
+      <Modal
+        visible={contentsOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setContentsOpen(false)}
+        accessibilityViewIsModal
+      >
+        {contentsOpen ? <LabContents nav={nav} maxHeight={listMax} noun={noun} /> : null}
+      </Modal>
     </View>
   );
 }
 
-function LabContents({ nav, maxHeight }: { nav: LabNav; maxHeight: number }) {
+function LabContents({ nav, maxHeight, noun }: { nav: LabNav; maxHeight: number; noun: UnitNoun }) {
+  const Noun = noun[0].toUpperCase() + noun.slice(1);
   const { units, index, ending } = nav;
+  const close = () => nav.setContentsOpen(false);
+  // START OVER opens a confirm dialog: run it after this popup's Modal has
+  // gone (house helper; iOS refuses to present while one is still closing).
+  const handoff = useModalHandoff();
   return (
-    <View style={styles.contentsWrap}>
-      <View style={[styles.contents, { maxHeight }]}>
-        <ScrollView keyboardShouldPersistTaps="handled" nestedScrollEnabled>
+    // A tap outside the card closes it; the card swallows its own taps.
+    <Pressable accessible={false} style={styles.contentsBackdrop} onPress={close}>
+      <Pressable accessible={false} style={[styles.contents, { maxHeight: maxHeight + 56 }]} onPress={() => {}}>
+        <View style={styles.contentsHead}>
+          <Text style={styles.contentsTitle} accessibilityRole="header">
+            CONTENTS
+          </Text>
+          <Pressable onPress={close} hitSlop={12} style={styles.contentsClose} accessibilityRole="button" accessibilityLabel="Close the contents">
+            <Text style={styles.contentsCloseText}>✕</Text>
+          </Pressable>
+        </View>
+        <ScrollView style={{ maxHeight }} keyboardShouldPersistTaps="handled" nestedScrollEnabled>
           {units.map((u, i) => {
             const current = !ending && i === index;
             const num = u.kind === 'check' ? 'CHECK' : String(i + 1).padStart(2, '0');
@@ -242,7 +311,7 @@ function LabContents({ nav, maxHeight }: { nav: LabNav; maxHeight: number }) {
                 accessibilityRole="button"
                 accessibilityState={{ selected: current }}
                 aria-pressed={current}
-                accessibilityLabel={`${u.kind === 'check' ? 'Check' : `Module ${i + 1}`}, ${u.title}${u.done ? ', done' : ''}${current ? ', current' : ''}`}
+                accessibilityLabel={`${u.kind === 'check' ? 'Check' : `${Noun} ${i + 1}`}, ${u.title}${u.done ? ', done' : ''}${current ? ', current' : ''}`}
               >
                 <Text style={[styles.rowMark, u.done && styles.rowMarkDone, current && styles.rowCurrent]}>{u.done ? '✓' : '○'}</Text>
                 <Text style={[styles.rowNum, u.kind === 'check' && styles.rowNumCheck, current && styles.rowCurrent]}>{num}</Text>
@@ -264,8 +333,9 @@ function LabContents({ nav, maxHeight }: { nav: LabNav; maxHeight: number }) {
           {nav.reset ? (
             <Pressable
               onPress={() => {
+                const run = nav.reset?.run;
                 nav.setContentsOpen(false);
-                nav.reset?.run();
+                if (run) handoff(run);
               }}
               style={styles.row}
               accessibilityRole="button"
@@ -275,8 +345,8 @@ function LabContents({ nav, maxHeight }: { nav: LabNav; maxHeight: number }) {
             </Pressable>
           ) : null}
         </ScrollView>
-      </View>
-    </View>
+      </Pressable>
+    </Pressable>
   );
 }
 
@@ -309,12 +379,17 @@ export function LabNextButton({ nav: navProp, label, onPress }: { nav?: LabNav; 
 
 const styles = StyleSheet.create({
   // Header — the Digital / Foundations header, unchanged in look.
-  header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 8 },
+  // flexWrap + a 110 pt floor on the title (lab fix round 2026-11-14, checker C4 / F8): at 320 wide a
+  // long title word (MEMBRANE, OSCILLATOR, HARMONOGRAPH) broke mid-word; now the right-hand keys drop to
+  // a second row, right-aligned (marginLeft 'auto'), and the title keeps its words. 390: one row as before.
+  header: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 10, paddingHorizontal: 14, paddingBottom: 8 },
   back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
-  titleBlock: { flexShrink: 1, flexGrow: 1 },
+  // minWidth comes from titleMinWidth(title) (its longest word, 80–128): with F8's fixed 110 the keys
+  // stayed on row 1 at 320 and HARMONOGRAPH (126 px) broke ("HARMONOGRAP / H", measured 2026-11-14).
+  titleBlock: { flexShrink: 1, flexGrow: 1, flexBasis: 0 },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.2, color: colors.textPrimary },
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
-  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 10, marginLeft: 'auto' },
 
   // The strip. Every control is a 44 pt box; the row caps at the reading
   // column and centres on a tablet (RackUnit's dockInner).
@@ -344,12 +419,15 @@ const styles = StyleSheet.create({
   nextSlot: { minWidth: 88, minHeight: 44 },
   nextLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 13, letterSpacing: 1.2, color: colors.amber },
 
-  // CONTENTS — in-tree (no Modal), under the strip, capped.
-  contentsWrap: { paddingHorizontal: 12, paddingTop: 6, paddingBottom: 4 },
+  // CONTENTS — the centered popup (2026-11-14): dim backdrop, card at the
+  // popup width (popupCard), ✕ in its header.
+  contentsBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', paddingHorizontal: 20 },
+  contentsHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingLeft: 14, paddingRight: 4, minHeight: 48, borderBottomWidth: 1, borderBottomColor: colors.hairlineDim },
+  contentsTitle: { fontFamily: fonts.oswaldSemiBold, fontSize: 14, letterSpacing: 1.6, color: colors.amber },
+  contentsClose: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
+  contentsCloseText: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, color: colors.textSub },
   contents: {
-    width: '100%',
-    maxWidth: READING_MAX_W,
-    alignSelf: 'center',
+    ...popupCard,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: colors.hairline,

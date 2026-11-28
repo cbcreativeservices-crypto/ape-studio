@@ -55,7 +55,7 @@ export const E07_COPY: Partial<LessonCopy> = {
     workedAim: 'Aim the vocal mic at the mouth — the lab counts it while the mic points within about {tol}° of the mouth — and turn its least-sensitive side toward the instrument where it can.',
     workedClear: 'Clear of the performer and the instrument: the mic, its stand and its boom keep off the face, the hands, the strumming arm, the neck, the music desk and the lid. Clearance comes first, before any number.',
     blocked: {},
-    reveal: 'Closer to the mouth tends to bring a stronger voice and less instrument; the instrument mic’s distance and angle set how much of the guitar or piano — and of the voice — it hears. Performers and rooms vary, so “it depends” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
+    reveal: 'Closer to the mouth tends to bring a stronger voice and less instrument; the instrument mic’s distance and angle set how much of the guitar or piano — and of the voice — it hears. Performers and rooms vary, so “it depends” is fair too. Each zone’s TENDS TO HEAR line is an idea to check by ear.',
     typeNotes: {
       vocDynCard: 'Ideas to try with a vocal dynamic: hold a steady distance, then turn the mic until its rear faces the instrument as much as the mouth allows.',
       vocDynSuper: 'Ideas to try with a supercardioid: its least-sensitive directions sit off its rear — aim them at the guitar or the strings.',

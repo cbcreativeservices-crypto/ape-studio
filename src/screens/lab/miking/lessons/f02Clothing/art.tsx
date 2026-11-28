@@ -25,6 +25,12 @@ import { voiceLabelObstacles } from '../shared/voice/VoiceArt';
 import { make } from '../shared/concert/paths.ts';
 import { F02_MODEL, FLOOR, JACKET, posesOf, WEARER } from './geometry.ts';
 import { F02_ZONES } from './model.ts';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+import { ClothingPersonV2, clothingCoversV2 } from './clothingV2';
+import { PoleOperatorV2 } from '../shared/fieldmics/PoleOperatorV2';
+
+/** The new look (figure V2, builder Foley3): the artist is Mei of the cast, the boom operator Ruth. */
+export const V2 = figureV2On('sidePlayers');
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const V = F02_MODEL.views;
@@ -258,10 +264,30 @@ function WornJacket({ part }: { part: 'body' | 'sleeve' }) {
   );
 }
 
-export function ClothingArt({ view, variant }: { view: ViewId; variant: VariantId }) {
+export function ClothingArt({ view, variant, v2 = V2 }: { view: ViewId; variant: VariantId; /** (the study page compares the old look) */ v2?: boolean }) {
   const P = posesOf(variant);
   const live = variant === 'live';
   const worn = variant === 'worn';
+  if (v2) {
+    if (view === 'top') {
+      const t = V.top!;
+      return (
+        <Group>
+          <StageFloorPlan u0={t.u0 - 200} u1={t.u1 + 200} v0={t.v0 - 200} v1={t.v1 + 200} />
+          {live ? <BoothArt view="top" rail={BOOTH.rail} pa={{ x: BOOTH.pa.p.x, y: BOOTH.pa.p.y, z: BOOTH.pa.p.z }} /> : null}
+          <ClothingPersonV2 view="top" variant={variant} jacket={worn ? null : <HeldJacket view="top" />} />
+        </Group>
+      );
+    }
+    const s = V.side!;
+    return (
+      <Group>
+        <PitSection surface="concrete" floorY={FLOOR} u0={s.u0 - 200} u1={s.u1 + 200} pit={false} />
+        {live ? <BoothArt view="side" floorY={FLOOR} rail={BOOTH.rail} pa={{ x: BOOTH.pa.p.x, y: BOOTH.pa.p.y, z: BOOTH.pa.p.z }} /> : null}
+        <ClothingPersonV2 view="side" variant={variant} jacket={worn ? null : <HeldJacket view="side" />} />
+      </Group>
+    );
+  }
   if (view === 'top') {
     const t = V.top!;
     return (
@@ -312,13 +338,13 @@ export function clothingHitTest(view: ViewId, variant: VariantId, u: number, v: 
     if (worn && u >= WEARER.neck.x - 180 - tol && u <= WEARER.neck.x + 150 + tol && v >= WEARER.neck.y - tol && v <= WEARER.neck.y + 600 + tol) return 'f02.jacketWorn';
     if (live && Math.abs(u - BOOTH.pa.p.x) <= 220 + tol && v >= BOOTH.pa.p.y - 340 - tol && v <= BOOTH.pa.p.y + 340 + tol) return 'f02.pa';
     if (live && u >= BOOTH.rail.x - tol && u <= BOOTH.rail.x + 60 + tol && v >= FLOOR - BOOTH.rail.h - tol) return 'f02.booth';
-    if (poseCovers(P.side, u, v, tol)) return 'f02.artist';
+    if (V2 ? clothingCoversV2('side', variant, u, v, tol) : poseCovers(P.side, u, v, tol)) return 'f02.artist';
     return null;
   }
   if (!worn && Math.abs(u) <= 110 + tol && Math.abs(v) <= JACKET.across + 40 + tol) return 'f02.jacketHeld';
   if (live && Math.abs(u - BOOTH.pa.p.x) <= 220 + tol && Math.abs(v - BOOTH.pa.p.z) <= 300 + tol) return 'f02.pa';
   if (live && u >= BOOTH.rail.x - tol && u <= BOOTH.rail.x + 60 + tol) return 'f02.booth';
-  if (poseCovers(P.top, u, v, tol)) return worn ? 'f02.jacketWorn' : 'f02.artist';
+  if (V2 ? clothingCoversV2('top', variant, u, v, tol) : poseCovers(P.top, u, v, tol)) return worn ? 'f02.jacketWorn' : 'f02.artist';
   return null;
 }
 
@@ -326,10 +352,12 @@ export const F02_ART: LessonArt = {
   Instrument: ClothingArt,
   labels: clothingLabels,
   hitTest: clothingHitTest,
-  figureAt: (view, variant, u, v, tol) => poseCovers(view === 'side' ? posesOf(variant).side : posesOf(variant).top, u, v, tol),
+  figureAt: (view, variant, u, v, tol) => (V2 ? clothingCoversV2(view, variant, u, v, tol) : poseCovers(view === 'side' ? posesOf(variant).side : posesOf(variant).top, u, v, tol)),
   labelObstacles: voiceLabelObstacles(F02_ZONES),
   labelsYieldToMic: true,
-  PoleOperator: PoleOperatorArt,
+  // (figure V2) the boom operator over the engine's pole, both fists on it at any slope
+  PoleOperator: V2 ? PoleOperatorV2 : PoleOperatorArt,
+  poleOperatorOver: V2,
   // ORIENT's figure: the artist head to floor (art fix 2026-10-16).
   figureBox: () => ({ u0: -950, u1: 650, v0: -640, v1: 1290 }),
 };

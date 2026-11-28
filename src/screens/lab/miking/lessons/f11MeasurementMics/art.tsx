@@ -13,6 +13,10 @@ import { ReadingOperator, TestSpeaker, make, rectP } from '../shared/measure/Mea
 import { hitTestOf, labelsOf, type SceneHits } from '../shared/measure/sceneHits.ts';
 import { MIC_ANATOMY_ASPECT, MicAnatomy } from '../shared/measure/MicAnatomy';
 import { F11_GROUND, F11_OP, F11_OP_SIDE, F11_OP_TOP, F11_SPK, F11_VIEWS } from './geometry.ts';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+
+/** The new look (figure V2, wave 3 set 3b): the operator is the cast's (figureV2/cast 'operator.measure'). */
+export const V2 = figureV2On('sidePlayers');
 import { F11_PAGES, F11_STEP_COUNTS } from './pages';
 
 function Floor({ view }: { view: ViewId }) {
@@ -46,12 +50,12 @@ function Floor({ view }: { view: ViewId }) {
   );
 }
 
-function BenchScene({ view }: { view: ViewId; variant: VariantId }) {
+export function BenchScene({ view, v2 = V2 }: { view: ViewId; variant: VariantId; /** (the study page compares the old look) */ v2?: boolean }) {
   return (
     <Group>
       <Floor view={view} />
       <TestSpeaker g={F11_SPK} view={view} />
-      <ReadingOperator pose={view === 'side' ? F11_OP_SIDE : F11_OP_TOP} />
+      <ReadingOperator pose={view === 'side' ? F11_OP_SIDE : F11_OP_TOP} v2={v2} pair={{ side: F11_OP_SIDE, top: F11_OP_TOP }} />
     </Group>
   );
 }

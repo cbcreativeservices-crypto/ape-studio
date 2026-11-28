@@ -56,7 +56,7 @@ const SHARED: VoiceZoneSpec = {
   kind: 'sourced',
   src: 'R-REPORTER',
   quote: 'held at around chest height between the interviewer and the person being interviewed (the maker’s own model and a typical interview: a starting trial, not a distance rule — the lesson L20)',
-  bandProv: ill('chest height (28 cm below the mouths) and the 75 cm spacing are drawing defaults; 35–60 cm from each mouth is the band round the drawing'),
+  bandProv: ill('chest height (28 cm below the mouths) and the 75 cm spacing are drawing defaults; 35–60 cm from each mouth is the band around the drawing'),
   distance: { min: 350, max: 600 },
   off: { min: 20, max: 60, toward: 'down', prov: ill('below and between the mouths: 20–60° below the guest’s mouth axis (the drawing)') },
   aimTol: 60,

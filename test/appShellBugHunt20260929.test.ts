@@ -119,7 +119,10 @@ describe('A2 — gate popups are hosted inside an open Modal', () => {
     }
     assert.match(gate, /visible=\{phase === 'safety' && rootShown\}/);
     assert.match(warning, /overlayPublisher="gate"/);
-    assert.match(warning, /if \(embedded\) return visible \? body : null;/);
+    // `shown` (2026-11-14, lab fix round S1; owner: Sound Safety "Once per
+    // session (Recommended)"): `visible` AND this request is one the sheet
+    // still asks (KEEP SOUND OFF is honoured until the app is closed).
+    assert.match(warning, /if \(embedded\) return shown \? body : null;/);
   });
 });
 

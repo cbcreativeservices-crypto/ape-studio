@@ -10,6 +10,7 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { menuClearance } from '../../components/nav/circleMenuPlaces';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { BACK_GLYPH_MAX_SCALE, colors, fonts } from '../../theme/tokens';
 import { TrophyImage } from '../../components/TrophyImage';
@@ -48,6 +49,9 @@ function fmtDate(iso: string | null): string {
 
 export function TopicsScreen() {
   const insets = useSafeAreaInsets();
+  // The circle menu's MENU button floats over the bottom-left corner (owner
+  // 2026-11-20): the content ends above it (circleMenuPlaces.menuClearance).
+  const menuClear = menuClearance(insets.bottom);
   const navigation = useNavigation<any>();
   const [fields, setFields] = useState<FieldGroup[] | null>(null);
   const [earnedTotal, setEarnedTotal] = useState(0);
@@ -158,7 +162,7 @@ export function TopicsScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: menuClear }]}>
         <View style={styles.headerRow}>
           <Pressable
             onPress={leave}

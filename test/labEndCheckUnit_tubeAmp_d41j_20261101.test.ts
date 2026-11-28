@@ -53,7 +53,8 @@ describe('Vacuum Tube: the check is a CHECK unit on the end screen', () => {
   });
   it('the end guide says so', async () => {
     const { TUBE_END_GUIDE } = await import('../src/screens/lab/tube/tubeScreenGuides.ts');
-    assert.match(TUBE_END_GUIDE.seeing[0], /LAB COMPLETE appears once every module is opened and the check is passed/);
+    // "Done = work done" (owner's decision 1, phase 3, 2026-11-14): a module counts on its task, not on opening.
+    assert.match(TUBE_END_GUIDE.seeing[0], /LAB COMPLETE appears once every module’s task is done and the check is passed/);
     assert.match(TUBE_END_GUIDE.seeing[0], /CHECK row/);
     assert.match(TUBE_END_GUIDE.control.join(' '), /Tap the CHECK row to scroll this screen up to the check/); // D41 K6
     assert.doesNotMatch(TUBE_END_GUIDE.seeing.join(' '), /When none are left the title reads LAB COMPLETE/);
@@ -137,7 +138,8 @@ describe('EQ Lab: the check is a CHECK unit on both end screens (D41 J2 follow-u
   });
   it('the end guide says so', async () => {
     const { EQ_END_GUIDE } = await import('../src/screens/lab/eq/eqScreenGuides.ts');
-    assert.match(EQ_END_GUIDE.seeing[0], /LAB COMPLETE once every module is opened and the check is passed/);
+    // Phase 3, lab fix round (owner 2026-11-14, decision 1: "Done = work done … not when it is opened"): a module counts when its goal is met.
+    assert.match(EQ_END_GUIDE.seeing[0], /LAB COMPLETE once every module is done and the check is passed/);
     assert.match(EQ_END_GUIDE.control.join(' '), /Tapping the CHECK row keeps you here/);
     assert.doesNotMatch(EQ_END_GUIDE.seeing.join(' '), /When none are left the title reads LAB COMPLETE/);
   });

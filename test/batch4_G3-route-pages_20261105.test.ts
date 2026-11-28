@@ -169,23 +169,29 @@ describe('BAND DCA says why it waits', () => {
   });
 });
 
+// Lab fix round 2026-11-14 (F2), owner: "Begin fixing all bugs found and do
+// obvious (my decision is not required) fixes as you suggestted in the
+// report." — on the four narrow wedge columns the lead vocal row reads its
+// short console-tape name "Vocal" ("Lead vo…" was cut at 390); ConsolePanel
+// bankRowName. Wider columns keep "Lead vocal".
+const VOX4 = 'Vocal';
 describe('PRE shows on the wedge row', () => {
   it('the first tap shows, even before the send is brought up', () => {
     const page = openPage(MONITORS);
-    assert.ok(!page.draw().includes('Lead vocal'));
+    assert.ok(!page.draw().includes(VOX4));
     page.param('pre').onToggle?.();
-    assert.deepEqual(after(page.draw(), 'Lead vocal', 2), ['OFF', 'PRE']);
+    assert.deepEqual(after(page.draw(), VOX4, 2), ['OFF', 'PRE']);
   });
 
   it('flips PRE and POST on the matching row of the matching wedge', () => {
     const page = openPage(MONITORS, engine.setSend(engine.setSend(engine.bandConsole(), 'vox', 'aux1', { db: -6, tap: 'post' }), 'kick', 'aux2', { db: 0, tap: 'pre' }));
-    assert.deepEqual(after(page.draw(), 'Lead vocal', 2), ['-6', 'POST']);
+    assert.deepEqual(after(page.draw(), VOX4, 2), ['-6', 'POST']);
     page.param('pre').onToggle?.();
     const on = page.draw();
-    assert.deepEqual(after(on, 'Lead vocal', 2), ['-6', 'PRE']);
+    assert.deepEqual(after(on, VOX4, 2), ['-6', 'PRE']);
     assert.deepEqual(after(on, 'Kick', 2), ['0', 'PRE'], 'the other wedge keeps its own');
     page.param('pre').onToggle?.();
-    assert.deepEqual(after(page.draw(), 'Lead vocal', 2), ['-6', 'POST']);
+    assert.deepEqual(after(page.draw(), VOX4, 2), ['-6', 'POST']);
   });
 
   it('adds nothing for a user of BusBank that gives no tags', () => {

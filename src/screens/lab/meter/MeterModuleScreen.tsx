@@ -16,7 +16,8 @@ import { markLabUnit, useLabClearedUnits, useLabCompletionUnreadable } from '../
 import { LabEndScreen } from '../kit/LabEndScreen';
 import { LabHeader, LabNavBar, LabNavProvider, LabNextButton, useLabNav } from '../kit/LabNavBar';
 import { ScrollLockProvider } from '../LabShell';
-import { METER_MODULES, type MeterModuleId } from './modules/registry';
+import { METER_MODULES, METER_MODULE_CHECKS, meterLeftDetail, type MeterModuleId } from './modules/registry';
+import { ModuleGoalProvider } from './moduleGoal';
 import { WaveformModule, PeakModule, VuModule, LoudnessModule } from './modules/modMeterA';
 import { SpectrumModule, SpectrogramModule, WaterfallModule } from './modules/modMeterB';
 import { PhaseModule, StereoModule, ScopeModule, DetectiveModule } from './modules/modMeterC';
@@ -74,11 +75,12 @@ export function MeterModuleScreen() {
   const focused = useIsFocused();
   const meta = METER_MODULES.find((m) => m.id === route.params.id) ?? METER_MODULES[0];
   const Comp = COMPONENTS[meta.id];
-  // R6c: mark this module viewed → the Visual Audio Analysis lab completes once
-  // every module has been seen (fires mark_lab_complete server-side).
-  useEffect(() => {
-    if (focused) markLabUnit('af_visual_analysis', meta.id);
-  }, [focused, meta.id]);
+  // "Done = work done" (owner's decision 1, phase 3, 2026-11-14): a module
+  // counts once every CHECK YOURSELF on it is answered right (Signal
+  // Detective: one whole case), never on opening (it used to be marked here
+  // on focus). Credit already banked stays. The lab still completes once
+  // every module counts (mark_lab_complete).
+  const onGoalMet = () => markLabUnit('af_visual_analysis', meta.id);
   const [width, setWidth] = useState(0);
   // Modules lock the ScrollView during their drags via the lockScroll prop
   // (owner 2026-07-29 drag-vs-scroll fix).
@@ -125,8 +127,12 @@ export function MeterModuleScreen() {
   });
   const endScreen = ending ? (
     <LabEndScreen
+      // The recap and next-lab card (labEndContent.ts, S4).
+      labId="af_visual_analysis"
       labTitle="Visual Audio Analysis Lab"
-      units={METER_MODULES.map((m) => ({ id: m.id, label: m.title }))}
+      units={METER_MODULES.map((m) => ({ id: m.id, label: m.title, detail: meterLeftDetail(m.id) }))}
+      // Phase 2 end screen (2026-11-14): the rule every row shares, said once.
+      howItCounts="A module counts once every CHECK YOURSELF on it is answered right (Signal Detective: one whole case). Opening it again, or practicing, never removes it."
       cleared={banked}
       unreadable={progressUnreadable}
       mode="credit"
@@ -165,12 +171,12 @@ export function MeterModuleScreen() {
         // Rack module: full height — the module's RackUnit pins stage + dock
         // and owns the scroll well (incl. its own guided-lesson entry row).
         <View style={styles.rackFill} onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
-          {width > 0 ? <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} /> : null}
+          {width > 0 ? (<ModuleGoalProvider need={METER_MODULE_CHECKS[meta.id]} onMet={onGoalMet} resetKey={meta.id}><Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} /></ModuleGoalProvider>) : null}
         </View>
       ) : (
       <ScrollView contentContainerStyle={[styles.scroll, readingColumn, { paddingBottom: 30 + insets.bottom }]} keyboardShouldPersistTaps="handled" scrollEnabled={!scrollLocked}>
         <View onLayout={(e) => setWidth(Math.round(e.nativeEvent.layout.width) - 26)}>
-          {width > 0 ? <Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} /> : null}
+          {width > 0 ? (<ModuleGoalProvider need={METER_MODULE_CHECKS[meta.id]} onMet={onGoalMet} resetKey={meta.id}><Comp width={width} focused={focused} help={help} lockScroll={setScrollLocked} /></ModuleGoalProvider>) : null}
         </View>
         {/* Guided-lesson entry lives at the BOTTOM (owner 2026-07-29, LabShell v2). */}
         <Pressable

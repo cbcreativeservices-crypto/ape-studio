@@ -109,7 +109,8 @@ describe('3. each guide quotes its screen’s real names', () => {
   const NAMES: Record<string, string[]> = {
     explore: [
       // the two analyzers (fxAnim SpectrumFlow / FlowScene)
-      'FLANGER', 'IN ▸', '▸ OUT', 'SPECTRUM (dB)', 'PINK NOISE', 'WHITE NOISE', '100', '1k', '10k',
+      // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item FL-04): the flanger's OUT title names its dips.
+      'FLANGER', 'IN ▸', '▸ OUT', 'DIPS = CANCELED HERE', 'PINK NOISE', 'WHITE NOISE', '100', '1k', '10k',
       // bezel + dock + tray choices (config labels / shorts)
       'CENTER', 'RATE', 'FDBK', 'FEEDBACK', 'SWEEP', 'DEPTH', 'MIX', 'SOURCE',
       '0.2 Hz JET', '5 Hz WARBLE', '70% METALLIC', '−70% HOLLOW', '50% EVEN', '90%',
@@ -118,7 +119,8 @@ describe('3. each guide quotes its screen’s real names', () => {
     ],
     // 2026-11-08: 'Manual / Delay time' is now CENTER (decision 1: the on-screen label); the rewrite
     // no longer names the LEARN tab itself. The lesson-only names below are in the old lesson AND Part A.
-    learn: ['EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'LFO Waveform', 'Stereo width', 'Through-Zero', 'TZF', 'ADV', 'CENTER', 'SWEEP', 'FDBK', '50% EVEN', 'RATE', 'DEPTH', '▶'],
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item FL-02): the three missing controls fold into ONE entry.
+    learn: ['EXPLORE', 'CHECK', 'CONTROLS', 'COMMON MISTAKES', 'PRO TIPS', 'FORMULA / CONCEPT', 'GUIDED LESSON', 'LAB NOTES', 'Other controls you will meet', 'CENTER', 'SWEEP', 'FDBK', '50% EVEN', 'RATE', 'DEPTH', '▶'],
     // 'SOURCE' dropped: the CHECK TRY THIS no longer walks to the SOURCE list (decision 6, 2026-11-08).
     check: ['CHECK YOUR UNDERSTANDING', 'still to get right', 'CORRECT', 'NOT QUITE — TRY ANOTHER', 'Check passed', 'LEARN', 'EXPLORE', 'CENTER', 'FDBK', 'DESIGNED RESPONSE', 'COMMON MISTAKES', '50% EVEN'],
   };
@@ -134,25 +136,28 @@ describe('3. each guide quotes its screen’s real names', () => {
       }
     });
   }
-  it('the dock is CENTER (fader) · SWEEP (RATE + DEPTH) · FDBK · MIX · SOURCE, the bezel CENTER · RATE · FDBK, the sources PINK + WHITE NOISE', () => {
+  it('the dock is CENTER (fader) · SWEEP (RATE + DEPTH) · FDBK · MIX · SOURCE, the bezel CENTER · SWEEP · FDBK, the sources PINK + WHITE NOISE', () => {
     const labels = [...CFG.matchAll(/label: '([A-Z ]+)', (?:short: '([A-Z]+)', )?paramId:/g)].map((m) => m[2] ?? m[1]);
     assert.deepEqual(labels, ['CENTER', 'RATE', 'DEPTH', 'FDBK', 'MIX']);
     assert.match(CFG, /id: 'sweep', label: 'SWEEP', paramIds: \[P\.rateHz, P\.depth\]/);
-    assert.deepEqual([...CFG.matchAll(/\{ k: '([A-Z]+)', paramId/g)].map((m) => m[1]), ['CENTER', 'RATE', 'FDBK']);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item FL-03): one name, SWEEP on the readout as on the dock key.
+    assert.deepEqual([...CFG.matchAll(/\{ k: '([A-Z]+)', paramId/g)].map((m) => m[1]), ['CENTER', 'SWEEP', 'FDBK']);
     assert.match(CFG, /sources: \[SRC_PINK, SRC_WHITE\]/);
     assert.match(code(FX_SCREEN), /label: 'SOURCE'/);
     // the analyzers' labels: the source name on IN, SPECTRUM (dB) on OUT
     assert.match(ANIM, /text=\{white \? 'WHITE NOISE' : 'PINK NOISE'\}/);
-    assert.match(ANIM, /text="SPECTRUM \(dB\)"/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item FL-04): DIPS = CANCELED HERE on the flanger, SPECTRUM (dB) kept on the phaser.
+    assert.match(ANIM, /text=\{mode === 'flanger' \? 'DIPS = CANCELED HERE' : 'SPECTRUM \(dB\)'\}/);
     assert.match(ANIM, /\[100, '100'\],\s*\[1000, '1k'\],\s*\[10000, '10k'\]/);
     assert.match(ANIM, /case 'mod': return model\.flavor === 'chorus' \? 'CHORUS' : 'FLANGER';/);
   });
-  it('the LEARN page lists the three controls the guide says are not in this dock', () => {
+  it('the LEARN page folds the three controls the guide says are not in this dock into ONE entry', () => {
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item FL-02): one "Other controls you will meet" entry names all three.
     const c = code('src/features/lab/guidedLessons/content.ts');
     const block = c.slice(c.indexOf('  flanger: {'), c.indexOf('  phaser: {'));
-    for (const k of ['lfo_wave', 'stereo_offset', 'tzf']) assert.match(block, new RegExp(`key: ["']${k}["']`));
-    assert.match(block, /key: ["']tzf["'][\s\S]*?advanced: true/);
-    assert.doesNotMatch(CFG, /lessonKey: '(lfo_wave|stereo_offset|tzf)'/, 'one of them is on the dock now — update the LEARN guide');
+    for (const k of ['lfo_wave', 'stereo_offset', 'tzf']) assert.doesNotMatch(block, new RegExp(`key: ["']${k}["']`));
+    assert.match(block, /key: "other_controls", name: "Other controls you will meet", range: "Not on this rack", definition: "[^"]*LFO waveform[^"]*stereo width[^"]*quarter cycle, 90°[^"]*through-zero[^"]*"[\s\S]*?advanced: true/);
+    assert.doesNotMatch(CFG, /lessonKey: '(lfo_wave|stereo_offset|tzf|other_controls)'/, 'one of them is on the dock now — update the LEARN guide');
   });
   it('CHECK (decision 6, 2026-11-08): TRY THIS and the intro never give a check answer away', () => {
     const ck = FLANGER_SCREEN_GUIDES.check as unknown as Guide & { intro: { learning: string; start: string } };
@@ -169,7 +174,8 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.match(ck.tryThis[0], /with MIX on 50% EVEN, slide CENTER to the top, 5\.0 ms\. The caption under DESIGNED RESPONSE reads notches every 200 Hz/);
     // the spacing caption only shows below 100% MIX
     assert.match(CFG, /heroCaption: \(v\) =>\s*v\[P\.modMix\] >= 1\s*\? 'At 100% MIX/);
-    assert.match(ck.tryThis[1], /reread the COMMON MISTAKES line on test sources on LEARN/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(ck.tryThis[1], /open COMMON MISTAKES on LEARN and reread the line on test sources/);
   });
   it('the CHECK tab has the four questions the guide counts', () => {
     const u = code('src/features/lab/understandingChecks.ts');
@@ -231,7 +237,8 @@ describe('4. the TRY THIS numbers follow from the config and the engine', () => 
   });
   it('FDBK 0% → 70% at MIX 50%: the peaks go from the dotted line (0 dB) to well above it (+6.7 dB)', () => {
     assert.match(CFG, /\{ label: '70% METALLIC', value: 0\.7 \}/);
-    assert.match(CFG, /\{ label: '50% EVEN', value: 0\.5 \}/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item SH-76): tray choices may carry a one-line blurb.
+    assert.match(CFG, /\{ label: '50% EVEN', value: 0\.5(?:, blurb: '[^']*')? \}/);
     const p0 = extremes(2, 0.5, 0).hi, p4 = extremes(2, 0.5, 0.4).hi, p7 = extremes(2, 0.5, 0.7).hi;
     assert.ok(Math.abs(p0) < 0.05, `fb 0 peak ${p0}`);
     assert.ok(Math.abs(p4 - 2.5) < 0.1, `fb 40% peak ${p4}`);
@@ -285,7 +292,8 @@ describe('6. guide review fixes (2026-10-31, each re-checked against the code)',
     assert.match(code('modules/ape-dsp/ios/core/Effects.hpp'), /const double sR = std::sin\(2\.0 \* fx::kPi \* \(lfo_ \+ 0\.25\)\);/);
     const t = textOf(GUIDES.learn);
     assert.doesNotMatch(t, /found on many flangers/);
-    assert.ok(t.includes('Through-Zero is a specialty') && t.includes('a quarter cycle apart'));
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item FL-02): the folded line keeps both facts.
+    assert.ok(t.includes('a specialty, through-zero') && t.includes('a quarter cycle apart'));
   });
 });
 
@@ -304,7 +312,8 @@ describe('7. −70% HOLLOW is hollow only at full wet (screen + lesson copy, 202
     assert.doesNotMatch(CFG, /Math\.abs\(v\[P\.modFeedback\]\) >= 0\.7/);
     assert.ok(CFG.includes("wrongHint: 'Step FDBK from 0% to 70% METALLIC and watch the peaks between the notches on OUT rise above the dotted input line.'"));
     // the card's answer/reveal follow the maths: peaks grow (0 → +2.5 → +6.7 dB), notches get SHALLOWER
-    assert.ok(CFG.includes("'The peaks between the notches grow tall and narrow and ring"));
+    // Phase 2, lab fix round (owner 2026-11-14: "Begin fixing all bugs found and do obvious ... fixes", check card row 4: balanced option lengths): shorter option, same maths (the peaks grow).
+    assert.ok(CFG.includes("'Tall, narrow peaks ring between the notches'"));
     // D42 r2 (owner GO 2026-11-01): the CHECK reveal follows the maths too — taller,
     // narrower peaks; never "deeper contrast" or "deeper notches".
     assert.ok(CFG.includes('the peaks between the notches grow taller and narrower, so the comb sounds sharper and more resonant'));
@@ -331,7 +340,8 @@ describe('8. MIX 50% is EVEN, not always DEEPEST (verified 2026-10-31)', () => {
     assert.ok(extremes(2, 0.5, -0.7).lo > extremes(2, 1, -0.7).lo, 'at −70% the 100% chip dips deeper');
   });
   it('the chip, caption and lesson do not claim "deepest at 50%"', () => {
-    assert.match(CFG, /\{ label: '50% EVEN', value: 0\.5 \}/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item SH-76): tray choices may carry a one-line blurb.
+    assert.match(CFG, /\{ label: '50% EVEN', value: 0\.5(?:, blurb: '[^']*')? \}/);
     assert.doesNotMatch(CFG, /DEEPEST|deepest comb/);
     const L = read('src/features/lab/guidedLessons/content.ts');
     // the old lesson line, or the Part A rewrite's (2026-11-08); neither claims "deepest at 50%"

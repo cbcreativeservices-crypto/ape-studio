@@ -13,7 +13,7 @@
  * Every name is the on-screen name in MicSelectLabScreen.tsx /
  * micSelectData.ts / polarStage.tsx (chip labels, headings, verdict words,
  * buttons), the shared LabEndScreen / LabUnderstandingCheck, and the
- * CHECK YOURSELF card (foundations/bits.tsx). Every verdict quoted in a TRY
+ * CHECK YOURSELF card (micCheck.tsx, since 2026-11-14). Every verdict quoted in a TRY
  * THIS is what the screen computes for that choice — the polar verdicts from
  * polarR() at each neighbour's bearing (picked up ≥ 0.6, partial 0.25–0.6),
  * the SPL verdicts from SPL_MATCH, the challenge answers from CHALLENGE_*,
@@ -51,22 +51,22 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
   types: {
     intro: {
       learning: 'Builds on Microphone Principles: the main microphone families, and why some names say how a mic turns sound into signal while others only describe its design or body.',
-      start: 'Read the Moving-Coil Dynamic card down to IMPORTANT LIMITATION. Then tap COMPARE, pick Moving-Coil Dynamic and Condenser, and read the two cards side by side.',
+      start: 'Read the Moving-Coil Dynamic card down to IMPORTANT LIMITATION. Then tap COMPARE (Moving-Coil Dynamic stays as your first pick), tap Condenser, and read the two cards side by side.',
     },
     seeing: [
-      'Twelve mic types with photos. Four are named for how they turn sound into signal (Moving-Coil Dynamic, Condenser, Electret Condenser, Ribbon), eight for their design or form, from Large-Diaphragm to Contact.',
-      'The amber banner warns these are NOT equivalent categories: a shotgun is usually a condenser.',
+      'Twelve mic photos in two groups. HOW IT WORKS INSIDE: Moving-Coil Dynamic, Condenser, Electret Condenser, Ribbon. SHAPE OR JOB: eight named for their body or use, from Large-Diaphragm to Contact.',
+      'The banner under the card: the groups are not equivalent categories (a shotgun is usually a condenser).',
       'The card below gives WHAT IT IS, MAJOR CHARACTERISTICS, TYPICAL APPLICATIONS and IMPORTANT LIMITATION.',
     ],
     control: [
-      'Under TAP A MICROPHONE, tap one to show its card. Moving-Coil Dynamic shows first.',
-      'Tap COMPARE, then pick two mics to see their cards side by side. Tap COMPARING to go back to one card.',
+      'Tap a mic in either group to show its card. Moving-Coil Dynamic shows first.',
+      'Tap COMPARE: the mic on show stays as your first pick; tap a second to see the two cards side by side. Tap COMPARING to go back to one card.',
       'Tap the photo on a card (⤢) to see it bigger.',
-      'Tap NEXT: CHARACTERISTICS THAT MATTER › at the bottom, or use the strip under the title, to move between lessons. Tap the readout in the strip for the list of lessons. ‹ leaves the lab.',
+      'Tap NEXT: CHARACTERISTICS THAT MATTER › at the bottom, or use the strip under the title, to move between modules. Tap the readout in the strip for the list of modules. ‹ leaves the lab.',
     ],
     changes: [
-      'The card follows the mic you tap. Its class line reads TRANSDUCER PRINCIPLE when the name is about the parts inside, or DESIGN / FORM FACTOR when it’s about the body around them.',
-      'In COMPARE, a third pick replaces the older of your two.',
+      'The card follows the mic you tap, and scrolls into view. Its class line names its group: HOW IT WORKS INSIDE when the name is about the parts inside, or SHAPE OR JOB when it’s about the body around them.',
+      'In COMPARE, a third pick replaces the older of your two; tapping a picked mic again takes it out.',
       'Every card ends on a limitation, because no type is best at everything.',
     ],
     teaches: [
@@ -75,7 +75,7 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
       'Every type trades something away, so the job decides which trade you can accept.',
     ],
     tryThis: [
-      'Tap Shotgun / Interference-Tube: its class reads DESIGN / FORM FACTOR, and WHAT IT IS puts a condenser capsule behind the tube.',
+      'Tap Shotgun / Interference-Tube: its class reads SHAPE OR JOB, and WHAT IT IS puts a condenser capsule behind the tube.',
       'COMPARE Moving-Coil Dynamic with Condenser: passive and rugged against powered and detailed. Each one’s limitation is the other’s strength.',
       'Tap Contact: it senses vibration through the surface it touches, not sound in the air. Read its limitation: the tone is different.',
     ],
@@ -88,12 +88,12 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
       start: 'Polar pattern shows first; read its card. Then tap Sensitivity and Maximum SPL in turn: one is about output, the other about how loud a source the mic can take.',
     },
     seeing: [
-      'Sixteen characteristic chips sit beside a condenser photo, from Polar pattern to Environmental suitability.',
+      'Sixteen characteristic chips, from Polar pattern to Environmental suitability, sit beside a condenser photo in four small groups: HOW IT HEARS, LEVEL AND NOISE, POWER AND CABLE, SIZE AND BUILD.',
       'The card below names the one you picked and why it matters when you choose a mic. Some cards add an amber warning, such as “Flat is not synonymous with better.”',
     ],
     control: [
       'Tap any chip to show its card. Polar pattern shows first.',
-      'Tap NEXT: POLAR PATTERN SELECTION ›, or use the strip under the title, to move between lessons.',
+      'Tap NEXT: POLAR PATTERN SELECTION ›, or use the strip under the title, to move between modules.',
     ],
     changes: [
       'Each card answers one question: what does this characteristic change about the job? It’s not about how the mic is built.',
@@ -119,7 +119,7 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
     },
     seeing: [
       'You’re looking down on a stage vocal mic aimed at the singer. On the ring: Singer · wanted, Drum kit, Audience, Wedge monitor, Reflective wall, HVAC vent.',
-      'Amber outline: your pattern. Dotted ring: full pickup. TOP VIEW · DIRECTIONS ONLY, NOT TO SCALE: teaching shapes, not a real mic’s chart.',
+      'Amber outline: your pattern. Dotted ring: full pickup. “Top view · directions only, not to scale”: teaching shapes, not a real mic’s chart.',
       'Tags: ✓ good, ⚠ a problem, △ partial. Singer: ✓ picked up or ⚠ missed. The rest: ⚠ picked up or ✓ rejected.',
     ],
     control: [
@@ -152,11 +152,11 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
     seeing: [
       'A response graph runs from 20 Hz on the left to 20 kHz on the right. The amber line is the curve you chose; the gray line is flat.',
       'Every curve is fictional but realistic: read the SHAPE, not a brand.',
-      'Under the graph you’ll find EMPHASIZES, ATTENUATES and WHERE THAT IS USEFUL, then a CHECK YOURSELF question and the lesson banner.',
+      'Under the graph you’ll find EMPHASIZES, ATTENUATES and WHERE THAT IS USEFUL, then a CHECK YOURSELF question and the banner.',
     ],
     control: [
       'Tap a curve chip: Relatively flat (shown first), Presence rise (3–6 kHz), Low-frequency rolloff, Extended high-frequency response or Strongly shaped (application-voiced).',
-      'In CHECK YOURSELF, tap an answer. A wrong one gives a hint; the right one gives the reason. ▾ folds the card.',
+      'In CHECK YOURSELF, tap an answer. A wrong one says why that one is not it (a second wrong pick adds the explanation); the right one gives the reason. ▾ folds the card.',
       'Tap NEXT: SENSITIVITY, NOISE & SPL ›, or use the strip, to move on.',
     ],
     changes: [
@@ -244,7 +244,7 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
     },
     seeing: [
       'Seven rows, each a mic body and its typical jobs: Handheld, Lavalier, Headworn, Shotgun, Boundary, Pencil / SDC (small-diaphragm condenser), Large-diaphragm studio.',
-      'Below the rows, the lesson banner sums up the idea.',
+      'Below the rows, the banner sums up the idea.',
     ],
     control: [
       'There’s nothing to set here. Read down the rows and compare the jobs. Tap a photo (⤢) to see it bigger.',
@@ -267,14 +267,14 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
   env: {
     intro: {
       learning: 'How the place sets the priorities for the same voice: detail and low noise in a studio, feedback rejection on stage, wind protection outdoors.',
-      start: 'A, the studio, shows first: read its PRIORITIES. Then tap B and C and see the list reorder while the voice stays the same.',
+      start: 'A · Studio shows first: read its PRIORITIES. Then tap B · Loud stage and C · Outdoors and see the list reorder while the voice stays the same.',
     },
     seeing: [
-      'Three places for the same voice, on chips A, B and C.',
+      'Three places for the same voice, on the chips A · Studio, B · Loud stage and C · Outdoors.',
       'The card names the place (A · Controlled recording studio, B · Loud concert stage or C · Outdoor interview), gives one line about it, and lists its PRIORITIES. The banner sums it up.',
     ],
     control: [
-      'Tap A, B or C to change the place. A, the studio, shows first.',
+      'Tap a chip to change the place. A · Studio shows first.',
       'Tap NEXT: APPLICATION EXPLORER ›, or use the strip, to move on.',
     ],
     changes: [
@@ -285,7 +285,7 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
       'The same spec can count for a lot in one place and little in another: low self-noise matters in a quiet studio, far less beside a loud stage.',
     ],
     tryThis: [
-      'Tap B: Feedback rejection (pattern!) tops the list. That’s the pattern choice from Lesson 3, now set by the room.',
+      'Tap B: Feedback rejection (pattern!) tops the list. That’s the pattern choice from Module 3, now set by the room.',
       'Tap C: Wind protection comes first. Remember it: this is the same brief as the final challenge.',
     ],
   },
@@ -299,11 +299,11 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
     seeing: [
       'Three job groups, Voice (shown first), Instruments and Production / AV, each with a chip for every job.',
       'The card shows the job, four priorities rated in stars, a note, and the question WHICH MICROPHONE CHARACTERISTICS SATISFY THESE REQUIREMENTS?',
-      'Below it: a CHECK YOURSELF question and the lesson banner.',
+      'Below it: a CHECK YOURSELF question and the banner.',
     ],
     control: [
       'Tap a group to list its jobs, then tap a job to show its card. Live vocal shows first.',
-      'In CHECK YOURSELF, tap an answer for a hint or the reason.',
+      'In CHECK YOURSELF, tap an answer: a wrong one says why it is not it, the right one gives the reason.',
       'Tap NEXT: CHOOSE THE MICROPHONE ›, or use the strip, to move on.',
     ],
     changes: [
@@ -387,21 +387,21 @@ export const MICSEL_SCREEN_GUIDES: Record<MicSelStepId, ScreenGuide> = {
 // ── The what's-left end screen (with the understanding check) ──────────────
 export const MICSEL_END_GUIDE: ScreenGuide = {
   intro: {
-    learning: 'How the lab’s lessons fit together into one way of choosing a microphone, starting from the job, the place and the source.',
-    start: 'Answer the four questions under CHECK YOUR UNDERSTANDING. If one stumps you, open REVIEW ▾, tap the lesson it comes from, then come back and try again.',
+    learning: 'How the lab’s modules fit together into one way of choosing a microphone, starting from the job, the place and the source.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are. If a question stumps you, open REVIEW ▾ and the module it comes from.',
   },
   seeing: [
-    'You’ve reached the end of the lab. The title reads WHAT’S LEFT until every step is opened (the optional mic locker too) and the check is passed; then it reads LAB COMPLETE.',
+    'You’ve reached the end of the lab. The title reads WHAT’S LEFT until every module’s goal is met (the optional mic locker too) and the check is passed; then it reads LAB COMPLETE.',
     'CHECK YOUR UNDERSTANDING asks four questions on the whole lab: mic categories, rumble at a lectern, self-noise, and a label versus the specs.',
-    'REVIEW ▾ lists the lessons you’ve opened, and the check once you pass it.',
+    'REVIEW ▾ lists the modules you’ve done, and the check once you pass it.',
   ],
   control: [
-    'Tap the answer you think is right. CORRECT shows why; NOT QUITE — TRY ANOTHER gives the reason, and you can pick again straight away.',
-    'Tap a lesson row to go back to it. The CHECK row, last in the list, scrolls down to the questions.',
-    'PRACTICE AGAIN FROM THE START reopens Lesson 1. DONE · BACK TO LABS leaves the lab.',
+    'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
+    'Tap a module row to go back to it. The CHECK row, last in the list, scrolls down to the questions.',
+    'PRACTICE AGAIN FROM THE START reopens Module 1. DONE · BACK TO LABS leaves the lab.',
   ],
   changes: [
-    'A lesson counts as done as soon as you open it. That’s your progress on this device, not a grade.',
+    'A module counts once its own goal is met; each row still listed says what it asks. Opening a module does not count it. That’s your progress on this device, not a grade.',
     'Get every question right and the check is passed. If you leave this screen, the questions start over, but a pass is kept.',
   ],
   teaches: [
@@ -410,8 +410,8 @@ export const MICSEL_END_GUIDE: ScreenGuide = {
     'What a type name like “condenser” or a label like “vocal mic” can and can’t tell you about a mic.',
   ],
   tryThis: [
-    'Unsure on the lectern question? Open FREQUENCY RESPONSE & TONAL CHARACTER (in the list, or under REVIEW ▾ once opened) and compare what each curve ATTENUATES.',
-    'For the label question, open APPLICATION EXPLORER (in the list, or under REVIEW ▾ once opened) and look at what the stars rate.',
+    'Unsure on the lectern question? Open FREQUENCY RESPONSE & TONAL CHARACTER (in the list, or under REVIEW ▾ once done) and compare what each curve ATTENUATES.',
+    'For the label question, open APPLICATION EXPLORER (in the list, or under REVIEW ▾ once done) and look at what the stars rate.',
   ],
 };
 

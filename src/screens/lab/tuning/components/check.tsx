@@ -9,9 +9,9 @@
  * array you pass. Every lab that imports this gets the shuffle for free.
  *
  * `wrong` (optional, indexed by ORIGINAL option index) gives each distractor
- * its own misconception-targeting feedback; while it is present the correct
- * explanation stays hidden until the learner gets it right, so "try again"
- * is real retrieval rather than copying. Without `wrong`, the first miss
+ * its own misconception-targeting feedback; the first miss shows only that
+ * reason, and from a second DIFFERENT wrong pick on the explanation follows
+ * it (fix round 2026-11-14, the shared check card's rule). Without `wrong`, the first miss
  * says only "Not quite — try again." and the explanation shows as a hint
  * from the second miss on (owner decision 7, 2026-11-07; checkFeedback.ts).
  */
@@ -39,6 +39,9 @@ export function UnderstandingCheck({
   // check with no `wrong` map does not reveal the explanation.
   const [misses, setMisses] = useState(0);
   const missesRef = useRef(0);
+  // DIFFERENT wrong options picked so far (fix round 2026-11-14, the shared
+  // card's rule: the same wrong option tapped twice is one miss).
+  const missedRef = useRef(new Set<number>());
   // Synchronous guard: a same-frame double tap on the right answer lands
   // before `disabled` re-renders, and must not fire onCorrect twice
   // (bug hunt 2026-09-29).
@@ -56,6 +59,7 @@ export function UnderstandingCheck({
   // A new question (new options) starts the miss count again.
   useEffect(() => {
     missesRef.current = 0;
+    missedRef.current = new Set();
     setMisses(0);
   }, [signature]);
   const right = picked === correct;
@@ -80,7 +84,8 @@ export function UnderstandingCheck({
                 solvedRef.current = true;
                 onCorrect?.();
               } else {
-                missesRef.current += 1;
+                missedRef.current.add(i);
+                missesRef.current = missedRef.current.size;
                 setMisses(missesRef.current);
               }
               // Spoken text = the shown line, so a screen reader is not told

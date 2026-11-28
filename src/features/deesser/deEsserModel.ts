@@ -100,6 +100,28 @@ export type Processed = {
   outHiss: number;
 };
 
+/** What a split-band cut of linear gain `g` (at the detector frequency) does
+ *  to energy at `f`, EXACTLY (owner 2026-11-25, round 2 checker): the
+ *  complementary split y = x − H·x + g·H·x with the band-pass
+ *  H = 1 / (1 + jX), X = Q·(f/fc − fc/f), is (g + jX) / (1 + jX), so its gain
+ *  is √((g² + X²) / (1 + X²)). Equal to g at the band centre (X = 0), 1 far
+ *  from it, and 1 everywhere when g = 1 (no reduction). (The magnitude-only
+ *  blend 1 − |H|·(1 − g) used before ignored the band's phase and cut too
+ *  much off centre: an "sh" at 4 kHz under a 6.5 kHz, Q 1.4 band.) */
+export function splitBandGain(f: number, s: Settings, g: number): number {
+  const X = s.q * (f / s.freqHz - s.freqHz / f);
+  return Math.sqrt((g * g + X * X) / (1 + X * X));
+}
+
+/** Mean drop (dB) of the hiss on the sibilant frames: toDb(hiss) − toDb(outHiss),
+ *  the quantity the frame strips draw (owner 2026-11-25, round 2 checker). In
+ *  broadband it equals the mean gain reduction; in split-band an off-centre
+ *  hiss drops less than the band centre's gain reduction. */
+export function meanSibilantDropDb(processed: Processed[]): number {
+  const sib = processed.filter((p) => p.frame.sibilant);
+  return sib.length ? sib.reduce((a, p) => a + (toDb(p.frame.hiss) - toDb(p.outHiss)), 0) / sib.length : 0;
+}
+
 export function processFrame(frame: Frame, s: Settings): Processed {
   const gr = gainReductionDb(frame, s);
   const g = fromDb(-gr);
@@ -108,7 +130,12 @@ export function processFrame(frame: Frame, s: Settings): Processed {
     detectorDb: detectorDb(frame, s),
     grDb: gr,
     outBody: s.mode === 'broadband' ? frame.body * g : frame.body,
-    outHiss: frame.hiss * g,
+    // Split-band (owner 2026-11-25, audit B11): the hiss takes the band's cut
+    // AT ITS OWN frequency, the same weighting the frame spectrum draws, so the
+    // frame strip and the spectrum show one cut (an "sh" at 4 kHz under a
+    // 6.5 kHz band loses less than the band centre's −gr dB). It used to take
+    // the full −gr dB wherever it sat. Broadband: everything × g, unchanged.
+    outHiss: s.mode === 'broadband' ? frame.hiss * g : frame.hiss * splitBandGain(frame.hissHz, s, g),
   };
 }
 
@@ -188,7 +215,7 @@ export type Block = { id: string; name: string; what: string };
 
 export const PATH_MAIN: Block[] = [
   { id: 'in', name: 'Input', what: 'The whole voice arrives.' },
-  { id: 'gain', name: 'Gain element', what: 'Turns the level down by whatever the gain computer asks for — on the whole signal (broadband) or on the hiss band only (split-band).' },
+  { id: 'gain', name: 'Gain element', what: 'Turns the level down by whatever HOW MUCH asks for — on the whole signal (broadband) or on the hiss band only (split-band).' },
   { id: 'out', name: 'Output', what: 'The voice with its S’s under control.' },
 ];
 
@@ -205,7 +232,8 @@ export const PATH_SIDECHAIN: Block[] = [
   { id: 'det', name: 'Level detector', what: 'Measures how loud the filtered copy is, moment to moment.' },
   { id: 'thr', name: 'Threshold compare', what: 'Is the hiss level above the threshold? If not, do nothing.' },
   // NEW COPY (review 2026-09-02): names the ratio, which the model has but the copy never mentioned.
-  { id: 'gc', name: 'Gain computer', what: 'Turns the amount above threshold into a gain reduction: the ratio sets what fraction of the excess is removed, and the range caps how far the gain may fall.' },
+  // Checker fix (owner 2026-11-15: "build waves 1 thru 3", D62 DES-03): a plain name for the block.
+  { id: 'gc', name: 'How much to turn down', what: 'Works out how far to turn the sound down from the amount above the threshold: the ratio sets what fraction of the excess is removed, and the range caps how far the gain may fall.' },
 ];
 
 /** The signal-chain screens that the connections card points at (route names
@@ -214,7 +242,7 @@ export const PATH_SIDECHAIN: Block[] = [
 // page of this lab it extends, so the card is a study plan rather than a list.
 export const CONNECTIONS: { name: string; why: string; route: string }[] = [
   { name: 'EQ Lab', why: 'Build the static cut from page 2 as a real EQ band and hear why it is always on.', route: 'EqLabHome' },
-  { name: 'Compression', why: 'The same detector → threshold → gain computer, listening to the whole signal instead of a filtered copy.', route: 'CompressionLab' },
+  { name: 'Compression', why: 'The same detector → threshold → how-much step, listening to the whole signal instead of a filtered copy.', route: 'CompressionLab' },
   { name: 'Gate / Expander', why: 'The same threshold, used the other way round: opening on signal instead of ducking on hiss.', route: 'GateLab' },
   { name: 'Visual Audio Analysis', why: 'Watch the hiss band on a live spectrum before you pick the detector frequency (page 5).', route: 'MeterLab' },
   { name: 'Speech & Voice Lab', why: 'Where the S is made — teeth, air and turbulence — and why some voices hiss more than others.', route: 'SpeechLab' },

@@ -19,6 +19,8 @@ import type { ViewId } from '../../../engine/model/types.ts';
 import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
 import type { PlayerPose } from '../players/playerPose.ts';
 import { CLIPBOARD, sheetOf } from './measureModel.ts';
+import { PlayerSideV2, PlayerTopV2 } from '../figureV2/playersV2';
+import { MEASURE_OP, operatorRestPlan, readingSide, readingTop, standingTop } from './operatorV2.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 export const make = (): SkPath => Skia.Path.Make();
@@ -219,7 +221,16 @@ export function OmniSource({ cu, cv, r, floorV }: { cu: number; cv: number; r: n
 
 /* ── the person running the measurement ── */
 
-export function Operator({ pose, dim = 0.9 }: { pose: PlayerPose; dim?: number }) {
+export function Operator({ pose, dim = 0.9, v2 = false, assumePtPerMm }: { pose: PlayerPose; dim?: number; /** the new look (figure V2, wave 3 set 3b): the cast's operator, hands at rest */ v2?: boolean; /** (a picture without its own FigureScale) its drawn scale */ assumePtPerMm?: number }) {
+  if (v2)
+    return pose.view === 'above' ? (
+      // (standing, seen from above — review 2026-11-24, "an armless egg, the head at its front edge, a beak":
+      // the head over the neck with only the nose's tip past the brow, the shoulders' sleeve heads where the
+      // hanging arms leave them)
+      <PlayerTopV2 plan={standingTop(pose)} who={MEASURE_OP} dim={dim} bareArms assumePtPerMm={assumePtPerMm} />
+    ) : (
+      <PlayerSideV2 plan={operatorRestPlan(pose)} who={MEASURE_OP} dim={dim} assumePtPerMm={assumePtPerMm} />
+    );
   return (
     <Group>
       <PlayerBehind pose={pose} dim={dim} />
@@ -294,6 +305,18 @@ function buildSheet(pose: PlayerPose) {
   return { board, paper, clip, lines };
 }
 
+/** (round 3) The board's outline on the page from above (the Sheet's own turn): the fingers on its far face hide under it. */
+const outlineCache = new WeakMap<PlayerPose, ReturnType<typeof Skia.Path.Make>>();
+function sheetOutline(pose: PlayerPose) {
+  const hit = outlineCache.get(pose);
+  if (hit) return hit;
+  const b = buildSheet(pose).board.copy();
+  if (pose.view === 'above' && pose.facing !== undefined)
+    b.transform(Skia.Matrix().translate(pose.neck.u, pose.neck.v).rotate(pose.facing - Math.PI / 2).translate(-pose.neck.u, -pose.neck.v));
+  outlineCache.set(pose, b);
+  return b;
+}
+
 function Sheet({ pose }: { pose: PlayerPose }) {
   const p = useMemo(() => buildSheet(pose), [pose]);
   const turn = pose.view === 'above' && pose.facing !== undefined ? [{ translateX: pose.neck.u }, { translateY: pose.neck.v }, { rotate: pose.facing - Math.PI / 2 }, { translateX: -pose.neck.u }, { translateY: -pose.neck.v }] : undefined;
@@ -313,7 +336,15 @@ function Sheet({ pose }: { pose: PlayerPose }) {
 }
 
 /** The operator reading the clipboard (poses: measureModel.operatorSideReading / operatorTopReading). */
-export function ReadingOperator({ pose, dim = 0.9 }: { pose: PlayerPose; dim?: number }) {
+export function ReadingOperator({ pose, dim = 0.9, v2 = false, pair }: { pose: PlayerPose; dim?: number; /** the new look (figure V2, wave 3 set 3b): the cast's operator, both hands closed round the board's side edges */ v2?: boolean; /** (v2) the same operator's side and top poses: one 3-D pair of arms for both views */ pair?: { side: PlayerPose; top: PlayerPose } }) {
+  if (v2 && pair)
+    // The board passes through the near fist from the side; from above it lies in the far hand's grip,
+    // the near hand closing over its edge after it.
+    return pose.view === 'above' ? (
+      <PlayerTopV2 plan={readingTop(pair.side, pair.top).plan} grips={readingTop(pair.side, pair.top)} who={MEASURE_OP} dim={dim} farStick={<Sheet pose={pose} />} plate={sheetOutline(pose)} />
+    ) : (
+      <PlayerSideV2 plan={readingSide(pair.side, pair.top).plan} grips={readingSide(pair.side, pair.top)} who={MEASURE_OP} dim={dim} nearStick={<Sheet pose={pose} />} />
+    );
   return (
     <Group>
       <PlayerBehind pose={pose} dim={dim} />

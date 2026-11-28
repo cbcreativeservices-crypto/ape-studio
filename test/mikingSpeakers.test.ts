@@ -172,7 +172,7 @@ describe('the module validates; its zones are clear, inside, and drawn round the
   });
   it('is registered in Lab 1 and served', () => {
     const row = LESSONS.find((l: { id: string }) => l.id === 'SPK');
-    assert.ok(row && row.labId === 'drums' && row.title === 'Amplified speakers & Leslie');
+    assert.ok(row && row.labId === 'drums' && row.title === 'Amplified Speakers and Leslie'); // server name, owner 2026-11-14 (Comp A applied)
     assert.ok(lessonById('SPK'));
   });
   it('every zone is outside the grille (d > 0) and each start lies inside its drawn band (side view)', () => {

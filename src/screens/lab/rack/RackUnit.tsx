@@ -20,7 +20,7 @@
  * value (the Faceplate graft) — the value is never hidden under the finger.
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { fitValue } from '../../../theme/legibility';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { armSaveFailureReport } from '../../../features/storage/saveFailureNotice';
@@ -33,7 +33,7 @@ import { ScrollLockProvider } from '../scrollLock';
 import { BezelReadouts } from './BezelReadouts';
 import { DockButton, DockStrip } from './DockButton';
 import { DockTray } from './DockTray';
-import { DOCK_KEY_GAP, isLabelOnly } from './dockFit';
+import { DOCK_KEY_GAP, isLabelOnly, widestLaneValue } from './dockFit';
 import { ParamLane } from './ParamLane';
 import { STAGE_HEIGHTS, type DockParam, type RackStage } from './rackTypes';
 import { StageFullScreen } from './StageFullScreen';
@@ -45,6 +45,16 @@ import { LabNextButton, useLabNavContext } from '../kit/LabNavBar';
 // visible, so it MEASURES these three views when it shows a step. Register-only
 // refs — no layout change, nothing runs unless a guide asks.
 import { useGuideRegion } from '../../../features/lab/screenGuide/guideRegions';
+// …and the first-visit intro card never rises over a tray or a drag already
+// under way (held frame item 2, 2026-11-13): leaf context, nothing else.
+import { useScreenGuideWork } from '../../../features/lab/screenGuide/introHold';
+// Lab fix round 1 (2026-11-14): the silent learner's line (row 3), first-visit
+// bezel captions (row 7), the lane's − / + keys (row 8).
+import { SoundOffLine, soundOffLineText } from './silentPath';
+import { captionsIdFor, markCaptionsSeen, useCaptionsUnseen } from './bezelFirstSight';
+import { laneStepA11y, laneStepTries } from './laneStep';
+import { TRAY_READ_MIN, peekHeight, shouldPeek, shouldTrayFold } from './peekRules';
+import { DrawingPlaceholder, ModelNote } from './ModelNote';
 
 /** Tablet glass height as a share of the window height, per declared size
  *  (owner 2026-09-29, tablet pass). 1366-tall portrait iPad: M 464 · L 546;
@@ -105,6 +115,24 @@ let stageCollapsedCache: boolean | null = null;
 export const FULL_DISMISS_MS = 350;
 
 /**
+ * THE READING WELL GETS ROOM WHILE YOU READ (lab fix round 1, 2026-11-14,
+ * section 3 row 9; owner: "Begin fixing all bugs found and do obvious ...
+ * fixes as you suggested in the report", suggested order item 8). The audit:
+ * Wave's teaching text scrolled "through a 228 px window (27 % of the
+ * screen)", Foundations "about 6 lines", Signal Detective ~230 px, Delay
+ * ~150 px. On a phone, once the learner scrolls a well that holds more than
+ * it shows, the display FOLDS to a slim strip: the glass is CLIPPED to
+ * PEEK_SHARE of its height around its middle, never resized (a live canvas is
+ * never resized — the judge ruling; nothing re-renders at a new size), and
+ * the bezel readouts and the badge stay on screen. It opens again on any
+ * touch on the display or the dock, when a tray opens, when the well is
+ * scrolled back to its top, or with the OPEN DISPLAY bar. HIDE
+ * DISPLAY (the owner's 2026-09-23 collapse) works exactly as before.
+ * Tablets keep the whole display (they have the room).
+ */
+export { PEEK_AFTER_Y, PEEK_MIN_H, PEEK_SHARE, PEEK_SPARE, TRAY_READ_MIN, peekHeight, shouldPeek, shouldTrayFold } from './peekRules';
+
+/**
  * ⛔ A GROUP TRAY'S LONG-PRESS IN FULL SCREEN (hunt 13, 2026-10-04). A
  * 'group' tray renders the lab's own chips, and their long-press calls the
  * lab's openLesson DIRECTLY — not the rack's `help` — so in full screen the
@@ -160,13 +188,45 @@ export function RackUnit({
   const [boundId, setBoundId] = useState(validInitial ? initialParam : (faders[0]?.id ?? ''));
   const [openTrayId, setOpenTrayId] = useState<string | null>(null);
   const [wellLocked, setWellLocked] = useState(false);
+  /** The display is folded while the learner reads (row 9, PEEK_SHARE). */
+  const [peek, setPeek] = useState(false);
+  const peekRef = useRef(false);
+  peekRef.current = peek;
+  /** The learner unfolded it with OPEN DISPLAY: no fold again on
+   *  this visit (they asked to see the whole display while they read). */
+  const peekOptOut = useRef(false);
+  /** Last render's tray fold (the layout it was measured with). */
+  const trayFoldRef = useRef(false);
+  /** The open inline tray card's height: the well's foot gets that much room,
+   *  so any line can be scrolled above the card (row 8). */
+  const [inlineTrayH, setInlineTrayH] = useState(0);
+  /** The well's top edge in the rack (dp), as last laid out (row 8 tray fold). */
+  const [wellTopY, setWellTopY] = useState(0);
+  /** Where the current touch on the well went down (tap vs scroll). */
+  const wellTouch = useRef<{ x: number; y: number } | null>(null);
   const wellRef = useRef<ScrollView>(null);
   const glassRef = useRef<View>(null);
   const bezelRef = useRef<View>(null);
   const dockRef = useRef<View>(null);
+  const rootRef = useRef<View>(null);
+  const stageRef = useRef<View>(null);
   useGuideRegion('display', glassRef);
   useGuideRegion('readouts', bezelRef);
   useGuideRegion('dock', dockRef);
+  // SHOWN AGAIN, MEASURED AGAIN (phase 3): a rack that mounted hidden (a
+  // first visit opens on LEARN) measured 0, and the web does not always send
+  // a new layout when `display` comes back, so the glass never drew. When the
+  // rack becomes active it measures its parts itself (keepShown).
+  useEffect(() => {
+    if (!active) return undefined;
+    const t = setTimeout(() => {
+      glassRef.current?.measure?.((_x, _y, w) => keepShown(setGlassW, Math.round(w) - 2));
+      rootRef.current?.measure?.((_x, _y, _w, h) => keepShown(setRootH, Math.round(h)));
+      stageRef.current?.measure?.((_x, _y, _w, h) => keepShown(setStageBlockH, Math.round(h)));
+      dockRef.current?.measure?.((_x, _y, _w, h) => keepShown(setDockH, Math.round(h)));
+    }, 0);
+    return () => clearTimeout(t);
+  }, [active]);
   const scrollWellTo = useCallback((y: number) => {
     wellRef.current?.scrollTo({ y: Math.max(0, y), animated: true });
   }, []);
@@ -285,6 +345,12 @@ export function RackUnit({
     };
   }, []);
   const toggleStage = useCallback(() => {
+    // While the display is folded for reading (row 9) the bar unfolds it.
+    if (peekRef.current) {
+      peekOptOut.current = true;
+      setPeek(false);
+      return;
+    }
     setStageCollapsed((prev) => {
       const next = !prev;
       stageCollapsedCache = next;
@@ -341,9 +407,42 @@ export function RackUnit({
   const targetH = Math.max(Math.min(declaredH, STAGE_HEIGHTS.S), Math.min(declaredH, Math.round(fitH)));
   const [glassH, setGlassH] = useState(targetH);
   const interacting = laneActive || trayParam != null;
+  // A hidden rack (`active` false) has no tray anyone can see.
+  useScreenGuideWork(active && interacting);
   useEffect(() => {
     if (!interacting && glassH !== targetH) setGlassH(targetH);
   }, [interacting, glassH, targetH]);
+  // The fold (row 9) opens the moment anything is in hand.
+  const peekAllowed = !tablet && !stageCollapsed;
+  useEffect(() => {
+    if (peek && (interacting || !peekAllowed)) setPeek(false);
+  }, [peek, interacting, peekAllowed]);
+  /**
+   * AN OPEN TRAY ON A TALL DISPLAY FOLDS IT TOO (row 8, F2 on DJ screen 10 at
+   * 390 × 844: under DjRack's tall glass an open tray left ONE lesson line).
+   * While a tray is open and the reading room between the well's top and the
+   * card is under TRAY_READ_MIN, the display folds to the same slim strip as
+   * the reading fold (clipped, never resized; bezel and badge stay), and it
+   * opens again when the tray closes. Decided from the UNFOLDED layout, so
+   * folding can never flip the decision back.
+   *
+   * ⛔ NEVER UNDER A STICKY TRAY (owner 2026-11-21, iPhone video of the Spectrum
+   * Analyzer: "look at this bug"). A sticky tray says "stays open — compare while
+   * you watch", and the fold clipped the display to its middle 40 % exactly then:
+   * every peak above −12 dB, the 220 Hz marker and the Hz labels were cut off, so
+   * pink noise read as a flat-topped block. While you compare, the WHOLE display
+   * stays; the reading well behind the card gives up the room instead.
+   */
+  const trayIsSticky = trayParam != null && 'sticky' in trayParam && trayParam.sticky === true;
+  const trayFold =
+    trayParam != null &&
+    !trayIsSticky &&
+    peekAllowed &&
+    !full &&
+    shouldTrayFold({ rootH, bottom, dockH, cardH: inlineTrayH, wellTop: wellTopY + (peek || trayFoldRef.current ? glassH - peekHeight(glassH) : 0), glassH });
+  trayFoldRef.current = trayFold;
+  /** The display is folded now: for reading (peek) or under a tray. */
+  const folded = peek || trayFold;
 
   // FULL SCREEN owned by the rack (opt-in `stage.fullScreen`, 2026-09-25).
   // The glass render is wrapped in a StageAspectReport so a view-built stage
@@ -388,6 +487,7 @@ export function RackUnit({
       fn();
     }, FULL_DISMISS_MS);
   }, []);
+  const soundOffText = soundOffLineText(stage.soundOffLine);
   const help = useMemo(
     () => (onHelp ? (helpKey?: string) => leaveFullThen(() => onHelp(helpKey)) : undefined),
     [onHelp, leaveFullThen],
@@ -399,11 +499,32 @@ export function RackUnit({
   const bezelItems = stage.bezel?.map((it) =>
     it.leavesFull && it.onPress ? { ...it, onPress: () => leaveFullThen(it.onPress as () => void) } : it,
   );
+  // FIRST-VISIT CAPTIONS (row 7, bezelFirstSight): latched for this mount
+  // once known unseen, and the visit is recorded when this rack goes away, so
+  // the whole first visit keeps them and the next one is as before.
+  const captionsId = captionsIdFor(stage.captionsId, (stage.bezel ?? []).map((b) => b.caption));
+  const captionsUnseen = useCaptionsUnseen(captionsId);
+  const captionsShownRef = useRef<string | null>(null);
+  if (captionsUnseen && captionsId) captionsShownRef.current = captionsId;
+  const showCaptions = captionsId != null && captionsShownRef.current === captionsId;
+  useEffect(
+    () => () => {
+      if (captionsShownRef.current) void markCaptionsSeen(captionsShownRef.current);
+    },
+    [],
+  );
 
   // FULL SCREEN's dock leaves out the keys that change nothing there
   // (`hideInFull`, owner 2026-10-06: "useless buttons should just be
   // hidden" — a view toggle over a full screen that shows both views).
   const shownIn = (inFull: boolean) => params.filter((p) => !(inFull && (p.kind === 'toggle' || p.kind === 'options') && p.hideInFull));
+  // A readout that repeats the key's name is read aloud without the repeat
+  // ("TRIM 1: TRIM 1 +9.0 dB"); the screen is unchanged. Same rule as
+  // spokenValue.ts, inline because the dock's code is also run from source.
+  const spokenOf = (label: string, text: string) => {
+    const l = label.trim();
+    return l && text.toLowerCase().startsWith(`${l.toLowerCase()} `) ? text.slice(l.length + 1).trimStart() : text;
+  };
   const dockFor = (inFull: boolean) => (
     <View style={styles.dock}>
       {/* Tablet (owner 2026-09-29): the faceplate stays full width but the
@@ -412,18 +533,26 @@ export function RackUnit({
           stretched to 1004 pt on an iPad. Never binds on a phone. */}
       <View style={styles.dockInner}>
       {bound && !(trayParam?.kind === 'group' && trayParam.hideLane) ? (
-        <ParamLane
-          label={bound.label}
-          value={bound.value}
-          readout={bound.format(bound.value)}
-          onChange={bound.onChange}
-          onCommit={bound.onCommit}
-          format={bound.onCommit ? bound.format : undefined}
-          onDragActive={setLaneActive}
-          tint={bound.tint}
-          level={bound.level}
-          home={bound.home}
-        />
+        <View style={styles.laneRow}>
+          {/* − / + at the lane's ends (row 8, laneStep.ts): a lane without
+              the lab's own nudges gets one-step keys; hold = that end. */}
+          {bound.nudges?.length ? null : <LaneStepKey dir={-1} param={bound} />}
+          <View style={styles.laneFlex}>
+            <ParamLane
+              label={bound.label}
+              value={bound.value}
+              readout={bound.format(bound.value)}
+              onChange={bound.onChange}
+              onCommit={bound.onCommit}
+              format={bound.onCommit ? bound.format : undefined}
+              onDragActive={setLaneActive}
+              tint={bound.tint}
+              level={bound.level}
+              home={bound.home}
+            />
+          </View>
+          {bound.nudges?.length ? null : <LaneStepKey dir={1} param={bound} />}
+        </View>
       ) : null}
       {/* The bound fader's fine-step buttons (owner rule 2026-10-10: the
           well's nudge buttons moved into the dock, under their own lane). */}
@@ -444,12 +573,13 @@ export function RackUnit({
           ))}
         </View>
       ) : null}
-      {/* A tapped LOCKED key's reason (rackTypes `locked`). */}
+      {/* A tapped LOCKED key's reason (rackTypes `locked`). A key with a
+          `lockedValue` is only "not yet", and says so (SN-1, 2026-11-15). */}
       {(() => {
         const lp = lockedNoteId ? params.find((p) => p.id === lockedNoteId) : null;
         return lp && (lp.kind === 'fader' || lp.kind === 'toggle' || lp.kind === 'options') && lp.locked ? (
           <Text style={styles.lockedNote} accessibilityLiveRegion="polite">
-            {lp.label} — locked: {lp.locked}
+            {lp.label} — {lp.lockedValue ? 'not yet' : 'locked'}: {lp.locked}
           </Text>
         ) : null;
       })()}
@@ -465,7 +595,10 @@ export function RackUnit({
                     key={p.id}
                     fit={fit}
                     label={p.label}
-                    value="LOCKED"
+                    // `lockedValue`: a key that is only "not yet" reads its own words, not LOCKED (SN-1, 2026-11-15).
+                    value={p.lockedValue ?? 'LOCKED'}
+                    // Its own words ask the strip for room, so they are never cut (SN-1 checker follow-up).
+                    valueSpan={p.lockedValue}
                     glyph="▪"
                     dim
                     selected={lockedNoteId === p.id || (!!p.chooser && openTrayId === p.id)}
@@ -475,7 +608,10 @@ export function RackUnit({
                       if (p.chooser) setOpenTrayId((cur) => (cur === p.id ? null : p.id));
                     }}
                     onLongPress={p.helpKey ? () => help?.(p.helpKey) : undefined}
-                    a11y={`${p.label}: locked — ${p.locked}.${p.chooser ? ' Tap to choose another.' : ''}`}
+                    // The reason loses its own end stop, so it never reads ".." (dockFit lockedReason, 2026-11-14).
+                    a11y={p.lockedValue
+                      ? `${p.label}: not yet — ${p.locked.trim().replace(/[.!?]+$/, '')}.${p.chooser ? ' Tap to choose another.' : ''}`
+                      : `${p.label}: locked — ${p.locked.trim().replace(/[.!?]+$/, '')}.${p.chooser ? ' Tap to choose another.' : ''}`}
                   />
                 );
               }
@@ -485,6 +621,10 @@ export function RackUnit({
                   fit={fit}
                   label={p.label}
                   value={(p.formatShort ?? p.format)(p.value)}
+                  // A chooser-fader's key shows the value the drag changes: it
+                  // asks for room for the widest one, so it never moves
+                  // sideways under the finger (frame round 2, 2026-11-13).
+                  valueSpan={p.chooser ? widestLaneValue(p.formatShort ?? p.format, (p.formatShort ?? p.format)(p.value)) : undefined}
                   // A chooser-fader opens a tray first, so it wears the
                   // OPEN verb glyph, not the bind glyph (the two-verb rule).
                   glyph={p.chooser ? '▸' : '▪'}
@@ -499,8 +639,8 @@ export function RackUnit({
                   onLongPress={p.helpKey ? () => help?.(p.helpKey) : undefined}
                   a11y={
                     p.chooser
-                      ? `${p.label}: ${p.format(p.value)}. Tap to choose, then adjust on the fader.`
-                      : `${p.label}: ${p.format(p.value)}. Tap to adjust on the fader.`
+                      ? `${p.label}: ${spokenOf(p.label, p.format(p.value))}. Tap to choose, then adjust on the fader.`
+                      : `${p.label}: ${spokenOf(p.label, p.format(p.value))}. Tap to adjust on the fader.`
                   }
                 />
               );
@@ -512,13 +652,15 @@ export function RackUnit({
                     key={p.id}
                     fit={fit}
                     label={p.label}
-                    value="LOCKED"
+                    value={p.lockedValue ?? 'LOCKED'}
                     glyph="▸"
                     dim
                     selected={lockedNoteId === p.id}
                     onPress={() => setLockedNoteId((cur) => (cur === p.id ? null : p.id))}
                     onLongPress={p.helpKey ? () => help?.(p.helpKey) : undefined}
-                    a11y={`${p.label}: locked — ${p.locked}.`}
+                    a11y={p.lockedValue
+                      ? `${p.label}: not yet — ${p.locked.trim().replace(/[.!?]+$/, '')}.`
+                      : `${p.label}: locked — ${p.locked.trim().replace(/[.!?]+$/, '')}.`}
                   />
                 );
               }
@@ -563,12 +705,14 @@ export function RackUnit({
                     key={p.id}
                     fit={fit}
                     label={p.label}
-                    value="LOCKED"
+                    value={p.lockedValue ?? 'LOCKED'}
                     dim
                     selected={lockedNoteId === p.id}
                     onPress={() => setLockedNoteId((cur) => (cur === p.id ? null : p.id))}
                     onLongPress={p.helpKey ? () => help?.(p.helpKey) : undefined}
-                    a11y={`${p.label}: locked — ${p.locked}.`}
+                    a11y={p.lockedValue
+                      ? `${p.label}: not yet — ${p.locked.trim().replace(/[.!?]+$/, '')}.`
+                      : `${p.label}: locked — ${p.locked.trim().replace(/[.!?]+$/, '')}.`}
                   />
                 );
               }
@@ -629,6 +773,15 @@ export function RackUnit({
   // everywhere else it starts at the stage block, as before.
   const trayTop = rootH > 0 ? Math.max(0, Math.min(stageBlockH, rootH - bottom - dockH - 12 - TRAY_MIN)) : stageBlockH;
   const trayRoom = rootH - trayTop - dockH - bottom - 12;
+  // A TRAY FOLD MUST LEAVE THE LESSON ITS ROOM (checker C1, FAIL 1, DJ screen
+  // 10): the fold freed the display's room and the card grew straight into it
+  // (DockTray holds its tallest height up to `maxHeight`), hiding every line
+  // again. While the tray fold holds, the card keeps at most the room it had
+  // UNFOLDED, and never so much that under TRAY_READ_MIN of lesson shows
+  // above it; never under TRAY_MIN (its title and two rows).
+  const trayCardRoom = trayFold
+    ? Math.max(TRAY_MIN, Math.min(trayRoom - (glassH - peekHeight(glassH)), rootH - bottom - dockH - 12 - (wellTopY + TRAY_READ_MIN)))
+    : trayRoom;
   // A tray chip's own long-press (a reference photo — LabPhotoLightbox, a
   // sibling Modal) leaves full screen first, like `help` above.
   const trayRouted = useMemo(
@@ -643,7 +796,11 @@ export function RackUnit({
         : trayParam,
     [trayParam, leaveFullThen],
   );
-  const trayNode = <DockTray param={trayRouted} onClose={closeTray} onHelp={help} bottomInset={0} maxHeight={rootH > 0 ? trayRoom : undefined} active={active} />;
+  // PASS-THROUGH (row 8): the inline tray no longer washes and blocks the
+  // well. The lesson stays readable and live around the card; a tap on the
+  // well closes the tray (and still reaches what was tapped), and the well's
+  // foot gets the card's height so any line can be scrolled above it.
+  const trayNode = <DockTray param={trayRouted} onClose={closeTray} onHelp={help} bottomInset={0} passThrough onCardLayout={setInlineTrayH} maxHeight={rootH > 0 ? trayCardRoom : undefined} active={active} />;
   // In full screen the drawing is what sits behind the tray: no wash.
   // …and its card height is reported so the full-screen view can lift the
   // dock ABOVE the open tray: the learner keeps the lane and keys while
@@ -659,16 +816,26 @@ export function RackUnit({
   );
 
   return (
-    <View style={[styles.root, { paddingBottom: bottom }]} onLayout={(e) => setRootH(Math.round(e.nativeEvent.layout.height))}>
+    <View ref={rootRef} style={[styles.root, { paddingBottom: bottom }]} onLayout={(e) => keepShown(setRootH, Math.round(e.nativeEvent.layout.height))}>
       {/* ── STAGE — pinned; structurally cannot leave the screen ─────────── */}
-      <View style={styles.stageWrap} onLayout={(e) => setStageBlockH(Math.round(e.nativeEvent.layout.height))}>
+      <View ref={stageRef} style={styles.stageWrap} onLayout={(e) => keepShown(setStageBlockH, Math.round(e.nativeEvent.layout.height))}>
         {/* Not rendered at all when collapsed — a zero-height canvas would
             still be mounted and still be drawing frames. */}
         {stageCollapsed ? null : (
-        <View ref={glassRef} collapsable={false} style={[styles.glass, { height: glassH }]} onLayout={(e) => setGlassW(Math.round(e.nativeEvent.layout.width) - 2)}>
+        // The fold's clip (row 9): the glass keeps its height inside; the
+        // window onto it shrinks around its middle. A touch here opens it.
+        <View
+          style={[styles.peekClip, folded && { height: peekHeight(glassH) }]}
+          onTouchStart={peek ? () => setPeek(false) : undefined}
+          {...mouseToo(peek ? () => setPeek(false) : undefined)}
+        >
+        <View ref={glassRef} collapsable={false} style={[styles.glass, { height: glassH }, folded && { marginTop: -Math.round((glassH - peekHeight(glassH)) / 2) }]} onLayout={(e) => keepShown(setGlassW, Math.round(e.nativeEvent.layout.width) - 2)}>
           {glassW > 0 ? (
             <StageAspectReport.Provider value={glassReport}>{stage.render(glassW, glassH - 2)}</StageAspectReport.Provider>
           ) : null}
+          {/* "drawing…" (phase 3): never an empty black box — before the
+              first measure, and while the lab says its drawing is not ready. */}
+          {glassW <= 0 || stage.drawing ? <DrawingPlaceholder /> : null}
           {/* Smoked-glass sheen (ToolsHub TileGlass language). Decorative. */}
           <LinearGradient
             pointerEvents="none"
@@ -684,13 +851,18 @@ export function RackUnit({
             </View>
           ) : null}
         </View>
+        </View>
         )}
         {stage.bezel?.length || stage.onGuide ? (
           <View ref={bezelRef} collapsable={false}>
-            <BezelReadouts items={bezelItems ?? []} onGuide={stage.onGuide} onHelp={help} />
+            <BezelReadouts items={bezelItems ?? []} onGuide={stage.onGuide} onHelp={help} captions={showCaptions} unitsChip />
           </View>
         ) : null}
-        {stage.badge ? (
+        {stage.modelNote ? (
+          // Phase 3 (owner's decision 3): the disclosure as one plain
+          // sentence, still pinned with the display.
+          <ModelNote text={stage.modelNote} />
+        ) : stage.badge ? (
           // Honesty badge: silk-screened on the FACEPLATE under the unit —
           // never floated over the glass (owner 2026-08-23: no hover objects
           // may block the display). Still pinned with it. Two lines + a gentle
@@ -719,7 +891,7 @@ export function RackUnit({
           hitSlop={{ top: 5, bottom: 5, left: 12, right: 12 }}
           accessibilityRole="button"
           accessibilityState={{ expanded: !stageCollapsed }}
-          accessibilityLabel={stageCollapsed ? 'Show the display' : 'Hide the display to read'}
+          accessibilityLabel={peek ? 'Show all of the display' : stageCollapsed ? 'Show the display' : 'Hide the display to read'}
           accessibilityHint={
             stageCollapsed
               ? 'Brings the display back'
@@ -727,7 +899,7 @@ export function RackUnit({
           }
         >
           <Text style={styles.stageToggleText}>
-            {stageCollapsed ? '▾  SHOW DISPLAY' : '▴  HIDE DISPLAY'}
+            {peek ? '▾  OPEN DISPLAY' : stageCollapsed ? '▾  SHOW DISPLAY' : '▴  HIDE DISPLAY'}
           </Text>
         </Pressable>
         {onEnlarge && !stageCollapsed ? (
@@ -757,41 +929,85 @@ export function RackUnit({
       {/* …and while a tray is open the well grows too, so the dock sits at
           the bottom and the tray card fills the well above it (below). */}
       <View
-        style={[styles.wellWrap, (stageCollapsed || trayParam != null) && styles.wellWrapGrow]}
+        style={[styles.wellWrap, (stageCollapsed || trayParam != null) && styles.wellWrapGrow, peek && styles.wellWrapGrow]}
+        // A tap on the well closes an open tray (row 8); the tap still lands
+        // on what it was meant for. A scroll is handled by the ScrollView.
+        onTouchStart={(e) => {
+          wellTouch.current = { x: e.nativeEvent.pageX, y: e.nativeEvent.pageY };
+        }}
+        onTouchEnd={(e) => {
+          const t0 = wellTouch.current;
+          wellTouch.current = null;
+          if (!trayParam || !t0) return;
+          if (Math.hypot(e.nativeEvent.pageX - t0.x, e.nativeEvent.pageY - t0.y) < 10) closeTray();
+        }}
+        {...mouseToo(
+          (e) => {
+            wellTouch.current = { x: e.nativeEvent.pageX, y: e.nativeEvent.pageY };
+          },
+          (e) => {
+            const t0 = wellTouch.current;
+            wellTouch.current = null;
+            if (!trayParam || !t0) return;
+            if (Math.hypot(e.nativeEvent.pageX - t0.x, e.nativeEvent.pageY - t0.y) < 10) closeTray();
+          },
+        )}
         // The well's top minus the glass = the fixed chrome above it (read
         // with the glass height this layout was made with). Only while the
         // display shows, and only for a lab that asked (stage.minWell).
-        onLayout={
-          stage.minWell
-            ? (e) => {
-                if (stageCollapsed) return;
-                const c = Math.round(e.nativeEvent.layout.y) - glassH;
-                if (c > 0 && c !== wellChromeH) setWellChromeH(c);
-              }
-            : undefined
-        }
+        onLayout={(e) => {
+          const y = Math.round(e.nativeEvent.layout.y);
+          if (y !== wellTopY) setWellTopY(y);
+          // While folded the glass is clipped, so the well's top says nothing
+          // about the chrome: read it only with the whole display showing.
+          if (!stage.minWell || stageCollapsed || folded) return;
+          const c = Math.round(e.nativeEvent.layout.y) - glassH;
+          if (c > 0 && c !== wellChromeH) setWellChromeH(c);
+        }}
       >
         <ScrollLockProvider value={setWellLocked}>
           <ScrollView
             ref={wellRef}
-            style={[styles.wellScroll, (stageCollapsed || trayParam != null) && styles.wellScrollGrow]}
+            style={[styles.wellScroll, (stageCollapsed || trayParam != null) && styles.wellScrollGrow, peek && styles.wellScrollGrow]}
             // The well is the lab's READING space: on a tablet its notes
             // cap at the reading column (owner 2026-09-29 — the notes ran
             // 990 pt wide, ~150 characters a line). No-op on a phone.
             contentContainerStyle={[styles.well, readingColumn]}
             scrollEnabled={!wellLocked}
+            scrollEventThrottle={64}
+            onScrollBeginDrag={() => {
+              // Scrolling the well closes a pick-and-close tray; a sticky
+              // (A/B) tray stays while the learner scrolls and compares.
+              if (trayParam && !(trayParam.kind === 'group' || trayParam.sticky)) closeTray();
+            }}
+            onScroll={(e) => {
+              const { contentOffset, contentSize, layoutMeasurement } = e.nativeEvent;
+              const y = contentOffset.y;
+              if (peek) {
+                if (y <= 4) setPeek(false);
+                return;
+              }
+              if (shouldPeek({ y, contentH: contentSize.height, viewH: layoutMeasurement.height, glassH, busy: interacting, allowed: peekAllowed && !full && !peekOptOut.current })) setPeek(true);
+            }}
           >
+            {/* The silent learner's line (row 3): only while sound is off,
+                only where the stage asks for it. */}
+            {soundOffText ? <SoundOffLine text={soundOffText} /> : null}
             {typeof children === 'function' ? children({ setScrollLocked: setWellLocked, scrollWellTo }) : children}
             {/* Shared lab navigation (2026-09-30): a host that provides a
                 LabNav gets the in-flow "NEXT: <title> ›" / FINISH at the end
                 of its well. Draws nothing when there is no provider. */}
             {labNav ? <LabNextButton nav={labNav} /> : null}
+            {/* While a tray is open the well's foot gets the card's height
+                (row 8), so any line, NEXT included, scrolls above the card. */}
+            {trayParam && inlineTrayH > 0 ? <View style={{ height: inlineTrayH + 12 }} pointerEvents="none" /> : null}
           </ScrollView>
         </ScrollLockProvider>
       </View>
 
       {/* ── DOCK — lane + strip; rides directly under the well content ────── */}
-      <View ref={dockRef} collapsable={false} onLayout={(e) => setDockH(Math.round(e.nativeEvent.layout.height))}>{dockFor(false)}</View>
+      {/* A touch on the dock unfolds a folded display (row 9). */}
+      <View ref={dockRef} collapsable={false} onLayout={(e) => keepShown(setDockH, Math.round(e.nativeEvent.layout.height))} onTouchStart={peek ? () => setPeek(false) : undefined} {...mouseToo(peek ? () => setPeek(false) : undefined)}>{dockFor(false)}</View>
 
       {/* Blank faceplate below the raised dock — calm, non-interactive. Gone
           while a tray is open: the dock drops to the bottom instead. */}
@@ -822,7 +1038,8 @@ export function RackUnit({
             setFull(false);
           }}
           render={stage.render}
-          badge={stage.badge}
+          badge={stage.modelNote ?? stage.badge}
+          badgePlain={!!stage.modelNote}
           glassW={glassW}
           controls={dockFor(true)}
           overlay={trayNodeFull}
@@ -836,6 +1053,81 @@ export function RackUnit({
 
 /** The least room an open tray gets: its title and two full-size rows. */
 const TRAY_MIN = 168;
+
+/**
+ * The browser preview has a MOUSE, and react-native-web fires no touch events
+ * for it, so the row 8 / row 9 touch handlers (a tap on the well closes the
+ * tray; a touch on the display or dock unfolds it) also listen to the mouse
+ * there. Phones: touch only, exactly as written.
+ */
+const WEB = Platform.OS === 'web';
+function mouseToo(down?: (e: { nativeEvent: { pageX: number; pageY: number } }) => void, up?: (e: { nativeEvent: { pageX: number; pageY: number } }) => void): object | null {
+  if (!WEB) return null;
+  return { onMouseDown: down, onMouseUp: up } as object;
+}
+
+/** One − / + key at the lane's end (row 8, laneStep.ts). A tap tries the
+ *  steps laneStepTries gives, a beat apart, until the lab's value moves (a
+ *  stepped lab snaps a too-small step back): one position, never an end
+ *  (checker C4 FAIL-5). Hold = that end. */
+function LaneStepKey({ dir, param }: { dir: -1 | 1; param: Extract<DockParam, { kind: 'fader' }> }) {
+  const paramRef = useRef(param);
+  paramRef.current = param;
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (timer.current) clearTimeout(timer.current);
+  }, []);
+  const set = (v: number) => {
+    const p = paramRef.current;
+    if (v === p.value) return;
+    p.onChange(v);
+    p.onCommit?.(v);
+  };
+  const tap = () => {
+    if (timer.current) clearTimeout(timer.current);
+    const from = param.value;
+    const tries = laneStepTries(from, dir, param.format, param.steps);
+    if (hapticsEnabled()) Haptics.selectionAsync().catch(() => {});
+    const attempt = (i: number) => {
+      set(tries[i]);
+      if (i + 1 >= tries.length) return;
+      timer.current = setTimeout(() => {
+        timer.current = null;
+        if (paramRef.current.value === from) attempt(i + 1);
+      }, LANE_RETRY_MS);
+    };
+    attempt(0);
+  };
+  return (
+    <Pressable
+      onPress={tap}
+      onLongPress={() => {
+        if (timer.current) clearTimeout(timer.current);
+        set(dir < 0 ? 0 : 1);
+      }}
+      delayLongPress={450}
+      hitSlop={{ top: 4, bottom: 4 }}
+      style={({ pressed }) => [styles.laneStep, pressed && styles.nudgePressed]}
+      accessibilityRole="button"
+      accessibilityLabel={laneStepA11y(param.label, dir)}
+    >
+      <Text style={styles.laneStepText}>{dir < 0 ? '−' : '+'}</Text>
+    </Pressable>
+  );
+}
+/**
+ * A HIDDEN RACK MEASURES 0 (phase 3, seen on screen): LabShell keeps the rack
+ * mounted under `display: 'none'` on LEARN / CHECK, and since a first visit
+ * now opens on LEARN, the glass reported a width of 0 there and never drew
+ * again on the hop back to EXPLORE (a "drawing…" box for good). A measure of
+ * 0 or less is the hidden state, not a size: the last real one is kept.
+ */
+function keepShown(set: (v: number) => void, v: number): void {
+  if (v > 0) set(v);
+}
+
+/** How long a lane step waits for the lab to take a try before the next. */
+const LANE_RETRY_MS = 60;
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
@@ -924,5 +1216,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   nudgePressed: { backgroundColor: '#23232a', borderColor: '#3a3a44' },
+  laneRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  laneFlex: { flex: 1 },
+  laneStep: {
+    width: 40,
+    height: 48,
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: '#2c2c33',
+    backgroundColor: '#17171c',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  laneStepText: { fontFamily: fonts.oswaldSemiBold, fontSize: 20, lineHeight: 24, color: colors.amber },
+  /** The fold's window onto the glass (row 9). */
+  peekClip: { overflow: 'hidden', borderTopLeftRadius: 12, borderTopRightRadius: 12 },
   nudgeText: { fontFamily: fonts.mono, fontSize: 12, color: colors.amber },
 });

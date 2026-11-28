@@ -20,7 +20,7 @@
  *   ATTACK AND BODY (read)  in words — then the three checks.
  * Credit: the strike sequence reached ④ + the three checks.
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import { cancelAnimation, Easing, useAnimatedReaction, useSharedValue, withTiming } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
@@ -40,6 +40,12 @@ import { BarShapes, BarStrike, boxOf, FanValve, TubeAir, type OneBar } from './M
 
 const STEP_MS = 1300;
 const FAN_RUN_S = 8;
+
+/** Where a fan turning at `rpm` from angle `from` (rad) is after `ms`. */
+export function fanAngleAfter(from: number, rpm: number, ms: number): number {
+  'worklet';
+  return from + 2 * Math.PI * (rpm / 60) * (ms / 1000);
+}
 
 function useFocusedSafe(): boolean {
   try {
@@ -171,6 +177,16 @@ export function MSound({ lesson, art, answers, onAnswered, onInteractive, intera
     const a = angle.value % (2 * Math.PI);
     setTurn((a < 0 ? a + 2 * Math.PI : a) / (2 * Math.PI));
   };
+  // When the running fan's run ends (Date.now() ms): a SPEED move mid-run
+  // re-aims the rest of the run at the new speed (round 2, audit Appendix E
+  // row 5, owner 2026-11-25: the fan kept the speed it started with).
+  const runEnd = useRef(0);
+  const spin = (r: number, ms: number) => {
+    // withTiming starts from the angle the fan is at now (the UI thread's).
+    angle.value = withTiming(fanAngleAfter(angle.value, r, ms), { duration: ms, easing: Easing.linear }, (done) => {
+      if (done) scheduleOnRN(fanStop);
+    });
+  };
   const fanRun = () => {
     if (spinning) {
       fanStop();
@@ -184,10 +200,8 @@ export function MSound({ lesson, art, answers, onAnswered, onInteractive, intera
       return;
     }
     setSpinning(true);
-    const to = angle.value + 2 * Math.PI * (rpm / 60) * FAN_RUN_S;
-    angle.value = withTiming(to, { duration: FAN_RUN_S * 1000, easing: Easing.linear }, (done) => {
-      if (done) scheduleOnRN(fanStop);
-    });
+    runEnd.current = Date.now() + FAN_RUN_S * 1000;
+    spin(rpm, FAN_RUN_S * 1000);
   };
 
   // Covered (the what's-left screen) or out of focus: stop where it is.
@@ -230,18 +244,18 @@ export function MSound({ lesson, art, answers, onAnswered, onInteractive, intera
       {
         kind: 'fader',
         id: 'step',
-        label: 'STEP',
+        label: 'EVENT',
         value: (shown - 1) / Math.max(1, n - 1),
         onChange: (x) => goTo(1 + Math.round(x * (n - 1))),
-        format: () => `${shown} of ${n} · ${stage.title.toLowerCase()}`,
-        formatShort: () => `${shown} / ${n}`,
+        format: () => `${stage.title.toLowerCase()}`,
+        formatShort: () => `${shown}`,
       },
       n,
       shown - 1,
       (i) => `${i + 1} · ${stagesNow[i].title}`,
       (i) => goTo(i + 1),
     ),
-    { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: play, tint: colors.green },
+    { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT EVENT', onPress: play, tint: colors.green },
     ...(hasDamper && W.pedal
       ? [
           {
@@ -262,7 +276,7 @@ export function MSound({ lesson, art, answers, onAnswered, onInteractive, intera
     ...(setupRedraws(G, midBarOf) ? [setupParam] : []),
   ];
   const strikeBezel: BezelItem[] = [
-    { k: 'EVENT', v: `${shown} / ${n}`, flex: 0.8 },
+    { k: 'EVENT', v: `${shown}`, flex: 0.8 },
     ...W.cells.map((c) => {
       const at = c.byVariant?.[v] ?? c.at;
       return { k: c.k, v: strikeWord(at[Math.min(at.length - 1, shown - 1)] ?? '—', damped), flex: c.flex ?? 1 };
@@ -366,7 +380,15 @@ export function MSound({ lesson, art, answers, onAnswered, onInteractive, intera
       id: 'speed',
       label: 'SPEED',
       value: (rpm - 25) / 125,
-      onChange: (x) => setRpm(Math.round(25 + x * 125)),
+      onChange: (x) => {
+        const r = Math.round(25 + x * 125);
+        setRpm(r);
+        // Running: the rest of the run turns at the new speed, from where the fan is.
+        if (spinning && r !== rpm) {
+          const left = runEnd.current - Date.now();
+          if (left > 0) spin(r, left);
+        }
+      },
       format: () => `${rpm} turns a minute (motors: about 25–150)`,
       formatShort: () => `${rpm} rpm`,
     },
@@ -408,7 +430,7 @@ export function MSound({ lesson, art, answers, onAnswered, onInteractive, intera
       well: (
         <>
           {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
-          <Landing looking={W.looking} prompt="STEP through the stroke, or PLAY ONCE — it stops at the end. Nothing here makes a sound." />
+          <Landing looking={W.looking} prompt="Go EVENT by EVENT through the stroke, or PLAY ONCE — it stops at the end. Nothing here makes a sound." />
           <Card>
             <Point title={`${shown} · ${stage.title.toUpperCase()}`}>{stageNow(shown - 1)}</Point>
           </Card>

@@ -542,7 +542,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: what makes most of a harp’s sound?', options: ['The string itself', 'The soundboard', 'The pillar'], after: 'Now STEP through the pluck (or PLAY ONCE) and watch the board.' },
+  sound: { prompt: 'Before you step through: what makes most of a harp’s sound?', options: ['The string itself', 'The soundboard', 'The pillar'], after: 'Now go EVENT by EVENT through the pluck (or PLAY ONCE) and watch the board.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move a mic from 30 cm to 60 cm from the soundboard. What changes?', options: ['More boom', 'More of the whole harp', 'It depends on this harp'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'Where will this cardioid, facing the harp, reject the harpist’s wedge best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },
@@ -719,7 +719,7 @@ export const C10_LESSON: Lesson = {
     { text: 'The five sound holes along the back (120 × 60 mm; the second from the bottom at 30 % of the board): their number and layout are drawing defaults.', dims: [] },
     { text: 'The seven pedals and their layout; the lever harp drawn at 0.75 of the pedal harp (about 1.4 m).', dims: [] },
     { text: 'The sizes come from museum instruments (an 1895 Erard, a Lyon & Healy of 1891–95) and the 1.9 m height from the research; a modern harp may differ.', dims: [] },
-    { text: 'The bands round the guides’ figures (60 cm ± 15 cm, 30 cm ± 5 cm), the pillar zone’s extent, the behind zone’s heights, the miniature at the opening — the lab’s drawing. The miniature’s size is a drawing default.', dims: [] },
+    { text: 'The bands around the guides’ figures (60 cm ± 15 cm, 30 cm ± 5 cm), the pillar zone’s extent, the behind zone’s heights, the miniature at the opening — the lab’s drawing. The miniature’s size is a drawing default.', dims: [] },
     { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],
   live: { wedges },

@@ -28,7 +28,7 @@ import { safeGoBack } from '../../../lib/safeGoBack';
 import { LabUnderstandingBlock } from '../../../components/LabUnderstandingBlock';
 import { useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
 import { UNDERSTANDING_UNIT, understandingFor } from '../../../features/lab/understanding';
-import { eqEndCleared, eqEndUnits } from './eqEnd';
+import { EQ_END_HOW_IT_COUNTS, eqEndCleared, eqEndUnits } from './eqEnd';
 
 /** The lab's educational progression, banner-style (Digital Lab idiom). */
 const PATH = ['SEE', 'MANIPULATE', 'HEAR', 'IDENTIFY', 'CORRECT'];
@@ -93,6 +93,10 @@ export function EqLabHomeScreen() {
           cleared={endCleared}
           unreadable={progressUnreadable}
           mode="progress"
+          howItCounts={EQ_END_HOW_IT_COUNTS}
+          // Recap + next lab from labEndContent (S2/S4): the EQ Lab's own entry
+          // ('eq' is the Equalizer's), wired by S4 on the coordinator's word.
+          labId="eq-lab"
           // The CHECK row stays here: the check is drawn on this screen (extra).
           onJump={(id) => { if (id !== UNDERSTANDING_UNIT) open(EQ_MODULES.find((m) => m.id === id)?.id ?? EQ_MODULES[0].id); }}
           onPracticeAgain={() => open(EQ_MODULES[0].id)}
@@ -110,9 +114,11 @@ export function EqLabHomeScreen() {
             </View>
           ))}
         </View>
+        {/* EQL-05 (owner 2026-11-15: "build waves 1 thru 3", D62): the top line says
+            where to start and what to do first, in the space of the old one. */}
         <Text style={styles.body}>
-          Start by seeing the real frequency content of the room you’re in — then learn to shape
-          it. Lessons build in a deliberate order: each one introduces only what the next needs.
+          Start at module 1 and take the modules in order; each one is short. New to EQ? Try the
+          one-band Equalizer lab first (EQUALIZER EFFECT LAB, under RELATED TOOLS).
         </Text>
 
         {EQ_SECTION_META.map((sec) => {

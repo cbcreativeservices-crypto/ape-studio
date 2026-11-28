@@ -22,6 +22,7 @@ import { SceneText } from '../art/sceneText';
 import { BOOTH_LAYOUT, MIXER, PLAYER, PLAYER_D, PLAYER_W, type Box } from '../geometry/boothGeometry';
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { tempoHalfway } from '../goalWords';
 import { boothKey, stopKey, tempoKey } from '../dock';
 import { boothNow, getBooth, updateBooth } from '../booth/boothStore';
 import { cueAtBar, useScreenSetup } from '../booth/setup';
@@ -30,6 +31,8 @@ import { nudge, trueBeat } from '../model/djDeck';
 import { BEATS_PER_PHRASE, barInPhrase, phaseOffset, playedBpm } from '../model/djTime';
 import type { Booth } from '../model/djModel';
 import { useBoothKit } from './shared';
+import { beatAligned, beatOffsetText } from './fixGuards';
+import { plainTempoDeck } from './tempoDeck';
 
 const TERMS = [
   { term: 'BPM', def: 'Beats per minute: the tempo. 122 BPM is about two beats a second.' },
@@ -150,7 +153,10 @@ function PageTempo({ ctx }: { ctx: PageCtx }) {
     x = cueAtBar(x, 'B', 'glassHarbour', 1);
     return {
       ...x,
-      decks: { A: { ...x.decks.A, pitch: 0 }, B: { ...x.decks.B, pitch: 0 } },
+      // plain players, as the page teaches (owner 2026-11-25, fix-first 15):
+      // key lock off, no key shift, ±8 % — earlier screens leave B key-locked
+      // and Screen 14 can leave a key shift and ±16 %.
+      decks: { A: plainTempoDeck(x.decks.A), B: plainTempoDeck(x.decks.B) },
       ch: { 1: { ...x.ch[1], fader: 0.85, xf: 'THRU', cue: false }, 2: { ...x.ch[2], fader: 0, xf: 'THRU', cue: true } },
       mixer: { ...x.mixer, splitCue: true, phones: 0.45 },
       perspective: 'PHONES',
@@ -240,11 +246,13 @@ function PageTempo({ ctx }: { ctx: PageCtx }) {
           />
         ),
         bezel: [
-          { k: 'A BPM', v: bpmA.toFixed(2), tint: colors.textPrimary },
-          { k: 'B BPM', v: bpmB.toFixed(2), tint: Math.abs(bpmA - bpmB) < 0.05 ? colors.green : '#8fbcff' },
-          { k: 'B vs A', v: both ? `${off >= 0 ? '+' : '−'}${Math.abs(off).toFixed(2)} beat` : '—', tint: both && Math.abs(off) < 1 / 16 ? colors.green : colors.amber },
+          { k: 'A BPM', caption: 'beats a minute', v: bpmA.toFixed(2), tint: colors.textPrimary },
+          { k: 'B BPM', caption: 'beats a minute', v: bpmB.toFixed(2), tint: Math.abs(bpmA - bpmB) < 0.05 ? colors.green : '#8fbcff' },
+          // three decimals: a pass (≤ 0.062) and a miss (≥ 0.063) never print
+          // the same number (lab fix round 2026-11-14, F2; fixGuards)
+          { k: 'B vs A', caption: '+ = B is early', v: both ? beatOffsetText(off) : '—', tint: both && beatAligned(off) ? colors.green : colors.amber },
           // bar 8 is the count-in: the cell flashes before the phrase's ONE
-          { k: 'A PHRASE', v: aBar == null ? '—' : aBar === 8 ? '8 / 8 ▸' : `${aBar} / 8`, tint: aBar === 8 ? '#ff8a7e' : aBar === 1 ? colors.green : colors.textPrimary },
+          { k: 'A PHRASE', caption: 'bar of the 8', v: aBar == null ? '—' : aBar === 8 ? '8 / 8 ▸' : `${aBar} / 8`, tint: aBar === 8 ? '#ff8a7e' : aBar === 1 ? colors.green : colors.textPrimary },
         ],
         params: [
           tempoKey(booth, 'B'),
@@ -273,7 +281,7 @@ function PageTempo({ ctx }: { ctx: PageCtx }) {
         <Note>In a big room the PA reaches you late — about 3 ms for every meter. Match against your headphones and the booth monitors, never against the sound coming back off the floor.</Note>
       </Step>
       <Step n={4}>
-        <Do>Match the tempo to within 0.1 BPM, line the beats up to within a sixteenth of a beat (the lab’s pass mark — on a real system, until you hear no flam), and start deck B on a phrase.</Do>
+        <Do>Match the tempo to within 0.1 BPM, line the beats up to within a sixteenth of a beat (B vs A at 0.062 or less, green: the lab’s passing target — on a real system, until you hear no flam), and start deck B on a phrase.</Do>
         {startMsg ? <Note tone={phraseStart ? 'try' : 'safety'}>{startMsg}</Note> : null}
         <P>Then try the blend: bring B’s fader up (JOG B → CH2 FADER) as the next phrase begins. Where you start is a musical choice — the start of a phrase is a strong suggested starting point.</P>
         <GoalChips goals={goals.slice(0, 3)} latched={latched.slice(0, 3)} />
@@ -282,7 +290,7 @@ function PageTempo({ ctx }: { ctx: PageCtx }) {
         <UnderstandingCheck
           eyebrow="CHECK YOURSELF"
           question="You line the kicks up, but over the next 8 bars the flam slowly grows again. Which control fixes it?"
-          options={['The TEMPO fader — a growing flam is drift: the tempos still differ', 'The jog — nudge again every bar', 'The channel fader', 'The EQ — cut the LOW so the flam is hidden']}
+          options={['The TEMPO fader: the tempos still differ', 'The jog — nudge B again every bar', 'The channel fader for deck B', 'The EQ — cut the LOW to hide the flam']}
           correct={0}
           explain="A flam that GROWS is drift: one deck is still a little faster. Nudging only resets it for a while; a fine move of the TEMPO fader stops it. A steady flam that never grows would be an offset — a nudge."
           wrong={[undefined, 'Nudging resets the beats, but they keep sliding apart — the tempos still differ.', 'The fader changes how loud B is, not when its beats land.', 'Hiding the kick hides the symptom; the tempos still differ.']}
@@ -307,6 +315,8 @@ function PageTempo({ ctx }: { ctx: PageCtx }) {
             });
           }}
           fixed={both && fault.current.pulled && Math.abs(bpmA - bpmB) < 0.05 && Math.abs(off) < 1 / 16 && booth.ch[2].fader >= 0.5}
+          // DJ-10 (owner 2026-11-15: "build waves 1 thru 3"): the second half, said at the moment the first is done
+          halfway={tempoHalfway({ faultOn: fault.current.on && both, pulled: fault.current.pulled, bpmMatch: Math.abs(bpmA - bpmB) < 0.05, inPhase: Math.abs(off) < 1 / 16, ch2Fader: booth.ch[2].fader })}
           hints={['First pull B out of the mix (JOG B → CH2 FADER DOWN) and fix it in your headphones — the crowd should not hear the clash. The BPMs match, so this is not drift.', 'Look at the PHASE strip: B sits about half a beat away from A. Two BIG PUSHes (¼ beat each) cover most of it, or re-drop B on the one.', 'Finish with small nudges until the line sits in the green, then bring CH2 back UP.']}
           why="The tempos matched exactly, but deck B was half a beat late — an offset, not drift. You took B out of the mix, fixed it in your headphones and brought it back. A big offset is quickest fixed by restarting B on the one (or a firm push); small nudges are for the last few milliseconds. The tempo fader would only have made them slide."
           onFixed={() => setFaultFixed(true)}

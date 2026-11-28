@@ -12,6 +12,7 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Modal } from '../../components/DimModal';
 import { KeyboardAwareScrollView } from '../../features/keyboard/keyboardControllerSafe';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { menuClearance } from '../../components/nav/circleMenuPlaces';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { CredentialQr } from '../../components/CredentialQr';
 import { CredentialShareRow } from '../../features/credentials/CredentialShareRow';
@@ -69,6 +70,8 @@ import { academyTopicsDone, myProgressSummary, topicsDoneHint } from '../../feat
 import { cardColumn } from '../../theme/readingColumn';
 import { CommunityBadge } from '../../features/directory/CommunityBadge';
 import { AppHeader, TabIconTile } from '../../components/AppHeader';
+import { NavIcon } from '../../components/nav/NavIcon';
+import { goHome } from '../../components/nav/CircleMenu';
 
 
 /**
@@ -277,6 +280,9 @@ function fmtCredDate(iso: string): string {
 
 export function ProfileScreen() {
   const insets = useSafeAreaInsets();
+  // The circle menu's MENU button floats over the bottom-left corner (owner
+  // 2026-11-20): the content ends above it (circleMenuPlaces.menuClearance).
+  const menuClear = menuClearance(insets.bottom);
   const navigation = useNavigation();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   // [39] (2026-09-07): a transient profile-read failure must not silently render
@@ -817,7 +823,16 @@ export function ProfileScreen() {
       {/* The PROFILE tab's icon + title in the Study Dashboard's own header
           (owner 2026-10-29: the three tab titles match). */}
       <View style={styles.titleRow}>
-        <AppHeader title={['My', 'Profile']} logo={<TabIconTile icon="Profile" tint={colors.green} />} />
+        {/* HOME, always, top-left (owner 2026-11-20), then the Profile figure and the title. */}
+        <AppHeader
+          lead={
+            <Pressable onPress={() => goHome(navigation)} hitSlop={10} accessibilityRole="button" accessibilityLabel="Home">
+              <NavIcon icon="Home" lit />
+            </Pressable>
+          }
+          title={['My', 'Profile']}
+          logo={<TabIconTile icon="Profile" tint={colors.green} />}
+        />
       </View>
       <Pressable
         onPress={() => (navigation as any).navigate('Settings')}
@@ -841,7 +856,7 @@ export function ProfileScreen() {
   if (registryGuest) {
     return (
       <View style={[styles.root, { paddingTop: insets.top }]}>
-        <KeyboardAwareScrollView contentContainerStyle={styles.bodyScroll} keyboardShouldPersistTaps="handled" bottomOffset={24}>
+        <KeyboardAwareScrollView contentContainerStyle={[styles.bodyScroll, { paddingBottom: menuClear }]} keyboardShouldPersistTaps="handled" bottomOffset={24}>
           {headerRow}
           <View style={styles.guestCard}>
             <Text style={styles.guestText}>Sign in or create an account to have a profile.</Text>
@@ -864,7 +879,7 @@ export function ProfileScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
-      <KeyboardAwareScrollView contentContainerStyle={styles.bodyScroll} keyboardShouldPersistTaps="handled" bottomOffset={24}>
+      <KeyboardAwareScrollView contentContainerStyle={[styles.bodyScroll, { paddingBottom: menuClear }]} keyboardShouldPersistTaps="handled" bottomOffset={24}>
         {headerRow}
 
         {/* DIGITAL ID — pinned, never collapsible. Someone shows this at a
@@ -1500,7 +1515,7 @@ export function ProfileScreen() {
           {hydrated && !registryVerified ? (
             <Text style={styles.fieldError}>
               We couldn't check this with the server just now, so the switch above is
-              showing what this phone last saved. Reopen this screen when you're back
+              showing what this device last saved. Reopen this screen when you're back
               online to confirm it.
             </Text>
           ) : null}

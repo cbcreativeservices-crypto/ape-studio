@@ -56,3 +56,18 @@ export function eqCurvePoints(
     return { f, db, x: eqCurveX(f, x0, x1), y: eqCurveY(db, midY, halfH) };
   });
 }
+
+/**
+ * Where the band is, for its marker (owner 2026-11-25, audit B17). At 0 dB a
+ * bell or a shelf is a flat line, so FREQ and Q would move nothing on the
+ * display; the marker (a centre line on the strip, the house band marker on
+ * the DESIGNED RESPONSE) shows the band's frequency whatever its gain. Only a
+ * single gain-bearing band (bell, shelf) gets one: a pass filter's cutoff is
+ * already its curve's corner. Returns the band's Hz, or null for none.
+ */
+export function eqBandMarkHz(bands: readonly { type: string; freq: number }[]): number | null {
+  if (bands.length !== 1) return null;
+  const b = bands[0];
+  if (b.type !== 'peak' && b.type !== 'lowShelf' && b.type !== 'highShelf') return null;
+  return b.freq >= EQ_CURVE_F_MIN && b.freq <= EQ_CURVE_F_MAX ? b.freq : null;
+}

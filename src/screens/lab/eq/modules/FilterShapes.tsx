@@ -55,10 +55,15 @@ const CHECK: CheckSpec = {
   correctIdx: 0,
   reveal:
     'A HIGH-PASS filter PASSES the highs and CUTS the lows — the same device a console labels “low-cut”. The two names describe the same filter from opposite ends.',
+  // A reason per wrong option (phase 2, F5's `why`): names the mix-up, never the answer.
+  why: {
+    1: 'A low-pass keeps the lows and removes the highs: the opposite end.',
+    2: 'A shelf lowers the lows by a set amount; it does not remove them on a slope.',
+  },
   wrongHint: 'Name the filter by what it PASSES, not what it removes.',
 };
 
-export function FilterShapesModule(_p: EqModuleComponentProps) {
+export function FilterShapesModule(p: EqModuleComponentProps) {
   const [shape, setShape] = useState<ShapeKey>('bell');
   const [freq, setFreq] = useState(1000);
   const [gainDb, setGainDb] = useState(6);
@@ -149,18 +154,21 @@ export function FilterShapesModule(_p: EqModuleComponentProps) {
             ? 'Drawn at 12 dB/octave — slopes get their own lesson next.'
             : undefined,
         bezel: [
-          { k: 'SHAPE', v: SHAPE_SHORT[shape] },
-          { k: 'FREQ', v: fmtHz(freq) },
+          { k: 'SHAPE', caption: 'shape', v: SHAPE_SHORT[shape] },
+          { k: 'FREQ', caption: 'where', v: fmtHz(freq) },
           {
             k: 'GAIN',
             v: hasGain ? `${gainDb >= 0 ? '+' : ''}${gainDb.toFixed(1)} dB` : '—',
             tint: hasGain ? gc : '#7a7f8a',
           },
-          { k: 'Q', v: hasQ ? Math.max(qLaneMin(shape === 'notch'), q).toFixed(1) : '—', tint: hasQ ? undefined : '#7a7f8a' },
+          { k: 'Q', caption: 'how wide', v: hasQ ? Math.max(qLaneMin(shape === 'notch'), q).toFixed(1) : '—', tint: hasQ ? undefined : '#7a7f8a' },
         ],
         render: (w, h) => (
           <View style={{ width: w, height: h, justifyContent: 'center', paddingHorizontal: 8 }}>
-            <ResponseCurveGraph curves={curves} dbRange={18} width={w - 16} totalHeight={Math.max(94, h - 12)} mainColor={gc} focusHz={[freq]} />
+            {/* The band marker (owner 2026-11-25, audit B17): at 0 dB a BELL or shelf
+                is flat, so FREQ (and the bell's Q, shaded as its half-gain bandwidth (Q)) show
+                where the band is. Filters and the notch draw their own shape. */}
+            <ResponseCurveGraph curves={curves} dbRange={18} width={w - 16} totalHeight={Math.max(94, h - 12)} mainColor={gc} band={shape === 'bell' ? { f: freq, q } : hasGain ? { f: freq } : undefined} focusHz={[freq]} />
           </View>
         ),
       }}
@@ -177,7 +185,8 @@ export function FilterShapesModule(_p: EqModuleComponentProps) {
           <Text style={styles.teach}>{meta.teach}</Text>
         </View>
 
-        <CheckQuestion spec={CHECK} />
+        {/* Work done (phase 3, owner's decision 1): this module counts when its check is answered right. */}
+        <CheckQuestion spec={CHECK} onSolved={p.onDone} />
       </View>
     </RackUnit>
   );

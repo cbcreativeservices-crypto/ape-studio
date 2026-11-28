@@ -32,6 +32,9 @@ import { drawHand3, FIGURE_SKIN, FIGURE_TONES, FigureHead, FigureMass, headAbove
 import { pt } from '../players/playerPose';
 import type { HandView } from '../players/handModel';
 import { lowBrassHands, type PosedHand } from './lowBrassHands';
+import { figureV2On } from '../figureV2/figureV2Config.ts';
+import type { CastMember } from '../figureV2/cast';
+import { BellHandV2, lowBrassFigureItems } from './lowBrassFigureV2';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 type P2 = [number, number];
@@ -350,7 +353,7 @@ export function bellPaths(b: Bell, view: ViewId) {
 /** The posed hand in the bell, drawn (drawHand3). */
 type HandPaint = { path: SkPath; lines: SkPath; nails: SkPath };
 
-function BellArt({ b, view, hand }: { b: Bell; view: ViewId; hand: HandPaint | null }) {
+function BellArt({ b, view, hand, handNode }: { b: Bell; view: ViewId; hand: HandPaint | null; /** (figure roll-out wave 5) the hand in the approved look */ handNode?: ReactNode }) {
   const p = useMemo(() => bellPaths(b, view), [b, view]);
   const facing = dot(b.axis, TO_VIEWER[view]);
   const rb = bbox(p.rimPts);
@@ -363,7 +366,8 @@ function BellArt({ b, view, hand }: { b: Bell; view: ViewId; hand: HandPaint | n
             <RadialGradient c={vec((rb.u0 + rb.u1) / 2, (rb.v0 + rb.v1) / 2)} r={Math.max(rb.u1 - rb.u0, rb.v1 - rb.v0) * 0.55} colors={['#0d0702', '#2a1a06', '#6e4a14', '#b88a2e']} positions={[0, 0.45, 0.82, 1]} />
           </Path>
           <Path path={p.inner} style="stroke" strokeWidth={2} color="#c99634" opacity={0.25} />
-          {hand ? (
+          {handNode ? <Group clip={p.rim}>{handNode}</Group> : null}
+          {hand && !handNode ? (
             // The right hand cupped in the bell (figure pass 3): seen through
             // the opening only.
             <Group clip={p.rim}>
@@ -962,13 +966,23 @@ function smoothClosed(pts: P2[]): SkPath {
 }
 
 /** Every item of the scene for a view, far to near. */
-export function sceneItems(s: BrassScene, view: ViewId, opts: { player?: boolean } = {}): Item[] {
+export function sceneItems(s: BrassScene, view: ViewId, opts: { player?: boolean; /** (the study page) old or new whatever the switch */ v2?: boolean; /** (a plan's neighbor) another cast member */ who?: CastMember } = {}): Item[] {
   const items: Item[] = [];
-  if (opts.player !== false) items.push(...playerItems(s, view));
+  const v2 = opts.player !== false && (opts.v2 ?? figureV2On('familyLowBrass'));
+  if (opts.player !== false && !v2) items.push(...playerItems(s, view));
   for (const t of s.tubes) items.push(...tubeItems(t, view, s));
   s.valves.forEach((vl, i) => items.push(...valveItems(vl, view, i)));
   const b = s.bell;
   let hand: HandPaint | null = null;
+  if (v2) {
+    // (figure roll-out wave 5: the player in the approved look, the chair as before, the bell's hand new)
+    const bellD = depthOf(view, scale(add(b.rim, b.throat), 0.5)) + 10;
+    const ds = [...items.map((it) => it.depth), bellD];
+    const fig = lowBrassFigureItems(s, view, Math.min(...ds), Math.max(...ds), opts.who);
+    items.push(...fig.items, ...playerItems(s, view).filter((it) => it.key === 'chair'));
+    items.push({ key: 'bell', depth: bellD, node: <BellArt key="bell" b={b} view={view} hand={null} handNode={s.bellHand ? <BellHandV2 s={s} view={view} who={opts.who} /> : undefined} /> });
+    return items.sort((a, z) => a.depth - z.depth);
+  }
   if (s.bellHand && opts.player !== false) {
     const h = lowBrassHands(s).R;
     const dh = drawHand3(h.sk, VIEW3[view], handOpts(view, h, { E2: prj(view, h.elbow), W2: prj(view, h.sk.frame.o) }));
@@ -980,8 +994,8 @@ export function sceneItems(s: BrassScene, view: ViewId, opts: { player?: boolean
 
 /** The instrument and its player, for one view (Skia elements, mm). The
  *  player recedes behind the instrument (charter §6). */
-export function LowBrassScene({ s, view, dim = 1 }: { s: BrassScene; view: ViewId; dim?: number }) {
-  const items = useMemo(() => sceneItems(s, view), [s, view]);
+export function LowBrassScene({ s, view, dim = 1, v2, who }: { s: BrassScene; view: ViewId; dim?: number; v2?: boolean; who?: CastMember }) {
+  const items = useMemo(() => sceneItems(s, view, { v2, who }), [s, view, v2, who]);
   return (
     <Group opacity={dim}>
       {items.map((it) => (

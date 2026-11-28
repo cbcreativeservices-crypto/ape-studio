@@ -38,20 +38,22 @@ export const OSCILLATOR_SCREEN_GUIDES: Record<OscillatorScreenId, ScreenGuide> =
   // ── EXPLORE — the rack ────────────────────────────────────────────────────
   explore: {
     intro: {
-      learning: 'Every classic wave is a recipe of harmonics: which multiples of the fundamental are present, and how strong, sets the timbre, while F0 alone sets the pitch.',
-      start: 'Tap ▶, then open WAVE and switch between SINE, SQUARE and SAW while it plays. Watch the bars change and listen: the tone color shifts, but the pitch stays put.',
+      // OSC-05 (owner 2026-11-15, "build waves 1 thru 3"): the plain recipe idea first, and bar 1 is the note.
+      learning: 'Every sound shape is built from simple tones stacked up, like a recipe. Bar 1 is the note; bars 2 to 12 set its color.',
+      // A first step that needs no sound (novice audit 2026-11-14), then the sound.
+      start: 'Open WAVE and switch between SINE, SQUARE and SAW, and watch which bars light up: SQUARE empties every even bar. Then tap ▶ and switch again to hear the tone color change while the pitch stays put.',
     },
     seeing: [
       'On top, the wave: two cycles traveling left to right, colored by level — redder toward full scale.',
       'Below: its recipe. Bars 1 to 12 are the first twelve harmonics; a bar’s height is how strong that harmonic is next to bar 1, the fundamental.',
-      'Readouts: WAVE, F0 (the fundamental), VIEW (IDEAL or SPEAKER). Badge: ANALYTIC MODEL — NOT A MEASUREMENT; with SPKR on, PHONE SPEAKER OUTPUT — 150 Hz HPF APPLIED.',
+      'Readouts: WAVE, F0 (the fundamental), VIEW (IDEAL or SPEAKER). Under the display: drawn from the math, not measured; with SPKR on, the 150 Hz high-pass filter.',
     ],
     control: [
       '▶ in the header plays the wave you see; ■ stops it. A tap on the display does the same.',
       'Tap WAVE for SINE, SQUARE, TRIANGLE, SAW or PULSE 25%, each with a one-line description. The tray stays open, so you can switch while it plays. Long-press a choice for its lesson entry.',
       'Tap F0 for 110, 220, 440 or 880 Hz — each step one octave higher.',
       'Tap SPKR to see the signal after the phone speaker’s 150 Hz high-pass, which cuts deep lows; an amber line marks the filter’s effect on each bar. Its light shows it’s on.',
-      'Below the rack, LAB NOTES: what you’re seeing, THE SOUND, two CHECK YOURSELF questions and the ⓘ GUIDED LESSON. ▴ HIDE DISPLAY gives them room; ⤢ FULL SCREEN enlarges the display.',
+      'Below the rack, LAB NOTES: two CHECK YOURSELF questions first, THE SOUND under GO DEEPER, and the ⓘ GUIDED LESSON. ▴ HIDE DISPLAY gives them room; ⤢ FULL SCREEN enlarges the display.',
     ],
     changes: [
       'Each bar is a sine at a whole-number multiple of F0; added up, they make the shape.',
@@ -76,7 +78,7 @@ export const OSCILLATOR_SCREEN_GUIDES: Record<OscillatorScreenId, ScreenGuide> =
   learn: {
     intro: {
       learning: 'The words for oscillators — fundamental, harmonic, duty cycle, band-limiting, Nyquist and aliasing — and how FM and AM differ.',
-      start: 'Read the PULSE 25% and TRIANGLE entries. Then open EXPLORE, pick PULSE 25% and see bars 4, 8 and 12 go empty while F0 stays put.',
+      start: 'Open CONTROLS and read the PULSE 25% and TRIANGLE entries. Then open EXPLORE, pick PULSE 25% and see bars 4, 8 and 12 go empty while F0 stays put.',
     },
     seeing: [
       'You’re on the LEARN tab: this lab’s guided lesson as one page to read. Nothing on it moves, but ▶ in the header still plays or stops the wave.',
@@ -99,8 +101,8 @@ export const OSCILLATOR_SCREEN_GUIDES: Record<OscillatorScreenId, ScreenGuide> =
       'FM sweeps a wave’s frequency; AM sweeps its level. They are two different kinds of modulation.',
     ],
     tryThis: [
-      'Read the PULSE 25% entry, then on EXPLORE pick PULSE 25%: bars 4, 8 and 12 are empty, and F0 — the pitch — has not moved.',
-      'Read the TRIANGLE entry, then on EXPLORE switch between TRIANGLE and SQUARE: the same bars are lit, but the triangle’s fall away far faster.',
+      'Open CONTROLS and read the PULSE 25% entry, then on EXPLORE pick PULSE 25%: bars 4, 8 and 12 are empty, and F0 — the pitch — has not moved.',
+      'Open CONTROLS and read the TRIANGLE entry, then on EXPLORE switch between TRIANGLE and SQUARE: the same bars are lit, but the triangle’s fall away far faster.',
     ],
   },
 
@@ -115,8 +117,8 @@ export const OSCILLATOR_SCREEN_GUIDES: Record<OscillatorScreenId, ScreenGuide> =
       'They ask which wave holds every harmonic, why a triangle sounds softer than a square, what a pulse’s duty cycle changes, and why harmonics above Nyquist are left out.',
     ],
     control: [
-      'Tap an answer. Right: CORRECT and the reason, and its number turns to ✓. Wrong: NOT QUITE — TRY ANOTHER, with the reason — pick again.',
-      'There is no score, and a wrong answer costs nothing. The tabs under the title go to LEARN or EXPLORE.',
+      'Tap an answer. Right: it turns green, its number turns to ✓ and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
+      'The tabs under the title go to LEARN or EXPLORE.',
     ],
     changes: [
       'Answers already right stay right if you switch to LEARN or EXPLORE and come back; leaving the lab before the last one starts the check over.',
@@ -127,8 +129,8 @@ export const OSCILLATOR_SCREEN_GUIDES: Record<OscillatorScreenId, ScreenGuide> =
       'Why a wave can be missing some harmonics, and why a digital oscillator leaves the highest ones out.',
     ],
     tryThis: [
-      'For the triangle question, read the TRIANGLE and SQUARE entries under CONTROLS on LEARN. On EXPLORE, long-press a choice in the WAVE tray for its entry.',
-      'For the duty-cycle question, read the PULSE 25% entry under CONTROLS on LEARN, or long-press PULSE 25% in the WAVE tray on EXPLORE.',
+      'For the triangle question, open CONTROLS on LEARN and read the TRIANGLE and SQUARE entries. On EXPLORE, long-press a choice in the WAVE tray for its entry.',
+      'For the duty-cycle question, open CONTROLS on LEARN and read the PULSE 25% entry, or long-press PULSE 25% in the WAVE tray on EXPLORE.',
     ],
   },
 };

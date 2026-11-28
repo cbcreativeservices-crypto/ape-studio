@@ -843,9 +843,11 @@ export function SignalGenScreen({ navigation }: Props) {
                     : { k: 'FREQ', v: 'BROADBAND', flex: 1.2, helpKey: 'signal' },
               {
                 k: 'OUT',
-                // The HONEST level actually leaving the output path (Q4).
-                v: status ? `${status.effectiveLevelDb.toFixed(1)} dBFS` : '—',
-                tint: levelColorForDb(status?.effectiveLevelDb),
+                // The HONEST level actually leaving the output path (Q4). Stopped
+                // = nothing leaves it: "—", as the OUTPUT row says (round 2,
+                // 2026-11-25) — effectiveLevelDb is the capped REQUESTED level.
+                v: status && genRunning ? `${status.effectiveLevelDb.toFixed(1)} dBFS` : '—',
+                tint: levelColorForDb(genRunning ? status?.effectiveLevelDb : undefined),
                 flex: 1.4,
                 helpKey: 'status',
               },

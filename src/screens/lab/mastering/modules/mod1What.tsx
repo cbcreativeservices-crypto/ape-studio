@@ -9,7 +9,7 @@ import { Text } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { faderParam } from '../MasteringRack';
 import { ModuleSteps } from '../steps';
-import { Body, Card, KeyTerms, PlaybackStatus, Point, ScenarioDeck, SectionTitle, lufsTint, matchBezel, measureBezel, unmatchedWarning } from '../kit';
+import { Body, Card, GoDeeper, KeyTerms, PlaybackStatus, Point, ScenarioDeck, SectionTitle, lufsTint, matchBezel, measureBezel, unmatchedWarning } from '../kit';
 import { KEY_TERMS, TRIAGE_SCENARIOS } from '../masteringContent';
 import { PIPELINE, PIPELINE_ASPECT, PIPELINE_SHORT, PipelineStage, WAVE_ASPECT, WaveOverviewStage } from '../stages';
 import { useMasterPlayback, type MasterVariant } from '../useMasterPlayback';
@@ -119,17 +119,29 @@ export function Mod1What({ onAnswered }: ModuleProps) {
               { kind: 'action', id: 'stop', label: '■ STOP', onPress: pb.stop, tint: colors.green },
             ],
             initialParam: 'match',
+            // The silent learner (S3, phase 2): the numbers are offline renders, so
+            // they read with sound off; only the listening needs sound.
+            soundOffLine: 'Sound off? The PLR cell and the GAIN REDUCTION graph still show what LOUDER spends; the comparison by ear needs sound.',
             hideDragTag: true,
           },
           well: (
             <>
               <PlaybackStatus versions={variants} active={pb.active} pending={pb.pending} failed={pb.failed} rendering={pb.status === 'rendering'} matched={matched} matchDb={m?.matchDb} labels="▶ MIX or ▶ LOUDER" />
-              <Body>
-                Play THE MIX, then LOUDER: the same mix driven 8 dB into a peak limiter with its ceiling at {CEILING} dBFS. With MATCH LEVEL on, both play at the loudness of the quieter one — the louder version is turned DOWN by the difference between the two loudness estimates, in LU (1 LU = 1 dB), attenuation only, so nothing clips.
-              </Body>
+              {/* BEGINNER CORE FIRST (phase 3, owner's decision 5, 2026-11-14;
+                  novice audit G4: "the plain habit line is at the bottom"):
+                  what to do and what to listen for; the mechanics, the
+                  measured numbers and the meter notes fold under GO DEEPER. */}
+              <Card tone="accent">
+                <Point title="What to listen for at matched level">The transients of the kick and snare, the space between hits, the sense of movement. Limiting trades those for density. Sometimes that is the right trade; it is never automatically "better".</Point>
+              </Card>
+              <Body>Play THE MIX, then LOUDER. Leave MATCH LEVEL on: both play equally loud, so what you judge is the sound, not the volume.</Body>
               <Card tone="warn">
                 <Point title="Before you switch MATCH off">{unmatchedWarning(mix?.lufs, loud?.lufs, 'LOUDER')} Unmatched, nothing replays by itself after a change — you press ▶ each time. Then hear what the extra level does to your judgment.</Point>
               </Card>
+              <GoDeeper title="HOW THIS COMPARISON WORKS">
+              <Body>
+                LOUDER is the same mix driven 8 dB into a peak limiter with its ceiling at {CEILING} dBFS. With MATCH LEVEL on, both play at the loudness of the quieter one — the louder version is turned DOWN by the difference between the two loudness estimates, in LU (1 LU = 1 dB), attenuation only, so nothing clips.
+              </Body>
               {mix && loud ? (
                 <Card tone="accent">
                   <Text style={{ color: colors.textPrimary, fontFamily: fonts.barlowMedium, fontSize: 13.5, lineHeight: 18 }}>
@@ -141,16 +153,16 @@ export function Mod1What({ onAnswered }: ModuleProps) {
               ) : null}
               <Card>
                 <Point title="The faceplate on the display">The limiter LOUDER went through, at its real settings: INPUT (the drive), CEILING and RELEASE, with the deepest gain reduction lit on GR. When THE MIX plays it reads BYP — bypassed, nothing processed.</Point>
-                <Point title="What to listen for at matched level">The transients of the kick and snare, the space between hits, the sense of movement. Limiting trades those for density. Sometimes that is the right trade; it is never automatically "better".</Point>
-                <Point title="Honesty">An offline render of a synthesized session through your phone's uncalibrated output: the comparison is real, the absolute numbers are estimates.</Point>
+                <Point title="Honesty">An offline render of a synthesized session through this device's uncalibrated output: the comparison is real, the absolute numbers are estimates.</Point>
               </Card>
+              </GoDeeper>
             </>
           ),
         },
         {
           key: 'practice', title: 'Mix issue or mastering issue?', kind: 'PRACTICE', layout: 'read',
           body: (
-            <ScenarioDeck scenarios={TRIAGE_SCENARIOS} keepOrder onAnswered={onAnswered} intro="Each situation has a likely next step: a mastering adjustment, a mix revision, or more information from the client. Decide, then read why." />
+            <ScenarioDeck scenarios={TRIAGE_SCENARIOS} keepOrder onAnswered={onAnswered} intro="Each situation has a likely next step: a mastering adjustment, a mix revision, or asking the client first. Decide, then read why." />
           ),
         },
         {

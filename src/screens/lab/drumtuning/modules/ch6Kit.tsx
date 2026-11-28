@@ -11,6 +11,7 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { colors, fonts } from '../../../../theme/tokens';
 import { confirmDialog } from '../../../../lib/confirm';
 import { pitchFaderParam } from '../DrumRack';
+import { NeedsSoundTag } from '../../rack/silentPath';
 import { ChapterSteps } from '../steps';
 import { Body, Card, DrumStatus, Feedback, KeyButton, KeyTerms, Landing, Point, RecallCard, SectionTitle, YourRun, noteName } from '../kit';
 import { DRUM_KEY_TERMS, type TuningNote } from '../drumContent';
@@ -230,7 +231,8 @@ export function Ch6Kit({ onInteractive, notes, unsavedIds, onSaveNote, onDeleteN
               <Feedback tone={verdict.kind === 'distinct' ? 'ok' : 'warn'}>{verdict.message}</Feedback>
               <Card>
                 <Point title="The verdicts">DISTINCT: about 2.5 to 9 semitones between neighboring toms with both drums in their bands. CLOSE: under that, so the two toms sit too close together. UNBALANCED: a drum forced out of its band, the floor above the rack, or a gap so wide the pair stops reading as one kit. Teaching bands; your ears and your music set the real ones.</Point>
-                <Point title="Credit">Reach DISTINCT and hear ▶ BOTH. With two toms placed, a third sits between or above; the snare and kick are tuned for their own jobs (Chapter 5).</Point>
+                {/* Credit needs ▶ BOTH heard (fix round 2026-11-14, S3 §2); INTERVAL and VERDICT work silently. */}
+                <Point title="Credit"><NeedsSoundTag /> Reach DISTINCT and hear ▶ BOTH. With two toms placed, a third sits between or above; the snare and kick are tuned for their own jobs (Chapter 5).</Point>
               </Card>
             </>
           ),

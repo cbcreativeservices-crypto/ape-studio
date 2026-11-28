@@ -32,6 +32,8 @@ import { EngineGate } from '../tools/EngineGate';
 import { HarmonicsView } from './HarmonicsView';
 import { harmonicScreenGuide } from './harmonicScreenGuides';
 import { LabShell } from './LabShell';
+import { LabCheckEnd } from './kit/LabCheckEnd';
+import { stopAllSound } from '../../features/audio/panicMute';
 import type { EngineState } from '../../features/tools/engine/useDspEngine';
 import type { RootStackParamList } from '../../navigation/types';
 
@@ -57,10 +59,16 @@ export function HarmonicLabScreen(_props: Props) {
       {({ rack, headerAction, renderWell, view }) => (
         <LabShell
           labId="harmonic"
+          // FINISH · SEE WHAT'S LEFT under the CHECK (fix round 2026-11-14, S2). The tone
+          // lives in HarmonicsView, which unwinds on the sound-stop signal
+          // (useStopWhenSilenced), so stopAllSound stops it.
+          checkEnd={<LabCheckEnd labId="harmonic" labTitle="Harmonic Lab" onOpen={stopAllSound} />}
           title="HARMONIC LAB"
           subtitle="Additive Synthesis · Spectrum · Distortion"
           intro={INTRO}
-          exploreCaption="Ride the F0 fader, A/B presets from the dock, and drag the stems below — the display and audio follow live."
+          // HAR-01 (owner 2026-11-15, "build waves 1 thru 3"): the caption, now under the pinned stems,
+          // says what to do with them (same slot, shorter words).
+          exploreCaption="Drag a stem up to add a harmonic; the bands and the wave follow live."
           // Screen Guide (2026-10-31): one guide per tab, EXPLORE chosen by
           // the MODE key (ANALYTIC MODEL / REAL SIGNAL). The AccuracyNote chip
           // STAYS (default `accuracy`): REAL SIGNAL opens the live microphone

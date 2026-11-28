@@ -24,11 +24,11 @@ import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
 import { ChipRow, boothKey, pct, stopKey, trimKey } from '../dock';
 import { boothNow, getBooth, updateBooth } from '../booth/boothStore';
-import { renderedSince } from './s1Guards';
+import { CLEAN_HOLD_S, CLEAN_RUN_FRESH, cleanFor, cleanRunStep, renderedSince, type CleanRun } from './s1Guards';
 import { cueAtBar, preMatched, useScreenSetup } from '../booth/setup';
 import { TRIM_UNITY, dbStr, faderGain, levelKnobGain, trimPos, type InputSel } from '../model/djModel';
 import { alignPhase } from '../model/djDeck';
-import { averagesMatched, chanLevels, levelSet, type ChanLevels } from '../model/djLessons';
+import { averagesMatched, avgOnTarget, chanLevels, levelSet, type ChanLevels } from '../model/djLessons';
 import { anyClip, peakCell, peakDb, useBoothKit } from './shared';
 
 const TERMS = [
@@ -69,7 +69,12 @@ function MeterScaleStrip({ xf, k }: { xf: Xf; k: number }) {
 function avgCell(k: string, l: ChanLevels): BezelItem {
   const sub = l.peak == null ? undefined : l.peak >= 0 ? 'PK CLIP' : `PK ${l.peak.toFixed(1)}`;
   if (l.avg == null) return { k, v: '—', tint: colors.textSub, sub };
-  return { k, v: l.avg.toFixed(1), vA11y: `average ${l.avg.toFixed(1)} dBFS${l.peak != null ? `, peak ${l.peak.toFixed(1)} dBFS` : ''}`, tint: levelSet(l) ? colors.green : levelColorForDb(l.avg + 12, -40, 0), sub };
+  // The peak is the sub line, read after the value: it was spoken twice (lab fix 2026-11-14, F2).
+  // DJ-13 (owner 2026-11-15: "build waves 1 thru 3"; checker fix): the target is shown where the
+  // AVERAGE is read, not on the LED columns (those are PEAK meters, djRender.ts): on target the
+  // value turns green and carries a ✓ (avgOnTarget), so the ramp's own green cannot pass for it.
+  const on = avgOnTarget(l);
+  return { k, v: on ? `${l.avg.toFixed(1)} ✓` : l.avg.toFixed(1), vA11y: `average ${l.avg.toFixed(1)} dBFS${on ? ', on target' : ''},`, tint: on ? colors.green : levelColorForDb(l.avg + 12, -40, 0), sub };
 }
 
 type Lvl = 'f1' | 'f2' | 'master';
@@ -118,6 +123,12 @@ function PageGain({ ctx }: { ctx: PageCtx }) {
   // render made after it (a chunk from before showed the clean booth, so
   // START THE FAULT read Fixed at once — toddler test 2026-10-19)
   const faultAt = useRef<number | null>(null);
+  // "Fixed" needs the booth to STAY clean for CLEAN_HOLD_S, not one lucky
+  // chunk (lab fix round 2026-11-14, F2; s1Guards.cleanRunStep).
+  const cleanRun = useRef<CleanRun>(CLEAN_RUN_FRESH);
+  const chunkClean = bothPlaying && !!last && last.clipped.bus === 0 && last.clipped.ch1 === 0 && last.clipped.ch2 === 0;
+  cleanRun.current = cleanRunStep(cleanRun.current, last, chunkClean, faultAt.current);
+  const heldClean = chunkClean && cleanFor(cleanRun.current, last) >= CLEAN_HOLD_S;
   const c2 = booth.ch[2];
   if (!foundInput && booth.decks.B.playing && c2.input === 'LINE' && l2.avg != null) setFoundInput(true);
   const hits = [
@@ -162,7 +173,7 @@ function PageGain({ ctx }: { ctx: PageCtx }) {
             }}
           />
         ),
-        bezel: [avgCell('CH1 AVG', l1), avgCell('CH2 AVG', l2), { ...peakCell('MASTER', pm === -Infinity ? null : pm), flex: 1.35 }, { k: 'MIX BUS', v: busOver ? 'OVER' : last ? 'CLEAN' : '—', tint: busOver ? '#ff5a48' : last ? '#5bff85' : colors.textSub, flex: 0.85 }],
+        bezel: [avgCell('CH1 AVG', l1), avgCell('CH2 AVG', l2), { ...peakCell('MASTER', pm === -Infinity ? null : pm), flex: 1.35 }, { k: 'MIX BUS', caption: 'channel sum', v: busOver ? 'OVER' : last ? 'CLEAN' : '—', tint: busOver ? '#ff5a48' : last ? '#5bff85' : colors.textSub, flex: 0.85 }],
         params: [
           trimKey(booth, 1),
           trimKey(booth, 2),
@@ -202,7 +213,7 @@ function PageGain({ ctx }: { ctx: PageCtx }) {
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>Open DECKS and play deck A. Ride TRIM 1 and watch CH1 AVG on the readout strip: the average in dBFS, with the peak (PK) under it.</Do>
+        <Do>Open DECKS and play deck A. Slide TRIM 1 and watch CH1 AVG on the readout strip: the average in dBFS, with the peak (PK) under it.</Do>
         <P>Then open LEVELS → CH1 FADER and pull it down: the CH1 meter stays where it was while MASTER falls — the channel meter reads BEFORE the fader. Bring it back up.</P>
         <P>Now play deck B too. CH2 reads “—”: something BEFORE its trim decides what channel 2 listens to. Find it (it is at the top of the strip; its switch is in DECKS).</P>
       </Step>
@@ -213,7 +224,7 @@ function PageGain({ ctx }: { ctx: PageCtx }) {
         <Note>Every meter in this lab reads dBFS of this mixer’s own scale: 0 dBFS is where a stage clips. A real analog mixer’s meter often puts 0 at a reference level with room above it, so check how your own mixer is marked.</Note>
       </Step>
       <Step n={4}>
-        <Do>Bring deck A’s average into −21…−15 dBFS with its peaks under −3. Then, with deck B cued and its fader down, set TRIM 2 until CH2 AVG sits within 2 dB of CH1 AVG — the crowd never hears you do it.</Do>
+        <Do>Bring deck A’s average into −21…−15 dBFS (CH1 AVG turns green with a ✓ there) with its peaks under −3. Then, with deck B cued and its fader down, set TRIM 2 until CH2 AVG sits within 2 dB of CH1 AVG — the crowd never hears you do it.</Do>
         <P>That leaves headroom for EQ boosts and for the moment both tracks play together. These are suggested starting points, not rules — use your ears and the room.</P>
         <Note>Deck B’s tempo has been matched to deck A for you — Screen 10 shows how.</Note>
         <GoalChips goals={goals.slice(0, 4)} latched={latched.slice(0, 4)} />
@@ -223,7 +234,7 @@ function PageGain({ ctx }: { ctx: PageCtx }) {
           eyebrow="CHECK YOURSELF"
           question="Two tracks both peak at −6 dBFS, but one sounds much louder. Why, and how do you match them?"
           options={[
-            'One has a higher average level — match where the meters sit most of the time, and check by ear in cue',
+            'One has a higher average level: match the averages in cue',
             'The peaks match, so they are already matched — the ear is wrong',
             'Turn the louder one up until it clips, then back off',
             'Match them with the channel faders during the mix',
@@ -239,6 +250,7 @@ function PageGain({ ctx }: { ctx: PageCtx }) {
           start={() => {
             void audio.requestSound();
             faultAt.current = boothNow();
+            cleanRun.current = CLEAN_RUN_FRESH;
             updateBooth((b, t) => {
               let x = b;
               for (const d of ['A', 'B'] as const) x = { ...x, decks: { ...x.decks, [d]: { ...x.decks[d], playing: true, at: t } } };
@@ -246,7 +258,8 @@ function PageGain({ ctx }: { ctx: PageCtx }) {
               return { ...x, ch: { 1: { ...x.ch[1], input: 'LINE', trim: trimPos(9), fader: 1 }, 2: { ...x.ch[2], input: 'LINE', trim: trimPos(4), fader: 1 } }, mixer: { ...x.mixer, master: 0.32 } };
             });
           }}
-          fixed={bothPlaying && !!last && renderedSince(last, faultAt.current) && last.clipped.bus === 0 && last.clipped.ch1 === 0 && last.clipped.ch2 === 0}
+          fixed={!!last && renderedSince(last, faultAt.current) && heldClean}
+          extra={faultAt.current != null && chunkClean && !heldClean && renderedSince(last, faultAt.current) ? <Note tone="try">No clipping in the latest bars. Keep both channels and MIX BUS out of the red for a few more seconds to prove it.</Note> : null}
           hints={['Look past the MASTER meters: is the BUS OVER light flashing?', 'Turning the MASTER down made it quieter, not cleaner.', 'Bring the TRIMS down until the channel meters and the bus stay out of the red.']}
           why="On this mixer the mix bus was clipping before the MASTER knob. Lowering the trims (the stage that was too hot) removed the clipping; the master only ever set how loud the damage was."
           onFixed={() => setFaultFixed(true)}

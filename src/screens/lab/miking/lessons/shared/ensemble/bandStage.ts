@@ -39,6 +39,7 @@ import { KICK_ANCHORS } from '../../m01Kick/geometry.ts';
 import { cabLayout, type CabKind } from '../speakers/speakerModel.ts';
 import { BASS_HEAD } from '../speakers/ampModel.ts';
 import { mouthOf } from './seatingVoices.ts';
+import { MANDO_A, STEEL_DREAD } from '../guitars/guitarSpec.ts';
 
 const BAND_IDS: readonly BandSeatingId[] = ['band.stage', 'band.room', 'jazz.quartet', 'jazz.guitar', 'acoustic.duo', 'acoustic.trio'];
 export const isBandSeating = (id: string): id is BandSeatingId => (BAND_IDS as readonly string[]).includes(id);
@@ -147,8 +148,22 @@ export type GuitarKind = 'eguitar' | 'ebass' | 'aguitar' | 'mandolin';
 export const GUITAR_POSE: Record<GuitarKind, { tailR: number; tailUp: number; fwd: number; ang: number; L: number; neck: number }> = {
   eguitar: { tailR: 180, tailUp: 820, fwd: 170, ang: 24, L: 450, neck: 450 },
   ebass: { tailR: 180, tailUp: 820, fwd: 170, ang: 24, L: 500, neck: 700 },
-  aguitar: { tailR: 170, tailUp: 470, fwd: 230, ang: 18, L: 500, neck: 430 },
-  mandolin: { tailR: 170, tailUp: 760, fwd: 230, ang: 32, L: 330, neck: 300 },
+  // (2026-11-26) the seated acoustic's and the mandolin's `neck` now reach the DRAWN instrument's nut (HELD_DRAWN
+  // below: L + neck = its nut, to the millimeter), so the fretting hand (ensembleHands: L + 0.55·neck) lands in a low
+  // position on the real neck — never on the nut or the headstock. Was 430 and 300 (necks drawn about 20 % and 85 %
+  // too long).
+  // (owner 2026-11-26, "Yes, move them") THE SEATED GUITAR ON THE LAP: at true size the body hung through the right
+  // thigh (tailR 170, tailUp 470: its sound hole 566 mm up). Now it RESTS on the seated figure's own right thigh
+  // (SeatingArt seatSkeleton: the hip joint 560 mm up — the 1010 mm seated shoulders less 450 — the knee 530 mm up and
+  // 420 ahead, the thigh's radius 84 → 74 mm; under the guitar's back, 112 mm ahead of the hip line, its top is about
+  // 629 mm up at 106 mm right): the dreadnought's treble rim, just below its waist (the waist 11-1/16 in, the lower
+  // bout 16 in), sits on that thigh top as a steel-string player rests it, the lower bout hanging outside the right
+  // leg. That is tailR 334 (the waist's lower edge over the thigh) and tailUp 750 (the lowest rim point over the
+  // thigh 0.6 mm clear of it), the angle and the depth ahead unchanged: the sound hole 846 mm up, 39 mm right of the
+  // seat (was 566 mm up, 125 mm left). A raise alone (tailR 170) would rest it on its lower bout with the upper bout's
+  // edge at 1056 mm, above the 1010 mm shoulders.
+  aguitar: { tailR: 334, tailUp: 750, fwd: 230, ang: 18, L: 500, neck: 273 },
+  mandolin: { tailR: 170, tailUp: 760, fwd: 230, ang: 32, L: 330, neck: 115 },
 };
 /** A point `s` mm along a held guitar's axis from its tail (frame S). */
 export function guitarPoint(seat: Pick<Seat, 'p' | 'face'>, k: GuitarKind, s: number): Vec3 {
@@ -158,6 +173,22 @@ export function guitarPoint(seat: Pick<Seat, 'p' | 'face'>, k: GuitarKind, s: nu
 }
 /** Where the sound leaves a held acoustic: its sound hole (about 62 % up the body). */
 export const soundHole = (seat: Pick<Seat, 'p' | 'face'>, k: 'aguitar' | 'mandolin'): Vec3 => guitarPoint(seat, k, GUITAR_POSE[k].L * 0.62);
+
+/**
+ * THE HELD ACOUSTICS AS DRAWN (2026-11-26, owner: "the acoustic duo needs to redo the guitars they are oddly
+ * stretched") — drawing constants only. SeatingArt draws the shared guitar family's own instruments at TRUE size:
+ * C01's steel-string dreadnought (guitarSpec STEEL_DREAD: its sourced 20 in body, 16 in lower bout, 11-1/16 in
+ * waist, 4-5/8 in depth, 25-1/2 in scale with the 14th fret at the body) and C05b's A-style mandolin (MANDO_A: its
+ * sourced 26 cm wide teardrop; its 350 mm body and scale and its oval hole are that lesson's drawing defaults). Each lies along GUITAR_POSE's axis with its
+ * hole's center ON soundHole: `off` is where the spec's frame-G origin (the saddle) sits, in mm along the axis
+ * from GUITAR_POSE's tail, so a spec point x lies at guitarPoint(seat, k, off + x).
+ */
+export const HELD_DRAWN = {
+  aguitar: { spec: STEEL_DREAD, off: GUITAR_POSE.aguitar.L * 0.62 - STEEL_DREAD.opening.x.mm },
+  mandolin: { spec: MANDO_A, off: GUITAR_POSE.mandolin.L * 0.62 - MANDO_A.opening.x.mm },
+} as const;
+/** A point `x` mm along a drawn held acoustic's strings from its saddle (frame G's x), in frame S. */
+export const heldDrawnPoint = (seat: Pick<Seat, 'p' | 'face'>, k: 'aguitar' | 'mandolin', x: number): Vec3 => guitarPoint(seat, k, HELD_DRAWN[k].off + x);
 
 /* ── building blocks ── */
 type SecDef = { id: string; label: string; short: string; family: Family; radiates: string };
@@ -214,7 +245,11 @@ export const VOCAL_WEDGE = 1350;
  *  same kit and the same vocal mic on the stage and in the room, so the
  *  shared pages' mics sit on them in either): drawing defaults. */
 export const BAND_KIT = { p: v3(130, 0, -3820), face: 180 } as const;
-export const BAND_SINGER = { p: v3(0, 0, -400), face: 180 } as const;
+/** The singer stands BAND_SINGER_DX to the audience's left of the middle (owner 2026-11-26): from the hall the
+ *  drummer shows beside the singer instead of hidden behind them. The vocal mic, its wedge and the room's gobo
+ *  are read from this seat, so they move with it. */
+export const BAND_SINGER_DX = -600;
+export const BAND_SINGER = { p: v3(BAND_SINGER_DX, 0, -400), face: 180 } as const;
 
 function bandStage(): Seating {
   const gAmp = gear('amp.gtr', 'combo', v3(-2700, 0, -2700), 180, 'the guitar amp', 'GUITAR AMP', 'gtr');
@@ -278,7 +313,7 @@ function bandRoom(): Seating {
       gAmp,
       bAmp,
       gear('gobo.gtr', 'gobo', v3(-2950, 0, -2500), 120, 'a gobo between the guitar amp and the room', 'GOBO', 'gtr'),
-      gear('gobo.vox', 'gobo', v3(0, 0, -1150), 180, 'a gobo screening the singer from the band', 'GOBO', 'vox'),
+      gear('gobo.vox', 'gobo', v3(BAND_SINGER.p.x, 0, -1150), 180, 'a gobo screening the singer from the band', 'GOBO', 'vox'),
       gear('di.bass', 'di', v3(2950, 0, -2500), 280, 'the bass DI box', 'DI', 'bass'),
     ],
     viewer: 'audience',
@@ -328,11 +363,19 @@ function jazzQuartet(): Seating {
   };
 }
 
+/** The jazz guitarist and the amp moved toward the bass as one (owner 2026-11-26: the spacing pass). The
+ *  guitarist stood where the quartet's piano keys are, 2.3 m from the bassist with 1.7 m of empty floor
+ *  between them; +700 mm across puts the guitarist 1.7 m from the bassist, center to center, the guitar's
+ *  neck short of the bassist's wedge and about 1 m clear of the bassist — beside the bass, as a
+ *  guitar group sets up. The amp still faces away from the drums. A drawing default. */
+export const JAZZ_GTR_DX = 700;
+
 function jazzGuitar(): Seating {
   const dr = drummer('drums.1', JAZZ_KIT.p, JAZZ_KIT.face);
-  // The amp faces down and away from the drums (toward the audience's left).
-  const gAmp = gear('amp.gtr', 'combo', v3(-3000, 0, -1900), 235, 'the guitar amp, turned away from the drums', 'GUITAR AMP', 'jgtr');
-  const gt = ampPlayer('jgtr.1', 'eguitar', 'jgtr', v3(-2300, 0, -900), 165, gAmp);
+  // The amp faces down and away from the drums (toward the audience's left). The guitarist and the amp
+  // together: JAZZ_GTR_DX toward the bass (owner 2026-11-26, the spacing pass).
+  const gAmp = gear('amp.gtr', 'combo', v3(-3000 + JAZZ_GTR_DX, 0, -1900), 235, 'the guitar amp, turned away from the drums', 'GUITAR AMP', 'jgtr');
+  const gt = ampPlayer('jgtr.1', 'eguitar', 'jgtr', v3(-2300 + JAZZ_GTR_DX, 0, -900), 165, gAmp);
   const ub = uprightBass('ub.1', 'ub', JAZZ_BASS.p, JAZZ_BASS.face);
   const tp = seat('tpt.1', 'trumpet', 'tpt', JAZZ_SOLO.p, JAZZ_SOLO.face, 'standing');
   const tps = { ...tp, src: local(tp.p, tp.face, 560, 0, 1500) };
@@ -356,6 +399,12 @@ function jazzGuitar(): Seating {
  *  "equal distance" idea for a main mic): centre and radius, drawing
  *  defaults; the guitarist at the same place in the duo and the trio. */
 export const TRIO_ARC = { c: v3(0, 0, 700), r: 1500, at: [-40, 0, 40] } as const;
+/** (owner 2026-11-26, "Spread the players") the TRIO's own places on the arc: the guitarist where the duo's sits
+ *  (−40°, so the shared guitar spot sits on them in either group), the fiddler and the bassist turned 5° further
+ *  round toward the bass end (0° → 5°, 40° → 45°) — so the three spots keep the lesson's 3:1 (the guitar and fiddle
+ *  mics 818 → 916 mm apart, at least 3 × 300 mm), the fiddle and bass mics as before (962 mm). Still on the arc:
+ *  every player as far from the pair at its center as before. */
+export const TRIO_AT = [-40, 5, 45] as const;
 /** A player at angle `th` on the arc, set back by how far ahead of them their
  *  instrument's sound leaves (`ahead`, mm), so the SOUND sits on the arc. */
 const onArc = (th: number, ahead = 0) => {
@@ -392,7 +441,7 @@ function acousticDuo(): Seating {
 }
 
 function acousticTrio(): Seating {
-  const [a, b, c] = TRIO_ARC.at;
+  const [a, b, c] = TRIO_AT;
   const ag = heldAcoustic('ag.1', 'aguitar', 'ag', onArc(a, AHEAD.aguitar), a + 180);
   const fd = seat('fid.1', 'violin', 'fid', onArc(b, AHEAD.violin), b + 180, 'seated');
   const ub = uprightBass('ub.1', 'ub', onArc(c, AHEAD.bass), c + 180);

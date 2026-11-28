@@ -157,8 +157,15 @@ export function buildReportFromSummary(s: SavedRunSummary): SharedCalculatorRepo
     sourceStepName: isWorkflow ? stripStepNumber(r.step) : undefined,
   }));
 
-  // PRIMARY = the last numeric result (the final answer of the sequence).
-  const primaryResult = [...results].reverse().find((r) => looksNumeric(r.formattedValue));
+  // PRIMARY = the final step's headline: the FIRST numeric result of the last
+  // step (every function lists its answer first). It used to be the very last
+  // numeric row — Delay Speaker Setup headlined "375" (buffers per second, a
+  // side figure of the last step) with no name or unit (beginner audit
+  // 2026-11-14). The card now prints the result's label with it, too.
+  const lastStep = s.results.length ? s.results[s.results.length - 1].step : undefined;
+  const primaryResult =
+    results.find((r, idx) => s.results[idx].step === lastStep && looksNumeric(r.formattedValue)) ??
+    [...results].reverse().find((r) => looksNumeric(r.formattedValue));
 
   // NOTES vs WARNINGS. summary.warnings mixes both; user notes are always notes.
   const notes: string[] = [];
@@ -276,7 +283,7 @@ export function reportToText(r: SharedCalculatorReport): string {
   L.push(r.createdAtDisplay);
 
   if (r.primaryResult) {
-    L.push(RULE, 'PRIMARY RESULT', r.primaryResult.formattedValue);
+    L.push(RULE, 'PRIMARY RESULT', leaderLine(r.primaryResult.label, r.primaryResult.formattedValue));
   }
 
   if (r.inputs.length) {

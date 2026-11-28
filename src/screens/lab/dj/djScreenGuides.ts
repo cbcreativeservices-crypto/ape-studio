@@ -27,7 +27,8 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   'Welcome and safe operation': {
     intro: {
       learning: 'Why safe listening comes first in a DJ booth: start low, keep STOP in reach, and see how level and time together use up a day’s hearing allowance.',
-      start: 'In the A LOUD NIGHT, IN NUMBERS tile, pick a 4 h set at 88 dBA, then 91 dBA, and compare. Then press PLAY A and switch LISTEN from CROWD to BOOTH.',
+      // DJ-05 (owner 2026-11-15: "build waves 1 thru 3"): the same first move as the page's step 2 (STOP, then PLAY A).
+      start: 'Find ■ STOP in the dock, then press PLAY A and switch LISTEN from CROWD to BOOTH. Then, in the A LOUD NIGHT, IN NUMBERS tile, compare a 4 h set at 88 dBA with 91 dBA.',
     },
     seeing: [
       'You’re looking down on a DJ booth: deck A on the left, the two-channel mixer in the middle, deck B on the right. The line under it shows whose ears you’re listening with.',
@@ -61,7 +62,8 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   'Meet the DJ equipment': {
     intro: {
       learning: 'The four jobs every DJ setup does (play the music, mix it, let the DJ hear the next track, let the room hear the mix) and which device does each.',
-      start: 'Step through EQUIPMENT to meet each piece of gear. Then pick a SYSTEM and use FIND to spot which device does each of the four jobs.',
+      // DJ-05: the same first move as the page's step 2 (FIND names a job; EQUIPMENT picks the device).
+      start: 'FIND on the readout strip names a job. Open EQUIPMENT and pick the device that does it, for each of the four jobs. Then open SYSTEM to compare whole setups.',
     },
     seeing: [
       'You see a drawing of the gear or the whole system you picked, with its sockets and cables.',
@@ -90,7 +92,8 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   'Connections and signal types': {
     intro: {
       learning: 'How to read a socket by its direction, connector, signal, level and channels, and why a turntable needs a PHONO input rather than LINE.',
-      start: 'Use PATCH to plug deck A’s white and red plugs into CH1 LINE, then press PLAY. Pull the red plug and watch CH1 R GETS.',
+      // DJ-05: the same first move as the page's step 2 (IDENTIFY first, then PATCH).
+      start: 'Open IDENTIFY and pick each socket the step asks for: a halo shows it on the drawing. Then use PATCH to plug deck A’s white and red plugs into CH1 LINE, and press PLAY.',
     },
     seeing: [
       'You’re behind the gear: the back of deck A (or the turntable) above the back of the mixer, with the source’s white and red RCA plugs. Seen from behind, the mixer is mirrored.',
@@ -125,8 +128,9 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       start: 'Open PATCH and connect each cable: tap the end already in its source, then where its loose end goes. Then use POWER: decks and mixer first, speakers last.',
     },
     seeing: [
-      'You’re looking at the whole booth from BEHIND, so it’s mirrored. At the top is the room: PA speakers on stands, the table, decks, mixer, headphones and booth monitors.',
-      'Below it, full size, is everything you plug in. A cable glows blue while audio flows through it. CABLES, POWERED and PA L · R track your wiring, the power and what reaches each PA speaker.',
+      // DJ-11: the layout moved here from the screen's step 1.
+      'You’re looking at the booth from BEHIND, so it’s mirrored. At the top, the room at 1:5 scale: the PA speakers (PA L on your left), the decks, mixer, headphones and booth monitors.',
+      'Below it, full size, is everything you plug in. A cable glows blue while audio flows through it. CABLES (left to plug in), POWERED (devices on) and PA L · R track your wiring, the power and what reaches each PA speaker.',
     ],
     control: [
       'In PATCH, pick a cable by the end already in its source, then tap where its loose end goes. VIEW switches between FOLLOW THE CABLE and WHOLE BOOTH.',
@@ -183,7 +187,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   'Set gain and read meters': {
     intro: {
       learning: 'Why tracks are matched by their average level, with the peak only a ceiling, and why clipping can happen at the mix bus even when each channel is clean.',
-      start: 'Play deck A and ride TRIM 1 until CH1 AVG sits between −21 and −15 dBFS with PK under −3. Then play deck B and find why CH2 reads “—”.',
+      start: 'Play deck A and slide TRIM 1 until CH1 AVG sits between −21 and −15 dBFS with PK under −3. Then play deck B and find why CH2 reads “—”.',
     },
     seeing: [
       'You’re looking down on the mixer: two input selectors, TRIM 1 and TRIM 2, four meters (CH1, master L and R, CH2) with their scale, and the BUS OVER light.',
@@ -191,7 +195,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     control: [
       'TRIM 1 and TRIM 2 set how much of each track comes into its channel, in ±1 dB steps.',
-      'LEVELS gives you one lane for CH1 FADER, CH2 FADER or MASTER; tap the LEVELS key to choose which.',
+      'LEVELS gives you one slider for CH1 FADER, CH2 FADER or MASTER; tap the LEVELS key to choose which.',
       'DECKS plays the decks. It also holds each channel’s INPUT SELECTOR (LINE, PHONO, USB) and CUE 2.',
       STOP,
     ],
@@ -205,7 +209,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'Signals that add together can clip where they meet, at the mix bus. Turning down after that point can’t undo it.',
     ],
     tryThis: [
-      'Play deck A and ride TRIM 1 until CH1 AVG sits in −21…−15 dBFS with PK under −3.',
+      'Play deck A and slide TRIM 1 until CH1 AVG sits in −21…−15 dBFS with PK under −3.',
       'Play deck B: CH2 reads “—”. Look at its input selector in DECKS to find why, then set TRIM 2 so CH2 AVG is within 2 dB of CH1 AVG.',
     ],
   },
@@ -213,7 +217,8 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   'Headphone cue and booth monitoring': {
     intro: {
       learning: 'How you hear the next track privately in your headphones, and how the booth monitor feed is separate from what the crowd hears.',
-      start: 'In CUE press ▶ PLAY B, then CUE 2 with the CH2 fader down. Listen as PHONES, then as the CROWD, and compare what each one hears.',
+      // SH-11 (owner 2026-11-15: "build waves 1 thru 3"): the first step can be seen with sound off (the readouts).
+      start: 'In CUE press ▶ PLAY B, then CUE 2 with the CH2 fader down. Watch CUE BUS and PHONES L light while the crowd hears nothing of B; then listen as PHONES and as the CROWD.',
     },
     seeing: [
       'You see part of the mixer: its booth, headphone and CUE controls, with your headphones in the PHONES jack. Beside them are the output meters and a booth monitor at half scale.',
@@ -237,7 +242,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'In CUE press ▶ PLAY B, then CUE 2 with the CH2 fader down. Listen as PHONES, then switch to CROWD: what reaches the room?',
-      'Ride BLEND from CUE to MASTER, then turn SPLIT on and listen to each ear: the next track on the left, the room on the right.',
+      'Slide BLEND from CUE to MASTER, then turn SPLIT on and listen to each ear: the next track on the left, the room on the right.',
     ],
   },
   // ── 8 ──────────────────────────────────────────────────────────────────
@@ -251,7 +256,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'CH1 → MIX and CH2 → MIX show, in dB, how much of each channel reaches the mix. The fourth cell, TWO COPIES, shows how much two identical copies add when they sum.',
     ],
     control: [
-      'FADERS gives you one lane for CH1 (DECK A) or CH2 (DECK B).',
+      'FADERS gives you one slider for CH1 (DECK A) or CH2 (DECK B).',
       'X-FADER: the crossfader.',
       'In SETUP, assign each channel to side A or B, choose the CURVE (BLEND, DIP or CUT), or tap PUT THE SAME TRACK ON BOTH DECKS, ALIGNED.',
       'DECKS: play both.',
@@ -283,7 +288,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     control: [
       'LOW 1 and LOW 2 sit side by side, so you can hand the bass from one channel to the other.',
-      'EQ+FILT gives you one lane for CH1/CH2 HIGH and MID, CH1/CH2 FILTER or RESONANCE.',
+      'EQ+FILT gives you one slider for CH1/CH2 HIGH and MID, CH1/CH2 FILTER or RESONANCE.',
       'DECKS: play both.',
       STOP,
     ],
@@ -337,7 +342,8 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   'Beatgrids, sync and quantize': {
     intro: {
       learning: 'Why SYNC and QUANTIZE follow the beatgrid, not the music, so a wrong grid gives matching tempos with kicks that still land apart.',
-      start: 'Play both decks with DECKS, press SYNC B and listen as the CROWD: B’s kicks fall between A’s. Then fix deck B’s grid in GRID and sync again.',
+      // SH-11: a step that can be seen with sound off (REAL BEATS), before the listening.
+      start: 'Play both decks with DECKS and press SYNC B: REAL BEATS shows B’s kicks landing between A’s (listen as the CROWD to hear it). Then fix deck B’s grid in GRID and sync again.',
     },
     seeing: [
       'You see deck A’s and deck B’s waveforms, about two bars each, with their beatgrids: thin white beat lines and bold amber bar lines. The kicks are tinted violet.',
@@ -462,7 +468,8 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   'Stems and source separation': {
     intro: {
       learning: 'What stems are: a track’s drums, bass, chords and melody as separate parts. And why stems pulled out of a finished mix are never as clean as the originals.',
-      start: 'Play deck A and open STEMS. With SOURCE on ORIGINAL STEMS, switch MELODY off. Then switch SOURCE to SEPARATED (SIMULATED) and listen for what is left.',
+      // SH-11: what is left is read on MELODY LEFT, so the step works with sound off.
+      start: 'Play deck A and open STEMS. With SOURCE on ORIGINAL STEMS, switch MELODY off. Then switch SOURCE to SEPARATED (SIMULATED) and read MELODY LEFT: what is still there.',
     },
     seeing: [
       'Each lane is one stem of the track (drums, bass, chords and melody), all under one playhead. A muted part turns hatched.',
@@ -656,7 +663,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
   'Recording and streaming': {
     intro: {
       learning: 'Why a recording is taken from its own tap at its own level, so room moves don’t change the take, and why the mic must be in the recording too.',
-      start: 'In TAP, pick REC OUT and press RECORD. Ride MASTER: the room changes, but the RECORDER’s level holds. Then set REC GAIN and PLAY THE TAKE.',
+      start: 'In TAP, pick REC OUT and press RECORD. Slide MASTER: the room changes, but the RECORDER’s level holds. Then set REC GAIN and PLAY THE TAKE.',
     },
     seeing: [
       'The drawing shows the tap the recorder takes its signal from, the RECORDER with its meters, and the take’s waveform. Green marks show where the mic is in the take.',
@@ -680,7 +687,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
       'Only playback proves a take: it shows whether the level held and the mic made it in.',
     ],
     tryThis: [
-      'Pick TAP → REC OUT, press RECORD and ride MASTER: the room changes, but the RECORDER’s level doesn’t.',
+      'Pick TAP → REC OUT, press RECORD and slide MASTER: the room changes, but the RECORDER’s level doesn’t.',
       'Set REC GAIN so REC PEAK sits between −12 and −3 dBFS, then PLAY THE TAKE and look for the green mic marks.',
     ],
   },
@@ -712,7 +719,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'In CLOCK set CH 1, 5-PIN MIDI and EXTERNAL, then play deck A: MACHINE reads deck A’s tempo.',
-      'Use START ON THE NEXT BAR, then ride TEMPO A and watch MACHINE follow.',
+      'Use START ON THE NEXT BAR, then slide TEMPO A and watch MACHINE follow.',
     ],
   },
   // ── 23 ─────────────────────────────────────────────────────────────────
@@ -792,7 +799,7 @@ export const DJ_SCREEN_GUIDES: Record<string, ScreenGuide> = {
 export const DJ_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'A look back over the DJ booth as one system: safe levels, the path from player to PA, and the cueing, blending and timing you’ve worked through so far.',
-    start: 'Tap the first screen still listed to go straight to it. Or tap REVIEW ▾ on the ✓ DONE line to reopen a screen you’ve finished.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
     'The title reads WHAT’S LEFT while you still have required screens to do, and LAB COMPLETE once you’ve done them all. If your saved progress can’t be read, it reads YOUR PROGRESS.',

@@ -13,6 +13,11 @@ import { SKIN, SKIN_RIM, SLEEVE, SLEEVE_RIM } from './Hand';
 import { PLAYER } from './geom.ts';
 import { armPath, BARE_ARM, FigureHead, headAbove, headProfile } from '../players/PlayerFigure';
 import { pt } from '../players/playerPose';
+import { figureV2On } from '../figureV2/figureV2Config.ts';
+import { Arm2DV2, PlayerSideV2SP, PlayerTopV2SP } from './smallPercV2';
+
+/** (figure roll-out wave 5) the small-percussion player in the approved look. */
+const SP_V2 = figureV2On('familySmallPerc');
 
 const fromD = (d: string) => Skia.Path.MakeFromSVGString(d) ?? Skia.Path.Make();
 const TROUSER = ['#3a3f4a', '#23272f', '#14161b'];
@@ -43,6 +48,11 @@ const SIDE_TORSO: Pt[] = [
 /** The standing player seen from the right: legs, torso, neck, head. The
  *  near (right) arm is drawn separately (Arm2D), over the torso. */
 export function PlayerSide({ opacity = 1 }: { opacity?: number }) {
+  // (figure roll-out wave 5: the player in the approved look)
+  return SP_V2 ? <PlayerSideV2SP opacity={opacity} /> : <PlayerSideOld opacity={opacity} />;
+}
+/** The look before the roll-out (its own component: hooks never follow a return). */
+function PlayerSideOld({ opacity = 1 }: { opacity?: number }) {
   const g = useMemo(() => {
     const H = (h: number) => -h;
     const torso = SIDE_TORSO;
@@ -116,6 +126,9 @@ const TOP_SHOULDERS: Pt[] = ((x: number): Pt[] => [
 ])(PLAYER.shoulderX);
 
 export function PlayerTop({ opacity = 1 }: { opacity?: number }) {
+  return SP_V2 ? <PlayerTopV2SP opacity={opacity} /> : <PlayerTopOld opacity={opacity} />;
+}
+function PlayerTopOld({ opacity = 1 }: { opacity?: number }) {
   const g = useMemo(() => {
     const sh = TOP_SHOULDERS;
     return {
@@ -154,6 +167,9 @@ export function PlayerTop({ opacity = 1 }: { opacity?: number }) {
  * recedes (`opacity` < 1) is drawn darker, never see-through.
  */
 export function Arm2D({ s, e, w, opacity = 1 }: { s: Pt; e: Pt; w: Pt; opacity?: number }) {
+  return SP_V2 ? <Arm2DV2 s={s} e={e} w={w} opacity={opacity} /> : <Arm2DOld s={s} e={e} w={w} opacity={opacity} />;
+}
+function Arm2DOld({ s, e, w, opacity = 1 }: { s: Pt; e: Pt; w: Pt; opacity?: number }) {
   const g = useMemo(() => {
     const k = 0.72;
     const len = Math.hypot(e[0] - s[0], e[1] - s[1]) || 1;

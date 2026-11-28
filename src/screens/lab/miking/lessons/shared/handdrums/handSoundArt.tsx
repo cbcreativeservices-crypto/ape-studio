@@ -34,9 +34,10 @@ import { strokeShares } from './strokes.ts';
 import { StaticLabels, type StaticLabel } from '../../../engine/scene/StaticLabels';
 import { BRASS, CHROME, FLOOR, GOAT, INK, RAWHIDE, FILM, WOOD } from './handDrumArt';
 import type { HandDrum } from './handDrumModel.ts';
-import { armPath, FIGURE_SKIN, FigureMass } from '../players/PlayerFigure';
+import { ARM, armPath, FIGURE_SKIN } from '../players/PlayerFigure';
 import { pt as ppt } from '../players/playerPose.ts';
 import { Hand } from '../smallperc/Hand';
+import { StrikeArm } from '../kitScene/stickPlayer';
 import { dorsalFlat, openHand, placePt, sideNails, smoothPathD, tubeOutline, wristFor, type HandGeo, type Placement, type Pt } from '../smallperc/hands.ts';
 import type { StrokeSpec } from './family.ts';
 
@@ -112,30 +113,79 @@ function arcs(p: SkPath, cx: number, cy: number, radii: number[], a0: number, a1
  * the family's tested hand geometry (smallperc/hands.ts) — an adult hand
  * ≈ 190 mm from the wrist crease to the middle fingertip, ≈ 85 mm across the
  * knuckles; palm, four fingers together with knuckle creases and nails, the
- * thumb set on the index side. Skin = the shared figure skin (HF1).
- *   side view   the player's LEFT hand seen from their right (its thumb
- *               side): the OPEN TONE — fingers flat, striking near the edge,
- *               the palm's heel up over the rim, the forearm rising toward
- *               the player.
- *   from above  the back of the right hand, fingers toward the audience:
- *               OPEN / MUTED tone = flat fingers near the edge, the heel over
- *               the rim; BASS = the flat palm toward the centre; TIPS / SLAP
- *               = the fingers cupped, their tips on the head. */
-const SIDE_OPEN = openHand(-8);
-const SIDE_HAND: HandGeo = { ...SIDE_OPEN, nails: sideNails([...SIDE_OPEN.fingers, SIDE_OPEN.thumb]), nailAlpha: 0.55 };
+ * thumb set on the index side.
+ *
+ * THE STROKES' POSES (figure realism pass, 2026-11-23; the owner, a working
+ * percussionist, on the cupped hand whose palm hung off the drum with only its
+ * fingertips over the head: "slap is not just the fingers short near the rim
+ * like this. research a little more"). What conga and djembe teaching agrees
+ * on: the open tone lands with the PALM'S RIDGE (the pad at the base of the
+ * fingers) on the edge of the head and the fingers together and flat on the
+ * head; the muted tone the same, the fingers held down; the bass the flat palm
+ * toward the center, the whole hand on the head; the slap the same ridge on
+ * the edge, the hand a little farther onto the drum (about an inch on a
+ * djembe), the fingers a little open and cupped so their TIPS strike the head
+ * (the edge of the palm and the fingertips: the lesson's own words); bongo
+ * fingertip strokes cupped fingers falling onto the head from the rim, the
+ * tips near the edge. The amber ring stays where the lesson's model puts the
+ * stroke (`frac`); a cupped stroke also marks its four fingertip pads.
+ *   side view   the player's LEFT hand seen from their right (its thumb side,
+ *               the thumb nearest): the OPEN TONE — the palm's ridge on the
+ *               rim, the fingers flat on the head, the wrist above the rim and
+ *               the forearm rising toward the player.
+ *   from above  the back of the right hand, fingers toward the audience (the
+ *               thumb under the hand's edge, the back of the hand nearer). */
 const FLAT_TOP: HandGeo = dorsalFlat(0);
-const CUP_TOP: HandGeo = dorsalFlat(55);
+/** The slap from above: the fingers a little open and cupped, tips down. */
+const SLAP_TOP: HandGeo = dorsalFlat(50, 2.2);
+/** A bongo fingertip stroke from above: the hand low over the rim, the
+ *  fingers dropped a little at their knuckles (20°) and gently curved, so seen
+ *  from above they keep most of their length (owner review 2026-11-23: a 40°
+ *  drop read as "just the fingers short near the rim"). */
+const TIPS_TOP: HandGeo = dorsalFlat(36, 1, 20);
+const TIPS_TURN = -12;
 /** The middle finger's pad (local): just short of its tip, on the palm side. */
-function padOf(g: HandGeo, k = 1): Pt {
+export function padOf(g: HandGeo, k = 1): Pt {
   const f = g.fingers.find((x) => x.layer === 3 - k) ?? g.fingers[1];
   const [dx, dy] = f.tipDir;
   return [f.tip[0] - dx * 8 - dy * f.w1 * 0.45, f.tip[1] - dy * 8 + dx * f.w1 * 0.45];
 }
-/** The open-tone pose in the side view: tilted so the wrist rises toward the
- *  player (the forearm comes down onto the drum), its pad on the strike point. */
-const SIDE_TILT = 16;
-function sidePlacement(x: number, headY: number): Placement {
-  return { at: wristFor(padOf(SIDE_HAND), [x, headY - 3], SIDE_TILT), angle: SIDE_TILT };
+/** The palm's ridge (local): the pad at the base of the fingers, on the palm
+ *  side under the nearest finger's knuckle (a side view) or across the
+ *  knuckle row (from above: its x). */
+export function ridgeOf(g: HandGeo): Pt {
+  if (g.view === 'back') return [Math.max(...g.knuckles.map((k) => k[0])) + 4, 0];
+  const f = g.fingers.reduce((a, b) => (b.layer > a.layer ? b : a));
+  return [f.pts[0][0] + 2, f.pts[0][1] + f.w0 / 2];
+}
+/** The palm's slope in the side view (deg): the wrist above the rim. */
+const SIDE_TILT = 20;
+/**
+ * The open tone from the side, on a drum whose head's near edge is at
+ * `edgeX` (its rim `rise` mm above the head at `headY`): the palm's ridge on
+ * the rim's top, the palm sloping up to the wrist, the fingers turned at their
+ * knuckles (`mcp`, solved here) so they lie on the head, the middle finger's
+ * pad on it. Built once per drum.
+ */
+export function sideStrike(edgeX: number, headY: number, rise: number): { geo: HandGeo; pl: Placement; mcp: number } {
+  const ridgeAt: Pt = [edgeX + 4, headY - rise];
+  const place = (m: number) => {
+    const o = openHand(-4, false, m);
+    const geo: HandGeo = { ...o, nails: sideNails([...o.fingers, o.thumb]), nailAlpha: 0.55 };
+    const pl: Placement = { at: wristFor(ridgeOf(geo), ridgeAt, SIDE_TILT), angle: SIDE_TILT };
+    return { geo, pl, pad: placePt(padOf(geo), pl) };
+  };
+  // (more `mcp` turns the fingers down toward the head: find where the pad just meets it)
+  let lo = -60;
+  let hi = 20;
+  for (let i = 0; i < 40; i++) {
+    const m = (lo + hi) / 2;
+    if (place(m).pad[1] < headY - 3) lo = m;
+    else hi = m;
+  }
+  const m = (lo + hi) / 2;
+  const r = place(m);
+  return { geo: r.geo, pl: r.pl, mcp: m };
 }
 /** A soft shadow of a placed hand (its body and fingers), for the head under it. */
 function handShadow(g: HandGeo, pl: Placement): SkPath {
@@ -154,14 +204,14 @@ function handShadow(g: HandGeo, pl: Placement): SkPath {
  *  hand's line, a real elbow, and the upper arm (≈ 30 cm) turning up
  *  (side view) or back (from above) toward the shoulder off the frame — one
  *  long-sleeved arm (the house figure's armPath), the bare wrist below the
- *  cuff. Returns the hand's short skin forearm (cuff → wrist) and the sleeve. */
-function armOf(pl: Placement, view: 'side' | 'top'): { forearm: { from: Pt; w: number; sleeve: number }; sleeve: SkPath } {
+ *  cuff. Returns the hand's forearm, the sleeve and its cuff. */
+export function armOf(pl: Placement, view: 'side' | 'top'): { forearm: { from: Pt; w: number; sleeve: number }; sleeve: SkPath; cuff: { c: Pt; r: number } } {
   const a = (pl.angle * Math.PI) / 180;
   const ang = a + (pl.angle === 0 ? 0 : 0.18);
   const c = Math.cos(ang);
   const sn = Math.sin(ang);
   const W: Pt = pl.at;
-  const cuff: Pt = [W[0] - c * 45, W[1] - sn * 45];
+  const cuff: Pt = [W[0] - c * 30, W[1] - sn * 30];
   const E: Pt = [W[0] - c * 250, W[1] - sn * 250];
   // back along the forearm, then turned: up toward the shoulder (side), or a
   // little out to the player's side (from above)
@@ -176,11 +226,97 @@ function armOf(pl: Placement, view: 'side' | 'top'): { forearm: { from: Pt; w: n
   }
   const L = Math.hypot(bx, by) || 1;
   const S: Pt = [E[0] + (bx / L) * 300, E[1] + (by / L) * 300];
-  return { forearm: { from: cuff, w: 54, sleeve: 0 }, sleeve: armPath(ppt(S[0], S[1]), ppt(E[0], E[1]), ppt(cuff[0], cuff[1])) };
+  // (figure realism pass, 2026-11-23: the bare forearm runs from INSIDE the
+  // sleeve to the wrist and the sleeve is painted over it, its cuff's near rim
+  // in front of the wrist; the cuff ≈ 72 mm across, roomier than the wrist —
+  // the shared arm's 62 mm cuff was as wide as the hand's wrist from above)
+  const R = { ...ARM, cuff: 36 };
+  const end: Pt = [W[0] - c * (30 + R.cuffGap), W[1] - sn * (30 + R.cuffGap)];
+  const from: Pt = [W[0] - c * 80, W[1] - sn * 80];
+  return { forearm: { from, w: 54, sleeve: 0 }, sleeve: armPath(ppt(S[0], S[1]), ppt(E[0], E[1]), ppt(cuff[0], cuff[1]), R), cuff: { c: end, r: R.cuff } };
 }
 
 /** The striking hand wears the shared figure skin (owner 2026-10-08, HF1). */
 const SKIN = FIGURE_SKIN.ramp;
+
+/** The open-tone hand on the side view's drum (`edgeX`: the head's near
+ *  edge; `rise`: the rim's height over the head): its soft shadow on the head,
+ *  the sleeved arm, the hand (① of the sequence). */
+export function SideStrikeHand({ edgeX, headY, rise }: { edgeX: number; headY: number; rise: number }) {
+  const t = useMemo(() => {
+    const st = sideStrike(edgeX, headY, rise);
+    return { ...st, shadow: handShadow(st.geo, st.pl), arm: armOf(st.pl, 'side') };
+  }, [edgeX, headY, rise]);
+  return (
+    <Group>
+      <Group transform={[{ translateX: 6 }, { translateY: 8 }]}>
+        <Path path={t.shadow} color="#000" opacity={0.35}>
+          <BlurMask blur={7} style="normal" />
+        </Path>
+      </Group>
+      <Hand geo={t.geo} pl={t.pl} forearm={t.arm.forearm} sleevePath={t.arm.sleeve} cuff={t.arm.cuff} />
+    </Group>
+  );
+}
+
+/** How a stroke's hand meets the head, from above. */
+export type TopPose = 'palm' | 'fingers' | 'slap' | 'tips';
+/** The pose for a lesson's stroke: its tool, and a slap by its id. */
+export const topPoseOf = (s: { id: string; tool: 'palm' | 'fingers' | 'tips' }): TopPose => (s.id === 'slap' ? 'slap' : s.tool);
+
+/** The four fingertip pads (local), just short of each tip. */
+function padsOf(g: HandGeo): Pt[] {
+  return g.fingers.map((f) => [f.tip[0] - f.tipDir[0] * 5, f.tip[1] - f.tipDir[1] * 5] as Pt);
+}
+
+/**
+ * The hand from above for a stroke, on a head of radius `R` (center at 0, the
+ * player toward −x), its model point `sx`:
+ *   fingers  (open / muted tone) the palm's ridge on the head's edge, the
+ *            fingers flat on the head;
+ *   palm     (bass) the palm's center on the model point, the whole hand on
+ *            the head;
+ *   slap     the ridge about an inch (25 mm) inside the edge, the fingers a
+ *            little open and cupped, their tips on the head;
+ *   tips     (bongo fingertip strokes) the cupped fingers' middle pad on the
+ *            model point near the edge, falling from the rim.
+ */
+export function topHandFor(pose: TopPose, sx: number, R: number) {
+  const geo = pose === 'slap' ? SLAP_TOP : pose === 'tips' ? TIPS_TOP : FLAT_TOP;
+  const mid = geo.fingers.find((f) => f.layer === 2)!;
+  const y = -mid.pts[0][1];
+  const ridge = ridgeOf(geo)[0];
+  const x = pose === 'palm' ? sx - 52 : pose === 'fingers' ? -R - ridge : pose === 'slap' ? -R + 25 - ridge : sx - (mid.tip[0] - mid.tipDir[0] * 5);
+  // (a bongo stroke: the hand turned a little toward the head's center
+  // (TIPS_TURN), so the shorter little finger's pad also lands on the small head)
+  const pl: Placement = pose === 'tips' ? { at: wristFor([mid.tip[0] - mid.tipDir[0] * 5, mid.tip[1] - mid.tipDir[1] * 5], [sx, 0], TIPS_TURN), angle: TIPS_TURN } : { at: [x, y], angle: 0 };
+  // (the pads that land on the head: on a small bongo head the shorter little
+  // finger's pad falls on the rim, and is not marked as a contact)
+  const pads = pose === 'slap' || pose === 'tips' ? padsOf(geo).map((p) => placePt(p, pl)).filter((q) => Math.hypot(q[0], q[1]) < R) : [];
+  return { geo, pl, pads, ridgeX: placePt([ridge, 0], pl)[0], shadow: handShadow(geo, pl), arm: armOf(pl, 'top') };
+}
+
+export function TopStrokeHand({ pose, sx, R }: { pose: TopPose; sx: number; R: number }) {
+  const t = useMemo(() => topHandFor(pose, sx, R), [pose, sx, R]);
+  const pads = useMemo(() => {
+    if (!t.pads.length) return null;
+    const p = Skia.Path.Make();
+    for (const q of t.pads) p.addCircle(q[0], q[1], 7);
+    return p;
+  }, [t]);
+  return (
+    <Group>
+      <Group transform={[{ translateX: 8 }, { translateY: 12 }]}>
+        <Path path={t.shadow} color="#000" opacity={0.4}>
+          <BlurMask blur={8} style="normal" />
+        </Path>
+      </Group>
+      <Hand geo={t.geo} pl={t.pl} forearm={t.arm.forearm} sleevePath={t.arm.sleeve} cuff={t.arm.cuff} />
+      {/* a cupped stroke's contact: the four fingertip pads */}
+      {pads ? <Path path={pads} style="stroke" strokeWidth={3} color={AMBER} opacity={0.9} /> : null}
+    </Group>
+  );
+}
 
 export function buildSection(s: SectionSpec) {
   const d = s.drum;
@@ -311,13 +447,10 @@ export function HandStrikeSequence({ w, h, spec, box, reveal, shown, accessibili
   const line = useDerivedValue(() => headLine(d.c.x, d.R, d.headY, amp.value));
   const fill = useDerivedValue(() => headFill(d.c.x, d.R, d.headY, amp.value));
   // The tool rests on the head at the strike (a pose, not a motion: ① shows the approach).
-  const toolY = d.headY - 4;
-  const sidePl = useMemo(() => (spec.tool === 'hand' ? sidePlacement(g.sx, d.headY) : null), [spec.tool, g.sx, d.headY]);
-  const sideShadow = useMemo(() => (sidePl ? handShadow(SIDE_HAND, sidePl) : null), [sidePl]);
-  const sideArm = useMemo(() => (sidePl ? armOf(sidePl, 'side') : null), [sidePl]);
   const skin = spec.head === 'rawhide' ? RAWHIDE : spec.head === 'goat' ? GOAT : FILM;
   const labels: StaticLabel[] = [];
-  if (shown >= 1) labels.push({ id: 's1', text: words.s1, short: '①', u: g.sx - 80, v: d.headY - 250, align: 'right', tone: 'amber' });
+  // A stick's arm comes in from the left (StrikeArm): its ① sits right of the strike.
+  if (shown >= 1) labels.push(spec.tool === 'stick' ? { id: 's1', text: words.s1, short: '①', u: g.sx + 40, v: d.headY - 170, align: 'left', tone: 'amber' } : { id: 's1', text: words.s1, short: '①', u: g.sx - 80, v: d.headY - 250, align: 'right', tone: 'amber' });
   if (shown >= 2) labels.push({ id: 's2', text: words.s2, short: '② HEAD IN', u: d.c.x + d.R + 30, v: d.headY + 12, align: 'left', tone: 'blue' });
   if (shown >= 3) labels.push({ id: 's3', text: words.s3, short: '③ AIR', u: d.c.x + g.rMid + 30, v: g.midY, align: 'left', tone: 'blue' });
   if (shown >= 4) {
@@ -371,22 +504,15 @@ export function HandStrikeSequence({ w, h, spec, box, reveal, shown, accessibili
           {/* ① the strike: the hand (or stick) at the strike point, and its approach */}
           <Group opacity={o1}>
             <Path path={g.approach} style="stroke" strokeWidth={7} color={AMBER} strokeCap="round" strokeJoin="round" />
-            {spec.tool === 'hand' && sidePl ? (
-              <Group>
-                <Group transform={[{ translateX: 6 }, { translateY: 8 }]}>
-                  <Path path={sideShadow!} color="#000" opacity={0.35}>
-                    <BlurMask blur={7} style="normal" />
-                  </Path>
-                </Group>
-                <FigureMass path={sideArm!.sleeve} tone="shirt" />
-                <Hand geo={SIDE_HAND} pl={sidePl} forearm={sideArm!.forearm} />
-              </Group>
+            {spec.tool === 'hand' ? (
+              <SideStrikeHand edgeX={d.c.x - d.R} headY={d.headY} rise={d.rim.rise} />
             ) : (
-              <Group>
-                <Path path={stickPath(g.sx, toolY)} style="stroke" strokeWidth={15} strokeCap="round" color="#3a2512" />
-                <Path path={stickPath(g.sx, toolY)} style="stroke" strokeWidth={11} strokeCap="round" color="#c9925a" />
-                <Path path={stickPath(g.sx, toolY)} style="stroke" strokeWidth={3} strokeCap="round" color="#ffe2ae" opacity={0.6} />
-              </Group>
+              // The timbale stick (stick technique fix 2026-11-22, owner: "It should
+              // look like normal stick tech. usage"; it was a bare 436 mm stick at
+              // 48° with no hand): the kit's drum close-up stroke — a crop of the
+              // player, the arm entering from the frame's left edge — holding a
+              // straight 406 mm dowel (no bead, no taper) about 11° to the head.
+              <StrikeArm tip={TIMBALE_TIP(g.sx, d.headY)} kind="drum" dowel />
             )}
             <Circle cx={g.sx} cy={d.headY} r={16} style="stroke" strokeWidth={5} color={AMBER} />
           </Group>
@@ -413,12 +539,8 @@ export function HandStrikeSequence({ w, h, spec, box, reveal, shown, accessibili
   );
 }
 
-function stickPath(x: number, y: number): SkPath {
-  const p = Skia.Path.Make();
-  p.moveTo(x - 300, y - 330);
-  p.lineTo(x - 6, y - 8);
-  return p;
-}
+/** Where the timbale stick's tip lands (the drawing's mm): on the head at the strike. */
+export const TIMBALE_TIP = (sx: number, headY: number) => ({ x: sx - 2, y: headY - 6 });
 
 /* ── where the hand or stick lands, and the shapes it drives ── */
 
@@ -478,17 +600,10 @@ export function StrokeMap({ w, h, drum, head, stroke, accessibilityLabel, scaleR
   const skin = head === 'rawhide' ? RAWHIDE : head === 'goat' ? GOAT : FILM;
   // The strike point: toward the player (−x, drawn to the LEFT of center).
   const sx = stroke.frac == null ? -rr - 4 : -stroke.frac * R;
-  // The hand from above, placed by the stroke: flat fingers' pads on the spot
-  // (open / muted tone), the palm's centre on it (bass), or the cupped
-  // fingertips on it (tips / slap). Its middle finger runs along y = 0.
-  const topHand = useMemo(() => {
-    if (stroke.tool === 'stick') return null;
-    const geo = stroke.tool === 'tips' ? CUP_TOP : FLAT_TOP;
-    const mid = geo.fingers.find((f) => f.layer === 2)!;
-    const spot: Pt = stroke.tool === 'palm' ? [52, mid.pts[0][1]] : stroke.tool === 'tips' ? [mid.tip[0] - 4, mid.tip[1]] : [mid.pts[0][0] + 62, mid.pts[0][1]];
-    const pl: Placement = { at: [sx - spot[0], -spot[1]], angle: 0 };
-    return { geo, pl, shadow: handShadow(geo, pl), arm: armOf(pl, 'top') };
-  }, [stroke.tool, sx]);
+  // The hand from above, posed by the stroke (topHandFor): the palm's ridge on
+  // the edge and the fingers flat (open / muted tone), the palm's center on the
+  // spot (bass), the ridge an inch in and the fingers cupped (slap), or cupped
+  // fingertips near the edge (bongo strokes). Its middle finger runs along y = 0.
   const labels: StaticLabel[] = [
     { id: 'title', text: 'HOW STRONGLY THIS SPOT DRIVES EACH SHAPE', short: 'EACH SHAPE', u: barX0, v: -rrB - 30, align: 'left', tone: 'muted' },
     ...HEAD_SHAPES.map((sh, i) => ({ id: `s${i}`, text: `${sh.label} ×${sh.ratio.toFixed(2)}`, short: sh.label, u: barX0 + rowH * 0.9, v: -rrB + rowH * (i + 0.5), align: 'left' as const })),
@@ -512,17 +627,10 @@ export function StrokeMap({ w, h, drum, head, stroke, accessibilityLabel, scaleR
           {stroke.tool === 'stick' ? (
             <Circle cx={sx} cy={0} r={10} color="#c9925a" />
           ) : (
-            <Group>
-              <Group transform={[{ translateX: 8 }, { translateY: 12 }]}>
-                <Path path={topHand!.shadow} color="#000" opacity={0.4}>
-                  <BlurMask blur={8} style="normal" />
-                </Path>
-              </Group>
-              <FigureMass path={topHand!.arm.sleeve} tone="shirt" />
-              <Hand geo={topHand!.geo} pl={topHand!.pl} forearm={topHand!.arm.forearm} />
-            </Group>
+            <TopStrokeHand pose={topPoseOf(stroke as { id: string; tool: 'palm' | 'fingers' | 'tips' })} sx={sx} R={R} />
           )}
-          <Circle cx={sx} cy={0} r={18} style="stroke" strokeWidth={5} color={AMBER} />
+          {/* the model's strike point (a cupped fingertip stroke marks its four pads instead) */}
+          {stroke.tool === 'stick' || topPoseOf(stroke as { id: string; tool: 'palm' | 'fingers' | 'tips' }) !== 'tips' ? <Circle cx={sx} cy={0} r={18} style="stroke" strokeWidth={5} color={AMBER} /> : null}
           {/* the five bars */}
           {shares.map((v, i) => (
             <Group key={i}>

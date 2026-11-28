@@ -3,7 +3,7 @@
  * 2026-08-01).
  *
  * DEFAULT is ALPHABETICAL. The user must EXPLICITLY engage CUSTOM ordering (from
- * the Topic-Deck list opened by the blue Study icon), where they can drag topics
+ * the Topic-Deck list opened by the Study icon), where they can drag topics
  * into any order and remove topics from the deck. Switching back to alphabetical
  * keeps the custom order stored, so changing your mind restores it. Removed
  * topics can be restored.

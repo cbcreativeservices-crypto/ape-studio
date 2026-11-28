@@ -42,13 +42,15 @@ export const MODULAR_SCREEN_GUIDES: Record<ModularScreenId, ScreenGuide> = {
   // ── EXPLORE — the rack ────────────────────────────────────────────────────
   explore: {
     intro: {
-      learning: 'How a subtractive synth voice works: the VCO makes a bright wave, the VCF carves harmonics away, the VCA sets loudness, and control cables decide what moves what.',
-      start: 'Tap ▶ to hear the drone, then drag CUTOFF down and hear it darken. Next tap PATCH → WOBBLE and watch a blue LFO cable run to the VCF.',
+      // MOD-04 (owner 2026-11-15, "build waves 1 thru 3"): the plain path first: the amber cable, TONE → FILTER → VOLUME → OUT.
+      learning: 'Sound flows along the amber cable: TONE, FILTER, VOLUME, OUT. The colored cables turn knobs for you, and what they turn makes each classic synth sound.',
+      // A first step that needs no sound (novice audit 2026-11-14), then the sound.
+      start: 'Tap PATCH → WOBBLE and watch a blue LFO cable run to the VCF. Then tap ▶ to hear the drone, and drag CUTOFF down to hear it darken.',
     },
     seeing: [
-      'THE PATCH: seven modules. CONTROL SOURCES (CV): SEQ, LFO, ENV. AUDIO PATH → OUT: VCO, VCF, VCA, OUT.',
+      'THE PATCH: seven modules. CONTROL SOURCES (CV): SEQ, LFO, ENV. Sound: TONE, FILTER, VOLUME, OUT.',
       'Amber cables carry sound; a cable in its source’s color (SEQ red, LFO blue, ENV green) carries control. When it runs, the ENV light shows the envelope; the lit SEQ step is sounding.',
-      'LAB NOTES › THE VOICE, AS SOUND: the 110 Hz note’s harmonics as bars under the filter’s dashed curve. Gray bars: filtered out.',
+      'Under the case, THE VOICE, AS SOUND: the 110 Hz note’s harmonics as bars under the filter’s dashed curve. Gray bars: filtered out.',
     ],
     control: [
       '▶ in the header plays the drone (SEQ off) or runs the sequence (SEQ on); ■ stops it. The CUTOFF fader sets the filter’s cutoff, 250 Hz to 8.0 kHz.',
@@ -70,7 +72,7 @@ export const MODULAR_SCREEN_GUIDES: Record<ModularScreenId, ScreenGuide> = {
       'A filter can only remove what is there: a sine has no harmonics above its note.',
     ],
     tryThis: [
-      'Tap ▶, pick VCO SINE and drag CUTOFF from 8.0 kHz to 250 Hz: the one bar in THE VOICE, AS SOUND (LAB NOTES) drops only about 1.5 dB. On SAW, the filtered bars go gray.',
+      'Tap ▶, pick VCO SINE and drag CUTOFF from 8.0 kHz to 250 Hz: the one bar in THE VOICE, AS SOUND (under the case) drops only about 1.5 dB. On SAW, the filtered bars go gray.',
       'In MOD tap RES MAX: in THE VOICE, AS SOUND the dashed filter curve now peaks about 8 dB above 0 dB at the CUTOFF line. At RES 0 it sits 6 dB below.',
       'Tap PATCH → WOBBLE: LFO reads →CUT and a blue cable runs to the VCF. In MOD tap →PITCH: the cable moves to the VCO, LFO reads →PIT and PATCH reads CUSTOM.',
     ],
@@ -80,7 +82,7 @@ export const MODULAR_SCREEN_GUIDES: Record<ModularScreenId, ScreenGuide> = {
   learn: {
     intro: {
       learning: 'The vocabulary of a synth voice (VCO, VCF, VCA, ADSR, LFO, CV, cutoff, resonance) and why one LFO can give vibrato, a wobble or tremolo.',
-      start: 'Scroll to COMMON MISTAKES and read the line on filtering a sine. Then switch to EXPLORE, pick VCO SINE, tap ▶ and ride CUTOFF to hear it.',
+      start: 'Open COMMON MISTAKES and read the line on filtering a sine. Then switch to EXPLORE, pick VCO SINE, tap ▶ and ride CUTOFF to hear it.',
     },
     seeing: [
       'This is the guided lesson for this lab, as one page to read. Nothing here plays.',
@@ -93,7 +95,7 @@ export const MODULAR_SCREEN_GUIDES: Record<ModularScreenId, ScreenGuide> = {
       'On EXPLORE, tap a module in the case, long-press a dock key or a readout, or tap the ⓘ on the readout strip, to open just that entry.',
     ],
     changes: [
-      'Read this beside EXPLORE: each module entry here is a module in THE PATCH.',
+      'Open CONTROLS and read it beside EXPLORE: each module entry is a module in THE PATCH.',
       'Each patch entry says which routing makes that sound, and why.',
       'Several COMMON MISTAKES lines mix up what a signal does: a filter on a sine, the loudness envelope taken for the filter envelope, an LFO on the wrong destination.',
     ],
@@ -103,8 +105,8 @@ export const MODULAR_SCREEN_GUIDES: Record<ModularScreenId, ScreenGuide> = {
       'Why the envelope shapes loudness through the VCA, and brightness too only when it is routed to the VCF.',
     ],
     tryThis: [
-      'Read the COMMON MISTAKES line on filtering a sine, then on EXPLORE pick VCO SINE, tap ▶ and ride CUTOFF: the tone hardly changes.',
-      'Read the PRO TIPS line on building a bass, then on EXPLORE tap PATCH → ACID BASS and ▶: RES reads MAX, SEQ 8/s, and a green cable runs from ENV to the VCF.',
+      'Open COMMON MISTAKES and read the line on filtering a sine, then on EXPLORE pick VCO SINE, tap ▶ and ride CUTOFF: the tone hardly changes.',
+      'Open PRO TIPS and read the line on building a bass, then on EXPLORE tap PATCH → ACID BASS and ▶: RES reads MAX, SEQ 8/s, and a green cable runs from ENV to the VCF.',
     ],
   },
 
@@ -120,12 +122,12 @@ export const MODULAR_SCREEN_GUIDES: Record<ModularScreenId, ScreenGuide> = {
       'Below them, FINISH · SEE WHAT’S LEFT › opens Where you are: the check’s status and the way back to labs.',
     ],
     control: [
-      'Tap an answer. A wrong one stays open: pick again straight away. Nothing is lost and there is no score.',
+      'Tap an answer. Right: it turns green and CORRECT explains why. Wrong: NOT QUITE — TRY ANOTHER says what to look at again; a second wrong pick also shows the explanation.',
       'A right answer locks in, and its explanation stays to read.',
       'Use the tabs under the title to go back to LEARN or EXPLORE to look something up; answers already right stay right. If you leave the lab before every answer is right, the check starts over.',
     ],
     changes: [
-      'Every answer opens its explanation — CORRECT, or NOT QUITE — TRY ANOTHER — with the reason.',
+      'A right answer shows CORRECT with its reason; a wrong one says what to look at again, and a second wrong pick adds the explanation.',
       'Get all four right and the check is passed.',
       'A pass is kept: the questions show as done, and you never need to take the check twice.',
     ],
@@ -134,8 +136,8 @@ export const MODULAR_SCREEN_GUIDES: Record<ModularScreenId, ScreenGuide> = {
       'Where you route a control source decides what you hear change: pitch, brightness or loudness.',
     ],
     tryThis: [
-      'Unsure about the audio order? Switch to LEARN and reread FORMULA / CONCEPT, then come back and answer.',
-      'Unsure about LFO destinations? Switch to LEARN and reread the LFO entry under CONTROLS, then come back.',
+      'Unsure about the audio order? Switch to LEARN and open FORMULA / CONCEPT, then come back and answer.',
+      'Unsure about LFO destinations? Switch to LEARN, open CONTROLS and reread the LFO entry, then come back.',
     ],
   },
 };

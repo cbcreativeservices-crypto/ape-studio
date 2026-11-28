@@ -24,13 +24,13 @@ import { slotDef } from '../../../features/soundsystems/system';
 import { STATION_LABEL, STATION_ORDER, type Placed, type Station } from '../../../features/soundsystems/types';
 import { levelColorForDb } from '../../../features/tools/levelColor';
 import type { DockParam } from '../rack/rackTypes';
-import { CalcLink, ChapterTag, DeeperRow, GoalChips, KeyFact, LabLink, ToolLink, useVisitGoals, VerdictLine } from './bits';
+import { CalcLink, ChapterTag, DeeperRow, FormulaFold, GoalChips, KeyFact, LabLink, PickTile, ToolLink, useVisitGoals, VerdictLine } from './bits';
 import { ChainMeterKey, ChainMeterStage } from './art/ChainMeter';
 import { benchMap, MAP_H, MAP_W, ReadingKey, SystemMap, type MapNode } from './art/SystemMap';
 import { FieldKey, PLOT_FS, PLOT_H, PLOT_W, PlotLabel, VenueView, type PlotBeam } from './art/VenueView';
 import { PlanGlyph } from './art/planArt';
 import { ArrivalTimeline, FeedbackLoop } from './art/diagrams';
-import { BEAM_COLOR, PLOT_BADGE, THROW } from './plot';
+import { BEAM_COLOR, THROW } from './plot';
 import { gainBezel, gainReading, gainReadingCopy, gainStageParam, HEADROOM_GOOD_DB } from './gainDock';
 import { lanePos, laneVal, SoundSystemsRackLayout, type SsPageDef } from './rackLayout';
 import { StageFit } from '../rack/StageFit';
@@ -55,14 +55,14 @@ function PageGain({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
-        badge: 'GAIN CHAIN — ILLUSTRATIVE MODEL · teaching values, not a specification',
+        modelNote: 'A teaching model of the gain chain: example values, not a specification.',
         initialParam: 'stage',
         hideDragTag: true,
         bezel: gainBezel(chain, verdict),
         stage: (w, h) => <ChainMeterStage chain={chain} settings={settings} w={w} h={h} highlight={stage} />,
         params,
       }}
-      caption="The lane is the PREAMP. Ride it up and watch the haze fall — then tap the key, pick each later stage, and bring it back to unity (double-tap the lane to land there). Finish on the preamp: leave 12 dB of headroom, HEADROOM green."
+      caption="The slider is the PREAMP. Slide it up and watch the haze fall — then tap the key, pick each later stage, and bring it back to unity (double-tap the slider to land there). Finish on the preamp: leave 12 dB of headroom, HEADROOM green."
       wellTop={<VerdictLine ok={verdict === 'ok'} warn={verdict === 'quiet' || verdict === 'noisy' || verdict === 'tight'}>{gainReadingCopy(verdict, chain)}</VerdictLine>}
     >
       <ChapterTag n={10}>GAIN STRUCTURE AND SIGNAL LEVELS</ChapterTag>
@@ -156,13 +156,13 @@ function PageCoverage({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
-        badge: PLOT_BADGE,
+        modelNote: 'A teaching picture of coverage, not a measurement of a real room.',
         initialParam: 'cover',
         hideDragTag: true,
         bezel: [
           { k: 'COVERAGE', v: `${cover}°`, tint: colors.amber },
           { k: 'AIM', v: aim === 0 ? 'STRAIGHT' : `${aim}° IN`, tint: colors.amber },
-          { k: 'RIG', v: flown ? 'FLOWN' : 'STACKED' },
+          { k: 'RIG', caption: 'flown or stack', v: flown ? 'FLOWN' : 'STACKED' },
           { k: 'FILLS', v: fills ? 'ON' : 'OFF', tint: fills ? colors.greenBright : undefined, flex: 0.8 },
         ],
         stage: (w, h) => (
@@ -172,7 +172,7 @@ function PageCoverage({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Ride COVERAGE and AIM and read the floor. Fly the mains: the front rows go dark. Add front fills: they come back."
+      caption="Slide COVERAGE and AIM and read the floor. Fly the mains: the front rows go dark. Add front fills: they come back."
     >
       <ChapterTag n={11}>LOUDSPEAKER PLACEMENT, COVERAGE AND ALIGNMENT</ChapterTag>
       <Body>Two mains at the deck corners, each drawn with its nominal (−6 dB) coverage sector; the floor is the two summed. Hatched floor is where both arrive and comb-filter.</Body>
@@ -287,7 +287,7 @@ function PageAlignment({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
-        badge: 'TIMING RING — ILLUSTRATIVE · delay from distance CALCULATED',
+        modelNote: 'A drawing of the sound arriving; the delay is calculated from distance.',
         initialParam: 'delay',
         hideDragTag: true,
         bezel: [
@@ -311,7 +311,7 @@ function PageAlignment({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Ride DELAY up until the ring reaches the towers and the two arrivals fuse. Then move the towers with DISTANCE and do it again."
+      caption="Slide DELAY up until the ring reaches the towers and the two arrivals fuse. Then move the towers with DISTANCE and do it again."
       wellTop={
         <>
           <ArrivalTimeline needMs={need} setMs={setMs} />
@@ -322,11 +322,12 @@ function PageAlignment({ ctx }: { ctx: PageCtx }) {
       }
     >
       <ChapterTag n={11}>DELAY TIME, TIME ALIGNMENT AND POLARITY</ChapterTag>
+      {/* SS-01: the idea in plain words first; the formula is folded under GO DEEPER. */}
+      <Body>The idea: sound takes time to travel, so a loudspeaker far from the stage must wait until the sound from the stage reaches it.</Body>
       <Body>{`Mains at the stage, delay towers on poles ${dist} m back. The ring is the mains’ wavefront at the instant the towers fire: aligned means it has just reached them.`}</Body>
       <GoalChips goals={goals} latched={latched} />
       <Card tone="math">
-        <Eyebrow>FROM THE CALCULATOR</Eyebrow>
-        <Text style={styles.path}>t = d ÷ c · c = 331.3 × √(1 + T/273.15)</Text>
+        <Eyebrow>HOW LONG TO WAIT · FROM THE CALCULATOR</Eyebrow>
         <Body>Sound travels about {speedOfSound(temp).toFixed(0)} m/s at {temp} °C — roughly 2.9 ms per meter. Acoustic delay is the distance; electronic delay is what you add to match it. Warm air is faster, so a delay set at soundcheck in the afternoon drifts by evening — measure again.</Body>
         <Body>Many engineers then add 5–10 ms MORE on purpose: with the mains arriving first, the ear localizes to the stage and the delay tower disappears (the precedence effect). Align first, then decide.</Body>
       </Card>
@@ -334,11 +335,11 @@ function PageAlignment({ ctx }: { ctx: PageCtx }) {
         <Eyebrow>POLARITY, PHASE AND THE SUBWOOFER CROSSOVER</Eyebrow>
         <Body>Polarity is a flip (the whole waveform inverted); phase is a time offset that varies with frequency. Two tops in opposite polarity cancel their low end down the center. Subs and tops are aligned at the crossover frequency so their outputs add there: a path difference of just {pathDiff} m puts the first cancellation at about {Math.round(firstNull)} Hz — the crossover region is exactly where a small misalignment costs the most.</Body>
       </Card>
-      <DeeperRow>
+      <FormulaFold formula="t = d ÷ c · c = 331.3 × √(1 + T/273.15)">
         <CalcLink id={CALC_LINKS.delay.workspace} label="Delay from distance" />
         <CalcLink id={CALC_LINKS.comb.workspace} label="Comb filter from a path difference" />
         <CalcLink id="phase" label="Phase from time and distance" />
-      </DeeperRow>
+      </FormulaFold>
     </SoundSystemsRackLayout>
   );
 }
@@ -445,13 +446,13 @@ function PageFeedback({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'M',
-        badge: 'FEEDBACK LOOP — ILLUSTRATIVE MODEL · placement buys 12 dB, a notch 4',
+        modelNote: 'A teaching model: here placement buys 12 dB and a notch 4 dB.',
         initialParam: 'send',
         hideDragTag: true,
         bezel: [
           { k: 'SEND', v: `${send > 0 ? '+' : ''}${send} dB`, tint: levelColorForDb(send, -30, 6) },
-          { k: 'LOOP LIMIT', v: `${gbf > 0 ? '+' : ''}${gbf} dB`, tint: colors.red, flex: 1.1 },
-          { k: 'MARGIN', v: ringing ? `${-margin} dB OVER` : `${margin} dB`, tint: ringing ? colors.red : colors.green, flex: 1.1 },
+          { k: 'LOOP LIMIT', caption: 'where it rings', v: `${gbf > 0 ? '+' : ''}${gbf} dB`, tint: colors.red, flex: 1.1 },
+          { k: 'MARGIN', caption: 'room to ring', v: ringing ? `${-margin} dB OVER` : `${margin} dB`, tint: ringing ? colors.red : colors.green, flex: 1.1 },
           { k: 'LOOP', v: ringing ? 'RINGING' : 'STABLE', tint: ringing ? colors.red : colors.green },
         ],
         stage: (w, h) => (
@@ -461,7 +462,7 @@ function PageFeedback({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Ride SEND up until the loop rings. Then move the WEDGE into the null and try again."
+      caption="Slide SEND up until the loop rings. Then move the WEDGE into the null and try again."
       wellTop={
         <View style={styles.gbfWrap} accessible accessibilityLabel={`Monitor send ${send} dB; gain before feedback ${gbf} dB; ${ringing ? 'ringing' : `${margin} dB of margin`}`}>
           <View style={styles.gbfBar}>
@@ -555,12 +556,12 @@ function PageMethod({ ctx }: { ctx: PageCtx }) {
     <SoundSystemsRackLayout
       rack={{
         size: 'L',
-        badge: 'THE WALK — ILLUSTRATIVE · readings from a sample fault',
+        modelNote: 'A teaching model: the readings come from a sample fault.',
         initialParam: 'walk',
         hideDragTag: true,
         bezel: [
           { k: 'START', v: STATION_LABEL[METHOD_START].toUpperCase(), flex: 1.4 },
-          { k: 'READ', v: `${probed.length} / ${walk.length}`, flex: 0.8 },
+          { k: 'READ', v: `${probed.length}`, flex: 0.8 },
           { k: 'LAST', v: lastProbed ? STATION_LABEL[lastProbed].toUpperCase() : '—', tint: colors.cyanBright, flex: 1.4 },
           { k: 'FAULT', v: done ? 'FOUND' : '—', tint: done ? colors.green : undefined, flex: 0.8 },
         ],
@@ -571,7 +572,7 @@ function PageMethod({ ctx }: { ctx: PageCtx }) {
         ),
         params,
       }}
-      caption="Ride WALK forward one station at a time and watch where the reading changes — or press RUN and watch the walk happen."
+      caption="Slide WALK forward one station at a time and watch where the reading changes — or press RUN and watch the walk happen."
       wellTop={
         done ? (
           <VerdictLine ok>Console in: healthy. Console out: healthy. Processor: nothing. Three probes, one answer, no boxes swapped.</VerdictLine>
@@ -600,20 +601,44 @@ function PageMethod({ ctx }: { ctx: PageCtx }) {
 
 /* ── 22 · Wrap ──────────────────────────────────────────────────────────── */
 
+/** The four practice modes, opened one at a time on the wrap page. */
+export const WRAP_MODES: readonly { id: string; label: string; what: string }[] = [
+  { id: 'build', label: 'BUILD', what: 'BUILD puts the gear on a venue plot and checks every link.' },
+  { id: 'route', label: 'ROUTE', what: 'ROUTE puts the console under your fingers.' },
+  { id: 'operate', label: 'OPERATE', what: 'OPERATE walks power-up, line check, gain and shutdown.' },
+  { id: 'troubleshoot', label: 'TROUBLESHOOT', what: 'TROUBLESHOOT puts twenty-two faults on the bench.' },
+];
+
 function PageWrap({ ctx }: { ctx: PageCtx }) {
-  useEffect(() => {
-    if (!ctx.isDone) ctx.markDone();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // Owner decision 1, 2026-11-14 ("done" = work done): this page used to count
+  // the moment it opened. It now counts once each practice mode has been
+  // opened here and read.
+  const [seenModes, setSeenModes] = useState<ReadonlySet<string>>(new Set());
+  const [modeOpen, setModeOpen] = useState<string | null>(null);
+  const goals = [{ label: 'Tap all four practice modes', hit: seenModes.size >= WRAP_MODES.length }];
+  const latched = useVisitGoals(ctx, goals);
+  const openMode = (id: string) => {
+    setModeOpen(id);
+    setSeenModes((s) => new Set([...s, id]));
+  };
+  const shown = WRAP_MODES.find((m) => m.id === modeOpen);
   return (
     <View style={{ gap: 12 }}>
-      <ChapterTag n={14}>WHAT YOU CAN NOW DO</ChapterTag>
+      {/* owner 2026-11-15 "build waves 1 thru 3" (checker): a knowledge title, not a skills claim */}
+      <ChapterTag n={14}>WHAT YOU NOW KNOW</ChapterTag>
       <Lead>
         You know every section of a live sound reinforcement system and what feeds it. You know which system type suits a venue and which output configuration suits a room. You know which routing tool does which job, what reaches a subwoofer under each feed, how a monitor mix must be tapped, which connections are silent and which are dangerous, what an amplifier can and cannot drive, how a system is deployed, gain-structured, aligned, tuned and rung out — and how a fault is found.
       </Lead>
       <Card tone="ok">
         <Eyebrow>THE FOUR OTHER MODES</Eyebrow>
-        <Body>BUILD puts the gear on a venue plot and checks every link. ROUTE puts the console under your fingers. OPERATE walks power-up, line check, gain and shutdown. TROUBLESHOOT puts twenty-two faults on the bench. The lab’s home page lists what is still outstanding for credit.</Body>
+        <Body>Tap each one to read what it practices. The lab’s home page lists what is still outstanding for credit.</Body>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          {WRAP_MODES.map((m) => (
+            <PickTile key={m.id} label={m.label} selected={modeOpen === m.id} done={seenModes.has(m.id)} onPress={() => openMode(m.id)} />
+          ))}
+        </View>
+        {shown ? <Body>{shown.what}</Body> : null}
+        <GoalChips goals={goals} latched={latched} />
       </Card>
       <Card>
         <Eyebrow>NEXT</Eyebrow>
@@ -633,7 +658,7 @@ export const SS_LEARN_PAGES_C: SsPageDef[] = [
   { title: 'Processing and tuning', short: 'TUNE', Component: PageProcessing, manualDone: true },
   { title: 'Feedback control', short: 'FEEDBACK', Component: PageFeedback, manualDone: true, rack: true },
   { title: 'The source-forward method', short: 'METHOD', Component: PageMethod, manualDone: true, rack: true },
-  { title: 'What you can now do', short: 'WRAP', Component: PageWrap, manualDone: true },
+  { title: 'What you now know', short: 'WRAP', Component: PageWrap, manualDone: true },
 ];
 
 const styles = StyleSheet.create({

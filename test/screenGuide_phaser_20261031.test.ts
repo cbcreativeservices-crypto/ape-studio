@@ -143,7 +143,8 @@ describe('3. each guide quotes its screen’s real names', () => {
     assert.match(code(FX_SCREEN), /label: 'SOURCE'/);
     assert.match(CFG, /choices: \[2, 4, 6, 8\]\.map\(\(s\) => \(\{ label: `\$\{s\}`, value: s \}\)\)/);
     assert.match(ANIM, /text=\{white \? 'WHITE NOISE' : 'PINK NOISE'\}/);
-    assert.match(ANIM, /text="SPECTRUM \(dB\)"/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item FL-04): the flanger's OUT title changed; the phaser keeps SPECTRUM (dB).
+    assert.match(ANIM, /text=\{mode === 'flanger' \? 'DIPS = CANCELED HERE' : 'SPECTRUM \(dB\)'\}/);
     assert.match(ANIM, /case 'phaser': return 'PHASER';/);
     assert.match(ANIM, /mode="phaser"[\s\S]*?mix=\{0\.5\}/);
   });
@@ -304,7 +305,8 @@ describe('6. guide review fixes (2026-10-31, each re-checked against the code)',
     assert.match(PH, /correct: 'Sharpens the peaks between the notches, so the sweep rings'/);
     const t = GUIDES.check.tryThis.join(' ') + ' ' + JSON.stringify((GUIDES.check as unknown as { intro: unknown }).intro);
     assert.doesNotMatch(t, /STAGES to 8|STAGES 8|four|watch what rises|peaks (rise|between)|0% to 60%/);
-    assert.match(GUIDES.check.tryThis[0], /set STAGES to 4 and count the dips on OUT/);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item PS-03): every counting step holds the dips still first.
+    assert.match(GUIDES.check.tryThis[0], /set DEPTH \(SWEEP\) to STATIC, then STAGES to 4, and count the dips on OUT/);
     assert.match(CFG, /label: 'RESONANCE', short: 'RES', paramId: P\.modFeedback, lessonKey: 'feedback',/);
     assert.match(GUIDES.check.tryThis[1], /long-press the RES key on EXPLORE to open its lesson entry/);
   });

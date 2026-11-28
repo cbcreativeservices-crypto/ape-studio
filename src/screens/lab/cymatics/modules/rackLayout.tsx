@@ -33,6 +33,9 @@ export type CymaticsRack = {
   size?: StageSize;
   /** Honesty badge (Simulation / Calculated / Approximated / Illustrative). */
   badge?: string;
+  /** The same disclosure as one plain sentence (Phase 3, S3 §2). Absent: the
+   *  badge is said in sentence case (plainBadge). */
+  modelNote?: string;
   /** Live readouts printed on the glass bezel (3–4 cells). */
   bezel?: BezelItem[];
   params: DockParam[];
@@ -50,6 +53,21 @@ export type CymaticsRack = {
    *  cannot scale would set false. */
   fullScreen?: boolean;
 };
+
+/** "CALCULATED — pressure standing wave" → "Calculated: pressure standing wave." */
+/** D62 SH-12: the modules' sound-off line (every figure is drawn from the model). */
+export const CYMATICS_SOUND_OFF_LINE = 'Sound off? The figures and readouts still work.';
+/** Only a module with a SILENT key adds this (checker fix 2026-11-15: just module 2 has one). */
+export const CYMATICS_SILENT_KEY_LINE = 'Sound off? The figures and readouts still work. SILENT drives the plate without sound.';
+
+export function plainBadge(badge: string): string {
+  const [head, ...rest] = badge.split(' — ');
+  const h = head.trim().toLowerCase();
+  const lead = h.charAt(0).toUpperCase() + h.slice(1);
+  const tail = rest.join(' — ').trim();
+  const s = tail ? `${lead}: ${tail}` : lead;
+  return /[.!?]$/.test(s) ? s : `${s}.`;
+}
 
 export function CymaticsRackLayout({
   rack,
@@ -70,10 +88,13 @@ export function CymaticsRackLayout({
         render: rack.stage,
         size: rack.size ?? 'M',
         badge: rack.badge,
+        modelNote: rack.modelNote ?? (rack.badge ? plainBadge(rack.badge) : undefined),
         bezel: rack.bezel,
         onGuide: rack.onGuide,
         hideDragTag: rack.hideDragTag,
         fullScreen: rack.fullScreen ?? true,
+        // The sound-off line (owner 2026-11-15: "build waves 1 thru 3", D62 SH-12): shown only while sound is off.
+        soundOffLine: rack.params.some((p) => p.id === 'silent') ? CYMATICS_SILENT_KEY_LINE : CYMATICS_SOUND_OFF_LINE,
       }}
       params={rack.params}
       initialParam={rack.initialParam}

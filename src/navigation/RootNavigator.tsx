@@ -111,6 +111,8 @@ const Lazy = {
   Help: lazyScreen(() => require('../screens/help/HelpScreen').HelpScreen),
   WeeklyConcept: lazyScreen(() => require('../screens/notifications/WeeklyConceptScreen').WeeklyConceptScreen),
   About: lazyScreen(() => require('../screens/about/AboutScreen').AboutScreen),
+  // The academy's message (owner 2026-11-17) [MD:D68]: free for everyone, guests too.
+  AcademyMessage: lazyScreen(() => require('../screens/academyMessage/AcademyMessageScreen').AcademyMessageScreen),
   Awards: lazyScreen(() => require('../screens/awards/AwardsScreen').AwardsScreen),
   AudioCommunityDirectory: lazyScreen(() => require('../screens/directory/AudioCommunityDirectoryScreen').AudioCommunityDirectoryScreen),
   // The Audio Community Forum. Next store build only, never by OTA.
@@ -267,6 +269,11 @@ const MemberGated = {
   // Live Sound Reinforcement category — nothing in it is free for a guest
   // (owner). One route.
   DJSystemsLab: lazyScreen(() => withMembershipPreview(require('../screens/lab/dj/DJSystemsLabScreen').DJSystemsLabScreen)),
+  // Game Audio Lab and Stage Plot and Channel Designer (listed 2026-11-13
+  // [MD:D60]): members-only via their catalog leaves (Game Audio; Live Sound
+  // Reinforcement) — nothing in either is free for a guest. One route each.
+  GameAudioLab: lazyScreen(() => withMembershipPreview(require('../screens/lab/gameaudio/GameAudioLabScreen').GameAudioLabScreen)),
+  StagePlotLab: lazyScreen(() => withMembershipPreview(require('../screens/lab/stageplot/StagePlotLabScreen').StagePlotLabScreen)),
   // Miking Labs (2026-10-04): the hub is the catalog row (Instruments &
   // Recording, training); the lesson host is a child route the catalog
   // cannot name (MEMBER_ONLY_EXTRA_ROUTES). Both gated, both lazy.
@@ -428,11 +435,16 @@ export function RootNavigator() {
       <Stack.Screen name="AwardProgress" getComponent={Lazy.AwardProgress} options={swipe} />
       <Stack.Screen name="FinalExam" getComponent={Lazy.FinalExam} options={{ gestureEnabled: false }} />
       <Stack.Screen name="FinalExamResult" getComponent={Lazy.FinalExamResult} options={{ gestureEnabled: false }} />
-      {/* S11 — modal, bottom nav hidden, exits via ✕ */}
-      <Stack.Screen name="Settings" getComponent={Lazy.Settings} options={{ presentation: 'modal' }} />
-      <Stack.Screen name="Help" getComponent={Lazy.Help} options={{ presentation: 'modal' }} />
+      {/* S11. Pushed screens since 2026-11-20 (owner: the same top row as the
+          hubs, HOME key then the titled section, and the circle menu); they
+          were modals that closed with ✕. Pushed, Android BACK and the HOME / ‹
+          key leave them and the menu can leave them without stacking modals.
+          No edge swipe: the app default (the swipe opt-in list is a ratchet). */}
+      <Stack.Screen name="Settings" getComponent={Lazy.Settings} />
+      <Stack.Screen name="Help" getComponent={Lazy.Help} />
       <Stack.Screen name="WeeklyConcept" getComponent={Lazy.WeeklyConcept} options={{ presentation: 'modal' }} />
       <Stack.Screen name="About" getComponent={Lazy.About} options={{ presentation: 'modal' }} />
+      <Stack.Screen name="AcademyMessage" getComponent={Lazy.AcademyMessage} options={{ presentation: 'modal' }} />
       {/* Awards (Booth 2026-07-15) — Certificates/Diplomas/Hall of Fame, bottom
           nav hidden. An AREA-level destination (Dashboard ⇄ Certificates) → fade. */}
       <Stack.Screen name="Awards" getComponent={Lazy.Awards} options={NAV_FADE} />
@@ -595,6 +607,8 @@ export function RootNavigator() {
       <Stack.Screen name="MasteringLab" getComponent={MemberGated.MasteringLab} />
       <Stack.Screen name="DrumTuningLab" getComponent={MemberGated.DrumTuningLab} />
       <Stack.Screen name="DJSystemsLab" getComponent={MemberGated.DJSystemsLab} />
+      <Stack.Screen name="GameAudioLab" getComponent={MemberGated.GameAudioLab} />
+      <Stack.Screen name="StagePlotLab" getComponent={MemberGated.StagePlotLab} />
       <Stack.Screen name="MikingHub" getComponent={MemberGated.MikingHub} />
       <Stack.Screen name="MikingLesson" getComponent={MemberGated.MikingLesson} />
       <Stack.Screen name="MixingGuides" getComponent={MemberGated.MixingGuides} options={swipe} />

@@ -7,7 +7,7 @@
  */
 import type { LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { voiceLabelObstacles } from '../shared/voice/VoiceArt';
-import { B11Instrument, b11FigureAt, b11HitTest, b11Labels } from './scene';
+import { B11HandsOver, B11Instrument, b11FigureAt, b11HitTest, b11Labels } from './scene';
 import { B11_ZONES } from './model.ts';
 import { B11_PAGES, B11_STEP_COUNTS } from './pages';
 
@@ -20,4 +20,6 @@ export const B11_ART: LessonArt = {
   labelsYieldToMic: true,
   pages: B11_PAGES,
   stepCounts: B11_STEP_COUNTS,
+  // (figure V2, 2026-11-24) the operator's front fist painted again over the engine's pole
+  poleHandsOver: B11HandsOver,
 };

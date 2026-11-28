@@ -74,8 +74,11 @@ function PageTranslation({ ctx }: { ctx: PageCtx }) {
     <View style={styles.page}>
       <Lead>Translation is the only verdict that counts: does the mix survive OTHER systems, other volumes, other formats? Measurement is part of it — LUFS and true peak are the delivery world’s shared ruler, not an artistic target.</Lead>
       <Card>
-        <Eyebrow>MEASURE — BS.1770-STYLE ESTIMATES</Eyebrow>
-        <Prompt>Set a master trim, then measure the session’s integrated loudness and true peak. (On-device estimates of the ITU-R BS.1770 procedure — teaching numbers, not certified metering.)</Prompt>
+        {/* AM-02 (owner 2026-11-15: "build waves 1 thru 3", D62): the plain
+            idea leads; the standard's name moves under it, on its own line. */}
+        <Eyebrow>MEASURE — LOUDNESS AND TRUE PEAK</Eyebrow>
+        <Prompt>Set a master trim, then measure how loud the whole session is (its integrated loudness) and its highest peak (its true peak).</Prompt>
+        <Text style={styles.statUnit}>These are on-device estimates of the ITU-R BS.1770 procedure: teaching numbers, not certified metering.</Text>
         <Row>
           {[-6, -3, 0].map((db) => (
             <Btn key={db} label={`TRIM ${db === 0 ? '0' : db} dB`} tone={masterDb === db ? 'primary' : 'plain'} selected={masterDb === db} onPress={() => setMasterDb(db)} a11y={`Master trim ${db} dB`} />
@@ -107,7 +110,7 @@ function PageTranslation({ ctx }: { ctx: PageCtx }) {
       </Card>
       <UnderstandingCheck
         question="A client demands the mix “hit −8 LUFS because streaming”. The professionally honest answer:"
-        options={['Comply — platform numbers are hard requirements for mixes', 'Explain that platforms normalize playback — deliver dynamics, plus a loud reference if they insist', 'Refuse to discuss loudness targets with clients at all', 'Quietly deliver whatever loudness you personally prefer']}
+        options={['Comply — platform numbers are hard requirements for mixes', 'Explain normalization: deliver dynamics, plus a loud reference', 'Refuse to discuss loudness targets with clients at all', 'Quietly deliver whatever loudness you personally prefer']}
         correct={1}
         explain="On normalized playback, streaming services turn masters down to their own loudness — a crushed −8 LUFS master plays at about the SAME volume as a dynamic one near the target, minus the life. Measurement informs; it does not conduct."
         wrong={[
@@ -160,7 +163,7 @@ function PageStems({ ctx }: { ctx: PageCtx }) {
       </Card>
       <UnderstandingCheck
         question="The label asks for “the stems”. Before bouncing anything, the professional question is:"
-        options={['Which DAW should the bounces come from', 'WHICH stem set — how many, split how, with or without the bus processing and FX?', 'What loudness the stems should each hit', 'Whether MP3 stems are acceptable']}
+        options={['Which DAW and which session the bounces should come from', 'WHICH stem set: how many, split how, with or without bus FX?', 'What loudness each of the stems should hit', 'Whether MP3 stems are acceptable for delivery']}
         correct={1}
         explain="“Stems” names a CATEGORY, not a list. Five music-video stems, eight remix stems, and a TV-mix split are all “stems” — bounce before agreeing on the set and you will bounce twice."
         wrong={[
@@ -298,7 +301,7 @@ function PageReconstruction({ ctx }: { ctx: PageCtx }) {
       </Card>
       <UnderstandingCheck
         question="Your stems sum back 1.5 dB louder and “thicker” than the approved mix. The most likely cause:"
-        options={['WAV files simply gain a little level when copied around', 'The mix-bus processing ran on each stem alone — each stem gets compressed less', 'Stems always sound a bit different; nobody expects a null', 'The sample rate silently changed during the stem bounce']}
+        options={['WAV files simply gain a little level when copied around', 'The mix-bus chain ran on each stem alone, compressing each one less', 'Stems always sound a bit different; nobody expects a null', 'The sample rate silently changed during the stem bounce']}
         correct={1}
         explain="Bounce each stem through the bus chain and every stem meets the compressor alone — less level across the same threshold, less gain reduction — so the stems sum hotter and denser than the mix that was compressed as a whole. Decide the policy, write it in the delivery notes."
         wrong={[
@@ -369,7 +372,7 @@ function PageDelivery({ ctx }: { ctx: PageCtx }) {
       </Card>
       <UnderstandingCheck
         question="A year later: “small lyric change, can you recall the mix?” What decided, a year AGO, whether this is an hour or a disaster?"
-        options={['How good the mix itself was', 'The archive: session + samples + documented chain, stored complete', 'Which DAW version was fashionable', 'Whether the label paid on time']}
+        options={['How good the mix itself was, back when it was approved', 'A complete archive: session, samples and documented chain', 'Which DAW version was in fashion that year', 'Whether the label paid its invoice on time']}
         correct={1}
         explain="Recalls are won at delivery time. A complete archive — session, every sample it references, the notes that explain it — turns “a year later” into “open, change, bounce”."
         wrong={[
@@ -591,6 +594,14 @@ function PageAdvFinal({ ctx }: { ctx: PageCtx }) {
     <View style={styles.page}>
       <MixMantra />
       <Lead>The handoff from hell: a mix someone else abandoned — vocal buried, guitar hot and centered, keys muddy, everything drowned. Repair it, check it, deliver it. This is the job.</Lead>
+      {/* Page 2's promise, kept BEFORE the work (novice audit G4, 2026-11-14:
+          the priorities appeared only in DELIVERED, after all seven steps). */}
+      {priorities.length === 3 ? (
+        <Card tone="note">
+          <Eyebrow>YOUR PAGE-2 CONTRACT</Eyebrow>
+          <Body>{`${priorities.join(' · ')}. Repair with these three in mind; the DELIVERED card asks whether the repair honored them.`}</Body>
+        </Card>
+      ) : null}
       <Card>
         <Eyebrow>STEP 1 — DIAGNOSE THE HANDOFF</Eyebrow>
         <AbPlayer pb={pb} variants={[variants[0]]} />

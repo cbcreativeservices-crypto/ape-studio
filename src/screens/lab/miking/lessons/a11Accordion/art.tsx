@@ -29,6 +29,11 @@ import { accLeftHand, accRightHand, bassFace, BASS_HAND, type PosedArm } from '.
 import type { PlayerPose } from '../shared/players/playerPose.ts';
 import { Hand3Art, MassArt, ProfileBehind, ProfileFront, SHIRT, SHIRT_RIM, type ProfilePose, type Pt } from '../shared/freereed/PlayerProfile';
 import { BODY, bassBoxAt, FLOOR_Y, GRILLE, KEYS, stateOf, TREBLE } from './model.ts';
+import { figureV2On } from '../shared/figureV2/figureV2Config.ts';
+import { AccLeftHandFrontV2, AccordionPlayerV2 } from '../shared/freereed/accordionFigureV2';
+
+/** The player in the approved look (figure roll-out wave 5, D78). */
+const ACC_V2 = figureV2On('familyFreeReeds');
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -470,14 +475,23 @@ export function AccordionFront({ top, bottom, hi = null, sound = 0 }: { top: num
   if (sound) for (let i = 0; i < 3; i++) bassArcs.addArc(Skia.XYWHRect(-b.outlets.z - 30 - i * 40, b.outlets.y - 70 - i * 40, 60 + i * 80, 140 + i * 80), -60, 120);
   return (
     <Group>
-      <PlayerBehind pose={pose} />
+      {ACC_V2 ? <AccordionPlayerV2 top={top} bottom={bottom} view="front" part="back" /> : <PlayerBehind pose={pose} />}
       <AccStraps pose={pose} />
       <Bellows top={top} bottom={bottom} view="front" />
       <BassFront top={top} bottom={bottom} hi={hi} />
       <TrebleFront hi={hi} />
       {hi === 'ac.bellows' ? <Path path={poly([[-TREBLE.z0, TREBLE.y0], [-b.it.z, b.it.y], [-b.ib.z, b.ib.y], [-TREBLE.z0, TREBLE.y1]])} style="stroke" strokeWidth={MARK_W} color={HIGHLIGHT} /> : null}
-      <PlayerInFront pose={pose} hands={false} />
-      <AccHandsFront top={top} bottom={bottom} />
+      {ACC_V2 ? (
+        <Group>
+          <AccordionPlayerV2 top={top} bottom={bottom} view="front" part="front" />
+          <AccLeftHandFrontV2 top={top} bottom={bottom} view={stripView(top, bottom)} />
+        </Group>
+      ) : (
+        <Group>
+          <PlayerInFront pose={pose} hands={false} />
+          <AccHandsFront top={top} bottom={bottom} />
+        </Group>
+      )}
       <BassFront top={top} bottom={bottom} hi={hi} part="strap" />
       <PartMark top={top} bottom={bottom} hi={hi} />
       {sound ? (
@@ -605,11 +619,17 @@ function SceneSide({ variant, hi }: { variant: VariantId; hi: string | null }): 
   return (
     <Group>
       <Floor u0={-2000} u1={3000} />
-      <ProfileBehind pose={PROFILE} />
+      {ACC_V2 ? <AccordionPlayerV2 top={s.top} bottom={s.bottom} view="side" part="back" /> : <ProfileBehind pose={PROFILE} />}
       <BassBehindSide top={s.top} bottom={s.bottom} />
       <TrebleSide hi={hi} />
-      <ProfileFront pose={PROFILE} />
-      <HandOnKeys />
+      {ACC_V2 ? (
+        <AccordionPlayerV2 top={s.top} bottom={s.bottom} view="side" part="front" />
+      ) : (
+        <Group>
+          <ProfileFront pose={PROFILE} />
+          <HandOnKeys />
+        </Group>
+      )}
     </Group>
   );
 }
@@ -659,9 +679,13 @@ function SceneTop({ variant, hi }: { variant: VariantId; hi: string | null }): R
   const armL = armPath(tp(PL.S), tp(PL.E), tp(PL.W));
   return (
     <Group>
-      <Group transform={[{ translateX: BODY.headC.x }, { translateY: 0 }, { rotate: -Math.PI / 2 }]}>
-        <PlayerBehind pose={ABOVE} />
-      </Group>
+      {ACC_V2 ? (
+        <AccordionPlayerV2 top={s.top} bottom={s.bottom} view="top" part="back" />
+      ) : (
+        <Group transform={[{ translateX: BODY.headC.x }, { translateY: 0 }, { rotate: -Math.PI / 2 }]}>
+          <PlayerBehind pose={ABOVE} />
+        </Group>
+      )}
       <Path path={lowFan} color="#0f1012" opacity={0.85} />
       <Bellows top={s.top} bottom={s.bottom} view="top" />
       <Lacquer path={bassEnd} box={{ u0: TREBLE.x0, v0: b.ot.z, u1: TREBLE.x1, v1: b.ob.z }} />
@@ -672,10 +696,16 @@ function SceneTop({ variant, hi }: { variant: VariantId; hi: string | null }): R
       <Path path={rr(TREBLE.x1 - 4, GRILLE.z0, TREBLE.x1 + 3, GRILLE.z1, 2)}>
         <LinearGradient start={vec(0, GRILLE.z0)} end={vec(0, GRILLE.z1)} colors={CHROME} />
       </Path>
-      <MassArt path={armR} ramp={SHIRT} rim={SHIRT_RIM} edge="#171a21" />
-      <MassArt path={armL} ramp={SHIRT} rim={SHIRT_RIM} edge="#171a21" />
-      <Hand3Art sk={PL.sk} view={TOP_VIEW} fore={angleIn(TOP_VIEW, PL)} />
-      <Hand3Art sk={PR.sk} view={TOP_VIEW} fore={angleIn(TOP_VIEW, PR)} />
+      {ACC_V2 ? (
+        <AccordionPlayerV2 top={s.top} bottom={s.bottom} view="top" part="front" />
+      ) : (
+        <Group>
+          <MassArt path={armR} ramp={SHIRT} rim={SHIRT_RIM} edge="#171a21" />
+          <MassArt path={armL} ramp={SHIRT} rim={SHIRT_RIM} edge="#171a21" />
+          <Hand3Art sk={PL.sk} view={TOP_VIEW} fore={angleIn(TOP_VIEW, PL)} />
+          <Hand3Art sk={PR.sk} view={TOP_VIEW} fore={angleIn(TOP_VIEW, PR)} />
+        </Group>
+      )}
     </Group>
   );
 }

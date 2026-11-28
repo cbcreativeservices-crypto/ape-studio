@@ -8,10 +8,31 @@
 import { AppState } from 'react-native';
 import { runSoon } from '../../lib/afterInteractions';
 import * as Updates from 'expo-updates';
-import { watchForPendingUpdate } from './autoUpdate';
+import { trackEvent } from '../telemetry/telemetry';
+import { isUpdateReloadHeld, launchEventProps, watchForPendingUpdate } from './autoUpdate';
+
+/** Which bundle this launch runs, once per launch (fresh-install update audit 2026-11-27). */
+function reportLaunch(): void {
+  try {
+    if (!Updates.isEnabled) return;
+    trackEvent(
+      'update_launch',
+      launchEventProps({
+        isEmbedded: Updates.isEmbeddedLaunch,
+        isEmergency: Updates.isEmergencyLaunch,
+        channel: Updates.channel ?? null,
+        createdAt: Updates.createdAt ?? null,
+        nowMs: Date.now(),
+      }),
+    );
+  } catch {
+    /* diagnostics never throw into startup */
+  }
+}
 
 /** Start watching. Returns an unsubscribe for the app root's cleanup. */
 export function startAutoUpdate(): () => void {
+  reportLaunch();
   return watchForPendingUpdate({
     isEnabled: Updates.isEnabled,
     // ⚠️ There is no `Updates.isUpdatePending` constant — only the live
@@ -43,8 +64,12 @@ export function startAutoUpdate(): () => void {
     },
     reload: () => Updates.reloadAsync(),
     now: () => Date.now(),
+    // A quiz, exam or purchase in progress is never restarted (the reload hold, autoUpdate.ts).
+    isHeld: isUpdateReloadHeld,
     onOutcome: (o) => {
       if (o === 'failed') console.warn('[updates] reload failed; the app carries on unchanged');
+      // 'none' and 'disabled' are every ordinary launch: not sent (low noise).
+      if (o !== 'none' && o !== 'disabled') trackEvent('update_apply', { outcome: o });
     },
   });
 }

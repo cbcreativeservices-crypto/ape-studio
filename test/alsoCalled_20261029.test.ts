@@ -144,7 +144,9 @@ describe('2. search: term OR other name', () => {
     );
     assert.match(SCREEN, /aliasHitById\.has\(item\.id\) \? \(\s*<Text style=\{styles\.alsoCalled\}>\{highlightNodes\(aliasMatchLabel\(aliasHitById\.get\(item\.id\)!\), hq\)\}/);
     const load = between(SCREEN, 'function loadAllEntries(', 'type ShareDefinitionUnreadable');
-    assert.equal((load.match(/aliasesLower: lowerNames\(r\.also_called\),/g) ?? []).length, 2);
+    // (2026-11-27) one shared row → entry helper, used by the stored and the downloaded path.
+    assert.equal((load.match(/aliasesLower: lowerNames\(r\.also_called\),/g) ?? []).length, 1);
+    assert.equal((load.match(/\.map\(corpusRowToEntry\)/g) ?? []).length, 2);
   });
 });
 

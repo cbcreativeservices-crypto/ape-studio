@@ -311,7 +311,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: what moves most of the air on a banjo?', options: ['The strings themselves', 'The head, driven by the bridge', 'The long neck'], after: 'Now STEP through the pluck (or PLAY ONCE) and watch what each event drives.' },
+  sound: { prompt: 'Before you step through: what moves most of the air on a banjo?', options: ['The strings themselves', 'The head, driven by the bridge', 'The long neck'], after: 'Now go EVENT by EVENT through the pluck (or PLAY ONCE) and watch what each event drives.' },
   placement: { prompt: 'Predict: you move from the neck junction to about 3 in in front of the head. What changes?', options: ['More attack and head projection', 'More of the room', 'It depends on this banjo'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   ...STRINGS_PREDICT,
 };

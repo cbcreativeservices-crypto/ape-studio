@@ -150,8 +150,10 @@ test('bezel: every mode label, state word, response and drive value fits its cel
 
 test('the studio uses the compact bezel words, the weights, and opts into the rack full screen', () => {
   const src = readFileSync(new URL('../src/screens/lab/cymatics/PlateStudioScreen.tsx', import.meta.url), 'utf8');
-  assert.match(src, /bezelModeLabel\(res\.dominant\.label\)/);
-  assert.match(src, /BEZEL_RES_WORD\[res\.state\]/);
+  // owner 2026-11-25, fix-first 15 (fix-next CYM, audit row 18): MODE and RES
+  // read the LEAD tone (the one RESPONSE shows), which is tone A with one tone.
+  assert.match(src, /bezelModeLabel\(lead\.dominant\.label\)/);
+  assert.match(src, /BEZEL_RES_WORD\[lead\.state\]/);
   for (const k of ['drive', 'response', 'mode', 'res']) assert.match(src, new RegExp(`flex: PLATE_BEZEL_FLEX\.${k}`));
   assert.match(src, /fullScreen: true/);
 });

@@ -149,7 +149,7 @@ export function Lesson02Body() {
         <Text style={s.cardHead}>
           {revealed === 0
             ? 'UNOPENED — PEEL FROM THE OUTSIDE IN'
-            : `OUTSIDE → INSIDE · LAYER ${revealed} OF ${sec.layers.length}`}
+            : `OUTSIDE → INSIDE · LAYER ${revealed}`}
         </Text>
         {sec.layers.slice(0, revealed).map((ly, i) => (
           <View key={ly.name} style={local.layerRow}>

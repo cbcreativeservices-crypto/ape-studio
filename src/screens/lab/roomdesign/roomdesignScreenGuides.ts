@@ -26,20 +26,22 @@ import type { ScreenGuide } from '../../../features/lab/screenGuide/types';
 import type { RoomModuleId } from './registry';
 
 export const ROOM_SCREEN_GUIDES: Record<RoomModuleId, ScreenGuide> = {
-  // ── 1 · What a room model can tell you (reading page) ────────────────────
+  // ── 2 · What a room model can tell you (reading page) ────────────────────
+  // RO-06 (owner 2026-11-15, "build waves 1 thru 3", D62): the lab opens on
+  // Create the room; this reading page follows it, before Monitoring setup.
   intro: {
     intro: {
       learning: 'Every number in this lab is one of three kinds: CALCULATED, ESTIMATED or MEASURED. A model shows where problems are likely; only a measurement describes your real room.',
-      start: 'Read THREE KINDS OF NUMBER, then HEARING FIRST. Before you check, guess which kind a speaker-to-ear distance is. Then tap NEXT to open Create the room.',
+      start: 'Read THREE KINDS OF NUMBER, then HEARING FIRST. Before you check, guess which kind a speaker-to-ear distance is. Then tap NEXT to open Monitoring setup.',
     },
     seeing: [
-      'This page is for reading; there’s no drawing yet. It takes Wave Physics and Speaker Placement & Coverage into your own room.',
+      'This page is for reading, between your room and its speakers. It takes Wave Physics and Speaker Placement & Coverage into your own room.',
       'Start with THREE KINDS OF NUMBER: CALCULATED (exact arithmetic), ESTIMATED (a model built on simple physics) and MEASURED (taken in the real room).',
-      'HEARING FIRST gives the safe-level rule for monitoring. HOW THE LAB RUNS lists the five modules that follow, in order.',
+      'HEARING FIRST gives the safe-level rule for monitoring. HOW THE LAB RUNS lists the live modules, in order.',
     ],
     control: [
       'Nothing to set here. Scroll to read.',
-      'Tap NEXT at the bottom to open Create the room. Use the strip under the title to jump to any module, or ‹ to leave the lab.',
+      'Tap NEXT at the bottom to open Monitoring setup. Use the strip under the title to jump to any module, or ‹ to leave the lab.',
       'Tap ⓘ on any module whenever you want that screen explained.',
     ],
     changes: [
@@ -59,11 +61,11 @@ export const ROOM_SCREEN_GUIDES: Record<RoomModuleId, ScreenGuide> = {
     ],
   },
 
-  // ── 2 · Create the room ──────────────────────────────────────────────────
+  // ── 1 · Create the room (the lab opens here: RO-06, owner 2026-11-15) ────
   create: {
     intro: {
-      learning: 'How a room is described for acoustics: size, height, surfaces and furniture. Also why dimensions that are simple multiples of each other stack bass resonances on one note.',
-      start: 'Read AREA, VOLUME and RATIO S:M:L on the default room. Then ride the CEILING fader and watch the side view open and RATIO change. Open FINISH to compare materials.',
+      learning: 'Build a model of your room in steps: size, speakers, where you sit, suggested setups, panels, your report. First, the size: how a room is described for acoustics.',
+      start: 'Drag a corner of the room to reshape it. Then read AREA, VOLUME and RATIO S:M:L, and slide CEILING to watch the side view open.',
     },
     seeing: [
       'Your room from above (PLAN), FRONT wall at the top. Width runs across, length up the left side. Doors and windows carry their wall’s tag (W2, W3).',
@@ -73,7 +75,7 @@ export const ROOM_SCREEN_GUIDES: Record<RoomModuleId, ScreenGuide> = {
     ],
     control: [
       'Drag a corner to reshape the room, or drag a piece of furniture to move it.',
-      'LENGTH and WIDTH faders: 2 m to 15 m. CEILING fader: 2 m to 6 m. Riding CEILING opens the side view, where you see the height.',
+      'LENGTH and WIDTH faders: 2 m to 15 m. CEILING fader: 2 m to 6 m. Sliding CEILING opens the side view, where you see the height.',
       'Flip the SIDE VIEW switch, or tap VIEW in the readouts, to see the room from the side.',
       'SHAPE tray: TYPE THE DIMENSIONS, UNITS, WALL SHAPE (RECTANGLE, ANGLED, IRREGULAR, CURVED), CEILING (FLAT, SLOPED, VAULTED, MIXED), + DOOR, + WINDOW, + OPENING, + DESK, + SOFA, + SHELF, + RACK, and NEW ROOM to start over.',
       'FINISH tray: pick the FLOOR, WALLS and CEILING materials. Each lists its absorption (α, how much sound it soaks up) at 125 Hz, 500 Hz and 2 kHz.',
@@ -92,7 +94,7 @@ export const ROOM_SCREEN_GUIDES: Record<RoomModuleId, ScreenGuide> = {
     ],
     tryThis: [
       'On the default room, read AREA 20.0 m², VOLUME 50.0 m³ and RATIO S:M:L 1:1.6:2.0. The 2.0: the 5 m length is twice the 2.50 m height, so both have a mode at 68.6 Hz.',
-      'Ride CEILING to 2.65 m. The side view opens and RATIO reads 1:1.5:1.9: no longer a simple multiple, and close to the 1 : 1.4 : 1.9 in the notes below. Then set it back to 2.50 m.',
+      'Slide CEILING to 2.65 m. The side view opens and RATIO reads 1:1.5:1.9: no longer a simple multiple, and close to the 1 : 1.4 : 1.9 in the notes below. Then set it back to 2.50 m.',
       'In SHAPE pick ANGLED. The note below the display warns that mode estimates will use the bounding box: LESS reliable. Then SHAPE › NEW ROOM brings the default room back.',
     ],
   },
@@ -101,7 +103,7 @@ export const ROOM_SCREEN_GUIDES: Record<RoomModuleId, ScreenGuide> = {
   monitoring: {
     intro: {
       learning: 'How the stereo triangle keeps the center image steady, what nearfield and midfield mean, and why distance from the front wall moves a dip in the bass.',
-      start: 'Check that DIST L and DIST R match and L−R is green. Then ride FRONT and watch L’s front-wall dip move in the list below. Then ride SEAT and watch ANGLE.',
+      start: 'Check that DIST L and DIST R match and L−R is green. Then slide FRONT and watch L’s front-wall dip move in the list below. Then slide SEAT and watch ANGLE.',
     },
     seeing: [
       'The plan again, now with the speakers (L, R), your head and the stereo triangle. It starts equilateral: 1.60 m on each side.',
@@ -111,7 +113,7 @@ export const ROOM_SCREEN_GUIDES: Record<RoomModuleId, ScreenGuide> = {
     control: [
       'Drag a speaker or the listener on the plan. In the side view, drag up or down to change height.',
       'SPREAD sets the distance between L and R, kept even about the room’s center line. FRONT sets the speakers’ distance from the front wall. SEAT sets your distance from the front wall.',
-      'HEIGHT: first pick WHICH HEIGHT (the tweeters, your seated ears or the sub). Riding it opens the side view.',
+      'HEIGHT: first pick WHICH HEIGHT (the tweeters, your seated ears or the sub). Sliding it opens the side view.',
       'SETUP tray: CONFIGURATION (STEREO, STEREO + SUB, MULTICHANNEL), LISTENING DISTANCE CLASS (NEARFIELD, MIDFIELD, OTHER), TOE-IN (STRAIGHT, TOE-IN 15°, TOE-IN 30°) and an optional label for your monitors.',
     ],
     changes: [
@@ -127,8 +129,8 @@ export const ROOM_SCREEN_GUIDES: Record<RoomModuleId, ScreenGuide> = {
     ],
     tryThis: [
       'In SETUP pick MIDFIELD: the line under your head turns amber and reads MIDFIELD · 1.60 m ?. 1.60 m sits in the nearfield band (0.8–1.8 m), not midfield (1.8–4.2 m).',
-      'Ride FRONT from 0.90 m to 1.20 m. L’s front-wall cancellation moves from ~101.9 Hz to ~77.0 Hz: farther from the wall, lower dip. Ride it back to 0.90 m.',
-      'Ride SEAT down to about 1 m. ANGLE turns red and reads NONE: your seat is only 10 cm in front of the speakers, and the screen needs 30 cm to draw a triangle.',
+      'Slide FRONT from 0.90 m to 1.20 m. L’s front-wall cancellation moves from ~101.9 Hz to ~77.0 Hz: farther from the wall, lower dip. Slide it back to 0.90 m.',
+      'Slide SEAT down to about 1 m. ANGLE turns red and reads NONE: your seat is only 10 cm in front of the speakers, and the screen needs 30 cm to draw a triangle.',
     ],
   },
 
@@ -136,7 +138,7 @@ export const ROOM_SCREEN_GUIDES: Record<RoomModuleId, ScreenGuide> = {
   explore: {
     intro: {
       learning: 'Why bass changes from seat to seat (room modes), why reflections within 15 ms blur the image, and how each reflection acts like a mirrored speaker.',
-      start: 'Flip LAYOUT to START and pick MODE 34.3 Hz. Drag the listener toward the rear wall and watch AT EARS. Then tap TRACE to follow the earliest reflection.',
+      start: 'With LAYOUT on START, pick MODE 34.3 Hz. Drag the listener toward the rear wall and watch AT EARS. Then tap TRACE to follow the earliest reflection.',
     },
     seeing: [
       'The colors are MODE PRESSURE: one room mode at ear height. RED = a pressure maximum, BLUE = a null, yellow and green in between.',
@@ -162,17 +164,50 @@ export const ROOM_SCREEN_GUIDES: Record<RoomModuleId, ScreenGuide> = {
       'Reflections within about 15 ms change image and tone; a mode’s null can make a bass note almost vanish.',
     ],
     tryThis: [
-      'Flip LAYOUT to START. MODE 34.3 Hz, the first length mode: AT EARS reads 13 %. Drag the listener back: 0 % at mid-room (2.50 m), the null, then up toward 100 % (red) by the rear wall.',
+      'Flip LAYOUT to START. MODE 34.3 Hz, the first length mode: AT EARS reads 13%. Drag the listener back: 0% at mid-room (2.50 m), the null, then up toward 100% (red) by the rear wall.',
       'Flip LAYOUT back to START. 1ST reads +0.7 ms: the bounce off the desk top, the earliest reflection here. Tap TRACE and the pulse rides that path first.',
       'In SAVE tap OPTION A, then drag the listener. WHAT CHANGED lists the difference between START and OPTION A.',
     ],
   },
 
-  // ── 5 · Add treatment ────────────────────────────────────────────────────
+  // ── 5 · Suggested setups ─────────────────────────────────────────────────
+  suggest: {
+    intro: {
+      learning: 'How your room’s own numbers point to better positions: the bass at your seat, a matched stereo triangle, and the smallest moves that clear a warning.',
+      start: 'Tap SETUP A to open its report. Compare WHAT TO MOVE with the faint current positions on the drawing, then open SETUP B and SETUP C.',
+    },
+    seeing: [
+      'The stage draws the selected setup in bright; the faint, dashed shapes are where everything stands now.',
+      'Each card names its goal, draws its layout and lists what it improves. Readouts, each as now → setup: SETUP (the one shown), DIPS+PEAKS (bass dips and peaks at your seat), STRONG <15ms (strong early wall reflections) and WARNINGS ! (Review warnings to look at first).',
+    ],
+    control: [
+      'Tap a card, or REPORT, to open its full report: WHAT TO MOVE, BEFORE → AFTER, WHY IT IS BETTER and TRADE-OFFS.',
+      'SETUP flips the drawing between the setups.',
+      'TRY (or TRY THIS SETUP in the report) puts a setup in OPTION A or OPTION B beside START and shows it. START is never touched.',
+      'OPEN EXPLORE takes you to Explore placement, to drag the setup and TRACE its reflections.',
+    ],
+    changes: [
+      'Smoother bass counts the length modes up to 150 Hz whose dip or peak your seat sits in, the lowest first.',
+      'Clearer stereo image keeps a 60° triangle on the center line and cuts strong early wall reflections.',
+      'Least change makes the smallest moves that clear the Review page’s “!” warnings; the desk stays put.',
+    ],
+    teaches: [
+      'The 38% rule (the seat at 35–40% of the length) is a starting point; your room’s own modes decide.',
+      'Every gain has a cost, and the report lists what gets worse.',
+      'A model points to positions worth trying; a measurement settles them.',
+    ],
+    tryThis: [
+      'In the starting room open SETUP A: DIPS+PEAKS reads 3→1. The seat moves to 35% of the length and the speakers to 36 cm from the front wall.',
+      'Open SETUP B: STRONG <15ms reads 2→0, and the triangle is still 60°, matched left and right.',
+      'Open SETUP C: the chair and both speakers move 30 cm toward the front wall, the desk stays, and WARNINGS ! reads 1→0.',
+    ],
+  },
+
+  // ── 6 · Add treatment ────────────────────────────────────────────────────
   treatment: {
     intro: {
       learning: 'Where each kind of treatment works: absorbers at reflection points for mids and highs, traps in corners for bass. Also why thickness, not more thin panels, reaches low frequencies.',
-      start: 'Tap BASS TRAPS IN THE CORNERS and watch RT60 125 ≈ fall. Then tap CEILING CLOUD and watch TREATED rise. Use ITEM OFF and ITEM ON to compare.',
+      start: 'Open ADD, tap BASS TRAPS IN THE CORNERS and watch RT60 125 ≈ fall. Then tap CEILING CLOUD and watch TREATED rise. Use ITEM OFF and ITEM ON to compare.',
     },
     seeing: [
       'The plan shows every modeled reflection path, colored by level, with your treatment in gold. A ✓ on a path means it meets treatment.',
@@ -204,7 +239,7 @@ export const ROOM_SCREEN_GUIDES: Record<RoomModuleId, ScreenGuide> = {
     ],
   },
 
-  // ── 6 · Review the room (report page) ────────────────────────────────────
+  // ── 7 · Review the room (report page) ────────────────────────────────────
   review: {
     intro: {
       learning: 'How to read a room as observations and next steps, not a grade: which seat problems are worth moving for, and why a measurement outranks the model.',
@@ -235,7 +270,7 @@ export const ROOM_SCREEN_GUIDES: Record<RoomModuleId, ScreenGuide> = {
     tryThis: [
       'On the default design, the TRY FIRST row says your seat sits near a null of the 34.3 Hz length mode: that note nearly disappears there.',
       'Type 34 in RESONANCE FOUND. The nearest modeled mode is axial (1,0,0) at 34.3 Hz, 0.3 Hz above: a close match for a simple model.',
-      'On the untreated default (Create the room › SHAPE › NEW ROOM), type 0.45 in MEASURED RT60 (MID). Against the 0.55 s estimate, the room is 18 % deader than the model.',
+      'On the untreated default (Create the room › SHAPE › NEW ROOM), type 0.45 in MEASURED RT60 (MID). Against the 0.55 s estimate, the room is 18% deader than the model.',
     ],
   },
 };
@@ -244,11 +279,11 @@ export const ROOM_SCREEN_GUIDES: Record<RoomModuleId, ScreenGuide> = {
 export const ROOM_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'How the lab’s steps fit together in order: describe the room, set up the monitors, explore placement, add treatment, then review the model against measurement.',
-    start: 'Look under WHAT’S LEFT and tap any module’s row to open it. Or tap PRACTICE AGAIN FROM THE START to model your own room.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
-    'WHAT’S LEFT lists the modules you haven’t opened yet, each with its number. Once you’ve opened them all, it reads LAB COMPLETE.',
-    '✓ DONE holds the modules you’ve opened; REVIEW ▾ shows them.',
+    'WHAT’S LEFT lists the modules not done yet, each with what is still to do. Once all are done, it reads LAB COMPLETE.',
+    '✓ DONE holds the modules you’ve done; REVIEW ▾ shows them.',
     'Your progress here is saved on this device only.',
   ],
   control: [
@@ -256,7 +291,7 @@ export const ROOM_END_GUIDE: ScreenGuide = {
     'PRACTICE AGAIN FROM THE START reopens module 1. DONE · BACK TO LABS leaves the lab.',
   ],
   changes: [
-    'Opening a module checks it off. A practice run never removes a check mark.',
+    'A hands-on module is checked off once you change the room on it; a reading module when you move on with NEXT. A practice run never removes a check mark.',
     'Your design stays while the lab is open. Leaving the lab clears it; a design you saved comes back with LOAD in REVIEW.',
   ],
   teaches: [
@@ -264,7 +299,7 @@ export const ROOM_END_GUIDE: ScreenGuide = {
     'Model numbers show where problems are likely; a measurement in the real room has the last word.',
   ],
   tryThis: [
-    'Open any module you skipped, straight from its row.',
+    'Open any module still listed, straight from its row, and do its step.',
     'Tap PRACTICE AGAIN FROM THE START and model your real room from a tape measure’s numbers. Compare its RATIO S:M:L with the default room’s 1:1.6:2.0.',
   ],
 };

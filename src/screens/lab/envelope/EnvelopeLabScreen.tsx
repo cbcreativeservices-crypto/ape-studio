@@ -33,6 +33,7 @@ import { ControlSlider } from '../amp/kit';
 import { CHART_HONESTY, EnvelopeChart } from './EnvelopeChart';
 import { ENVELOPE_END_GUIDE, envelopePageGuide } from './envelopeScreenGuides';
 import { envLogMs, envToLog, fmtEnvMs } from '../../../features/lab/sliderMaps';
+import { termWithShort } from '../../../features/lab/plainTerms';
 
 /** Preset handed from the gallery to the explorer (module-local, consumed once on arrival). */
 let handoff: { name: string; adsr: Adsr } | null = null;
@@ -121,7 +122,9 @@ function PageExplorer({ ctx }: { ctx: PageCtx }) {
   return (
     <View style={{ gap: 12 }}>
       <Lead>Every sound has a shape in time. Move the sliders and watch the envelope — and the waveform inside it — redraw instantly.</Lead>
-      <Prompt>Try it: drag ATTACK all the way left, then all the way right. Watch the two gold dots — the rise-time markers — and the readout under the chart.</Prompt>{/* NEW COPY */}
+      {/* ENV-04 (owner 2026-11-15, "build waves 1 thru 3"): say what the learner should notice
+          ("starts at once", not "snap": ATTACK: SNAP below is a different control, the curve shape). */}
+      <Prompt>Try it: drag ATTACK all the way left and the sound starts at once; drag it right and it fades in slowly. That rise is the attack.</Prompt>
       {loaded ? <Text style={styles.loaded}>LOADED FROM THE GALLERY · {loaded.name.toUpperCase()}</Text> : null}{/* NEW COPY */}
       <EnvelopeChart adsr={adsr} showRise sweep reduceMotion={ctx.reduceMotion} title="ENVELOPE · A / D / S / R (waveform shaped by it)" controls={adsrSliders} readout={explorerRead} />
       {adsrSliders}
@@ -175,10 +178,10 @@ function PageGallery({ ctx }: { ctx: PageCtx }) {
             <Btn
               label="LOAD INTO THE EXPLORER ›"
               tone="primary"
-              a11y={`Load ${preset.name} into the explorer on page 1`}
+              a11y={`Load ${preset.name} into the explorer in module 1`}
               onPress={() => { handoff = { name: preset.name, adsr: preset.adsr }; if (ctx.goTo) ctx.goTo(0); }}
             />
-            {!ctx.goTo ? <Body>Then go back one page — the explorer opens with this shape loaded.</Body> : null}
+            {!ctx.goTo ? <Body>Then go back one module — the explorer opens with this shape loaded.</Body> : null}
           </Card>
         </>
       ) : (
@@ -220,7 +223,7 @@ function SpeechChart() {
         </Svg>
       </View>
       )} />
-      <Text style={styles.caption}>{CHART_HONESTY} · syllable timing is typical, not a recording</Text>
+      <Text style={styles.caption}>{CHART_HONESTY} Syllable timing is typical, not a recording.</Text>
     </View>
   );
 }
@@ -293,7 +296,7 @@ function PageDuration({ ctx }: { ctx: PageCtx }) {
       <Prompt>Tap a numbered marker, or its button. Notice how far apart 12 ms and 12 s sit: each equal step along the axis is ten times longer.</Prompt>{/* NEW COPY */}
       <View style={{ gap: 4 }}>
         <Text style={styles.chartTitle}>DURATION · IMPULSE → CONTINUOUS · LOG TIME</Text>
-        <ExpandableFigure aspect={W / H} title="DURATION" badge="TYPICAL VALUES — ILLUSTRATIVE, NOT MEASURED" controls={<View style={styles.dock}>{picks}</View>} render={(w, h) => (
+        <ExpandableFigure aspect={W / H} title="DURATION" badge="Typical values, for illustration, not measured." controls={<View style={styles.dock}>{picks}</View>} render={(w, h) => (
         <View accessible accessibilityRole="image" accessibilityLabel={`Duration timeline on a logarithmic axis from 1 millisecond to 20 seconds: ${DURATION_EXAMPLES.map((e, i) => `${i + 1}, ${e.name}, about ${fmtMs(e.ms)}, ${e.category}`).join('; ')}.${chosen ? ` Selected: ${chosen.name}.` : ''} Typical values, illustrative.`} style={{ width: w, height: h }}>
           <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" width={w} height={h} viewBox={`0 0 ${W} ${H}`}>
             <Rect x={0} y={0} width={W} height={H} rx={8} fill="#0a0a0c" stroke={colors.hairline} />
@@ -332,7 +335,7 @@ function PageDuration({ ctx }: { ctx: PageCtx }) {
           </Svg>
         </View>
         )} />
-        <Text style={styles.caption}>TYPICAL VALUES — ILLUSTRATIVE, NOT MEASURED · real sounds vary</Text>{/* NEW COPY */}
+        <Text style={styles.caption}>Typical values, for illustration, not measured; real sounds vary.</Text>{/* NEW COPY */}
       </View>
       {picks}
       <Card>
@@ -378,9 +381,13 @@ function PagePeakAverage({ ctx }: { ctx: PageCtx }) {
       <Lead>Two meters can disagree about the same sound: a peak meter follows the transient, an average meter follows the body.</Lead>
       <Prompt>Switch between the two shapes and watch the gap between the PEAK line and the AVERAGE line. That gap is the crest factor.</Prompt>{/* NEW COPY */}
       {shapes}
-      <EnvelopeChart adsr={preset.adsr} tone={PRESET_TONES[preset.id]} showRegions={false} showPeakAvg title={`${preset.name.toUpperCase()} · PEAK VS AVERAGE`} caption="levels relative to the chart’s full scale (the top of the envelope)" fullTitle="PEAK / AVG" controls={shapes} readout={crestRead} />
+      {/* ENV-01 (owner 2026-11-15, "build waves 1 thru 3"): the plain meaning comes BEFORE the dB
+          numbers, and dB is glossed once with the shared words (plainTerms.ts). The chart's own
+          "relative to full scale" caption went: the card's eyebrow already says it (a line out). */}
+      <EnvelopeChart adsr={preset.adsr} tone={PRESET_TONES[preset.id]} showRegions={false} showPeakAvg title={`${preset.name.toUpperCase()} · PEAK VS AVERAGE`} fullTitle="PEAK / AVG" controls={shapes} readout={crestRead} />
       <Card>
         <Eyebrow>COMPUTED FROM THE DRAWN WAVEFORM · RELATIVE TO FULL SCALE</Eyebrow>
+        <Body>{`A big gap between the lines means a spiky sound, like a drum; a small gap, a steady sound, like a trumpet. The numbers are in ${termWithShort('db')}.`}</Body>
         {crestRead}
         <Body>{id === 'snare' ? 'The percussive sound spends almost all its time far below its peak: a big crest factor. A peak meter reads it high; an average meter barely moves.' : 'The sustained sound sits near its peak most of the time: a small crest factor. Peak and average meters nearly agree.'}</Body>
       </Card>
@@ -417,7 +424,9 @@ function PageScope({ ctx }: { ctx: PageCtx }) {
       </Card>
       <Body>ADSR does not describe propagation. A snare’s envelope at the source is the same whether you stand at one meter or twenty — what changes with distance and the room is propagation, the Wave Physics Laboratory’s subject, in Audio Fundamentals.</Body>
       <Body>The classic mix-up: a long reverb tail is NOT a long release. Release is the source stopping; the tail is the room still returning energy after it has.</Body>{/* NEW COPY */}
-      {!ctx.isDone ? <Btn label="GOT IT ›" tone="primary" onPress={ctx.markDone} /> : null}
+      {/* The button used to vanish with no word of what it did (novice audit
+          2026-11-14): the page now says it is done. */}
+      {!ctx.isDone ? <Btn label="GOT IT ›" tone="primary" onPress={ctx.markDone} /> : <Text style={styles.loaded}>✓ THIS MODULE IS DONE · NEXT MOVES ON</Text>}
     </View>
   );
 }
@@ -427,18 +436,22 @@ function PageScope({ ctx }: { ctx: PageCtx }) {
 /** Correct answers deliberately land on different positions (2,0,1,3,1,2) and
  *  distractors are written to similar lengths — no position or length cue.
  *  Each check targets a named misconception; the explanation names it. */
-const CHECKS: { q: string; options: string[]; correct: number; explain: string }[] = [
+const CHECKS: { q: string; options: string[]; correct: number; explain: string; wrong?: (string | undefined)[] }[] = [
   {
     q: 'Which part of an envelope is the transient?',
     options: ['The steady sustain', 'The fading release', 'The fast-changing onset', 'The silence between notes'], // NEW COPY (rebalanced)
     correct: 2,
     explain: 'The transient is the brief, fast-changing onset — the part the ear uses to place and identify the sound.',
+    // Fix round 2026-11-14 (S2 rule): a reason per wrong option; never the answer.
+    wrong: ['The sustain is the held part, where little changes. On the Transient Explorer, where does the shape change fastest?', 'The release is the fade at the end, after the energy stops. Look at the other end of the shape.', undefined, 'Silence has no sound to place or identify. Look for the part of the shape that changes fastest.'],
   },
   {
     q: 'A piano note has a fast attack, a natural decay and…',
     options: ['No true sustain — it can only decay', 'A long, true sustain', 'No decay at all', 'A slow, swelling attack'], // NEW COPY (rebalanced)
     correct: 0,
     explain: 'A struck string can only lose energy. The pedal lets that decay run longer, but nothing keeps supplying energy the way a bow does.', // NEW COPY
+    // Fix round 2026-11-14 (S2 rule): a reason per wrong option; never the answer.
+    wrong: [undefined, 'A true sustain needs energy supplied the whole time, like a bow. Once the hammer strikes, does anything keep feeding the string?', 'Look at the Piano shape in Common Sound Shapes: after the hit, the level never holds flat.', 'A hammer hits the string in an instant. Compare the Piano and Violin shapes in Common Sound Shapes.'],
   },
   {
     // NEW COPY — rise time objective
@@ -446,12 +459,16 @@ const CHECKS: { q: string; options: string[]; correct: number; explain: string }
     options: ['Zero — rise time only applies to percussion', 'Less than 40 ms — it skips the slow start and the final approach', 'Exactly 40 ms — rise time and attack time are the same thing', 'More than 40 ms — it includes the decay as well'],
     correct: 1,
     explain: 'Rise time is measured between the 10 % and 90 % crossings, so it is always shorter than the attack: about 32 ms for a linear 40 ms attack, shorter still for a snap. Attack time and rise time are related but not the same.',
+    // Fix round 2026-11-14 (S2 rule): a reason per wrong option; never the answer.
+    wrong: ['Rise time applies to any onset, not just percussion. Look at the two gold dots on the Explorer chart.', undefined, 'Watch the two gold dots on the Explorer: they do not sit at silence and at the peak.', 'Rise time ends before the peak, so the decay never enters it. Look where the second gold dot sits.'],
   },
   {
     q: 'Why can a peak meter and an average meter disagree about a snare hit?',
     options: ['One of the two meters must be miscalibrated', 'Both read the same level, just on different scales', 'Average meters are built to ignore percussion', 'The hit sets the peak; the short body keeps the average low'], // NEW COPY (rebalanced)
     correct: 3,
     explain: 'The hit spends almost all its time far below its peak — a large crest factor — so the peak reads high while the average stays low. Both meters are right; they measure different things.', // NEW COPY
+    // Fix round 2026-11-14 (S2 rule): a reason per wrong option; never the answer.
+    wrong: ['Nothing is broken: on Peak vs Average both lines come from the same snare. Look at how far apart they sit.', 'They do not read the same level: on a snare the peak line and the average line sit far apart.', 'An average meter counts every sound. Compare where most of the snare’s time is spent with its peak.', undefined],
   },
   {
     // NEW COPY — dynamic range objective
@@ -459,12 +476,16 @@ const CHECKS: { q: string; options: string[]; correct: number; explain: string }
     options: ['Two names for the same span, used by different manufacturers', 'Two different spans — one sound’s peak-to-average versus loudest-to-quietest overall', 'Two ways of reading the same peak meter, in dBFS and in VU', 'Two settings on a compressor — the ratio and the threshold'],
     correct: 1,
     explain: 'Crest factor is peak minus average of ONE sound. Dynamic range is loudest minus quietest — across a performance, or from a system’s clipping point down to its noise floor.',
+    // Fix round 2026-11-14 (S2 rule): a reason per wrong option; never the answer.
+    wrong: ['They answer different questions: one is about a single sound, the other about a whole performance or system.', undefined, 'dBFS and VU are meter scales. This question is about two spans of level, not two meters.', 'Ratio and threshold are compressor controls. These two terms describe the sound itself, not a processor.'],
   },
   {
     q: 'Does ADSR describe how sound travels through a room?',
     options: ['Only for percussive sounds, where the room matters most', 'Yes — the release stage is the room’s decay, which is why long halls sound sustained', 'No — ADSR describes the source over time; travel through space is propagation', 'Only outdoors, where there are no reflections to shape it'], // NEW COPY (rebalanced)
     correct: 2,
     explain: 'ADSR, transients and duration describe the sound at its source. The room’s decay is reverberation — propagation, the Wave Physics lab’s subject. A snare’s release at the source is the same in any room.', // NEW COPY
+    // Fix round 2026-11-14 (S2 rule): a reason per wrong option; never the answer.
+    wrong: ['Percussive or not, ADSR is drawn at the source. The Envelope vs Propagation module keeps the two subjects apart.', 'A hall’s long ring comes after the source has stopped. Reread Envelope vs Propagation.', undefined, 'Reflections or none, an envelope belongs to the sound where it starts. Reread Envelope vs Propagation for the other subject.'],
   },
 ];
 
@@ -481,23 +502,36 @@ function PageChecks({ ctx }: { ctx: PageCtx }) {
     <View style={{ gap: 12 }}>
       <Lead>Six checks — one per idea in this lab. A wrong pick explains itself and lets you try again.</Lead>{/* NEW COPY */}
       <Card tone={complete ? 'ok' : 'plain'}>
-        <Eyebrow>{n} OF {CHECKS.length} CORRECT</Eyebrow>
-        <Body>{complete ? (ctx.isDone && n < CHECKS.length ? 'This page is already complete — answer again for practice.' : 'All six — this page is complete.') : 'This page completes when all six are answered correctly.'}</Body>{/* NEW COPY — evening hunt 1 (2026-10-02): FINISH is never locked and records nothing (kit/PagedLab: the what's-left screen lists this page until it is done); the old lines said FINISH "unlocks" and "records it", and called the LAB complete when only this page was. */}
+        <Eyebrow>{n >= CHECKS.length ? 'ALL CORRECT' : `${CHECKS.length - n} STILL TO GET RIGHT`}</Eyebrow>
+        <Body>{complete ? (ctx.isDone && n < CHECKS.length ? 'This module is already complete — answer again for practice.' : 'All six — this module is complete.') : 'This module completes when all six are answered correctly.'}</Body>{/* NEW COPY — evening hunt 1 (2026-10-02): FINISH is never locked and records nothing (kit/PagedLab: the what's-left screen lists this page until it is done); the old lines said FINISH "unlocks" and "records it", and called the LAB complete when only this page was. */}
       </Card>
-      {CHECKS.map((c, i) => <UnderstandingCheck key={i} question={c.q} options={c.options} correct={c.correct} explain={c.explain} onCorrect={onCorrect(i)} />)}
+      {CHECKS.map((c, i) => <UnderstandingCheck key={i} question={c.q} options={c.options} correct={c.correct} explain={c.explain} wrong={c.wrong} onCorrect={onCorrect(i)} />)}
     </View>
   );
 }
 
 const PAGES: PageDef[] = [
-  { title: 'The Envelope Explorer', short: 'Explorer', Component: PageExplorer },
-  { title: 'Common Sound Shapes', short: 'Gallery', Component: PageGallery },
-  { title: 'Transient Explorer', short: 'Transients', Component: PageTransients },
-  { title: 'How Long Does a Sound Last?', short: 'Duration', Component: PageDuration },
-  { title: 'Peak vs Average Level', short: 'Peak/Avg', Component: PagePeakAverage },
-  { title: 'Envelope vs Propagation', short: 'Scope', Component: PageScope },
+  // Phase 3 (owner decision 1, 2026-11-14: "done = work done"): each module says
+  // its kind. Modules 1–5 count when a control is used (useTouch); NEXT alone
+  // no longer counts them. Envelope vs Propagation has nothing to do but read.
+  { title: 'The Envelope Explorer', short: 'Explorer', Component: PageExplorer, manualDone: true },
+  { title: 'Common Sound Shapes', short: 'Gallery', Component: PageGallery, manualDone: true },
+  { title: 'Transient Explorer', short: 'Transients', Component: PageTransients, manualDone: true },
+  { title: 'How Long Does a Sound Last?', short: 'Duration', Component: PageDuration, manualDone: true },
+  { title: 'Peak vs Average Level', short: 'Peak/Avg', Component: PagePeakAverage, manualDone: true },
+  { title: 'Envelope vs Propagation', short: 'Scope', Component: PageScope, reading: true },
   { title: 'Check Yourself', short: 'Check', Component: PageChecks, manualDone: true },
 ];
+
+/** WHAT'S LEFT: each hands-on module names its own missing piece (S2 §4). */
+export const ENVELOPE_STILL_TO_DO: Record<number, string> = {
+  0: 'Still to do: move any slider, or switch a curve.',
+  1: 'Still to do: tap one of the sound shapes.',
+  2: 'Still to do: tap one of the transient types.',
+  3: 'Still to do: tap one of the numbered sounds.',
+  4: 'Still to do: tap Percussive (snare) or Sustained (trumpet).',
+  6: 'Still to do: get all six questions in this module right.',
+};
 
 export function EnvelopeLabScreen() {
   return (
@@ -510,6 +544,9 @@ export function EnvelopeLabScreen() {
       // check included, and on the what's-left screen (WHERE YOU ARE).
       pageGuide={envelopePageGuide}
       endGuide={ENVELOPE_END_GUIDE}
+      // WHAT'S LEFT (fix round 2026-11-14, S2 §4): the one hands-on page names
+      // what is missing; reading pages get the shared NEXT rule once.
+      pageDetail={(i) => ENVELOPE_STILL_TO_DO[i]}
       // A CONCEPT lab (owner rule 2026-10-31): visual only, nothing is
       // measured — every chart carries its own ILLUSTRATIVE MODEL badge — so
       // no accuracy note; the ⓘ takes its spot.

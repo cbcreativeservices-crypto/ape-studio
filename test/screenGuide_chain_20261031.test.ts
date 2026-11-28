@@ -114,7 +114,7 @@ describe('3. each guide quotes its screen’s real names', () => {
       // unit captions (lab defaults) and the rack's own controls
       '−30 dB · 4:1', 'opens −35 dB', 'drive +12 dB', 'HIDE DISPLAY', 'GR', '⟲',
       // the SCENE short name the guide quotes, and LAB NOTES' contents
-      'SQUASH', 'LAB NOTES', 'MARK AS REVIEWED', 'FINISH · SEE WHAT’S LEFT',
+      'HOT→LIMIT', 'SILENT', 'LAB NOTES', 'MARK AS REVIEWED', 'FINISH · SEE WHAT’S LEFT',
     ],
     // 'LEARN' (the tab's own name) and the old lesson's mistake titles ('Gain-staging into the limiter', 'EQ→comp') dropped:
     // the approved rewrite (2026-11-08) refers to the COMMON MISTAKES lines by topic, and the Part A lesson rewrite retitles them.
@@ -132,10 +132,13 @@ describe('3. each guide quotes its screen’s real names', () => {
       }
     });
   }
-  it('SCENE shows the scenario’s short name: SQUASH is HOT INTO LIMITER’s, and the guide says so', () => {
-    assert.match(code(SCREEN), /key: 'squash', label: 'HOT INTO LIMITER', short: 'SQUASH',/);
+  // Changed on purpose, lab fix round 1 (owner 2026-11-14: "Begin fixing all bugs found and do
+  // obvious (my decision is not required) fixes as you suggestted in the report."): SCENE read
+  // "SQUASH" while the button said HOT INTO LIMITER; one name now.
+  it('SCENE shows the scenario’s short name: HOT→LIMIT is HOT INTO LIMITER’s, and the guide says so', () => {
+    assert.match(code(SCREEN), /key: 'squash', label: 'HOT INTO LIMITER', short: 'HOT→LIMIT',/);
     assert.match(code(SCREEN), /\{ k: 'SCENE', v: scenario\?\.short \?\? \(anyOn \? 'CUSTOM' : '—'\)/);
-    assert.match(CHAIN_SCREEN_GUIDES.explore.seeing.join(' '), /SCENE \(short name, e\.g\. SQUASH for HOT INTO LIMITER; else CUSTOM\)/);
+    assert.match(CHAIN_SCREEN_GUIDES.explore.seeing.join(' '), /SCENE \(the scenario, e\.g\. HOT→LIMIT; else CUSTOM\)/);
   });
   it('the LEARN TRY THIS topics are COMMON MISTAKES lines in the chain lesson (EQ before the compressor; hot stages into the limiter)', () => {
     // holds before and after the Part A lesson load (old titles, or the rewrite's wording)
@@ -284,7 +287,8 @@ describe('4. the TRY THIS numbers follow from the lab and the engine', () => {
     const ex = CHAIN_SCREEN_GUIDES.explore.tryThis.join('\n');
     assert.match(ex, /set SOURCE to SINE 220 and play: COMP reads about −8 dB\. Bypass EQ: about −7 \(−6 on the phone speaker; the app cuts its lows\)/);
     const le = CHAIN_SCREEN_GUIDES.learn.tryThis;
-    assert.match(le[0], /COMMON MISTAKES line about EQ before the compressor[\s\S]*EQ BOOST → COMP with SOURCE on SINE 220 and bypass EQ in MODULES: COMP’s GR falls by over 1 dB/);
+    // owner 2026-11-21: 'Build all 40' (collapsed-sections proposal): the LEARN block starts closed, so the guide says open it.
+    assert.match(le[0], /COMMON MISTAKES and read the line about EQ before the compressor[\s\S]*EQ BOOST → COMP with SOURCE on SINE 220 and bypass EQ in MODULES: COMP’s GR falls by over 1 dB/);
     assert.match(le[1], /running stages hot into the limiter[\s\S]*HOT INTO LIMITER with SOURCE on SINE 220: COMP reads about −8 dB, LIMIT 0\.0/);
     // HOT INTO LIMITER lights exactly EQ, COMP and LIMIT, the units the re-run uses; a SOURCE change keeps them
     assert.match(s, /key: 'squash',[^\n]*enable: \[FX\.eq, FX\.comp, FX\.limiter\]/);
@@ -317,7 +321,7 @@ describe('5. wiring + the accuracy-chip decision', () => {
     for (const c of calls) assert.match(c, /^(gen|fx)[A-Z]\w*$|^(isAvailable|engineVersion)$/, `ApeDsp.${c} — not a generator/effects call`);
     assert.doesNotMatch(s, /useMicrophone|getUserMedia|AudioRecorder|requestRecordingPermissions|getFrame|getMeterFrame/);
     // The honesty disclosure stays on the faceplate.
-    assert.match(s, /badge: 'MODULES RUN LAB-DEFAULT SETTINGS — GR METERS MEASURED, LIVE'/);
+    assert.match(s, /modelNote: 'Each unit runs lab-default settings; the GR meters are measured live\.'/);
   });
 });
 
@@ -431,9 +435,12 @@ describe('6. every dynamics param the engine reads is written by the chain (D41 
   // bands 1–5 are written OFF, and an off band's freq / q / gain are never read
   for (const b of [1, 2, 3, 4, 5]) for (const f of ['freq', 'q', 'gain']) INERT[`eq:eqBand${b}.${f}`] = /const int t = bands_\[i\]\.type\.load\(std::memory_order_relaxed\);\s*if \(t == Off\) continue;/;
 
-  it('the chain enables all nine nodes (FULL CHAIN), so every node is covered', () => {
+  it('the chain enables all nine engine nodes (FULL CHAIN), so every node is covered', () => {
     const full = s.match(/key: 'full',[^\n]*enable: \[([^\]]+)\]/)?.[1] ?? '';
-    assert.deepEqual(full.split(',').map((x) => x.trim()), ['FX.eq', 'FX.comp', 'FX.gate', 'FX.dist', 'FX.mod', 'FX.delay', 'FX.reverb', 'FX.stereo', 'FX.limiter']);
+    // Owner 2026-11-22: "the gate is usually before any eq and compression. Low Cut as well (not shown currently)";
+    // LOW CUT joined the rack as its first unit, so the rack holds ten units, not nine.
+    // LOW_CUT is a rack unit carried by the EQ node (its band 5), so the engine nodes are still these nine.
+    assert.deepEqual(full.split(',').map((x) => x.trim()), ['LOW_CUT', 'FX.eq', 'FX.comp', 'FX.gate', 'FX.dist', 'FX.mod', 'FX.delay', 'FX.reverb', 'FX.stereo', 'FX.limiter']);
   });
   it('every param any lab or screen writes is written by the chain too (or is inert in the chain’s settings)', () => {
     const chain = chainWrites();

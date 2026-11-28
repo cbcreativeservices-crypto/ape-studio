@@ -13,20 +13,29 @@
  * Honesty: this is instructional content only — it never claims a live
  * measurement and never renders a meter.
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState, type ComponentType, type ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Modal } from '../../../components/DimModal';
+import { sheetContent } from './sheetContent';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, fonts } from '../../../theme/tokens';
 import type { GuidedStep, LessonContent } from './types';
 import { readingColumn } from '../../../theme/readingColumn';
+// S3's silent-path tag (lab fix round 2026-11-14): a step only the ear can do.
+import { NeedsSoundTag } from '../../../screens/lab/rack/silentPath';
 
-/** A titled block of bullet lines. */
-function BulletBlock({ title, items, accent }: { title: string; items: string[]; accent?: boolean }) {
+/** A fold the LEARN tab hands in (owner 2026-11-21: "Build all 40",
+ *  collapsed-sections proposal): it draws the block's title as its header and
+ *  starts CLOSED. Absent (every popup sheet) = the blocks draw as before. */
+export type LessonFold = ComponentType<{ title: string; children: ReactNode }>;
+
+/** A titled block of bullet lines. `noTitle`: the fold holding the block
+ *  draws the title, so it is never drawn twice. */
+function BulletBlock({ title, items, accent, noTitle }: { title: string; items: string[]; accent?: boolean; noTitle?: boolean }) {
   if (!items.length) return null;
   return (
     <View style={styles.block}>
-      <Text style={[styles.blockTitle, accent && styles.blockTitleAccent]}>{title}</Text>
+      {noTitle ? null : <Text style={[styles.blockTitle, accent && styles.blockTitleAccent]}>{title}</Text>}
       {items.map((line, i) => (
         <View key={i} style={styles.bulletRow}>
           <Text style={[styles.bulletDot, accent && styles.bulletDotAccent]}>•</Text>
@@ -48,7 +57,10 @@ function StepsBlock({ steps }: { steps: GuidedStep[] }) {
         <View key={i} style={styles.stepRow}>
           <Text style={styles.stepNum}>{i + 1}</Text>
           <View style={styles.stepBody}>
-            <Text style={styles.stepDo}>{st.do}</Text>
+            <Text style={styles.stepDo}>
+              {st.do}
+              {st.needsSound ? <NeedsSoundTag /> : null}
+            </Text>
             <Text style={styles.stepLine}>
               <Text style={styles.stepLabel}>NOTICE  </Text>
               {st.notice}
@@ -76,12 +88,22 @@ export function GuidedLessonBody({
   lesson,
   controlKey,
   compact = false,
+  fold,
 }: {
   lesson: LessonContent;
   controlKey?: string;
   compact?: boolean;
+  /** LEARN tab only (LabShell, owner 2026-11-21: "Build all 40"): CONTROLS,
+   *  COMMON MISTAKES, PRO TIPS and FORMULA / CONCEPT start CLOSED inside this
+   *  fold, every word kept; what it is, WHAT YOU WILL UNDERSTAND and GUIDED
+   *  STEPS stay open. Whole-lab view only — a focused control never folds. */
+  fold?: LessonFold;
 }) {
   const control = controlKey ? lesson.controls.find((c) => c.key === controlKey) : undefined;
+  const Fold = control ? undefined : fold;
+  /** One block, folded under its own title when the LEARN tab asks for it. */
+  const folded = (title: string, has: boolean, block: (noTitle: boolean) => ReactNode) =>
+    !has ? null : Fold ? <Fold title={title}>{block(true)}</Fold> : block(false);
 
   // TIER 1 — the small popup: name + what-it-does, that's it.
   if (compact && control) {
@@ -129,9 +151,9 @@ export function GuidedLessonBody({
             <Text style={styles.paragraph}>{lesson.whatItIs}</Text>
           </View>
           <BulletBlock title="WHAT YOU WILL UNDERSTAND" items={lesson.outcomes ?? []} />
-          {lesson.controls.length ? (
+          {folded('CONTROLS', lesson.controls.length > 0, (noTitle) => (
             <View style={styles.block}>
-              <Text style={styles.blockTitle}>CONTROLS</Text>
+              {noTitle ? null : <Text style={styles.blockTitle}>CONTROLS</Text>}
               {lesson.controls.map((c) => (
                 <View key={c.key} style={styles.controlRow}>
                   <Text style={styles.controlRowName}>
@@ -143,19 +165,26 @@ export function GuidedLessonBody({
                 </View>
               ))}
             </View>
-          ) : null}
+          ))}
           <StepsBlock steps={lesson.steps ?? []} />
         </>
       )}
 
-      {/* The mandatory element — always present. */}
-      <BulletBlock title="COMMON MISTAKES" items={lesson.commonMistakes} accent />
-      <BulletBlock title="PRO TIPS" items={lesson.proTips} />
+      {/* The mandatory element — always present (on the LEARN tab, present
+          and one tap away: it starts closed, owner 2026-11-21). */}
+      {folded('COMMON MISTAKES', lesson.commonMistakes.length > 0, (noTitle) => (
+        <BulletBlock title="COMMON MISTAKES" items={lesson.commonMistakes} accent noTitle={noTitle} />
+      ))}
+      {folded('PRO TIPS', lesson.proTips.length > 0, (noTitle) => (
+        <BulletBlock title="PRO TIPS" items={lesson.proTips} noTitle={noTitle} />
+      ))}
 
-      <View style={styles.block}>
-        <Text style={styles.blockTitle}>FORMULA / CONCEPT</Text>
-        <Text style={styles.formula}>{lesson.formula}</Text>
-      </View>
+      {folded('FORMULA / CONCEPT', true, (noTitle) => (
+        <View style={styles.block}>
+          {noTitle ? null : <Text style={styles.blockTitle}>FORMULA / CONCEPT</Text>}
+          <Text style={styles.formula}>{lesson.formula}</Text>
+        </View>
+      ))}
     </View>
   );
 }
@@ -173,6 +202,15 @@ export function GuidedLessonSheet({
   onClose: () => void;
 }) {
   const insets = useSafeAreaInsets();
+  // THE CARD KEEPS ITS CONTENT WHILE IT SLIDES AWAY (SN-2 checker follow-up,
+  // 2026-11-15). A host that closes by clearing its key (FxLabScreen:
+  // `visible={help != null}`, `controlKey={help?.key}`, close = setHelp(null))
+  // turned the closing card into the WHOLE lesson for the length of the slide,
+  // and a tap then could land on it. While closing, the sheet draws the
+  // control and lesson it was last opened with. Open, nothing changes.
+  const shownRef = useRef({ controlKey, lesson });
+  if (visible) shownRef.current = { controlKey, lesson };
+  ({ controlKey, lesson } = sheetContent(visible, { controlKey, lesson }, shownRef.current));
   const control = controlKey ? lesson.controls.find((c) => c.key === controlKey) : undefined;
   // Two-tier (owner 2026-07-26): a FOCUSED control opens COMPACT (name + what it
   // does); "Learn more" expands to the full stack. The whole-lab entry (no

@@ -11,6 +11,12 @@
  *    an earlier step automatically recalculates every dependent later result
  *    (and the user is told how many changed). An old result is never shown as
  *    current.
+ *  - CARRY (fix-first 15, owner 2026-11-25): a template step's `carry` links
+ *    fill its inputs LIVE from an earlier step's input or answer (the SPL
+ *    Estimate's distance with its level, a cable length, a temperature), and
+ *    any step offers an earlier INPUT that is the same thing as ⤵ USE. The ↻
+ *    note counts every dependent step and names one that cannot be worked out
+ *    from the new value (workflowCarry.ts).
  *  - Typing into an imported field converts it to a manual OVERRIDE (labeled,
  *    with ⟲ RESTORE to return to the import).
  *  - Every imported/overridden value carries a small source label.
@@ -38,7 +44,9 @@ import { MEMBERSHIP_NOT_CONFIRMED } from '../../../features/commercial/tier';
 import { refusalRows, type CalcFunction, type FieldDef, type Workspace } from './calcTypes';
 import { chainFits, fmt, fmtCarried, liveImport, outputUnits, parseQuantity, unitFits, unitsFor } from './calcUnits';
 import { FieldRow, buildValues, defaultUnitIdx, formatOutput, runCompute, type ComputeResult } from './calcPanel';
-import type { BoundInput, Project, SavedRunSummary, ValueSource, Workflow, WorkflowRun } from './workflowModel';
+import type { BoundInput, EstimateId, Project, SavedRunSummary, ValueSource, Workflow, WorkflowRun } from './workflowModel';
+import { answeredInWords, carriedInputs, carriedValue, carrySource, dependentSteps, inputOfferFits, noteDependents, recalcNoteText, waitingText } from './workflowCarry';
+import { ESTIMATE_SOURCE_LABEL, estimateButton, estimateFor, estimateLabel, estimateReach, estimateReportLine, estimateResultText, estimateText, estimateValue, estimatedOutputs, estimatesFedBy, withEstimateLabels } from './workflowEstimate';
 import { workflowLimitsFor } from './workflowModel';
 import { workflowGeneration, workflowListUnreadable, workflowStore } from './workflowStore';
 import { WORKFLOW_TEMPLATES, resolveStep, validateWorkflow } from './workflowCatalog';
@@ -69,7 +77,23 @@ type StepComputed = {
    *  (D41 follow-up J5c): the field reads empty WITH a reason, offers its
    *  ⤵ USE buttons again, and typing makes it a plain manual value. */
   refusedImports: string[];
+  /** This step's inputs as values a later step may carry (fix-first 15). */
+  carried: ReturnType<typeof carriedInputs>;
+  /** Round 2 (2026-11-25): a carried gauge the carry moved to a size the
+   *  table lists, with the words that say so, by field key. */
+  snapNotes: Record<string, string>;
+  /** Round 2: the fields filled with a stated ESTIMATE, and what it worked
+   *  out to (null: the input it needs is not entered yet). */
+  estimates: Record<string, ReturnType<typeof estimateValue>>;
 };
+
+/** A field's template CARRY (fix-first 15, owner 2026-11-25) as a bound live
+ *  import, used wherever the learner has set nothing for that field: typing
+ *  over it makes a restorable OVERRIDE, exactly as over a ⤵ USE import. */
+function linkedBound(workflow: Workflow, stepIndex: number, f: FieldDef): BoundInput | undefined {
+  const src = carrySource(workflow, stepIndex, f.key);
+  return src ? { raw: '', unitIdx: defaultUnitIdx(f), source: src } : undefined;
+}
 
 /** Human line for a source label (spec: "Entered manually", "From Speed of
  *  Sound", "From Church Sanctuary project", "Manually overridden"…). */
@@ -83,9 +107,90 @@ function sourceLabel(src: ValueSource, stepName: (i: number) => string, projectN
       return `From ${projectName ?? 'saved'} project · ${src.valueLabel}`;
     case 'fixed':
       return 'Fixed workflow value';
+    case 'estimate':
+      return ESTIMATE_SOURCE_LABEL;
     case 'override':
       return 'Manually overridden';
   }
+}
+
+/**
+ * The compute chain (the runner's `computed`): every step, in order, imports
+ * resolved LIVE. `estScale` (round 2, 2026-11-25) scales every stated
+ * ESTIMATE: the runner works the chain out again at other estimates to tell
+ * which answers really depend on one (workflowEstimate `estimatedOutputs`).
+ */
+function computeChain(workflow: Workflow | null, run: WorkflowRun | null, estScale = 1): StepComputed[] {
+  if (!workflow || !run) return [];
+  const out: StepComputed[] = [];
+  workflow.steps.forEach((step, i) => {
+    const resolved = resolveStep(step);
+    const fields = resolved
+      ? resolved.fn.inputs.map((k) => resolved.ws.fields.find((f) => f.key === k)).filter((f): f is FieldDef => !!f)
+      : [];
+    const bound = run.steps[i]?.inputs ?? {};
+    const effRaw: Record<string, string> = {};
+    const unitSel: Record<string, number> = {};
+    const refusedImports: string[] = [];
+    const snapNotes: Record<string, string> = {};
+    const estimated: FieldDef[] = [];
+    for (const f of fields) {
+      const b = bound[f.key] ?? linkedBound(workflow, i, f);
+      unitSel[f.key] = b?.unitIdx ?? defaultUnitIdx(f);
+      if (b && b.source.kind === 'prior-step' && b.source.inputKey != null && f.quantity === 'list') {
+        // A carried LIST arrives as typed in the same list field earlier.
+        effRaw[f.key] = out[b.source.stepIndex]?.effRaw[b.source.inputKey] ?? '';
+      } else if (b && b.source.kind === 'prior-step') {
+        // LIVE import: derive from the upstream step's CURRENT output.
+        // Finite only: fmt(NaN) is "—", which the field then flagged as the
+        // user's own unreadable typing. `fits`: the same unit AND meaning
+        // rule as the offer below — a relabelled output must still fit this
+        // field, and a saved run's import that no longer means the same
+        // thing (D41) never shows a wrong figure.
+        const li = liveImport(out, b.source, f);
+        const o = li?.o;
+        if (o && li?.fits && o.quantity === f.quantity && Number.isFinite(o.value)) {
+          const units = unitsFor(f.quantity, f.unitIds);
+          const u = units[unitSel[f.key] % units.length];
+          effRaw[f.key] = fmtCarried(u.fromBase(o.value), f.quantity);
+          // A snapped carry (round 2, 2026-11-25): a gauge Table 310.16 does
+          // not list arrives as the next thicker size it does, said in words.
+          const cv = carriedValue(b.source, o.value);
+          if (cv.note) {
+            snapNotes[f.key] = cv.note;
+            // NaN: a gauge finer than 14 AWG carries nothing (words only).
+            effRaw[f.key] = Number.isFinite(cv.value) ? fmtCarried(u.fromBase(cv.value), f.quantity) : '';
+          }
+        } else {
+          effRaw[f.key] = ''; // upstream incomplete/missing — honestly empty
+          // …or an answer that no longer fits: empty, and the field says why.
+          if (li && !li.fits) refusedImports.push(f.key);
+        }
+      } else if (b && b.source.kind === 'estimate' && resolved && estimateFor(step, resolved.fn.inputs, f.key) === b.source.id) {
+        estimated.push(f); // worked out below, from this step's other inputs
+      } else {
+        // (An estimate that no longer fits this step's calculator holds no
+        // digits: its raw is '', so the field reads empty, to be typed.)
+        effRaw[f.key] = b?.raw ?? '';
+      }
+    }
+    // A stated ESTIMATE (round 2, owner 2026-11-25): live from the same
+    // step's other inputs as entered now, in the field's own unit.
+    const estimates: StepComputed['estimates'] = {};
+    for (const f of estimated) {
+      const b = bound[f.key];
+      if (b?.source.kind !== 'estimate') continue;
+      const est = estimateValue(b.source.id, fields, effRaw, unitSel);
+      estimates[f.key] = est;
+      const units = unitsFor(f.quantity, f.unitIds);
+      effRaw[f.key] = est ? fmtCarried(units[unitSel[f.key] % units.length].fromBase(est.value * estScale), f.quantity) : '';
+    }
+    const values = resolved ? buildValues(fields, effRaw, unitSel) : null;
+    const result = runCompute(resolved?.fn ?? null, values, fields);
+    // A refused step is not complete — like an error, it is not counted.
+    out.push({ resolved, fields, effRaw, result, complete: values != null && !result.computeError && !result.refused, refusedImports, carried: carriedInputs(fields, effRaw, unitSel), snapNotes, estimates });
+  });
+  return out;
 }
 
 export function CalcWorkflowRunScreen() {
@@ -127,6 +232,11 @@ export function CalcWorkflowRunScreen() {
   const [run, setRun] = useState<WorkflowRun | null>(null);
   const [outUnit, setOutUnit] = useState<Record<string, number>>({});
   const [recalcNote, setRecalcNote] = useState<string | null>(null);
+  /** The last edited value (fix-first 15): the ↻ note is worked out from the
+   *  RECOMPUTED steps, so it can say which dependent step has no answer. */
+  // `before` (round 2, 2026-11-25): which steps were complete BEFORE the edit,
+  // so the note speaks only of steps the learner has started or had finished.
+  const [recalc, setRecalc] = useState<{ from: number; fieldKey: string; fieldName: string; before: boolean[] } | null>(null);
   const [resultSaved, setResultSaved] = useState(false);
   // Saved Projects (Phase 4): attach one to the run; its compatible values are
   // offered to matching inputs. Runs never write back into a project.
@@ -296,54 +406,37 @@ export function CalcWorkflowRunScreen() {
   }, [run, limits.canResume, persist]);
 
   // ---- The compute chain: every step, in order, imports resolved LIVE ------
-  const computed: StepComputed[] = useMemo(() => {
-    if (!workflow || !run) return [];
-    const out: StepComputed[] = [];
-    workflow.steps.forEach((step, i) => {
-      const resolved = resolveStep(step);
-      const fields = resolved
-        ? resolved.fn.inputs.map((k) => resolved.ws.fields.find((f) => f.key === k)).filter((f): f is FieldDef => !!f)
-        : [];
-      const bound = run.steps[i]?.inputs ?? {};
-      const effRaw: Record<string, string> = {};
-      const unitSel: Record<string, number> = {};
-      const refusedImports: string[] = [];
-      for (const f of fields) {
-        const b = bound[f.key];
-        unitSel[f.key] = b?.unitIdx ?? defaultUnitIdx(f);
-        if (b && b.source.kind === 'prior-step') {
-          // LIVE import: derive from the upstream step's CURRENT output.
-          // Finite only: fmt(NaN) is "—", which the field then flagged as the
-          // user's own unreadable typing. `fits`: the same unit AND meaning
-          // rule as the offer below — a relabelled output must still fit this
-          // field, and a saved run's import that no longer means the same
-          // thing (D41) never shows a wrong figure.
-          const li = liveImport(out, b.source, f);
-          const o = li?.o;
-          if (o && li?.fits && o.quantity === f.quantity && Number.isFinite(o.value)) {
-            const units = unitsFor(f.quantity, f.unitIds);
-            const u = units[unitSel[f.key] % units.length];
-            effRaw[f.key] = fmtCarried(u.fromBase(o.value), f.quantity);
-          } else {
-            effRaw[f.key] = ''; // upstream incomplete/missing — honestly empty
-            // …or an answer that no longer fits: empty, and the field says why.
-            if (li && !li.fits) refusedImports.push(f.key);
-          }
-        } else {
-          effRaw[f.key] = b?.raw ?? '';
-        }
-      }
-      const values = resolved ? buildValues(fields, effRaw, unitSel) : null;
-      const result = runCompute(resolved?.fn ?? null, values, fields);
-      // A refused step is not complete — like an error, it is not counted.
-      out.push({ resolved, fields, effRaw, result, complete: values != null && !result.computeError && !result.refused, refusedImports });
-    });
-    return out;
-  }, [workflow, run]);
+  const computed: StepComputed[] = useMemo(() => computeChain(workflow, run), [workflow, run]);
 
   const n = workflow?.steps.length ?? 0;
   const idx = run ? Math.min(run.stepIndex, n) : 0; // idx === n → results view
-  const cur = idx < n ? computed[idx] : null;
+  /** Steps whose answers rest on a stated ESTIMATE (round 2, 2026-11-25),
+   *  each mapped to the step whose estimate it rests on: those answers say
+   *  ESTIMATE, the final panel count included. */
+  const estimateOf = useMemo(() => {
+    if (!workflow || !run) return new Map<number, number>();
+    return estimateReach(
+      n,
+      (i) => computed[i]?.fields.map((x) => x.key) ?? [],
+      (i, key) => {
+        const f = computed[i]?.fields.find((x) => x.key === key);
+        return f ? (run.steps[i]?.inputs[key] ?? linkedBound(workflow, i, f))?.source : undefined;
+      },
+      (i, key) => key in (computed[i]?.estimates ?? {}),
+    );
+  }, [workflow, run, computed, n]);
+  /** Per step, the answers that CHANGE when the estimate changes (worked out
+   *  again at ½×, 1.01× and 2× the estimate): only those say "(ESTIMATE)". An
+   *  answer the estimate does not enter (ABSORPTION NEEDED = 0.161·V/RT) never
+   *  does. */
+  const estimateMarks = useMemo(() => {
+    if (!computed.some((c) => Object.keys(c.estimates).length > 0)) return new Map<number, Set<number>>();
+    return estimatedOutputs(computed, [0.5, 1.01, 2].map((k) => computeChain(workflow, run, k)));
+  }, [computed, workflow, run]);
+  const markedAt = (i: number) => (estimateOf.has(i) ? estimateMarks.get(i) : undefined);
+  // Shown with each such answer label marked "(ESTIMATE)" (round 2): a display
+  // copy — imports still match the calculators' own labels.
+  const cur = idx < n ? withEstimateLabels(computed[idx], markedAt(idx)) : null;
   const stepName = useCallback((i: number) => computed[i]?.resolved?.fn.name ?? `step ${i + 1}`, [computed]);
 
   // ---- Mutations ------------------------------------------------------------
@@ -361,23 +454,58 @@ export function CalcWorkflowRunScreen() {
     });
   };
 
-  /** Count later steps whose live imports depend (directly or transitively) on
-   *  step `from` — the honest "N later results were recalculated" figure. */
-  const dependentsOf = (from: number): number => {
-    if (!run) return 0;
-    const depends = new Set<number>([from]);
-    for (let i = from + 1; i < n; i++) {
-      const inputs = run.steps[i]?.inputs ?? {};
-      const hit = Object.values(inputs).some(
-        (b) => b.source.kind === 'prior-step' && depends.has(b.source.stepIndex),
-      );
-      if (hit) depends.add(i);
-    }
-    return depends.size - 1;
+  /** The ↻ note for the last edit (fix-first 15): every later step whose live
+   *  imports or carried inputs depend on that value, directly or through
+   *  another step, counted from the RECOMPUTED steps — a dependent step that
+   *  cannot be worked out from the new value is named in words, never counted
+   *  as "recalculated". */
+  const recalcText = useMemo(() => {
+    if (!recalc || !workflow || !run) return null;
+    // An ESTIMATE worked out from the edited value changes with it (round 2):
+    // its dependents count too.
+    const keys = [recalc.fieldKey, ...estimatesFedBy(computed[recalc.from]?.estimates ?? {}, run.steps[recalc.from]?.inputs ?? {}, recalc.fieldKey)];
+    const deps = [
+      ...new Set(
+        keys.flatMap((key) =>
+          dependentSteps(
+            n,
+            (i) => computed[i]?.fields.map((x) => x.key) ?? [],
+            (i, k) => {
+              const f = computed[i]?.fields.find((x) => x.key === k);
+              return f ? (run.steps[i]?.inputs[k] ?? linkedBound(workflow, i, f))?.source : undefined;
+            },
+            recalc.from,
+            key,
+          ),
+        ),
+      ),
+    ].sort((a, b) => a - b);
+    // Only steps that were complete before the edit, or that the learner has
+    // started and that now work out (round 2, 2026-11-25): "can't be worked
+    // out" is said only of a step that WAS finished.
+    const shown = noteDependents(deps, (i) => Object.keys(run.steps[i]?.inputs ?? {}).length > 0, (i) => !!recalc.before[i], (i) => !!computed[i]?.complete);
+    return recalcNoteText(recalc.fieldName, shown, (i) => !!computed[i]?.complete);
+  }, [recalc, workflow, run, computed, n]);
+  useEffect(() => {
+    if (recalcText) AccessibilityInfo.announceForAccessibility?.(recalcText);
+  }, [recalcText]);
+  /** Note that `f` (on this step) changed. While the SAME field keeps being
+   *  edited, the completeness from before its FIRST keystroke is kept: clearing
+   *  a value and retyping it must not forget a step that was finished. */
+  const markRecalc = (f: FieldDef) =>
+    setRecalc((p) =>
+      p && p.from === idx && p.fieldKey === f.key
+        ? { ...p, fieldName: f.name, before: p.before }
+        : { from: idx, fieldKey: f.key, fieldName: f.name, before: computed.map((c) => c.complete) },
+    );
+  /** A plain note (SAVE's answer), or none — it replaces the ↻ note. */
+  const showNote = (text: string | null) => {
+    setRecalc(null);
+    setRecalcNote(text);
   };
 
   const onEditField = (f: FieldDef, text: string) => {
-    const existing = run?.steps[idx]?.inputs[f.key];
+    const existing = run?.steps[idx]?.inputs[f.key] ?? (workflow ? linkedBound(workflow, idx, f) : undefined);
     // An import that no longer fits (J5c) has nothing to restore: typing over
     // it is a plain manual value, never an override offering ⟲ RESTORE.
     const deadImport = existing?.source.kind === 'prior-step' && !!computed[idx]?.refusedImports.includes(f.key);
@@ -389,18 +517,16 @@ export function CalcWorkflowRunScreen() {
     const unitIdx = existing?.unitIdx ?? defaultUnitIdx(f);
     const source: ValueSource = existing?.source.kind === 'override' ? existing.source : { kind: 'manual' };
     setBound(f.key, { raw: text, unitIdx, source });
-    // Editing an earlier step's value updates dependent later results — say so.
-    const deps = dependentsOf(idx);
-    if (deps > 0) {
-      const msg = `${f.name} changed — ${deps} later result${deps === 1 ? '' : 's'} recalculated.`;
-      setRecalcNote(msg);
-      AccessibilityInfo.announceForAccessibility?.(msg);
-    }
+    // Editing an earlier step's value updates dependent later results — say
+    // so, from the recomputed steps (recalcText; nothing shows when none do).
+    setRecalcNote(null);
+    markRecalc(f);
   };
 
   const onCycleUnit = (f: FieldDef) => {
     const units = unitsFor(f.quantity, f.unitIds);
-    const existing = run?.steps[idx]?.inputs[f.key];
+    // A carried field keeps its link: only the shown unit changes.
+    const existing = run?.steps[idx]?.inputs[f.key] ?? (workflow ? linkedBound(workflow, idx, f) : undefined);
     const curIdx = existing?.unitIdx ?? defaultUnitIdx(f);
     const nextIdx = (curIdx + 1) % units.length;
     // A value that CAME FROM somewhere (a saved project, a workflow constant)
@@ -421,13 +547,19 @@ export function CalcWorkflowRunScreen() {
     });
   };
 
-  const importFrom = (f: FieldDef, fromStep: number, outputLabel: string, outputIndex: number) => {
+  const importFrom = (f: FieldDef, fromStep: number, outputLabel: string, outputIndex: number, inputKey?: string) => {
+    const unitIdx = run?.steps[idx]?.inputs[f.key]?.unitIdx ?? defaultUnitIdx(f);
+    showNote(null);
+    if (inputKey != null) {
+      // An earlier step's INPUT (fix-first 15) is carried by its field key.
+      setBound(f.key, { raw: '', unitIdx, source: { kind: 'prior-step', stepIndex: fromStep, outputLabel, inputKey } });
+      return;
+    }
     setBound(f.key, {
       raw: '',
-      unitIdx: run?.steps[idx]?.inputs[f.key]?.unitIdx ?? defaultUnitIdx(f),
+      unitIdx,
       source: { kind: 'prior-step', stepIndex: fromStep, outputLabel, outputIndex },
     });
-    setRecalcNote(null);
   };
 
   const restoreImport = (f: FieldDef) => {
@@ -457,16 +589,29 @@ export function CalcWorkflowRunScreen() {
       unitIdx: uIdx,
       source: { kind: 'project', projectId: run?.projectId ?? '', valueLabel: v.label },
     });
-    const deps = dependentsOf(idx);
-    if (deps > 0) {
-      const msg = `${f.name} changed — ${deps} later result${deps === 1 ? '' : 's'} recalculated.`;
-      setRecalcNote(msg);
-      AccessibilityInfo.announceForAccessibility?.(msg);
-    }
+    setRecalcNote(null);
+    markRecalc(f);
+  };
+
+  /** "I DON'T KNOW IT" (round 2, owner 2026-11-25): fill the field with its
+   *  stated ESTIMATE, worked out live; typing a value replaces it. */
+  /** Does this carried/imported value come from a stated estimate (the
+   *  estimated input itself, or an answer that depends on it)? */
+  const carriesEstimate = (src: Extract<ValueSource, { kind: 'prior-step' }>): boolean => {
+    const up = computed[src.stepIndex];
+    if (!up) return false;
+    if (src.inputKey != null) return src.inputKey in up.estimates;
+    const oi = up.result.outputs.findIndex((o) => o.label === src.outputLabel);
+    return oi >= 0 && !!markedAt(src.stepIndex)?.has(oi);
+  };
+  const applyEstimate = (f: FieldDef, id: EstimateId) => {
+    setBound(f.key, { raw: '', unitIdx: run?.steps[idx]?.inputs[f.key]?.unitIdx ?? defaultUnitIdx(f), source: { kind: 'estimate', id } });
+    setRecalcNote(null);
+    markRecalc(f);
   };
 
   const goTo = (next: number) => {
-    setRecalcNote(null);
+    showNote(null);
     // Stepping back INTO the steps re-opens a finished run (toddler pass
     // 2026-09-30). `completedAt` used to survive the step back, so edits made
     // after FINISH were saved on a run marked complete — which the resume
@@ -506,7 +651,7 @@ export function CalcWorkflowRunScreen() {
       if (!c.resolved) return;
       const step = `${i + 1}. ${c.resolved.fn.name}`;
       for (const f of c.fields) {
-        const b = run.steps[i]?.inputs[f.key];
+        const b = run.steps[i]?.inputs[f.key] ?? linkedBound(workflow, i, f);
         const units = unitsFor(f.quantity, f.unitIds);
         const u = units[(b?.unitIdx ?? defaultUnitIdx(f)) % units.length];
         const raw = c.effRaw[f.key] ?? '';
@@ -517,16 +662,20 @@ export function CalcWorkflowRunScreen() {
         const src = b ? sourceLabel(b.source, stepName, run.projectName) : null;
         inputs.push({ label: f.name, value: raw, unit: u.label, source: src ?? 'Entered manually', step });
         if (b?.source.kind === 'override') warnings.add(`${f.name} in step ${i + 1} was manually overridden.`);
+        // A stated estimate is said in the report too (round 2, 2026-11-25).
+        const est = c.estimates[f.key];
+        if (est) warnings.add(estimateReportLine(i + 1, f, b?.unitIdx ?? defaultUnitIdx(f), est));
       }
+      const marks = markedAt(i);
       if (c.result.computeError) warnings.add(`Step ${i + 1} (${c.resolved.fn.name}) could not compute — check its inputs.`);
       // A refused step reports its refusal, never a figure beside it as a result.
       if (c.result.refused) {
         for (const o of refusalRows(c.result.outputs)) warnings.add(`Step ${i + 1} (${c.resolved.fn.name}): ${o.text}`);
       } else {
-        for (const o of c.result.outputs) {
-          if ('value' in o) results.push({ label: o.label, value: formatOutput(o, 4, 0), unit: '', step });
+        c.result.outputs.forEach((o, oi) => {
+          if ('value' in o) results.push({ label: estimateLabel(o.label, !!marks?.has(oi)), value: formatOutput(o, 4, 0), unit: '', step });
           else results.push({ label: o.label, value: o.text, unit: '', step });
-        }
+        });
       }
       if (c.resolved.ws.warnings) warnings.add(c.resolved.ws.warnings);
     });
@@ -541,7 +690,7 @@ export function CalcWorkflowRunScreen() {
       warnings: [...warnings],
       notes: run.notes?.trim() || undefined,
     };
-  }, [workflow, run, idx, n, computed, stepName]);
+  }, [workflow, run, idx, n, computed, stepName, estimateOf, estimateMarks]);
   /** The summary ON SCREEN now — SAVE RESULT compares against it after the write. */
   const summaryRef = useRef<SavedRunSummary | null>(null);
   summaryRef.current = summary;
@@ -626,7 +775,7 @@ export function CalcWorkflowRunScreen() {
           <View style={styles.scroll}>
             <Text style={styles.caption}>
               {tierReadFailed
-                ? 'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.'
+                ? 'Couldn’t confirm your membership on this device. Check your connection and reopen the app.'
                 : 'Checking your account…'}
             </Text>
           </View>
@@ -717,7 +866,7 @@ export function CalcWorkflowRunScreen() {
         keyboardShouldPersistTaps="handled"
         bottomOffset={24}
       >
-        {recalcNote ? <Text style={styles.recalcNote}>↻ {recalcNote}</Text> : null}
+        {recalcText ? <Text style={styles.recalcNote}>↻ {recalcText}</Text> : recalcNote ? <Text style={styles.recalcNote}>↻ {recalcNote}</Text> : null}
 
         {idx < n && cur ? (
           cur.resolved ? (
@@ -772,10 +921,11 @@ export function CalcWorkflowRunScreen() {
                   2026-08-07 — same behaviour as the single calculator). */}
               <View style={styles.panel} onLayout={(e) => { inputsYRef.current = e.nativeEvent.layout.y; }}>
                 {cur.fields.map((f) => {
-                  const b = run.steps[idx]?.inputs[f.key];
-                  const src = b ? sourceLabel(b.source, stepName, run.projectName) : null;
+                  const b = run.steps[idx]?.inputs[f.key] ?? linkedBound(workflow, idx, f);
+                  // (An estimate that no longer fits this step is not labeled as one.)
+                  const src = b && !(b.source.kind === 'estimate' && !(f.key in cur.estimates)) ? sourceLabel(b.source, stepName, run.projectName) : null;
                   // Compatible earlier results (matching quantity, numeric only).
-                  const sources: { fromStep: number; label: string; index: number }[] = [];
+                  const sources: { fromStep: number; label: string; index: number; inputKey?: string }[] = [];
                   if (f.quantity !== 'list') {
                     for (let k = 0; k < idx; k++) {
                       // A refused step offers nothing to import (see the live import).
@@ -789,6 +939,16 @@ export function CalcWorkflowRunScreen() {
         if ('value' in o && chainFits(o.label, o.quantity, f, o.meaning) && o.chainable !== false && Number.isFinite(o.value)) sources.push({ fromStep: k, label: o.label, index: oi });
                       });
                     }
+                    // An earlier step's INPUT that is the same thing (fix-first
+                    // 15): a typed distance, temperature or sample rate.
+                    for (let k = 0; k < idx; k++) {
+                      const ck = computed[k];
+                      const fromWs = workflow.steps[k]?.workspaceId;
+                      if (!ck || !fromWs) continue;
+                      for (const g of ck.fields) {
+                        if (ck.carried[g.key] && inputOfferFits(fromWs, g, workflow.steps[idx]?.workspaceId ?? '', f)) sources.push({ fromStep: k, label: g.name, index: -1, inputKey: g.key });
+                      }
+                    }
                   }
                   // A saved import whose answer no longer fits this input (J5c):
                   // say why the field is empty, offer the answers that DO fit,
@@ -798,14 +958,36 @@ export function CalcWorkflowRunScreen() {
                   const canRestore =
                     b?.source.kind === 'override' &&
                     !(b.source.replaced.kind === 'prior-step' && liveImport(computed, b.source.replaced, f)?.fits === false);
+                  // A stated ESTIMATE this field may take (round 2, owner
+                  // 2026-11-25): offered while the field is empty; once used,
+                  // its assumption is printed here in full.
+                  const estId = estimateFor(step ?? undefined, cur.resolved?.fn.inputs ?? [], f.key);
+                  const onEst = b?.source.kind === 'estimate' && f.key in cur.estimates;
                   const footer = (
                     <View style={styles.srcWrap}>
-                      {deadImport && b?.source.kind === 'prior-step' ? (
+                      {onEst && b?.source.kind === 'estimate' ? (
+                        <Text style={[styles.srcLabel, styles.srcLabelOverride]}>{estimateText(b.source.id, f, b.unitIdx, cur.estimates[f.key])}</Text>
+                      ) : deadImport && b?.source.kind === 'prior-step' ? (
                         <Text style={[styles.srcLabel, styles.srcLabelOverride]}>
                           {`${b.source.outputLabel} from step ${b.source.stepIndex + 1} no longer fits this input — type a value.`}
                         </Text>
+                      ) : isImport && b?.source.kind === 'prior-step' && (cur.effRaw[f.key] ?? '') === '' && !cur.snapNotes[f.key] ? (
+                        // Nothing to carry yet: say so, never a blank with a source badge.
+                        <Text style={[styles.srcLabel, styles.srcLabelOverride]}>
+                          {waitingText(b.source, answeredInWords(computed, b.source), f.meaning === 'number:awg' ? 'gauge' : 'value')}
+                        </Text>
                       ) : src ? (
-                        <Text style={[styles.srcLabel, b?.source.kind === 'override' && styles.srcLabelOverride]}>{src}</Text>
+                        <Text style={[styles.srcLabel, b?.source.kind === 'override' && styles.srcLabelOverride]}>
+                          {b?.source.kind === 'prior-step' && carriesEstimate(b.source) ? `${src} (estimate)` : src}
+                        </Text>
+                      ) : null}
+                      {isImport && cur.snapNotes[f.key] ? (
+                        <Text style={[styles.srcLabel, styles.srcLabelOverride]}>{cur.snapNotes[f.key]}</Text>
+                      ) : null}
+                      {estId && !onEst && !isImport && (cur.effRaw[f.key] ?? '') === '' ? (
+                        <Pressable style={styles.srcBtn} onPress={() => applyEstimate(f, estId)} accessibilityRole="button" accessibilityLabel={`${f.name}: I don’t know it. Use a typical untreated room, as a stated estimate`}>
+                          <Text style={styles.srcBtnText}>{estimateButton(estId)}</Text>
+                        </Pressable>
                       ) : null}
                       {canRestore ? (
                         <Pressable style={styles.srcBtn} onPress={() => restoreImport(f)} accessibilityRole="button" accessibilityLabel={`Restore the imported value for ${f.name}`}>
@@ -815,9 +997,9 @@ export function CalcWorkflowRunScreen() {
                       {!isImport
                         ? sources.slice(0, 4).map((s) => (
                             <Pressable
-                              key={`${s.fromStep}-${s.label}`}
+                              key={`${s.fromStep}-${s.inputKey ?? ''}-${s.label}`}
                               style={styles.srcBtn}
-                              onPress={() => importFrom(f, s.fromStep, s.label, s.index)}
+                              onPress={() => importFrom(f, s.fromStep, s.label, s.index, s.inputKey)}
                               accessibilityRole="button"
                               accessibilityLabel={`Use ${s.label} from step ${s.fromStep + 1}`}
                             >
@@ -864,6 +1046,13 @@ export function CalcWorkflowRunScreen() {
                 {/* Answer — same destination-first grammar as the calculators. */}
                 <View style={styles.resultPanel}>
                   <Text style={styles.resultEyebrow}>YOUR ANSWER — {cur.resolved.fn.name.toUpperCase()}</Text>
+                  {/* An answer resting on a stated ESTIMATE says so (round 2, 2026-11-25). */}
+                  {cur.complete && (markedAt(idx)?.size ?? 0) > 0 ? (
+                    <Text style={styles.resultNote}>
+                      <Text style={[styles.resultLabel, styles.estimateTag]}>ESTIMATE  </Text>
+                      {estimateResultText(estimateOf.get(idx) ?? idx, idx)}
+                    </Text>
+                  ) : null}
                   {!cur.complete ? (
                     cur.result.computeError ? (
                       <Text style={styles.warnText}>
@@ -958,6 +1147,7 @@ export function CalcWorkflowRunScreen() {
                 label="START AGAIN"
                 onPress={() => {
                   setResultSaved(false);
+                  showNote(null);
                   setRun({
                     id: Crypto.randomUUID(),
                     workflowId: workflow.id,
@@ -986,6 +1176,7 @@ export function CalcWorkflowRunScreen() {
               label="SAVE"
               onPress={() =>
                 void persist().then((ok) => {
+                  setRecalc(null); // SAVE's answer replaces the ↻ note
                   if (ok === 'blank') setRecalcNote('Nothing to save yet — enter a value first.');
                   else if (ok) setRecalcNote('Progress saved.');
                   else if (storeGenRef.current === workflowGeneration()) notify('Save failed', 'Your progress could not be saved. Try again.');
@@ -1081,6 +1272,7 @@ const styles = StyleSheet.create({
   resultLabel: { fontFamily: fonts.oswaldSemiBold, fontSize: 11, letterSpacing: 0.9, color: colors.textSecondary, flexShrink: 1 },
   resultValue: { fontFamily: fonts.oswaldMedium, fontSize: 19, letterSpacing: 0.4, color: colors.amber },
   resultNote: { fontFamily: fonts.barlowRegular, fontSize: 13, lineHeight: 18, color: colors.textSecondary },
+  estimateTag: { color: colors.amber },
   warnText: { fontFamily: fonts.barlowMedium, fontSize: 12.5, lineHeight: 17, color: '#ff9b8f' },
   formula: { fontFamily: fonts.mono, fontSize: 13, color: colors.textPrimary },
 

@@ -27,6 +27,7 @@ import { REACH_PART } from '../shared/broadcast/talkerModel.ts';
 import { BODY_MOUNTS, lavLead, packAt } from '../shared/broadcast/bodyWorn.ts';
 import { SHOT_PRESETS, cameraBody, cameraForShot } from '../shared/broadcast/cameraFrame.ts';
 import { LECTERN } from '../b06Panels/geometry.ts';
+import { figureV2On } from '../shared/figureV2/figureV2Config.ts';
 
 const ill = (reason: string): Provenance => ({ kind: 'illustrative', reason });
 const v3 = (x: number, y: number, z: number): Vec3 => ({ x, y, z });
@@ -81,14 +82,27 @@ const parts: Part[] = [
   REACH_PART,
 ];
 
-const garmentRim = (id: keyof typeof BODY_MOUNTS, label: string): Rim => ({ id: `clip.${id}`, label, c: BODY_MOUNTS[id].grip, axis: v3(1, 0, 0), r: 0, types: LAV_TYPES, lead: lavLead(BODY_MOUNTS[id].grip) });
+/** (figure V2, wave 4: the presenter Ruth in her jacket) each clip's GRIP drawn on the cloth — the lesson's own
+ *  grip height, brought along the horizontal onto the new figure's shirt in the jacket's V, or onto the
+ *  lapel's fold (figureV2/jacketPlan clipOnCloth, as B02; pinned by test/figureV2FrontAndBoom_20261124), and
+ *  the headset's ear hook on the new head's ear. The CAPSULES — every distance and angle is read from them
+ *  (BODY_MOUNTS[…].at, HEADSET.at) — do not move: no number the lesson prints changes. */
+export const GRIP_ON_CLOTH_X: Readonly<Partial<Record<keyof typeof BODY_MOUNTS, number>>> = { sternum: 1.5, lapel: 4.9, collar: -14.6, tie: 4.1, neckline: -6.7, concealed: 1.5 };
+export const EAR_ON_HEAD = v3(-117.2, -48.8, 85.8);
+const V2_GRIPS = figureV2On('frontAndBoom');
+const gripDx = (id: keyof typeof BODY_MOUNTS) => (V2_GRIPS && GRIP_ON_CLOTH_X[id] !== undefined ? GRIP_ON_CLOTH_X[id]! - BODY_MOUNTS[id].grip.x : 0);
+const garmentRim = (id: keyof typeof BODY_MOUNTS, label: string): Rim => {
+  const dx = gripDx(id);
+  const g = BODY_MOUNTS[id].grip;
+  return { id: `clip.${id}`, label, c: v3(g.x + dx, g.y, g.z), axis: v3(1, 0, 0), r: 0, types: LAV_TYPES, lead: lavLead(g).map((p) => v3(p.x + dx, p.y, p.z)) };
+};
 const rims: Rim[] = [
   garmentRim('sternum', 'a clip on the shirt, over the breastbone'),
   garmentRim('lapel', 'a clip on the jacket’s lapel'),
   garmentRim('collar', 'a clip on the collar'),
   garmentRim('tie', 'a clip on the tie'),
   garmentRim('neckline', 'a clip at the neckline'),
-  { id: 'clip.ear', label: 'a headset over the right ear', c: v3(EAR.x, EAR.y, EAR_HALF), axis: v3(0, 0, 1), r: 0, types: HS_TYPES },
+  { id: 'clip.ear', label: 'a headset over the right ear', c: V2_GRIPS ? EAR_ON_HEAD : v3(EAR.x, EAR.y, EAR_HALF), axis: v3(0, 0, 1), r: 0, types: HS_TYPES },
   { id: 'goose.lectern', label: 'the lectern’s gooseneck socket', c: LECTERN.socket, axis: v3(0, -1, 0), r: 0, variants: ['live'], types: ['bcGoose', 'bcGooseSuper'] },
 ];
 

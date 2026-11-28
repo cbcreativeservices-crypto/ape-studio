@@ -77,7 +77,22 @@ export async function resetScreenIntros(): Promise<void> {
  * Plain objects, not `let`: neither is user data (they only order popups),
  * and both empty themselves when their screens unmount.
  */
-const labTermSignal = { owed: new Set<number>(), holds: new Set<number>(), seq: 0 };
+const labTermSignal = {
+  owed: new Set<number>(),
+  holds: new Set<number>(),
+  /** Screen intro cards owed or on screen (ScreenGuide's IntroCardController
+   *  and its overlay) — see "ONE AT A TIME" below. */
+  cards: new Set<number>(),
+  /** Work under way inside a ScreenGuideHost (a tray open, a drag). */
+  work: new Set<number>(),
+  /** Hosts able to carry the lab term inside their intro card: 'pending'
+   *  while the card's seen flag is still being read, 'ready' once it is due. */
+  carriers: new Map<number, 'pending' | 'ready'>(),
+  /** The focused lab's term, offered to a carrier while it is owed. */
+  offered: null as CarriedLabTerm | null,
+  offeredBy: 0,
+  seq: 0,
+};
 const labTermListeners = new Set<() => void>();
 function emitLabTerm(): void {
   for (const l of Array.from(labTermListeners)) l();
@@ -93,18 +108,145 @@ export function labTermSignalId(): number {
   labTermSignal.seq += 1;
   return labTermSignal.seq;
 }
-export function setLabTermIntroOwed(id: number, owed: boolean): void {
-  const had = labTermSignal.owed.has(id);
-  if (owed === had) return;
-  if (owed) labTermSignal.owed.add(id);
-  else labTermSignal.owed.delete(id);
+function setIn(set: Set<number>, id: number, on: boolean): void {
+  if (set.has(id) === on) return;
+  if (on) set.add(id);
+  else set.delete(id);
   emitLabTerm();
 }
+export function setLabTermIntroOwed(id: number, owed: boolean): void {
+  setIn(labTermSignal.owed, id, owed);
+}
+/**
+ * ⛔ ONE AT A TIME (audit 2026-11-14, row 1: "Two to four popups arrive
+ * before the first touch, and late ones swallow the first tap"; owner
+ * approval: "Begin fixing all bugs found and do obvious ... fixes").
+ *
+ * "Owed" now means a FIRST-OPEN CARD is still to come on this visit: the lab
+ * term popup OR the screen's intro card (which may carry the term inside it,
+ * see CARRY below). Everything that already waited for the term popup — the
+ * lab's own first-open popups (useScreenIntro: ProNote), GuestStartReminder,
+ * LabShell's arrival audio ask and the ⓘ hint — now also waits for the card,
+ * so they come one after another, never on top of each other.
+ */
 export function isLabTermIntroOwed(): boolean {
-  return labTermSignal.owed.size > 0;
+  return labTermSignal.owed.size > 0 || labTermSignal.cards.size > 0;
 }
 export function useLabTermIntroOwed(): boolean {
   return useSyncExternalStore(subscribeLabTerm, isLabTermIntroOwed, isLabTermIntroOwed);
+}
+/** The TERM popup alone (the intro card itself waits on this, never on its
+ *  own entry). */
+export function isLabTermOnlyOwed(): boolean {
+  return labTermSignal.owed.size > 0;
+}
+export function useLabTermOnlyOwed(): boolean {
+  return useSyncExternalStore(subscribeLabTerm, isLabTermOnlyOwed, isLabTermOnlyOwed);
+}
+/** A focused screen's intro card is owed or on screen (ScreenGuide). */
+export function setIntroCardOwed(id: number, owed: boolean): void {
+  setIn(labTermSignal.cards, id, owed);
+}
+export function isIntroCardOwed(): boolean {
+  return labTermSignal.cards.size > 0;
+}
+
+/**
+ * WORK UNDER WAY (introHold.ts publishes it): a view inside a ScreenGuideHost
+ * has a tray open or a drag on its lane. App-wide, so surfaces outside the
+ * host (the lab term popup, the Sound Safety arrival ask) never open over it.
+ */
+export function setScreenWork(id: number, on: boolean): void {
+  setIn(labTermSignal.work, id, on);
+}
+export function isScreenWorkUnderway(): boolean {
+  return labTermSignal.work.size > 0;
+}
+export function useScreenWorkUnderway(): boolean {
+  return useSyncExternalStore(subscribeLabTerm, isScreenWorkUnderway, isScreenWorkUnderway);
+}
+
+/**
+ * CARRY: the lab term rides INSIDE the intro card (audit 2026-11-14, row 1:
+ * "Merge the term card into the intro card"). One card, the term on top.
+ *
+ *   LabTermIntro  — while its term is owed and ready, OFFERS it
+ *                   (offerLabTermToCard) and, while a carrier is 'pending' or
+ *                   'ready', draws nothing of its own (still owed, so the
+ *                   lab's other popups keep waiting);
+ *   ScreenGuide   — a focused host whose intro card is due registers as a
+ *                   carrier (setLabTermCarrier), draws the offered term inside
+ *                   the card, and on close reports it read
+ *                   (finishCarriedLabTerm), which marks the term seen.
+ * A screen with no intro card due has no carrier: the term shows on its own
+ * sheet as before.
+ */
+export type CarriedLabTerm = { key: string; title: string; plainEnglish: string };
+/** `offeredBy` is the owner of the offer slot: a blurred lab withdrawing late
+ *  never clears the focused lab's offer. */
+export function offerLabTermToCard(owner: number, term: CarriedLabTerm | null): void {
+  if (!term) {
+    if (labTermSignal.offeredBy !== owner || labTermSignal.offered == null) return;
+    labTermSignal.offeredBy = 0;
+    labTermSignal.offered = null;
+    emitLabTerm();
+    return;
+  }
+  const cur = labTermSignal.offered;
+  if (labTermSignal.offeredBy === owner && cur && cur.key === term.key && cur.plainEnglish === term.plainEnglish) return;
+  labTermSignal.offeredBy = owner;
+  labTermSignal.offered = term;
+  emitLabTerm();
+}
+function offeredNow(): CarriedLabTerm | null {
+  return labTermSignal.offered;
+}
+export function useOfferedLabTerm(): CarriedLabTerm | null {
+  return useSyncExternalStore(subscribeLabTerm, offeredNow, offeredNow);
+}
+export function setLabTermCarrier(id: number, state: 'none' | 'pending' | 'ready'): void {
+  const cur = labTermSignal.carriers.get(id) ?? 'none';
+  if (cur === state) return;
+  if (state === 'none') labTermSignal.carriers.delete(id);
+  else labTermSignal.carriers.set(id, state);
+  emitLabTerm();
+}
+/** 'ready' if any carrier is ready, else 'pending' if any is still reading,
+ *  else 'none'. */
+export function labTermCarrierState(): 'none' | 'pending' | 'ready' {
+  let pending = false;
+  for (const s of labTermSignal.carriers.values()) {
+    if (s === 'ready') return 'ready';
+    pending = true;
+  }
+  return pending ? 'pending' : 'none';
+}
+export function useLabTermCarrierState(): 'none' | 'pending' | 'ready' {
+  return useSyncExternalStore(subscribeLabTerm, labTermCarrierState, labTermCarrierState);
+}
+const carriedDone = new Set<(key: string) => void>();
+/** The carrying card closed: its term was read. */
+export function finishCarriedLabTerm(key: string): void {
+  for (const fn of Array.from(carriedDone)) fn(key);
+}
+export function onCarriedLabTermDone(fn: (key: string) => void): () => void {
+  carriedDone.add(fn);
+  return () => {
+    carriedDone.delete(fn);
+  };
+}
+
+/**
+ * A popup ignores taps for its first moment (audit 2026-11-14, quick win 1:
+ * "Make popups ignore taps until they are fully shown"). A tap aimed at the
+ * page a beat before a card arrived must not close it, nor press a button on
+ * it. Shared by the intro card, the term popup, the ⓘ hint and the Sound
+ * Safety sheet.
+ */
+export const POPUP_ARM_MS = 350;
+/** Pure: is a tap at `now` inside the arm window of a popup shown at `shownAt`? */
+export function popupArming(shownAt: number | null, now: number, armMs = POPUP_ARM_MS): boolean {
+  return shownAt != null && now - shownAt < armMs;
 }
 /** Hold the term popup back while the caller owns the screen; returns the
  *  release (an effect cleanup). */
@@ -303,3 +445,124 @@ export const SCREEN_INTROS: Record<
     button: 'Got it',
   },
 };
+
+/**
+ * ⛔ THE GUEST PRIVACY NOTICE (owner 2026-11-20) [MD:D72].
+ *
+ * Every tap of GUEST MODE (each one erases the visit before it, D57) owes one
+ * popup on the main menu BEFORE the intro video: our stance on tracking, the
+ * guest erase, and how little an account keeps. "Got it" settles it and the
+ * video then plays — every guest sign-in, by the owner's choice (its "seen"
+ * flag is device-level and survives the wipe, so on its own it plays once per
+ * phone; `guestVideoOwed` launches it anyway, without touching that flag).
+ *
+ * Every sentence is true for the shipped app (checked 2026-11-20 against
+ * features/telemetry, clearLocalAccountData GUEST_KEEP and Privacy Policy
+ * 3.2): no advertising id and no cross-app tracking; the guest wipe keeps only
+ * the glossary / calculator weekly counts, the install id and intro flags;
+ * Sentry and Aptabase carry no name, email or account. Change a fact here
+ * only together with the code that makes it true.
+ *
+ * In memory on purpose: both are owed by THIS sign-in, never a stored record
+ * (no storage at all). A later account sign-in cannot show it: the notice
+ * and the guest video both require useGuestWording().guest.
+ * Kept in this file (already at app start) so no new module joins the start
+ * graph (perfStartTrim, cap 260).
+ */
+/** Paragraphs both versions share: the opening two and the closing one. */
+const PRIVACY_OPEN = [
+  'We believe privacy is a right, not a setting. You came here to learn audio, not to be studied yourself.',
+  'So we do not track people. We never sell or share anyone’s information, we show no ads, and we never follow you across other apps or websites.',
+] as const;
+const PRIVACY_CLOSE = 'For everyone, crash reports and usage counts are anonymous. They exist only to help us fix and improve the Academy.';
+
+/** GUEST version (owner-approved 2026-11-20, "Option 1"). */
+export const GUEST_PRIVACY_NOTICE = {
+  title: 'Your Privacy, Our Promise',
+  paragraphs: [
+    ...PRIVACY_OPEN,
+    'Guest Mode lives by that promise: every guest sign-in erases everything from before on this device, including lab work, scores and settings. Only a weekly count of free lookups stays, with no name on it.',
+    'Students with an account are tracked as little as possible: just your email, your membership, and your progress and scores, so your work follows you to any device.',
+    PRIVACY_CLOSE,
+  ],
+  button: 'Got it',
+} as const;
+
+/** ACCOUNT version (owner-approved 2026-11-20: "ok build it"). Shown once per
+ *  account: a brand-new account sees it before the intro video; an existing
+ *  account sees it alone, once. "Anything you choose to post or share" keeps
+ *  "only" true (forum posts, the profile name). */
+export const ACCOUNT_PRIVACY_NOTICE = {
+  title: 'Your Privacy, Our Promise',
+  paragraphs: [
+    ...PRIVACY_OPEN,
+    'Your account lives by that promise. We keep only what your learning needs: your email, your membership, and your progress and scores, so your work follows you to any device, plus anything you choose to post or share.',
+    PRIVACY_CLOSE,
+  ],
+  button: 'Got it',
+} as const;
+
+/** The account version's per-phone "seen" flag, per account (an `ape:intro:`
+ *  key: device-level, survives the wipes, cleared by "Reset onboarding
+ *  hints" and by a brand-new account's intro reset). Used only while the
+ *  server has no answer (`my_privacy_notice_seen`). */
+export function accountPrivacyIntroKey(uid: string): `accountPrivacy:${string}` {
+  return `accountPrivacy:${uid}`;
+}
+
+/** Two flags owed by ONE guest sign-in. A const holder: no user data, no
+ *  storage, and an account never reads them (the notice and the guest video
+ *  both require useGuestWording().guest), so the account wipe has nothing to
+ *  forget here. */
+const guestStart = { privacyOwed: false, videoOwed: false };
+const guestPrivacyListeners = new Set<() => void>();
+const guestStartListeners = new Set<() => void>();
+function emitGuestPrivacy(): void {
+  for (const fn of Array.from(guestPrivacyListeners)) fn();
+}
+
+/** A guest sign-in has just wiped the device (AuthScreen's enterGuest): owe
+ *  the privacy notice, then the intro video again (Home's once-per-session
+ *  launch latch is released through onGuestStart). */
+export function oweGuestStart(): void {
+  guestStart.privacyOwed = true;
+  guestStart.videoOwed = true;
+  for (const fn of Array.from(guestStartListeners)) {
+    try {
+      fn();
+    } catch {
+      // one listener failing must not stop the others
+    }
+  }
+  emitGuestPrivacy();
+}
+
+/** "Got it" (or Android BACK) on the notice. */
+export function settleGuestPrivacyNotice(): void {
+  if (!guestStart.privacyOwed) return;
+  guestStart.privacyOwed = false;
+  emitGuestPrivacy();
+}
+
+/** The guest's video is owed (read by Home's launch effect). */
+export function guestIntroVideoOwed(): boolean {
+  return guestStart.videoOwed;
+}
+/** Home launched the video for this guest sign-in. */
+export function settleGuestIntroVideo(): void {
+  guestStart.videoOwed = false;
+}
+
+export function onGuestStart(fn: () => void): void {
+  guestStartListeners.add(fn);
+}
+
+function subscribeGuestPrivacy(fn: () => void): () => void {
+  guestPrivacyListeners.add(fn);
+  return () => guestPrivacyListeners.delete(fn);
+}
+const readGuestPrivacy = () => guestStart.privacyOwed;
+/** True while this guest sign-in's privacy notice has not been answered. */
+export function useGuestPrivacyOwed(): boolean {
+  return useSyncExternalStore(subscribeGuestPrivacy, readGuestPrivacy, readGuestPrivacy);
+}

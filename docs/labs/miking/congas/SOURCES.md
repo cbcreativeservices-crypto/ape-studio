@@ -63,3 +63,31 @@ positions for the sourced descriptions; the simplified head ignores the hand's c
 time (said on screen). Simplifications register: the conga's straight taper (0.8 × head at the
 bottom), the side view hiding the conga behind the tumba, the raised stands, the hands and player
 envelopes — all drawing defaults or ILLUSTRATIVE (`CORRECTIONS_LOG.md` CG-01 … CG-07).
+
+## Three-drum pass (2026-11-22, owner decision "Three drums")
+
+The owner, on his iPhone at MEET IT step 2 (one tall drum labelled "TUMBA (IN FRONT)", a second label
+"CONGA BEHIND IT"), named his screenshot "center conga is conga w tumba and quinto on sides". Asked what
+the lesson should show, he chose: "Three drums — rebuild the lesson for a set of three: conga in the
+center, quinto and tumba on the sides. Pictures, part names, mic choices and the lesson text all change."
+
+RM-CONGA re-read 2026-11-22 (page 200, "By Eric Ferguson", no date on the page). Quotes verbatim:
+
+| Fact | Value | Source's exact words | Confidence |
+|---|---|---|---|
+| A set of three | the lesson draws three drums | "Congas are commonly grouped into a set of three" (RM-CONGA) | High |
+| How many vary | one, two or more | "the number of congas varies with style and musician" (RM-CONGA) | High |
+| Quinto size | 11 in = 279.4 mm (conv.), 30 in tall | "LP Classic 11″ Quinto" (LP522X product title); "These drums stand 30″ tall" (all three pages) (LP-CLASSIC, already on record above) | High |
+| A pair over two or three drums | the `cg.pair` zone (TRIAL: the lab's drawing) | "I typically use a matched pair of microphones to record a two- or three-drum setup." (RM-CONGA) | High |
+| Where the pair goes | as for a single drum, equidistant | "Microphone placement is similar to that used with a single drum" … "While I start with the mics equidistant from the separate drums" (RM-CONGA) | High (words); the positions over the two gaps are the lab's drawing |
+| 6 in–2 ft is for ONE mic on ONE conga | the per-drum zones use it for each drum of the set | "When recording a single conga, I typically use one microphone and start with a placement anywhere from 6 inches to two feet from the head of the drum." (RM-CONGA) | High |
+| "A couple feet into the air" | single-conga context only; NOT used for the pair's height | "I usually move the mic a couple feet into the air, well outside the near field" (RM-CONGA) | High |
+| Layout (which drum on which side, arc or row) | NOT STATED | (RM-CONGA gives no layout) | — |
+| One mic over three drums | NOT STATED for three | S-DRUMS gives "One microphone aiming down between pair of drums, just above top heads" for a PAIR; over the middle of three is the lab's extension (zone `cg.shared`, kind `trial`) | — |
+| Clip-ons on a set of three | two drums only | DPA-JB: "4099s on high and low congas" — two drums; a clip on the third (the quinto, `cg.clip.quinto`) is the lab's extension (kind `trial`) | — |
+
+Zone record after the pass (`m04aCongas/model.ts`): `cg.quinto`, `cg.conga`, `cg.tumba` (RM-CONGA, sourced —
+one mic, one drum, its words); `cg.clip.tumba`, `cg.clip.conga` (DPA-JB, sourced); `cg.clip.quinto` (DPA-JB,
+TRIAL); `cg.shared` (S-DRUMS, TRIAL: a pair's mic extended to three); `cg.pair` (RM-CONGA, TRIAL: the pair's
+words are sourced, its two positions are the lab's drawing); `cg.bottom` (SOS-LATIN, sourced, the tumba).
+No sound is recorded or played for any drum: the lesson is silent.

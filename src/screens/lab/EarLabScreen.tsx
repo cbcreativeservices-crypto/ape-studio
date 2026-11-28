@@ -13,7 +13,7 @@
  * Fully data-driven from labCatalog.
  */
 import { useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions, type StyleProp, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { colors, fonts } from '../../theme/tokens';
@@ -42,6 +42,11 @@ import { GlassPanel, GlassTile } from '../tools/GlassTile';
 import { labTileArt } from './labTileArt';
 import { fitValue } from '../../theme/legibility';
 import { safeGoBack } from '../../lib/safeGoBack';
+// The ✓ on a finished lab's tile (lab fix round 1, 2026-11-14): READ-ONLY
+// from the existing lab-credit store, the same "done" the old category
+// screen's rows showed (LabCategoryScreen useLabDone). Nothing is written.
+import { useLabDone } from '../../features/lab/labCompletion';
+import { trainingKeyFor } from '../../features/lab/trainingLabKeys';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'EarLab'>;
 
@@ -50,19 +55,23 @@ const INTRO =
   'start, with the deeper labs unlocked by membership — and the members-only ' +
   'Advanced Training Labs. Choose a lab to hear it, see it, measure it, and take ' +
   'it apart.';
+/**
+ * Where a newcomer begins (beginner waves 2026-11-15, LM-04; owner: "build
+ * waves 1 thru 3"). The opening text listed topics but never said which tile
+ * to open first; the start line takes the topic list's place (a line in, a
+ * line out), and the tiles below show the topics anyway.
+ */
+export const FUNDAMENTALS_START_LINE =
+  'New to audio? Start with the first tile, Understanding Level & Amplitude, then Foundations of Sound.';
 const FUNDAMENTALS_INTRO =
-  'Start free with the essentials — level and amplitude, the foundations of ' +
-  'sound, and wave physics. The deeper Fundamentals labs open with Academy ' +
-  'membership.';
+  `${FUNDAMENTALS_START_LINE} Both are free; the deeper Fundamentals labs open with Academy membership.`;
 // MEMBER copy (owner 2026-09-29): no "free" / "unlocked by membership"
 // marketing to people who already pay.
 const INTRO_MEMBER =
   'A professional audio curriculum in two parts: Audio Fundamentals and the ' +
   'Advanced Training Labs. Choose a lab to hear it, see it, measure it, and take ' +
   'it apart.';
-const FUNDAMENTALS_INTRO_MEMBER =
-  'The essentials — level and amplitude, the foundations of sound, and wave ' +
-  'physics — and the deeper Fundamentals labs that build on them.';
+const FUNDAMENTALS_INTRO_MEMBER = FUNDAMENTALS_START_LINE;
 const TRAINING_INTRO_MEMBER =
   'Your members-only workbench: interactive demonstrations, visualizations, ' +
   'controls and guided experiments across every audio discipline.';
@@ -269,37 +278,16 @@ export function EarLabScreen({ navigation, route }: Props) {
                         {secLocked && !cat.alwaysFree ? <Text style={styles.tileTagLock}>🔒 MEMBERS</Text> : null}
                       </GlassTile>
                     ) : (
-                      categoryEntries(cat).map((leaf) => {
-                        const locked = leafLocked(leaf, sec.key) && leaf.status !== 'development';
-                        const free = freeIncluded(leaf, sec.key);
-                        const dev = leaf.status === 'development';
-                        return (
-                          <GlassTile
-                            key={`${cat.id}:${leaf.name}`}
-                            style={tablet ? tabletTile : styles.tileHalf}
-                            glassStyle={styles.tileFace}
-                            backgroundImage={labTileArt(leaf.name)}
-                            onPress={() => openLeaf(leaf, sec.key)}
-                            accessibilityLabel={`${leaf.name}. ${leaf.blurb}${leaf.countLine ? ` ${leaf.countLine}.` : ''}${locked ? ' Academy members only — opens the preview.' : ''}${free ? ' Included free.' : ''}`}
-                          >
-                            <Text style={styles.tileName} numberOfLines={2}>{leaf.name}</Text>
-                            <Text style={styles.tileSub} numberOfLines={3}>{leaf.blurb}</Text>
-                            {/* A count (the Miking family tiles' "17 Miking Lab
-                                Lessons"): never cut short — its words wrap,
-                                and it never shrinks under 9 pt. */}
-                            {leaf.countLine ? (
-                              <Text style={styles.tileCount} {...fitValue(12)} numberOfLines={2}>{leaf.countLine}</Text>
-                            ) : null}
-                            {dev ? (
-                              <Text style={styles.soon}>PLANNED</Text>
-                            ) : locked ? (
-                              <Text style={styles.tileTagLock}>🔒 MEMBERS</Text>
-                            ) : free ? (
-                              <Text style={styles.freeTag}>FREE</Text>
-                            ) : null}
-                          </GlassTile>
-                        );
-                      })
+                      categoryEntries(cat).map((leaf) => (
+                        <LeafTile
+                          key={`${cat.id}:${leaf.name}`}
+                          leaf={leaf}
+                          style={tablet ? tabletTile : styles.tileHalf}
+                          locked={leafLocked(leaf, sec.key) && leaf.status !== 'development'}
+                          free={freeIncluded(leaf, sec.key)}
+                          onPress={() => openLeaf(leaf, sec.key)}
+                        />
+                      ))
                     )}
                   </GlassPanel>
                 </View>
@@ -315,10 +303,94 @@ export function EarLabScreen({ navigation, route }: Props) {
   );
 }
 
+/** How many lines a lab tile's name and blurb may take at this window width
+ *  (2026-11-14, C1 FAIL 2). 390 and wider: 2 and 3, as before. Pure. */
+export function tileTextLines(winW: number): { name: number; blurb: number } {
+  if (winW >= 390) return { name: 2, blurb: 3 };
+  if (winW >= 360) return { name: 3, blurb: 4 };
+  return { name: 4, blurb: 5 };
+}
+
+/** The credit key a tile's ✓ reads: the Fundamentals lab's own key, else
+ *  the training lab's (by route); '' (never done) for anything else, such as
+ *  a Miking family tile, which holds many lessons. Pure. */
+export function tileDoneKey(leaf: Pick<LabLeaf, 'key' | 'route'>): string {
+  return leaf.key ?? (leaf.route ? trainingKeyFor(leaf.route) : '');
+}
+
+/**
+ * One lab tile (glass tiles, owner 2026-09-30). Lab fix round 1 (2026-11-14,
+ * quick win 12 and section 7; owner: "Begin fixing all bugs found and do
+ * obvious ... fixes as you suggested in the report"):
+ *   • START HERE on the first Fundamentals lab — a marker, never a lock;
+ *   • the tile's short blurb (LabLeaf.tileBlurb) where the full one was cut at
+ *     three lines (34 of 65 at 390 wide); the full blurb is still read aloud;
+ *   • a quiet ✓ DONE once the lab's credit is done (read-only).
+ */
+function LeafTile({
+  leaf,
+  style,
+  locked,
+  free,
+  onPress,
+}: {
+  leaf: LabLeaf;
+  style: StyleProp<ViewStyle>;
+  locked: boolean;
+  free: boolean;
+  onPress: () => void;
+}) {
+  const dev = leaf.status === 'development';
+  const done = useLabDone(tileDoneKey(leaf)) && !dev;
+  // NARROW PHONES (checker C1, FAIL 2: at 320 wide 9 names and 41 blurbs were
+  // cut). The tile is narrower there, so it takes the lines it needs: a name
+  // up to three, a blurb as tileTextLines says. Nothing changes at 390.
+  const { width: winW } = useWindowDimensions();
+  const lines = tileTextLines(winW);
+  return (
+    <GlassTile
+      style={style}
+      glassStyle={styles.tileFace}
+      backgroundImage={labTileArt(leaf.name)}
+      onPress={onPress}
+      accessibilityLabel={`${leaf.startHere ? 'Start here. ' : ''}${leaf.name}${done ? ', done' : ''}. ${leaf.blurb}${leaf.countLine ? ` ${leaf.countLine}.` : ''}${locked ? ' Academy members only — opens the preview.' : ''}${free ? ' Included free.' : ''}`}
+    >
+      {leaf.startHere ? <Text style={styles.startHere}>START HERE</Text> : null}
+      <Text style={styles.tileName} numberOfLines={lines.name}>{leaf.name}</Text>
+      <Text style={styles.tileSub} numberOfLines={lines.blurb}>{leaf.tileBlurb ?? leaf.blurb}</Text>
+      {/* A count (the Miking family tiles' "17 Miking Lab
+          Lessons"): never cut short — its words wrap,
+          and it never shrinks under 9 pt. */}
+      {leaf.countLine ? (
+        <Text style={styles.tileCount} {...fitValue(12)} numberOfLines={2}>{leaf.countLine}</Text>
+      ) : null}
+      {dev ? (
+        <Text style={styles.soon}>PLANNED</Text>
+      ) : locked ? (
+        <Text style={styles.tileTagLock}>🔒 MEMBERS</Text>
+      ) : done ? (
+        <Text style={styles.doneTag}>✓ DONE</Text>
+      ) : free ? (
+        <Text style={styles.freeTag}>FREE</Text>
+      ) : null}
+    </GlassTile>
+  );
+}
+
 const SECTIONS = [
   { key: 'fundamentals' as const, title: 'AUDIO FUNDAMENTALS', note: 'Free to start' },
   { key: 'training' as const, title: 'ADVANCED TRAINING LABS', note: 'Members only' },
 ];
+
+/** The subject's description under its name (SH-44 = LM-03), or '' when its
+ *  only tile already shows the same words (checker F9, 2026-11-15: Phase's
+ *  line showed twice). Pure. */
+export function subjectLine(cat: LabCategory): string {
+  const tiles = categoryEntries(cat);
+  const only = tiles.length === 1 ? tiles[0] : undefined;
+  const same = (a?: string) => !!a && a.trim().toLowerCase() === cat.description.trim().toLowerCase();
+  return only && same(only.tileBlurb ?? only.blurb) ? '' : cat.description;
+}
 
 /** Subject header (glyph + name + count). Tappable (a card, with a chevron) when
  *  the subject is a single hub lab; a plain label when it heads a list of labs. */
@@ -339,9 +411,16 @@ function CategoryLabel({ cat, onPress, locked }: { cat: LabCategory; onPress?: (
           <Text style={[styles.iconGlyphSm, styles.iconGlyphSmPurple]}>{cat.glyph}</Text>
         </View>
       ) : null}
+      {/* SH-44 = LM-03 (2026-11-15; owner: "build waves 1 thru 3"): the
+          subject's one-line description under its name, so "Signal" or
+          "Modulation" is explained before its tiles. A line in, a line out:
+          the count moved up beside the name. */}
       <View style={{ flex: 1 }}>
-        <Text style={[styles.catName, purple && styles.catNamePurple]}>{cat.name}</Text>
-        <Text style={styles.catCount}>{categoryCountLabel(cat)}</Text>
+        <View style={styles.catNameRow}>
+          <Text style={[styles.catName, purple && styles.catNamePurple]}>{cat.name}</Text>
+          <Text style={styles.catCount}>{categoryCountLabel(cat)}</Text>
+        </View>
+        {subjectLine(cat) ? <Text style={styles.catDesc}>{subjectLine(cat)}</Text> : null}
       </View>
       {onPress ? <Text style={locked ? styles.lock : styles.rowChevron}>{locked ? '🔒' : '›'}</Text> : null}
     </>
@@ -487,6 +566,21 @@ const styles = StyleSheet.create({
   tileSub: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 16, color: '#d4d6da', flexGrow: 1 },
   tileTagLock: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.textSub },
   tileCount: { fontFamily: fonts.oswaldMedium, fontSize: 12, letterSpacing: 0.6, color: colors.amberLabel },
+  /** START HERE (2026-11-14): a small amber pill over the first lab's name. */
+  startHere: {
+    alignSelf: 'flex-start',
+    fontFamily: fonts.oswaldSemiBold,
+    fontSize: 10.5,
+    letterSpacing: 1.2,
+    color: '#0c0c0c',
+    backgroundColor: colors.amber,
+    borderRadius: 4,
+    overflow: 'hidden',
+    paddingHorizontal: 6,
+    paddingVertical: 1,
+  },
+  /** ✓ DONE (2026-11-14): quiet, no counts. */
+  doneTag: { fontFamily: fonts.oswaldSemiBold, fontSize: 10.5, letterSpacing: 1.2, color: colors.green },
 
   // Subject header (its labs are the tappable rows beneath).
   catLabel: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingTop: 2 },
@@ -523,6 +617,10 @@ const styles = StyleSheet.create({
   // Sound, Signal, Equalization…
   catName: { fontFamily: fonts.oswaldSemiBold, fontSize: 17, letterSpacing: 1, color: colors.amber },
   catCount: { fontFamily: fonts.oswaldSemiBold, fontSize: 10, letterSpacing: 1, color: colors.amberLabel, marginTop: 1 },
+  /** Name and count on one line (SH-44 / LM-03). */
+  catNameRow: { flexDirection: 'row', alignItems: 'baseline', flexWrap: 'wrap', columnGap: 10 },
+  /** The subject's one-line description (SH-44 / LM-03). */
+  catDesc: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub, marginTop: 1 },
 
   // Uniform lab rows — same size for every topic (hub or single lab).
   row: {

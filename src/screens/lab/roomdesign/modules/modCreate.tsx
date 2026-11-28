@@ -1,5 +1,5 @@
 /**
- * Module 2 — CREATE THE ROOM. The room editor on the Rack Unit: the plan (or
+ * Module 1 — CREATE THE ROOM (the lab opens here since RO-06, 2026-11-15). The room editor on the Rack Unit: the plan (or
  * the side view) pinned on the glass, LENGTH / WIDTH / HEIGHT on the lane,
  * SHAPE and SURFACE trays, drag the corners and the furniture on the glass or
  * type the numbers in the tray. Every number here is CALCULATED.
@@ -206,7 +206,7 @@ export function CreateModule({ ctx }: { ctx: RoomLabCtx }) {
   return (
     <RoomRackLayout
       rack={{ stage, badge: BADGE.create, bezel, params, initialParam: 'length', hideDragTag: true }}
-      caption="Drag a corner to reshape the room, or ride LENGTH / WIDTH / CEILING (CEILING opens the side view, where the height shows). SHAPE opens the plan presets, the ceiling, doors and windows, furniture, typed dimensions and a fresh default room; FINISH sets the floor, walls and ceiling material — the walls and floor take the material's color. Tap VIEW on the readouts to switch between plan and side view."
+      caption="Drag a corner to reshape the room, or slide LENGTH / WIDTH / CEILING (CEILING opens the side view, where the height shows). SHAPE opens the plan presets, the ceiling, doors and windows, furniture, typed dimensions and a fresh default room; FINISH sets the floor, walls and ceiling material — the walls and floor take the material's color. Tap VIEW on the readouts to switch between plan and side view."
       wellTop={
         <View style={styles.summary}>
           <Text style={styles.summaryLine}>

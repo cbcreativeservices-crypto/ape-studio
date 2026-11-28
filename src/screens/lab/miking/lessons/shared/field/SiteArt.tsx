@@ -19,6 +19,9 @@ import { Circle, DashPathEffect, Group, LinearGradient, Paint, Path, PathOp, Rad
 import type { ViewId } from '../../../engine/model/types.ts';
 import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
 import { operatorSide, operatorTop } from '../measure/measureModel.ts';
+import { castFor, type RoleKey } from '../figureV2/cast';
+import { PersonSideV2 } from '../figureV2/personV2';
+import { recedeV2, StandingTopV2 } from '../figureV2/playersV2';
 import { seeded } from '../foley/StageArt';
 import { bandPolygon, type FieldSite, type GroundKind, type SiteFeature, type XZ } from './sites.ts';
 
@@ -904,9 +907,32 @@ function Ring({ f, view }: { f: Extract<SiteFeature, { kind: 'ring' }>; view: Vi
   );
 }
 
-function Person({ f, view }: { f: Extract<SiteFeature, { kind: 'person' }>; view: ViewId }) {
+/** (figure V2) the cast member for the k-th person of a site: five different people, in the site's order. */
+export const sitePersonWho = (k: number) => castFor(`site.public${((k % 5) + 5) % 5}` as RoleKey);
+
+function Person({ f, view, v2 = false, k = 0, far = 1, who }: { f: Extract<SiteFeature, { kind: 'person' }>; view: ViewId; /** the new look (figure V2, wave 3 set 3b): a cast member, opaque, receding with distance */ v2?: boolean; /** (v2) the person's place among the site's people */ k?: number; /** (v2) the site's distance fade, drawn as an opaque recede */ far?: number; /** (v2) a given cast member in place of the k-th */ who?: ReturnType<typeof castFor> }) {
   const [x, z] = f.c;
   const dim = f.role === 'public' ? 0.75 : 0.95;
+  if (v2) {
+    // a passer-by at rest: the approved standing person, hands at the sides; from above the arms hang
+    // under the shoulders (the approved standing look), turned to the person's heading
+    const person = who ?? sitePersonWho(k);
+    if (view === 'side') {
+      const pose = operatorSide(x, 0, Math.cos(f.heading * DEG) >= 0 ? 1 : -1);
+      return (
+        <Group layer={recedeV2(dim * far) as never}>
+          <PersonSideV2 pose={pose} who={person} opts={{ rest: 'restSide' }} />
+        </Group>
+      );
+    }
+    const pose = operatorTop(x, z, 1);
+    return (
+      <Group transform={[{ translateX: x }, { translateY: z }, { rotate: f.heading * DEG }, { translateX: -x }, { translateY: -z }]} layer={recedeV2(dim) as never}>
+        {/* (review 2026-11-24: the head over the neck, not at the egg's front edge with the face poking out) */}
+        <StandingTopV2 pose={pose} who={person} />
+      </Group>
+    );
+  }
   if (view === 'side') {
     const pose = operatorSide(x, 0, Math.cos(f.heading * DEG) >= 0 ? 1 : -1);
     return (
@@ -1014,7 +1040,16 @@ const ORDER: Readonly<Record<SiteFeature['kind'], number>> = {
   flock: 10,
 };
 
-export function SiteArt({ site, view, hide = [] }: { site: FieldSite; view: ViewId; hide?: readonly SiteFeature['kind'][] }): ReactElement {
+export function SiteArt({ site, view, hide = [], v2 = false }: { site: FieldSite; view: ViewId; hide?: readonly SiteFeature['kind'][]; /** the new look (figure V2, wave 3 set 3b): the site's people are the cast's — a lesson opts in */ v2?: boolean }): ReactElement {
+  // (v2) each person's place among the site's people (its cast member)
+  const personK = useMemo(() => {
+    const m = new Map<number, number>();
+    let k = 0;
+    site.features.forEach((f, i) => {
+      if (f.kind === 'person') m.set(i, k++);
+    });
+    return m;
+  }, [site]);
   const items = useMemo(() => {
     const list = site.features.map((f, i) => ({ f, i })).filter(({ f }) => !hide.includes(f.kind));
     // Elevation: far (large |z|) features first and dimmer; trees after the ground but before people.
@@ -1058,9 +1093,13 @@ export function SiteArt({ site, view, hide = [] }: { site: FieldSite; view: View
             return <Barrier key={key} f={f} view={view} />;
           case 'person':
             return (
-              <Group key={key} opacity={view === 'side' ? farDim(f.c[1]) : 1}>
-                <Person f={f} view={view} />
-              </Group>
+              v2 ? (
+                <Person key={key} f={f} view={view} v2 k={personK.get(i) ?? 0} far={view === 'side' ? farDim(f.c[1]) : 1} />
+              ) : (
+                <Group key={key} opacity={view === 'side' ? farDim(f.c[1]) : 1}>
+                  <Person f={f} view={view} />
+                </Group>
+              )
             );
           case 'car':
             return <Car key={key} c={f.c} heading={f.heading} view={view} />;

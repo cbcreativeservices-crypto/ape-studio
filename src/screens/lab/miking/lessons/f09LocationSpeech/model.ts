@@ -70,7 +70,7 @@ function lavZone(id: string, variant: string, alternative: boolean): DocumentedZ
     kind: 'sourced',
     src: 'SHURE-LAV',
     quote: 'Place the shirt microphone above the sternum',
-    bandProv: ill('no source gives a distance from the mouth: 15–32 cm is the lab’s band round the drawing’s place (21 cm)'),
+    bandProv: ill('no source gives a distance from the mouth: 15–32 cm is the lab’s band around the drawing’s place (21 cm)'),
     distance: { min: 150, max: 320 },
     off: { min: 55, max: 100, toward: 'down', prov: ill('below the mouth, on the chest: 55–100° below the mouth’s axis (the drawing)') },
     aimTol: 60,

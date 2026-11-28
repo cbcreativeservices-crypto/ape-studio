@@ -157,7 +157,7 @@ export function targetZone(z: TargetZoneSpec): DocumentedZone {
     side: 'outside',
     distance: { min: z.d[0], max: z.d[1] },
     ...(z.bandProv ? { bandProv: z.bandProv } : {}),
-    cone: { min: z.a[0], max: z.a[1], prov: ill('the zone’s approach angles: the lab’s band round the source’s words') },
+    cone: { min: z.a[0], max: z.a[1], prov: ill('the zone’s approach angles: the lab’s band around the source’s words') },
     aim: { maxOffAxis: z.aimTol, prov: ill(`facing the playing area: the lab counts within ${z.aimTol}°`) },
     ...(z.clear ? { radial: { line: z.clear.line, min: z.clear.min, prov: ill('outside the motion envelope (a drawing default)') } } : {}),
     requires: { variants: z.variants, micTypeIds: z.micTypeIds, ...(z.mount ? { mount: z.mount } : {}) },

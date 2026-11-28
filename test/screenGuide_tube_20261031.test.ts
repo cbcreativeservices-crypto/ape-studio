@@ -148,7 +148,9 @@ describe('3. each guide quotes its screen’s real names', () => {
     highv: { src: fnBlock(LAB_SRC, 'HighVoltSection'), names: ['SUPPLY', 'SMALL SUPPLY', 'HIGH-VOLTAGE SUPPLY (B+)', 'B+ HIGH', 'PULL', 'WEAK', 'STRONG', 'STREAM', 'SPARSE', 'DENSE'] },
     types: { src: fnBlock(LAB_SRC, 'TypesSection'), names: ['TYPE', 'GRIDS', 'NEW', 'ADDS'] },
     bias: { src: fnBlock(LAB_SRC, 'BiasSection'), names: ['BIAS', 'ZONE', 'CUTOFF', 'SATURATION', 'LINEAR', 'too negative', 'too positive', 'correct'] },
-    sat: { src: fnBlock(LAB_SRC, 'SaturationSection'), names: ['DRIVE', 'STATE', 'CLEAN', 'WARMING', 'SATURATED', 'clean — straight-line region', 'warming — peaks rounding', 'saturated — soft clipping'] },
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item SH-27): the DRIVE lane's
+    // words were cut at 390 ("clean — straight-lin…"); now short enough to show whole.
+    sat: { src: fnBlock(LAB_SRC, 'SaturationSection'), names: ['DRIVE', 'STATE', 'CLEAN', 'WARMING', 'SATURATED', 'clean', 'peaks rounding', 'soft clipping'] },
     versus: { src: fnBlock(LAB_SRC, 'VersusSection'), names: ['TUBE', 'VACUUM', 'TRANSISTOR', 'JUNCTION'] },
     reference: { src: REF_SRC, names: ['✕'] },
     card: { src: CARD_SRC, names: ['PAGE', 'RETRY', 'LOADING', 'Preamp Triode', 'Power Output', 'Directly-Heated Triode', 'Rectifier'] },
@@ -228,11 +230,15 @@ describe('4. the numbers in the guide are the numbers the screen prints', () => 
     assert.equal(grid.gridState(0.1449), 'CUT OFF');
     assert.equal(grid.gridState(0.154), 'PARTIAL');
     assert.match(MODULES.grid.changes.join(' '), /At 15% and below the tube is cut off/);
-    for (const w of [grid.CUTOFF_WORDS, 'partly negative', 'barely negative — full flow']) assert.ok(MODULES.grid.control.join(' ').includes(w), w);
+    // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, items TB-02 / SH-27): above
+    // cutoff the GRID V lane reads "% open" with the bezel's own words, short enough to show whole.
+    for (const w of [grid.CUTOFF_WORDS, 'partial', 'full flow']) assert.ok(MODULES.grid.control.join(' ').includes(w), w);
   });
   it('WARM-UP: 50% → step 3, 0%; 85% → step 5, 50%; PLATE I starts above 70%', () => {
     const body = fnBlock(LAB_SRC, 'FlowSection');
-    assert.match(body, /const current = heat > 0\.7 \? \(heat - 0\.7\) \/ 0\.3 : 0;/);
+    // owner 2026-11-25, fix-first 15 (round 2, audit B8): the same formula, now shared with the drawing.
+    assert.match(body, /const current = plateCurrentShare\(heat\);/);
+    assert.match(read('src/screens/lab/tube/flowModel.ts'), /return heat01 > 0\.7 \? Math\.min\(1, \(heat01 - 0\.7\) \/ 0\.3\) : 0;/);
     assert.match(body, /const stage = FLOW_STAGES\.find\(\(s\) => heat < s\.until\) \?\? FLOW_STAGES\[4\];/);
     const untils = [...LAB_SRC.matchAll(/\{ until: ([\d.]+), text: '(\d) · /g)].map((m) => [Number(m[1]), m[2]] as const);
     assert.deepEqual(untils.map((u) => u[0]), [0.15, 0.35, 0.7, 0.85, 1.01]);
@@ -290,9 +296,12 @@ describe('4. the numbers in the guide are the numbers the screen prints', () => 
   });
   it('BIAS: below 22% CUTOFF, above 80% SATURATION, 50% LINEAR', () => {
     const body = fnBlock(LAB_SRC, 'BiasSection');
-    assert.match(body, /v: b < 0\.22 \? 'CUTOFF' : b > 0\.8 \? 'SATURATION' : 'LINEAR'/);
+    // owner 2026-11-25, fix-first 15 (round 2, audit B7): one rule (biasZone) for the word and
+    // the drawn wave; its edges are still 22 % and 80 % (b − 0.15 < 0.07, b + 0.15 > 0.95).
+    assert.match(body, /v: zk === 'cutoff' \? 'CUTOFF' : zk === 'saturation' \? 'SATURATION' : 'LINEAR'/);
+    assert.match(read('src/screens/lab/tube/biasCurve.ts'), /export const TUBE_BIAS_DRIVE = 0\.15;[\s\S]*export const TUBE_V_CUTOFF = 0\.07;[\s\S]*export const TUBE_V_SAT = 0\.95;/);
     assert.match(body, /const \[b, setB\] = useState\(0\.5\);/);
-    assert.match(body, /x < 0\.22 \? 'too negative' : x > 0\.8 \? 'too positive' : 'correct'/);
+    assert.match(body, /biasZone\(x\) === 'cutoff' \? 'too negative' : biasZone\(x\) === 'saturation' \? 'too positive' : 'correct'/);
     assert.match(MODULES.bias.changes.join(' '), /Below 22%[\s\S]*CUTOFF[\s\S]*Above 80%[\s\S]*SATURATION/);
     assert.match(MODULES.bias.tryThis.join(' '), /50%: ZONE reads LINEAR/);
   });
@@ -387,7 +396,7 @@ describe('5. wiring and the accuracy-chip decisions', () => {
   });
   it('chip decision — the lab: a CONCEPT lab, no AccuracyNote; its honesty badges and lethal-voltage lines stay on the screens', () => {
     assert.doesNotMatch(LAB_SRC, /AccuracyNote/);
-    assert.match(LAB_SRC, /badge: 'ILLUSTRATIVE MODEL — SCHEMATIC CROSS-SECTION, NOT MEASURED TUBE DATA'/);
+    assert.match(LAB_SRC, /modelNote: 'A drawn cross-section, not measured tube data\.'/);
     assert.match(LAB_SRC, /it is enough to kill/);
     assert.match(LAB_SRC, /inside an energized chassis at lethal voltage, by a qualified technician/);
     assert.match(MODULES.highv.teaches.join(' '), /can kill, even after the amp is unplugged/);
@@ -396,10 +405,13 @@ describe('5. wiring and the accuracy-chip decisions', () => {
   });
   it('chip decision — Tube Reference list and card: real data-sheet ratings, so the chip STAYS and the ⓘ sits beside it', () => {
     assert.match(REF_SRC, /<ScreenGuideHost regions=\{false\} resetKey="tubeRef">\s*<ScreenGuideHintAnchor>\s*<View style=\{styles\.header\}>/);
-    assert.match(REF_SRC, /<AccuracyNote compact detail="These cards are a STUDY REFERENCE[^"]*" \/>\s*<ScreenGuideKey title="TUBE REFERENCE" guide=\{TUBE_REFERENCE_GUIDE\} \/>\s*<\/View>\s*<\/ScreenGuideHintAnchor>/);
+    // variant="about" (phase 2, D37; owner 2026-11-14 "Begin fixing all bugs found and do obvious ... fixes"): only the cards' own note.
+    assert.match(REF_SRC, /<AccuracyNote compact variant="about" label="ABOUT THESE CARDS" detail="These cards are a STUDY REFERENCE[^"]*" \/>\s*<ScreenGuideKey title="TUBE REFERENCE" guide=\{TUBE_REFERENCE_GUIDE\} \/>\s*<\/View>\s*<\/ScreenGuideHintAnchor>/);
     assert.match(REF_SRC, /<\/ScrollView>\s*<\/ScreenGuideHost>\s*<\/View>/);
-    assert.match(CARD_SRC, /<ScreenGuideHost regions=\{false\} resetKey="tubeCard">\s*<ScreenGuideHintAnchor>\s*<View style=\{styles\.navBar\}>/);
-    assert.match(CARD_SRC, /<AccuracyNote compact detail="This card is a STUDY REFERENCE[^"]*" \/>\s*<ScreenGuideKey title="TUBE REFERENCE CARD" guide=\{TUBE_CARD_GUIDE\} \/>\s*<Pressable/);
+    // hold={failed} added on purpose (lab fix round 1, phase 2, owner 2026-11-14: "Begin fixing all bugs found and do
+    // obvious (my decision is not required) fixes as you suggestted in the report."): never over a load error.
+    assert.match(CARD_SRC, /<ScreenGuideHost regions=\{false\} resetKey="tubeCard" hold=\{failed\}>\s*<ScreenGuideHintAnchor>\s*<View style=\{styles\.navBar\}>/);
+    assert.match(CARD_SRC, /<AccuracyNote compact variant="about" label="ABOUT THIS CARD" detail="This card is a STUDY REFERENCE[^"]*" \/>\s*<ScreenGuideKey title="TUBE REFERENCE CARD" guide=\{TUBE_CARD_GUIDE\} \/>\s*<Pressable/);
     assert.match(CARD_SRC, /<\/View>\s*<\/ScreenGuideHintAnchor>\s*<View style=\{styles\.pageRow\}>/);
     assert.match(CARD_SRC, /\) : null\}\s*<\/View>\s*<\/ScreenGuideHost>\s*<\/View>\s*\);\s*\}/);
   });

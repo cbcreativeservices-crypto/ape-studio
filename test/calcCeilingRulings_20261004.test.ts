@@ -98,5 +98,6 @@ describe('calcCeiling — OVER CEILING BY (owner ruling 2026-10-04)', () => {
 it('Loudness Normalization: over the ceiling also reads OVER CEILING BY (owner 2026-10-04)', () => {
   const src = readFileSync(new URL('../src/screens/lab/calc/workspaces/loudness.ts', import.meta.url), 'utf8');
   assert.doesNotMatch(src, /LIMITING NEEDED/);
-  assert.match(src, /over > 0 \? 'OVER CEILING BY' : 'HEADROOM TO CEILING'/);
+  // Comp A audit C19 (2026-11-26): the decision now goes through ceilingMargin (float noise snaps to 0); the owner's two labels stay.
+  assert.ok(src.includes("m.label === 'OVER CEILING BY' ? 'OVER CEILING BY' : 'HEADROOM TO CEILING'"));
 });

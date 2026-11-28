@@ -456,7 +456,7 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
 
   const fourth =
     view === 'ROOM'
-      ? { k: 'TT LOOP', v: Number.isFinite(ttMargin) ? (ttMargin <= 0 ? 'HOWLING' : `${ttMargin.toFixed(0)} dB`) : 'NO SUBS', sub: Number.isFinite(ttMargin) && ttMargin > 0 ? 'SPARE' : undefined, tint: ttMargin <= 0 ? PEAK_RED : ttMargin < 6 ? colors.amber : colors.green }
+      ? { k: 'TT LOOP', caption: 'deck feedback', v: Number.isFinite(ttMargin) ? (ttMargin <= 0 ? 'HOWLING' : `${ttMargin.toFixed(0)} dB`) : 'NO SUBS', sub: Number.isFinite(ttMargin) && ttMargin > 0 ? 'SPARE' : undefined, tint: ttMargin <= 0 ? PEAK_RED : ttMargin < 6 ? colors.amber : colors.green }
       : view === 'HANDOFF'
         ? { k: 'DJ L · DJ R', v: `${v.djL === 'MST_L' ? '✓' : v.djL ? '✗' : '—'} · ${v.djR === 'MST_R' ? '✓' : v.djR ? '✗' : '—'}`, sub: v.cable === 'UNBAL' && (v.djL || v.djR) ? 'UNBALANCED' : undefined, tint: venueHandoffOk(v) ? colors.green : colors.amber }
         : { k: 'AT 100 Hz', v: Math.abs(at100) < 0.05 ? '0.0' : `${at100 > 0 ? '+' : '−'}${Math.abs(at100).toFixed(1)}`, sub: 'dB', tint: flatAt100 ? colors.green : colors.amber };
@@ -499,7 +499,7 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
         bezel: [
           { k: 'FLOOR', v: fmtDba(floor), sub: floorHum ? 'dBA · HUM' : 'dBA (MODEL)', vA11y: floor == null ? 'no sound on the floor' : `${floor.toFixed(0)} dBA modeled at the floor center${floorHum ? ', with a hum' : ''}`, tint: floorHum ? PEAK_RED : colors.amber },
           { k: 'AT THE DECKS', v: fmtDba(dj), sub: 'dBA (MODEL)', tint: dj != null && dj > 88 ? PEAK_RED : colors.green },
-          { k: '4-HOUR DOSE', v: dose == null ? '—' : `${dose} %`, sub: 'ROOM ONLY', vA11y: dose == null ? 'no dose yet' : `${dose} percent of the daily dose in four hours, from the room only — the headphones add to it`, tint: dose != null && dose > 100 ? PEAK_RED : colors.green },
+          { k: '4-HOUR DOSE', caption: 'of a safe day', v: dose == null ? '—' : `${dose} %`, sub: 'ROOM ONLY', vA11y: dose == null ? 'no dose yet' : `${dose} percent of the daily dose in four hours, from the room only — the headphones add to it`, tint: dose != null && dose > 100 ? PEAK_RED : colors.green },
           fourth,
         ],
         params: [
@@ -565,7 +565,7 @@ function PagePa({ ctx }: { ctx: PageCtx }) {
         <UnderstandingCheck
           eyebrow="CHECK YOURSELF"
           question="A small bar’s system has ONE input for the DJ. Someone offers a Y-cable that joins your MASTER L and MASTER R outputs into it. What do you do?"
-          options={['Use the mixer’s MONO switch (or a proper summing box) and send one output', 'Use the Y-cable — it is the same as mono', 'Send MASTER L only; the right side is just a copy', 'Send the booth output instead']}
+          options={['Use the mixer’s MONO switch, then send one output', 'Use the Y-cable — it is the same as mono', 'Send MASTER L only; the right side is a copy', 'Send the booth output into it instead']}
           correct={0}
           explain="A Y-cable ties two outputs straight together: each drives into the other, which can load them, distort and, on some gear, damage them. Sum L and R properly — the mixer’s MONO master, or a summing circuit — and check the mix in mono: anything only on one side gets quieter, and anything out of phase between the sides can vanish."
           wrong={[undefined, 'Joining two outputs with a cable is not a summing circuit: they fight each other.', 'L and R are rarely identical: whatever sits only on the right would disappear.', 'The booth output follows the BOOTH knob, and it is still stereo.']}

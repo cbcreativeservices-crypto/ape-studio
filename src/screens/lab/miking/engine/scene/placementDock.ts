@@ -146,6 +146,15 @@ export function posWords(a: PosAxis, v: number, words: LessonCopy['axes'] = copy
   return `${fmtLen(Math.abs(v))} ${plus ? w.plus : w.minus}`;
 }
 
+/** The AIM key's short value: the turn from the aim home with its direction
+ *  (↑ / ↓ tilt, ← / → swing), so it never reads as the bezel's AIM, which is
+ *  the angle off the target the mic is measured toward. */
+export function aimKeyShort(axis: AimAxis, deg: number): string {
+  const r = fmtAngle(Math.abs(deg));
+  if (r === fmtAngle(0)) return r;
+  return `${axis === 'az' ? (deg >= 0 ? '→' : '←') : deg >= 0 ? '↑' : '↓'} ${r}`;
+}
+
 export function placementParams(opts: {
   rig: Rig;
   slot: MicSlot;
@@ -258,7 +267,9 @@ export function placementParams(opts: {
         const sw = live ? '' : stopWord || stopWordOf(rig, aimEnd(a + h0));
         return `${sw ? `${sw} · ` : ''}${words(x)}`;
       },
-      formatShort: () => fmtAngle(a),
+      // The turn, with its direction (fix round 2026-11-14, F9 item 3, Part
+      // E3): "↓ ≈ 50°" is a tilt, never confused with the bezel's AIM (off target).
+      formatShort: () => aimKeyShort(aimAxis, a),
       chooser: {
         title: 'TURN THE MIC',
         selectedId: aimAxis,

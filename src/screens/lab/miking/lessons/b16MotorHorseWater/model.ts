@@ -29,7 +29,7 @@ const ill = (reason: string): Provenance => ({ kind: 'illustrative', reason });
 const H = PS.h;
 
 const pose = (at: P2, h: number, to: P2, hTo: number): MicPose => ({ p: toEngine(at, h), ...engineAim(at, h, to, hTo) });
-const box = (c: P2, h0: number, h1: number) => ({ min: { x: (c.x - 0.7) * 1000, y: -h1 * 1000, z: (-c.y - 0.6) * 1000 }, max: { x: (c.x + 0.7) * 1000, y: -h0 * 1000, z: (-c.y + 0.6) * 1000 }, prov: ill('round the mark in its equipment area (the lab’s box)') });
+const box = (c: P2, h0: number, h1: number) => ({ min: { x: (c.x - 0.7) * 1000, y: -h1 * 1000, z: (-c.y - 0.6) * 1000 }, max: { x: (c.x + 0.7) * 1000, y: -h0 * 1000, z: (-c.y + 0.6) * 1000 }, prov: ill('around the mark in its equipment area (the lab’s box)') });
 
 function zone(o: { id: string; label: string; band: string; type: string; at: P2; t: 'A' | 'B' | 'C'; dist: [number, number]; tendency: string; checks: string[]; quote: string }): DocumentedZone {
   return {

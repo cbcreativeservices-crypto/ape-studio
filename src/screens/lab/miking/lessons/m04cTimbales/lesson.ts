@@ -534,7 +534,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: HandLesson['predictions'] = {
-  sound: { prompt: 'Before you step through: the stick pushes the head down. Where does the air in the shallow shell go?', options: ['Down and out of the open end', 'Up, back out through the head', 'Into the cowbell'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the air.' },
+  sound: { prompt: 'Before you step through: the stick pushes the head down. Where does the air in the shallow shell go?', options: ['Down and out of the open end', 'Up, back out through the head', 'Into the cowbell'], after: 'Now go EVENT by EVENT through the stroke (or PLAY ONCE) and watch the air.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from above the heads to between the shells. What changes?', options: ['More cáscara, less head', 'More head, less cáscara', 'Nothing — it is the same pair'], after: 'Near the shells the cáscara tends to rise against the heads — a tendency to check by ear, with the whole phrase.' },
   context: { prompt: 'Where can this mic, aimed at the 15 in head, best reject the floor wedge in front?', options: ['Straight behind the mic', 'Toward its rear, off to one side', 'At the sides of the mic'], after: 'Now tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },

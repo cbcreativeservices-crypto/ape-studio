@@ -31,6 +31,11 @@ import {
 // Burnt, darker, glowing orange (owner request 2026-07-26) — the low-light
 // indicator hue, deliberately distinct from the audio-output frame's red.
 const EMBER = '#c2540f';
+// The Settings and Profile switch is keyed RED (owner 2026-11-23: "Make it red instead of
+// amber like the others"): the one card in the Settings list that is not amber. The
+// activation notice below keeps its ember accent.
+const LOW_RED = '#e5392d';
+const LOW_RED_DIM = '#b23a31';
 
 /** Dim wash + red tint — painted once low-light is ON *and* the activation
  *  notice has been acknowledged (owner 2026-08-31). */
@@ -61,7 +66,7 @@ export function LowLightDim() {
   );
 }
 
-/** Low-light toggle row (Profile screen). */
+/** Low-light toggle: its own card in the Settings list, and a row on Profile. */
 export function LowLightRow() {
   const on = useLowLight();
   return (
@@ -189,15 +194,18 @@ const styles = StyleSheet.create({
     paddingVertical: 11,
     paddingHorizontal: 14,
     borderRadius: 12,
-    backgroundColor: '#141414',
+    // The same card as a Settings section (components/Section.tsx), keyed red.
+    minHeight: 52,
+    backgroundColor: '#121215',
     borderWidth: 1,
-    borderColor: '#262626',
+    borderColor: 'rgba(229,57,45,.45)',
   },
-  rowOn: { backgroundColor: '#1c1108', borderColor: EMBER },
-  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#555' },
-  dotOn: { backgroundColor: EMBER },
-  label: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: '#8a8c90' },
-  labelOn: { color: EMBER },
+  rowOn: { backgroundColor: '#1c0b09', borderColor: LOW_RED },
+  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: LOW_RED_DIM },
+  dotOn: { backgroundColor: LOW_RED },
+  // Red in both states, as the other cards' titles are amber in both; ON adds the lit dot, the fill and the switch.
+  label: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.4, color: LOW_RED },
+  labelOn: { color: LOW_RED },
   track: {
     width: 34,
     height: 18,
@@ -208,9 +216,9 @@ const styles = StyleSheet.create({
     padding: 2,
     justifyContent: 'center',
   },
-  trackOn: { backgroundColor: '#3a1f0d', borderColor: EMBER, alignItems: 'flex-end' },
+  trackOn: { backgroundColor: '#3a100c', borderColor: LOW_RED, alignItems: 'flex-end' },
   thumb: { width: 12, height: 12, borderRadius: 6, backgroundColor: '#777' },
-  thumbOn: { backgroundColor: EMBER },
+  thumbOn: { backgroundColor: LOW_RED },
 
   // On-enable confirmation popup — kept DARK + ember-accented so it doesn't
   // flash bright in a theater (owner 2026-08-01).

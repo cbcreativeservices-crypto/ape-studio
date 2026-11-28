@@ -143,7 +143,7 @@ const scenarios: MikingScenario[] = [
     explain: 'Hear the actual music: the softest endings, the strongest high attacks, falls and shakes, every mute change — and watch how far the bell moves. One held note says nothing about the peaks.',
     why: {
       'Whether it is a B♭ or a C trumpet, for the mic': 'The pitch of the horn does not choose the mic. The part and its dynamics do.',
-      'A single held middle note, to set the input level': 'A polite middle note hides the peaks and the movement. Use the real part.',
+      'A single held middle note, to set the input level': 'A gentle middle note hides the peaks and the movement. Use the real part.',
     },
   },
   {
@@ -439,7 +439,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: what sets the notes a trumpet can play?', options: ['How hard the lips buzz', 'The tube’s air column', 'The bell alone'], after: 'Now STEP through (or PLAY ONCE) and watch the lips, the tube and the bell.' },
+  sound: { prompt: 'Before you step through: what sets the notes a trumpet can play?', options: ['How hard the lips buzz', 'The tube’s air column', 'The bell alone'], after: 'Now go EVENT by EVENT (or PLAY ONCE) and watch the lips, the tube and the bell.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you swing the mic from on the bell’s axis to well off to one side. What changes?', options: ['A brighter sound', 'A softer top', 'It depends on this horn'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front of the player. Where will a supercardioid aimed at the bell reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },

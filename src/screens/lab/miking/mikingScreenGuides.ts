@@ -129,7 +129,7 @@ export const STEP_NOTES: Readonly<Record<string, StepNote>> = {
       learning: 'Every miking lesson follows one journey, from where the sound leaves to a mic placed and checked; the map shows that order before you begin.',
       start: 'Look over THE JOURNEY map. Then choose New to miking … to go in order, or I already mic … to take the six-question quick check.',
     },
-    seeing: 'THE JOURNEY map lists every stage of this lesson in order. Below it, “How would you like to start?” offers you two paths.',
+    seeing: 'THE JOURNEY map lists the eight modules in order, numbered as the strip numbers them; modules 1 and 2 are the foundation. Below it, “How would you like to start?” offers you two paths.',
     control: 'Tap New to miking … to work through the lesson in order, or I already mic … to take the six-question quick check, right here on this step.',
     changes: 'Your path only changes what is suggested next. Passing the quick check opens every activity now, but it finishes nothing: you still complete the first two modules yourself.',
     tryThis: [
@@ -239,10 +239,10 @@ export const STEP_NOTES: Readonly<Record<string, StepNote>> = {
     engineOnly: true,
     intro: {
       learning: 'How a suggested starting point is read: where to begin, the distance from a named surface, the aim, and the clearance that comes first.',
-      start: 'Use STEP to read the example piece by piece, from WHERE TO BEGIN to CLEARANCE. Watch the lit readout (▸) and the part the drawing marks.',
+      start: 'Use PIECE to read the example piece by piece, from WHERE TO BEGIN to CLEARANCE. Watch the lit readout (▸) and the part the drawing marks.',
     },
     seeing: 'A worked example: the mic is placed for you at one suggested starting point (blue). The lit readout (▸) is the piece you’re reading.',
-    control: 'Use STEP to read the example piece by piece, from WHERE TO BEGIN to CLEARANCE. The drawing marks the part each piece is about.',
+    control: 'Use PIECE to read the example piece by piece, from WHERE TO BEGIN to CLEARANCE. The drawing marks the part each piece is about.',
     changes: 'Each distance runs from a named surface to the mic’s FRONT. The same number measured from another surface would put the mic somewhere else.',
     tryThis: [
       'Step to THE DISTANCE: the lit readout reads inside the suggested range written in the card.',
@@ -509,8 +509,9 @@ function keyPhrase(k: MikingDockKey, level: 0 | 1 | 2): string {
 }
 
 const STRIP_LINE = 'In the strip under the title, ‹ PREV and NEXT › move one step, on into the next module (FINISH › at the very end); ⏮ returns to module 1. Tap the middle readout (MODULE, plus STEP when there are several) for the contents. Every module stays open.';
-/** The header's other ⓘ: the lesson's starting-points note (AccuracyNote). */
-const CHIP_LINE = 'The other ⓘ, beside the one you tapped, opens the lesson’s ABOUT THESE STARTING POINTS note.';
+/** The header's ABOUT chip: the lesson's starting-points note (AccuracyNote
+ *  variant "about", fix round 2026-11-14). */
+const CHIP_LINE = 'ABOUT, beside the ⓘ you tapped, opens the lesson’s ABOUT THESE STARTING POINTS note.';
 const FULL_LINE = '⤢ FULL SCREEN shows the drawing at full size, with zoom. ▴ HIDE DISPLAY gives the words the whole screen.';
 
 function sequenceLine(prev: string | null, next: string | null): string {
@@ -545,8 +546,8 @@ export function mikingScreenGuide(x: MikingGuideInput): ScreenGuide {
           : null,
       rack && s && s.bezel.length ? opt(`Watch ${s.bezel.join(', ')} in the readouts, the cells framing the display.`) : null,
       sameAsStage ? null : opt(`It is part of the journey’s ${stage.title.toUpperCase()} stage.`),
-      x.first ? opt(`At the top, “Page ${x.pageNum} goal:” says what this module asks.`) : null,
-      x.last ? opt(x.credited ? 'At the end, read the takeaway card; “This page is credited.” means this module is done.' : 'At the end, read the takeaway card, then the TO EARN CREDIT line: it says what finishes this module.') : null,
+      x.first ? opt(`At the top, “Module ${x.pageNum} goal:” says what this module asks.`) : null,
+      x.last ? opt(x.credited ? 'At the end, read the takeaway card; “This module is credited.” means this module is done.' : 'At the end, read the takeaway card, then the TO EARN CREDIT line: it says what finishes this module.') : null,
     ],
     SCREEN_GUIDE_BUDGET.low,
   );
@@ -651,7 +652,7 @@ export function mikingFoundationsGuide(x: { pageNum: number; pageTitle: string; 
       CHIP_LINE,
     ],
     changes: [
-      'Each of the first two modules counts the moment you finish it, so this activity opens straight away.',
+      'Each of the first two modules counts the moment you finish it, so this activity opens right away.',
       'Passing the quick check opens every activity, but it finishes nothing: you still complete the first two modules yourself.',
     ],
     teaches: [
@@ -670,7 +671,7 @@ export function mikingFoundationsGuide(x: { pageNum: number; pageTitle: string; 
 export const MIKING_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'How a miking lesson fits together: find where the sound leaves, compare setups, choose the mic, place it clear of everything, then test it in real situations.',
-    start: 'Read LAB COMPLETE, or the WHAT’S LEFT rows and what each module still needs. Tap a row to jump to that module, or open REVIEW ▾ to look back at the ones you’ve done.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are. Each row still listed says what that module still needs; tap a row to jump to it.',
   },
   seeing: [
     'You’ve reached the end of this lesson. LAB COMPLETE means every module is done. Otherwise WHAT’S LEFT lists each module still to do, what it needs, and any note on your first try.',
@@ -706,10 +707,15 @@ export const MIKING_END_GUIDE: ScreenGuide = {
 export function mikingHubGuide(family?: { family: string }): ScreenGuide {
   const where = family ? `${family.family.toUpperCase()}: one tile per lesson in this family` : 'MIKING LABS: every family’s lessons, under a heading for each family';
   return {
+    // The screen the Miking Labs open on gets its intro card (S1 phase 2, fix
+    // round 2026-11-14): the lab term rides on top of it.
+    intro: {
+      learning: 'One silent, drawn lesson per instrument or source. Every lesson runs the same journey, from where the sound leaves to a mic placed clear of everything.',
+      start: 'New to miking? Open the lesson the amber line names; modules 1 and 2 give you the foundation. Every lesson opens, in any order.',
+    },
     seeing: [
-      `${where}. The line at the top says what the lessons cover.`,
-      'Each tile shows the lesson’s name, what it covers and how many of its modules you’ve done (the tile calls them pages). ✓ marks a finished lesson.',
-      'At the bottom, a reminder: these lessons suggest where to begin — starting points, not rules.',
+      `${where}. Under the heading, a short reminder (suggested starting points, not rules; silent drawings), then a line saying what the lessons cover and, in amber, the lesson to start with if you are new.`,
+      'Each tile shows the lesson’s name, what it covers and how many of its modules you’ve done. ✓ marks a finished lesson.',
     ],
     control: [
       'Tap a tile to open that lesson. When your progress is saved, it opens where you left off.',

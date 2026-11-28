@@ -161,6 +161,9 @@ export type BalanceSpec = {
   onMoved?: () => void;
 };
 
+/** How far each way (mm) the listening point must move to count as moved. */
+const BALANCE_LEG = 1500;
+
 export function useBalanceStep(spec: BalanceSpec): MikingStep {
   const [x, setX] = useState(spec.x.start);
   const [moved, setMoved] = useState<{ lo: boolean; hi: boolean }>({ lo: false, hi: false });
@@ -185,6 +188,13 @@ export function useBalanceStep(spec: BalanceSpec): MikingStep {
     if (done) onMoved?.();
   }, [done, onMoved]);
   const span = spec.x.max - spec.x.min;
+  // "Moved" counts 1.5 m each way, or the lane's own end when the range stops
+  // sooner (fix-first 15 item 7, owner 2026-11-25: F06 woodland stops 0.5 m
+  // back, at the walking path's keep-out, so a fixed 1.5 m was never reached).
+  // The ends are the values the lane itself snaps to (100 mm steps).
+  const snap = (q: number) => Math.round(q / 100) * 100;
+  const loAt = Math.max(spec.x.start - BALANCE_LEG, snap(spec.x.min));
+  const hiAt = Math.min(spec.x.start + BALANCE_LEG, snap(spec.x.max));
   const params: DockParam[] = [
     {
       kind: 'fader',
@@ -193,9 +203,9 @@ export function useBalanceStep(spec: BalanceSpec): MikingStep {
       value: (x - spec.x.min) / span,
       home: (spec.x.start - spec.x.min) / span,
       onChange: (v) => {
-        const xx = Math.round((spec.x.min + v * span) / 100) * 100;
+        const xx = snap(spec.x.min + v * span);
         setX(xx);
-        setMoved((m) => ({ lo: m.lo || xx <= spec.x.start - 1500, hi: m.hi || xx >= spec.x.start + 1500 }));
+        setMoved((m) => ({ lo: m.lo || xx <= loAt, hi: m.hi || xx >= hiAt }));
       },
       format: () => `${fmtMetres(Math.abs(x - spec.x.start))} ${x >= spec.x.start ? 'toward' : 'back from'} the ${spec.words.mainWord} · ${spec.words.mainWord} ${fmtMetres(r.rM)}`,
       formatShort: () => fmtMetres(r.rM),

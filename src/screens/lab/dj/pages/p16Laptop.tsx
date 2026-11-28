@@ -18,6 +18,7 @@ import { useStageTextScale } from '../../rack/stageAspect';
 import { AudioSetupPanel, LaptopRig, RIG, RIG_BODIES, RIG_FRAME, RIG_POINTS } from '../art/laptopArt';
 import { DjRack } from '../DjRack';
 import { Do, FaultCard, GoalChips, Look, Note, P, Step, Terms, useVisitGoals } from '../bits';
+import { waitIf } from '../goalWords';
 import { boothKey, stopKey } from '../dock';
 import { boothNow, getBooth, updateBooth } from '../booth/boothStore';
 import { renderedSince } from './s1Guards';
@@ -159,7 +160,19 @@ function PageLaptop({ ctx }: { ctx: PageCtx }) {
   // clean, but not the smallest buffer that manages (learning review 2, p16 #2)
   const biggerThanNeeded = clean20 && (A.playing || B.playing) && l.device === 'MIXER USB' && l.buffer > stableBuffer(l.workload, l.rate);
   const hits = [h.current.device, h.current.two, h.current.heavy, h.current.ctrl, h.current.hi, faultFixed, h.current.check];
-  const goals = GOALS_LAPTOP.map((label, i) => ({ label, hit: hits[i] }));
+  // DJ-04 (owner 2026-11-15: "build waves 1 thru 3"): set up right with the
+  // decks stopped, the chip says to press PLAY instead of a silent ○.
+  const noneOn = !A.playing && !B.playing;
+  const waits = [
+    waitIf(l.device === 'MIXER USB', noneOn, 'any'),
+    waitIf(l.workload === 'TWO DECKS' && l.buffer === stableBuffer('TWO DECKS', l.rate) && l.rate === 48000, !both, 'both'),
+    waitIf(l.workload === 'STEMS LIVE' && l.buffer === stableBuffer('STEMS LIVE', l.rate), !both, 'both'),
+    waitIf(!l.usbCtrl && l.device === 'MIXER USB', noneOn, 'any'),
+    waitIf(l.rate === 96000 && l.buffer === stableBuffer(l.workload, 96000), noneOn, 'any'),
+    undefined,
+    waitIf(check && l.usbMixer && l.device === 'MIXER USB' && booth.ch[1].fader > 0.3, noneOn, 'any'),
+  ];
+  const goals = GOALS_LAPTOP.map((label, i) => ({ label, hit: hits[i], wait: waits[i] }));
   const latched = useVisitGoals(ctx, goals, 'LAPTOP', ready);
   const audioLive = (A.playing || B.playing) && l.device === 'MIXER USB' && l.usbMixer;
   const panelH = (H: number, k: number) => Math.round(Math.min(112 * Math.sqrt(k), H * 0.4));
@@ -197,9 +210,9 @@ function PageLaptop({ ctx }: { ctx: PageCtx }) {
         ),
         bezel: [
           { k: 'DEVICE', v: l.device === 'MIXER USB' ? 'MIXER' : 'BUILT-IN', tint: l.device === 'MIXER USB' ? colors.green : '#ff8a7e' },
-          { k: 'LATENCY', v: `${outputLatencyMs(l.buffer, l.rate).toFixed(1)} ms`, sub: `${l.buffer} smp`, tint: '#8fbcff' },
-          { k: 'DROPOUTS', v: String(run.current.count), sub: `${Math.min(20, Math.round(run.current.clean))} s CLEAN`, tint: run.current.count ? '#ff8a7e' : colors.green },
-          { k: 'CH2 GETS', v: l.device !== 'MIXER USB' ? 'NOTHING' : (['A', 'B'] as DeckId[]).filter((d) => l.assign[d] === 'USB 3/4').map((d) => (d === 'A' ? 'DECK 1' : 'DECK 2')).join('+') || 'NOTHING', tint: ch2Silent ? '#ff8a7e' : colors.textPrimary },
+          { k: 'LATENCY', caption: 'output delay', v: `${outputLatencyMs(l.buffer, l.rate).toFixed(1)} ms`, sub: `${l.buffer} smp`, tint: '#8fbcff' },
+          { k: 'DROPOUTS', caption: 'audio gaps', v: String(run.current.count), sub: `${Math.min(20, Math.round(run.current.clean))} s CLEAN`, tint: run.current.count ? '#ff8a7e' : colors.green },
+          { k: 'CH2 GETS', kNarrow: 'CH2', v: l.device !== 'MIXER USB' ? 'NOTHING' : (['A', 'B'] as DeckId[]).filter((d) => l.assign[d] === 'USB 3/4').map((d) => (d === 'A' ? 'DECK 1' : 'DECK 2')).join('+') || 'NOTHING', tint: ch2Silent ? '#ff8a7e' : colors.textPrimary },
         ],
         params: [
           { kind: 'group', id: 'setup', label: 'SETUP', valueLabel: `${l.buffer}`, valueA11y: `buffer ${l.buffer} samples, ${l.device}`, render: () => <SetupTray /> },

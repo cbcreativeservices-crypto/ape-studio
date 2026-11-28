@@ -40,8 +40,12 @@ describe('UnderstandingCheck retry feedback (decision 7)', () => {
   it('the component counts misses and resets the count with the question signature', () => {
     const src = readFileSync('src/screens/lab/tuning/components/check.tsx', 'utf8').replace(/\r\n/g, '\n');
     assert.match(src, /const feedback = checkFeedback\(\{ picked, correct, explain, wrong, misses \}\);/);
-    assert.match(src, /missesRef\.current \+= 1;\n\s*setMisses\(missesRef\.current\);/);
-    assert.match(src, /useEffect\(\(\) => \{\n\s*missesRef\.current = 0;\n\s*setMisses\(0\);\n\s*\}, \[signature\]\);/);
+    // Fix round 2026-11-14 (owner: "Begin fixing all bugs found and do obvious … fixes"; the
+    // shared check card's rule): a miss is a DIFFERENT wrong option; the same one twice is one miss.
+    assert.match(src, /missedRef\.current\.add\(i\);\n\s*missesRef\.current = missedRef\.current\.size;\n\s*setMisses\(missesRef\.current\);/);
+    assert.match(src, /useEffect\(\(\) => \{\n\s*missesRef\.current = 0;\n\s*missedRef\.current = new Set\(\);\n\s*setMisses\(0\);\n\s*\}, \[signature\]\);/);
+    // …and with a `wrong` map the explanation follows the reason from the second miss on
+    assert.equal(checkFeedback({ ...base, wrong: ['W0', undefined, undefined], picked: 0, misses: 2 }), `W0 ${base.explain}`);
     assert.ok(!src.includes('try again with that in mind'), 'the hint text lives only in checkFeedback.ts');
   });
 });

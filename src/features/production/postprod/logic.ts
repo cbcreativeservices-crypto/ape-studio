@@ -74,6 +74,10 @@ const hasPicture = (ctx: RuleContext): boolean => {
 /** Names that are an organisation or a group rather than one person. */
 const GROUP_WORDS = /\b(team|label|committee|board|client|department|group|management|the\s+\w+s)\b/i;
 const JOINS_TWO = /\s(?:and|&|\/|,)\s|\s*&\s*/;
+/** "The label", "the team", "Sam and Jo": a group, not one approver. One
+ *  test for the finding AND the exercise check (novice audit G4, 2026-11-14:
+ *  the check ticked "One named person" for two names the finding flagged). */
+export const looksLikeGroup = (who: string): boolean => GROUP_WORDS.test(who) || JOINS_TWO.test(who);
 
 registerRuleLogic({
   'brief-no-written-spec': (ctx) =>
@@ -84,7 +88,7 @@ registerRuleLogic({
   'brief-approver-is-a-committee': (ctx) => {
     const who = str(ctx.get('brief', 'approval_authority'));
     if (who === '') return false; // the previous rule's business
-    return GROUP_WORDS.test(who) || JOINS_TWO.test(who);
+    return looksLikeGroup(who);
   },
 
   'brief-material-still-changing': (ctx) => {

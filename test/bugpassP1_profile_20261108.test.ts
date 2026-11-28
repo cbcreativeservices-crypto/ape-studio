@@ -1,8 +1,9 @@
+// 2026-11-21 owner (tester on a tablet): learner text says "this device", never "this phone".
 /**
  * Bug pass 1 (2026-11-08), group "profile": CODE-1-01, -02, -03, -14, -24, -25.
  *
  *  CODE-1-01  A listed member read "private" and could not unlist: the switch
- *             was greyed whenever this phone's form was incomplete.
+ *             was greyed whenever this device's form was incomplete.
  *  CODE-1-02  One tap before the Profile load landed dropped the loaded record
  *             and the save laid a one-chip interests list over the stored one.
  *  CODE-1-03  The share went to whatever code was in the field at SHARE time,

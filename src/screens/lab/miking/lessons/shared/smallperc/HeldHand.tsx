@@ -16,6 +16,10 @@ import { AnatomicalHand } from '../hand/anatomy/AnatomicalHand';
 import { cylinderCut, towardOf, type Cylinder } from '../hand/anatomy/anatomy.ts';
 import { SIDE_VIEW, TOP_VIEW } from './Hand';
 import { Arm2D } from './Player';
+import { figureV2On } from '../figureV2/figureV2Config.ts';
+import { HeldHandV2 } from './smallPercV2';
+
+const SP_V2 = figureV2On('familySmallPerc');
 
 const proj = (view: 'side' | 'top', p: V3): [number, number] => (view === 'side' ? [p.x, p.y] : [p.x, p.z]);
 
@@ -38,7 +42,17 @@ export type HeldHandProps = {
   opacity?: number;
 };
 
-export function HeldHand({ view, S, E, sk, held, cyl, halfLength = 0, arm = true, armElsewhere = false, opacity = 1 }: HeldHandProps) {
+export function HeldHand(props: HeldHandProps) {
+  // (figure roll-out wave 5: the arm and the hand in the approved look)
+  if (SP_V2) {
+    const { view, cyl, halfLength = 0 } = props;
+    const cut = cyl ? cylinderCut(cyl, towardOf(view === 'side' ? SIDE_VIEW : TOP_VIEW), halfLength) : undefined;
+    return <HeldHandV2 view={view} S={props.S} E={props.E} sk={props.sk} held={props.held} cut={cut} arm={props.arm} armElsewhere={props.armElsewhere} opacity={props.opacity} />;
+  }
+  return <HeldHandOld {...props} />;
+}
+
+function HeldHandOld({ view, S, E, sk, held, cyl, halfLength = 0, arm = true, armElsewhere = false, opacity = 1 }: HeldHandProps) {
   const V = view === 'side' ? SIDE_VIEW : TOP_VIEW;
   const W = sk.frame.o;
   const s = proj(view, S);

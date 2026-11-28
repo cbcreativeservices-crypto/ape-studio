@@ -32,3 +32,18 @@ export function collapsedDefinitionLines(
   // LIST: clamp only a reader who is actually being metered.
   return capped ? COLLAPSED_PREVIEW_LINES : undefined;
 }
+
+/**
+ * The Glossary's one-time hint, worded for what a tap does in the view the
+ * reader is in (owner 2026-11-20: "it says tap a term … but it only works once
+ * a user goes into full screen"). A member's LIST row already prints the whole
+ * definition, so "expand the complete definition" promised something the tap
+ * never visibly did; there a tap opens the term's learning levels.
+ */
+export function glossaryCoachText(cardView: boolean, capped: boolean): string {
+  if (cardView) return 'Tap a card to open its complete definition';
+  if (collapsedDefinitionLines(false, capped) !== undefined) {
+    return 'Tap a term to expand or collapse the complete definition';
+  }
+  return 'Tap a term to open or close its learning levels';
+}

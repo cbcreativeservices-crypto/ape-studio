@@ -75,6 +75,10 @@ export type GuidedStep = {
   do: string;
   notice: string;
   why: string;
+  /** ADDITIVE (lab fix round 2026-11-14, report section 3 row 3): this step's
+   *  NOTICE can only be heard (nothing on screen shows it), so the sheet draws
+   *  S3's NEEDS SOUND tag beside it. A marker, never a lock. */
+  needsSound?: true;
 };
 
 /** The renderable content the GuidedLessonSheet actually uses — shared by lab

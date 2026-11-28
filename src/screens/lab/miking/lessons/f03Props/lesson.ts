@@ -417,7 +417,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: where does a door’s sound start?', options: ['Only at the handle', 'In several places on the door', 'In the room'], after: 'Now STEP through (or PLAY ONCE) and watch the hand, the contact, the body and the final contact.' },
+  sound: { prompt: 'Before you step through: where does a door’s sound start?', options: ['Only at the handle', 'In several places on the door', 'In the room'], after: 'Now go EVENT by EVENT (or PLAY ONCE) and watch the hand, the contact, the body and the final contact.' },
   microphone: { prompt: 'Before you move anything: where will the supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move from the whole-action start to about 45 cm from the latch. What changes?', options: ['A sharper click', 'More room', 'It depends on this door'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front of the artist. Where will a supercardioid aimed at the keys reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },

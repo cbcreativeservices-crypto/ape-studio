@@ -217,8 +217,9 @@ export function CentsRail({
 }: {
   markers: RailMarker[];
   divisions?: boolean;
-  /** Deviation brackets between two cents positions with a label. */
-  brackets?: { fromCents: number; toCents: number; label: string; role?: keyof typeof ROLE }[];
+  /** Deviation brackets between two cents positions with a label. `row`
+   *  (0 = top) pins a bracket's height; default: its place in the list. */
+  brackets?: { fromCents: number; toCents: number; label: string; role?: keyof typeof ROLE; row?: number }[];
   height?: number;
   onPressMarker?: (id: string) => void;
   selectedId?: string | null;
@@ -273,7 +274,7 @@ export function CentsRail({
         <SvgText x={xOfCents(1200)} y={endY} fontSize={11} fill={colors.textSecondary} textAnchor="end" fontFamily={fonts.oswaldMedium}>2:1 · 1200 ¢</SvgText>
         {brackets?.map((b, i) => {
           const x1 = xOfCents(b.fromCents), x2 = xOfCents(b.toCents);
-          const y = 14 + i * 12;
+          const y = 14 + (b.row ?? i) * 12;
           const col = ROLE[b.role ?? 'near'];
           return (
             <Svg accessibilityElementsHidden importantForAccessibility="no-hide-descendants" key={i}>
@@ -360,7 +361,7 @@ export function EquationStage({ steps, title, reduceMotion, autoAdvance }: { ste
         </Animated.View>
       ))}
       <Row>
-        {shown < steps.length ? <Btn label={`NEXT STEP (${shown}/${steps.length})`} onPress={reveal} tone="primary" /> : null}
+        {shown < steps.length ? <Btn label={`NEXT STEP (${steps.length - shown} left)`} onPress={reveal} tone="primary" /> : null}
         {shown > 1 ? <Btn label="REPLAY" onPress={() => setShown(1)} /> : null}
       </Row>
     </Card>

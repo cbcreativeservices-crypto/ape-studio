@@ -19,20 +19,37 @@ import { Roadway } from '../shared/broadcast/ReporterArt';
 import { HEAD_C, HEAD_R } from '../shared/voice/voiceSpec.ts';
 import { SINGER_SOLIDS } from '../shared/voice/voicePose.ts';
 import { CAMERA_BOX, FLOOR, GUEST, KERB_X, LENS, PA_C, REPORTER, ROAD_X0, ROAD_Z, TRIPOD } from './geometry.ts';
+import { castFor } from '../shared/figureV2/cast';
+import { SoftFolds } from '../shared/figureV2/paint';
+import { StandingV2, standingCoversV2 } from '../shared/broadcast/heldPeopleV2';
+import { REP_HOLDER, V2 } from './held';
+
+/** (figure V2) the guest and the reporter as their cast members. */
+const WHO = { guest: castFor('talker.guest'), reporter: castFor('talker.reporter') };
 
 export const CAMERA: CameraSpec = { box: CAMERA_BOX, lens: LENS, floor: FLOOR, spread: TRIPOD.spread };
 
 const street = (v: VariantId) => v === 'street' || v === 'twoMics';
 
-export function B03Scene({ view, variant }: { view: ViewId; variant: VariantId }): ReactElement {
+/** (figure V2) the scene with the cloth’s folds soft (paint.SoftFolds) in the new look. */
+export function B03Scene(props: { view: ViewId; variant: VariantId; /** (the study page compares the old look) */ v2?: boolean }): ReactElement {
+  return (
+    <SoftFolds.Provider value={props.v2 ?? V2}>
+      <B03SceneIn {...props} />
+    </SoftFolds.Provider>
+  );
+}
+
+function B03SceneIn({ view, variant, v2 = V2 }: { view: ViewId; variant: VariantId; /** (the study page compares the old look) */ v2?: boolean }): ReactElement {
   const side = view === 'side';
   return (
     <Group>
       {street(variant) ? <Roadway view={view} x0={ROAD_X0} x1={KERB_X} z0={ROAD_Z.z0} z1={ROAD_Z.z1} floor={FLOOR} /> : null}
       {variant === 'event' && !side ? <PaSpeaker view={view} c={PA_C} faces={1} floor={FLOOR} /> : null}
       {!side && street(variant) ? <DirArrow a={{ u: -1500, v: -1300 }} b={{ u: -800, v: -900 }} color="#8fbcff" w={10} /> : null}
-      <StandingTalker view={view} t={GUEST} />
-      <StandingTalker view={view} t={REPORTER} arm="R" />
+      {v2 ? <StandingV2 view={view} t={GUEST} who={WHO.guest} /> : <StandingTalker view={view} t={GUEST} />}
+      {/* (v2) the reporter holds the handheld when the engine hangs it from their shoulder: the arm at its depth */}
+      {v2 ? <StandingV2 view={view} t={REPORTER} who={WHO.reporter} holder={REP_HOLDER} /> : <StandingTalker view={view} t={REPORTER} arm="R" />}
       <CameraRig view={view} spec={CAMERA} />
       {/* From the side the loudspeaker (z 1.3 m, nearer the viewer than the
           camera at 0.7–0.8 m) stands in front of the camera's tripod. */}
@@ -84,5 +101,6 @@ export function b03HitTest(view: ViewId, variant: VariantId, u: number, v: numbe
 }
 
 export function b03FigureAt(view: ViewId, _variant: VariantId, u: number, v: number, tol: number): boolean {
+  if (V2) return standingCoversV2(view, GUEST, WHO.guest, u, v, tol) || standingCoversV2(view, REPORTER, WHO.reporter, u, v, tol);
   return standingCovers(view, GUEST, u, v, tol) || standingCovers(view, REPORTER, u, v, tol, 'R');
 }

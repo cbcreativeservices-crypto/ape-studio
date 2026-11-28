@@ -28,8 +28,9 @@ import { reportUnhandledSaveFailure } from '../../../../features/storage/saveFai
 import { registerLocalStoreReset } from '../../../../features/storage/localStoreRegistry';
 import { markLabUnit, PASS_UNIT } from '../../../../features/lab/labCompletion';
 import { holdSessionWork, registerSessionCarry } from '../../../../features/lab/sessionCarry';
-import { LabChip, CollapsibleSection } from '../../LabShell';
+import { CollapsibleSection } from '../../LabShell';
 import { CheckQuestion, VizUnavailableCard, type CheckSpec } from '../../foundations/bits';
+import { GoalCheck, useGoalMet } from '../moduleGoal';
 import { MythReality, dstyles } from '../../digital/bits';
 import { RackUnit } from '../../rack/RackUnit';
 import type { BezelItem, DockParam } from '../../rack/rackTypes';
@@ -50,7 +51,8 @@ import {
 import type { MeterModuleProps } from '../MeterModuleScreen';
 
 /** The standing honesty badge (§1.7), silk-screened under every stage. */
-const HONESTY = 'SYNTHESIZED TEACHING SIGNAL — NOTHING HERE MEASURES REAL AUDIO';
+// S3's plain model note (phase 3, 2026-11-14), not an all-caps badge.
+const HONESTY = 'A built-in teaching signal: nothing here measures real audio.';
 
 /** The well's guided-lesson entry row (rack modules own it — the host's bottom
  *  row only exists on non-rack modules; styling mirrors MeterModuleScreen). */
@@ -115,6 +117,11 @@ const CHECK_PHASE_PA: CheckSpec = {
     'The mix, about 3 dB louder',
   ],
   correctIdx: 1,
+  why: {
+    0: 'At −1 the two channels are opposites. Summed together, opposites do not add up.',
+    2: 'Correlation near −1 is about the whole mix, dry parts too, not only the reverb.',
+    3: 'Two channels add up louder only when they agree. At −1 they disagree completely.',
+  },
   reveal:
     '−1 means the right channel is the polarity-opposite of the left: every push in L is a pull in R. ' +
     'Sum them and they subtract — at equal levels the mix collapses toward silence. That is why you read this meter ' +
@@ -131,6 +138,11 @@ const CHECK_PHASE_HEALTHY: CheckSpec = {
     'Dipping to −1 on the loud parts',
   ],
   correctIdx: 1,
+  why: {
+    0: 'Exactly +1 all the time means left and right are identical: mono, with no width at all.',
+    2: 'Exactly 0 means the channels share almost nothing, which is very wide and risky in mono.',
+    3: 'Dips toward −1 are the warning sign the lab showed: content that cancels in mono.',
+  },
   reveal:
     'Healthy stereo lives in the positive zone: mostly shared content, some width. Pinned at +1 means ' +
     'pure mono (no width at all); long visits below 0 mean cancellation is waiting on any mono sum.',
@@ -201,10 +213,10 @@ export function PhaseModule(p: MeterModuleProps) {
   ];
 
   const bezel: BezelItem[] = [
-    { k: 'CORR', v: `${corr >= 0 ? '+' : ''}${corr.toFixed(2)}`, tint: zoneColor, helpKey: 'phase_meter' },
+    { k: 'CORR', v: `${corr >= 0 ? '+' : ''}${corr.toFixed(2)}`, tint: zoneColor, helpKey: 'phase_meter', caption: 'L-R alike?' },
     { k: 'WIDTH', v: `${Math.round(widthV * 100)} %`, helpKey: 'stereo_width' },
     { k: 'PHASE', v: `${phaseDeg}°`, helpKey: 'phase_meter' },
-    { k: 'MONO FOLD', v: `${foldDb >= 0 ? '+' : ''}${foldDb.toFixed(1)} dB`, tint: zoneColor, helpKey: 'phase_meter', flex: 1.15 },
+    { k: 'MONO FOLD', v: `${foldDb >= 0 ? '+' : ''}${foldDb.toFixed(1)} dB`, tint: zoneColor, helpKey: 'phase_meter', flex: 1.15, caption: 'mono level' },
   ];
 
   return (
@@ -215,7 +227,7 @@ export function PhaseModule(p: MeterModuleProps) {
       stage={{
         size: 'L',
         fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
-        badge: HONESTY,
+        modelNote: HONESTY,
         onGuide: () => p.help('phase_meter'),
         bezel,
         render: (w, h) =>
@@ -239,12 +251,15 @@ export function PhaseModule(p: MeterModuleProps) {
           <DisplayGuideButton onPress={() => p.help('goniometer')} />
         </CollapsibleSection>
 
-        <MythReality
-          myth="Out-of-phase tricks just make a mix sound wider — the width is free."
-          reality="The width is borrowed against mono compatibility. Drag PHASE toward 180° and watch: the image gets huge while the correlation dives to −1 — then read the MONO FOLD number. Any mono playback (club PA, phone, smart speaker) collects that debt."
-        />
-        <CheckQuestion spec={CHECK_PHASE_PA} />
-        <CheckQuestion spec={CHECK_PHASE_HEALTHY} />
+        {/* MYTH vs REALITY starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal). */}
+        <CollapsibleSection title="MYTH vs REALITY" startOpen={false}>
+          <MythReality
+            myth="Out-of-phase tricks just make a mix sound wider — the width is free."
+            reality="The width is borrowed against mono compatibility. Drag PHASE toward 180° and watch: the image gets huge while the correlation dives to −1 — then read the MONO FOLD number. Any mono playback (club PA, phone, smart speaker) collects that debt."
+          />
+        </CollapsibleSection>
+        <GoalCheck spec={CHECK_PHASE_PA} />
+        <GoalCheck spec={CHECK_PHASE_HEALTHY} />
         <LessonRow onPress={() => p.help()} />
       </View>
     </RackUnit>
@@ -263,7 +278,7 @@ const STEREO_PRESETS: { key: StereoPreset; label: string; mid: string; side: str
     mid: '100 %',
     side: '0 %',
     caption:
-      'One signal in both speakers: all Mid, zero Side. The image is a single point at center — total focus, no space.',
+      'One signal in both speakers: all Mid, zero Side. The image is a single line straight up the middle — total focus, no space.',
   },
   {
     key: 'narrow',
@@ -308,6 +323,11 @@ const CHECK_MS: CheckSpec = {
     'The frequencies above 8 kHz',
   ],
   correctIdx: 2,
+  why: {
+    0: 'One channel alone carries both shared and different parts. Look at the readout labels.',
+    1: 'What both speakers share is the MID. The readout says MID (SHARED).',
+    3: 'Mid and side are about left versus right, not about high or low frequencies.',
+  },
   reveal:
     'Side = L − R: only what the channels disagree about. Mid = what they share. Width is not a ' +
     'separate ingredient you sprinkle on — it IS the ratio of Side to Mid, and this display makes ' +
@@ -369,7 +389,7 @@ export function StereoModule(p: MeterModuleProps) {
       stage={{
         size: 'L',
         fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
-        badge: HONESTY,
+        modelNote: HONESTY,
         onGuide: () => p.help('stereo_width'),
         bezel,
         render: (w, h) =>
@@ -407,11 +427,14 @@ export function StereoModule(p: MeterModuleProps) {
           </Text>
         </CollapsibleSection>
 
-        <MythReality
-          myth="Wider is always better — push every element to the sides."
-          reality="Width is a position, not a quality. Compare WIDE and HARD L-R with MONO: what the sides gain in size, the center loses in focus — and everything in Side vanishes from a mono sum. Great mixes SPEND width on a few elements and keep the anchors in the Mid."
-        />
-        <CheckQuestion spec={CHECK_MS} />
+        {/* MYTH vs REALITY starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal). */}
+        <CollapsibleSection title="MYTH vs REALITY" startOpen={false}>
+          <MythReality
+            myth="Wider is always better — push every element to the sides."
+            reality="Width is a position, not a quality. Compare WIDE and HARD L-R with MONO: what the sides gain in size, the center loses in focus — and everything in Side vanishes from a mono sum. Great mixes SPEND width on a few elements and keep the anchors in the Mid."
+          />
+        </CollapsibleSection>
+        <GoalCheck spec={CHECK_MS} />
         <LessonRow onPress={() => p.help()} />
       </View>
     </RackUnit>
@@ -437,10 +460,15 @@ const CHECK_SCOPE_SQUARE: CheckSpec = {
   options: [
     'You cannot — at the same level they trace the same shape',
     'The square is twice as tall as the sine',
-    'The square sits on flat shelves with fast vertical edges; the sine is one smooth curve',
+    'The square has flat shelves and sharp vertical edges; the sine is smooth',
     'The square moves across the screen faster',
   ],
   correctIdx: 2,
+  why: {
+    0: 'Same level, different shape. Switch SIGNAL between SINE and SQUARE and compare the trace.',
+    1: 'At the same level they reach the same height. Look at the SHAPE between the peaks.',
+    3: 'Same pitch means same cycle length. They move across the screen at the same speed.',
+  },
   reveal:
     'The scope is the raw voltage picture. A sine bends smoothly through every level; a square SITS ' +
     'at two levels and jumps between them. That same eye is your clipping detector: when a wave ' +
@@ -457,6 +485,11 @@ const CHECK_LISSAJOUS_LINE: CheckSpec = {
     'The signal is maximally wide',
   ],
   correctIdx: 0,
+  why: {
+    1: 'Opposite polarity tilts the line the other way, toward the opposite diagonal.',
+    2: 'With one channel gone the trace lies flat along one axis, not on the 45° diagonal.',
+    3: 'A wide signal spreads into a cloud, not a thin line.',
+  },
   reveal:
     // ── WHY THIS DISAGREES WITH THE GONIOMETER (2026-09-18, teaching · MINOR 4)
     // Both pictures are correct for their own instrument, and the app said so
@@ -520,12 +553,11 @@ export function ScopeModule(p: MeterModuleProps) {
     return correlationOf(l, r);
   }, [widthV, phaseDeg]);
 
-  // Riding a Lissajous lane IS entering X-Y mode (cause→effect, zero taps —
-  // the LiveSpectrumEq bellFader idiom).
-  const xyFader = (set: (v: number) => void) => (v: number) => {
-    if (!xy) setXy(true);
-    set(v);
-  };
+  // MT-06 + SH-64 (owner 2026-11-15: "build waves 1 thru 3", D62): WIDTH and PHASE shape only the
+  // X-Y picture, so in TIME they are greyed with a reason and never bind the lane. The dock no longer
+  // opens on PHASE (whose first drag jumped the picture to X-Y, past the card's first step): it opens
+  // on SIGNAL, and PHASE binds the moment X-Y is on.
+  const xyOnly = xy ? undefined : 'it shapes the X-Y picture, so tap X-Y first.';
 
   const params: DockParam[] = [
     {
@@ -552,24 +584,27 @@ export function ScopeModule(p: MeterModuleProps) {
       onToggle: () => setXy((v) => !v),
       helpKey: 'lissajous',
     },
-    {
-      kind: 'fader',
-      id: 'width',
-      label: 'WIDTH',
-      value: widthV,
-      onChange: xyFader(setWidthV),
-      format: () => `${Math.round(widthV * 100)} %`,
-      formatShort: () => `${Math.round(widthV * 100)}%`,
-      helpKey: 'lissajous',
-    },
+    // SH-35 (owner 2026-11-15, D62): PHASE before WIDTH, the order the Phase module's dock uses.
     {
       kind: 'fader',
       id: 'phase',
       label: 'PHASE',
       value: phaseV,
-      onChange: xyFader(setPhaseV),
+      onChange: setPhaseV,
+      locked: xyOnly,
       format: () => `${phaseDeg}° (R vs L)`,
       formatShort: () => `${phaseDeg}°`,
+      helpKey: 'lissajous',
+    },
+    {
+      kind: 'fader',
+      id: 'width',
+      label: 'WIDTH',
+      value: widthV,
+      onChange: setWidthV,
+      locked: xyOnly,
+      format: () => `${Math.round(widthV * 100)} %`,
+      formatShort: () => `${Math.round(widthV * 100)}%`,
       helpKey: 'lissajous',
     },
   ];
@@ -578,7 +613,7 @@ export function ScopeModule(p: MeterModuleProps) {
     // Read-only (owner rule 2026-10-10): the X-Y dock key flips TIME ↔ X-Y.
     { k: 'MODE', v: xy ? 'X-Y' : 'TIME', helpKey: 'lissajous' },
     { k: 'SIGNAL', v: xy ? '—' : sigLabel, helpKey: 'oscilloscope' },
-    { k: 'CORR', v: xy ? `${corr >= 0 ? '+' : ''}${corr.toFixed(2)}` : '—', helpKey: 'lissajous' },
+    { k: 'CORR', v: xy ? `${corr >= 0 ? '+' : ''}${corr.toFixed(2)}` : '—', helpKey: 'lissajous', caption: 'L-R alike?' },
     { k: 'WIDTH', v: xy ? `${Math.round(widthV * 100)} %` : '—', helpKey: 'lissajous' },
   ];
 
@@ -590,7 +625,7 @@ export function ScopeModule(p: MeterModuleProps) {
       stage={{
         size: 'L',
         fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
-        badge: HONESTY,
+        modelNote: HONESTY,
         onGuide: () => p.help(xy ? 'lissajous' : 'oscilloscope'),
         bezel,
         render: (w, h) =>
@@ -617,7 +652,8 @@ export function ScopeModule(p: MeterModuleProps) {
             : 'Reading flat-tops: when the trace slams into a ceiling and flattens, the signal has clipped RIGHT THERE or earlier — whatever the meters further down the chain claim.'}
         </Text>
 
-        <CollapsibleSection title="THE RAWEST VIEW">
+        {/* Starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal): extra reading, one tap away. */}
+        <CollapsibleSection title="THE RAWEST VIEW" startOpen={false}>
           <Text style={dstyles.body}>
             The oscilloscope draws the voltage itself against time — no averaging, no ballistics, no
             weighting. Sine = one smooth curve, square = shelves with fast edges, saw = ramps, speech =
@@ -626,12 +662,15 @@ export function ScopeModule(p: MeterModuleProps) {
           </Text>
         </CollapsibleSection>
 
-        <MythReality
-          myth="If no meter shows red, nothing is clipping anywhere in the chain."
-          reality="Meters read the point where they are inserted. The scope shows the waveform itself — flat-tops mean the signal has clipped at THIS point or earlier in the chain, even when a meter later in the path (after a pad or trim) reads a polite level."
-        />
-        <CheckQuestion spec={CHECK_SCOPE_SQUARE} />
-        <CheckQuestion spec={CHECK_LISSAJOUS_LINE} />
+        {/* MYTH vs REALITY starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal). */}
+        <CollapsibleSection title="MYTH vs REALITY" startOpen={false}>
+          <MythReality
+            myth="If no meter shows red, nothing is clipping anywhere in the chain."
+            reality="Meters read the point where they are inserted. The scope shows the waveform itself — flat-tops mean the signal has clipped at THIS point or earlier in the chain, even when a meter later in the path (after a pad or trim) reads a safe level."
+          />
+        </CollapsibleSection>
+        <GoalCheck spec={CHECK_SCOPE_SQUARE} />
+        <GoalCheck spec={CHECK_LISSAJOUS_LINE} />
         <LessonRow onPress={() => p.help()} />
       </View>
     </RackUnit>
@@ -776,6 +815,11 @@ const CASES: DetectiveCase[] = [
       question: 'WHAT METER IS THIS?',
       options: ['A goniometer', 'A waveform display', 'A spectrum analyzer', 'A loudness history'],
       correctIdx: 1,
+      why: {
+        0: 'A goniometer draws a cloud or line inside a circle. Here a line runs left to right across a center line.',
+        2: 'A spectrum runs low to high pitch across. This axis is TIME, with a zero line in the middle.',
+        3: 'A loudness history has no center zero line; it only climbs up from the bottom.',
+      },
       reveal:
         'The DAW picture: amplitude on the vertical axis, time running left to right, with the zero line through the middle and the 0 dBFS rails at the edges.',
       wrongHint: 'The horizontal axis here is TIME, and there is a center zero line.',
@@ -789,14 +833,24 @@ const CASES: DetectiveCase[] = [
         'Two channels out of phase',
       ],
       correctIdx: 2,
+      why: {
+        0: 'Clipping shows as flat tops at the rails. Look where this wave sits compared with the center.',
+        1: 'Noise is a ragged random band. This is one smooth, repeating wave.',
+        3: 'Phase needs two channels. This display shows one trace.',
+      },
       reveal:
         'The shape itself is healthy — but the whole trace is shifted upward. Its average is not zero: it spends more of its life above the line than below it.',
       wrongHint: 'Compare where the wave is centered against where the zero line is.',
     },
     problem: {
       question: 'WHAT PROBLEM DO YOU SEE?',
-      options: ['Aliasing', 'Mains hum', 'Phase cancellation', 'DC offset'],
+      options: ['Aliasing', 'AC hum', 'Phase cancellation', 'DC offset'],
       correctIdx: 3,
+      why: {
+        0: 'Aliasing is a wrong frequency, not a wave lifted off center.',
+        1: 'Hum is an added tone at 50 or 60 Hz. Here the whole wave has moved up.',
+        2: 'Phase cancellation needs two channels. One trace cannot cancel itself.',
+      },
       reveal:
         'A constant (0 Hz) component rides under the audio. It eats headroom asymmetrically — the top clips early while the bottom has room to spare — parks speaker cones off-center, and makes edits click.',
       wrongHint: 'What frequency is a constant shift upward? (Hint: it never oscillates.)',
@@ -804,12 +858,17 @@ const CASES: DetectiveCase[] = [
     fix: {
       question: 'WHAT PROCESSOR/ACTION FIXES IT?',
       options: [
-        'A compressor',
-        'A gentle high-pass / DC filter',
+        'A fast compressor',
+        'A DC / high-pass filter',
         'A stereo widener',
         'A de-esser',
       ],
       correctIdx: 1,
+      why: {
+        0: 'A compressor changes level, not the wave’s center line.',
+        2: 'A widener works on stereo; this problem is in one signal’s center.',
+        3: 'A de-esser tames harsh “s” sounds, not an offset under the whole wave.',
+      },
       reveal:
         'A DC-removal filter (a high-pass at a few Hz) passes all the audio and blocks the constant — the wave recenters on zero and the symmetric headroom comes back. Compression would just squash the already-shifted signal.',
       wrongHint: 'The fault lives BELOW the audio band. Which processor removes only that?',
@@ -822,6 +881,11 @@ const CASES: DetectiveCase[] = [
       question: 'WHAT METER IS THIS?',
       options: ['A VU meter', 'A spectrogram', 'A digital peak meter', 'A correlation meter'],
       correctIdx: 2,
+      why: {
+        0: 'A VU has a needle on an arc. These are lit segments in tall bars.',
+        1: 'A spectrogram is a colored picture over time. These are bars climbing to a ceiling.',
+        3: 'A correlation meter is one bar from −1 to +1. Read the scale on these bars.',
+      },
       reveal:
         'A segment ladder in dBFS with a hold bar parked at the recent maximum and an OVER lamp that lights when full scale is hit — the digital recording safety meter.',
       wrongHint: 'Segments, a hold bar, and a warning lamp at the very top.',
@@ -835,6 +899,11 @@ const CASES: DetectiveCase[] = [
         'Stereo width',
       ],
       correctIdx: 1,
+      why: {
+        0: 'LUFS needs a loudness meter with its time windows. These bars are in dBFS.',
+        2: 'Frequency balance needs a pitch axis. These bars are only level.',
+        3: 'Width needs a stereo display. These bars show each channel’s level.',
+      },
       reveal:
         'The bar keeps slamming the top of the scale and the lit OVER says full scale has already been hit at least once. Peak meters answer exactly one question: how close are the biggest instants to 0 dBFS?',
       wrongHint: 'This ladder reads instants, not averages — and its warning lamp has tripped.',
@@ -848,6 +917,11 @@ const CASES: DetectiveCase[] = [
         'Feedback',
       ],
       correctIdx: 0,
+      why: {
+        1: 'This meter has no pitch axis, so it cannot tell you about bass.',
+        2: 'Look at the OVER lamp: a healthy meter keeps it dark.',
+        3: 'Feedback is a pitch problem, seen on a spectrum, not on a peak meter.',
+      },
       reveal:
         'Hitting full scale means the converter has run out of numbers: the waveform is flat-topped and the distortion is already recorded. The OVER lamp exists so you catch it even if you looked away.',
       wrongHint: 'What happens to a digital signal at the moment it reaches full scale?',
@@ -861,6 +935,11 @@ const CASES: DetectiveCase[] = [
         'Trim the gain upstream',
       ],
       correctIdx: 3,
+      why: {
+        0: 'EQ reshapes the tone, but the level is still past full scale.',
+        1: 'Your speakers do not change what was recorded. The overload is in the signal.',
+        2: 'Reverb adds sound. It cannot take away the level that is clipping.',
+      },
       reveal:
         'Turn the SIGNAL down at its source (input gain / trim), not your speakers — monitor volume changes what you hear, never what gets recorded. Leave honest headroom and the OVER lamp stays dark.',
       wrongHint: 'The problem is the recorded level itself. Which knob changes THAT?',
@@ -873,6 +952,11 @@ const CASES: DetectiveCase[] = [
       question: 'WHAT METER IS THIS?',
       options: ['A spectrum analyzer', 'A waveform display', 'A waterfall (CSD)', 'A phase meter'],
       correctIdx: 0,
+      why: {
+        1: 'A waveform runs time across with a center zero line. This shows pitch across.',
+        2: 'A waterfall is a 3-D picture with slices stepping forward. This is one flat curve.',
+        3: 'A phase meter compares two channels. This shows energy at each pitch.',
+      },
       reveal:
         'Level on the vertical axis, frequency on a log horizontal axis, one snapshot in time — the display that answers WHAT frequencies the signal is made of.',
       wrongHint: 'The horizontal axis here is FREQUENCY, not time.',
@@ -882,10 +966,15 @@ const CASES: DetectiveCase[] = [
       options: [
         'Broadband pink noise',
         'One tall spike at 1.75 kHz',
-        'Spikes at the power-line frequency and its exact multiples',
+        'Spikes at power-line multiples',
         'A speech formant pattern',
       ],
       correctIdx: 2,
+      why: {
+        0: 'Pink noise is a smooth sloped curve, with no sharp spikes.',
+        1: 'There is more than one spike. Count them and check how they are spaced.',
+        3: 'Formants are soft humps that shift. These are thin, evenly spaced spikes.',
+      },
       reveal:
         'Narrow, evenly spaced spikes marching up from the power-line frequency in exact multiples — a harmonic series of the power line, sitting there whether or not anything is playing. The power-line frequency is 60 Hz in North America (drawn here) and 50 Hz in most other countries.',
       wrongHint: 'Look at the SPACING of the spikes — they are exact multiples of one low frequency.',
@@ -894,11 +983,16 @@ const CASES: DetectiveCase[] = [
       question: 'WHAT PROBLEM DO YOU SEE?',
       options: [
         'Feedback building up',
-        'Mains hum',
+        'AC hum',
         'DC offset',
         'Aliasing',
       ],
       correctIdx: 1,
+      why: {
+        0: 'Feedback is ONE spike that grows. Here several spikes hold steady.',
+        2: 'DC offset sits at 0 Hz, a shift of the whole wave, not a row of spikes.',
+        3: 'Aliasing makes stray tones; it does not line them up at power-line multiples.',
+      },
       reveal:
         'The power-line comb (60 Hz here; 50 Hz in most other countries) is the electrical fingerprint of the power line riding on your audio — classically a ground loop between two powered devices, or an unbalanced cable running beside power.',
       wrongHint: 'What in every studio oscillates at the power-line frequency, forever?',
@@ -909,9 +1003,14 @@ const CASES: DetectiveCase[] = [
         'A limiter',
         'Boost the low end to mask it',
         'A stereo widener',
-        'Fix the grounding, then notch the residue',
+        'Fix the grounding, notch what’s left',
       ],
       correctIdx: 3,
+      why: {
+        0: 'A limiter caps loud peaks. Hum is a steady quiet tone underneath.',
+        1: 'Boosting the low end makes hum louder. It needs removing, not masking.',
+        2: 'Width does nothing about a tone leaking in from the power wiring.',
+      },
       reveal:
         'Cure the electrical cause first: break the ground loop (one ground path, proper balanced connections, reroute cables away from power — never by lifting the safety ground). Notch filters at the power-line frequency and its multiples (60/120/180 Hz here; 50/100/150 Hz in most other countries) are the mop-up for whatever tiny residue remains — not the primary fix.',
       wrongHint: 'The hum enters through the WIRING. Where does the real fix live?',
@@ -924,6 +1023,11 @@ const CASES: DetectiveCase[] = [
       question: 'WHAT METER IS THIS?',
       options: ['An oscilloscope', 'A peak meter', 'A spectrogram', 'A stereo image display'],
       correctIdx: 2,
+      why: {
+        0: 'A scope draws a wave over milliseconds. This picture shows pitch over seconds, in color.',
+        1: 'A peak meter is bars of level. This has a pitch axis and color.',
+        3: 'A stereo image display is a half-circle. This is a colored picture over time.',
+      },
       reveal:
         'Time runs left to right, frequency climbs the vertical axis, and color carries level — the display that shows how the spectrum CHANGES over time.',
       wrongHint: 'Two axes plus COLOR as the third dimension.',
@@ -937,6 +1041,11 @@ const CASES: DetectiveCase[] = [
         'A falling whistle',
       ],
       correctIdx: 0,
+      why: {
+        1: 'Beats would draw vertical stripes. Look at the direction of the line here.',
+        2: 'A noise wash fills the whole picture top to bottom. This is one line.',
+        3: 'A falling whistle slopes downward. This line stays at one height.',
+      },
       reveal:
         'A single frequency, sustained and BRIGHTENING with time: energy at one spot on the frequency axis that grows instead of decaying. Nothing musical holds one pitch and gets louder by itself.',
       wrongHint: 'Horizontal = one frequency held over time. And it is growing.',
@@ -945,11 +1054,16 @@ const CASES: DetectiveCase[] = [
       question: 'WHAT PROBLEM DO YOU SEE?',
       options: [
         'Tape hiss',
-        'Feedback between a mic and a speaker',
+        'Mic-to-speaker feedback',
         'A synthesizer pad',
         'A dropped channel',
       ],
       correctIdx: 1,
+      why: {
+        0: 'Hiss is a broad haze across the top, not one line.',
+        2: 'A pad holds steady. This line keeps growing hotter.',
+        3: 'A dropped channel shows as nothing at all, not one bright line.',
+      },
       reveal:
         'The mic hears the speaker, the speaker replays the mic, and at one frequency the loop gain has passed 1 — so that frequency circles and GROWS. Seconds later it is the scream everyone knows.',
       wrongHint: 'What loop makes one frequency feed itself louder and louder?',
@@ -958,11 +1072,16 @@ const CASES: DetectiveCase[] = [
       question: 'WHAT PROCESSOR/ACTION FIXES IT?',
       options: [
         'Compress the mix bus',
-        'Notch the ringing frequency, fix the geometry',
+        'Notch the ring, fix mic placement',
         'A subharmonic synthesizer',
         'More reverb',
       ],
       correctIdx: 1,
+      why: {
+        0: 'Compressing the mix does not break the mic-speaker loop.',
+        2: 'Adding low end does nothing for a ring at one pitch.',
+        3: 'More reverb adds more ringing, not less.',
+      },
       reveal:
         'First pull the gain down until the ring stops. Then fix the GEOMETRY — mic behind the speakers, a tighter pickup pattern, and the mic closer to the source so it needs less gain. Then a narrow notch at the ringing frequency (ringing out) drops the loop gain below 1 there, for a little more margin. A notch adds margin; it does not cure a bad layout.',
       wrongHint: 'You must break the LOOP: stop the ring with the fader, fix the layout that feeds it, then notch what is left.',
@@ -982,6 +1101,11 @@ const CASES: DetectiveCase[] = [
         'A waterfall (CSD)',
       ],
       correctIdx: 3,
+      why: {
+        0: 'A spectrogram is flat and colored. This one has slices stepping toward you.',
+        1: 'A loudness meter shows one number or a history line, not slices of a spectrum.',
+        2: 'A goniometer draws a cloud in a circle, not a 3-D landscape.',
+      },
       reveal:
         'The pseudo-3D mountain range: frequency across, amplitude up, and TIME stepping toward you — the start (t = 0) stands at the back, and each slice nearer the front is the spectrum a moment later. Built to show how each frequency DECAYS.',
       wrongHint: 'Three axes, drawn as a mountain range collapsing toward you.',
@@ -995,6 +1119,11 @@ const CASES: DetectiveCase[] = [
         'Two channels canceling',
       ],
       correctIdx: 1,
+      why: {
+        0: 'Look along the time axis: does every pitch fade at the same rate?',
+        2: 'Peak hold is a meter feature. This picture shows decay over time.',
+        3: 'Cancellation needs two channels; a waterfall shows one signal’s decay.',
+      },
       reveal:
         'Most of the range collapses quickly, near the back of the picture — but one narrow ridge around 250 Hz keeps standing all the way toward the front, far along the time axis. One frequency refuses to die.',
       wrongHint: 'Compare how far toward the front (later in TIME) each part of the mountain survives.',
@@ -1003,11 +1132,16 @@ const CASES: DetectiveCase[] = [
       question: 'WHAT PROBLEM DO YOU SEE?',
       options: [
         'A room mode ringing at ~250 Hz',
-        'Clipping',
-        'Mains hum',
-        'DC offset',
+        'Clipping at the input',
+        'AC hum on the line',
+        'DC offset in the signal',
       ],
       correctIdx: 0,
+      why: {
+        1: 'Clipping is about level and flat tops, not how long one pitch lasts.',
+        2: 'Hum is a family of spikes at power-line multiples, not one ridge that lingers.',
+        3: 'DC offset sits at 0 Hz and does not ring.',
+      },
       reveal:
         'A room mode: at ~250 Hz the room stores energy and releases it slowly, so that frequency booms and smears long after the source stops. Level meters barely notice — this is a TIME problem, which is exactly what the waterfall exists to expose.',
       wrongHint: 'The fault is not how LOUD 250 Hz is — it is how LONG it lasts.',
@@ -1021,6 +1155,11 @@ const CASES: DetectiveCase[] = [
         'A brighter loudspeaker',
       ],
       correctIdx: 2,
+      why: {
+        0: 'EQ lowers the ridge’s LEVEL. Watch its LENGTH in the picture: that is the room storing energy.',
+        1: 'A gate cuts quiet parts; it does not stop the room ringing at one pitch.',
+        3: 'A brighter speaker adds treble. The ring is in the room at 250 Hz.',
+      },
       reveal:
         'The classic trap: EQ shapes LEVEL, but the ridge is a TIME problem — cut 250 Hz and the ring is quieter, yet across the room it rings about as long. Only absorbing the stored energy (tuned traps, thick porous absorption) shortens the decay everywhere. Watch the ridge on this display shrink as treatment goes in.',
       wrongHint: 'Can an equalizer change how LONG a room stores energy?',
@@ -1033,11 +1172,16 @@ const CASES: DetectiveCase[] = [
       question: 'WHAT METER IS THIS?',
       options: [
         'A VU meter',
-        'A correlation meter + goniometer',
+        'A correlation/phase meter',
         'A spectrum analyzer',
         'A waveform display',
       ],
       correctIdx: 1,
+      why: {
+        0: 'A VU is one needle on an arc. Here there is a bar from −1 to +1 and a circle.',
+        2: 'A spectrum has a pitch axis. Nothing here is about pitch.',
+        3: 'A waveform runs left to right over time. This compares left with right.',
+      },
       reveal:
         'The −1…+1 correlation scale plus the dot cloud (goniometer): the pair of displays that read the RELATIONSHIP between left and right rather than either channel alone.',
       wrongHint: 'The scale runs from −1 to +1 — what quantity lives on that scale?',
@@ -1051,6 +1195,11 @@ const CASES: DetectiveCase[] = [
         'A level imbalance toward the left channel',
       ],
       correctIdx: 0,
+      why: {
+        1: 'Mono parks the bar at the +1 end. Look at which end it sits near.',
+        2: 'A healthy mix hovers on the positive side. This bar is on the other side.',
+        3: 'This display compares the channels’ shape, not which one is louder.',
+      },
       reveal:
         'The needle lives at the far left of the scale and the cloud has collapsed toward the anti-phase diagonal: whatever left does, right does the OPPOSITE, nearly all the time.',
       wrongHint: 'Which END of the −1…+1 scale is the reading pinned against?',
@@ -1061,9 +1210,14 @@ const CASES: DetectiveCase[] = [
         'Too much stereo width',
         'The right channel is muted',
         'Hum',
-        'The channels are nearly opposite polarity',
+        'Channels in near-opposite polarity',
       ],
       correctIdx: 3,
+      why: {
+        0: 'Wide stereo sits near 0, not down near −1.',
+        1: 'With one channel muted there is nothing to compare; the bar would not park near −1.',
+        2: 'Hum is a tone; this display compares the two channels.',
+      },
       reveal:
         'Near −1 the two channels fight: summed to mono (club PA, phone speaker, broadcast fold-down) they subtract and the mix collapses. On speakers it may even sound impressively huge — the meter is the early warning.',
       wrongHint: 'Think about what L + R equals when R ≈ −L.',
@@ -1072,11 +1226,16 @@ const CASES: DetectiveCase[] = [
       question: 'WHAT PROCESSOR/ACTION FIXES IT?',
       options: [
         'Acoustic treatment',
-        'Flip Ø on the inverted channel',
+        'Flip Ø on the inverted side',
         'A limiter',
         'Turn the monitors up',
       ],
       correctIdx: 1,
+      why: {
+        0: 'Treatment changes the room. This problem is in the signal’s wiring or settings.',
+        2: 'A limiter caps level; the channels still cancel each other in mono.',
+        3: 'Louder monitors make the cancellation louder too.',
+      },
       reveal:
         'Find the cause and undo it: a polarity flip (Ø) on the inverted side, a cable with hot and cold (its two signal wires) swapped, a plugin inverting one channel, or misaligned mics that need time alignment. Watch this meter swing from −1 toward +1 as the fix lands.',
       wrongHint: 'One channel is upside-down. Which one-button fix turns it right-side up?',
@@ -1094,6 +1253,11 @@ const CASES: DetectiveCase[] = [
         'A Lissajous display',
       ],
       correctIdx: 2,
+      why: {
+        0: 'A peak meter has segment bars. Here a needle sweeps an arc.',
+        1: 'A loudness meter shows LUFS numbers or bars, not a swinging needle.',
+        3: 'A Lissajous display draws a figure from two channels. This is a needle.',
+      },
       reveal:
         'The cream face, the −20…+3 arc, the red zone, the swinging needle — the classic VU, here paired with the fast peak LED that traditionally guards it.',
       wrongHint: 'A needle on an arc scale, plus one small fast lamp beside it.',
@@ -1102,11 +1266,16 @@ const CASES: DetectiveCase[] = [
       question: 'WHAT DOES IT SHOW?',
       options: [
         'The needle pinned in the red',
-        'Needle low, peak LED firing on every hit',
+        'Needle low, LED firing on each hit',
         'A steady tone parked at 0 VU',
         'DC offset',
       ],
       correctIdx: 1,
+      why: {
+        0: 'Look at where the needle actually sits: near the left of the scale.',
+        2: 'A steady tone would park the needle and keep the LED quiet.',
+        3: 'DC offset belongs on a waveform display. A VU needle cannot show it.',
+      },
       reveal:
         'Two readings that disagree on purpose: the slow needle barely stirs while the LED fires on every snare hit. Needle = average level; LED = the instantaneous peaks the needle physically cannot reach.',
       wrongHint: 'Watch BOTH indicators — one is slow, one is instant.',
@@ -1120,6 +1289,11 @@ const CASES: DetectiveCase[] = [
         'Nothing — high crest factor, both meters honest',
       ],
       correctIdx: 3,
+      why: {
+        0: 'The needle shows the average; the LED shows the peaks. Two questions, two honest answers.',
+        1: 'Clipping lights a peak meter’s OVER. Here the peaks are flagged, but nothing says over full scale.',
+        2: 'Phase needs two channels. This is one meter on one signal.',
+      },
       reveal:
         'This is normal transient material. The VU integrates ~300 ms BY DESIGN — it reads average, like your ears read loudness — so a short snare crack barely moves it while the peak LED catches every spike. The disagreement IS the information: it is the crest factor made visible.',
       wrongHint: 'Is either indicator actually lying? What does each one measure?',
@@ -1133,12 +1307,22 @@ const CASES: DetectiveCase[] = [
         'A high-pass filter',
       ],
       correctIdx: 1,
+      why: {
+        0: 'Forcing them to agree crushes the drum’s life. They measure different things.',
+        2: 'A faster needle would stop being a VU; its slowness is the point.',
+        3: 'There is no low rumble here to remove.',
+      },
       reveal:
         'Not every reading is a problem. The pair is telling you the signal is peaky — useful truth, no fault. Compressing merely to make two meters agree would trade the snare’s crack for a meter aesthetic. Know your meter, trust your ears.',
       wrongHint: 'First decide: is anything actually WRONG with the audio here?',
     },
   },
 ];
+
+/** One whole case answered right: all four of its questions (keys `case-step`). */
+export function aCaseSolved(solved: ReadonlySet<string>): boolean {
+  return CASES.some((_, ci) => [0, 1, 2, 3].every((q) => solved.has(`${ci}-${q}`)));
+}
 
 function CaseHero({
   vm,
@@ -1185,6 +1369,8 @@ export function DetectiveModule(p: MeterModuleProps) {
       if (!live) return;
       set.forEach((k) => solvedRef.current.add(k));
       setSolvedN(solvedRef.current.size);
+      // A whole case already answered right (saved on this device) is work done.
+      if (aCaseSolved(solvedRef.current)) goalMet();
     });
     return () => {
       live = false;
@@ -1203,24 +1389,53 @@ export function DetectiveModule(p: MeterModuleProps) {
   // backing out of the module at 27/28 threw the whole run away.
   const solvedRef = useRef<Set<string>>(new Set(solvedCache ?? []));
   const [solvedN, setSolvedN] = useState(solvedRef.current.size);
+  // "Done = work done" (owner's decision 1, phase 3, 2026-11-14): in the
+  // Visual Audio Analysis lab this module counts once ONE whole case — all
+  // four of its questions — is answered right (the standalone Signal
+  // Detective lab below still needs every case).
+  const goalMet = useGoalMet();
   const onSolved = () => {
     solvedRef.current.add(`${idx}-${step}`);
     setSolvedN(solvedRef.current.size);
     persistSolved(solvedRef.current);
     holdSolved(`${idx}-${step}`);
+    if (aCaseSolved(solvedRef.current)) goalMet();
     if (solvedRef.current.size >= n * qCount) markLabUnit('af_signal_detective', PASS_UNIT);
   };
   const goCase = (next: number) => {
     setIdx(((next % n) + n) % n);
     setStep(0); // new case → back to its first question
   };
+  // SD-02 (owner 2026-11-15: "build waves 1 thru 3", D62): a new case or question scrolls the well
+  // back to its top, so the new question's title is in sight (the well kept its old scroll spot, and
+  // the top also opens a display the reading had folded). Not on arrival: only after a move.
+  const scrollWellRef = useRef<((y: number) => void) | null>(null);
+  const placeKey = `${idx}-${step}`;
+  const lastPlace = useRef(placeKey);
+  useEffect(() => {
+    if (lastPlace.current === placeKey) return;
+    lastPlace.current = placeKey;
+    scrollWellRef.current?.(0);
+  }, [placeKey]);
 
   // The evidence PINS on the stage (rack law): the unlabeled display stays
   // visible while every question below is read and answered. Case nav = dock
   // action keys; round/score live on the bezel. Named CASE, not PREV / NEXT:
   // those two words mean LAB navigation only (kit/LabNavBar, owner 2026-09-30).
+  // SD-01 (owner 2026-11-15, D62): the question steps moved from a chip row in the well (out of sight
+  // after a wrong answer on a phone) into the dock, inside the case keys, so NEXT QUESTION › is always
+  // in view. Same four words as before; the chip row is gone (a line in, a line out).
   const params: DockParam[] = [
     { kind: 'action', id: 'prev', label: '‹ CASE', onPress: () => goCase(idx - 1) },
+    {
+      kind: 'action',
+      id: 'prevq',
+      label: '‹ PREVIOUS',
+      onPress: () => (step > 0 ? setStep(step - 1) : goCase(idx - 1)),
+    },
+    step < qCount - 1
+      ? { kind: 'action', id: 'nextq', label: 'NEXT QUESTION ›', onPress: () => setStep(step + 1) }
+      : { kind: 'action', id: 'nextq', label: 'NEXT CASE ›', onPress: () => goCase(idx + 1) },
     { kind: 'action', id: 'next', label: 'CASE ›', onPress: () => goCase(idx + 1) },
   ];
 
@@ -1239,7 +1454,7 @@ export function DetectiveModule(p: MeterModuleProps) {
       stage={{
         size: 'L',
         fullScreen: true, // the rack's FULL SCREEN, dock inside it (legibility pass 2026-09-25)
-        badge: HONESTY,
+        modelNote: HONESTY,
         onGuide: () => p.help('detective'),
         bezel,
         render: (w, h) =>
@@ -1252,22 +1467,13 @@ export function DetectiveModule(p: MeterModuleProps) {
           ),
       }}
     >
+      {(api) => {
+        scrollWellRef.current = api.scrollWellTo;
+        return (
       <View style={styles.well}>
         {/* ONE question at a time (owner 2026-08-05) — keyed per case+step so it
-            resets cleanly. Move between the case's four questions below. */}
+            resets cleanly. Move between the case's four questions with the dock keys. */}
         <CheckQuestion key={`${idx}-${step}`} spec={specs[step]} onSolved={onSolved} />
-        <View style={dstyles.chipRow}>
-          <LabChip
-            label="‹ PREVIOUS"
-            selected={false}
-            onPress={() => (step > 0 ? setStep(step - 1) : goCase(idx - 1))}
-          />
-          {step < qCount - 1 ? (
-            <LabChip label="NEXT QUESTION ›" selected={false} onPress={() => setStep(step + 1)} />
-          ) : (
-            <LabChip label="NEXT CASE ›" selected={false} onPress={() => goCase(idx + 1)} />
-          )}
-        </View>
 
         <CollapsibleSection title="THE GRADUATION EXERCISE">
           <Text style={dstyles.body}>
@@ -1277,7 +1483,8 @@ export function DetectiveModule(p: MeterModuleProps) {
           </Text>
         </CollapsibleSection>
 
-        <CollapsibleSection title="WHY IT WORKS">
+        {/* Starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal): extra reading, one tap away. */}
+        <CollapsibleSection title="WHY IT WORKS" startOpen={false}>
           <Text style={dstyles.caption}>
             Wrong guesses teach as much as right ones — every reveal explains WHY the answer is what it
             is. Cycle the deck until naming the meter, reading the story, spotting the fault and
@@ -1286,6 +1493,8 @@ export function DetectiveModule(p: MeterModuleProps) {
         </CollapsibleSection>
         <LessonRow onPress={() => p.help()} />
       </View>
+        );
+      }}
     </RackUnit>
   );
 }

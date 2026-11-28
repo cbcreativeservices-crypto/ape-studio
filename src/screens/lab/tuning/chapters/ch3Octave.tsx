@@ -112,10 +112,10 @@ export function Ch3Octave({ ctx }: ChapterProps) {
         size: 'M',
         initialParam: 'view',
         bezel: [
-          { k: 'RATIO', v: fracLabel(shown), tint: sv >= 1 && sv < 2 ? colors.green : colors.gold },
-          { k: 'VALUE', v: sv.toFixed(4) },
-          { k: 'REGION', v: region, tint: region === 'INSIDE' ? colors.green : undefined },
-          { k: 'NEXT OP', v: !turn && demoStep === 1 ? (demo === 'A' ? '÷2' : '×2') : turn && !inRange ? (sv >= 2 ? '÷2' : '×2') : '—', tint: colors.blue },
+          { k: 'RATIO', v: fracLabel(shown), tint: sv >= 1 && sv < 2 ? colors.green : colors.gold, caption: 'the fraction' },
+          { k: 'VALUE', v: sv.toFixed(4), caption: 'as a decimal' },
+          { k: 'REGION', v: region, tint: region === 'INSIDE' ? colors.green : undefined, caption: 'where it sits' },
+          { k: 'NEXT OP', v: !turn && demoStep === 1 ? (demo === 'A' ? '÷2' : '×2') : turn && !inRange ? (sv >= 2 ? '÷2' : '×2') : '—', tint: colors.blue, caption: 'next move' },
         ],
         // SHOW OP prints the pending operation beside the tile on the glass
         // (review 2026-09-30) — the key used to change only a well line.

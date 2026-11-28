@@ -40,12 +40,12 @@ export const PREPROD_START_GUIDE: ScreenGuide = {
     start: 'Tap Music recording and read the readiness score it opens with. Then tap + NEW PROJECT, pick Live performance or event, and compare the two Stage 1 questions.',
   },
   seeing: [
-    'This is the Audio Pre-Production home: everything that should happen before recording, filming, broadcasting or presenting begins.',
+    'This is the Audio Pre-Production home: you plan a recording or a show before anyone presses record, one stage of a producer’s questions at a time.',
     'Under START A PROJECT you choose one of three types: Music recording, Podcast or spoken word, or Live performance or event.',
     'Read the note: what you make changes the questions, the documents and the problems; the planning process underneath stays the same.',
   ],
   control: [
-    'Tap a project type to start that kind of project. It opens at once, saved on this phone and named after its type.',
+    'Tap a project type to start that kind of project. It opens at once, saved on this device and named after its type.',
     'Once a project is open, check its readiness, work through THE SIX STAGES, try the EXERCISES and build the Production Packet. + NEW PROJECT there starts another project of any type.',
     `‹ leaves the lab. ${CHIPS_LINE}`,
   ],
@@ -76,7 +76,7 @@ export const PREPROD_HOME_GUIDE: ScreenGuide = {
     'PRODUCTION READINESS shows the verdict, a score out of 100 and a bar of required decisions. THE SIX STAGES each show a dot, a % and a state.',
   ],
   control: [
-    'Tap the name to rename it. DUPLICATE copies the answers but not accepted conditions. DELETE asks first, then removes the project from this phone. + NEW PROJECT, then a type, starts another.',
+    'Tap the name to rename it. DUPLICATE copies the answers but not accepted conditions. DELETE asks first, then removes the project from this device. + NEW PROJECT, then a type, starts another.',
     'Tap a stage, PICK UP WHERE YOU LEFT OFF or NEXT OUTSTANDING to open that stage. NEXT OUTSTANDING lands on the exact question.',
     'Tap a red blocker under PRODUCTION READINESS to accept it on the record: ACCEPT A CONDITION asks who and why, then RECORD IT.',
     'EXERCISES opens a broken practice plan to repair. OPEN THE PRODUCTION PACKET shows the whole plan as one document.',
@@ -110,7 +110,7 @@ export const PREPROD_STAGE_GUIDES: Record<string, ScreenGuide> = {
     seeing: stageSeeing(kicker(1), 'Project Brief, Scope and Creative Direction'),
     control: CONTROL,
     changes: [
-      'Every answer re-runs the checks at once: the dots, the badge and WHAT THIS PLAN IS STILL MISSING update as you go.',
+      'Every answer re-runs the checks at once: the dots, the badge and OPEN QUESTIONS IN THIS PLAN update as you go.',
       'Flagged: a purpose with nothing checkable, two names as the approver, no audience, or success not defined.',
       'A completion date already passed is a blocker. A scope larger than the time, money, people or equipment behind it is flagged.',
     ],
@@ -120,7 +120,7 @@ export const PREPROD_STAGE_GUIDES: Record<string, ScreenGuide> = {
       'Every later part of a plan is measured against this brief: deliverables, people, schedule, technical plan and readiness.',
     ],
     tryThis: [
-      'Type one name in “Who approves the finished work?”: “Nobody can end this project” leaves. Make it “Sam Lee and Alex Ray”: “More than one person has the final yes” appears.',
+      'Type one name in “Who approves the finished work?”: “Nobody can end this project. Is that intended?” leaves. Make it “Sam Lee and Alex Ray”: “More than one person has the final yes” appears.',
       'Set “When must it be finished?” to a date before today. The badge reads BLOCKED and “The completion date has already passed” appears.',
       'Check Livestream under “Where will it be presented?”. A livestream finding appears until you check Livestream or broadcast feed under “Which services are included?”.',
     ],
@@ -145,7 +145,7 @@ export const PREPROD_STAGE_GUIDES: Record<string, ScreenGuide> = {
       'Delivery rests on the brief: the review rounds and the approver were set when the project was defined.',
     ],
     tryThis: [
-      'Add a row to “What must be delivered?” of Type Mastered program or master. “No deliverables are defined” clears; “There is no archival master anywhere in the plan” stays.',
+      'Add a row to “What must be delivered?” of Type Mastered program or master. “No deliverables are defined. Is that intended?” clears; “There is no archival master anywhere in the plan” stays.',
       'Add a second row of Type Archival package. “There is no archival master anywhere in the plan” clears.',
       'Set “If a reviewer misses their deadline, what happens?” to Not decided. It counts as answered, but the late-approval finding stays. Any real outcome clears it.',
     ],
@@ -155,7 +155,7 @@ export const PREPROD_STAGE_GUIDES: Record<string, ScreenGuide> = {
   people: {
     intro: {
       learning: 'How naming people turns a plan into something a crew can run: one owner per task, one person per authority, and qualified people for regulated work.',
-      start: 'Enter 8 in “How many wireless channels?” and read what WHAT THIS PLAN IS STILL MISSING asks for. Then set “How is the audio system powered?” to Temporary distribution and watch the badge.',
+      start: 'Enter 8 in “How many wireless channels?” and read what OPEN QUESTIONS IN THIS PLAN asks. Then set “How is the audio system powered?” to Temporary distribution and watch the badge.',
     },
     seeing: stageSeeing(kicker(3), 'Team, Responsibility Assignment, Communication Plan, and Talent and Participants'),
     control: CONTROL,
@@ -170,7 +170,7 @@ export const PREPROD_STAGE_GUIDES: Record<string, ScreenGuide> = {
       'Several wireless channels need an RF coordinator: one person who plans the radio frequencies so they don’t interfere.',
     ],
     tryThis: [
-      'Enter 8 in “How many wireless channels?”. “Wireless channels with nobody coordinating them” appears and stays until you name an RF coordinator.',
+      'Enter 8 in “How many wireless channels?”. “Wireless channels with nobody coordinating them. Is that intended?” appears and stays until you name an RF coordinator.',
       'Set “How is the audio system powered?” to Temporary distribution or a tie-in to building power: the badge reads BLOCKED. Name the licensed electrician and it clears.',
     ],
   },
@@ -196,7 +196,7 @@ export const PREPROD_STAGE_GUIDES: Record<string, ScreenGuide> = {
     tryThis: [
       'On a music or live project with 24 sources in Stage 1, enter 16 in “Recording channels available”: BLOCKED, “More sources than the equipment can capture”. Enter 24: it clears.',
       'In “Blocks of the day” add only a Soundcheck block: “There is a soundcheck but no line check”. Add a Line check block and it clears.',
-      'Set “Total budget available” to 5000, with lines of 4000 and 1500 and no Contingency line: “The lines add up to more than the budget” and “No contingency in the budget” appear.',
+      'Set “Total budget available” to 5000, with lines of 4000 and 1500 and no Contingency line: “The lines add up to more than the budget” and “No contingency in the budget. Is that intended?” appear.',
     ],
   },
 
@@ -245,7 +245,7 @@ export const PREPROD_STAGE_GUIDES: Record<string, ScreenGuide> = {
     ],
     tryThis: [
       'In “Hazard register” add a hazard with Severity if it happens set to Life-threatening and no preventive action: BLOCKED. Fill Preventive action and Owner and it clears.',
-      'Type a name in “Who decides to continue, pause, simplify, relocate, reschedule or cancel?”. “Nobody is named to decide whether the production continues” leaves.',
+      'Type a name in “Who decides to continue, pause, simplify, relocate, reschedule or cancel?”. “Nobody is named to decide whether the production continues. Is that intended?” leaves.',
     ],
   },
 };
@@ -372,7 +372,7 @@ export const PREPROD_PACKET_GUIDE: ScreenGuide = {
     'Then: Revision, Revision date, Prepared by, Status, any MUST BE RESOLVED BEFORE PROCEEDING and ACCEPTED CONDITIONS, and every stage’s answers.',
   ],
   control: [
-    'Tap a WHAT’S LEFT row (BLOCKER, REQUIRED QUESTION or TO LOOK AT) to open that stage at that question, marked with an amber edge, or at its findings.',
+    'Tap a WHAT’S LEFT row (BLOCKER, REQUIRED QUESTION or TO LOOK AT) to open that stage at that question, marked with an amber edge, or at its findings. NOT STARTED YET shows a stage’s rows.',
     'Tap SHARE AS PDF to make the PDF and record the next revision number. Where printing isn’t available, the screen says so, and this page is then the whole packet.',
     `‹ goes back. ${CHIPS_LINE}`,
   ],
@@ -387,7 +387,7 @@ export const PREPROD_PACKET_GUIDE: ScreenGuide = {
     'A plan with a named author and a stated status is one a crew can actually run a production from.',
   ],
   tryThis: [
-    'On a new project, WHAT’S LEFT opens with STAGE 1 · DEFINE THE PROJECT, its first row a REQUIRED QUESTION: Project name. Tap it and Stage 1 opens at that question.',
+    'On a new project, every stage under WHAT’S LEFT reads NOT STARTED YET. Tap it under STAGE 1 · DEFINE THE PROJECT: the first row is a REQUIRED QUESTION, Project name. Tap that to open it.',
     'Type a name in Stage 1’s “Producer or project lead”, then come back: Prepared by changes from Unattributed to that name.',
     'Add a life-threatening hazard with no action in Stage 6: STAGE 6 · CONFIRM PRODUCTION READINESS jumps to the top of WHAT’S LEFT, its BLOCKER first.',
   ],

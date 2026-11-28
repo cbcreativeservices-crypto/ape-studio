@@ -1,3 +1,4 @@
+// 2026-11-21 owner (tester on a tablet): learner text says "this device", never "this phone".
 /**
  * Receipt — userNotifications (owner decision 2026-10-04: "user should be able
  * to turn on and use notifications between each other").
@@ -11,7 +12,7 @@
  *  - a tapped alert opens the conversation through the deep-link table and
  *    the pendingLink rules (`directory/requests/<uuid>`);
  *  - member alerts are held out of the banner in Low-Light;
- *  - Log out releases this phone before signing out;
+ *  - Log out releases this device before signing out;
  *  - the server draft never sends message text unless the recipient opted in.
  */
 import assert from 'node:assert/strict';
@@ -250,7 +251,7 @@ describe('userNotifications — wiring', () => {
     assert.match(a, /syncCommunityDevice\(\)/);
   });
 
-  it('Settings: the section is rendered, and Log out releases this phone BEFORE signing out', () => {
+  it('Settings: the section is rendered, and Log out releases this device BEFORE signing out', () => {
     const s = src('src/screens/settings/SettingsScreen.tsx');
     assert.match(s, /<CommunityNotifySection \/>/);
     const rel = s.indexOf('releaseCommunityDevice()');
@@ -273,8 +274,11 @@ describe('userNotifications — wiring', () => {
     assert.match(src('src/features/permissions/permissionStore.ts'), /\['camera', 'location', 'photo', 'mic', 'notifications'\]/);
   });
 
-  it('badges: Profile tab, the directory entry points, the REQUESTS tab, and per conversation', () => {
-    assert.match(src('src/components/nav/TabBar.tsx'), /name === 'Profile' \? <CommunityBadge/);
+  it('badges: the MENU button and its Community circle, the directory entry points, the REQUESTS tab, and per conversation', () => {
+    // The circle menu replaced the tab bar (owner 2026-11-20): the badge that sat on
+    // PROFILE is on the MENU button and on the Community circle.
+    assert.match(src('src/components/nav/CircleMenu.tsx'), /<CommunityBadge state=\{inbox\} style=\{styles\.fabBadge\} \/>/);
+    assert.match(src('src/components/nav/CircleMenuPanel.tsx'), /badge=\{pl\.key === 'comm' \? inbox : null\}/);
     assert.match(src('src/screens/profile/ProfileScreen.tsx'), /<CommunityBadge /);
     assert.match(src('src/screens/directory/DirectoryScreen.tsx'), /<CommunityBadge /);
     assert.match(src('src/screens/directory/AudioCommunityDirectoryScreen.tsx'), /t\.key === 'requests' \? <CommunityBadge/);

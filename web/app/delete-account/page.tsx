@@ -20,6 +20,7 @@
  * ============================================================ */
 
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { PageHero, Section, List } from "@/components/content";
 import DeleteAccountForm from "@/components/DeleteAccountForm";
@@ -31,12 +32,13 @@ import DeleteAccountForm from "@/components/DeleteAccountForm";
  */
 const WEB_DELETE_ENABLED = false;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
+  path: "/delete-account",
   title: "Delete your account",
   // Copy approved by the owner 2026-10-28 (meta description).
   description:
     "How to delete your Pro Audio Training Academy account in the app or by email, what is deleted, and the choice you have for your certificates.",
-};
+});
 
 const EMAIL = "info@proaudiotrainingacademy.com";
 const DELETE_MAIL = `mailto:${EMAIL}?subject=${encodeURIComponent("Delete my account")}`;

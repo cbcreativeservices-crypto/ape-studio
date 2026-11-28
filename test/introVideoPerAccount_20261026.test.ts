@@ -1,3 +1,4 @@
+// 2026-11-21 owner (tester on a tablet): learner text says "this device", never "this phone".
 /**
  * D2 (D99 item 7, owner 2026-10-26): the onboarding intro video plays once per
  * ACCOUNT, not once per device. The account's mark lives on the server
@@ -21,10 +22,11 @@ test('the server mark is read and written through two RPCs, failing soft', () =>
 });
 
 test('Home asks the account BEFORE the video can launch', () => {
-  assert.match(home, /if \(accountVideo !== 'free' \|\| !introVideo\.visible \|\| introVideoLaunched\) return;/);
+  // 2026-11-20 [MD:D72]: also waits for the privacy notice; a guest's video is owed past the device flag.
+  assert.match(home, /if \(accountVideo !== 'free' \|\| !videoDue \|\| introVideoLaunched \|\| privacyFirst\) return undefined;/);
   // A failed membership read must not hold the video forever.
   assert.match(home, /if \(!resolved\) \{\s*setAccountVideo\(null\);/);
-  // seen on the account → remembered on this phone; seen on this phone → marks the account.
+  // seen on the account → remembered on this device; seen on this device → marks the account.
   assert.match(home, /if \(onAccount\) \{\s*if \(onDevice == null\) markIntroSeen\('introVideo'\);/);
   assert.match(home, /if \(onDevice != null\) \{\s*void markIntroVideoSeenOnAccount\(\);/);
   // Re-asked on every sign-in / sign-out (an account switch).

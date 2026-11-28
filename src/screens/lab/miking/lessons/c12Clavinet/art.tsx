@@ -19,6 +19,10 @@ import { PANEL, type CabKind } from '../shared/speakers/speakerModel.ts';
 import type { Back } from '../shared/speakers/cabGeometry.ts';
 import { FigureHead, headAbove } from '../shared/players/PlayerFigure';
 import { pt } from '../shared/players/playerPose';
+// (figure V2, wave 6 of D78: the player in the approved look, behind `v2`)
+import { PlayerTopV2 } from '../shared/figureV2/elsewhereTop';
+import { keysPlayer } from '../shared/figureV2/markerPose';
+import { castFor, type CastMember } from '../shared/figureV2/cast';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -95,26 +99,39 @@ function planPaths(): Built {
   return o;
 }
 
-export function ClavinetPlan({ dim = 1 }: { dim?: number }) {
+export function ClavinetPlan({ dim = 1, v2 = false, who }: { dim?: number; /** (figure V2) the player in the approved look, as `who` — OFF by default: the lesson switches it with its own player */ v2?: boolean; who?: CastMember }) {
   const o = planPaths();
   const c = LAYOUT.clav;
   return (
-    <Group opacity={dim}>
-      <Path path={o.cable} style="stroke" strokeWidth={10} color="#2a2b30" />
-      <Path path={o.legs} color="#9aa0ab" />
-      <Path path={o.case}>
-        <LinearGradient start={vec(c.x0, c.z0)} end={vec(c.x1, c.z1)} colors={['#4a4038', '#2e2722', '#1c1815']} />
-      </Path>
-      <Path path={o.keys} color="#ece8de" />
-      <Path path={o.black} color="#1a1a1c" />
-      <Path path={o.pedals}>
-        <LinearGradient start={vec(LAYOUT.pedals.x - 60, 0)} end={vec(LAYOUT.pedals.x + 60, 0)} colors={['#d24b3c', '#9c2f25']} />
-      </Path>
-      <Path path={o.arms} color="#3c4252" />
-      <Path path={o.body} color="#2f3542" />
-      <Group transform={[{ translateX: LAYOUT.player.x + 10 }, { translateY: LAYOUT.player.z }, { rotate: -Math.PI / 2 }]}>
-        <FigureHead fill={o.head} />
+    <Group>
+      <Group opacity={dim}>
+        <Path path={o.cable} style="stroke" strokeWidth={10} color="#2a2b30" />
+        <Path path={o.legs} color="#9aa0ab" />
+        <Path path={o.case}>
+          <LinearGradient start={vec(c.x0, c.z0)} end={vec(c.x1, c.z1)} colors={['#4a4038', '#2e2722', '#1c1815']} />
+        </Path>
+        <Path path={o.keys} color="#ece8de" />
+        <Path path={o.black} color="#1a1a1c" />
+        <Path path={o.pedals}>
+          <LinearGradient start={vec(LAYOUT.pedals.x - 60, 0)} end={vec(LAYOUT.pedals.x + 60, 0)} colors={['#d24b3c', '#9c2f25']} />
+        </Path>
+        {v2 ? null : (
+          <>
+            <Path path={o.arms} color="#3c4252" />
+            <Path path={o.body} color="#2f3542" />
+            <Group transform={[{ translateX: LAYOUT.player.x + 10 }, { translateY: LAYOUT.player.z }, { rotate: -Math.PI / 2 }]}>
+              <FigureHead fill={o.head} />
+            </Group>
+          </>
+        )}
       </Group>
+      {v2 ? (
+        // (both hands flat on the keys at the keybed's near edge; the head where the old marker's was. Outside the
+        // instrument's opacity: the figure recedes by its own `dim` as one opaque layer, never see-through.)
+        <Group transform={[{ translateX: LAYOUT.player.x + 10 }, { translateY: LAYOUT.player.z }]}>
+          <PlayerTopV2 player={keysPlayer(c.x0 - (LAYOUT.player.x + 10), (c.z0 + c.z1) / 2 - LAYOUT.player.z)} who={who ?? castFor('plan.clavinet')} dim={dim} />
+        </Group>
+      ) : null}
     </Group>
   );
 }

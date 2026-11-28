@@ -25,6 +25,12 @@ export function checkFeedback({
 }): string | null {
   if (picked == null) return null;
   if (picked === correct) return `✓ ${explain}`;
-  if (wrong) return wrong[picked] ?? GENERIC_WRONG;
+  // Fix round 2026-11-14 (the shared check card's rule, SHARED_API S2 §1):
+  // the first miss gives that option's own reason; from the second miss on,
+  // the explanation follows it.
+  if (wrong) {
+    const reason = wrong[picked] ?? GENERIC_WRONG;
+    return misses <= 1 ? reason : `${reason} ${explain}`;
+  }
   return misses <= 1 ? FIRST_MISS : `${explain} — try again with that in mind.`;
 }

@@ -326,6 +326,29 @@ export function noteInfo(hz: number): { midi: number; label: string; cents: numb
 
 export const midiToHz = (m: number) => 440 * 2 ** ((m - 69) / 12);
 
+/** Which harmonic rows of the stripe display get their "n: hz note ±¢" label.
+ *  Markers arrive low-n first (top-to-bottom y DEcreasing); labels that would
+ *  sit closer than `gap` px to the one above are dropped, low-n first. When a
+ *  `lit` set is given (model view), only harmonics that actually sound are
+ *  labelled, so after SQUARE the labels sit beside the lit odd rows, never on
+ *  an empty even row while 5, 7 and 9 go unnamed (novice audit 2026-11-14,
+ *  G7_HarmonicLab). The dashed marker LINES still show every harmonic. */
+export function pickMarkerLabels<M extends { n: number; y: number }>(
+  markers: readonly M[],
+  gap: number,
+  lit?: ReadonlySet<number>,
+): M[] {
+  const out: M[] = [];
+  let lastY = Number.POSITIVE_INFINITY;
+  for (const m of markers) {
+    if (lit && !lit.has(m.n)) continue;
+    if (lastY - m.y < gap) continue;
+    lastY = m.y;
+    out.push(m);
+  }
+  return out;
+}
+
 /** Exact frequency of harmonic n over fundamental f0 (locked integer ratio). */
 export const harmonicHz = (n: number, f0: number) => n * f0;
 

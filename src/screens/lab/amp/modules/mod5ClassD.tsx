@@ -196,8 +196,8 @@ export function Mod5ClassD() {
           rack: {
             rig: pic,
             bezel: [
-              { k: 'AT TROUGH', v: `${Math.round(dutyAtTrough * 100)}%`, tint: AMP_COLORS.neg },
-              { k: 'AT PEAK', v: `${Math.round(dutyAtPeak * 100)}%`, tint: AMP_COLORS.pos },
+              { k: 'AT TROUGH', v: `${Math.round(dutyAtTrough * 100)}%`, tint: AMP_COLORS.neg, caption: 'pulse width' },
+              { k: 'AT PEAK', v: `${Math.round(dutyAtPeak * 100)}%`, tint: AMP_COLORS.pos, caption: 'pulse width' },
               ...rigStatusBezel(pic, ['eff', 'heat', 'load']),
             ],
             params: [
@@ -208,10 +208,13 @@ export function Mod5ClassD() {
           },
           well: (
             <>
+              {/* AMPL-01 (owner 2026-11-15: "build waves 1 thru 3"): a plain analogy
+                  before PWM and its duty numbers. */}
               <Body>
-                Class D is not a bigger Class C, and it is not digital. The audio is turned into a fast on/off pattern whose{' '}
+                Think of a light switch flicked on and off so fast the lamp only looks dimmed: how long it stays ON sets the
+                brightness. Class D does that to audio: a fast on/off pattern whose{' '}
                 <Text style={{ color: colors.gold }}>average</Text> follows the waveform; a filter keeps the average and
-                throws the switching away.
+                throws the switching away. It is not digital, and not a bigger Class C.
               </Body>
 
               <SectionTitle>1 · MODULATION (PWM)</SectionTitle>
@@ -245,7 +248,7 @@ export function Mod5ClassD() {
             stage: { aspect: STAGE_W / STAGE_H, render: (w, h) => <SwitchingStage width={w} height={h} dutyAtPeak={dutyAtPeak} /> },
             badge: 'Representative half-bridge — conceptual',
             bezel: [
-              { k: 'AT PEAK', v: `${Math.round(dutyAtPeak * 100)}%`, tint: AMP_COLORS.pos },
+              { k: 'AT PEAK', v: `${Math.round(dutyAtPeak * 100)}%`, tint: AMP_COLORS.pos, caption: 'pulse width' },
               { k: 'TO LOAD', v: `${Math.round(sim.efficiencyPct)}%`, tint: colors.green },
               { k: 'AS HEAT', v: `${Math.round(lossW)}%`, tint: '#e6902f' },
             ],
@@ -267,7 +270,9 @@ export function Mod5ClassD() {
                 </Body>
               </LearnMore>
 
-              <SectionTitle>3 · WHERE THE ENERGY GOES</SectionTitle>
+              {/* Part of STEP 2, so no "3 ·" (beginner audit 2026-11-14: a
+                  section 3 under "STEP 2 / 2" read as a missing step). */}
+              <SectionTitle>WHERE THE ENERGY GOES</SectionTitle>
               <Card>
                 <HonestyBadge label="Illustrative loss breakdown at this level — not measured" />
                 <Text style={styles.effBig}>{Math.round(sim.efficiencyPct)}% to the load · {Math.round(lossW)}% lost as heat</Text>

@@ -392,6 +392,15 @@ export function BusBank({ buses, w, h, running = true }: { buses: readonly { id:
 /** Optional per-row tag, by channel id: where that channel's send taps off. */
 export type BusTags = Readonly<Record<string, 'PRE' | 'POST'>>;
 
+/** A channel's name on a NARROW bus column (four wedges side by side at
+ *  390): the long names in their short console-tape form, so the row is
+ *  never cut ("Lead vo…", lab fix round 2026-11-14, F2). The spoken label
+ *  keeps the full names. Wider columns keep the full name. */
+const SHORT_NAME: Readonly<Record<string, string>> = { 'Lead vocal': 'Vocal', 'Backing vox': 'Backing', Overheads: 'Overhead' };
+export function bankRowName(name: string, width: number): string {
+  return width < 96 ? (SHORT_NAME[name] ?? name) : name;
+}
+
 function BusColumn({ title, list, tags, width, meterH, running }: { title: string; list: Contribution[]; tags?: BusTags; width: number; meterH: number; running: boolean }) {
   const heard = hears(list).sort((a, b) => b.gain - a.gain);
   // A tagged send that reaches nothing yet still gets its row, reading OFF, so
@@ -425,7 +434,7 @@ function BusColumn({ title, list, tags, width, meterH, running }: { title: strin
               return (
                 <View key={h.channelId} style={{ gap: 1 }}>
                   <View style={styles.bankRow}>
-                    <Text style={styles.bankName} numberOfLines={1}>{h.name}</Text>
+                    <Text style={styles.bankName} numberOfLines={1}>{bankRowName(h.name, width)}</Text>
                     <Text style={styles.bankDb}>{on ? `${db > 0 ? '+' : ''}${Math.round(db)}` : 'OFF'}</Text>
                   </View>
                   <View style={styles.bankBar}>

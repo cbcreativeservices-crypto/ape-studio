@@ -12,7 +12,7 @@
  */
 import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Canvas, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, Circle, vec } from '@shopify/react-native-skia';
+import { Canvas, DashPathEffect, Group, Line, LinearGradient, Path, RadialGradient, Circle, Rect, vec } from '@shopify/react-native-skia';
 import { fonts } from '../../../../../theme/tokens';
 import { fitValue } from '../../../../../theme/legibility';
 import { useStageTextScale } from '../../../rack/stageAspect';
@@ -26,7 +26,7 @@ import { CAPSULE, MEAS_DIMS } from '../shared/measure/measureSpec.ts';
 import { exclusionHit, zoneRadius } from '../shared/measure/exclusion.ts';
 import { fmtMetres } from '../shared/field/sceneFrame.ts';
 import { make, rectP } from '../shared/measure/MeasureArt';
-import { EAR_Y, EXCL, HUB } from './geometry.ts';
+import { EAR_Y, EXCL, HUB, WALL_X } from './geometry.ts';
 import { FanScene } from './FanArt';
 
 const RED = '#ff6b5e';
@@ -42,10 +42,41 @@ export function probeAt(d: number, a: number): Vec3 {
   return { x: HUB.x + d * Math.cos(a * DEG), y: EAR_Y, z: HUB.z + d * Math.sin(a * DEG) };
 }
 
+/** DISTANCE's range (mm) and its 25 mm step. */
+export const D_MIN = 200;
+export const D_MAX = 2200;
+const D_STEP = 25;
+/** The mic's body (drawn pointing away from the fan) plus its ring stay this far in front of the wall. */
+const WALL_CLEAR = MEAS_DIMS.bodyHalf.mm + 65;
+
+/**
+ * The farthest the mic goes at ANGLE a (round 2, audit Appendix E row 3,
+ * owner 2026-11-25): 2.2 m, or the wall behind the fan when the angle points
+ * back toward it (WALL_X, 1.8 m behind the hub), on the 25 mm step. The old
+ * lane reached 2.2 m at every angle: at 150°–180° that is through the wall.
+ */
+export function reachAt(a: number): number {
+  const c = Math.cos(a * DEG);
+  if (c >= 0) return D_MAX;
+  return Math.min(D_MAX, Math.floor((HUB.x - WALL_X - WALL_CLEAR) / -c / D_STEP) * D_STEP);
+}
+
+/**
+ * The plan's frame (mm, top view): the room from its back wall to past the
+ * fan's 2.2 m along the airflow, and across to 2.2 m beside it, so the mic
+ * stays in the drawing at every DISTANCE and ANGLE (round 2, Appendix E row
+ * 3: the old frame, u −900…2350 and v −1250…1250, lost the mic at long
+ * distances to the side and more than 0.9 m behind the fan). The −v side
+ * keeps its old edge (the zone, the airflow cone and you, standing back).
+ */
+export const KEEP_OUT_BOX = { u0: WALL_X - 250, u1: D_MAX + WALL_CLEAR + 60, v0: -1250, v1: D_MAX + WALL_CLEAR + 60 };
+
 export function useKeepOutStep({ words, onDone }: { words: KeepOutWords; onDone: () => void }): MikingStep {
   const [d, setD] = useState(400);
   const [a, setA] = useState(20);
   const [device, setDevice] = useState<Device>('fan');
+  const dMax = reachAt(a);
+  const atWall = dMax < D_MAX && d >= dMax;
   const p = probeAt(d, a);
   const hit = exclusionHit(EXCL, p);
   const [seen, setSeen] = useState<{ zone: boolean; airflow: boolean; clear: boolean; machine: boolean }>({ zone: false, airflow: false, clear: false, machine: false });
@@ -68,8 +99,22 @@ export function useKeepOutStep({ words, onDone }: { words: KeepOutWords; onDone:
     ] },
     ...(device === 'fan'
       ? ([
-          { kind: 'fader', id: 'dist', label: 'DISTANCE', value: (d - 200) / 2000, onChange: (v: number) => setD(Math.round((200 + v * 2000) / 25) * 25), format: () => `${fmtMetres(d, true)} from the fan`, formatShort: () => fmtMetres(d) },
-          { kind: 'fader', id: 'angle', label: 'ANGLE', value: a / 180, onChange: (v: number) => setA(Math.round(v * 36) * 5), format: () => `${a}° off the airflow`, formatShort: () => `${a}°` },
+          // The lane spans 0.2 m to the reach at this angle (the wall behind can stop it first).
+          { kind: 'fader', id: 'dist', label: 'DISTANCE', value: (d - D_MIN) / (dMax - D_MIN), onChange: (v: number) => setD(Math.min(dMax, Math.round((D_MIN + v * (dMax - D_MIN)) / D_STEP) * D_STEP)), format: () => `${fmtMetres(d, true)} from the fan${atWall ? ' · the wall behind stops it' : ''}`, formatShort: () => fmtMetres(d) },
+          {
+            kind: 'fader',
+            id: 'angle',
+            label: 'ANGLE',
+            value: a / 180,
+            onChange: (v: number) => {
+              const na = Math.round(v * 36) * 5;
+              setA(na);
+              // Turned toward the wall, the mic stops in front of it.
+              setD((dd) => Math.min(dd, reachAt(na)));
+            },
+            format: () => `${a}° off the airflow${dMax < D_MAX ? ` · the wall stops the mic at ${fmtMetres(dMax)}` : ''}`,
+            formatShort: () => `${a}°`,
+          },
         ] as DockParam[])
       : []),
   ];
@@ -125,7 +170,7 @@ export function useKeepOutStep({ words, onDone }: { words: KeepOutWords; onDone:
 
 function KeepOutPlan({ w, h, p, tint, label }: { w: number; h: number; p: Vec3; tint: string; label: string }) {
   const k = useStageTextScale();
-  const box = { u0: -900, u1: 2350, v0: -1250, v1: 1250 };
+  const box = KEEP_OUT_BOX;
   const xf = useMemo(() => fitXform('top', box, w, h, 8), [w, h]); // eslint-disable-line react-hooks/exhaustive-deps
   const px = 1 / xf.s;
   // The mic's front at p, aimed at the fan, its body (drawn toward +y) pointing away from it.
@@ -134,6 +179,11 @@ function KeepOutPlan({ w, h, p, tint, label }: { w: number; h: number; p: Vec3; 
     <View style={{ width: w, height: h }}>
       <Canvas style={{ width: w, height: h }} accessible accessibilityRole="image" accessibilityLabel={label}>
         <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
+          {/* The room past the lesson's own room frame (its floor ends at v 1650): the same floor and back wall, carried to this frame's edge. */}
+          <Rect x={box.u0 - 200} y={box.v0 - 200} width={box.u1 - box.u0 + 400} height={box.v1 - box.v0 + 400} color="#18191c" />
+          <Rect x={WALL_X - 200} y={box.v0 - 200} width={200} height={box.v1 - box.v0 + 400}>
+            <LinearGradient start={vec(WALL_X - 200, 0)} end={vec(WALL_X, 0)} colors={['#2b2c30', '#45464c']} />
+          </Rect>
           <FanScene view="top" />
           <Line p1={vec(HUB.x, HUB.z)} p2={vec(p.x, p.z)} color={tint} strokeWidth={1.4 * px} opacity={0.7}>
             <DashPathEffect intervals={[6 * px, 5 * px]} />

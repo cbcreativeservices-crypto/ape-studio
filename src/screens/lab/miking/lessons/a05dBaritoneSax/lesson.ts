@@ -71,7 +71,7 @@ export const A05D_LESSON: Lesson = buildSaxLesson({
   ],
   stage: 'LIVE: monitors on the floor feed the players, the PA faces the audience, and the band is loud. A closer directional mic improves the direct sound against the spill, but its smaller zone shows every turn of the big horn; keep stands clear of its travel.',
   studio: 'STUDIO: no wedges, a room that may sound good, and repeated trials when the player stops. A big horn rewards distance: a farther mic — the triangle — takes in the whole baritone, alone or beside a close mic.',
-  placementReveal: 'Toward the key stack tends to bring warmth and key noise; toward the bell, focus and a nasal edge; farther, more of the whole horn and the room. On a baritone the holes are spread far apart, so distance matters more. Each zone’s LISTEN FOR line is an idea to check by ear.',
+  placementReveal: 'Toward the key stack tends to bring warmth and key noise; toward the bell, focus and a nasal edge; farther, more of the whole horn and the room. On a baritone the holes are spread far apart, so distance matters more. Each zone’s TENDS TO HEAR line is an idea to check by ear.',
   typeNotes: {
     saxDynCard: 'Ideas to try: begin a few centimeters above the bell, aimed at the holes; then compare a little farther and lower, toward the middle of the body, with the lowest and the highest notes each time.',
     saxDynSuper: 'The same places as the cardioid dynamic; its tighter pattern hears less of the stage, and its least-sensitive directions sit toward the rear, off to each side.',

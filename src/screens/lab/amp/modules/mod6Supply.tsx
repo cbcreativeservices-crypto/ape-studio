@@ -71,6 +71,10 @@ const STATE_SHORT = {
   protect: 'PROTECT',
 } as const;
 
+/** Module 6's plain line before the formulas (AMPL-01). */
+export const MOD6_LOAD_PLAIN =
+  'Halve the load’s impedance and the same voltage pulls twice the current. That is why a 2 Ω load reaches a limit before 8 Ω does.';
+
 export function Mod6Supply() {
   const [supply, setSupply] = useState<'linear' | 'smps'>('linear');
   const [drive, setDrive] = useState(0.5);
@@ -215,11 +219,16 @@ export function Mod6Supply() {
               </Card>
               <FaultBanner primary={sim.primary} />
 
-              <FormulaCard
-                title="What the rails and load decide"
-                lines={['Vrms = Vpeak / √2', 'I = V / R', 'P = Vrms² / R']}
-                note={`Resistive example. Lower impedance → more current for the same voltage: ${loadZ} Ω at ${sim.vrms.toFixed(1)} Vrms draws ${sim.irms.toFixed(1)} A. A real loudspeaker’s impedance varies with frequency, so its current demand does too.`}
-              />
+              {/* AMPL-01 (owner 2026-11-15: "build waves 1 thru 3"): the plain idea
+                  first; the formulas sit one tap away under LEARN MORE. */}
+              <Body>{MOD6_LOAD_PLAIN}</Body>
+              <LearnMore title="THE FORMULAS">
+                <FormulaCard
+                  title="What the rails and load decide"
+                  lines={['Vrms = Vpeak / √2', 'I = V / R', 'P = Vrms² / R']}
+                  note={`Resistive example. Lower impedance → more current for the same voltage: ${loadZ} Ω at ${sim.vrms.toFixed(1)} Vrms draws ${sim.irms.toFixed(1)} A. A real loudspeaker’s impedance varies with frequency, so its current demand does too.`}
+                />
+              </LearnMore>
 
               <LearnMore title="WHY THE LIMITS LOOK DIFFERENT">
                 <Body>

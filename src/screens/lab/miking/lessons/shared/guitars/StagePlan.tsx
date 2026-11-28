@@ -55,6 +55,8 @@ export type StagePlanSpec = {
   near?: ViewBox;
   /** The hearing note (strings words). */
   hearing: string;
+  /** (figure V2, wave 3 set 3c) the player in the new look (the lesson opts in) */
+  v2?: boolean;
 };
 
 const rr = (x0: number, z0: number, x1: number, z1: number, r: number): SkPath => {
@@ -93,7 +95,7 @@ function VocalPlan({ o, hi }: { o: PlanObject; hi: boolean }) {
   );
 }
 
-function ChairPlan({ o, hi }: { o: PlanObject; hi: boolean }) {
+export function ChairPlan({ o, hi }: { o: PlanObject; hi: boolean }) {
   const C = SIZES.chair;
   const seat = rr(o.at.x - C.half, o.at.z - C.front, o.at.x + C.half, o.at.z + C.front, 60);
   const back = rr(o.at.x - C.half, o.at.z - C.back, o.at.x + C.half, o.at.z - C.back + C.backDepth, 24);
@@ -358,7 +360,7 @@ export function makeStagePlanPage(built: BuiltGuitarModel, spec: StagePlanSpec) 
               {stageWedges.map((wd) => (
                 <WedgePlan key={wd.id} at={wd.p} faces={wd.faces} hi={lit.has(wd.id)} />
               ))}
-              <GuitarSceneArt sc={sc} view="top" />
+              <GuitarSceneArt sc={sc} view="top" v2={!!spec.v2} assumePtPerMm={xf.s} />
               {lit.has('player') || lit.has('instrument') ? <Path path={space} style="stroke" strokeWidth={14} color={AMBER} opacity={0.85} /> : null}
               {objs.filter((o) => o.kind === 'vocal').map((o) => <VocalPlan key={o.id} o={o} hi={lit.has(o.id)} />)}
               {objs.filter((o) => o.kind === 'shared').map((o) => <SharedMicPlan key={o.id} o={o} hi={lit.has(o.id)} />)}
@@ -402,7 +404,7 @@ export function makeStagePlanPage(built: BuiltGuitarModel, spec: StagePlanSpec) 
             if (it) pick(it.id);
           },
           format: () => (sel ? `${byId(sel)?.short ?? ''} · ${byId(sel)?.tag ?? ''}` : `step through the ${list.length} items`),
-          formatShort: () => (sel ? (byId(sel)?.short ?? '').slice(0, 9) : 'STEP'),
+          formatShort: () => (sel ? (byId(sel)?.short ?? '').slice(0, 9) : 'PICK'),
         },
         list.length,
         list.findIndex((q) => q.id === sel),

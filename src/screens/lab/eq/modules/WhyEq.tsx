@@ -39,10 +39,15 @@ const GRAPH_ASPECT = 320 / (140 + 14);
 
 const CHECK: CheckSpec = {
   question: 'Turning a frequency region DOWN with an EQ is called…',
-  options: ['Boost', 'Cut (attenuation)', 'Q'],
+  options: ['Boost (more gain)', 'Cut (attenuation)', 'Q (the width)'],
   correctIdx: 1,
   reveal:
     'Cut (attenuation) lowers a region’s level; boost raises it. Neither is inherently right or wrong — EQ is about changing the BALANCE of frequency content.',
+  // A reason per wrong option (phase 2, F5's `why`): names the mix-up, never the answer.
+  why: {
+    0: 'A boost raises a region; this one goes down.',
+    2: 'Q is about width, not up or down.',
+  },
   wrongHint: 'Think “down = ?” — Q is about width, not direction.',
 };
 
@@ -122,7 +127,7 @@ export function WhyEqModule(p: EqModuleComponentProps) {
           width={Math.max(120, p.width)}
           aspect={GRAPH_ASPECT}
           title="EQ RESPONSE"
-          badge="DESIGNED RESPONSE — CALCULATED"
+          badge="Designed response: worked out from the math, not measured."
           render={(w, h) => <ResponseCurveGraph curves={curves} dbRange={GAIN_RANGE + 3} width={w} totalHeight={h} mainColor={gc} />}
           controls={
             <View style={styles.controls}>
@@ -148,7 +153,8 @@ export function WhyEqModule(p: EqModuleComponentProps) {
         more effective than raising everything around it, but boosting is not inherently wrong.
       </Text>
 
-      <CheckQuestion spec={CHECK} />
+      {/* Work done (phase 3, owner's decision 1): this module counts when its check is answered right. */}
+      <CheckQuestion spec={CHECK} onSolved={p.onDone} />
     </View>
   );
 }

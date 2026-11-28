@@ -75,6 +75,9 @@ function SignalPathDiagram({ level, clipping, width, height }: { level: number; 
   );
 }
 
+/** Module 1's status readouts besides OUTPUT (AMPL-02/06): the supply only. */
+export const MOD1_BEZEL: ('supply' | 'heat' | 'eff' | 'load')[] = ['supply'];
+
 export function Mod1What() {
   const [level, setLevel] = useState(0.4);
   const [prediction, setPrediction] = useState<string | null>(null);
@@ -108,7 +111,7 @@ export function Mod1What() {
   // The signal-path figure's control for ITS full-screen dock (the same level
   // the lane sets) — docked under the figure there, never drawn on the page.
   const levelSlider = (
-    <ControlSlider level label="Input level" value={level} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setLevel} />
+    <ControlSlider level label="LEVEL · input level" value={level} min={0} max={1} step={0.01} format={(v) => `${Math.round(v * 100)}%`} onChange={setLevel} />
   );
 
   const pic: RigPicture = {
@@ -134,9 +137,12 @@ export function Mod1What() {
           kind: 'rack',
           rack: {
             rig: pic,
+            // AMPL-02 + AMPL-06 (owner 2026-11-15: "build waves 1 thru 3"): only the
+            // readouts this lesson uses, OUTPUT (clean or clip) and SUPPLY (the
+            // supply pays). HEAT, EFFIC. and LOAD come in later modules.
             bezel: [
               { k: 'OUTPUT', v: sim.clipping ? 'CLIP' : 'CLEAN', tint: sim.clipping ? colors.red : colors.green },
-              ...rigStatusBezel(pic),
+              ...rigStatusBezel(pic, MOD1_BEZEL),
             ],
             params: [
               faderParam({ id: 'level', label: 'LEVEL', value: level, min: 0, max: 1, step: 0.01, format: (v) => `${Math.round(v * 100)}%`, onChange: setLevel, level: true }),
@@ -145,13 +151,8 @@ export function Mod1What() {
           },
           well: (
             <>
-              <Body>
-                An amplifier does not enlarge the input signal, and it does not create energy. The input
-                signal <Text style={{ color: AMP_COLORS.input }}>steers</Text>; the power supply{' '}
-                <Text style={{ color: AMP_COLORS.supply }}>pays</Text>; the output stage hands that energy
-                to the load in the shape the input asked for.
-              </Body>
-
+              {/* AMPL-06: the guess-first prompt is the first thing in the well;
+                  the steer-and-pay paragraph follows it. */}
               <SectionTitle>PREDICT, THEN TRY</SectionTitle>
               <Body>The output can only swing as far as the supply rails allow. What happens when you push the input past that point? Pick one, then ride LEVEL on the fader below the display.</Body>
               <SegRow<string>
@@ -163,6 +164,14 @@ export function Mod1What() {
                 value={prediction ?? ''}
                 onChange={setPrediction}
               />
+
+              <Body>
+                An amplifier does not enlarge the input signal, and it does not create energy. The input
+                signal <Text style={{ color: AMP_COLORS.input }}>steers</Text>; the power supply{' '}
+                <Text style={{ color: AMP_COLORS.supply }}>pays</Text>; the output stage hands that energy
+                to the load in the shape the input asked for. Its voltage gain is how many times bigger: the output
+                volts divided by the input volts.
+              </Body>
 
               <FaultBanner primary={sim.clipping ? 'output-clipping' : null} />
 
@@ -201,12 +210,6 @@ export function Mod1What() {
                 />
               </Card>
 
-              <FormulaCard
-                title="Three kinds of gain"
-                lines={['Voltage gain   Av = Vout / Vin', 'Current gain   Ai = Iout / Iin', 'Power gain     Ap = Pout / Pin']}
-                note="In decibels: voltage/current gain use 20·log10(ratio); power gain uses 10·log10(ratio). A power amplifier delivers current gain and power gain, not just bigger volts."
-              />
-
               <SectionTitle>APPLIED COMPARISON</SectionTitle>
               <SegRow<'line' | 'amp'>
                 options={[
@@ -224,8 +227,8 @@ export function Mod1What() {
                     <Body>
                       A pro line output sits at a nominal +{LINE_NOMINAL_DBU} dBu, about {lineVrms.toFixed(2)} V rms (its peaks can swing
                       much higher), and it is built to feed high-impedance inputs with almost no current.
-                      Into an 8 Ω speaker, P = Vrms²/R = {lineVrms.toFixed(2)}² ÷ 8 ≈ {linePower.toFixed(3)} W — and in practice the
-                      output stage cannot even source that current cleanly. The cone barely moves.
+                      Into an 8 Ω speaker that is a fraction of a watt — and in practice the output stage cannot even
+                      source that current cleanly. The cone barely moves.
                     </Body>
                   </>
                 ) : (
@@ -233,14 +236,24 @@ export function Mod1What() {
                     <Text style={styles.compareBig}>≈ {ampPower.toFixed(0)} W</Text>
                     <Body>
                       The power amplifier takes the same line signal and, using its supply, swings 20 V peak with amps of
-                      current behind it: P = {ampVrms.toFixed(1)}² ÷ 8 = {ampPower.toFixed(0)} W. Same shape as the input; the energy came
-                      from the rails.
+                      current behind it: about {ampPower.toFixed(0)} W. Same shape as the input; the energy came from the rails.
                     </Body>
                   </>
                 )}
               </Card>
 
+              {/* AMPL-01 (owner 2026-11-15: "build waves 1 thru 3"): the formulas
+                  live here, one tap away, not in the main card. */}
               <LearnMore>
+                <FormulaCard
+                  title="Three kinds of gain"
+                  lines={['Voltage gain   Av = Vout / Vin', 'Current gain   Ai = Iout / Iin', 'Power gain     Ap = Pout / Pin']}
+                  note="In decibels: voltage/current gain use 20·log10(ratio); power gain uses 10·log10(ratio). A power amplifier delivers current gain and power gain, not just bigger volts."
+                />
+                <Body>
+                  The watts above, worked out (8 Ω resistive teaching load): P = Vrms²/R. Line out: {lineVrms.toFixed(2)}² ÷ 8 ≈{' '}
+                  {linePower.toFixed(3)} W. Power amp: {ampVrms.toFixed(1)}² ÷ 8 = {ampPower.toFixed(0)} W.
+                </Body>
                 <Body>
                   Voltage gain alone is not amplification in the power sense: a step-up transformer gives voltage gain
                   while its available current drops. Real amplification means the output can deliver MORE power than the

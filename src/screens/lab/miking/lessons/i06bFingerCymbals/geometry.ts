@@ -40,7 +40,7 @@ const parts: Part[] = [
 const envelopes: Envelope[] = [
   { id: 'env.player', label: 'the player', shape: { kind: 'box', min: v3(-560, -1800, -290), max: v3(-240, 0, 290) }, prov: ill('a standing player: chest front at x = −250 (the family’s drawing default)'), variants: ['orchestral'] },
   { id: 'env.hands', label: 'the hands and the drop', shape: { kind: 'box', min: v3(-240, P0.y - FC.drop.mm - 70, -170), max: v3(110, P0.y + 80, 210) }, prov: ill('both hands and the dropped cymbal’s path, plus a margin: a drawing default'), variants: ['orchestral'] },
-  { id: 'env.dance', label: 'the dancer’s moving space', shape: { kind: 'box', min: v3(-FC.danceR.mm, -FC.danceTop.mm, -FC.route.mm - FC.danceR.mm), max: v3(FC.danceR.mm, 0, FC.route.mm + FC.danceR.mm) }, prov: ill('the dance envelope (r 700 round the dancer, up to the raised hands) swept along the route: a drawing default'), variants: ['dance'] },
+  { id: 'env.dance', label: 'the dancer’s moving space', shape: { kind: 'box', min: v3(-FC.danceR.mm, -FC.danceTop.mm, -FC.route.mm - FC.danceR.mm), max: v3(FC.danceR.mm, 0, FC.route.mm + FC.danceR.mm) }, prov: ill('the dance envelope (r 700 around the dancer, up to the raised hands) swept along the route: a drawing default'), variants: ['dance'] },
 ];
 
 /* ── SUGGESTED STARTING POINTS: the lesson's own trials (internal kind

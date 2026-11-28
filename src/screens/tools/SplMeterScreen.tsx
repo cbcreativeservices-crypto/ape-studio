@@ -113,6 +113,31 @@ function selectedLevelDb(m: MeterFrame, w: Weighting, r: MeterResponse): number 
   return r === 'fast' ? m.zFastDb : m.zSlowDb;
 }
 
+/** A dBFS reading printed in the CHOSEN UNIT (owner 2026-11-25, fix-first 15):
+ *  dBFS mode prints the raw digital level (signed, no SPL offset), exactly like
+ *  the big number; every SPL unit prints the estimate dBFS + splOffset, floored
+ *  at 0. PEAK and PEAK HOLD use it so they never print an SPL estimate while
+ *  the screen says dBFS. */
+export function splUnitText(db: number, dbfs: boolean, splOffset: number): string {
+  if (!Number.isFinite(db)) return '—';
+  if (dbfs) {
+    const v = Math.abs(db) < 0.05 ? 0 : db;
+    return `${v > 0 ? '+' : ''}${v.toFixed(1)}`;
+  }
+  return Math.max(0, db + splOffset).toFixed(1);
+}
+
+/** The session log's Leq column label names what its number really is (owner
+ *  2026-11-25, fix-first 15). The engine keeps Leq(A) and Leq(Z) only, so with
+ *  C weighting the column shows the UNWEIGHTED Leq(Z) and says so — it never
+ *  claims a C-weighted Leq the meter does not measure. */
+export function splLeqColumnLabel(dbfs: boolean, weighting: Weighting): string {
+  if (dbfs) return 'Leq · dBFS';
+  if (weighting === 'A') return 'Leq · dBA';
+  if (weighting === 'C') return 'Leq · unweighted';
+  return 'Leq · dB SPL';
+}
+
 const fmtElapsed = (sec: number) => {
   if (!Number.isFinite(sec) || sec < 0) return '0:00';
   const s = Math.floor(sec);
@@ -152,6 +177,7 @@ const SideLed = memo(function SideLed({
   ledFill,
   avgColor,
   stack,
+  holdResetKey,
 }: {
   viz: VizMetersModule;
   live: LiveMeterDrive;
@@ -166,6 +192,8 @@ const SideLed = memo(function SideLed({
   avgColor?: string | null;
   /** Portrait-fullscreen STACK layout (owner 2026-09-01) — see PeakAvgMeterView. */
   stack?: boolean;
+  /** Bumped by RESET PEAK HOLD NOW so the LED's own held peak clears too. */
+  holdResetKey?: number;
 }) {
   const phase = viz.usePhaseClock(true, 1 / VU_LOOP);
   if (ledH <= 0) return <View style={{ width: ledW }} />;
@@ -182,6 +210,7 @@ const SideLed = memo(function SideLed({
       ledFill={ledFill}
       avgColor={avgColor}
       stack={stack}
+      holdResetKey={holdResetKey}
     />
   );
 });
@@ -622,6 +651,10 @@ export function SplMeterScreen({ navigation }: Props) {
   // the menu"). Now a manual STOP sets micPaused so the tool UI STAYS visible
   // (frozen, readouts dashed) and the same button flips to START to re-arm.
   const [micPaused, setMicPaused] = useState(false);
+  // RESET PEAK HOLD (owner 2026-11-25, fix-first 15): the native reset clears the
+  // engine's PEAK HOLD number only; every LED meter keeps its own held peak, so
+  // a reset also bumps `ledHoldReset` and the LED's cap + PK drop with it.
+  const [ledHoldReset, setLedHoldReset] = useState(0);
   const startMeter = useCallback(() => {
     // A FRESH SESSION MUST NOT INHERIT THE LAST ONE'S PEAK (fix 2026-08-28).
     // The mic stream is warm-adopted across tools and across a STOP→START
@@ -631,6 +664,8 @@ export function SplMeterScreen({ navigation }: Props) {
     // session's ELAPSED — and `onSaveLog` writes both into the Measurement
     // Library, so the wrong numbers were persisted as this measurement's data.
     resetPeakHold();
+    // …and the LED meter's own held peak (round 2, 2026-11-25): same rule.
+    setLedHoldReset((n) => n + 1);
     resetLeq();
     // Do NOT clear micPaused here (routing-flash fix 2026-07-30): if we cleared
     // it now, then during the 'starting' transition micPaused=false AND
@@ -643,6 +678,10 @@ export function SplMeterScreen({ navigation }: Props) {
     setMicPaused(true);
     stop();
   }, [stop]);
+  const resetAllPeakHold = useCallback(() => {
+    resetPeakHold();
+    setLedHoldReset((n) => n + 1);
+  }, [resetPeakHold]);
 
   // Open straight into the live meter — no redundant START screen (owner
   // 2026-08-01). Fires once; a deliberate STOP still holds the tool on-screen.
@@ -1356,8 +1395,9 @@ export function SplMeterScreen({ navigation }: Props) {
   ];
   // Session-log Leq follows the SELECTED dB unit (owner 2026-08-18): one column,
   // labeled + valued in the active unit. A→Leq(A); Z/C→Leq(Z) (C's documented
-  // honest fallback); FS shows the raw dBFS Leq (no SPL estimate).
-  const logLeqLabel = `Leq · ${activeUnit}`;
+  // honest fallback, LABELED "unweighted" since 2026-11-25 fix-first 15 — the
+  // engine has no C Leq); FS shows the raw dBFS Leq (no SPL estimate).
+  const logLeqLabel = splLeqColumnLabel(dbfs, weighting);
   const logLeqValue = !meter
     ? '—'
     : dbfs
@@ -1449,8 +1489,10 @@ export function SplMeterScreen({ navigation }: Props) {
       saveFlags.push('uncalibrated_input');
     // The engine logs Leq(A) and Leq(Z) only — a C-weighted selection stores
     // the unweighted Leq(Z) as its average (documented honest fallback).
-    // Values are stored AS DISPLAYED (owner 2026-08-12): estimated dB SPL always,
-    // with calibration_status + the offset recorded so an uncalibrated record is
+    // Values are stored as estimated dB SPL ALWAYS (owner 2026-08-12) — also in
+    // dBFS mode, where the screen shows the raw digital level instead, so the
+    // record is not "as displayed" there (comment corrected 2026-11-25, round 2);
+    // calibration_status + the offset are recorded so an uncalibrated record is
     // clearly an approximate estimate (compare mode warns on calibrated-vs-
     // uncalibrated pairs).
     const avgDb = shown(weighting === 'A' ? m.leqADb : m.leqZDb);
@@ -1569,7 +1611,7 @@ export function SplMeterScreen({ navigation }: Props) {
                   CLIP is now a text token beside the number. */}
               <Pressable
                 accessibilityRole="button"
-                accessibilityLabel={`Peak ${meter ? estSpl(meter.peakDb) : 'no reading'}${meter && isClipping(meter.peakDb) ? ', clipping' : ''}`}
+                accessibilityLabel={`Peak ${meter ? splUnitText(meter.peakDb, dbfs, splOffset) : 'no reading'}${meter && isClipping(meter.peakDb) ? ', clipping' : ''}`}
                 accessibilityHint="Press and hold for an explanation."
                 style={styles.peakCell}
                 onLongPress={() => help('peak')}
@@ -1577,22 +1619,22 @@ export function SplMeterScreen({ navigation }: Props) {
               >
                 <Text style={styles.cellLabel}>PEAK</Text>
                 <Text style={[styles.cellValue, meter ? { color: levelColorForDb(meter.peakDb) } : styles.cellValueMax]}>
-                  {meter ? estSpl(meter.peakDb) : '—'}
+                  {meter ? splUnitText(meter.peakDb, dbfs, splOffset) : '—'}
                 </Text>
                 {meter && isClipping(meter.peakDb) ? <Text style={styles.clipTag}>CLIP</Text> : null}
               </Pressable>
               {/* Tap the PEAK HOLD readout itself to reset. Long-press = help. */}
               <Pressable
                 style={styles.peakCell}
-                onPress={resetPeakHold}
+                onPress={resetAllPeakHold}
                 onLongPress={() => help('peak_hold')}
                 delayLongPress={260}
                 accessibilityRole="button"
-                accessibilityLabel={`Peak hold ${meter ? estSpl(meter.peakHoldDb) : 'no reading'}${meter && isClipping(meter.peakHoldDb) ? ', clipping' : ''} — tap to reset`}
+                accessibilityLabel={`Peak hold ${meter ? splUnitText(meter.peakHoldDb, dbfs, splOffset) : 'no reading'}${meter && isClipping(meter.peakHoldDb) ? ', clipping' : ''} — tap to reset`}
               >
                 <Text style={styles.cellLabel}>PEAK HOLD</Text>
                 <Text style={[styles.cellValue, meter ? { color: levelColorForDb(meter.peakHoldDb) } : styles.cellValueMax]}>
-                  {meter ? estSpl(meter.peakHoldDb) : '—'}
+                  {meter ? splUnitText(meter.peakHoldDb, dbfs, splOffset) : '—'}
                 </Text>
                 {meter && isClipping(meter.peakHoldDb) ? <Text style={styles.clipTag}>CLIP</Text> : null}
                 <Text style={styles.cellHint}>tap to reset</Text>
@@ -1922,7 +1964,7 @@ export function SplMeterScreen({ navigation }: Props) {
                       accessibilityRole="button"
                       accessibilityLabel="Open the fullscreen LED meter"
                     >
-                      <SideLed viz={viz} live={live} ledW={ledW} ledH={leftColH} holdMode={holdMode} splOffset={splOffset} weightingLabel={weighting} ledFill={ledFill} avgColor={avgPref} />
+                      <SideLed viz={viz} live={live} ledW={ledW} ledH={leftColH} holdMode={holdMode} splOffset={splOffset} weightingLabel={weighting} ledFill={ledFill} avgColor={avgPref} holdResetKey={ledHoldReset} />
                     </Pressable>
                   ) : null}
                 </View>
@@ -2323,6 +2365,7 @@ export function SplMeterScreen({ navigation }: Props) {
                           weightingLabel={weighting}
                           ledFill={ledFill}
                           avgColor={avgPref}
+                          holdResetKey={ledHoldReset}
                         />
                       )}
                     </View>
@@ -2380,6 +2423,7 @@ export function SplMeterScreen({ navigation }: Props) {
                   weightingLabel={weighting}
                   ledFill={ledFill}
                   avgColor={avgPref}
+                  holdResetKey={ledHoldReset}
                   stack
                 />
               </View>
@@ -2482,7 +2526,7 @@ export function SplMeterScreen({ navigation }: Props) {
               ))}
             </View>
             {settingPopup === 'hold' && (
-              <Pressable style={styles.popupResetBtn} onPress={() => { resetPeakHold(); setSettingPopup(null); }} accessibilityRole="button" accessibilityLabel="Reset peak hold now">
+              <Pressable style={styles.popupResetBtn} onPress={() => { resetAllPeakHold(); setSettingPopup(null); }} accessibilityRole="button" accessibilityLabel="Reset peak hold now">
                 <Text style={styles.popupResetText}>RESET PEAK HOLD NOW</Text>
               </Pressable>
             )}
@@ -2547,18 +2591,18 @@ export function SplMeterScreen({ navigation }: Props) {
               <View style={styles.fsCorner}>
                 <Text style={styles.cellLabel}>PEAK</Text>
                 <Text style={[styles.fsCornerValue, meter ? { color: levelColorForDb(meter.peakDb) } : styles.cellValueMax]}>
-                  {meter ? estSpl(meter.peakDb) : '—'}
+                  {meter ? splUnitText(meter.peakDb, dbfs, splOffset) : '—'}
                 </Text>
               </View>
               <Pressable
                 style={styles.fsCorner}
-                onPress={resetPeakHold}
+                onPress={resetAllPeakHold}
                 accessibilityRole="button"
                 accessibilityLabel="Peak hold — tap to reset"
               >
                 <Text style={styles.cellLabel}>PEAK HOLD</Text>
                 <Text style={[styles.fsCornerValue, meter ? { color: levelColorForDb(meter.peakHoldDb) } : styles.cellValueMax]}>
-                  {meter ? estSpl(meter.peakHoldDb) : '—'}
+                  {meter ? splUnitText(meter.peakHoldDb, dbfs, splOffset) : '—'}
                 </Text>
                 <Text style={styles.cellHint}>tap to reset</Text>
               </Pressable>

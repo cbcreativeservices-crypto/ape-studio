@@ -58,7 +58,7 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       {
         id: 'start-guest',
         q: 'What is Guest Mode?',
-        a: 'Guest Mode lets you use the app without creating an account. Guest data lives only on this phone and is cleared when you leave Guest Mode, except lab work: sign in or create an account before you close the app, and the lab work from that visit is saved to it (a members-only lab opened as a preview saves nothing). Create a free account when you want your progress to survive.',
+        a: 'Guest Mode lets you use the app without creating an account. Guest data lives only on this device and is cleared when you leave Guest Mode, except lab work: sign in or create an account before you close the app, and the lab work from that visit is saved to it (a members-only lab opened as a preview saves nothing). Create a free account when you want your progress to survive.',
       },
       {
         id: 'start-first-steps',
@@ -227,13 +227,13 @@ export const HELP_CATEGORIES: HelpCategory[] = [
       {
         id: 'tools-saved',
         q: 'Where do saved measurements go?',
-        a: 'The Measurement Library, stored on this phone — not in the cloud. Saving is part of Academy membership.',
+        a: 'The Measurement Library, stored on this device — not in the cloud. Saving is part of Academy membership.',
         jump: { label: 'Open the Tools', route: 'ToolsHub' },
       },
       {
         id: 'tools-limits',
         q: 'Why did a calculator or the glossary stop and ask me to wait?',
-        a: 'The free tier has weekly limits — 5 calculations and 14 glossary definitions a week; each count resets one week after your first use. Academy membership removes both caps.',
+        a: 'Free use has weekly limits, with or without an account — 5 calculations and 14 glossary definitions a week; each count resets one week after your first use. Academy membership removes both caps.',
       },
     ],
   },

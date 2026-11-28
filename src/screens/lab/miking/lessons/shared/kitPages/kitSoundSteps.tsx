@@ -59,20 +59,20 @@ export function useCymbalStrikeStep({ words, hidden, prediction, onReached }: { 
       {
         kind: 'fader',
         id: 'step',
-        label: 'STEP',
+        label: 'EVENT',
         value: (s.shown - 1) / Math.max(1, n - 1),
         onChange: (v) => s.goTo(1 + Math.round(v * (n - 1))),
-        format: () => `${s.shown} of ${n} · ${stage.title.toLowerCase()}`,
-        formatShort: () => `${s.shown} / ${n}`,
+        format: () => `${stage.title.toLowerCase()}`,
+        formatShort: () => `${s.shown}`,
       },
       n,
       s.shown - 1,
       (i) => `${i + 1} · ${words.stages[i].title}`,
       (i) => s.goTo(i + 1),
     ),
-    { kind: 'action', id: 'play', label: s.playing ? 'PAUSE' : reached ? 'REPLAY ONCE' : s.motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: s.play, tint: colors.green },
+    { kind: 'action', id: 'play', label: s.playing ? 'PAUSE' : reached ? 'REPLAY ONCE' : s.motion ? 'PLAY ONCE' : 'NEXT EVENT', onPress: s.play, tint: colors.green },
   ];
-  const bezel: BezelItem[] = [{ k: 'EVENT', v: `${s.shown} / ${n}`, flex: 0.8 }, ...words.cells.map((c) => ({ k: c.k, v: c.at[Math.min(c.at.length - 1, s.shown - 1)] ?? '—', flex: c.flex ?? 1 }))];
+  const bezel: BezelItem[] = [{ k: 'EVENT', v: `${s.shown}`, flex: 0.8 }, ...words.cells.map((c) => ({ k: c.k, v: c.at[Math.min(c.at.length - 1, s.shown - 1)] ?? '—', flex: c.flex ?? 1 }))];
   const step: MikingStep = {
     key: 'strike',
     title: words.title,

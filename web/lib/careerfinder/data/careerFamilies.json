@@ -1,0 +1,1060 @@
+[
+ {
+  "id": "recording-studios-and-music-production",
+  "name": "Recording Studios & Music Production",
+  "field": "Studio Recording",
+  "subject": "Recording Craft",
+  "topicGs": [
+   3840,
+   3850,
+   3120,
+   3870
+  ],
+  "settings": [
+   "Recording studios",
+   "production rooms",
+   "remote and location sessions"
+  ],
+  "sources": [
+   "U.S. Bureau of Labor Statistics / O*NET",
+   "Audio Engineering Society"
+  ],
+  "count": 33
+ },
+ {
+  "id": "mixing-and-mastering",
+  "name": "Mixing & Mastering",
+  "field": "Mixing & Mastering",
+  "subject": "Mixing",
+  "topicGs": [
+   3340,
+   3350,
+   3930
+  ],
+  "settings": [
+   "Mix rooms",
+   "mastering studios",
+   "independent production facilities",
+   "remote services"
+  ],
+  "sources": [
+   "U.S. Bureau of Labor Statistics / O*NET",
+   "Audio Engineering Society"
+  ],
+  "count": 27
+ },
+ {
+  "id": "music-creation-daws-synthesis-and-sonic-art",
+  "name": "Music Creation, DAWs, Synthesis & Sonic Art",
+  "field": "Electronic Music, DAWs & Synthesis",
+  "subject": "Synthesis & Sound Design",
+  "topicGs": [
+   4070,
+   4040,
+   4050,
+   4060,
+   3970
+  ],
+  "settings": [
+   "Project studios",
+   "production companies",
+   "labels",
+   "live performance",
+   "art and cultural spaces"
+  ],
+  "sources": [
+   "Audio Engineering Society",
+   "U.S. Bureau of Labor Statistics"
+  ],
+  "count": 37
+ },
+ {
+  "id": "live-sound-touring-and-festivals",
+  "name": "Live Sound, Touring & Festivals",
+  "field": "Live Sound & Production",
+  "subject": "Live Mixing & Crew",
+  "topicGs": [
+   3610,
+   3570,
+   3560,
+   3600,
+   3580,
+   3640
+  ],
+  "settings": [
+   "Concerts",
+   "tours",
+   "festivals",
+   "clubs",
+   "arenas",
+   "corporate and special events"
+  ],
+  "sources": [
+   "U.S. Bureau of Labor Statistics / O*NET",
+   "Audio Engineering Society",
+   "International Alliance of Theatrical Stage Employees (IATSE)"
+  ],
+  "count": 46
+ },
+ {
+  "id": "theatre-worship-venues-and-show-control",
+  "name": "Theater, Worship, Venues & Show Control",
+  "field": "Venue, Stagecraft & Entertainment Systems",
+  "subject": "Theatrical & Worship",
+  "topicGs": [
+   3720,
+   3710,
+   3700,
+   3670,
+   3730
+  ],
+  "settings": [
+   "Theaters",
+   "performing-arts centers",
+   "houses of worship",
+   "theme parks",
+   "permanent venues"
+  ],
+  "sources": [
+   "Audio Engineering Society",
+   "International Alliance of Theatrical Stage Employees (IATSE)"
+  ],
+  "count": 34
+ },
+ {
+  "id": "film-television-and-post-production-audio",
+  "name": "Film, Television & Post-Production Audio",
+  "field": "Sound for Picture & Media",
+  "subject": "Post Production",
+  "topicGs": [
+   4130,
+   4160,
+   4170,
+   4190,
+   4150,
+   4140
+  ],
+  "settings": [
+   "Film and television sets",
+   "post facilities",
+   "scoring stages",
+   "localization studios"
+  ],
+  "sources": [
+   "Motion Picture Sound Editors",
+   "Cinema Audio Society"
+  ],
+  "count": 72
+ },
+ {
+  "id": "game-interactive-xr-and-immersive-audio",
+  "name": "Game, Interactive, XR & Immersive Audio",
+  "field": "Sound for Picture & Media",
+  "subject": "Localization & Game",
+  "topicGs": [
+   4250,
+   4260,
+   4230,
+   4430
+  ],
+  "settings": [
+   "Game studios",
+   "XR (extended reality: virtual, augmented and mixed reality) companies",
+   "interactive media teams",
+   "location-based entertainment"
+  ],
+  "sources": [
+   "Motion Picture Sound Editors",
+   "Game Audio Network Guild"
+  ],
+  "count": 42
+ },
+ {
+  "id": "broadcast-radio-sports-and-streaming",
+  "name": "Broadcast, Radio, Sports & Streaming",
+  "field": "Broadcast, Podcast & Streaming",
+  "subject": "Broadcast & Air Chain",
+  "topicGs": [
+   4100,
+   4090,
+   4720,
+   3330
+  ],
+  "settings": [
+   "Radio and television stations",
+   "sports venues",
+   "production trucks",
+   "streaming platforms"
+  ],
+  "sources": [
+   "U.S. Bureau of Labor Statistics / O*NET",
+   "Society of Broadcast Engineers",
+   "Society of Motion Picture and Television Engineers"
+  ],
+  "count": 50
+ },
+ {
+  "id": "podcast-audiobook-voice-and-spoken-word-production",
+  "name": "Podcast, Audiobook, Voice & Spoken-Word Production",
+  "field": "Broadcast, Podcast & Streaming",
+  "subject": "Podcast",
+  "topicGs": [
+   4120,
+   4300,
+   4160,
+   3450
+  ],
+  "settings": [
+   "Podcast networks",
+   "audiobook publishers",
+   "voice studios",
+   "independent production"
+  ],
+  "sources": [
+   "U.S. Bureau of Labor Statistics / O*NET",
+   "Audio Publishers Association"
+  ],
+  "count": 35
+ },
+ {
+  "id": "installed-av-integration-and-institutional-systems",
+  "name": "Installed AV, Integration & Institutional Systems",
+  "field": "Installed & Commercial Audio",
+  "subject": "System Design & Install",
+  "topicGs": [
+   3750,
+   3740,
+   3300,
+   3290,
+   3320
+  ],
+  "settings": [
+   "Corporate",
+   "education",
+   "government",
+   "hospitality",
+   "healthcare",
+   "museums",
+   "integrators"
+  ],
+  "sources": [
+   "U.S. Bureau of Labor Statistics / O*NET"
+  ],
+  "count": 61
+ },
+ {
+  "id": "architectural-acoustics-noise-and-vibration",
+  "name": "Architectural Acoustics, Noise & Vibration",
+  "field": "Acoustics & Measurement",
+  "subject": "Acoustics & Room Behavior",
+  "topicGs": [
+   3420,
+   3010,
+   3430,
+   3440,
+   4550
+  ],
+  "settings": [
+   "Consultancies",
+   "architecture and engineering firms",
+   "government",
+   "transportation",
+   "product development"
+  ],
+  "sources": [
+   "Acoustical Society of America",
+   "National Institute for Occupational Safety and Health (NIOSH)"
+  ],
+  "count": 50
+ },
+ {
+  "id": "scientific-environmental-and-applied-acoustics",
+  "name": "Scientific, Environmental & Applied Acoustics",
+  "field": "Acoustics Science & Applied Research",
+  "subject": "Life, Earth & Space Acoustics",
+  "topicGs": [
+   4640,
+   4650,
+   4660,
+   4620,
+   4670
+  ],
+  "settings": [
+   "Universities",
+   "national laboratories",
+   "environmental organizations",
+   "ocean science",
+   "defense",
+   "industry"
+  ],
+  "sources": [
+   "Acoustical Society of America",
+   "American Society for Nondestructive Testing",
+   "National Oceanic and Atmospheric Administration (NOAA)",
+   "NASA"
+  ],
+  "count": 61
+ },
+ {
+  "id": "hearing-audiology-psychoacoustics-and-accessibility",
+  "name": "Hearing, Audiology, Psychoacoustics & Accessibility",
+  "field": "Hearing, Perception & Listening",
+  "subject": "Hearing & Psychoacoustics",
+  "topicGs": [
+   4270,
+   4280,
+   4300,
+   4520,
+   3750
+  ],
+  "settings": [
+   "Clinics",
+   "hospitals",
+   "schools",
+   "universities",
+   "hearing-device companies",
+   "accessibility teams"
+  ],
+  "sources": [
+   "American Speech-Language-Hearing Association",
+   "U.S. Bureau of Labor Statistics",
+   "Acoustical Society of America"
+  ],
+  "count": 43
+ },
+ {
+  "id": "medical-ultrasound-and-therapeutic-acoustics",
+  "name": "Medical Ultrasound & Therapeutic Acoustics",
+  "field": "Acoustics Science & Applied Research",
+  "subject": "Physical & Advanced Acoustics",
+  "topicGs": [
+   4680,
+   4630,
+   4580
+  ],
+  "settings": [
+   "Hospitals",
+   "diagnostic imaging centers",
+   "medical-device companies",
+   "biomedical research laboratories"
+  ],
+  "sources": [
+   "Acoustical Society of America",
+   "U.S. Bureau of Labor Statistics"
+  ],
+  "count": 24
+ },
+ {
+  "id": "audio-hardware-transducers-and-electronics-engineering",
+  "name": "Audio Hardware, Transducers & Electronics Engineering",
+  "field": "Electronics, Engineering & Manufacturing",
+  "subject": "Components & Circuits",
+  "topicGs": [
+   3790,
+   3780,
+   3810,
+   3180,
+   3090,
+   3200,
+   3210
+  ],
+  "settings": [
+   "Audio manufacturers",
+   "consumer electronics",
+   "R&D laboratories",
+   "engineering consultancies"
+  ],
+  "sources": [
+   "Audio Engineering Society",
+   "U.S. Bureau of Labor Statistics",
+   "Audio Engineering Society Technical Council"
+  ],
+  "count": 55
+ },
+ {
+  "id": "audio-software-dsp-ai-and-machine-learning",
+  "name": "Audio Software, DSP, AI & Machine Learning",
+  "field": "AI Audio",
+  "subject": "AI Audio",
+  "topicGs": [
+   4420,
+   4410,
+   4430,
+   3050,
+   3410
+  ],
+  "settings": [
+   "Software companies",
+   "audio manufacturers",
+   "AI laboratories",
+   "streaming platforms",
+   "game and media companies"
+  ],
+  "sources": [
+   "Audio Engineering Society",
+   "U.S. Bureau of Labor Statistics",
+   "IEEE Signal Processing Society"
+  ],
+  "count": 69
+ },
+ {
+  "id": "manufacturing-quality-calibration-and-repair",
+  "name": "Manufacturing, Quality, Calibration & Repair",
+  "field": "Troubleshooting, Maintenance & Repair",
+  "subject": "Maintenance & Repair",
+  "topicGs": [
+   3510,
+   3540,
+   3550,
+   3800,
+   3820,
+   3480
+  ],
+  "settings": [
+   "Factories",
+   "repair shops",
+   "rental companies",
+   "studios",
+   "field-service organizations"
+  ],
+  "sources": [
+   "U.S. Bureau of Labor Statistics"
+  ],
+  "count": 53
+ },
+ {
+  "id": "audio-archiving-preservation-and-restoration",
+  "name": "Audio Archiving, Preservation & Restoration",
+  "field": "Preservation & Archival",
+  "subject": "Preservation & Restoration",
+  "topicGs": [
+   4480,
+   4460,
+   4470,
+   4440
+  ],
+  "settings": [
+   "Archives",
+   "libraries",
+   "museums",
+   "broadcasters",
+   "labels",
+   "universities",
+   "preservation vendors"
+  ],
+  "sources": [
+   "Association of Moving Image Archivists",
+   "Library of Congress"
+  ],
+  "count": 35
+ },
+ {
+  "id": "forensic-surveillance-security-and-public-safety-audio",
+  "name": "Forensic, Surveillance, Security & Public-Safety Audio",
+  "field": "Acoustics Science & Applied Research",
+  "subject": "Forensic & Investigative",
+  "topicGs": [
+   4710,
+   3460,
+   4560,
+   4300,
+   4460
+  ],
+  "settings": [
+   "Forensic laboratories",
+   "law enforcement",
+   "courts",
+   "intelligence",
+   "security technology companies"
+  ],
+  "sources": [
+   "Acoustical Society of America",
+   "National Institute of Standards and Technology"
+  ],
+  "count": 34
+ },
+ {
+  "id": "technical-standards-regulation-law-and-rights",
+  "name": "Technical Standards, Regulation, Law & Rights",
+  "field": "Standards & Sound Law",
+  "subject": "Technical Standards",
+  "topicGs": [
+   4490,
+   4510,
+   4540
+  ],
+  "settings": [
+   "Standards bodies",
+   "government",
+   "manufacturers",
+   "broadcasters",
+   "law firms",
+   "rights organizations"
+  ],
+  "sources": [
+   "Society of Motion Picture and Television Engineers",
+   "Federal Communications Commission",
+   "National Institute for Occupational Safety and Health (NIOSH)",
+   "U.S. Copyright Office"
+  ],
+  "count": 41
+ },
+ {
+  "id": "education-research-training-and-technical-communication",
+  "name": "Education, Research, Training & Technical Communication",
+  "field": "Career, Business & Industry",
+  "subject": "Professional Practice",
+  "topicGs": [
+   4380,
+   4400,
+   4370,
+   3300,
+   4360
+  ],
+  "settings": [
+   "Colleges",
+   "universities",
+   "schools",
+   "manufacturers",
+   "training companies",
+   "research laboratories"
+  ],
+  "sources": [
+   "Audio Engineering Society",
+   "Acoustical Society of America"
+  ],
+  "count": 44
+ },
+ {
+  "id": "audio-business-product-sales-and-operations",
+  "name": "Audio Business, Product, Sales & Operations",
+  "field": "Career, Business & Industry",
+  "subject": "Professional Practice",
+  "topicGs": [
+   4390,
+   4395,
+   4360,
+   4370,
+   4400,
+   4380
+  ],
+  "settings": [
+   "Manufacturers",
+   "distributors",
+   "dealers",
+   "studios",
+   "labels",
+   "rental companies",
+   "production businesses"
+  ],
+  "sources": [
+   "Audio Engineering Society",
+   "Audio Engineering Society Career Center"
+  ],
+  "count": 64
+ },
+ {
+  "id": "consumer-home-vehicle-and-personal-audio",
+  "name": "Consumer, Home, Vehicle & Personal Audio",
+  "field": "Installed & Commercial Audio",
+  "subject": "Consumer & Vehicle Audio",
+  "topicGs": [
+   3760,
+   3770,
+   3220,
+   3450
+  ],
+  "settings": [
+   "Automotive OEMs (carmakers)",
+   "consumer-electronics companies",
+   "dealerships",
+   "home-integration firms",
+   "mobile-device companies"
+  ],
+  "sources": [
+   "Audio Engineering Society",
+   "U.S. Bureau of Labor Statistics",
+   "Consumer Technology Association"
+  ],
+  "count": 41
+ },
+ {
+  "id": "dj-club-and-event-performance-technology",
+  "name": "DJ, Club & Event Performance Technology",
+  "field": "Live Sound & Production",
+  "subject": "DJ Performance",
+  "topicGs": [
+   3650,
+   3630,
+   3570,
+   4050
+  ],
+  "settings": [
+   "Clubs",
+   "festivals",
+   "weddings",
+   "mobile events",
+   "radio",
+   "livestreams"
+  ],
+  "sources": [
+   "U.S. Bureau of Labor Statistics",
+   "U.S. Bureau of Labor Statistics / O*NET"
+  ],
+  "count": 25
+ },
+ {
+  "id": "sonic-branding-ux-exhibits-and-experience-design",
+  "name": "Sonic Branding, UX, Exhibits & Experience Design",
+  "field": "Sound for Picture & Media",
+  "subject": "Immersive",
+  "topicGs": [
+   4260,
+   3390,
+   4590,
+   4310
+  ],
+  "settings": [
+   "Brand agencies",
+   "product design teams",
+   "museums",
+   "public spaces",
+   "themed entertainment"
+  ],
+  "sources": [
+   "Audio Engineering Society",
+   "IEEE Signal Processing Society"
+  ],
+  "count": 35
+ },
+ {
+  "id": "music-for-picture-scoring-and-editorial",
+  "name": "Music for Picture, Scoring & Editorial",
+  "field": "Sound for Picture & Media",
+  "subject": "Scoring",
+  "topicGs": [
+   4200,
+   4220,
+   4140
+  ],
+  "settings": [
+   "Film",
+   "television",
+   "advertising",
+   "trailers",
+   "scoring stages",
+   "music-production studios"
+  ],
+  "sources": [
+   "U.S. Bureau of Labor Statistics",
+   "Motion Picture Sound Editors"
+  ],
+  "count": 31
+ },
+ {
+  "id": "audio-networks-cloud-and-technical-infrastructure",
+  "name": "Audio Networks, Cloud & Technical Infrastructure",
+  "field": "Audio Equipment & Signal Chain",
+  "subject": "Audio Networking",
+  "topicGs": [
+   4720,
+   3320,
+   3330,
+   4490
+  ],
+  "settings": [
+   "Enterprise AV",
+   "broadcasters",
+   "live production",
+   "studios",
+   "cloud media platforms",
+   "manufacturers"
+  ],
+  "sources": [
+   "Society of Broadcast Engineers",
+   "Society of Motion Picture and Television Engineers"
+  ],
+  "count": 29
+ },
+ {
+  "id": "audio-measurement-system-tuning-and-instrumentation",
+  "name": "Audio Measurement, System Tuning & Instrumentation",
+  "field": "Acoustics & Measurement",
+  "subject": "Measurement & Analysis",
+  "topicGs": [
+   3490,
+   3460,
+   4560,
+   3480,
+   4730
+  ],
+  "settings": [
+   "Live systems",
+   "laboratories",
+   "manufacturers",
+   "acoustic consultancies",
+   "calibration services"
+  ],
+  "sources": [
+   "Audio Engineering Society",
+   "Acoustical Society of America",
+   "Audio Engineering Society Technical Council"
+  ],
+  "count": 29
+ },
+ {
+  "id": "stagecraft-rigging-power-and-production-support",
+  "name": "Stagecraft, Rigging, Power & Production Support",
+  "field": "Venue, Stagecraft & Entertainment Systems",
+  "subject": "Stage & Venue",
+  "topicGs": [
+   3690,
+   3680,
+   3080,
+   3670
+  ],
+  "settings": [
+   "Theaters",
+   "arenas",
+   "festivals",
+   "touring productions",
+   "convention centers",
+   "rental companies"
+  ],
+  "sources": [
+   "National Institute for Occupational Safety and Health (NIOSH)",
+   "International Alliance of Theatrical Stage Employees (IATSE)"
+  ],
+  "count": 36
+ },
+ {
+  "id": "session-performance-voice-and-musical-direction",
+  "name": "Session Performance, Voice & Musical Direction",
+  "field": "Studio Recording",
+  "subject": "Recording Craft",
+  "topicGs": [
+   3870,
+   4340,
+   4330,
+   4350,
+   4300
+  ],
+  "settings": [
+   "Recording studios",
+   "scoring stages",
+   "broadcast studios",
+   "live venues",
+   "voice-production facilities"
+  ],
+  "sources": [
+   "U.S. Bureau of Labor Statistics",
+   "Audio Engineering Society"
+  ],
+  "count": 24
+ },
+ {
+  "id": "music-performance-conducting-and-live-musical-direction",
+  "name": "Music Performance, Conducting & Live Musical Direction",
+  "field": "Studio Recording",
+  "subject": "Recording Craft",
+  "topicGs": [
+   3870,
+   4340,
+   4330,
+   4350,
+   4300
+  ],
+  "settings": [
+   "Concert halls",
+   "theaters",
+   "clubs",
+   "houses of worship",
+   "cruise ships",
+   "touring productions",
+   "recording sessions"
+  ],
+  "sources": [
+   "U.S. Bureau of Labor Statistics"
+  ],
+  "count": 104
+ },
+ {
+  "id": "musical-instrument-building-tuning-and-repair",
+  "name": "Musical Instrument Building, Tuning & Repair",
+  "field": "Electronics, Engineering & Manufacturing",
+  "subject": "Build & Manufacturing",
+  "topicGs": [
+   3200,
+   3870
+  ],
+  "settings": [
+   "Instrument workshops",
+   "factories",
+   "music stores",
+   "schools",
+   "orchestras",
+   "touring productions",
+   "private service businesses"
+  ],
+  "sources": [
+   "Piano Technicians Guild",
+   "National Association of Professional Band Instrument Repair Technicians",
+   "American Federation of Violin and Bow Makers"
+  ],
+  "count": 89
+ },
+ {
+  "id": "music-education-lessons-and-musicianship-coaching",
+  "name": "Music Education, Lessons & Musicianship Coaching",
+  "field": "Hearing, Perception & Listening",
+  "subject": "Critical Listening & Ear Training",
+  "topicGs": [
+   4310,
+   3870,
+   4370
+  ],
+  "settings": [
+   "Schools",
+   "colleges",
+   "conservatories",
+   "community programs",
+   "studios",
+   "online learning",
+   "private practice"
+  ],
+  "sources": [
+   "U.S. Bureau of Labor Statistics"
+  ],
+  "count": 60
+ },
+ {
+  "id": "music-therapy-speech-and-clinical-voice",
+  "name": "Music Therapy, Speech & Clinical Voice",
+  "field": "Hearing, Perception & Listening",
+  "subject": "Hearing & Psychoacoustics",
+  "topicGs": [
+   4270,
+   4300,
+   4280,
+   4680
+  ],
+  "settings": [
+   "Hospitals",
+   "rehabilitation centers",
+   "schools",
+   "clinics",
+   "elder care",
+   "private practices",
+   "research programs"
+  ],
+  "sources": [
+   "Certification Board for Music Therapists",
+   "American Speech-Language-Hearing Association"
+  ],
+  "count": 44
+ },
+ {
+  "id": "phonetics-linguistics-and-speech-science",
+  "name": "Phonetics, Linguistics & Speech Science",
+  "field": "Hearing, Perception & Listening",
+  "subject": "Hearing & Psychoacoustics",
+  "topicGs": [
+   4300,
+   4560
+  ],
+  "settings": [
+   "Universities",
+   "speech laboratories",
+   "language-technology companies",
+   "forensic labs",
+   "media production",
+   "language archives"
+  ],
+  "sources": [
+   "Linguistic Society of America",
+   "IEEE Signal Processing Society",
+   "American Speech-Language-Hearing Association"
+  ],
+  "count": 45
+ },
+ {
+  "id": "telecom-voice-quality-and-communications-audio",
+  "name": "Telecom, Voice Quality & Communications Audio",
+  "field": "Audio Equipment & Signal Chain",
+  "subject": "Audio Networking",
+  "topicGs": [
+   4300,
+   3490
+  ],
+  "settings": [
+   "Telecommunications carriers",
+   "device makers",
+   "conferencing companies",
+   "contact centers",
+   "network labs",
+   "public-safety communications"
+  ],
+  "sources": [
+   "IEEE Signal Processing Society",
+   "Federal Communications Commission"
+  ],
+  "count": 43
+ },
+ {
+  "id": "acoustic-construction-and-noise-control-trades",
+  "name": "Acoustic Construction & Noise-Control Trades",
+  "field": "Acoustics & Measurement",
+  "subject": "Acoustics & Room Behavior",
+  "topicGs": [
+   3420,
+   3430,
+   3440,
+   4550
+  ],
+  "settings": [
+   "Construction sites",
+   "studios",
+   "theaters",
+   "industrial plants",
+   "schools",
+   "offices",
+   "residences",
+   "specialty fabrication shops"
+  ],
+  "sources": [
+   "Acoustical Society of America",
+   "National Institute for Occupational Safety and Health (NIOSH)",
+   "Occupational Safety and Health Administration"
+  ],
+  "count": 45
+ },
+ {
+  "id": "music-curation-repertoire-libraries-and-editorial",
+  "name": "Music Curation, Repertoire, Libraries & Editorial",
+  "field": "Career, Business & Industry",
+  "subject": "Professional Practice",
+  "topicGs": [
+   4310,
+   3950,
+   4380,
+   4400
+  ],
+  "settings": [
+   "Record labels",
+   "streaming platforms",
+   "radio",
+   "publishers",
+   "libraries",
+   "orchestras",
+   "archives",
+   "film and advertising companies"
+  ],
+  "sources": [
+   "U.S. Copyright Office",
+   "Music Library Association",
+   "NAMM (National Association of Music Merchants)"
+  ],
+  "count": 52
+ },
+ {
+  "id": "defense-sonar-and-acoustic-intelligence",
+  "name": "Defense, Sonar & Acoustic Intelligence",
+  "field": "Acoustics Science & Applied Research",
+  "subject": "Life, Earth & Space Acoustics",
+  "topicGs": [
+   4620
+  ],
+  "settings": [
+   "Naval vessels",
+   "defense laboratories",
+   "maritime patrol",
+   "sonar manufacturers",
+   "ocean surveillance",
+   "government contractors"
+  ],
+  "sources": [
+   "Acoustical Society of America",
+   "National Oceanic and Atmospheric Administration (NOAA)",
+   "U.S. Navy"
+  ],
+  "count": 44
+ },
+ {
+  "id": "accessible-media-and-audio-description",
+  "name": "Accessible Media & Audio Description",
+  "field": "Sound for Picture & Media",
+  "subject": "Localization & Game",
+  "topicGs": [
+   4160,
+   4230,
+   4300,
+   3750
+  ],
+  "settings": [
+   "Film and television post-production",
+   "streaming services",
+   "theaters",
+   "museums",
+   "live events",
+   "accessibility vendors",
+   "education"
+  ],
+  "sources": [
+   "Federal Communications Commission",
+   "American Council of the Blind"
+  ],
+  "count": 32
+ },
+ {
+  "id": "music-retail-rental-and-instrument-services",
+  "name": "Music Retail, Rental & Instrument Services",
+  "field": "Career, Business & Industry",
+  "subject": "Professional Practice",
+  "topicGs": [
+   4400,
+   4370,
+   4390,
+   4395,
+   4360
+  ],
+  "settings": [
+   "Music stores",
+   "pro-audio retailers",
+   "rental houses",
+   "distributors",
+   "auction houses",
+   "schools",
+   "touring suppliers"
+  ],
+  "sources": [
+   "Piano Technicians Guild",
+   "National Association of Professional Band Instrument Repair Technicians",
+   "NAMM (National Association of Music Merchants)"
+  ],
+  "count": 45
+ },
+ {
+  "id": "field-recording-sound-libraries-and-sonic-heritage",
+  "name": "Field Recording, Sound Libraries & Sonic Heritage",
+  "field": "Acoustics Science & Applied Research",
+  "subject": "Human & Heritage Acoustics",
+  "topicGs": [
+   4640
+  ],
+  "settings": [
+   "Outdoor fieldwork",
+   "museums",
+   "archives",
+   "production libraries",
+   "research expeditions",
+   "cultural heritage programs"
+  ],
+  "sources": [
+   "Association of Moving Image Archivists",
+   "National Oceanic and Atmospheric Administration (NOAA)",
+   "Library of Congress",
+   "Linguistic Society of America"
+  ],
+  "count": 33
+ }
+]

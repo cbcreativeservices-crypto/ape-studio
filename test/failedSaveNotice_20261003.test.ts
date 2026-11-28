@@ -1,3 +1,4 @@
+// 2026-11-21 owner (tester on a tablet): learner text says "this device", never "this phone".
 /**
  * A refused device-local write is TOLD to the user — once (owner ruling
  * 2026-10-03: "if it fails the user needs to know").
@@ -104,7 +105,7 @@ describe('a refused safe-store write raises the shared notice — once', () => {
     assert.equal(shown[0].title, "Some changes couldn't be saved");
     assert.equal(
       shown[0].body,
-      "This phone couldn't save your latest changes, so they may be gone the next time the app opens. Free up some storage space, then try again.",
+      "This device couldn't save your latest changes, so they may be gone the next time the app opens. Free up some storage space, then try again.",
     );
   });
 

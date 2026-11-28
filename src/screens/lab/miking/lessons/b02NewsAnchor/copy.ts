@@ -79,7 +79,7 @@ export const B02_COPY: Partial<LessonCopy> = {
     workedZone: { close: 'b2.lav', twoShot: 'b2.lav', public: 'b2.lav' },
     workedAim: 'An omni lav’s aim matters little — point it up toward the mouth; the lab counts it while it points within about {tol}° of the lips. A boom or a desk mic is aimed at the mouth.',
     workedClear: 'Clear of the anchor’s movement and the picture: the lav on a firm edge, off the jacket, the hair and the jewelry, its cable looped; a boom outside every frame; a desk mic’s base away from the papers. Clearance comes first, before any number.',
-    reveal: 'A chest lav keeps one distance but hears the clothes and drifts off the turning mouth; a boom from above sounds open but must stay outside the frame; a raised desk mic hears the desk’s bounce; a boundary on the desk hears more room. Desks and voices vary, so “it depends on this set” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
+    reveal: 'A chest lav keeps one distance but hears the clothes and drifts off the turning mouth; a boom from above sounds open but must stay outside the frame; a raised desk mic hears the desk’s bounce; a boundary on the desk hears more room. Desks and voices vary, so “it depends on this set” is fair too. Each zone’s TENDS TO HEAR line is an idea to check by ear.',
     typeNotes: {
       locLav: 'Ideas to try with a lav: centered on a firm edge first, then — only if the shot needs it — hidden under one layer, compared at matched loudness.',
       shotgunShort: 'Ideas to try with the fixed boom’s short shotgun: its tube’s tip just outside the widest frame, aimed at the mouth; distances read to its capsule.',

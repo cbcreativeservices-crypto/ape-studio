@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import LegalPage from "@/components/LegalPage";
 import { loadLegal } from "@/lib/legal";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
+  path: "/terms",
   title: "Terms of Service",
   description:
     "The User Agreement governing access to and use of Pro Audio Training Academy Services.",
-};
+});
 
 export default function Page() {
   const { html, meta } = loadLegal("terms");

@@ -28,7 +28,9 @@ import type { ViewId, Vec3 } from '../../../engine/model/types.ts';
 import { FigureHead, PlayerBehind, PlayerInFront, figureCovers, headAbove, headProfile } from '../players/PlayerFigure';
 import { pt, type PlayerPose } from '../players/playerPose.ts';
 import { EAR, EAR_HALF, HEAD_C, HEAD_R } from '../voice/voiceSpec.ts';
-import { COLLAR_B, NECK_B, SEATED_FLOOR, SEATED_SIDE, SEATED_TOP, SEAT_Y, TURN_PIVOT, onTalker, poseOnTalker, type Talker } from './talkerPose.ts';
+import { COLLAR_B, HOST, NECK_B, SEATED_FLOOR, SEATED_SIDE, SEATED_TOP, SEAT_Y, TURN_PIVOT, onTalker, poseOnTalker, type Talker } from './talkerPose.ts';
+import { castFor, talkerRole, type RoleKey } from '../figureV2/cast';
+import { PersonSideV2, PersonTopV2, personCovers, personTopCovers } from '../figureV2/personV2';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -103,9 +105,45 @@ export function Headphones({ view }: { view: ViewId }) {
   );
 }
 
+/* ── figure V2 (wave 3a of D78): the seated talker as its cast member ── */
+
+/** The side-view options of a seated talker drawn new: the mouth on the lip point, the hands resting on the desk. */
+const seatedOpts = (t: Talker, jacket = false) => ({ lip: { u: t.lip.x, v: t.lip.y }, rest: 'restFlat' as const, seatV: SEAT_Y + t.lip.y, ...(jacket ? { jacket: true } : {}) });
+
+/** A seated talker in the new look (the cast member the role table gives the talker's id). */
+function SeatedTalkerV2({ view, t, phones, headless, part, dim, leftHandIn, jacket }: { view: ViewId; t: Talker; phones: boolean; headless: boolean; part: 'all' | 'lower' | 'upper'; dim: number; leftHandIn: number; jacket: boolean }) {
+  const who = castFor(talkerRole(t.id));
+  const base = talkerPose(view, t);
+  const pose = view === 'top' && leftHandIn ? { ...base, handL: { ...base.handL, wrist: pt(base.handL.wrist.u - leftHandIn, base.handL.wrist.v) } } : base;
+  if (view === 'top')
+    return (
+      <Group>
+        <PersonTopV2 pose={pose} who={who} opts={jacket ? { desk: true, jacket: true } : { desk: true }} part={part} head={headless ? 'none' : 'show'} dim={dim} />
+        {phones && !headless && part !== 'lower' ? (
+          <OnTalker view={view} t={t}>
+            <Headphones view={view} />
+          </OnTalker>
+        ) : null}
+      </Group>
+    );
+  return (
+    <Group layer={dim < 1 ? <Paint opacity={dim} /> : undefined}>
+      <PersonSideV2 pose={pose} who={who} opts={seatedOpts(t, jacket)} part={headless ? 'headless' : 'all'} />
+      {!headless ? (
+        <OnTalker view={view} t={t}>
+          <Path path={MOUTH} color="#24170f" opacity={0.92} />
+          {phones ? <Headphones view={view} /> : null}
+        </OnTalker>
+      ) : null}
+    </Group>
+  );
+}
+
 /** A seated talker. `part`: 'lower' draws the legs only (from above, under
- *  the desk), 'upper' the rest; default both. */
-export function SeatedTalker({ view, t, phones = false, headless = false, part = 'all', dim = 1, leftHandIn = 0 }: { view: ViewId; t: Talker; phones?: boolean; headless?: boolean; part?: 'all' | 'lower' | 'upper'; dim?: number; /** From above: the left hand rests this many mm nearer the midline (clear of a gooseneck's base beside it). */ leftHandIn?: number }) {
+ *  the desk), 'upper' the rest; default both. `v2`: the new look (figure V2,
+ *  the cast) — a lesson passes it for ALL its figures or for none. */
+export function SeatedTalker({ view, t, phones = false, headless = false, part = 'all', dim = 1, leftHandIn = 0, v2 = false, jacket = false }: { view: ViewId; t: Talker; phones?: boolean; headless?: boolean; part?: 'all' | 'lower' | 'upper'; dim?: number; /** From above: the left hand rests this many mm nearer the midline (clear of a gooseneck's base beside it). */ leftHandIn?: number; v2?: boolean; /** (with v2) the person in their jacket (figureV2 jacketPlan: the dress variant) */ jacket?: boolean }) {
+  if (v2) return <SeatedTalkerV2 view={view} t={t} phones={phones} headless={headless} part={part} dim={dim} leftHandIn={leftHandIn} jacket={jacket} />;
   const base = talkerPose(view, t, headless);
   // From above the pose is authored round the neck, the left hand at +u
   // (PlayerFigure turns it): toward the midline is −u.
@@ -131,17 +169,31 @@ export function SeatedTalker({ view, t, phones = false, headless = false, part =
 
 /** The head drawn turned about its centre (talkerPose.TURN_PIVOT): from above
  *  by the yaw, from the side by the pitch (+ up). Frame V; wrap in OnTalker. */
-export function TurnedHeadTop({ yawDeg }: { yawDeg: number }) {
+export function TurnedHeadTop({ yawDeg, v2 = false, who = 'talker.host' }: { yawDeg: number; /** the new look (the lesson's figures are all new) */ v2?: boolean; who?: RoleKey }) {
   const head = useMemo(() => headAbove(pt(SEATED_TOP.head.c.u, SEATED_TOP.head.c.v), SEATED_TOP.head.r), []);
   const a = yawDeg * DEG;
+  if (v2)
+    return (
+      <Group transform={[{ translateX: TURN_PIVOT.x }, { rotate: a }, { translateX: -TURN_PIVOT.x }]}>
+        <PersonTopV2 pose={talkerPose('top', HOST)} who={castFor(who)} opts={{ desk: true }} head="only" />
+      </Group>
+    );
   return (
     <Group transform={[{ translateX: TURN_PIVOT.x }, { translateY: 0 }, { rotate: a - Math.PI / 2 }, { translateX: -SEATED_TOP.head.c.u }, { translateY: -SEATED_TOP.head.c.v }]}>
       <FigureHead fill={head.fill} />
     </Group>
   );
 }
-export function TurnedHeadSide({ pitchDeg, phones = false }: { pitchDeg: number; phones?: boolean }) {
+export function TurnedHeadSide({ pitchDeg, phones = false, v2 = false, who = 'talker.host' }: { pitchDeg: number; phones?: boolean; v2?: boolean; who?: RoleKey }) {
   const head = useMemo(() => headProfile(pt(HEAD_C.x, HEAD_C.y), HEAD_R, COLLAR_B.y, 1), []);
+  if (v2)
+    return (
+      <Group transform={[{ translateX: TURN_PIVOT.x }, { translateY: TURN_PIVOT.y }, { rotate: -pitchDeg * DEG }, { translateX: -TURN_PIVOT.x }, { translateY: -TURN_PIVOT.y }]}>
+        <PersonSideV2 pose={talkerPose('side', HOST)} who={castFor(who)} opts={seatedOpts(HOST)} part="head" />
+        <Path path={MOUTH} color="#24170f" opacity={0.92} />
+        {phones ? <Headphones view="side" /> : null}
+      </Group>
+    );
   return (
     <Group transform={[{ translateX: TURN_PIVOT.x }, { translateY: TURN_PIVOT.y }, { rotate: -pitchDeg * DEG }, { translateX: -TURN_PIVOT.x }, { translateY: -TURN_PIVOT.y }]}>
       <FigureHead fill={head.fill} />
@@ -153,8 +205,13 @@ export function TurnedHeadSide({ pitchDeg, phones = false }: { pitchDeg: number;
 
 /** Whether the drawn talker covers (u, v) — for labels (an 'above' pose is
  *  authored unturned round its neck: the point is turned back first). */
-export function talkerCovers(view: ViewId, t: Talker, u: number, v: number, tol: number): boolean {
+export function talkerCovers(view: ViewId, t: Talker, u: number, v: number, tol: number, v2 = false, jacket = false): boolean {
   const pose = talkerPose(view, t);
+  // (drawn new: the new outline AND the old envelope — labels keep off both)
+  if (v2) {
+    const who = castFor(talkerRole(t.id));
+    if (view === 'side' ? personCovers(pose, who, seatedOpts(t, jacket), u, v, tol) : personTopCovers(pose, who, jacket ? { desk: true, jacket: true } : { desk: true }, u, v, tol)) return true;
+  }
   if (view === 'side') return figureCovers(pose, u, v, tol);
   const a = -((pose.facing ?? 0) - Math.PI / 2);
   const du = u - pose.neck.u;

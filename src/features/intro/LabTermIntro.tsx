@@ -29,6 +29,12 @@
  *    for the other lab"). A failed read shows nothing and writes nothing.
  *  • FIRST: while it is owed, the lab's own first-open popups wait
  *    (useScreenIntro → ProNote; GuestStartReminder) — setLabTermIntroOwed.
+ *  • CARRIED (2026-11-14, audit row 1 "Merge the term card into the intro
+ *    card"): when the screen's intro card is due, the term rides INSIDE it
+ *    (one card) and this draws nothing; the card reports it read on close.
+ *    Work under way (a tray open) or a card already on screen drops it for
+ *    this visit (never marked seen). CONTINUE ignores taps in its first
+ *    POPUP_ARM_MS.
  *  • NEVER STACKED: not while another DimModal is open, not during a closing
  *    Modal's fade (rootModalHoldMs), not mid-push (transitionEnd), not over
  *    the amplitude orientation page (holdLabTermIntro).
@@ -37,7 +43,7 @@
  *    and unseen, so it comes the first time it can.
  */
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { Modal, rootModalHoldMs, useModalHostOpen } from '../../components/DimModal';
 import { ALL_ORIENTATIONS } from '../../components/modalOrientations';
@@ -47,14 +53,26 @@ import { useMemberGate } from '../commercial/useTier';
 import { useOverlaysSuppressed } from '../dev/popupSuppressStore';
 import { useLabPreview } from '../lab/labPreviewStore';
 import { useSamplingActive } from './onboardingSampling';
-import { labTermSignalId, setLabTermIntroOwed, useLabTermIntroHeld } from './screenIntros';
-import { labTermIntroState, labTermKey, labTermTitle, wiredLabTerm, type WiredLabTerm } from './labTermIntros';
+import {
+  labTermSignalId,
+  offerLabTermToCard,
+  onCarriedLabTermDone,
+  popupArming,
+  setLabTermIntroOwed,
+  useLabTermCarrierState,
+  useLabTermIntroHeld,
+  useScreenWorkUnderway,
+} from './screenIntros';
+import { labTermIntroExtras, labTermIntroState, labTermKey, labTermTitle, wiredLabTerm, type WiredLabTerm } from './labTermIntros';
 import { markLabTermSeen, useLabTermSeen } from './labTermSeenStore';
 
 /** After the push animation (GuestStartReminder's rule): transitionEnd + a
- *  beat, or this fallback for a screen that mounted after its push ended. */
+ *  beat, or this fallback for a screen that mounted after its push ended.
+ *  WEB: no native push animation exists there (and no transitionEnd is
+ *  promised), so the fallback is a beat, not 0.9 s — the audit's "arrives ~1 s
+ *  after the page" in the web preview (G6b, 2026-11-14). Native keeps 900. */
 const AFTER_PUSH_MS = 120;
-const PUSH_FALLBACK_MS = 900;
+const PUSH_FALLBACK_MS = Platform.OS === 'web' ? 150 : 900;
 
 export function LabTermIntroHost({
   routeName,
@@ -86,6 +104,8 @@ function LabTermIntro({ term, freeLab }: { term: WiredLabTerm; freeLab: boolean 
   const bypass = devBypass('alwaysShowIntros'); // dev: every entry is a first entry
   const seen = bypass ? false : stored;
   const otherModalOpen = useModalHostOpen();
+  const carrier = useLabTermCarrierState();
+  const workUnderway = useScreenWorkUnderway();
   const [dismissed, setDismissed] = useState(false);
   const [pushSettled, setPushSettled] = useState(false);
   const presentedRef = useRef(false);
@@ -121,11 +141,14 @@ function LabTermIntro({ term, freeLab }: { term: WiredLabTerm; freeLab: boolean 
     pushSettled,
     otherModalOpen,
     presented: presentedRef.current,
+    carrier,
+    workUnderway,
   };
   // The fade wait is read only when everything else is clear (it is a clock).
   const ready = labTermIntroState({ ...base, holdMs: 0 });
   const holdMs = ready.show && !presentedRef.current ? rootModalHoldMs() : 0;
   const { owed, show } = labTermIntroState({ ...base, holdMs });
+  const { drop, offer } = labTermIntroExtras({ ...base, holdMs });
   const [, setTick] = useState(0);
   useEffect(() => {
     if (holdMs <= 0) return undefined;
@@ -134,6 +157,11 @@ function LabTermIntro({ term, freeLab }: { term: WiredLabTerm; freeLab: boolean 
   }, [holdMs]);
   if (show) presentedRef.current = true;
   if (!owed) presentedRef.current = false;
+
+  // Work started before it could show: dropped for this visit (not seen).
+  useEffect(() => {
+    if (drop) setDismissed(true);
+  }, [drop]);
 
   // Published before paint, so the lab's own intros never get a frame first.
   useLayoutEffect(() => {
@@ -148,6 +176,18 @@ function LabTermIntro({ term, freeLab }: { term: WiredLabTerm; freeLab: boolean 
     // The dev bypass never persists (the useScreenIntro rule).
     if (!devBypass('alwaysShowIntros')) void markLabTermSeen(term.key);
   }, [term.key]);
+
+  // CARRY (2026-11-14): offered to the screen's intro card, which draws it
+  // inside itself; when that card closes the term was read.
+  const title = labTermTitle(term.term);
+  useLayoutEffect(() => {
+    offerLabTermToCard(id, offer ? { key: term.key, title, plainEnglish: term.plainEnglish } : null);
+  }, [id, offer, term.key, title, term.plainEnglish]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useLayoutEffect(() => () => offerLabTermToCard(id, null), []);
+  useEffect(() => onCarriedLabTermDone((k) => {
+    if (k === term.key) onContinue();
+  }), [term.key, onContinue]);
 
   if (!show) return null;
   return <LabTermSheet term={term.term} plainEnglish={term.plainEnglish} onContinue={onContinue} />;
@@ -164,6 +204,16 @@ export function LabTermSheet({
   onContinue: () => void;
 }) {
   const title = labTermTitle(term);
+  // A tap in the popup's first moment is ignored (POPUP_ARM_MS): one aimed at
+  // the lab a beat before the popup arrived never closes it unread.
+  const shownAt = useRef<number | null>(null);
+  useEffect(() => {
+    shownAt.current = Date.now();
+  }, []);
+  const tapContinue = () => {
+    if (popupArming(shownAt.current, Date.now())) return;
+    onContinue();
+  };
   return (
     <Modal
       supportedOrientations={ALL_ORIENTATIONS}
@@ -188,7 +238,7 @@ export function LabTermSheet({
             <Text style={styles.body}>{plainEnglish}</Text>
           </ScrollView>
           <Pressable
-            onPress={onContinue}
+            onPress={tapContinue}
             style={({ pressed }) => [styles.cta, pressed && styles.ctaPressed]}
             accessibilityRole="button"
             accessibilityLabel="Continue"
@@ -202,10 +252,12 @@ export function LabTermSheet({
 }
 
 const styles = StyleSheet.create({
-  // The house intro card (ScreenIntroOverlay / ProNote): dim scrim, amber edge.
+  // The first-visit term card sits on a SOLID screen, nothing of the lab behind
+  // it (owner 2026-11-21: "the very first GOT IT pop up opening each lab the first
+  // time should not show any background while being shown"). Amber edge kept.
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,.78)',
+    backgroundColor: colors.screenBg,
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,

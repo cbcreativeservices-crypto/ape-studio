@@ -50,7 +50,7 @@ export function makeReedSound(spec: ReedSoundSpec) {
     const stageText = (i: number) => S.stages[i].byVariant?.[variant] ?? S.stages[i].text;
     const pred = lesson.predictions.sound;
     const reached = st.shown >= n;
-    const seqBezel: BezelItem[] = [{ k: 'STEP', v: `${st.shown} / ${n}`, flex: 0.8 }, ...spec.cells.map((c) => ({ k: c.k, v: c.at[Math.min(c.at.length - 1, st.shown - 1)] ?? '—', flex: c.flex ?? 1 }))];
+    const seqBezel: BezelItem[] = [{ k: 'EVENT', v: `${st.shown}`, flex: 0.8 }, ...spec.cells.map((c) => ({ k: c.k, v: c.at[Math.min(c.at.length - 1, st.shown - 1)] ?? '—', flex: c.flex ?? 1 }))];
 
     /* the shapes */
     const [mode, setMode] = useState(0);
@@ -108,7 +108,7 @@ export function makeReedSound(spec: ReedSoundSpec) {
         well: (
           <>
             {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
-            <Landing looking={spec.seqLooking} prompt="STEP through how a reed turns moving air into sound — or PLAY ONCE. It stops at the end." />
+            <Landing looking={spec.seqLooking} prompt="Go EVENT by EVENT through how a reed turns moving air into sound — or PLAY ONCE. It stops at the end." />
             <Card>
               <Point title={`${st.shown} · ${S.stages[st.shown - 1].title.toUpperCase()}`}>{stageText(st.shown - 1)}</Point>
             </Card>

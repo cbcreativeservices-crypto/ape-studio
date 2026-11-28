@@ -526,10 +526,10 @@ function PageGear({ ctx }: { ctx: PageCtx }) {
         ),
         bezel: [
           { k: mode === 'item' ? 'EQUIPMENT' : 'SYSTEM', v: mode === 'item' ? (itemDef.label.length > 14 ? itemDef.short : itemDef.label) : sysDef.label.replace('CONTROLLER', 'CTRL'), vA11y: mode === 'item' ? itemDef.label : sysDef.label, tint: colors.amber, flex: 2 },
-          job < JOBS.length ? { k: `FIND ${job + 1}/4`, v: JOBS[job].bezel, tint: jobMsg && !jobMsg.ok ? '#ff8a7e' : colors.textPrimary, flex: 1.3 } : { k: 'JOBS', v: '4/4 FOUND', tint: colors.green },
+          job < JOBS.length ? { k: 'FIND', v: JOBS[job].bezel, tint: jobMsg && !jobMsg.ok ? '#ff8a7e' : colors.textPrimary, flex: 1.3 } : { k: 'JOBS', v: 'ALL FOUND', tint: colors.green },
           // the software's output is a laptop + controller setting: shown
           // only where it means something (visual review finding 24)
-          ...(mode === 'system' && sys === 'laptop' ? [{ k: 'SENDS TO', v: swOut, tint: swOut === 'CONTROLLER' ? colors.green : '#ff8a7e', flex: 1.3 }] : []),
+          ...(mode === 'system' && sys === 'laptop' ? [{ k: 'SENDS TO', caption: 'audio goes to', v: swOut, tint: swOut === 'CONTROLLER' ? colors.green : '#ff8a7e', flex: 1.3 }] : []),
         ],
         params: [
           {
@@ -585,7 +585,7 @@ function PageGear({ ctx }: { ctx: PageCtx }) {
         <Terms items={TERMS} />
       </Step>
       <Step n={2}>
-        <Do>{job < JOBS.length ? `Find what ${JOBS[job].ask}: open EQUIPMENT and pick it. (${job + 1} of 4 — FIND on the readout strip.)` : 'All four jobs found. Step through the rest of EQUIPMENT for anything you have not met.'}</Do>
+        <Do>{job < JOBS.length ? `Find what ${JOBS[job].ask}: open EQUIPMENT and pick it. (${JOBS.length - job} ${JOBS.length - job === 1 ? 'job' : 'jobs'} left — FIND on the readout strip.)` : 'All four jobs found. Step through the rest of EQUIPMENT for anything you have not met.'}</Do>
         {jobMsg ? <Note tone={jobMsg.ok ? 'try' : 'safety'}>{jobMsg.text}</Note> : null}
       </Step>
       <Step n={3}>
@@ -601,7 +601,7 @@ function PageGear({ ctx }: { ctx: PageCtx }) {
         <UnderstandingCheck
           eyebrow="CHECK YOURSELF"
           question="Which piece of gear makes the analog signal that a laptop DJ’s speakers receive?"
-          options={['The audio interface (built into the controller or separate)', 'The laptop’s DJ software alone', 'The headphones', 'The jog wheel']}
+          options={['The audio interface (in the controller or not)', 'The laptop’s DJ software, all on its own', 'The DJ’s pair of headphones', 'The jog wheel on the controller']}
           correct={0}
           explain="The software plays the music digitally; an audio interface — often built into the controller — turns it into the analog line outputs that go to a mixer or the speakers."
           wrong={[undefined, 'The software makes digital audio; something still has to turn it into an analog output.', 'Headphones only listen.', 'The jog wheel sends control data, not audio.']}
@@ -610,7 +610,7 @@ function PageGear({ ctx }: { ctx: PageCtx }) {
         <UnderstandingCheck
           eyebrow="CHECK YOURSELF"
           question="A small private event: no reliable internet, and you would rather not depend on a laptop. Which system fits best?"
-          options={['A standalone system with tracks on a USB stick (and a spare stick)', 'A laptop playing from a streaming service', 'Two turntables with no records', 'A controller with no computer']}
+          options={['A standalone player, tracks on two USB sticks', 'A laptop playing from a streaming service', 'Two turntables, but no records to play', 'A controller with no computer plugged in']}
           correct={0}
           explain="A standalone unit plays from local media with no laptop and no internet. A tested spare stick covers a failed one. A streaming service may need a connection, and most controllers need their computer."
           wrong={[undefined, 'A streaming service may need a working connection — the one thing you do not have.', 'Turntables need records to play.', 'Most controllers do nothing without their computer and software.']}

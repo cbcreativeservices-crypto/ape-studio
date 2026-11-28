@@ -71,7 +71,10 @@ describe('the shared dock: shrink to fit, 9 pt minimum (owner 2026-10-19)', () =
     const s = read('src/screens/lab/rack/DockButton.tsx');
     assert.match(s, /accessibilityElementsHidden importantForAccessibility="no-hide-descendants" aria-hidden/);
     assert.match(s, /\{\.\.\.fitValue\(valueFs\)\}/);
-    assert.match(s, /const valueFs = \(value \? dockFitSize\(VALUE_FS, valueW, inner\) : VALUE_FS\) \?\? VALUE_FS;/, 'null (not even 9 pt) → the authored 14, as before');
+    // frame round 2 (2026-11-13): the value's fit is dockValueFitSize, which
+    // keeps VALUE_FIT_MARGIN_PX inside the key on the web (WEB) and fits as
+    // before on a phone; the null fallback is unchanged.
+    assert.match(s, /const valueFs = \(value \? dockValueFitSize\(VALUE_FS, valueW, inner, WEB\) : VALUE_FS\) \?\? VALUE_FS;/, 'null (not even 9 pt) → the authored 14, as before');
     // the glyph's own style never takes the shrunk size
     for (const m of s.matchAll(/<Text style=\{\[styles\.glyph[^\]]*\]\}/g)) assert.doesNotMatch(m[0], /labelSize/);
     assert.match(s, /glyph: \{ fontSize: 12, color: colors\.textSub \}/);

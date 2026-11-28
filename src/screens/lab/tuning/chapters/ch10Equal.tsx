@@ -20,9 +20,12 @@ import { UnderstandingCheck } from '../components/check';
 import { StageFit } from '../../rack/StageFit';
 import type { DockParam } from '../../rack/rackTypes';
 import { TuningRackLayout, playTray, soundCell, stopKey, usePlayerStatus } from '../rackLayout';
+import { sequenceSeconds, useAbHalf } from '../components/abHalf';
 
 const CHROMA = buildEqualChromatic();
 const RAIL_H = 110;
+/** Each pattern note's length (renderSequence; its default 0.05 s gap follows). */
+const NOTE_S = 0.28;
 
 export function Ch10Equal({ ctx }: ChapterProps) {
   const [built, setBuilt] = useState(0); // markers revealed beyond the root
@@ -39,11 +42,13 @@ export function Ch10Equal({ ctx }: ChapterProps) {
   // (review 2026-09-30): in C the steps 0·2·4·7, on F the same shape five
   // steps up (5·7·9·12) — the transposition is SEEN as the same spacing, not
   // only heard. Before, the key changed nothing on the glass.
-  const lit = new Set<number>(!status.playing ? [] : last === 'a' ? pattern : last === 'b' ? pattern.map((s) => s + 5) : last === 'ab' ? [...pattern, ...pattern.map((s) => s + 5)] : []);
+  // A → B lights the C pattern, then the F pattern once it sounds (audit B20; abHalf.ts).
+  const abHalf = useAbHalf(status.playing && last === 'ab', sequenceSeconds(pattern.length, NOTE_S));
+  const lit = new Set<number>(!status.playing ? [] : last === 'a' ? pattern : last === 'b' ? pattern.map((s) => s + 5) : last === 'ab' ? (abHalf === 'b' ? pattern.map((s) => s + 5) : pattern) : []);
   const markers: RailMarker[] = CHROMA.map((n, k) => ({
     id: `e${k}`, cents: n.value.cents, label: k <= built || k === 12 || lit.has(k) ? n.spelling.split('/')[0] : '', role: lit.has(k) ? 'active' : k === built && built > 0 ? 'operation' : k <= built ? 'neutral' : 'muted', emphasis: k === built || lit.has(k), row: k % 2,
   }));
-  const seq = (start: number) => renderSequence(pattern.map((s) => frequencyFromRatio(root, Math.pow(2, (start + s) / 12))), 0.28, 'rich');
+  const seq = (start: number) => renderSequence(pattern.map((s) => frequencyFromRatio(root, Math.pow(2, (start + s) / 12))), NOTE_S, 'rich');
   usePreloadClips(ctx.player, () => [() => seq(0), () => seq(5), () => concatWithGap(seq(0), seq(5))], String(root));
 
   const params: DockParam[] = [
@@ -85,9 +90,9 @@ export function Ch10Equal({ ctx }: ChapterProps) {
         initialParam: 'steps',
         hideDragTag: true,
         bezel: [
-          { k: 'STEP', v: `${built}/12`, flex: 0.8 },
-          { k: 'RATIO', v: built === 0 ? '1' : CHROMA[built].value.decimalLabel, tint: colors.gold, flex: 1.2 },
-          { k: 'Hz', v: `${hz(built).toFixed(2)} Hz`, flex: 1.1 },
+          { k: 'STEP', v: `${built}`, flex: 0.8, caption: 'steps added' },
+          { k: 'RATIO', v: built === 0 ? '1' : CHROMA[built].value.decimalLabel, tint: colors.gold, flex: 1.2, caption: 'times C' },
+          { k: 'Hz', v: `${hz(built).toFixed(2)} Hz`, flex: 1.1, caption: 'frequency' },
           soundCell(status),
         ],
         stage: (w, h) => (
@@ -101,7 +106,8 @@ export function Ch10Equal({ ctx }: ChapterProps) {
     >
       <Lead>What if every semitone used exactly the same frequency ratio?</Lead>
       <Body>Twelve positions on a logarithmic cents rail — equal spacing here means equal ratios, not equal hertz.</Body>
-      <EquationStage
+      {/* The derivation folds under MATH (owner 2026-11-15, D62 TU-01). */}
+      {ctx.mathView ? <EquationStage
         title="TWELVE IDENTICAL STEPS"
         reduceMotion={ctx.reduceMotion}
         steps={[
@@ -111,14 +117,14 @@ export function Ch10Equal({ ctx }: ChapterProps) {
           { text: `r ≈ ${ET_SEMITONE.decimalLabel}` },
           { text: 'each step = 1200 ÷ 12 = 100 cents', note: 'exactly, by construction' },
         ]}
-      />
+      /> : <Body>Twelve identical steps must land exactly on the octave, so each step is the same small ratio: 100 cents. MATH (top right) shows the derivation.</Body>}
       <Prompt>Build the scale one step at a time and watch the hertz increase grow.</Prompt>
       <Card tone="math">
         {built === 0 ? (
           <MathLine>start = 1 · {root.toFixed(2)} Hz</MathLine>
         ) : (
           <>
-            <MathLine>{CHROMA[built].value.exactLabel} = {CHROMA[built].value.decimalLabel} · {CHROMA[built].value.cents.toFixed(0)} ¢ · {hz(built).toFixed(2)} Hz</MathLine>
+            <MathLine>{ctx.mathView ? `${CHROMA[built].value.exactLabel} = ` : `step ${built} · ×`}{CHROMA[built].value.decimalLabel} · {CHROMA[built].value.cents.toFixed(0)} ¢ · {hz(built).toFixed(2)} Hz</MathLine>
             <MathLine emphasis>this step: {hz(built - 1).toFixed(2)} → {hz(built).toFixed(2)} Hz = +{(hz(built) - hz(built - 1)).toFixed(2)} Hz, ratio {ET_SEMITONE.decimalLabel}, 100 ¢</MathLine>
             {built >= 2 ? <MathLine>previous step: +{(hz(built - 1) - hz(built - 2)).toFixed(2)} Hz — same ratio, more hertz</MathLine> : null}
           </>

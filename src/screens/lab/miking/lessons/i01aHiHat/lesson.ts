@@ -367,7 +367,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: with the pedal down, the stick strikes the top cymbal. How long does the pair ring?', options: ['Briefly — the cymbals hold each other', 'As long as a crash rings', 'It depends only on the stick'], after: 'Now STEP through the stroke (or PLAY ONCE), then switch SETUP to open the pair.' },
+  sound: { prompt: 'Before you step through: with the pedal down, the stick strikes the top cymbal. How long does the pair ring?', options: ['Briefly — the cymbals hold each other', 'As long as a crash rings', 'It depends only on the stick'], after: 'Now go EVENT by EVENT through the stroke (or PLAY ONCE), then switch SETUP to open the pair.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you slide the mic’s aim from the edge toward the cup. What changes?', options: ['More of the lower tones', 'More of the high overtones', 'It depends on these hats'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The mic under the hats points up. Where will a supercardioid reject the floor monitor best?', options: ['Straight below the mic', 'Below, off to one side', 'Level with the mic'], after: 'Now turn the mic with AIM (or change PATTERN) and watch IN REJECTION.' },

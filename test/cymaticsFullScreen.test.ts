@@ -106,7 +106,8 @@ test('the Intro module wraps its live figures in ExpandableFigure with the badge
   const src = strip(read('modules/modIntro.tsx'));
   assert.equal((src.match(/<ExpandableFigure/g) ?? []).length, 3, 'the pressure strip and both plate demos');
   assert.match(src, /function FigBadge\(/, 'the on-figure badge scales with the figure');
-  assert.match(src, /badge="ILLUSTRATIVE — AIR MOLECULES, LONGITUDINAL WAVE"/, 'the disclosure travels into full screen');
+  // K4, owner 2026-11-14 (decision 3): "plain one-line model notes, no ALL-CAPS disclaimers on screen". 
+  assert.match(src, /badge="Illustrative: air molecules in a longitudinal wave\."/, 'the disclosure travels into full screen');
   assert.match(src, /controls=\{/, 'the AT / OFF RESONANCE chips ride along docked');
   const strip96 = strip(read('vizPlate.tsx'));
   assert.match(strip96, /export function PressureWaveStrip\(\{ width: boxW, height: boxH, running \}/, 'the strip zooms too');

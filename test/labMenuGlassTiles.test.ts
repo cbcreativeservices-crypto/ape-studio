@@ -10,8 +10,16 @@ const s = readFileSync('src/screens/lab/EarLabScreen.tsx', 'utf8');
 
 test('each category heading sits above a glass panel of lab tiles', () => {
   assert.match(s, /<CategoryLabel cat=\{cat\} \/>\s*<GlassPanel/);
-  assert.match(s, /<GlassTile[\s\S]{0,400}onPress=\{\(\) => openLeaf\(leaf, sec\.key\)\}/);
-  assert.match(s, /<Text style=\{styles\.tileSub\} numberOfLines=\{3\}>\{leaf\.blurb\}<\/Text>/);
+  // Lab fix round 1 (2026-11-14; owner: "Begin fixing all bugs found and do
+  // obvious ... fixes as you suggested in the report", quick win 12 and the
+  // Labs-menu rows of section 7): a lab tile is its own LeafTile (it reads the
+  // lab's ✓ from the credit store), still a GlassTile opened with openLeaf,
+  // and it shows the short tileBlurb where the full blurb was cut at 3 lines.
+  assert.match(s, /<LeafTile[\s\S]{0,400}onPress=\{\(\) => openLeaf\(leaf, sec\.key\)\}/);
+  assert.match(s, /function LeafTile\([\s\S]{0,900}<GlassTile[\s\S]{0,200}onPress=\{onPress\}/);
+  // C1 FAIL 2 (same day): on a narrower phone the tile takes the lines it needs.
+  assert.match(s, /<Text style=\{styles\.tileSub\} numberOfLines=\{lines\.blurb\}>\{leaf\.tileBlurb \?\? leaf\.blurb\}<\/Text>/);
+  assert.match(s, /if \(winW >= 390\) return \{ name: 2, blurb: 3 \};/);
   assert.match(s, /<GlassTile[\s\S]{0,300}onPress=\{\(\) => openHub\(cat\)\}/);
 });
 

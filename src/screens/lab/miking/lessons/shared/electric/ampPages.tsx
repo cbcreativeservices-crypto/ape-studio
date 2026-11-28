@@ -53,6 +53,7 @@ import { C20, EQUAL_PATH_MM, deltaTms, notchDepthDb, notchesHz } from '../../../
 import { fmtAngle, fmtDb, fmtHz, fmtIdealPickup, fmtLen, fmtMs, isDeepNull } from '../../../engine/model/units.ts';
 import { MIC_TYPES, micType } from '../../../data/micTypes';
 import { PTroubleshoot } from '../../../pages/PReadPages';
+import { SteadyScene, useAimRide } from '../../../pages/PContext';
 import { lineFoot, workedMark, type WorkedMark } from '../../../pages/PPlacement';
 import type { PageProps } from '../../../pages/pageTypes';
 import { Chip, GMicrophone, GPractice, factsStep, micSentence, posParams, startStep, type AimAxis, type AxisWords, type MicPageSpec, type PosAxis, type PracticeSpec } from '../journeyPages';
@@ -65,6 +66,9 @@ import { cabOf, type AmpRig } from '../speakers/ampModel.ts';
 import { DiPath } from '../speakers/DiPath';
 import { patchVerdict, type ChainSpec } from '../speakers/signalChain.ts';
 import { BacklinePlan, type Backline, type BacklineScene } from '../speakers/BacklinePlan';
+import { figureV2On } from '../figureV2/figureV2Config';
+/** (2026-11-26) the plan player in the approved look, with every other standing player. */
+const BACKLINE_V2 = figureV2On('sidePlayers');
 import { PairComb } from '../speakers/PairComb';
 import type { Back } from '../speakers/cabGeometry.ts';
 import { ElectricExplorer, electricAspect, type ElectricShow } from './ElectricExplorer';
@@ -72,6 +76,7 @@ import { StringDisplay, HARMONICS } from './StringDisplay';
 import { atNode, barFor, barHz, pickupWeight } from './stringModel.ts';
 import { openHz, type ElectricSpec } from './electricSpec.ts';
 import { viewToggle } from '../../../engine/scene/viewToggle.ts';
+import { zoneActivityLine } from '../../../engine/progress/zoneActivity.ts';
 
 const G = GRILLE_X.mm;
 
@@ -203,7 +208,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
                         if (p) pick(p.id);
                       },
                       format: () => (shown ? shown.title : 'step through the parts'),
-                      formatShort: () => (shown ? shown.title.split(' ')[0].slice(0, 9) : 'STEP'),
+                      formatShort: () => (shown ? shown.title.split(' ')[0].slice(0, 9) : 'PICK'),
                     },
                     parts.length,
                     parts.findIndex((p) => p.id === partId),
@@ -266,7 +271,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
                   if (p) aPick(p.id);
                 },
                 format: () => (aShown ? aShown.short.toUpperCase() : 'step through the parts'),
-                formatShort: () => (aShown ? aShown.short.toUpperCase().slice(0, 9) : 'STEP'),
+                formatShort: () => (aShown ? aShown.short.toUpperCase().slice(0, 9) : 'PICK'),
               },
               aParts.length,
               aParts.findIndex((p) => p.id === aPart),
@@ -483,14 +488,14 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
           render: (w, h) => <ConeSequence w={w} h={h} back={coneBack} reveal={reveal} shown={shown} accessibilityLabel={`A speaker cut open from the side, ${coneBack} back. Event ${shown} of ${n}: ${stage.title}. ${stageText(shown - 1)}`} />,
           badge: 'The order of events, not their speed · cone motion drawn much larger · silent',
           bezel: [
-            { k: 'EVENT', v: `${shown} / ${n}`, flex: 0.8 },
+            { k: 'EVENT', v: `${shown}`, flex: 0.8 },
             { k: 'CONE', v: shown >= 2 ? 'FORWARD' : 'AT REST', flex: 1.1 },
             { k: 'FRONT AIR', v: shown >= 3 ? 'PUSHED' : '—', flex: 1.1 },
             { k: 'BACK AIR', v: shown >= 3 ? (coneBack === 'open' ? 'PULLED · OUT' : 'PULLED · IN BOX') : '—', flex: 1.4 },
           ],
           params: [
-            tapsWhenFew({ kind: 'fader', id: 'step', label: 'STEP', value: (shown - 1) / Math.max(1, n - 1), onChange: (v) => goTo(1 + Math.round(v * (n - 1))), format: () => `${shown} of ${n} · ${stage.title.toLowerCase()}`, formatShort: () => `${shown} / ${n}` }, n, shown - 1, (i) => `${i + 1} · ${S.stages[i].title}`, (i) => goTo(i + 1)),
-            { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT STEP', onPress: play, tint: colors.green },
+            tapsWhenFew({ kind: 'fader', id: 'step', label: 'EVENT', value: (shown - 1) / Math.max(1, n - 1), onChange: (v) => goTo(1 + Math.round(v * (n - 1))), format: () => `${stage.title.toLowerCase()}`, formatShort: () => `${shown}` }, n, shown - 1, (i) => `${i + 1} · ${S.stages[i].title}`, (i) => goTo(i + 1)),
+            { kind: 'action', id: 'play', label: playing ? 'PAUSE' : shown >= n ? 'REPLAY ONCE' : motion ? 'PLAY ONCE' : 'NEXT EVENT', onPress: play, tint: colors.green },
             {
               kind: 'options',
               id: 'back',
@@ -508,7 +513,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
         },
         well: (
           <>
-            <Landing looking={`Side view · a speaker cut open · ${coneBack} back`} prompt="STEP through the four events, or PLAY ONCE — it stops at the end." />
+            <Landing looking={`Side view · a speaker cut open · ${coneBack} back`} prompt="Go EVENT by EVENT through the four events, or PLAY ONCE — it stops at the end." />
             <Card>
               <Point title={`${shown} · ${stage.title.toUpperCase()}`}>{stageText(shown - 1)}</Point>
             </Card>
@@ -673,7 +678,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
                   if (it) pickC(it.id);
                 },
                 format: () => (cs ? `${cs.short} · ${cs.tag}` : `step through the ${chainItems.length} items`),
-                formatShort: () => (cs ? cs.short.slice(0, 9) : 'STEP'),
+                formatShort: () => (cs ? cs.short.slice(0, 9) : 'PICK'),
               },
               chainItems.length,
               chainItems.findIndex((q) => q.id === cSel),
@@ -715,7 +720,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
         kind: 'LEARN',
         layout: 'rack',
         rack: {
-          render: (w, h) => <BacklinePlan w={w} h={h} who={spec.who} scene={scene} wedges={lesson.live.wedges} highlight={sel} onTap={setSel} shortOf={(id) => planItems.find((i) => i.id === id)?.short ?? shortOf(id)} accessibilityLabel={`${scene === 'stage' ? 'A stage' : 'A studio room'} from above: the amp, the player and their keep-clear space, a DI box, the other amp${scene === 'stage' ? ', the monitor wedge, the drum kit, the PA and the audience' : ''}.${ps ? ` Highlighted: ${ps.label}.` : ''}`} />,
+          render: (w, h) => <BacklinePlan v2={BACKLINE_V2} w={w} h={h} who={spec.who} scene={scene} wedges={lesson.live.wedges} highlight={sel} onTap={setSel} shortOf={(id) => planItems.find((i) => i.id === id)?.short ?? shortOf(id)} accessibilityLabel={`${scene === 'stage' ? 'A stage' : 'A studio room'} from above: the amp, the player and their keep-clear space, a DI box, the other amp${scene === 'stage' ? ', the monitor wedge, the drum kit, the PA and the audience' : ''}.${ps ? ` Highlighted: ${ps.label}.` : ''}`} />,
           badge: scene === 'stage' ? 'From above · a typical layout · gray dashes = the player’s space, keep clear' : 'From above · a typical studio room',
           bezel: [
             { k: 'ITEM', v: ps ? ps.short : 'TAP ONE', flex: 1.4 },
@@ -734,7 +739,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
                   if (it) setSel(it.id);
                 },
                 format: () => (ps ? `${ps.short} · ${ps.tag}` : `step through the ${planItems.length} items`),
-                formatShort: () => (ps ? ps.short.slice(0, 9) : 'STEP'),
+                formatShort: () => (ps ? ps.short.slice(0, 9) : 'PICK'),
               },
               planItems.length,
               planItems.findIndex((q) => q.id === sel),
@@ -861,7 +866,12 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
     const lastVersion = useRef(-1);
     useEffect(() => {
       if (rig.version === lastVersion.current) return;
+      const opening = lastVersion.current < 0;
       lastVersion.current = rig.version;
+      // ONE rule in every Placement Studio (fix round 2026-11-14, checker C4):
+      // the pose the studio opens at is GIVEN, never rested; only the learner's
+      // own moves (drag, fader, ZONE, SETUP) count.
+      if (opening) return;
       if (r0.zoneId && !r0.blocked) setVisited((prev) => (prev.has(r0.zoneId!) ? prev : new Set([...prev, r0.zoneId!])));
     }, [rig.version, r0.zoneId, r0.blocked]);
     useEffect(() => {
@@ -902,7 +912,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
         selectedId: zone?.id ?? null,
         onSelect: (id) => {
           const z = rig.lesson.zones.find((q) => q.id === id);
-          if (z) rig.jumpTo('A', z.start);
+          if (z) rig.jumpTo('A', z.start, z.id);
         },
         options: available.map((z) => ({ id: z.id, label: z.label, blurb: z.band })),
       },
@@ -921,7 +931,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
           badge: 'WORKED EXAMPLE · placed for you · blue = suggested starting point · dashed lobe = pattern shape',
           bezel: exBezel,
           params: [
-            tapsWhenFew({ kind: 'fader', id: 'piece', label: 'STEP', value: exStep / (worked.length - 1), onChange: (v) => setExStep(Math.round(v * (worked.length - 1))), format: () => `${exStep + 1} of ${worked.length} · ${wk.title.toLowerCase()}`, formatShort: () => `${exStep + 1} / ${worked.length}` }, worked.length, exStep, (i) => `${i + 1} · ${worked[i].title}`, setExStep),
+            tapsWhenFew({ kind: 'fader', id: 'piece', label: 'PIECE', value: exStep / (worked.length - 1), onChange: (v) => setExStep(Math.round(v * (worked.length - 1))), format: () => `${wk.title.toLowerCase()}`, formatShort: () => `${exStep + 1}` }, worked.length, exStep, (i) => `${i + 1} · ${worked[i].title}`, setExStep),
             ...viewToggle({ view: exView, setView: setExView, stage: 'dual' }),
           ],
           initialParam: 'piece',
@@ -955,7 +965,7 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
             <NowLine text={now(rig, ['A'])} />
             {shown.blocked ? <Note tone="warn">{`It would touch the ${shown.blocked.label} — the mic stops there.`}</Note> : null}
             {zone ? <ZoneCard z={zone} /> : <Body>{`Not at a suggested starting point. Starting points for this mic: ${available.map((z) => z.label).join('; ')}.`}</Body>}
-            <Body>{`Activity: zones rested in, clear of every part — ${visited.size} of 2${visited.size ? ` (${[...visited].map((id) => rig.lesson.zones.find((z) => z.id === id)?.label ?? id).join('; ')})` : ''}.`}</Body>
+            <Body>{zoneActivityLine([...visited].map((id) => rig.lesson.zones.find((z) => z.id === id)?.label ?? id))}</Body>
             {tried ? <Note tone="ok">{`You predicted “${predicted}”. Across the cone at the same distance, toward the edge most often sounds smoother and darker — and speakers vary, so “it depends on this speaker” is fair too.`}</Note> : null}
             <Note>{spec.notes.place}</Note>
           </>
@@ -1004,6 +1014,14 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
     const db = gainDb(pattern, theta);
     const inNull = nearNull(pattern, theta, NULL_TOL);
     const nulls = nullAngles(pattern);
+    // While AIM rides: the inset's dot and the OFF AXIS / PICKUP / REJECTION
+    // cells follow the mic (fix-first 15 item 4, pages/PContext useAimRide).
+    // The credit and the read-aloud label keep the saved pose, as before.
+    const aimLive = useAimRide(rig);
+    const thetaNow = arrivalAngle(aimLive.pose, src);
+    const dbNow = gainDb(pattern, thetaNow);
+    const inNullNow = nearNull(pattern, thetaNow, NULL_TOL);
+    const wedgeArt = useMemo(() => (live ? { at: wedge.p, faces: wedge.faces, src } : null), [live, wedge, src]);
     const tried = predicted != null && aimed;
     const first = lesson.live.wedges[0];
     useEffect(() => {
@@ -1017,8 +1035,8 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
     const aimHeld = previewMemo();
     const FLOOR = lesson.model.yFloor.mm;
     const zs = lesson.live.wedges.map((w) => w.p.z);
-    const PLAN: ViewBox = { u0: lesson.model.views.top!.u0, u1: Math.max(...lesson.live.wedges.map((w) => w.p.x)) + 350, v0: Math.min(-800, ...zs.map((z) => z - 450)), v1: Math.max(800, ...zs.map((z) => z + 450)) };
-    const SIDE: ViewBox = { u0: lesson.model.views.side!.u0, u1: PLAN.u1, v0: lesson.model.views.side!.v0, v1: FLOOR + 40 };
+    const PLAN: ViewBox = useMemo(() => ({ u0: lesson.model.views.top!.u0, u1: Math.max(...lesson.live.wedges.map((w) => w.p.x)) + 350, v0: Math.min(-800, ...zs.map((z) => z - 450)), v1: Math.max(800, ...zs.map((z) => z + 450)) }), [lesson]); // eslint-disable-line react-hooks/exhaustive-deps
+    const SIDE: ViewBox = useMemo(() => ({ u0: lesson.model.views.side!.u0, u1: PLAN.u1, v0: lesson.model.views.side!.v0, v1: FLOOR + 40 }), [lesson, PLAN, FLOOR]);
     const params: DockParam[] = [
       {
         kind: 'fader',
@@ -1030,9 +1048,11 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
         // engine's fader contract, 2026-10-06: no page re-render per move).
         onChange: (v) => {
           const ang = Math.round((v * 2 - 1) * lim);
+          aimLive.ride();
           aimHeld.note(v, rig.preview('A', aimAxis === 'az' ? { ...pose, az: ang } : { ...pose, el: ang }));
         },
         onCommit: () => {
+          aimLive.rest();
           rig.commit('A');
           setAimed(true);
         },
@@ -1073,10 +1093,10 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
     ];
     const bezel: BezelItem[] = live
       ? [
-          { k: 'OFF AXIS', v: `≈ ${Math.round(theta / 5) * 5}°`, sub: 'monitor', flex: 1 },
-          isDeepNull(db) ? { k: 'PICKUP', v: 'DEEP NULL', flex: 1.15 } : { k: 'PICKUP', v: fmtDb(db), flex: 1.15 },
+          { k: 'OFF AXIS', v: `≈ ${Math.round(thetaNow / 5) * 5}°`, sub: 'monitor', flex: 1 },
+          isDeepNull(dbNow) ? { k: 'PICKUP', v: 'DEEP NULL', flex: 1.15 } : { k: 'PICKUP', v: fmtDb(dbNow), flex: 1.15 },
           { k: 'NULL', v: tried ? `≈ ${Math.round(nulls[0])}°` : '?', flex: 0.8 },
-          { k: 'REJECTION', v: inNull ? 'IN NULL' : 'NO', tint: inNull ? '#5bff85' : undefined, flex: 1.15 },
+          { k: 'REJECTION', v: inNullNow ? 'IN NULL' : 'NO', tint: inNullNow ? '#5bff85' : undefined, flex: 1.15 },
         ]
       : [
           { k: 'SCENARIO', v: 'STUDIO' },
@@ -1093,8 +1113,8 @@ export function makeAmpPages(spec: AmpPagesSpec): Partial<Record<SourcePageId, (
         layout: 'rack',
         rack: {
           render: (w, h) => (
-            <PatternInset w={w} h={h} typeId={rig.mics[0].typeId} pattern={pattern} view={view} box={view === 'top' ? PLAN : SIDE} avoid={live ? [pose.p, CAB_AT, wedge.p] : [pose.p, CAB_AT]} angle={live ? theta : 0} source={live ? 'MONITOR' : null}>
-              {(sceneW) => <PlacementScene rig={rig} art={art} view={view} w={sceneW} h={h} slots={['A']} showZones={false} interactive={false} boxOverride={view === 'top' ? PLAN : SIDE} wedge={live ? { at: wedge.p, faces: wedge.faces, src } : null} showLabels={false} accessibilityLabel={label} />}
+            <PatternInset w={w} h={h} typeId={rig.mics[0].typeId} pattern={pattern} view={view} box={view === 'top' ? PLAN : SIDE} avoid={live ? [pose.p, CAB_AT, wedge.p] : [pose.p, CAB_AT]} angle={live ? thetaNow : 0} source={live ? 'MONITOR' : null}>
+              {(sceneW) => <SteadyScene rig={rig} art={art} view={view} w={sceneW} h={h} slots={['A']} showZones={false} interactive={false} boxOverride={view === 'top' ? PLAN : SIDE} wedge={wedgeArt} showLabels={false} accessibilityLabel={label} />}
             </PatternInset>
           ),
           badge: live ? `${patternInsetBadge(true)} · counts within ±${NULL_TOL}° of a null · monitors where a stage often puts them` : patternInsetBadge(false),

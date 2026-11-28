@@ -28,8 +28,8 @@ export type FaultGroup = 'dead' | 'level' | 'routing' | 'time' | 'digital';
 export const FAULT_GROUPS: readonly { id: FaultGroup; title: string; blurb: string }[] = [
   { id: 'dead', title: 'Dead signal', blurb: 'Nothing, or nothing from one place. The walk finds where the signal stops.' },
   { id: 'level', title: 'Level, noise and distortion', blurb: 'It plays, but wrong: clipping, hum, squash, a rattle. The walk finds where clean turns dirty.' },
-  { id: 'routing', title: 'Routing', blurb: 'The signal exists and arrives somewhere — just not where it should. The console is usually the station.' },
-  { id: 'time', title: 'Time, polarity and crossover', blurb: 'Everything is present; the pieces disagree with each other. The processor and the loudspeakers are the stations.' },
+  { id: 'routing', title: 'Routing', blurb: 'The signal exists and arrives somewhere — just not where it should.' },
+  { id: 'time', title: 'Time, polarity and crossover', blurb: 'Everything is present; the pieces disagree with each other.' },
   { id: 'digital', title: 'Digital, network and acoustic', blurb: 'Faults that arrive as clicks, dropouts or a ring — and are solved by discipline, not by swapping boxes.' },
 ];
 
@@ -55,10 +55,18 @@ export type FaultCase = {
   kinds?: Partial<Record<Station, GearKind | 'listener'>>;
   options: readonly string[];
   correct: number;
+  /** ADDITIVE (lab fix round 2026-11-14, phase 2, F2): one line per option
+   *  saying why THAT option is not the fault (null for the right one), shown
+   *  on a wrong pick. It points at the evidence; it never names the answer. */
+  why?: readonly (string | null)[];
   explain: string;
   fix: string;
   /** Why the forward walk found it, in one sentence. */
   forward: string;
+  /** SH-69 (owner 2026-11-15: "build waves 1 thru 3", D62 adoption plan):
+   *  the rule to remember, one short sentence, printed as "Fixed. <rule>"
+   *  once the case is solved (the DJ lab's "Fixed." lines, copied here). */
+  rule: string;
 };
 
 const OK: Record<Station, string> = {
@@ -106,9 +114,11 @@ export const FAULTS: readonly FaultCase[] = [
     ),
     options: ['The main bus is muted at the console', 'The amplifier rack has lost power', 'Every microphone cable has failed', 'The loudspeakers are damaged'],
     correct: 0,
+    why: [null, 'The signal is already missing at the console output, before any amplifier: look again at that reading.', 'Every channel meter was moving at the console input, so the microphones and their cables are working.', 'Damaged loudspeakers would not stop the main bus meter at the console; look at the console readings.'],
     explain: 'Channel meters alive and the main meter dead put the fault between them — the main bus. The lit MUTE is the confirmation. The amplifiers are dark because nothing is being sent, not because they failed.',
     fix: 'Un-mute the main bus. Then ask how it got muted: a mute group, a scene recall, or a hand.',
     forward: 'Two probes at the console settled it; swapping cables or checking amplifiers would have been guessing at the far end.',
+    rule: 'Channel meters moving and the main meter dead puts the fault between them: check the main bus mute before any cable or amplifier.',
   },
   {
     id: 'one-input',
@@ -134,9 +144,11 @@ export const FAULTS: readonly FaultCase[] = [
     ),
     options: ['A faulty microphone cable', 'The main bus is muted', 'An amplifier channel has failed', 'The crossover is set wrong'],
     correct: 0,
+    why: [null, 'The rest of the band plays through the same main bus, so it is not muted.', 'The rest of the band comes out of the same amplifiers.', 'A crossover acts on everything that reaches the loudspeakers, not on one input.'],
     explain: 'The source is fine, the first station after it is not. A single dead channel with a live band is almost always early in that channel’s own path: the mic, its cable, its input, or that channel’s own settings.',
     fix: 'Replace the cable and tag the bad one so it does not go back in the case.',
     forward: 'One channel down and everything else fine says the fault is upstream of where the channels combine — so start at that channel’s source.',
+    rule: 'One dead channel in a live band lives early in that channel’s own path: its mic, its cable, its input.',
   },
   {
     id: 'left-dead',
@@ -159,9 +171,11 @@ export const FAULTS: readonly FaultCase[] = [
     ),
     options: ['The left amplifier channel is in protect', 'The left console output is muted', 'The left loudspeaker cable is reversed', 'The left microphones are dead'],
     correct: 0,
+    why: [null, 'The console output reads healthy: the left side leaves the console fine.', 'A reversed speaker cable flips polarity; the box would still play.', 'The right side plays the same microphones, so they are alive.'],
     explain: 'Console and processor both show left and right — so nothing upstream of the amplifier is the cause. The amplifier’s own PROTECT light names the station. Reversed polarity would still play; muted console output would show on the console meter.',
     fix: 'Find WHY it went into protect before resetting it: a shorted speaker cable, a load below its minimum, or overheating. Clear the cause, then power-cycle the channel.',
     forward: 'Three probes: console, processor, amplifier. The first station whose reading changed was the answer.',
+    rule: 'A light on the box is a reading: an amplifier in PROTECT names its station, and the cause must be found before a reset.',
   },
   {
     id: 'subs-dead',
@@ -182,11 +196,13 @@ export const FAULTS: readonly FaultCase[] = [
         listener: { signal: 'ok', note: 'Full range from the tops, nothing beneath.' },
       },
     ),
-    options: ['The aux-fed subwoofer master is down at the console', 'The subwoofer amplifier has failed', 'The crossover is set too high', 'The kick microphone cable is open'],
+    options: ['The sub aux master is down at the console', 'The subwoofer amplifier has failed', 'The crossover is set far too high', 'The kick microphone cable is open'],
     correct: 0,
+    why: [null, 'Look at the console output reading: the subs’ feed is already missing before any amplifier.', 'A crossover set too high sends MORE to the subs, not nothing.', 'Bass and keys go to the subs too, and they are silent as well.'],
     explain: 'With aux-fed subs the sub feed is its own bus. The main meters cannot tell you about it — only the aux master can, and it is down. The amplifier is dark because it is being fed nothing.',
     fix: 'Raise the Aux 6 master to its show position. Save it in the scene so a recall cannot lose it again.',
     forward: 'An aux-fed sub adds a station the main mix never passes through. Probe the bus that actually feeds the subs, not the one that feeds the tops.',
+    rule: 'An aux-fed sub is its own bus: the main meters cannot vouch for it, only its own master can.',
   },
   {
     id: 'mixer-not-speaker',
@@ -207,17 +223,19 @@ export const FAULTS: readonly FaultCase[] = [
         listener: { signal: 'none', note: 'Silence.' },
       },
     ),
-    options: ['The processor outputs are muted (a preset recall)', 'The console main is muted', 'The loudspeaker cables are unplugged', 'The microphones are switched off'],
+    options: ['The processor’s outputs are muted', 'The console main bus is muted', 'The loudspeaker cables are unplugged', 'The microphones are switched off'],
     correct: 0,
+    why: [null, 'The console output read healthy: the main bus is leaving the console.', 'Unplugged speaker cables would leave the amplifiers’ signal LEDs lit; check what reaches the amplifiers.', 'The desk meters are moving, so the microphones are on.'],
     explain: 'Signal in, nothing out, at one box — that box is the station. Many processors mute their outputs on preset recall precisely so a wrong preset cannot destroy loudspeakers; un-muting is a deliberate act.',
     fix: 'Confirm the preset matches the loudspeakers, then un-mute the outputs one at a time at low level.',
     forward: 'The console meters already proved everything upstream. Starting at the console output and walking forward reached the processor in two probes.',
+    rule: 'Signal in and nothing out at one box makes that box the station, even when every cable is good.',
   },
   {
     id: 'intermittent',
     startAt: 'source',
     group: 'dead',
-    title: 'Intermittent cable or connector',
+    title: 'Sound cuts in and out',
     symptom: '“The bass keeps dropping out. Sometimes it crackles.”',
     setup: 'Bass guitar into a DI box; XLR from the DI to the stagebox.',
     faultAt: 'cable',
@@ -232,11 +250,13 @@ export const FAULTS: readonly FaultCase[] = [
         listener: { signal: 'ok', note: 'The bass vanishes for a beat whenever the player moves.', flags: ['intermittent'] },
       },
     ),
-    options: ['An intermittent cable or connector at the DI', 'The amplifier goes into protect', 'The limiter is closing', 'The channel is patched from the wrong input'],
+    options: ['A loose XLR connector at the DI', 'The amplifier goes into protect', 'The processor limiter is closing', 'The channel is patched from a wrong input'],
     correct: 0,
+    why: [null, 'Only the bass drops out; an amplifier in protect would take everything on its side with it.', 'A limiter squashes level; it does not crackle or cut out one instrument.', 'A wrong patch is steady silence, not a crackle that comes and goes.'],
     explain: 'An intermittent fault hides from a test while nothing moves. The tell is that it follows movement — and the first station that moves with the player is the cable at the DI.',
     fix: 'Replace the cable now; repair the strain relief later. Never put an intermittent cable back in service on a promise.',
     forward: 'Wiggle while you watch, from the source forward. The station that flickers under your hand is the fault.',
+    rule: 'An intermittent fault follows movement: move each cable and connector while you watch the reading.',
   },
 
   /* ── LEVEL, NOISE, DISTORTION ───────────────────────────────────────── */
@@ -261,9 +281,11 @@ export const FAULTS: readonly FaultCase[] = [
     ),
     options: ['A damaged loudspeaker driver', 'The amplifier is clipping', 'A console preamp is overloaded', 'A ground loop'],
     correct: 0,
+    why: [null, 'The amplifier reading showed no clip light at any level.', 'The console output read clean, nowhere near clip.', 'A ground loop hums; this buzz follows the low notes and stays with one box.'],
     explain: 'Every electrical station reads clean and the buzz moves with the cabinet when you swap them. Distortion that is present at any level and lives in one box is mechanical — a torn cone, a rubbing coil, a loose part.',
     fix: 'Take the cabinet out of service and repair the driver. Check the limiter settings that were supposed to protect it.',
     forward: 'Clean at the console, clean at the processor, clean at the amplifier — the first dirty reading was the last station, so the fault is there and not before.',
+    rule: 'When every electrical reading is clean and the fault moves with the cabinet, it is mechanical, inside that box.',
   },
   {
     id: 'amp-clip',
@@ -271,7 +293,7 @@ export const FAULTS: readonly FaultCase[] = [
     group: 'level',
     title: 'Amplifier clips',
     symptom: '“It gets harsh and nasty as soon as the band gets loud.”',
-    setup: 'Amplifier input attenuators fully open (full output at +4 dBu in); the processor limiter threshold is set ABOVE that.',
+    setup: 'Club system: console, loudspeaker processor with limiters, power amplifiers and passive tops. The band has just started its loud set.',
     faultAt: 'amp',
     reads: reads(
       'amp',
@@ -284,19 +306,24 @@ export const FAULTS: readonly FaultCase[] = [
         listener: { signal: 'hot', note: 'Loud and ugly at the same moment.', flags: ['distortion'] },
       },
     ),
-    options: ['The amplifier is driven into clipping — set its input level and the system gain structure', 'A loudspeaker is damaged', 'A console channel is clipping', 'A digital clock error'],
+    options: ['The amplifier is driven into clipping', 'A loudspeaker driver is damaged', 'A console channel is clipping', 'A digital clock error in the system'],
     correct: 0,
+    why: [null, 'A damaged driver buzzes at any level; this only happens when the band gets loud.', 'The console output reading was clean.', 'A clock error clicks on every channel at once; it does not get harsh with level.'],
     explain: 'The console and the processor have headroom; the first station to run out of it is the amplifier. A clipped amplifier delivers flattened, high-frequency-rich waveforms that heat tweeters — the distortion is a warning of damage to come.',
     fix: 'Bring the amplifier attenuators down (or lower the processor output) until the limiter engages before the amplifier clips, and confirm the limiter thresholds match the cabinets. The limiter, not the amplifier, should set the ceiling.',
     forward: 'Headroom is checked in order. The first station with no headroom left is where the level structure broke.',
+    rule: 'Headroom is checked in order: the first station that runs out of it is where the level structure broke.',
   },
   {
     id: 'hum-keys',
     startAt: 'source',
+    // SS-09: the stage-input station said "Not in this path"; it now names
+    // what is there (nothing) so the station and its reading agree.
+    labels: { stagebox: 'No stage box' },
     group: 'level',
     title: 'Loud hum or buzz',
     symptom: '“There is a hum on the keyboards.”',
-    setup: 'Keyboard connected on a 20 m unbalanced ¼-inch instrument cable straight to a line input at front of house.',
+    setup: 'Keyboard on stage, cabled to a line input at front of house.',
     faultAt: 'cable',
     reads: reads(
       'cable',
@@ -304,26 +331,33 @@ export const FAULTS: readonly FaultCase[] = [
       {
         source: { signal: 'ok', note: 'On headphones at the keyboard: clean.' },
         cable: { signal: 'ok', note: 'A 20 m UNBALANCED instrument cable. Lift its far end from the input: the hum stops with the keys. Move it near the lighting cable: it gets louder.', flags: ['hum'] },
-        stagebox: { signal: 'ok', note: 'Not in this path — the keyboard cable bypasses the box and runs straight to front of house. That is already the clue: no balanced line, no DI.', flags: ['hum'] },
+        stagebox: { signal: 'ok', note: 'There is no stage box on this run: the keyboard cable goes straight to front of house, so there is no balanced line and no DI. That is already the clue. The keys still hum here.', flags: ['hum'] },
         consoleIn: { signal: 'ok', note: 'Hum on the keys channel only. Mute it: silence.', flags: ['hum'] },
         listener: { signal: 'ok', note: 'A steady hum whenever the keys channel is open.', flags: ['hum'] },
       },
     ),
-    options: ['A long unbalanced cable picking up interference — use a DI box', 'A damaged loudspeaker driver', 'The amplifier is clipping', 'The channel is on the wrong bus'],
+    options: ['A long unbalanced cable picking up hum', 'A damaged driver in the loudspeaker', 'The amplifier is clipping on peaks', 'The channel is on the wrong bus'],
     correct: 0,
+    why: [null, 'The hum is only on the keyboard channel; a damaged driver would buzz on everything it plays.', 'Clipping is distortion on loud notes; this hum is there between notes too.', 'A wrong bus changes where the keys go; it does not add a hum.'],
     explain: 'The source is clean; the first station that adds the hum is the cable, and it is unbalanced over a distance no unbalanced cable should run. A DI converts to balanced mic level at the keyboard, and the long run rejects interference.',
     fix: 'DI box at the keyboard, XLR to the stagebox — or, if the keyboard has balanced XLR outputs, run those direct. Ground-lift on the DI if a loop remains.',
     forward: 'The hum was NOT at the source. Probing the source first ruled out the keyboard in one step and pointed at the next station.',
+    rule: 'A long run needs a balanced line: a DI at the source turns a cable that picks up hum into a quiet line.',
   },
   {
     id: 'ground-loop',
     startAt: 'consoleIn',
-    labels: { amp: 'Powered cabinet (amp inside)' },
-    kinds: { amp: 'poweredSpeaker' },
+    // SS-09 (owner 2026-11-15: "build waves 1 thru 3"): every station reads
+    // what its name says. The processor station read "Not in the chain" and
+    // the powered top was two look-alike stations ("Powered cabinet", then a
+    // humming "Loudspeaker"); now the long cable, the amplifier inside the
+    // top and the top itself each read for themselves.
+    labels: { processor: 'Long cable', amp: 'Amp inside the top', speaker: 'Powered top' },
+    kinds: { processor: 'snake', amp: 'amp', speaker: 'poweredSpeaker' },
     group: 'level',
-    title: 'Ground loop',
+    title: 'Hum through the system',
     symptom: '“A hum that is there even when everything is muted.”',
-    setup: 'Console at front of house on one mains circuit; a powered top on the stage circuit; both joined by the signal cable.',
+    setup: 'Console at front of house; a powered top on stage, fed by one long signal cable.',
     faultAt: 'speaker',
     reads: reads(
       'speaker',
@@ -331,17 +365,19 @@ export const FAULTS: readonly FaultCase[] = [
       {
         consoleIn: { signal: 'ok', note: 'Every channel clean. Mute them all: the hum continues.' },
         consoleOut: { signal: 'ok', note: 'Main meter shows nothing with everything muted — the hum is NOT in the console.' },
-        processor: { signal: 'ok', note: 'Not in the chain on this side; the tops are powered.' },
-        amp: { signal: 'ok', note: 'Powered cabinet — the amplifier is inside it.' },
-        speaker: { signal: 'ok', note: 'Unplug the SIGNAL cable at the cabinet: the hum stops. Plug it in through a ground-isolating transformer: the hum stops. Two circuits, two grounds, one cable shield joining them.', flags: ['hum'] },
+        processor: { signal: 'ok', note: 'One long line-level cable carries the main mix from front of house to the powered top. Tested on its own: continuity good on all three pins.' },
+        amp: { signal: 'ok', note: 'The amplifier built into the powered top. Unplug the signal cable at the cabinet and the top is silent: the amplifier itself adds no hum.' },
+        speaker: { signal: 'ok', note: 'Plug the SIGNAL cable back in: the hum returns. Plug it in through a ground-isolating transformer: the hum stops. Two circuits, two grounds, one cable shield joining them.', flags: ['hum'] },
         listener: { signal: 'ok', note: 'A hum that has nothing to do with the mix.', flags: ['hum'] },
       },
     ),
-    options: ['A ground loop between the console and a powered loudspeaker on a different mains circuit, entering through the cable shield', 'A damaged driver', 'Dimmer noise entering the microphones', 'The console main is clipping'],
+    options: ['A ground loop through the cable shield', 'A damaged driver in the powered top', 'Dimmer noise entering the microphones', 'The console main bus is clipping'],
     correct: 0,
+    why: [null, 'A damaged driver distorts the music; it does not hum with everything muted.', 'Every channel is muted and the hum goes on, so it is not coming in through the microphones.', 'With everything muted the main meter shows nothing, and clipping needs a signal.'],
     explain: 'Hum that survives muting every channel is not signal — it is a current flowing between two grounds through the cable shield. A balanced input rejects it only when the shield is bonded to the chassis at the jack; where the shield lands on the audio circuit ground instead (a pin-1 problem), or the run is unbalanced, that current becomes hum. The station where it enters is the cabinet at the far end of that cable.',
-    fix: 'Feed the console and every powered loudspeaker from the same power distribution, on one ground reference, or isolate the signal path at the cabinet with a transformer. Never lift a mains safety ground.',
+    fix: 'Feed the console and every powered loudspeaker from the same power distribution, on one ground reference, or isolate the signal path at the cabinet with a transformer. Never lift an AC safety ground.',
     forward: 'The console proved itself clean with two probes. Walking on to the cabinet found the loop; guessing at the microphones would never have.',
+    rule: 'Two power circuits joined by one cable shield make a ground loop: power everything from one distribution, or isolate the signal.',
   },
   {
     id: 'limiter',
@@ -349,7 +385,7 @@ export const FAULTS: readonly FaultCase[] = [
     group: 'level',
     title: 'Excessive limiter activity',
     symptom: '“It will not get loud. It just sounds squashed.”',
-    setup: 'Processor preset recalled from a smaller cabinet; limiter thresholds far below what these cabinets need.',
+    setup: 'Club system: console, loudspeaker processor with limiters, amplifiers and passive tops.',
     faultAt: 'processor',
     reads: reads(
       'processor',
@@ -362,11 +398,13 @@ export const FAULTS: readonly FaultCase[] = [
         listener: { signal: 'low', note: 'Loud passages do not get louder, they get smaller.', flags: ['limiting'] },
       },
     ),
-    options: ['The processor limiter threshold is set far too low', 'The amplifier is clipping', 'The console main fader is too low', 'A loudspeaker is damaged'],
+    options: ['The processor limiter is set far too low', 'The amplifier is clipping on loud bars', 'The console main fader is too low', 'A loudspeaker driver is damaged'],
     correct: 0,
+    why: [null, 'A clipping amplifier gets harsh; this gets squashed and refuses to get louder.', 'The console output read healthy, well below clip: the level leaving the console is fine.', 'A damaged driver buzzes or rattles; it does not hold the whole system down.'],
     explain: 'The console has level to give and the amplifier is nowhere near clipping; the station shaving the peaks is the processor, and its LIMIT lights say so. A limiter set for a smaller box protects a box you do not have.',
     fix: 'Load the preset for THESE cabinets, or set the limiter thresholds from the manufacturer’s data for this amplifier and cabinet pairing.',
     forward: 'Level was traced in order: enough at the console, too little after the processor. The change happened in one box.',
+    rule: 'A limiter belongs to one cabinet: load the preset for the boxes you actually have.',
   },
 
   /* ── ROUTING ────────────────────────────────────────────────────────── */
@@ -376,7 +414,7 @@ export const FAULTS: readonly FaultCase[] = [
     group: 'routing',
     title: 'Incorrect digital patch',
     symptom: '“The vocal is plugged in and the box shows signal, but the channel is dead.”',
-    setup: 'Digital stagebox. The vocal microphone is plugged into stagebox input 5; console channel 1 is patched from stagebox input 4.',
+    setup: 'Digital stagebox on stage; the console takes every input over the network link.',
     faultAt: 'consoleIn',
     reads: reads(
       'consoleIn',
@@ -391,11 +429,13 @@ export const FAULTS: readonly FaultCase[] = [
         listener: { signal: 'ok', note: 'Band present, vocal absent.' },
       },
     ),
-    options: ['The console channel is patched from the wrong stagebox input', 'The microphone is dead', 'The main bus is muted', 'The amplifier is in protect'],
+    options: ['The channel is patched from a wrong input', 'The vocal microphone is dead', 'The main bus is muted at the console', 'The house amplifier is in protect'],
     correct: 0,
+    why: [null, 'The stagebox input LED lights when the singer speaks, so the microphone works.', 'The rest of the band is in the house, through the same main bus.', 'The channel meter itself is flat, so the loss is before any amplifier.'],
     explain: 'The box proves the signal arrived. The first station that does not see it is the console channel — and on a digital system, which physical input a channel listens to is a setting, not a plug.',
     fix: 'Patch channel 1 from stagebox input 5 (or move the cable to input 4 and keep the patch list honest).',
     forward: 'Signal at the box, none at the channel: the fault is the step between them. No cable, microphone or amplifier needed checking.',
+    rule: 'On a digital system the input a channel listens to is a setting: check the patch before the plug.',
   },
   {
     id: 'wrong-bus',
@@ -403,7 +443,7 @@ export const FAULTS: readonly FaultCase[] = [
     group: 'routing',
     title: 'Wrong output bus selected',
     symptom: '“Guitar meter is moving on the desk but the guitar is not in the PA.”',
-    setup: 'The guitar channel is assigned to Subgroup 3. Subgroup 3 is not assigned to the main mix.',
+    setup: 'Band channels on the console, with subgroups for drums, guitars and vocals.',
     faultAt: 'consoleOut',
     reads: reads(
       'consoleOut',
@@ -417,11 +457,13 @@ export const FAULTS: readonly FaultCase[] = [
         listener: { signal: 'ok', note: 'Everything but the guitar.' },
       },
     ),
-    options: ['The channel is assigned to a subgroup that is not routed to the main mix', 'The guitar cable is open', 'An amplifier channel is down', 'The processor limiter is closed'],
+    options: ['Its subgroup is not routed to the main mix', 'The guitar’s microphone cable is open', 'One house amplifier channel is down', 'The processor limiter is closed'],
     correct: 0,
+    why: [null, 'The guitar channel meter is moving, so its cable is bringing signal in.', 'Everything else plays through the same amplifiers.', 'A limiter would hold down the whole mix, not remove one guitar.'],
     explain: 'A channel meter shows what enters the channel, not where it goes. The bus assignment is the next station — and a subgroup with no path to the main mix is a dead end with a moving meter.',
     fix: 'Assign Subgroup 3 to the main mix (or the channel directly), and check the other subgroups.',
     forward: 'Meter alive, mix missing it: the routing between them is the station. That is where the walk went.',
+    rule: 'A channel meter shows what enters the channel, not where it goes: follow its bus assignment to the main mix.',
   },
   {
     id: 'pre-post',
@@ -429,7 +471,7 @@ export const FAULTS: readonly FaultCase[] = [
     group: 'routing',
     title: 'Pre-fader / post-fader routing error',
     symptom: '“When I pull the vocal down, the reverb stays just as loud.”',
-    setup: 'Reverb on Aux 5. The vocal channel’s Aux 5 send is tapped PRE-fader.',
+    setup: 'Reverb on an aux send, returned into the main mix.',
     faultAt: 'consoleOut',
     reads: reads(
       'consoleOut',
@@ -440,11 +482,13 @@ export const FAULTS: readonly FaultCase[] = [
         listener: { signal: 'ok', note: 'Dry vocal gone, wet vocal still there — a reverb with no source.', flags: ['wrongContent'] },
       },
     ),
-    options: ['The reverb send is tapped pre-fader — switch it to post-fader', 'The reverb unit’s output is too hot', 'The vocal microphone is too far away', 'The polarity is reversed'],
+    options: ['The reverb send is tapped before the fader', 'The reverb unit’s output is too hot', 'The vocal microphone is too far away', 'The vocal’s polarity is reversed'],
     correct: 0,
+    why: [null, 'A hot return would be loud all the time; here the fader move does nothing to it.', 'Mic distance changes the dry vocal too; here the dry vocal goes and the reverb stays.', 'Polarity would thin or cancel the sound; it would not keep the reverb up.'],
     explain: 'An effects send usually follows the fader so the wet stays in proportion to the dry. Pre-fader is the monitor convention, and on an effect it produces exactly this: a vocal that vanishes and leaves its reverb behind.',
     fix: 'Set the vocal’s Aux 5 send to post-fader. Check every effects send on the console the same way.',
     forward: 'Move the fader and watch the send meter — the station that does not respond to the control that should govern it is the fault.',
+    rule: 'Effects sends follow the fader (post); monitor sends do not (pre). The wrong tap shows as reverb with no voice.',
   },
   {
     id: 'monitor-follows-main',
@@ -454,31 +498,34 @@ export const FAULTS: readonly FaultCase[] = [
     group: 'routing',
     title: 'Monitor changes when the main fader moves',
     symptom: '“Every time you touch the house, the wedges change.”',
-    setup: 'The wedge amplifier is patched from a MAIN L output instead of an aux output.',
+    setup: 'Four wedges, each on its own monitor amplifier channel, fed from the console.',
     faultAt: 'consoleOut',
     reads: reads(
       'consoleOut',
       { signal: 'ok', note: 'Wedges follow the house.', flags: ['wrongContent'] },
       {
         consoleOut: { signal: 'ok', note: 'The output patch shows the monitor amplifier fed from MAIN L. Move the main fader: the wedge follows. Aux 1’s output is patched to nothing.', flags: ['wrongContent'] },
+        processor: { signal: 'ok', note: 'The monitor EQ passes on whatever it is fed: here, the house mix.', flags: ['wrongContent'] },
         amp: { signal: 'ok', note: 'Monitor amplifier receives the house mix.' },
         speaker: { signal: 'ok', note: 'The wedge plays the audience mix.' },
         listener: { signal: 'ok', note: 'Performers hear the house, at the house level, never their own balance.', flags: ['wrongContent'] },
       },
     ),
-    options: ['The monitor amplifier is fed from the main output instead of an aux send', 'The monitor sends are post-fader', 'Feedback in the wedge', 'A DCA is muted'],
+    options: ['The wedge amp is fed from a main output', 'The monitor sends are post-fader', 'Feedback building in the wedge', 'The band DCA is being moved'],
     correct: 0,
+    why: [null, 'Post-fader sends follow each CHANNEL fader; these wedges follow the MAIN fader, which no send does.', 'Feedback rings; it does not follow the house fader.', 'A DCA moves channel faders, and a pre-fader wedge send ignores it.'],
     explain: 'Monitors must come from a bus the house fader does not control. A wedge fed from the main output can never be a monitor mix; it is the audience mix on the floor.',
     fix: 'Patch the monitor amplifier from Aux 1, build the wedge mix on pre-fader sends, and leave the main outputs to the house.',
     forward: 'The symptom names the control, the main fader; the walk found the station where that fader should no longer have mattered, but still did.',
+    rule: 'A monitor mix comes from its own bus, never from the main outputs the house fader controls.',
   },
   {
     id: 'vocals-in-subs',
     startAt: 'consoleOut',
     group: 'routing',
-    title: 'Subwoofer receives vocals unintentionally',
+    title: 'Vocals coming out of the subwoofer',
     symptom: '“The vocal sounds boomy and thick — you can hear it coming from the subs.”',
-    setup: 'Aux-fed subs on Aux 6. The lead vocal channel’s Aux 6 send has been turned up.',
+    setup: 'Aux-fed subs: the console decides which channels the subs get.',
     faultAt: 'consoleOut',
     reads: reads(
       'consoleOut',
@@ -490,23 +537,27 @@ export const FAULTS: readonly FaultCase[] = [
         listener: { signal: 'ok', note: 'Thick, boomy vocal; stage rumble on every plosive.', flags: ['wrongContent'] },
       },
     ),
-    options: ['The vocal channel is sending to the aux-fed subwoofer bus', 'The crossover is set too high', 'The subwoofer polarity is reversed', 'The amplifier is clipping'],
+    options: ['The vocal is sent to the sub aux', 'The crossover is set too high', 'The subwoofer polarity is reversed', 'The sub amplifier is clipping'],
     correct: 0,
+    why: [null, 'With aux-fed subs the crossover does not choose what reaches them; look at the sends.', 'Reversed polarity makes the low end thinner; it does not add a vocal.', 'Clipping adds distortion; it does not put a vocal into the subs.'],
     explain: 'Aux-fed subs give you the choice of what reaches them — which means an accidental send puts a vocal in the subs with the crossover blameless. The send is the station.',
     fix: 'Turn the vocal’s Aux 6 send off, then walk every channel: only the sources with real low-frequency content feed the subs.',
     forward: 'The processor was checked and cleared in one probe; the console send before it was the change.',
+    rule: 'On aux-fed subs the send decides what reaches them: only sources with real low end belong there.',
   },
 
   /* ── TIME, POLARITY, CROSSOVER ──────────────────────────────────────── */
   {
     id: 'polarity',
     startAt: 'consoleOut',
-    labels: { amp: 'Powered cabinet (amp inside)' },
-    kinds: { amp: 'poweredSpeaker' },
+    // SS-09: the amplifiers inside the two tops and the tops themselves read
+    // as two different stations, not two "powered cabinets".
+    labels: { amp: 'Amps inside the tops', speaker: 'Powered tops' },
+    kinds: { amp: 'amp', speaker: 'poweredSpeaker' },
     group: 'time',
     title: 'Reversed polarity',
     symptom: '“Each side alone sounds full. Both together, the bass disappears in the middle.”',
-    setup: 'Two powered tops. The cable to the right top has pins 2 and 3 swapped.',
+    setup: 'Two powered tops, left and right, each on its own signal cable.',
     faultAt: 'speaker',
     reads: reads(
       'speaker',
@@ -514,16 +565,18 @@ export const FAULTS: readonly FaultCase[] = [
       {
         consoleOut: { signal: 'ok', note: 'Main L and R meters equal and healthy.' },
         processor: { signal: 'ok', note: 'Left and right outputs identical; polarity buttons both normal.' },
-        amp: { signal: 'ok', note: 'Powered cabinets — amplifiers inside.' },
+        amp: { signal: 'ok', note: 'The amplifiers built into the two tops: signal lights on both, no clip or protect light, both alike.' },
         speaker: { signal: 'ok', note: 'Each cabinet alone is full. Both together: the low end cancels on the center line. Flip the polarity of ONE cabinet: it returns. The right cabinet’s cable tests pins 2 and 3 reversed.', flags: ['polarity'] },
         listener: { signal: 'ok', note: 'Hollow and thin down the middle; fuller off to either side.', flags: ['polarity'] },
       },
     ),
-    options: ['The signal cable to one powered top has pins 2 and 3 reversed — a polarity flip', 'The crossover is set wrong', 'A delay is set on one side', 'The amplifier is clipping'],
+    options: ['The signal cable to one powered top has pins 2 and 3 swapped', 'The crossover is set wrong in the processor', 'A delay is set on one side only', 'An amplifier inside a top is clipping'],
     correct: 0,
+    why: [null, 'A crossover fault would show on each box alone, and each alone sounds full.', 'A delay smears or echoes; this loss happens only on the center line.', 'Clipping is distortion from one box alone; this appears only when both play.'],
     explain: 'Two sources in opposite polarity cancel where they arrive together — the center — and mostly at low frequencies, where the wavelengths are long enough to cancel over a wide area of the audience. Every electrical station reads normal because a reversed cable IS a normal signal, upside down. The walk finds it at the loudspeaker station; the cable INTO the right cabinet is the cause — which is why the fix is the cable, not the box.',
     fix: 'Replace or re-terminate the cable. Test every cable in the case for pin order before it goes out again.',
     forward: 'Every reading was healthy until the two loudspeakers were compared to EACH OTHER. Some faults live between stations, not in one — the walk still finds them, at the end.',
+    rule: 'Two boxes that are full alone and thin together disagree in polarity: test the cables for pin order.',
   },
   {
     id: 'crossover',
@@ -531,7 +584,7 @@ export const FAULTS: readonly FaultCase[] = [
     group: 'time',
     title: 'Incorrect crossover',
     symptom: '“The subs are muddy and you can hear vocals in them. The tops sound thin.”',
-    setup: 'Processor crossover point set at 400 Hz instead of 100 Hz.',
+    setup: 'Crossover-fed subs: the processor splits the lows to the subs and the rest to the tops.',
     faultAt: 'processor',
     reads: reads(
       'processor',
@@ -543,11 +596,13 @@ export const FAULTS: readonly FaultCase[] = [
         listener: { signal: 'ok', note: 'Vocals from the floor; thin, hollow tops.', flags: ['wrongContent'] },
       },
     ),
-    options: ['The crossover frequency is set far too high in the processor', 'The subwoofer polarity is reversed', 'A vocal send is feeding the subs', 'The amplifier is clipping'],
+    options: ['The processor crossover is set too high', 'The subwoofer polarity is reversed', 'A vocal send is feeding the subs', 'The sub amplifier is clipping'],
     correct: 0,
+    why: [null, 'Reversed polarity thins the low end; it does not put vocals in the subs or thin the tops.', 'The console output showed no vocal on any sub send; these subs are fed by the crossover.', 'Clipping adds distortion; it does not move the vocals into the subs.'],
     explain: 'With crossover-fed subs, the console has no sub send — only the crossover decides what goes where. The processor reading names the number: at 400 Hz, the vocals and much of the music go to the subwoofers.',
     fix: 'Set the crossover for these cabinets (typically 80–120 Hz), then re-check level and alignment between subs and tops.',
     forward: 'The console send was cleared first, which turned a “vocals in the subs” symptom into a processor question in one step.',
+    rule: 'With crossover-fed subs, only the crossover decides what goes where: set it for these cabinets first.',
   },
   {
     id: 'delay-time',
@@ -555,7 +610,7 @@ export const FAULTS: readonly FaultCase[] = [
     group: 'time',
     title: 'Delay loudspeaker arriving too early',
     symptom: '“Under the delay towers everything sounds smeared, like a slap echo.”',
-    setup: 'Outdoor system: delay loudspeakers 30 m in front of the mains. The processor’s DELAY outputs show 0.0 ms.',
+    setup: 'Outdoor system: mains at the stage, delay towers 30 m out in the crowd, all fed from the processor.',
     faultAt: 'processor',
     reads: reads(
       'processor',
@@ -568,11 +623,13 @@ export const FAULTS: readonly FaultCase[] = [
         listener: { signal: 'ok', note: 'Two distinct arrivals; the delays first, the mains 87 ms later — a clear echo.', flags: ['early'] },
       },
     ),
-    options: ['The delay loudspeakers are not delayed — set ≈ distance ÷ speed of sound', 'The mains are reversed in polarity', 'The delay amplifier is clipping', 'The crossover is wrong'],
+    options: ['The delay outputs are not delayed', 'The mains are reversed in polarity', 'The delay amplifier is clipping', 'The tower crossover is set wrong'],
     correct: 0,
+    why: [null, 'Reversed polarity cancels low end; it does not make a slap echo.', 'Clipping is harshness on loud passages, not an echo.', 'A crossover changes which sounds go where, not when they arrive.'],
     explain: 'A delay loudspeaker exists to arrive WITH the mains. Sound needs roughly 2.9 ms per meter, so 30 m is about 87 ms; with 0 ms set, the delay towers lead by that much and the ear hears two events. Many engineers then add a few milliseconds more so the mains stay the perceived source.',
     fix: 'Set the delay outputs to the distance-derived time (the app’s Delay from Distance calculator gives the exact figure for the day’s temperature), then verify by measurement and by ear.',
     forward: 'Level was fine everywhere; TIME was wrong at one station. The processor is where time is set, and its display gave the answer.',
+    rule: 'A delay loudspeaker must wait for the sound from the stage: about 2.9 ms for every meter between them.',
   },
 
   /* ── DIGITAL, NETWORK, FEEDBACK ─────────────────────────────────────── */
@@ -582,7 +639,7 @@ export const FAULTS: readonly FaultCase[] = [
     group: 'digital',
     title: 'Digital clocking problem',
     symptom: '“Clicks and pops, every few seconds, on every channel at once.”',
-    setup: 'Digital stagebox set to be the clock master; the console has been switched to INTERNAL clock.',
+    setup: 'Digital stagebox on a network link to a digital console.',
     faultAt: 'consoleIn',
     reads: reads(
       'consoleIn',
@@ -593,11 +650,13 @@ export const FAULTS: readonly FaultCase[] = [
         listener: { signal: 'ok', note: 'A tick through the whole mix every few seconds.', flags: ['clicks'] },
       },
     ),
-    options: ['A digital clock mismatch — one clock master, everything else following it', 'A bad microphone cable', 'A ground loop', 'Feedback'],
+    options: ['A digital clock mismatch', 'A bad microphone cable', 'A ground loop in the system', 'Feedback from a wedge'],
     correct: 0,
+    why: [null, 'A bad cable affects one channel; these clicks hit every channel at the same instant.', 'A ground loop hums steadily; it does not click.', 'Feedback rings and grows; it does not click every few seconds.'],
     explain: 'One bad cable affects one channel; a clock fault affects every channel at once, at the same instant. Two devices each believing they are master is the classic cause.',
     fix: 'Choose ONE clock master — on a proprietary link usually the console — and set every other device to follow it. On Dante or AES67 the network ELECTS the master, even when more than one device is set as preferred. The usual mistake there is a device set to its own INTERNAL clock instead of the network. Confirm the sample rates match.',
     forward: 'Every channel together means the fault is where the channels first share a clock — the console’s digital input, not any microphone.',
+    rule: 'Clicks on every channel at the same instant are a clock fault: one master, and every other device follows it.',
   },
   {
     id: 'network',
@@ -605,7 +664,7 @@ export const FAULTS: readonly FaultCase[] = [
     group: 'digital',
     title: 'Network audio interruption',
     symptom: '“The whole PA drops out for a second, then comes back.”',
-    setup: 'One network cable from the stagebox to the console, routed through a door hinge to an office switch with Energy-Efficient Ethernet enabled.',
+    setup: 'One network cable from the stagebox to the console carries every input.',
     faultAt: 'stagebox',
     reads: reads(
       'stagebox',
@@ -616,11 +675,13 @@ export const FAULTS: readonly FaultCase[] = [
         listener: { signal: 'ok', note: 'A second of silence, then the show returns.', flags: ['dropout'] },
       },
     ),
-    options: ['The network link between the stagebox and the console is failing (cable or switch)', 'One microphone cable is intermittent', 'The amplifier is going into protect', 'The limiter is closing'],
+    options: ['The stagebox network link is failing', 'One microphone cable is intermittent', 'The amplifier is going into protect', 'The processor limiter is closing'],
     correct: 0,
+    why: [null, 'One cable would drop one channel; here every input drops together.', 'An amplifier in protect would not cut the console’s own meters; look at where the drop starts.', 'A limiter holds level down; it does not cut the sound for a second.'],
     explain: 'All inputs dropping as one is a transport fault, not a channel fault. On a networked system the transport is a single cable and whatever it passes through — and a door hinge is where cables die.',
     fix: 'Re-route the cable clear of the door with strain relief, use a switch with Energy-Efficient Ethernet disabled and QoS (quality of service) set for audio, and run the redundant second link if the system supports it.',
     forward: 'The stagebox is the first station where all channels share one path. Its LINK light told the story before a single cable was swapped.',
+    rule: 'Every input dropping as one is the transport: one network cable and everything it passes through.',
   },
   {
     id: 'feedback',
@@ -630,7 +691,7 @@ export const FAULTS: readonly FaultCase[] = [
     group: 'digital',
     title: 'Feedback appears during soundcheck',
     symptom: '“A ring starts every time the singer’s wedge comes up.”',
-    setup: 'Vocal microphone with a cardioid pattern; the wedge fires up into the FRONT of the capsule — on-axis — and the singer’s monitor send is at +6 dB.',
+    setup: 'Vocal microphone with a cardioid pattern; the singer’s wedge sits in front of the riser.',
     faultAt: 'speaker',
     reads: reads(
       'speaker',
@@ -638,17 +699,19 @@ export const FAULTS: readonly FaultCase[] = [
       {
         consoleIn: { signal: 'ok', note: 'Vocal preamp gain sensible; no clipping.' },
         consoleOut: { signal: 'ok', note: 'Aux 1 send on the vocal at +6 dB — hotter than anything else in that mix.' },
-        processor: { signal: 'ok', note: 'Not in the monitor path.' },
+        processor: { signal: 'ok', note: 'The graphic EQ on aux 1 is flat: nothing is cut yet, so the send passes through unchanged.' },
         amp: { signal: 'ok', note: 'Monitor amplifier clean.' },
         speaker: { signal: 'hot', note: 'The wedge sits ON-AXIS, firing into the capsule’s most sensitive angle. Raise the send: a 2.5 kHz ring builds until it howls.', flags: ['feedback'] },
         listener: { signal: 'hot', note: 'Everyone hears the ring before the singer hears the wedge.', flags: ['feedback'] },
       },
     ),
-    options: ['Acoustic feedback: the wedge is aimed into the microphone and the send is too hot — reposition, reduce, then notch', 'A faulty cable', 'A digital clock error', 'A ground loop'],
+    options: ['Feedback: the wedge points into the mic', 'A faulty cable to the wedge', 'A digital clock error at the console', 'A ground loop on the wedge amp'],
     correct: 0,
+    why: [null, 'A faulty cable crackles or cuts out; it does not build a ring as the send comes up.', 'A clock error clicks on every channel; it does not ring.', 'A ground loop hums all the time, whatever the send is set to.'],
     explain: 'Feedback is a loop, not a component: microphone → console → wedge → microphone. Gain-before-feedback is spent first by geometry — a wedge in the pattern’s live angle — then by level. Position and placement come before any equalizer.',
     fix: 'Move the wedge into the microphone’s null — directly behind a cardioid; about 110–125° off-axis for a super- or hypercardioid, which has a small rear lobe — lower the send, then find the ringing frequency on the analyzer and apply a narrow cut.',
     forward: 'Electrical stations were all clean; the fault was ACOUSTIC, at the last station, where the loudspeaker meets the microphone again.',
+    rule: 'Feedback is a loop: fix it with placement first, then level, and only last with an equalizer.',
   },
 ];
 

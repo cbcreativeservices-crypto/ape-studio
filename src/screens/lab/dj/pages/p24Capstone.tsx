@@ -47,14 +47,16 @@ import { PatchTray, PowerTray, type PowerEvent } from '../trays';
 import { boothNow, getBooth, updateBooth } from '../booth/boothStore';
 import { cueAtBar, preMatched, useScreenSetup } from '../booth/setup';
 import { armTake, closeTake, takeOpen, writeChunk } from '../booth/takeStore';
-import { load } from '../model/djDeck';
-import { BUILT_PLUGS, POWERED, deviceLive, dbStr, speakerFeed, trimDb, trimPos, xfGainFor, type Booth, type ChannelId, type DeviceId, type XfAssign } from '../model/djModel';
+import { load, seek } from '../model/djDeck';
+import { BUILT_PLUGS, POWERED, deckPos, deviceLive, dbStr, speakerFeed, trimDb, trimPos, xfGainFor, type Booth, type ChannelId, type DeviceId, type XfAssign } from '../model/djModel';
 import { evOf, micGainPos, recGainDb, recGainPos, withEv, withMic, withRec } from '../model/djEvent';
 import { DEBRIEF_PARTS, FAULTS, TRANSITION_FRESH, allFixed, debriefOptions, hintsFor, plant, scenarioFor, transitionStep, type DebriefPart, type FaultId, type Scenario, type TransitionState } from '../model/djCapstone';
 import { DJ_COVERS, isOptionalNo } from './registry';
 import { getDjRegistry } from './registryRuntime';
 import { announce, EventListen, musicOn, Row, TrayNote, useEventKit, useFreshReading, voiceIn, withFreshEvent } from './eventShared';
-import { holdDoneUnlessFresh } from './eventGuards';
+import { holdDoneUnlessFresh, repeatPhrasePos } from './eventGuards';
+import { barSec, trackSeconds } from '../engine/djMusic';
+import { trimStillHot } from './fixGuards';
 import { PEAK_RED } from './shared';
 import type { BoothRender } from '../engine/djRender';
 import { isEventRender, type EventRender } from '../engine/djEventRender';
@@ -295,7 +297,7 @@ function EventTray({ lead, onPower, lastPower, view, setView, onNew, onReplay, s
       <PatchTray plugs={['mst.xlrL', 'mst.xlrR', 'bth.trsL', 'bth.trsR']} />
       <Row head="PA L’S POWER CORD">
         <LabChip label="BOOTH STRIP" selected={!ev.paLWall} onPress={() => updateBooth((x) => withEv(x, (e) => ({ ...e, paLWall: false })))} compact />
-        <LabChip label="WALL SOCKET (OTHER CIRCUIT)" selected={ev.paLWall} onPress={() => updateBooth((x) => withEv(x, (e) => ({ ...e, paLWall: true })))} compact />
+        <LabChip label="WALL OUTLET (OTHER CIRCUIT)" selected={ev.paLWall} onPress={() => updateBooth((x) => withEv(x, (e) => ({ ...e, paLWall: true })))} compact />
         <LabChip label={ev.paLIsolator ? 'ISOLATION TRANSFORMER IN MST L' : 'NO ISOLATION TRANSFORMER'} selected={ev.paLIsolator} onPress={() => updateBooth((x) => withEv(x, (e) => ({ ...e, paLIsolator: !e.paLIsolator })))} compact />
       </Row>
       <Row head="PA R · ITS OWN INPUT SWITCH (on its back)">
@@ -416,6 +418,23 @@ function PageEvent({ ctx }: { ctx: PageCtx }) {
     },
     [],
   );
+  // DJ-08 (owner 2026-11-15: "build waves 1 thru 3"): a playing deck near its
+  // end jumps back whole phrases, so the on-air track never runs out while
+  // the learner fixes the faults and the transition can always be tried.
+  useEffect(() => {
+    const b = getBooth();
+    const t = boothNow();
+    for (const id of ['A', 'B'] as const) {
+      const d = b.decks[id];
+      if (!d.playing || !d.track) continue;
+      const tk = d.track;
+      if (repeatPhrasePos(deckPos(d, t), trackSeconds(tk) - 1, barSec(tk)) == null) continue;
+      updateBooth((x, tt) => {
+        const p = repeatPhrasePos(deckPos(x.decks[id], tt), trackSeconds(tk) - 1, barSec(tk));
+        return p == null ? x : seek(x, tt, id, p);
+      });
+    }
+  }, [last]);
   const allOn = POWERED.every((d) => deviceLive(booth, d));
   // the power goal re-arms once everything is OFF again (learning #4)
   if (POWERED.every((d) => !booth.power[d])) thumped.current = false;
@@ -469,7 +488,14 @@ function PageEvent({ ctx }: { ctx: PageCtx }) {
   const f1 = scenario.faults[0];
   const f2 = scenario.faults[1];
   const hints = two ? [hintsFor(f1)[0], `Fault 1: ${FAULTS[f1].probe}`, `Fault 1: ${FAULTS[f1].where}`, `Fault 2: ${FAULTS[f2].probe}`, `Fault 2: ${FAULTS[f2].where}`] : hintsFor(f1);
-  const roomV = !last ? '—' : last.rmsDb.crowd < -50 ? 'SILENT' : last.clipped.master + last.clipped.bus > 0 ? 'CLIPPING' : (last.ext.clipped.paR ?? 0) > 0 ? 'DISTORTED' : last.ext.hum.crowd ? 'HUM' : 'MUSIC';
+  // A clipping CHANNEL is in the room's sound too (lab fix round 2026-11-14,
+  // F2: THE ROOM read MUSIC while channel 1 still clipped — the transition
+  // check above already counts ch1/ch2).
+  const chClip = !!last && last.clipped.ch1 + last.clipped.ch2 > 0;
+  const roomV = !last ? '—' : last.rmsDb.crowd < -50 ? 'SILENT' : last.clipped.master + last.clipped.bus > 0 || chClip ? 'CLIPPING' : (last.ext.clipped.paR ?? 0) > 0 ? 'DISTORTED' : last.ext.hum.crowd ? 'HUM' : 'MUSIC';
+  // The hot-trim fault is repaired at +3 dB or less: between that and the
+  // clip point the room sounds clean, so the page says why it is still open.
+  const trimHotOpen = doorsOpen && scenario.faults.includes('TRIM_HOT') && trimStillHot(trimDb(booth.ch[1].trim), chClip);
   const f1v = Math.round(booth.ch[1].fader * 100);
   const f2v = Math.round(booth.ch[2].fader * 100);
 
@@ -478,7 +504,7 @@ function PageEvent({ ctx }: { ctx: PageCtx }) {
       spec={{
         render: (w, h) =>
           view === 'FLOW' ? (
-            <Scene w={w} h={h} frame={FRAME} motion={motion} focus={{ x: 120, y: 0, w: 200, h: 170 }} a11y={`${LOOK_FLOW} ${allOn ? 'Everything is switched on.' : 'Some of the system is still off.'}${ev.paLWall ? ' PA L is plugged into the wall socket on another circuit.' : ''}`} obstacles={flowBoxes(board.nodes)}>
+            <Scene w={w} h={h} frame={FRAME} motion={motion} focus={{ x: 120, y: 0, w: 200, h: 170 }} a11y={`${LOOK_FLOW} ${allOn ? 'Everything is switched on.' : 'Some of the system is still off.'}${ev.paLWall ? ' PA L is plugged into the wall outlet on another circuit.' : ''}`} obstacles={flowBoxes(board.nodes)}>
               <FlowBoard nodes={board.nodes} links={board.links} />
               <Cords cords={board.cords} />
               <WallWords hum={ev.paLWall && !ev.paLIsolator && deviceLive(booth, 'paL')} />
@@ -488,7 +514,7 @@ function PageEvent({ ctx }: { ctx: PageCtx }) {
           ),
         bezel: [
           { k: 'EVENT', v: `#${seed}`, sub: doorsOpen ? 'DOORS OPEN' : 'SETTING UP', tint: colors.amber },
-          { k: 'POWER', v: `${POWERED.filter((d) => deviceLive(booth, d)).length}/7`, sub: 'ON', tint: allOn ? colors.green : colors.amber },
+          { k: 'POWER', v: `${POWERED.filter((d) => deviceLive(booth, d)).length} ON`, tint: allOn ? colors.green : colors.amber },
           { k: 'THE ROOM', v: roomV, tint: !last ? colors.textSub : roomV === 'MUSIC' ? colors.green : roomV === 'HUM' ? colors.amber : PEAK_RED },
           { k: 'PLAYING', v: decksValue(booth), tint: colors.amber },
         ],
@@ -508,8 +534,9 @@ function PageEvent({ ctx }: { ctx: PageCtx }) {
             ],
           },
           { kind: 'group', id: 'mixer', label: 'MIXER', valueLabel: booth.ch[2].input, valueA11y: `channel 1 input ${booth.ch[1].input}, channel 2 input ${booth.ch[2].input}`, render: () => <MixerTray /> },
-          { kind: 'group', id: 'decks', label: 'DECKS', valueLabel: decksValue(booth), render: () => <DecksTray tr={tr} /> },
+          // SH-35 (owner 2026-11-15: "build waves 1 thru 3"): DECKS sits just before ■ STOP, as on every other screen.
           { kind: 'group', id: 'event', label: 'EVENT', valueLabel: doorsOpen ? 'LIVE' : 'SET UP', render: () => <EventTray lead={audio.leadSec} onPower={onPower} lastPower={lastPower} view={view} setView={setView} onNew={() => restart(1 + Math.floor(Math.random() * 9999))} onReplay={() => restart(seed)} seed={seed} doorsOpen={doorsOpen} onDoors={openDoors} /> },
+          { kind: 'group', id: 'decks', label: 'DECKS', valueLabel: decksValue(booth), render: () => <DecksTray tr={tr} /> },
           stopKey(tr),
         ],
         initialParam: 'fader',
@@ -524,10 +551,11 @@ function PageEvent({ ctx }: { ctx: PageCtx }) {
         <Do>Open EVENT → POWER and switch the system on in the safe order: the decks and the mixer first, the speakers LAST. Start RECORD. Then open the doors: EVENT → OPEN THE DOORS (or the red card in Step 5).</Do>
         <P>Then run the show: play deck A to the room; cue deck B in your headphones with its fader down; bring B in and A out with FADERS (CH 1 ↓ under it) — no gap, no clip; switch the mic on and make an announcement the room AND the recorder carry.</P>
         {silentRoom ? <Note tone="try">The room is silent while music plays: trace it on the board — source, channel, mix, output — and find the last live meter.</Note> : null}
+        {trimHotOpen ? <Note tone="try">{`Channel 1 has stopped clipping, but TRIM 1 is still ${dbStr(trimDb(booth.ch[1].trim))}: hotter than channel 2, with no headroom left for a loud bar. Bring it down to +3 dB or less (about 0 dB matches channel 2).`}</Note> : null}
         {trans.current.failed ? <Note tone="try">{`${trans.current.failed}${faultLive ? ' — fix the event’s fault first.' : ''} Bring CH 1 back up and CH 2 down to try again.`}</Note> : null}
       </Step>
       <Step n={3}>
-        <P>The board is the method: every card’s meter is a tap of the real signal. A dark card after a live one is where to look. The tempos are matched for you, with key lock on — the lesson here is the system.</P>
+        <P>The board is the method: every card’s meter is a tap of the real signal. A dark card after a live one is where to look. The tempos are matched for you, with key lock on, and a playing track repeats its last phrases instead of running out — the lesson here is the system.</P>
         <Note tone="safety">Real faults at real events: turn the MASTER down before you touch an output cable, never remove a safety ground, and keep your ears protected while you troubleshoot. A hum here is 60 Hz from the power line (50 Hz in many countries).</Note>
       </Step>
       <Step n={4}>
@@ -539,7 +567,7 @@ function PageEvent({ ctx }: { ctx: PageCtx }) {
         <UnderstandingCheck
           eyebrow="CHECK YOURSELF"
           question="Mid-set the room goes silent. The MASTER meters still move and the booth monitors still play. Where do you look first?"
-          options={['After the mixer: the MASTER cables, the PA’s power and its input', 'The channel’s input selector', 'The headphone blend', 'The trim of the deck that is playing']}
+          options={['After the mixer: MASTER cables, PA power and input', 'The input selector of the playing channel', 'The headphone blend of cue and master', 'The trim of the deck that is playing']}
           correct={0}
           explain="The MASTER meters and the booth prove the music reaches the mixer’s outputs. The loss is downstream of the last live meter: the MASTER cables, the PA’s power, its input setting or its level."
           wrong={[undefined, 'A wrong selector would silence the channel meter too — and the booth.', 'The headphones are a separate bus; they cannot silence the room.', 'A trim changes the channel’s level; the MASTER meters show the music is there.']}
@@ -559,7 +587,7 @@ function PageEvent({ ctx }: { ctx: PageCtx }) {
         />
         {fixedAll
           ? scenario.faults.map((f, i) => (
-              <Debrief key={`${seed}-${f}`} fault={f} seed={seed} head={two ? `DEBRIEF · FAULT ${i + 1} OF 2` : 'DEBRIEF · THE EVENT’S FAULT'} onDone={() => setDebriefed((d) => ({ ...d, [i]: true }))} />
+              <Debrief key={`${seed}-${f}`} fault={f} seed={seed} head={two ? `DEBRIEF · FAULT ${i + 1}` : 'DEBRIEF · THE EVENT’S FAULT'} onDone={() => setDebriefed((d) => ({ ...d, [i]: true }))} />
             ))
           : null}
         <GoalChips goals={goals.slice(4)} latched={latched.slice(4)} />

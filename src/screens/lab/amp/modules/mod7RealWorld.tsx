@@ -4,7 +4,8 @@
  * bridged operation, watts vs loudness, clipping risk, the rack inspection,
  * and the specification decoder.
  *
- * RACK (2026-09-30): TWO steps. GAIN CHAIN pins the chain on the glass with
+ * RACK (2026-09-30): THREE steps since phase 3 (2026-11-14, owner decision 5:
+ * the six-section practice step was split in two). GAIN CHAIN pins the chain on the glass with
  * the three stage levels as faders (SOURCE on the lane) and the verdict on
  * the bezel. REAL-WORLD PRACTICE is a document step: the load builder, power
  * and current, bridging, watts vs loudness, clipping risk, the rack
@@ -170,9 +171,13 @@ export function Mod7RealWorld() {
             badge: 'Relative levels — 100% = that stage’s clip point',
             bezel: [
               { k: 'VERDICT', v: verdictShort, tint: gs.firstClip ? colors.red : gs.starved ? colors.gold : colors.green },
-              { k: 'SOURCE', v: pct(src), tint: levelColor(src) },
-              { k: 'MIXER', v: pct(mix), tint: levelColor(mix) },
-              { k: 'AMP IN', v: pct(ampIn), tint: levelColor(ampIn) },
+              // These are the FADER SETTINGS; the meters on the drawing read each
+              // stage's LEVEL as % of its clip point. Each number now says which
+              // it is (beginner audit 2026-11-14: "SOURCE 80% of clip" on the
+              // drawing beside "SOURCE 50%" here, unexplained).
+              { k: 'SOURCE', v: pct(src), sub: 'SETTING', tint: levelColor(src) },
+              { k: 'MIXER', v: pct(mix), sub: 'SETTING', tint: levelColor(mix) },
+              { k: 'AMP IN', v: pct(ampIn), sub: 'SETTING', tint: levelColor(ampIn) },
             ],
             params: [
               faderParam({ id: 'src', label: 'SOURCE', value: src, min: 0, max: 1, step: 0.01, format: pct, onChange: setSrc, level: true }),
@@ -217,7 +222,7 @@ export function Mod7RealWorld() {
         },
         {
           key: 'practice',
-          title: 'Real-world practice',
+          title: 'Loads, power and bridging',
           kind: 'read',
           body: (
             <>
@@ -340,6 +345,17 @@ export function Mod7RealWorld() {
               <MisconceptionCard m={misc('common-ground')} />
               <MisconceptionCard m={misc('bridge-4x')} />
 
+            </>
+          ),
+        },
+        {
+          // Split from 'practice' (phase 3, owner decision 5). Step position is
+          // not stored (AmpModuleSteps keeps it in memory), so nothing earned moves.
+          key: 'risk',
+          title: 'Loudness, risk and spec sheets',
+          kind: 'read',
+          body: (
+            <>
               {/* ── watts vs loudness ── */}
               <SectionTitle>5 · WATTS AND LOUDNESS</SectionTitle>
               {/* Driven in log2 (slider pass 2026-10-14): a linear 0.25–10× lane

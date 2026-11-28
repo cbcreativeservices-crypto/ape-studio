@@ -268,7 +268,7 @@ function PageLoops({ ctx }: { ctx: PageCtx }) {
         bezel: [
           { k: 'HOT CUES', v: `${B.hotCues.filter((c) => c != null).length} / 4`, tint: colors.amber },
           { k: 'LOOP', v: loopBeats ? `${loopBeats} BEATS` : 'OFF', tint: loopBeats ? colors.green : colors.textSub },
-          { k: 'SAMPLER →', v: `DECK ${booth.sampler.on} · ${chOnAir(booth, booth.sampler.on) ? 'ON AIR' : 'PRIVATE'}`, tint: chOnAir(booth, booth.sampler.on) ? '#ff8a7e' : colors.green, flex: 1.5 },
+          { k: 'SAMPLER →', caption: 'pads play to', v: `DECK ${booth.sampler.on} · ${chOnAir(booth, booth.sampler.on) ? 'ON AIR' : 'PRIVATE'}`, tint: chOnAir(booth, booth.sampler.on) ? '#ff8a7e' : colors.green, flex: 1.5 },
         ],
         params: [
           {
@@ -343,7 +343,7 @@ function PageLoops({ ctx }: { ctx: PageCtx }) {
         <UnderstandingCheck
           eyebrow="CHECK YOURSELF"
           question="You press the CUE button on the player while the track is playing. What happens?"
-          options={['The deck jumps back to its cue point and stops', 'The track goes into your headphones', 'A hot cue is stored', 'The loop exits']}
+          options={['The deck jumps back to its cue point and stops', 'The track goes into your headphones', 'A new hot cue is stored on the deck', 'The running loop exits and the track goes on']}
           correct={0}
           explain="That is the TRANSPORT cue: playing, it returns to the cue point and pauses. Sending a channel to your headphones is the MIXER’s CUE button."
           wrong={[undefined, 'That is the mixer’s headphone CUE, on the channel strip.', 'Hot cues live on the numbered pads.', 'Loops exit with the loop EXIT key.']}

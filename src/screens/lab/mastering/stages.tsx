@@ -883,7 +883,7 @@ export function DeliverySheetStage({ width, height, title, brief, items, confirm
       {/* The destination's first word: the full name is on the bezel's tray
           and in the well; the sheet keeps room for the count at the right. */}
       <SvgText x={16} y={23} fontSize={f2} fill={complete ? ink.green : ink.amber} fontFamily={fonts.oswaldMedium}>{`DELIVERY CHECKLIST · ${title.toUpperCase().split(' ')[0]}`}</SvgText>
-      <SvgText x={W - 16} y={23} fontSize={fs} fill={complete ? ink.green : ink.dim} textAnchor="end" fontFamily={fonts.mono}>{`${done} / ${items.length}`}</SvgText>
+      <SvgText x={W - 16} y={23} fontSize={fs} fill={complete ? ink.green : ink.dim} textAnchor="end" fontFamily={fonts.mono}>{done === items.length ? '✓ ALL' : `${items.length - done} LEFT`}</SvgText>
       {briefLines.map((line, i) => (
         <SvgText key={i} x={16} y={46 + i * 13 * bst} fontSize={fsS} fill={ink.dim} fontFamily={fonts.barlowRegular}>{line}</SvgText>
       ))}
@@ -1218,7 +1218,7 @@ export function DestinationArt({ width, height, kind }: { width: number; height:
         <Path d={`M10 ${cy - 34} l124 0`} stroke="#3a3c44" strokeWidth={0.8} />
         {[0, 1, 2].map((i) => <Circle key={i} cx={17 + i * 6} cy={cy - 39} r={1.6} fill={i === 0 ? '#c4372a' : i === 1 ? '#b8892b' : '#2f8f63'} />)}
         <Rect x={38} y={cy - 42} width={90} height={6} rx={3} fill="#1d1f25" />
-        {['01-Signal.wav', '02-Harbour.wav', '03-Static.wav'].map((f, i) => (
+        {['01-Signal.wav', '02-Harbor.wav', '03-Static.wav'].map((f, i) => (
           <G key={f}>
             <SvgText x={16} y={cy - 19 + i * 13} fontSize={FONT_S} fill={ink.text} fontFamily={fonts.mono}>{f}</SvgText>
             <Path d={`M${120} ${cy - 23 + i * 13} l2.5 2.5 l4.5 -5`} stroke={ink.green} strokeWidth={1.4} fill="none" />

@@ -36,6 +36,7 @@ import { CymbalPlan, DrumPlan, KickFromAbove, topTransform } from '../drums/Drum
 import { KICK_22x18 } from '../drums/drumSpec.ts';
 import { KIT_CYMBALS, KIT_DRUMS } from '../kitPlanModel.ts';
 import { hatchFor, pluckPath, sceneGroups, sweepPaths } from './BowedArt';
+import { bowedSecond } from './bowedFigureV2';
 import type { Posture } from './posture.ts';
 import { KitTop } from '../kitScene/KitSceneArt';
 import { Pianist } from '../piano/PianoArt';
@@ -43,6 +44,13 @@ import { CueMixPlan } from '../monitoring/CueMixPlan';
 import { cueCables, cueLabels } from '../monitoring/cueMix.ts';
 import { clearOfFoots, planTurn, labelPlaces, unionRect } from '../planFoot.ts';
 import { PIANIST, bowedCue, bowedFoots, bowedPlayerRect, bowedShown, type BowedPlanLayout } from './bowedPlanModel.ts';
+import { figureV2On } from '../figureV2/figureV2Config.ts';
+import { castFor } from '../figureV2/cast';
+
+/** (cast figures 2026-11-26) the pianist beside the bass (c06a/b) in the approved look: the plans' keys
+ *  player (Ruth, 'plan.keys') — never the bassist (Mei) nor the drummer at the kit beside them. */
+const PIANIST_V2 = figureV2On('familyBowed');
+const PIANIST_WHO = castFor('plan.keys');
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 
@@ -318,14 +326,16 @@ export function WedgeTop({ at, faces }: { at: { x: number; z: number }; faces: {
 }
 
 /** A string player and instrument from above (the family's own art). */
-function BowedTop({ P, dim, bow = true }: { P: Posture; dim: number; bow?: boolean }) {
-  const groups = useMemo(() => sceneGroups(P, 'top', { bow }), [P, bow]);
+function BowedTop({ P, dim, bow = true, second = false }: { P: Posture; dim: number; bow?: boolean; /** a neighbor playing the lesson's own instrument: another person */ second?: boolean }) {
+  const groups = useMemo(() => sceneGroups(P, 'top', { bow, ...(second ? { who: bowedSecond() } : {}) }), [P, bow, second]);
   return (
     <Group opacity={dim}>
       {groups.map((g) => (
         <Group key={g.key}>
           {g.items.map((it, i) =>
-            typeof it.fill === 'object' ? (
+            it.node ? (
+              <Group key={i}>{it.node}</Group>
+            ) : typeof it.fill === 'object' ? (
               <Path key={i} path={it.path}>
                 <LinearGradient start={vec(it.box.u0, it.box.v0)} end={vec(it.box.u1, it.box.v1)} colors={it.fill.colors} positions={it.fill.positions} />
               </Path>
@@ -431,7 +441,7 @@ export function BowedPlan({ w, h, cfg, box, scene, wedges, items, highlight, onT
                   <GrandPiano />
                   {/* the pianist on the bench, at the keyboard's middle */}
                   <Group transform={[{ translateY: PIANIST.y }]}>
-                    <Pianist view="top" xKey={PIANIST.xKey} pedalX={PIANIST.pedalX} dim={0.8} />
+                    <Pianist view="top" xKey={PIANIST.xKey} pedalX={PIANIST.pedalX} dim={0.8} v2={PIANIST_V2} who={PIANIST_WHO} />
                   </Group>
                 </>
               ) : o.kind === 'kit' ? (
@@ -442,7 +452,7 @@ export function BowedPlan({ w, h, cfg, box, scene, wedges, items, highlight, onT
               ) : o.kind === 'pair' ? (
                 <MainPair />
               ) : o.kind === 'bowed' && o.posture ? (
-                <BowedTop P={o.posture} dim={0.72} />
+                <BowedTop P={o.posture} dim={0.72} second={o.posture.spec.id === self.spec.id} />
               ) : null}
             </Group>
           ))}
@@ -491,7 +501,7 @@ export function makeBowedSettingPage(cfg: BowedSettingConfig): (p: PageProps) =>
             if (it) pick(it.id);
           },
           format: () => (sel ? `${byId(sel)?.short ?? sel} · ${byId(sel)?.tag ?? ''}` : `step through the ${list.length} items`),
-          formatShort: () => (sel ? (byId(sel)?.short ?? sel).slice(0, 9) : 'STEP'),
+          formatShort: () => (sel ? (byId(sel)?.short ?? sel).slice(0, 9) : 'PICK'),
         },
         list.length,
         list.findIndex((q) => q.id === sel),

@@ -155,18 +155,20 @@ describe('2. each guide quotes its screen’s real names', () => {
   ];
   const SRC = files.map(code).join('\n');
   const NAMES: Record<string, string[]> = {
-    home: ['START LAB', 'RESUME — MODULE', 'WHAT YOU’LL LEARN', 'SOURCES / STANDARDS ›', '‹ PREV', 'NEXT ›', "WHAT'S LEFT", 'RULE OR MYTH?', 'CODE / REGULATION', 'INDUSTRY STANDARD', 'MANUFACTURER REQUIREMENT', 'PROFESSIONAL PRACTICE'],
-    why: ['MARK STAGE COMPLETE ✓', 'SIX THINGS RIDING ON EVERY RUN', 'SAFETY', 'RELIABILITY', 'SIGNAL INTEGRITY', 'SERVICEABILITY', 'MECHANICAL PROTECTION', 'PROFESSIONAL WORKMANSHIP', 'WHICH INSTALLATION WOULD YOU APPROVE?', 'A — THE SHOWPIECE', 'B — THE PROFESSIONAL', 'C — THE PILE', 'D — THE BLOCKADE', 'NEAT ≠ CORRECT', '▸ WHY?', 'FULL SCREEN', 'APPROVE'],
+    home: ['START LAB', 'RESUME — STAGE', 'WHAT YOU’LL LEARN', 'SOURCES / STANDARDS ›', '‹ PREV', 'NEXT ›', "WHAT'S LEFT", 'RULE OR MYTH?', 'CODE / REGULATION', 'INDUSTRY STANDARD', 'MANUFACTURER REQUIREMENT', 'PROFESSIONAL PRACTICE'],
+    why: ['MARK STAGE COMPLETE ✓', 'SIX THINGS RIDING ON EVERY RUN', 'SAFETY', 'RELIABILITY', 'SIGNAL INTEGRITY', 'SERVICEABILITY', 'MECHANICAL PROTECTION', 'PROFESSIONAL WORKMANSHIP', 'WHICH INSTALLATION WOULD YOU APPROVE?', 'NEAT ≠ CORRECT', '▸ WHY?', 'FULL SCREEN', 'APPROVE'],
     know: ['THE CABLE WORKBENCH', 'PERMANENT', 'TEMPORARY', 'PERM · TEMP', 'SECTION', 'CHECK BEFORE ROUTING', 'SCENARIO DRILL — WHAT ARE YOU INSTALLING?', '1 · WHAT CABLE IS THIS?', '2 · TEMPORARY OR PERMANENT?', '3 · THE LIKELY PATHWAY?', '4 · THE KEY RISK?', 'THEN THE PAPERWORK', 'Microphone cable', 'Fiber-optic cable'],
     route: ['Scale: 20 units = 1 m · person 1.75 m', 'CABLE: ', 'FINISHED', 'X-RAY', 'WHICH ROUTE DO YOU PULL?', 'PULL ', 'THE VERDICT — ALL THREE ROUTES, SCORED', '✕ REJECTED — SAFETY', 'Across the hallway floor', '×1.0', '/100', '▸ WHY?'],
-    mech: ['A · BEND RADIUS', 'SIMULATED SPEC', 'B · PULLING', 'C · RESTRAINT', 'LOOSE', 'SECURE', 'EXCESSIVE', 'BEND TIGHTNESS', '− EASE', '+ TIGHTEN', 'CHECK BEND', 'MEETS SPEC ✓', 'Steady smooth pull', 'Pull harder through the snag', 'Hard yank around the corner', 'Pull it through by the connector', 'STRAP TENSION', 'SET LOOSE', 'SET SECURE', 'SET EXCESSIVE'],
-    supports: ['A · FOUR JOBS', 'SUPPORT', 'PATHWAY', 'PROTECTION', 'MANAGEMENT', 'B · THE SORT', 'C · SUPPORT SPACING', 'MAX SAG ½ UNIT', 'APPROVE', 'REJECT', 'NEXT ITEM ›', 'FINISH SORT ›', 'RETRY THE SORT', 'RUN THE SORT AGAIN', 'CHECK SPACING'],
+    mech: ['A · BEND RADIUS', 'SIMULATED SPEC', 'B · PULLING', 'C · RESTRAINT', 'LOOSE', 'SECURE', 'EXCESSIVE', 'BEND TIGHTNESS', '◂ GENTLER', 'TIGHTER ▸', 'CHECK BEND', 'MEETS SPEC ✓', 'Steady smooth pull', 'Pull harder through the snag', 'Hard yank around the corner', 'Pull it through by the connector', 'STRAP TENSION', 'SET LOOSE', 'SET SECURE', 'SET EXCESSIVE'],
+    supports: ['A · FOUR JOBS', 'SUPPORT', 'PATHWAY', 'PROTECTION', 'MANAGEMENT', 'B · THE SORT', 'C · SUPPORT SPACING', 'MAX SAG', '½ UNIT', 'APPROVE', 'REJECT', 'NEXT ITEM ›', 'FINISH SORT ›', 'RETRY THE SORT', 'RUN THE SORT AGAIN', 'CHECK SPACING'],
     rack: ['RACK', 'PHASE A — INSPECT', 'PHASE B — DRESS', 'PHASE C — SERVICE', 'PHASE D — MAINTAIN', 'FIX', '▸ SUSPECT LIST', 'RACK CONDEMNED — NOW DRESS IT RIGHT ›', 'DSP INPUT 7', 'REPLACE THIS CABLE ✓', 'STRIP THE RACK', 'CUT THE DRESSING', 'USE THE DRESSING', 'FORCE IT', 'A-007', 'THE SAME JOB, BEFORE'],
     walls: ['ROOM', 'X-RAY WALL VIEW', '1 · SURFACE RACEWAY', '2 · WALL PENETRATION', '3 · THE DOORWAY', '4 · SHARP EDGE', 'NEXT WALL ›', 'TEMPORARY', 'PERMANENT', 'Wedge the door open for the event', 'Wrap the edge in tape and move on', 'Install a bushing / grommet on the opening'],
     ceiling: ['CEILING', 'ABOVE CEILING · AS FOUND', 'FINISHED VIEW', 'EXERCISE 1 · FIND THE PROBLEMS', 'EXERCISE 2 · INSTALL THE ROUTE', 'SUSPECT LIST', 'CONTINUE TO THE INSTALL ›', '1 · PICK THE PATHWAY / SUPPORT', '2 · PLACE J-HOOKS ON THE 12-UNIT SPAN', 'CHECK SPACING', 'CONFIRM THE ROUTE ✓'],
     floor: ['STAGE CRAFT — CLEAN UP THE DECK', 'STAGE PLAN', 'THE FOH RUN', 'BACKSTAGE', 'OVERALL', 'STRIKE — COIL THE SNAKE OVER-UNDER', 'TWIST', 'SHOW THE PROFESSIONAL WAY', 'OVER LOOP', 'UNDER LOOP', 'RESTART THE COIL', 'NONE — loops cancel', 'LOW', 'BUILDING', 'HIGH — will fight deployment', '✕ REJECTED — SAFETY'],
     emi: ['THE CONCEPT FIELD', 'EXPOSURE', 'LOW', 'MODERATE', 'HIGH', 'BALANCED', 'UNBALANCED', 'CLOSE', 'MID', 'FAR', 'THE REAL LEVERS — NOT A MAGIC NUMBER', 'THE CROSSING — POWER ROUTE MEETS SIGNAL ROUTE', 'AC FEEDER', 'TRANSFORMER', 'MOTOR', 'DIMMER RACK', 'NETWORK CABLE', 'DISTANCE', '◂ CLOSER', 'FARTHER ▸', 'BALANCED PAIR', 'LEVEL', 'SHIELDING', 'CURRENT', 'GEOMETRY', 'GROUNDING'],
-    fire: ['1 · IDENTIFY EACH SPACE', '2 · ONE RATED-WALL PENETRATION', 'READING THE SECTION', 'DUCTED CAVITY', 'OPEN-RETURN CAVITY', 'RISER', 'A plenum — every ceiling cavity is one', 'Yes — the label says fire rated', 'FULL SCREEN', '▸ WHY?'],
+    // fire option text balanced on purpose (lab fix round 1, phase 2, owner 2026-11-14: "Begin fixing all bugs found and do
+    // obvious (my decision is not required) fixes as you suggestted in the report."; report row 4, pattern 4).
+    fire: ['1 · IDENTIFY EACH SPACE', '2 · ONE RATED-WALL PENETRATION', 'READING THE SECTION', 'DUCTED CAVITY', 'OPEN-RETURN CAVITY', 'RISER', 'A plenum — every ceiling cavity is one', 'Yes — the label on the tube says fire rated', 'FULL SCREEN', '▸ WHY?'],
     label: ['SYSTEM', 'A · SERVICE CALL', 'B · ASSIGN IDENTITY', 'C · TRACE TEST', 'D · SERVICE LOOPS', 'THE OTHER HALF OF IDENTITY — THE RECORDS', 'A-012', 'CABLE ', 'ORIGIN — STAGE END', 'DESTINATION — RACK END', 'CABLE ID', 'APPLY LABELS — BOTH ENDS', 'STORED SLACK', 'TOO LITTLE', 'INTENTIONAL', 'EXCESSIVE', 'CONFIRM STORED SLACK', 'R1-PP2-12', 'PB-3'],
     inspect: ['FACILITY WALK', 'STAGE', 'FLOOR', 'WALL / DOOR', 'RACK', 'CEILING / TRAY', 'EQUIP ROOM', 'KNOWLEDGE CHECK', '1 · CLASSIFY', '2 · CORRECT', '▸ FINDINGS LIST', 'Fire / Building', 'Serviceability', 'SIGN OFF THE INSPECTION ✓', 'FINAL INSPECTION COMPLETE', 'AS FOUND ON THE WALK', 'NEW INSPECTION ATTEMPT ↻'],
     myth: ['RULE OR MYTH?', 'TRUE', 'FALSE', '✓ Right', '✕ It’s', 'CONTINUE ›', 'NEXT ›'],
@@ -222,7 +224,9 @@ describe('3. every TRY THIS number is one the screen prints', () => {
     for (const s of ['OVERALL 75', 'OVERALL 77', 'OVERALL 100']) assert.ok(tryOf('floor').includes(s), s);
     assert.match(code(`${DIR}/scenes/FloorScene.tsx`), /`OVERALL \$\{overall\}`/);
   });
-  it('Stage 4 bend: coax after five − EASE taps ≈ 9.5× (< 10×), after six ≈ 11× (passes)', () => {
+  // Button words changed on purpose, lab fix round 1 (owner 2026-11-14: "Begin fixing all bugs found and do
+  // obvious (my decision is not required) fixes as you suggestted in the report."): "− EASE" made the number go up.
+  it('Stage 4 bend: coax after five ◂ GENTLER taps ≈ 9.5× (< 10×), after six ≈ 11× (passes)', () => {
     const m = code(`${DIR}/scenes/MechScene.tsx`);
     assert.match(m, /const R_MAX_DIA = 20;/);
     assert.match(m, /const R_MIN_DIA = 1;/);
@@ -256,13 +260,19 @@ describe('3. every TRY THIS number is one the screen prints', () => {
     assert.equal(maxGap([4, 8]), 4);
     assert.equal(maxGap([2, 6, 10]), 4);
     // The drawn dip: a 4-unit span sags exactly TO the MAX SAG ½ UNIT line (not
-    // level); 6- and 8-unit spans hit the drawing's cap, past the line.
-    assert.match(sc, /const depthPx = span > 0 \? Math\.min\(27, SAG_LIMIT_UNITS \* Math\.pow\(span \/ SPEC_EVERY, 2\) \* UNIT\) : 0;/);
+    // level); past it every longer span dips deeper (owner 2026-11-25, fix-first 15
+    // round 2: the old 27 px cap drew 6, 8, 10 and 12 units with the same sag).
+    // The label now reads on two lines, MAX SAG / ½ UNIT, so the deeper sag misses it.
+    assert.match(sc, /const depthPx = sagDepthPx\(span, SPEC_EVERY, SAG_LIMIT_UNITS \* UNIT, SAG_ROOM_PX\);/);
     assert.match(sc, /y1=\{CABLE_Y \+ SAG_LIMIT_UNITS \* UNIT\}/);
     const unitPx = Number(/const UNIT = (\d+(?:\.\d+)?);/.exec(sc)?.[1]);
-    const dip = (span: number) => Math.min(27, 0.5 * (span / 4) ** 2 * unitPx);
-    assert.equal(dip(4), 0.5 * unitPx, '4-unit span dips just to the line');
-    assert.ok(dip(6) > 0.5 * unitPx && dip(6) === dip(8), '6 and 8 both capped, past the line');
+    const room = Number(/const SAG_ROOM_PX = (\d+(?:\.\d+)?);/.exec(sc)?.[1]);
+    const m = sc.match(/export function sagDepthPx\([\s\S]*?\n\}\n/);
+    assert.ok(m);
+    const dip = new Function(`${m[0].replace('export ', '').replace(/: number/g, '')}\nreturn sagDepthPx;`)() as (s: number, e: number, l: number, r: number) => number;
+    const d = (span: number) => dip(span, 4, 0.5 * unitPx, room);
+    assert.equal(d(4), 0.5 * unitPx, '4-unit span dips just to the line');
+    assert.ok(d(6) > 0.5 * unitPx && d(6) < d(8) && d(8) < d(10) && d(10) < d(12), 'past the line, longer spans dip deeper');
     assert.ok(!tryOf('supports').includes('level'));
     assert.match(sc, /P\{i \+ 1\}/);
     assert.ok(tryOf('supports').includes('P3 (6u)') && tryOf('supports').includes('P2 and P4 (4u, 8u)'));
@@ -319,7 +329,11 @@ describe('4. wiring: the guide key in the header, the host around the screen', (
     );
   });
   it('ScreenGuideHost wraps the root’s whole content; regions only on the Rack Unit stage; reset per screen', () => {
-    assert.match(SCR, /<View style=\{\[styles\.root, \{ paddingTop: insets\.top \+ 10 \}\]\}>(\s*\{\})*\s*<ScreenGuideHost resetKey=\{guideKey\} regions=\{rackStage\}>\s*<LabHeader /);
+    // `hold={introAnimating}` added on purpose (lab fix round 1, phase 2, owner 2026-11-14: "Begin fixing all
+    // bugs found and do obvious (my decision is not required) fixes as you suggestted in the report."): the
+    // guide card waits for the intro drawing. The stage-1 nicknames left the guide list for the same reason:
+    // they now show only after the pick, so the guide no longer names them.
+    assert.match(SCR, /<View style=\{\[styles\.root, \{ paddingTop: insets\.top \+ 10 \}\]\}>(\s*\{\})*\s*<ScreenGuideHost resetKey=\{guideKey\} regions=\{rackStage\} hold=\{introAnimating\}>\s*<LabHeader /);
     assert.match(SCR, /<SourceSheet [^\n]*\/>\s*<\/ScreenGuideHost>\s*<\/View>\s*<\/LabNavProvider>/);
     // Stage 11 is the lab's one Rack Unit stage — the regions it registers are real.
     assert.equal(CI_MODULES.filter((m: { rack?: boolean }) => m.rack).map((m: { id: string }) => m.id).join(), 'fire');
@@ -342,7 +356,11 @@ describe('5. the chip decision: a concept / decision lab drops the AccuracyNote'
     assert.match(code(`${DIR}/scenes/MechScene.tsx`), /Conceptual meter for judgment training — not an engineering pull calculation\./);
     assert.match(code(`${DIR}/scenes/EmiScene.tsx`), /Not measured values\./);
   });
-  it('the code / safety boundary stays on the intro (CI_GOVERN_NOTE)', () => {
-    assert.match(code(`${DIR}/CableInstallLabScreen.tsx`), /<Text style=\{styles\.governNote\}>\{CI_GOVERN_NOTE\}<\/Text>/);
+  // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item CI-04): the code note
+  // moved from the intro page to the top of SOURCES / STANDARDS opened from the intro.
+  it('the code / safety boundary rides on top of SOURCES / STANDARDS from the intro (CI_GOVERN_NOTE)', () => {
+    const scr = code(`${DIR}/CableInstallLabScreen.tsx`);
+    assert.match(scr, /const CI_INTRO_SOURCES_LEAD: readonly string\[\] = \[CI_INTRO_LEAD, CI_GOVERN_NOTE\];/);
+    assert.match(scr, /<SourceSheet sourceIds=\{sourceIds\} lead=\{sourceLead \? CI_INTRO_SOURCES_LEAD : undefined\}/);
   });
 });

@@ -156,7 +156,7 @@ describe('room modes — Rayleigh, and parity with the Room Modes calculator', (
     // the explicit order cap still caps (the calculator-parity test uses it)
     assert.equal(roomModes(c, 5, 4, 2.5, 2, 100000).filter((m) => m.axis === 'L').length, 2);
   });
-  it('flags coincident modes within 5 % — a 4 × 4 room stacks (1,0,0) on (0,1,0)', () => {
+  it('flags coincident modes within 5% — a 4 × 4 room stacks (1,0,0) on (0,1,0)', () => {
     const modes = roomModes(c, 4, 4, 2.5);
     const pairs = coincidentModes(modes);
     assert.ok(pairs.some(([a, b]) => a.f === b.f && a.kind === 'axial' && b.kind === 'axial'));
@@ -368,7 +368,7 @@ describe('SBIR — the first cancellation AT THE SEAT from the image-source path
     assert.match(s[0].text, /^Both speakers are 90 cm from the front wall/);
     assert.match(s[0].text, /101\.9 Hz/);
     assert.match(s[0].text, /woofer/);
-    assert.match(s[0].text, /under about 0\.5 m/);
+    assert.match(s[0].text, /under about 50 cm: the cancellation moves up out of the low bass, where thick absorption — 10 cm or more — behind the speakers can reduce it; keep the rear-port clearance/);
     assert.match(s[0].text, /over about 2 m/);
   });
 });
@@ -701,7 +701,7 @@ describe('analysis bundle, suggestions and comparison', () => {
     assert.deepEqual(a.listenerZones.map((z) => `${z.mode.axis}:${z.zone}`), ['L:null', 'W:null', 'H:null']);
     const L = a.suggestions.find((s) => /L-axis mode 34\.3 Hz/.test(s.text))!;
     assert.equal(L.level, 'check');
-    assert.match(L.text, /Move fore\/aft — try the seat at roughly 35–40 % of the room length/);
+    assert.match(L.text, /Move fore\/aft — try the seat at roughly 35–40% of the room length/);
     const W = a.suggestions.find((s) => /every odd width mode/.test(s.text))!;
     assert.equal(W.level, 'ok', 'the width null on the center line is the accepted trade, not a warning');
     assert.match(W.text, /here 42\.9 Hz/);

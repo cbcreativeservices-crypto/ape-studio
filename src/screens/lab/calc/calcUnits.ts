@@ -661,6 +661,26 @@ export function unitTags(text: string): string[] {
   }
   return out;
 }
+
+/** Level references a 'db' answer may name in its label. */
+const LEVEL_REFS: ReadonlySet<string> = new Set(['dBu', 'dBV', 'dBFS', 'dBTP', 'dBm', 'LUFS', 'LU', 'dBV/Pa']);
+
+/**
+ * The unit a one-unit 'db' or 'number' answer prints when its LABEL names one:
+ * "SAME LEVEL IN dBV" prints dBV, "OUTPUT LEVEL (dBu)" dBu, "CAPACITOR (µF)" µF —
+ * never a bare "dB" beside a dBV level, or no unit at all (beginner audit
+ * 2026-11-14: "SAME LEVEL IN dBV 1.782 dB"). The value is unchanged; a label
+ * with no tag, or two, keeps the kind's own unit. Compressor Math works in dBFS
+ * (its fields' help says so): its level answers carry that in their meaning.
+ */
+export function namedOutputUnit(o: { label: string; quantity: string; meaning?: string }): string | null {
+  if (o.quantity !== 'db' && o.quantity !== 'number') return null;
+  if (o.quantity === 'db' && (o.meaning === 'db:dbfs-level' || o.meaning === 'db:comp-threshold')) return 'dBFS';
+  const tags = unitTags(o.label);
+  if (tags.length !== 1) return null;
+  if (o.quantity === 'db' && !LEVEL_REFS.has(tags[0])) return null;
+  return tags[0];
+}
 /**
  * The KIND + UNIT rule: may a value (`label`, `quantity`) fill `field` as far
  * as its kind and unit go? The kinds must match. On 'db', two NAMED references
@@ -723,10 +743,18 @@ type ChainNumOut = Extract<OutputVal, { value: number }>;
  *  offer (chainFits, D41). null: no answer to judge yet (the upstream step is
  *  incomplete or refused) — the field reads honestly empty, no reason given. */
 export function liveImport(
-  out: readonly ({ result: { refused?: boolean; outputs: OutputVal[] } } | undefined)[],
+  out: readonly ({ result: { refused?: boolean; outputs: OutputVal[] }; carried?: Record<string, ChainNumOut> } | undefined)[],
   src: Extract<ValueSource, { kind: 'prior-step' }>,
   f: Pick<FieldDef, 'name' | 'quantity' | 'meaning'>,
 ): { o: ChainNumOut; fits: boolean } | null {
+  // A carried INPUT (fix-first 15, 2026-11-25): that step's own value, as
+  // typed or carried there — read even when its answer is refused (the value
+  // the learner entered is still the value). Kind and unit must still fit.
+  if (src.inputKey != null) {
+    const c = out[src.stepIndex]?.carried?.[src.inputKey];
+    if (!c) return null;
+    return { o: c, fits: c.quantity === f.quantity && unitFits(c.label, c.quantity, f) };
+  }
   // A REFUSED upstream step has no answer to pass on (owner 2026-10-03,
   // "do 1"): a figure printed beside the refusal is not this step's input.
   const up0 = out[src.stepIndex];

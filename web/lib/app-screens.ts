@@ -8,7 +8,19 @@
  * Missing files fall back to a labeled placeholder in the phone frame.
  */
 
-const video = (id: string, title: string, caption: string, file: string, tint: string) =>
+/**
+ * `poster`: the still shown before the clip plays (SEO part C4, 2026-11-14;
+ * owner "Yes, make them"). Each `{file}-poster.webp` is that clip's own first
+ * frame, so by default every video uses its own still.
+ */
+const video = (
+  id: string,
+  title: string,
+  caption: string,
+  file: string,
+  tint: string,
+  poster: string = `/app-screens/${file}-poster.webp`,
+) =>
   ({
     id,
     title,
@@ -17,6 +29,7 @@ const video = (id: string, title: string, caption: string, file: string, tint: s
     tint,
     file,
     fit: "cover" as const,
+    poster,
   });
 
 export const APP_SCREENS = {

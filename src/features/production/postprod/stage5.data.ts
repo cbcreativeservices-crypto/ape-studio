@@ -91,7 +91,7 @@ export const STAGE5_BUILD: StageDef = {
           showWhen: { field: "replacement_needed", notEquals: ["no"] },
           label: "How the replacement is matched to the original",
           kind: "multiChoice",
-          help: "A clean studio recording dropped into a room that was never clean is the most recognisable sound in post-production. Everything on this list is an attempt to hide the join.",
+          help: "A clean studio recording dropped into a room that was never clean is the most recognizable sound in post-production. Everything on this list is an attempt to hide the join.",
           options: [
             { value: "mic", label: "Same or similar microphone" },
             { value: "distance", label: "Matched distance and angle" },
@@ -296,7 +296,7 @@ export const STAGE5_BUILD: StageDef = {
           showWhen: { field: "correction_decision", notEquals: ["none_needed"] },
           label: "What is being corrected",
           kind: "multiChoice",
-          help: "If correction was ruled out, leave this empty. Anything ticked here is a change to a performance that nobody agreed to.",
+          help: "If correction was ruled out, leave this empty. Anything checked here is a change to a performance that nobody agreed to.",
           options: [
             { value: "pitch", label: "Pitch" },
             { value: "timing", label: "Timing" },
@@ -364,8 +364,8 @@ export const STAGE5_BUILD: StageDef = {
       watches: ["build.cue_list", "build.match_plan"],
       severity: "attention",
       kind: "mismatch",
-      title: "Replacement recorded with no plan to match it",
-      detail: "Lines or parts have been recorded again and nothing is recorded about matching the microphone, the distance, the room or the background they are going back into. A clean replacement in a room that was never clean is the most recognisable sound in post-production.",
+      title: "Replacement recorded with no plan to match it. Is that intended?",
+      detail: "Lines or parts have been recorded again and nothing is recorded about matching the microphone, the distance, the room or the background they are going back into. A clean replacement in a room that was never clean is the most recognizable sound in post-production.",
       fixHint: "Lay the original background underneath it at minimum, and match level and perspective. Matching the microphone and distance at the session is cheaper than matching them afterwards.",
       needsLogic: true,
       logicIntent: "Fire when cue_list has any row with cu_status recorded, edited or approved AND match_plan is empty."
@@ -386,7 +386,7 @@ export const STAGE5_BUILD: StageDef = {
       watches: ["build.cue_list"],
       severity: "info",
       kind: "missing",
-      title: "A replacement cue with no reason against it",
+      title: "A replacement cue with no reason against it. Is that intended?",
       detail: "Re-recording costs a session and a performance that will not match. A cue without a stated reason is one nobody has weighed.",
       fixHint: "Say why each one is being replaced. If the honest answer is that somebody would prefer a different reading, that is worth being explicit about.",
       needsLogic: true,
@@ -441,7 +441,7 @@ export const STAGE5_BUILD: StageDef = {
       watches: ["build.effects_list"],
       severity: "info",
       kind: "missing",
-      title: "An added element with no stated purpose",
+      title: "An added element with no stated purpose. Is that intended?",
       detail: "Rows in the effects list have nothing in the purpose column. Elements added because they were available are the ones that get removed in the mix, after everything has been balanced around them.",
       fixHint: "One phrase per row. If nothing can be written, try the production without the element.",
       needsLogic: true,
@@ -463,7 +463,7 @@ export const STAGE5_BUILD: StageDef = {
       watches: ["build.effects_list", "build.music_cues"],
       severity: "attention",
       kind: "legal",
-      title: "Added material with no rights status at all",
+      title: "Added material with no rights status at all. Is that intended?",
       detail: "Rows carry no rights status, so nobody has looked. Library and generated material both have terms, and the terms usually depend on how the finished production is used.",
       fixHint: "Set a status on every row, including Not required where that is genuinely the answer.",
       needsLogic: true,
@@ -508,7 +508,7 @@ export const STAGE5_BUILD: StageDef = {
       watches: ["build.correction_decision", "build.correction_scope", "brief.prohibited_changes"],
       severity: "attention",
       kind: "legal",
-      title: "A performance is being altered without an agreement to do it",
+      title: "A performance is being altered without an agreement to do it. Is that intended?",
       detail: "Correction is being applied and nobody has agreed to it, or the brief recorded it as ruled out. Changing what somebody performed can be a contractual matter as well as a creative one.",
       fixHint: "Ask the performer or producer before going further. It is a short conversation now and a serious one after delivery.",
       needsLogic: true,
@@ -520,7 +520,7 @@ export const STAGE5_BUILD: StageDef = {
       severity: "attention",
       kind: "unrealistic",
       title: "Heavy correction with nothing protected",
-      detail: "Correction is set heavy or fully quantized and nothing is listed as being preserved. At these settings the tools often flatten vibrato, shift formants, pull breaths and consonants towards notes they were never on, and remove the timing variation that made the part feel played.",
+      detail: "Correction is set heavy or fully quantized and nothing is listed as being preserved. At these settings the tools often flatten vibrato, shift formants, pull breaths and consonants toward notes they were never on, and remove the timing variation that made the part feel played.",
       fixHint: "Exclude unpitched sounds, preserve formants, leave vibrato and deliberate expression alone, and correct individual moments rather than whole parts.",
       needsLogic: true,
       logicIntent: "Fire when correction_amount is heavy or quantized AND correction_guards is empty."
@@ -530,7 +530,7 @@ export const STAGE5_BUILD: StageDef = {
       watches: ["build.correction_target", "build.correction_scope"],
       severity: "attention",
       kind: "missing",
-      title: "Pitch correction with no key and scale recorded",
+      title: "Pitch correction with no key and scale recorded. Is that intended?",
       detail: "A common cause of obviously wrong tuning is the right tool aimed at the wrong scale, which pulls notes confidently to the wrong places.",
       fixHint: "Record the key and scale, and check it against a section where the harmony moves rather than the opening bar.",
       needsLogic: true,
@@ -542,7 +542,7 @@ export const STAGE5_BUILD: StageDef = {
       watches: ["build.correction_compared", "build.correction_scope"],
       severity: "attention",
       kind: "missing",
-      title: "Correction applied without hearing it against the original",
+      title: "Correction applied without hearing it against the original. Is that intended?",
       detail: "Correction is being judged without a level-matched comparison to the performance it replaced. Corrected material often comes back at a slightly different level and a little tidier, and either can read as better on its own.",
       fixHint: "Match the levels, switch between the two in context, and specifically listen for what has gone rather than for what has improved.",
       needsLogic: true,
@@ -584,7 +584,7 @@ export const STAGE5_BUILD: StageDef = {
       "build.music_edits_musical": "to_length",
       "build.music_speech_relationship": [],
       "build.cue_list": [
-        { cu_num: "1", cu_who: "Host", cu_where: "07:20", cu_original: "the figure was forty per cent", cu_replacement: "the figure was fourteen per cent", cu_reason: "correction", cu_status: "recorded", cu_notes: "Recorded at home on a different mic" }
+        { cu_num: "1", cu_who: "Host", cu_where: "07:20", cu_original: "the figure was forty percent", cu_replacement: "the figure was fourteen percent", cu_reason: "correction", cu_status: "recorded", cu_notes: "Recorded at home on a different mic" }
       ],
       "build.effects_list": [
         { fx_where: "Cold open", fx_what: "Street atmosphere", fx_source: "library", fx_purpose: "", fx_rights: "", fx_notes: "4 second file" }

@@ -117,7 +117,7 @@ export function centralitySplit(familyId: string): Record<AudioCentrality, numbe
  *  military. Used to surface COMMON ENTRY POINTS in a family. */
 export function preparationLevel(prep: string): 0 | 1 | 2 {
   if (/doctorate|graduate|clinical|law degree|military|credentialing/i.test(prep)) return 2;
-  if (/bachelor's degree common/i.test(prep)) return 1;
+  if (/bachelor['’]s degree common/i.test(prep)) return 1;
   return 0;
 }
 

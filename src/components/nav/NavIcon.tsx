@@ -1,7 +1,8 @@
 /**
  * NavIcon — per-tab icon (bundled PNG) + label, lit (active: full color + iOS
  * glow) / unlit (dimmed).
- *   Home = amber house · Study = blue headphones · Progress = white faders
+ *   Home = amber house · Study = orange (label and glow too, owner 2026-11-24)
+ *   · Progress = white faders
  *   · Profile = green person. (The "Achievements" tab is LABELED "PROGRESS".)
  * Art replaced hand-drawn SVG/View glyphs with bundled transparent PNGs
  * (assets/icons/nav/*, owner 2026-08-13). The PROGRESS glyph never tracks/shows/
@@ -14,8 +15,9 @@
  * as does Reduce Motion. Decorative only — still shows no user data.
  */
 import { useEffect, useRef, useState } from 'react';
+import { SvgXml } from 'react-native-svg';
 import { AccessibilityInfo, Animated, Easing, Image, Platform, StyleSheet, Text, View } from 'react-native';
-import { colors, fonts } from '../../theme/tokens';
+import { STUDY_COLOR, colors, fonts, studyRgba } from '../../theme/tokens';
 import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
 
 export type NavIconName = 'Home' | 'Study' | 'Achievements' | 'Profile';
@@ -56,7 +58,8 @@ function defFor(icon: NavIconName): Def {
       // App amber (was orange) — user request 2026-07-23.
       return { color: colors.amber, glowRgba: 'rgba(255,198,77,.7)', font: 10, spacing: 1 };
     case 'Study':
-      return { color: colors.blue, glowRgba: 'rgba(47,155,255,.7)', font: 10, spacing: 1 };
+      // STUDY is orange, label and glow (owner 2026-11-24: "Orange everywhere").
+      return { color: STUDY_COLOR, glowRgba: studyRgba(0.7), font: 10, spacing: 1 };
     case 'Achievements':
       // PROGRESS label stays silver-toned; glyph is the white faders PNG.
       return { color: '#d6d6d6', glowRgba: 'rgba(230,230,230,.6)', font: 9.5, spacing: 0.9 };
@@ -96,7 +99,10 @@ const FADER_EXC_EVERY_MS = 180000; // 3 minutes
 let lastFaderExcursionAt = 0;
 let nextExcursionFader = 0;
 
-function ProgressFadersLit() {
+/** Also drawn on the PROGRESS circle of the circle menu when Progress is the
+ *  current place (owner 2026-11-20: "PROGRESS faders must still MOVE like
+ *  before"). 22 × 22, like the tab icon; the menu scales it to its circle. */
+export function ProgressFadersLit() {
   // ⛔ THE APP SETTING COUNTS HERE TOO (owner 2026-09-20 bug pass). This read
   // only the OS flag, so the faders drifted on forever for anyone who turned
   // "Reduce animations" on in the app — the phone-level switch was the only
@@ -202,6 +208,36 @@ function ProgressFadersLit() {
   );
 }
 
+/**
+ * The STUDY icon (owner 2026-11-20): two stacked index cards, the front one
+ * with a bold "dB", and a small lit bulb — the circle menu's Study Dashboard
+ * art, used wherever the app means Study (the Dashboard title, Study keys,
+ * study-topic marks). The old blue headphones now mean LABS.
+ *
+ * The art loads on first use, not at app start (test/perfStartTrim: the
+ * start graph is a ratchet), and is built once.
+ */
+let studyXml: string | null = null;
+function studyArt(): string {
+  if (!studyXml) {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const art = require('./circleMenuIconArt') as typeof import('./circleMenuIconArt');
+    studyXml = art.iconXml('study3v2', '#ff8a1e');
+  }
+  return studyXml;
+}
+export function StudyGlyph({ size = 22 }: { size?: number }) {
+  return (
+    <SvgXml
+      xml={studyArt()}
+      width={size}
+      height={size}
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+    />
+  );
+}
+
 export function NavIcon({
   icon,
   lit,
@@ -224,7 +260,11 @@ export function NavIcon({
     // it now sits on the ICON only, so the label's own dim is not multiplied
     // under it. The icon looks exactly as it always has when not selected.
     <View style={styles.wrap}>
-      {animatedProgress ? (
+      {icon === 'Study' ? (
+        <View style={[styles.icon, { opacity: lit ? 1 : NAV_ICON_OFF }, glow]}>
+          <StudyGlyph size={22} />
+        </View>
+      ) : animatedProgress ? (
         <View style={[styles.icon, glow]}>
           <ProgressFadersLit />
         </View>

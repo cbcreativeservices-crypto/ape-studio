@@ -310,7 +310,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: what moves most of the air on a ukulele?', options: ['The nylon strings', 'The small top, driven by the bridge', 'The headstock'], after: 'Now STEP through the pluck (or PLAY ONCE) and watch what each event drives.' },
+  sound: { prompt: 'Before you step through: what moves most of the air on a ukulele?', options: ['The nylon strings', 'The small top, driven by the bridge', 'The headstock'], after: 'Now go EVENT by EVENT through the pluck (or PLAY ONCE) and watch what each event drives.' },
   placement: { prompt: 'Predict: you move the mic from the upper body toward the sound hole. What changes?', options: ['More string definition', 'More body and low-mid', 'It depends on this ukulele'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   ...STRINGS_PREDICT,
 };

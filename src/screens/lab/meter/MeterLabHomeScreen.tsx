@@ -17,7 +17,7 @@ import { ScreenGuideHost } from '../../../features/lab/screenGuide';
 import { METER_END_GUIDE, METER_HOME_GUIDE } from './meterScreenGuides';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { ModuleAccordionRow } from '../ModuleAccordionRow';
-import { METER_MODULES } from './modules/registry';
+import { METER_MODULES, meterLeftDetail } from './modules/registry';
 import { LabEndLink, LabEndScreen } from '../kit/LabEndScreen';
 // Tablet (owner 2026-09-29): a page of rows/cards - capped at the card column
 // and centred instead of stretching rows 990 pt wide. No-op on a phone.
@@ -69,8 +69,12 @@ export function MeterLabHomeScreen() {
       />
       {ending ? (
         <LabEndScreen
+          // The recap and next-lab card (labEndContent.ts, S4).
+          labId="af_visual_analysis"
           labTitle="Visual Audio Analysis Lab"
-          units={METER_MODULES.map((m) => ({ id: m.id, label: m.title }))}
+          units={METER_MODULES.map((m) => ({ id: m.id, label: m.title, detail: meterLeftDetail(m.id) }))}
+          // Phase 2 end screen (2026-11-14): the rule every row shares, said once.
+          howItCounts="A module counts once every CHECK YOURSELF on it is answered right (Signal Detective: one whole case). Opening it again, or practicing, never removes it."
           cleared={clearedUnits}
           unreadable={unreadable}
           mode="credit"
@@ -81,10 +85,11 @@ export function MeterLabHomeScreen() {
         />
       ) : (
       <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: 34 + insets.bottom }]}>
+        {/* MT-04 (owner 2026-11-15: "build waves 1 thru 3", D62): one plain idea instead of nine
+            display names a beginner has never heard. */}
         <Text style={styles.body}>
-          Every professional display — waveform, peak, VU, LUFS, spectrum, spectrogram, waterfall,
-          phase, scope — tells a story to the engineer who can read it. The Academy’s measurement
-          tools MEASURE; this lab teaches you to INTERPRET what they show.
+          Every meter answers one question about a sound. In 11 short modules you will learn which
+          question each one answers, then prove it in Signal Detective.
         </Text>
         {/* UNREADABLE is not "not started" (owner 2026-10-03, "do 2"; D51):
             no ✓ on a row is a stand-in when the banked units could not be

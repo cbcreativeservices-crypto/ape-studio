@@ -21,6 +21,7 @@ import Animated, { Easing, useAnimatedProps, useSharedValue, withTiming } from '
 import { useAnimationsAllowed } from '../../../features/settings/a11y';
 import { DistanceScene } from './distanceViz';
 import { useLoopClock } from './speechMotion';
+import { PLAIN_TERMS } from '../../../features/lab/plainTerms';
 
 const APath = Animated.createAnimatedComponent(Path);
 const ACircle = Animated.createAnimatedComponent(Circle);
@@ -322,7 +323,11 @@ export function PageDistance({ ctx }: { ctx: PageCtx }) {
       {picker}
       <DistanceScene inches={inches} a11y={`To scale: the talker and a microphone ${inches} inch${inches === 1 ? "" : "es"} from the lips. The direct sound fades as it spreads; the room reflections reach the mic from every direction at the same strength wherever it stands.`} />
       <DbBars rows={rows} controls={<View style={{ gap: 8 }}>{distRead}{picker}</View>} a11y={`At ${inches} inches: direct voice ${d.directDb.toFixed(0)} dB, room ${d.roomDb} dB, plosive air ${d.plosiveDb.toFixed(0)} dB, proximity bass ${d.proximityDb.toFixed(0)} dB, voice over noise ${d.snrDb.toFixed(0)} dB, all relative and illustrative.`} />
-      <Text style={styles.foot}>Relative, illustrative values — inverse-square for the voice, a much steeper fall for the air jet, a typical cardioid proximity curve, a fixed room and noise floor.</Text>
+      {/* How big a dB change is, next to the bars, in the ONE shared wording
+          (owner 2026-11-15: "build waves 1 thru 3", D62 VOX-02; guardrail 3,
+          plainTerms.ts). A line in, a line out: the model list it replaces
+          is now one short disclosure. */}
+      <Text style={styles.foot}>{PLAIN_TERMS.db.term}: {PLAIN_TERMS.db.sentence} Relative, illustrative values from a simple model.</Text>
       <Notice>Switch between 12", 6" and 1" and watch two bars: the room never moves, and the plosive bar moves far faster than the voice.</Notice>
       <Card>
         <Eyebrow>{inches}" · WHAT CHANGES</Eyebrow>
@@ -364,7 +369,9 @@ export function PageVoices({ ctx }: { ctx: PageCtx }) {
         </Card>
       ))}
       <Body>For the engineer: a lower fundamental puts more energy in the bottom octaves (mind the proximity effect and the high-pass filter); higher formants push the presence region up — sibilance sits a little higher too.</Body>
-      {!ctx.isDone ? <Btn label="GOT IT ›" tone="primary" onPress={ctx.markDone} /> : null}
+      {/* The button used to vanish with no word of what it did (novice audit
+          2026-11-14): the page now says it is done. */}
+      {!ctx.isDone ? <Btn label="GOT IT ›" tone="primary" onPress={ctx.markDone} /> : <Text style={styles.doneLine}>✓ THIS MODULE IS DONE · NEXT MOVES ON</Text>}
     </View>
   );
 }
@@ -429,7 +436,7 @@ export function PageSpeechChecks({ ctx }: { ctx: PageCtx }) {
   // a screen reader on a page that GATES on it. One answer at a time.
   useEffect(() => {
     if (Platform.OS !== 'ios' || n === 0) return;
-    AccessibilityInfo.announceForAccessibility(`${n} of ${FINAL_CHECKS.length} correct`);
+    AccessibilityInfo.announceForAccessibility(`${n} correct`);
   }, [n]);
   return (
     <View style={{ gap: 12 }}>
@@ -437,7 +444,7 @@ export function PageSpeechChecks({ ctx }: { ctx: PageCtx }) {
       {/* The count is THIS visit's (the answer chips reshuffle and start fresh each
           visit); the page mark is saved. So a page completed earlier reads
           "0 of 7 correct this visit · page complete" — practice, nothing lost. */}
-      <Text style={styles.foot} accessibilityLiveRegion="polite">{n} of {FINAL_CHECKS.length} correct this visit{ctx.isDone ? ' · page complete' : ` · ${PASS_MARK} completes the page`}</Text>
+      <Text style={styles.foot} accessibilityLiveRegion="polite">{n} correct this visit{ctx.isDone ? ' · module complete' : n >= PASS_MARK ? '' : ` · ${PASS_MARK - n} more completes the module`}</Text>
       {FINAL_CHECKS.map((c) => <SpeechCheckCard key={c.id} id={c.id} onCorrect={bump} />)}
     </View>
   );
@@ -446,6 +453,7 @@ export function PageSpeechChecks({ ctx }: { ctx: PageCtx }) {
 const styles = StyleSheet.create({
   foot: { color: colors.textMuted, fontFamily: fonts.barlowRegular, fontSize: 11.5, lineHeight: 15 },
   readout: { color: colors.textSecondary, fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, paddingHorizontal: 2 },
+  doneLine: { color: colors.green, fontFamily: fonts.oswaldMedium, fontSize: 10.5, letterSpacing: 1.5 },
 });
 
 /** A dB bar that glides to its new length (a Path, so it animates natively —

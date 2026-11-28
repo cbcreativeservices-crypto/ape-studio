@@ -13,6 +13,11 @@ import type { InstrumentModel, VariantId } from '../../../engine/model/types.ts'
 import { HandPlan } from '../handdrums/HandPlan';
 import { modelArtPlan } from '../handdrums/handPlanModel.ts';
 import type { SpExtra } from './family.ts';
+import { figureV2On } from '../figureV2/figureV2Config.ts';
+
+/** (cast figures 2026-11-26) a neighbour drawn as a person on the plan (I02's guitarist, the only one in the
+ *  family) is the cast's plan marker in the approved look, not the old shoulders-and-head marker. */
+const PLAN_V2 = figureV2On('familySmallPerc');
 
 /** `model`: the lesson's model — the art (player and instrument) draws from
  *  it, so its footprint on the plan does too (handPlanModel modelArtPlan). */
@@ -23,6 +28,6 @@ export function stationPlanFor(plan: SpExtra['plan'], model: InstrumentModel, In
     const art = useMemo(() => modelArtPlan(model, variant, true), [variant]);
     // On the station view ('kit') only the always-there neighbours; STAGE and
     // STUDIO add their own (HandPlan shows each scene's).
-    return <HandPlan w={w} h={h} scene={scene} variant={variant} Drums={Drums} things={plan.things} box={plan.box} art={art} cue={plan.cue} shortOf={shortOf} highlight={highlight} onTap={onTap} accessibilityLabel={accessibilityLabel} />;
+    return <HandPlan w={w} h={h} scene={scene} variant={variant} Drums={Drums} things={plan.things} box={plan.box} art={art} cue={plan.cue} shortOf={shortOf} highlight={highlight} onTap={onTap} accessibilityLabel={accessibilityLabel} v2={PLAN_V2} />;
   };
 }

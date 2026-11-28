@@ -301,9 +301,10 @@ function PageProcessorChain({ ctx }: { ctx: PageCtx }) {
             label: 'VIEW',
             valueLabel: vocal ? 'VOCAL' : 'PROCESSOR',
             valueA11y: vocal ? 'the vocal pair' : 'the processor pair',
+            // SH-76 (owner 2026-11-15: "build waves 1 thru 3", D62): one plain line per choice.
             options: [
-              { id: 'vocal', label: 'VOCAL PAIR' },
-              { id: 'proc', label: 'PROCESSOR PAIR' },
+              { id: 'vocal', label: 'VOCAL PAIR', blurb: 'The vocal mic’s pair: VOCAL OUT over CONSOLE IN 2, where the compressor is patched in.' },
+              { id: 'proc', label: 'PROCESSOR PAIR', blurb: 'The compressor’s own pair: COMPRESSOR OUT over COMPRESSOR IN, joined to the chain only by cords.' },
             ],
             selectedId: view,
             onSelect: (id) => setView(id === 'proc' ? 'proc' : 'vocal'),
@@ -383,7 +384,7 @@ function PageWrongPatch({ ctx }: { ctx: PageCtx }) {
       {WRONG_PATCH_CASES.map((c, i) => (
         <View key={c.id} style={{ gap: 8 }}>
           <Card>
-            <Eyebrow>{`CALL ${i + 1} OF ${WRONG_PATCH_CASES.length} · ${c.title.toUpperCase()}`}</Eyebrow>
+            <Eyebrow>{`CALL ${i + 1} · ${c.title.toUpperCase()}`}</Eyebrow>
             <Body>{c.situation}</Body>
           </Card>
           {c.render ? (

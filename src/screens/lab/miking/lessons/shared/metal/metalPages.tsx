@@ -40,6 +40,7 @@ import { makeHandPages, useStepper, type HandSpec } from '../hand/handPages';
 import { BAR_SHAPES, barAt, barStrikeShare, chimePitchRatio, DISC_SHAPES, discAt, discPeak, discStillDiameters, discStillRings, discStrikeShare, octaves } from './metalModes.ts';
 import { CYMBAL_SHAPES, cymbalShapeAt, cymbalShapePeak, cymbalStillDiameters, cymbalStillRings, cymbalStrikeShare } from '../cymbals/cymbalModes.ts';
 import { BarFace, DiscFace, type BarGeom } from './metalFigures';
+import { FigureScale } from '../figureV2/detail';
 
 /* ═══════════════ the face-on drawing ═══════════════ */
 
@@ -67,7 +68,10 @@ function FrontStage({ w, h, front, variant, highlight, onTap, label }: { w: numb
       <Pressable onPress={press} disabled={!onTap} accessibilityRole="image" accessibilityLabel={label} style={{ width: w, height: h }}>
         <Canvas style={{ width: w, height: h }} accessible accessibilityLabel={label}>
           <Group transform={[{ translateX: xf.ox }, { translateY: xf.oy }, { scale: xf.s }]}>
-            <Art variant={variant} highlight={highlight} />
+            {/* (figure V2: the drawn scale, so the player takes the right level of detail) */}
+            <FigureScale ptPerMm={xf.s}>
+              <Art variant={variant} highlight={highlight} />
+            </FigureScale>
           </Group>
         </Canvas>
       </Pressable>
@@ -168,7 +172,7 @@ export function MetalInstrument(spec: MeetSpec) {
                   if (q) pick(q.id);
                 },
                 format: () => (shown ? shown.short.toUpperCase() : 'step through the parts'),
-                formatShort: () => (shown ? shown.short.toUpperCase().slice(0, 9) : 'STEP'),
+                formatShort: () => (shown ? shown.short.toUpperCase().slice(0, 9) : 'PICK'),
               },
               parts.length,
               parts.findIndex((q) => q.id === livePart),
@@ -264,7 +268,7 @@ function MetalSound(spec: SoundSpec) {
     const pred = lesson.predictions.sound;
     const reached = st.shown >= n;
     const cells = spec.cells(variant);
-    const strikeBezel: BezelItem[] = [{ k: 'EVENT', v: `${st.shown} / ${n}`, flex: 0.8 }, ...cells.map((c) => ({ k: c.k, v: c.at[Math.min(c.at.length - 1, st.shown - 1)] ?? '—', flex: c.flex ?? 1 }))];
+    const strikeBezel: BezelItem[] = [{ k: 'EVENT', v: `${st.shown}`, flex: 0.8 }, ...cells.map((c) => ({ k: c.k, v: c.at[Math.min(c.at.length - 1, st.shown - 1)] ?? '—', flex: c.flex ?? 1 }))];
 
     /* the shapes */
     const SH = spec.shapes;
@@ -387,7 +391,7 @@ function MetalSound(spec: SoundSpec) {
         well: (
           <>
             {pred ? <PredictCard p={pred} value={predicted} onPick={setPredicted} /> : null}
-            <Landing looking={spec.strikeLooking(variant)} prompt="STEP through the stroke, or PLAY ONCE — it stops at the end. Nothing here makes a sound." />
+            <Landing looking={spec.strikeLooking(variant)} prompt="Go EVENT by EVENT through the stroke, or PLAY ONCE — it stops at the end. Nothing here makes a sound." />
             <Card>
               <Point title={`${st.shown} · ${stage.title.toUpperCase()}`}>{stageText(st.shown - 1)}</Point>
             </Card>

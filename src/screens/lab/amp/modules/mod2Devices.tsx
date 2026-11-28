@@ -152,6 +152,10 @@ export function TransformerDiagram({ np, ns, width, height }: { np: number; ns: 
   );
 }
 
+/** Module 2's plain line before any transformer formula (AMPL-01). */
+export const MOD2_TRANSFORMER_PLAIN =
+  'A transformer trades voltage for current: wind more turns on the output side and the voltage goes up while the current comes down, so it never adds power.';
+
 export function Mod2Devices() {
   const [device, setDevice] = useState<Device>('generic');
   const [control, setControl] = useState(0.5);
@@ -256,12 +260,15 @@ export function Mod2Devices() {
                   </View>
                 </Card>
               ) : null}
-              <FormulaCard
-                title="Ideal transformer"
-                lines={['Vp / Vs = Np / Ns', 'Ip × Vp = Is × Vs   (ideal — no net power gain)']}
-                note="Step the voltage up and the available current steps down by the same ratio. Losses in real cores and windings only make the output smaller."
-              />
-              <LearnMore title="IMPEDANCE TRANSFORMATION">
+              {/* AMPL-01 (owner 2026-11-15: "build waves 1 thru 3"): a plain sentence
+                  before any formula; the formula card moved under LEARN MORE. */}
+              <Body>{MOD2_TRANSFORMER_PLAIN}</Body>
+              <LearnMore title="THE FORMULAS · IMPEDANCE TRANSFORMATION">
+                <FormulaCard
+                  title="Ideal transformer"
+                  lines={['Vp / Vs = Np / Ns', 'Ip × Vp = Is × Vs   (ideal — no net power gain)']}
+                  note="Step the voltage up and the available current steps down by the same ratio. Losses in real cores and windings only make the output smaller."
+                />
                 <FormulaCard
                   title="Reflected impedance"
                   lines={['Zp / Zs = (Np / Ns)²', xf ? `8 Ω on the secondary looks like ${xf.zReflected?.toFixed(0)} Ω to the primary` : '']}

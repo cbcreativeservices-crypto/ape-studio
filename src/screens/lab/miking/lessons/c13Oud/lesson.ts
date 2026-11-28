@@ -338,7 +338,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: what moves most of the air when an oud string is plucked?', options: ['The string itself', 'The face, driven by the bridge', 'The bowl’s outer shell'], after: 'Now STEP through the pluck (or PLAY ONCE) and watch what each event drives.' },
+  sound: { prompt: 'Before you step through: what moves most of the air when an oud string is plucked?', options: ['The string itself', 'The face, driven by the bridge', 'The bowl’s outer shell'], after: 'Now go EVENT by EVENT through the pluck (or PLAY ONCE) and watch what each event drives.' },
   placement: { prompt: 'Predict: you turn the mic from the upper face toward the main rose. What changes?', options: ['More finger detail', 'More body and bloom', 'It depends on this oud'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   ...STRINGS_PREDICT,
 };

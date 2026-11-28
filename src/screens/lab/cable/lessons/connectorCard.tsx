@@ -100,7 +100,12 @@ export function usePrefetchConnectorImages(ids: readonly ConnectorId[]): void {
   }, [key]);
 }
 
-export function ConnectorCard({ rec }: { rec: ConnectorRecord }) {
+/**
+ * `folded` (owner's decision 5, phase 3, 2026-11-14: beginner core first):
+ * every section starts closed, CONTACTS & USES too, so the record opens on the
+ * photo, the name and its cautions, about one phone screen; nothing is removed.
+ */
+export function ConnectorCard({ rec, folded = false }: { rec: ConnectorRecord; folded?: boolean }) {
   const hazard = rec.safety.level === 'mains' || rec.safety.level === 'speaker';
   // Glossary term photos (owner ruling 2026-08-16) — one image, or a labeled
   // MALE/FEMALE/CABLE gallery for connectors with multiple views. Renders
@@ -165,7 +170,7 @@ export function ConnectorCard({ rec }: { rec: ConnectorRecord }) {
         </View>
       ) : null}
 
-      <Section title="CONTACTS & USES" startOpen>
+      <Section title="CONTACTS & USES" startOpen={!folded}>
         {/* CODE-DRAWN anatomy (fix pass 2026-10-16): the contacts NAMED on
             the connector itself, to scale. It sits beside the photo above —
             the photo slot stays the owner's — and beside the rows below. */}
@@ -265,7 +270,8 @@ export function RecognitionStrip({ rec, title }: { rec: ConnectorRecord[]; title
           </Pressable>
         ))}
       </View>
-      {selected ? <ConnectorCard rec={selected} /> : null}
+      {/* Folded like every record (CF-01, owner 2026-11-15: "build waves 1 thru 3"). */}
+      {selected ? <ConnectorCard rec={selected} folded /> : null}
     </View>
   );
 }

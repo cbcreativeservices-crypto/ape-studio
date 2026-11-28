@@ -53,7 +53,7 @@ export const SPLASH_COPY: Partial<LessonCopy> = {
     workedAim: 'Aim it at the splash — the lab counts it while the mic’s axis meets the plate. On a tilted splash, “above” is measured square to the plate.',
     workedClear: 'Clear of every part — the stick’s side, the swing, the crash above (or under) it, the arm and the player’s arm. Clearance comes first, and the drummer stops before a real mic moves.',
     blocked: {},
-    reveal: 'Closer tends to catch more of the splash’s quick attack; farther, more of the kit around it — and every splash is different. Each zone’s LISTEN FOR line is an idea to check by ear.',
+    reveal: 'Closer tends to catch more of the splash’s quick attack; farther, more of the kit around it — and every splash is different. Each zone’s TENDS TO HEAR line is an idea to check by ear.',
     typeNotes: {
       sdcCard: 'Ideas to try: above the splash on the far side; change the height first, then the aim. On top of the crash, the mic hears both plates — that is the sound the player chose.',
       smallDynCard: 'Ideas to try: a dynamic above the splash on the far side, aimed at its bow.',
@@ -126,7 +126,7 @@ export const SPLASH_CYM: CymbalExtra = {
     title: 'Strike to sound',
     badge: 'The order of events, not their speed · motion drawn much larger than it really is · silent',
     looking: 'Side view · the splash cut through the stick’s line',
-    prompt: 'STEP through the stroke, or PLAY ONCE — it stops at the end. Switch SETUP for the splash upside down. Nothing here makes a sound.',
+    prompt: 'Go EVENT by EVENT through the stroke, or PLAY ONCE — it stops at the end. Switch SETUP for the splash upside down. Nothing here makes a sound.',
     rFrac: 0.85,
     stages: [
       { title: 'The stick strikes', text: 'The stick strikes near the edge. A small, thin plate responds at once: a quick, bright ATTACK — an accent, a “splash”.' },

@@ -32,21 +32,21 @@ import type { MeterModuleId } from './modules/registry';
 export const METER_HOME_GUIDE: ScreenGuide = {
   intro: {
     learning: 'Why every display answers a different question about the same sound (peak, average, loudness, frequency, decay, stereo), and why you read any display’s axes first.',
-    start: 'Tap Waveform, read its one-line description, then tap OPEN to start Module 1. Take the modules in order; Signal Detective at the end hides each meter’s name.',
+    start: 'Tap Waveform and read the question it answers, then tap OPEN to start Module 1. Take the modules in order; Signal Detective at the end hides each meter’s name.',
   },
   seeing: [
     'This lab teaches you to read the ten displays engineers look at every day, one module each. Then Signal Detective puts them to work.',
-    'Each row is a module, and a ✓ means you’ve opened it. SEE WHAT’S LEFT lists the ones you haven’t.',
+    'Each row is a module, and a ✓ means you’ve answered every CHECK YOURSELF on it right. SEE WHAT’S LEFT lists the ones still to do.',
     'The measurement tools measure; this lab shows you what their pictures mean. USE WHAT YOU LEARNED links to those tools and the ⓘ GUIDED LESSON.',
   ],
   control: [
-    'Tap a module’s name to read its one-line description, then tap OPEN to start it.',
+    'Tap a module’s name to read the question that meter answers, then tap OPEN to start it.',
     'Every module is laid out the same way: the display on top, live numbers on its frame, your controls in the dock at the bottom, and notes and check questions to scroll below.',
     'To move on, use the strip under a module’s title (‹ PREV, NEXT ›) instead of coming back here. ‹ at the top left steps out: from a module to this menu, from this menu out of the lab.',
     'OPEN THE MEASUREMENT TOOLS › takes you to the tools that show your real sound. Stuck on any screen? Tap ⓘ beside its title, or long-press a control for its guided-lesson entry.',
   ],
   changes: [
-    'Open a module and its ✓ appears here, and the list behind SEE WHAT’S LEFT gets shorter.',
+    'Answer a module’s checks right and its ✓ appears here, and the list behind SEE WHAT’S LEFT gets shorter.',
     'Whatever you set inside a module stays in that module. Nothing you do there reaches another display.',
     'The order builds: Modules 1–4 are level (each a different “how loud?”), 5–7 frequency, 8–10 stereo and raw voltage, and Module 11 mixes them.',
   ],
@@ -66,22 +66,22 @@ export const METER_HOME_GUIDE: ScreenGuide = {
 export const METER_END_GUIDE: ScreenGuide = {
   intro: {
     learning: 'A review of the lab’s big idea: each meter answers one question, no single meter tells the whole story, and a reading depends on what it measures and how fast.',
-    start: 'Tap any module still listed under WHAT’S LEFT to open it. Or tap REVIEW ▾ on the ✓ line, reopen a module you’ve done, and read its display before you touch a control.',
+    start: 'Read WHERE TO START at the top: it names the next thing to do from where you are.',
   },
   seeing: [
-    'This is your list for the lab. WHAT’S LEFT shows the modules you haven’t opened yet, and each one is a link.',
-    'The ones you’ve opened fold into a single ✓ line, so only the unfinished work stands out.',
+    'This is your list for the lab. WHAT’S LEFT shows the modules still to do, and each one is a link.',
+    'The ones you’ve done fold into a single ✓ line, so only the unfinished work stands out.',
     'Once all eleven are done, the title changes to LAB COMPLETE.',
   ],
   control: [
     'Tap a module that’s still left to jump straight to it.',
-    'REVIEW ▾ on the ✓ line unfolds the modules you’ve opened. Tap any one to open it again.',
+    'REVIEW ▾ on the ✓ line unfolds the modules you’ve done. Tap any one to open it again.',
     'PRACTICE AGAIN FROM THE START reopens Module 1 and clears nothing.',
     'DONE · BACK TO LABS goes back one screen. Came here from a module? It returns to this lab’s menu (if you entered through it). Came from the menu? It takes you out of the lab.',
   ],
   changes: [
-    'Each module you open moves to the ✓ line, so this list shrinks as you go.',
-    'Signal Detective joins the ✓ line as soon as you open it. Its own lab under AUDIO FUNDAMENTALS › Signal counts as finished only once you’ve answered every question of every case right.',
+    'A module moves to the ✓ line once its CHECK YOURSELF questions are all answered right. Opening it is not enough.',
+    'Signal Detective joins the ✓ line once you answer all four questions of one case right. Its own lab under AUDIO FUNDAMENTALS › Signal counts as finished only once you’ve answered every question of every case right.',
     'Going back into a module takes nothing away, so its ✓ stays.',
   ],
   teaches: [
@@ -90,7 +90,7 @@ export const METER_END_GUIDE: ScreenGuide = {
     'A reading only means something once you know what the display measures and how fast it reacts.',
   ],
   tryThis: [
-    'Jump to a module you haven’t opened and read its display before you touch a control. What can you tell from the picture alone?',
+    'Jump to a module still on the list and read its display before you touch a control. What can you tell from the picture alone?',
     'Use PRACTICE AGAIN FROM THE START to run the eleven modules in order once more. Your ✓ line stays as it is.',
   ],
 };
@@ -105,7 +105,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
     seeing: [
       'You’re seeing a sound as a DAW (recording software) draws it: time left to right, amplitude up and down from the zero line. Judge height on the 0, −6, −12, −24 scale.',
       'Color warns you: blue near zero, red near full scale, all red while it clips.',
-      'On the frame: PEAK, RMS, CREST (their gap), DC (how far the center is off zero), CLIP (CLEAN, or how far OVER). PK, RMS and CF in the picture match until it clips.',
+      'On the frame: PEAK, RMS, CREST (their gap), DC (how far the center is off zero), CLIP (CLEAN, or how far OVER). The line in the picture shows the same numbers.',
     ],
     control: [
       'GAIN (−12 to +18 dB) turns the signal up or down before it’s drawn, so drag it and watch the wave grow. You start at +0.0 dB.',
@@ -169,11 +169,11 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
   vu: {
     intro: {
       learning: 'Why a VU needle reads average level, which is closer to how loud a sound feels, and why it lags far behind fast peaks on purpose.',
-      start: 'Pick SNARE and watch the PEAK lamp flash while the needle only flicks partway up. Then switch SIGNAL to ORGAN and see the needle climb and sit.',
+      start: 'Pick PINK NOISE: the needle sits steady on 0 VU and the PEAK lamp stays dark. Then pick SNARE and raise GAIN about +4 dB: the lamp flashes while the needle is barely into the red.',
     },
     seeing: [
       'This classic VU meter gives you two answers: a needle on an arc scale for the average, a PEAK lamp for fast peaks. Watch both.',
-      'The needle takes about 300 ms to respond, by design, as the badge says. Here, 0 VU sits at an average of about −7.5 dBFS; studios often align it nearer −18 dBFS.',
+      'The needle takes about 300 ms to respond, by design. 0 VU is lined up to −18 dBFS, a common studio alignment; the PEAK lamp lights at 0 dBFS.',
       'NDL MAX is the highest a 300 ms average reached, in dBFS. Compare it with PEAK, RMS and CREST (their gap).',
     ],
     control: [
@@ -183,7 +183,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
     ],
     changes: [
       'The needle averages about 300 ms. A snare crack is over before it moves far; a held organ chord keeps pushing, so the needle climbs and sits.',
-      'The PEAK lamp reacts at once, so you’ll see it flash on the snare while the needle only flicks partway up.',
+      'The PEAK lamp reacts at once, at full scale only: add GAIN on the snare and it flashes.',
       'NDL MAX lands near RMS, far below PEAK on spiky sounds. GAIN moves PEAK, RMS and NDL MAX together; CREST stays put, and only another SIGNAL changes it.',
     ],
     teaches: [
@@ -192,9 +192,9 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
       'Don’t read 0 VU as a ceiling. It’s a reference (nominal) level with headroom above it.',
     ],
     tryThis: [
-      'On SNARE: PEAK −1.6, but NDL MAX only −23.0. The needle stays more than 21 dB under the peak.',
-      'Switch to ORGAN: PEAK −5.7, NDL MAX −11.3. The peak is lower, yet NDL MAX sits almost 12 dB higher, and the PEAK lamp stays dark.',
-      'Now PINK NOISE: broadband and steady, so the needle holds almost still. Equal energy in every octave makes it the reference for system and room checks.',
+      'On SNARE: PEAK −3.1, but NDL MAX only −24.5. The needle stays more than 21 dB under the peak.',
+      'Switch to ORGAN: PEAK −13.2, NDL MAX −18.8. The peak is 10 dB lower, yet NDL MAX sits almost 6 dB higher, and the PEAK lamp stays dark.',
+      'Now PINK NOISE: broadband and steady, so the needle holds almost still on 0 VU with the lamp dark. Equal energy in every octave makes it the reference for line-up, system and room checks.',
     ],
   },
 
@@ -235,7 +235,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
   spectrum: {
     intro: {
       learning: 'How to read a spectrum by its shape: where the energy sits, smooth noise vs spiky notes, hum from AC power as a family of spikes, feedback as one spike.',
-      start: 'Open PATTERN and flip through all seven shapes. Then switch between MAINS HUM and FEEDBACK and watch PEAK jump from 60 Hz to 1.7 kHz.',
+      start: 'Open PATTERN and flip through all seven shapes. Then switch between AC HUM and FEEDBACK and watch PEAK jump from 60 Hz to 1.75 kHz.',
     },
     seeing: [
       'A spectrum analyzer shows you where a sound’s energy sits. Frequency runs left to right on a log scale (20, 100, 1k, 10k): 100 to 1k takes the same room as 1k to 10k. Level runs up in dB; bar colors follow it.',
@@ -243,7 +243,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
       'Careful: PEAK here is a frequency, the tallest point’s. LEVEL is its height (dB rel), and TILT is the overall slope per octave (a doubling).',
     ],
     control: [
-      'PATTERN opens SPEECH, CYMBAL, KICK DRUM, GUITAR, MAINS HUM, FEEDBACK and PINK NOISE. Each option describes its shape, and the tray stays open so you can flip through them until each shape looks familiar.',
+      'PATTERN opens SPEECH, CYMBAL, KICK DRUM, GUITAR, AC HUM, FEEDBACK and PINK NOISE. Each option describes its shape, and the tray stays open so you can flip through them until each shape looks familiar.',
       'There’s nothing else to set here: the shape is the lesson.',
       'Stuck between two shapes? Long-press PATTERN for its guided-lesson entry.',
     ],
@@ -258,7 +258,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
       'A finished mix usually slopes down like pink noise, not flat.',
     ],
     tryThis: [
-      'Switch between MAINS HUM and FEEDBACK: PEAK jumps from 60 Hz to 1.7 kHz (the plot’s marker says 1.75 kHz). You go from a low family to one lone spike.',
+      'Switch between AC HUM and FEEDBACK: PEAK jumps from 60 Hz to 1.75 kHz, the same number the plot’s marker shows. You go from a low family to one lone spike.',
       'Pick PINK NOISE: TILT reads −3.0/oct, the reference slope. Then CYMBAL: TILT flips to +5.2/oct.',
       'Pick KICK DRUM: PEAK reads 60 Hz for the thump, and a small second bump sits near 3 kHz. That’s the beater click.',
     ],
@@ -413,7 +413,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
     control: [
       'SIGNAL draws SINE, SQUARE, TRIANGLE, SAW, SPEECH or MUSIC, and the tray stays open so you can compare traces. Picking one in X-Y goes back to TIME: X-Y draws its own stereo pair.',
       'The X-Y key switches between TIME and X-Y.',
-      'WIDTH (0 to 100 %) and PHASE (0° to 180°, R vs L) shape that stereo pair. Both start at 0. Moving either one switches X-Y on, so tap X-Y to get back to TIME.',
+      'WIDTH (0 to 100 %) and PHASE (0° to 180°, R vs L) shape that stereo pair. Both start at 0 and stay grayed in TIME: tap X-Y first, and tap it again to get back to TIME.',
     ],
     changes: [
       'Each wave’s shape comes from its harmonics: a sine has none, a square has fast edges, this saw ramps down, then snaps back up.',
@@ -436,7 +436,7 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
   detective: {
     intro: {
       learning: 'How each fault leaves its own picture in level, frequency, time or stereo, and why you name the display and read its axes before judging what’s wrong.',
-      start: 'Answer WHAT METER IS THIS? first: say what runs across and what runs up before you tap. Then work through the other three questions and use CASE › for the next case.',
+      start: 'The meter’s name is hidden. Look at the picture: what runs left to right? What runs up? Then answer WHAT METER IS THIS? Wrong answers show you the clue. CASE › brings the next case.',
     },
     seeing: [
       'You’re the detective here. Each case gives you a meter with its name hidden and a real-world fault in the signal. You’ve met every one of these meters in Modules 1–10.',
@@ -445,8 +445,8 @@ export const METER_SCREEN_GUIDES: Record<MeterModuleId, ScreenGuide> = {
     ],
     control: [
       '‹ CASE and CASE › at the bottom of the screen move you between the seven cases. A new case starts at its first question.',
-      'Tap an answer. A wrong one gives you a hint and another try; the right one opens the explanation. The answers are shuffled each time.',
-      'Under the question, ‹ PREVIOUS steps back and NEXT QUESTION › steps on. After the last question it becomes NEXT CASE ›.',
+      'Tap an answer. A wrong one gives you a hint and another try; the right one opens the explanation. The answers come in a mixed order, so their place is no clue.',
+      'Between the case keys, ‹ PREVIOUS steps back and NEXT QUESTION › steps on. After the last question it becomes NEXT CASE ›. Each new question opens at the top.',
     ],
     changes: [
       'Each case swaps in a different display and fault, so your first job is always to name the display.',

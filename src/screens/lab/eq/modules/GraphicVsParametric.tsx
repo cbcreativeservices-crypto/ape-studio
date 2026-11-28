@@ -33,10 +33,15 @@ const CHECK: CheckSpec = {
   correctIdx: 1,
   reveal:
     'A graphic band has a FIXED frequency and a fixed/defined bandwidth — only its gain moves. A parametric band adjusts frequency, gain, AND Q. Graphic = fast fixed-band control; parametric = precision.',
+  // A reason per wrong option (phase 2, F5's `why`): names the mix-up, never the answer.
+  why: {
+    0: 'Both adjust gain: that is the one thing a graphic slider does.',
+    2: 'They are not identical: a graphic band is fixed in place. Look at what the parametric bell can move.',
+  },
   wrongHint: 'Both adjust gain — that’s the one thing a graphic slider does.',
 };
 
-export function GraphicVsParametricModule(_p: EqModuleComponentProps) {
+export function GraphicVsParametricModule(p: EqModuleComponentProps) {
   const [board, setBoard] = useState<'oct' | 'third'>('oct');
   const [octGains, setOctGains] = useState<number[]>(Array(OCT_CENTERS.length).fill(0));
   const [thirdGains, setThirdGains] = useState<number[]>(Array(THIRD_CENTERS.length).fill(0));
@@ -159,7 +164,8 @@ export function GraphicVsParametricModule(_p: EqModuleComponentProps) {
           precision and full control.
         </Text>
 
-        <CheckQuestion spec={CHECK} />
+        {/* Work done (phase 3, owner's decision 1): this module counts when its check is answered right. */}
+        <CheckQuestion spec={CHECK} onSolved={p.onDone} />
       </View>
     </RackUnit>
   );

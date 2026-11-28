@@ -5,7 +5,7 @@
  * the screen root, positioned above the content bottom / nav.
  */
 import { useEffect, useRef } from 'react';
-import { AccessibilityInfo, Animated, StyleSheet, Text, useWindowDimensions } from 'react-native';
+import { AccessibilityInfo, Animated, Pressable, StyleSheet, Text, useWindowDimensions } from 'react-native';
 import { BRAND_MAX_FONT_SCALE, fonts } from '../theme/tokens';
 import { POPUP_MAX_W } from '../theme/readingColumn';
 
@@ -13,9 +13,16 @@ export function CoachMark({
   text,
   bottom = 16,
   docked = false,
+  onDismiss,
 }: {
   text: string;
   bottom?: number;
+  /**
+   * When given, a tap on the pill dismisses the hint (owner 2026-11-20, the
+   * Glossary: a hint nobody can get rid of reads as something stuck on the
+   * screen). Without it the pill stays touch-transparent, as before.
+   */
+  onDismiss?: () => void;
   /**
    * In the layout flow instead of floating (toddler hunt 2026-10-14 #31d): the
    * pill takes its own band under the content, so it never sits over text.
@@ -51,9 +58,9 @@ export function CoachMark({
 
   // Subtle by design (Booth 2026-07-09): a quiet dark pill with muted text —
   // a gentle instruction, not a highlighted callout. Slightly translucent.
-  return (
+  const pill = (
     <Animated.View
-      pointerEvents="none"
+      pointerEvents={onDismiss ? 'auto' : 'none'}
       style={[
         styles.pill,
         docked
@@ -66,6 +73,17 @@ export function CoachMark({
       {/* A hint never grows past the brand cap — at large text it covered the content (TestFlight build 36, 2026-10-15). */}
       <Text style={styles.text} maxFontSizeMultiplier={BRAND_MAX_FONT_SCALE}>{text}</Text>
     </Animated.View>
+  );
+  if (!onDismiss) return pill;
+  return (
+    <Pressable
+      onPress={onDismiss}
+      hitSlop={8}
+      accessibilityRole="button"
+      accessibilityLabel={`${text}. Dismiss hint`}
+    >
+      {pill}
+    </Pressable>
   );
 }
 

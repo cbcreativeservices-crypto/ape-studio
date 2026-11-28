@@ -209,7 +209,7 @@
   },
   {
     "term": "Recording authentication",
-    "body": "Mains hum fluctuates with the power grid's own frequency - checking that pattern, ENF analysis, is one way examiners judge if a recording is genuine."
+    "body": "AC hum fluctuates with the power grid's own frequency - checking that pattern, ENF analysis, is one way examiners judge if a recording is genuine."
   },
   {
     "term": "Rip and Read",
@@ -516,7 +516,7 @@
     "body": "A leaky wave rides along a surface but can't keep its energy to itself - it continuously radiates sound into whatever medium sits against it, fading as it goes."
   },
   {
-    "term": "heritage-site acoustic modelling",
+    "term": "heritage-site acoustic modeling",
     "body": "Laser-scan a ruined historic building, give each surface real acoustic properties, and you can actually listen to how the space sounded before it changed."
   },
   {
@@ -2177,7 +2177,7 @@
   },
   {
     "term": "Far-side helioseismic imaging",
-    "body": "Sound waves travelling deep inside the Sun let astronomers map sunspot storms on its far side, invisible from Earth, before rotation brings them into view."
+    "body": "Sound waves traveling deep inside the Sun let astronomers map sunspot storms on its far side, invisible from Earth, before rotation brings them into view."
   },
   {
     "term": "Rectifier tube",
@@ -2321,7 +2321,7 @@
   },
   {
     "term": "Dictabelt",
-    "body": "A Dictabelt didn't cut a groove, it embossed one - a stylus ploughed the pattern into soft plastic rather than carve it away, for dictation from the late 1940s."
+    "body": "A Dictabelt didn't cut a groove, it embossed one - a stylus plowed the pattern into soft plastic rather than carve it away, for dictation from the late 1940s."
   },
   {
     "term": "long-range acoustic device",
@@ -2740,8 +2740,8 @@
     "body": "A voice recorded close to the mic doesn't just sound near - it can feel like it's addressing you alone, a quality studied as vocal intimacy in radio and ASMR."
   },
   {
-    "term": "Mains-hum speed correction",
-    "body": "Restorers can use the faint mains hum baked into old tape as a hidden pitch reference, correcting playback speed by matching it back to true."
+    "term": "AC-hum speed correction",
+    "body": "Restorers can use the faint AC hum baked into old tape as a hidden pitch reference, correcting playback speed by matching it back to true."
   },
   {
     "term": "Spatial audio heat map",
@@ -3121,7 +3121,7 @@
   },
   {
     "term": "Speed-error signature",
-    "body": "A recording played back at the wrong speed leaves a tell: mains hum or a reference tone shows up at a shifted frequency, revealing exactly how far off it runs."
+    "body": "A recording played back at the wrong speed leaves a tell: AC hum or a reference tone shows up at a shifted frequency, revealing exactly how far off it runs."
   },
   {
     "term": "Flying out",
@@ -3377,7 +3377,7 @@
   },
   {
     "term": "Variac",
-    "body": "A Variac dials mains voltage up or down via a sliding brush - handy for waking old gear gently, but it shares a winding with the mains and never isolates you."
+    "body": "A Variac dials line voltage up or down via a sliding brush - handy for waking old gear gently, but it shares a winding with the AC line and never isolates you."
   },
   {
     "term": "Shepard tones",
@@ -3421,7 +3421,7 @@
   },
   {
     "term": "One-voice dubbing",
-    "body": "Polish TV still favours lektor: one flat narrator reads every character's lines over the original soundtrack, still faintly audible underneath."
+    "body": "Polish TV still favors lektor: one flat narrator reads every character's lines over the original soundtrack, still faintly audible underneath."
   },
   {
     "term": "Paper-base tape",
@@ -3797,7 +3797,7 @@
   },
   {
     "term": "Switching hash",
-    "body": "Switching hash is the harsh gritty buzz that light dimmers and cheap power supplies leak into audio as they chop mains power on and off fast."
+    "body": "Switching hash is the harsh gritty buzz that light dimmers and cheap power supplies leak into audio as they chop AC power on and off fast."
   },
   {
     "term": "Synchresis",

@@ -30,10 +30,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { heatColor, levelColor, rampColors } from '../../../features/tools/levelColor';
 import { GuidedLessonSheet, getLabLesson } from '../../../features/lab/guidedLessons';
 import { EngineGate } from '../../tools/EngineGate';
-import { LabChip, LabShell, HeaderPlayButton, HeaderTextButton } from '../LabShell';
+import { CollapsibleSection, LabChip, LabShell, HeaderPlayButton, HeaderTextButton } from '../LabShell';
 import type { DockParam } from '../rack/rackTypes';
 import { MATERIALS, type MaterialId } from '../../../features/cymatics/materials';
-import { DEFAULT_PLATE, effectiveQ, plateAspect, plateModes, readResonance, sampleField, type EdgeCondition, type PlateShape, type PlateSpec } from '../../../features/cymatics/plateModes';
+import { DEFAULT_PLATE, effectiveQ, plateAspect, plateDrivePoint, plateModes, plateRefQ, readResonance, sampleField, type EdgeCondition, type PlateShape, type PlateSpec } from '../../../features/cymatics/plateModes';
 import { LIBRARY_SHAPES, isLibraryShape, loadLibraryShape } from '../../../features/cymatics/modalLibrary';
 import { formatHz, formatHzPrecise, formatWavelength, nearestNote, wavelengthAir } from '../../../features/cymatics/music';
 import { EXPERIMENT_BY_PRESET, PRESET_BY_ID, type FreqStrategy } from '../../../features/cymatics/presets';
@@ -49,6 +49,7 @@ import { DriveHint } from './DriveHint';
 import { RES_TINT } from '../../../features/cymatics/resTint';
 import { START_LEVEL_01 } from '../../../features/audio/startLevel';
 import { goToCymatics, useStudioKey } from './goToCymatics';
+import { STUDIO_RELATION } from './homePath';
 import { CYMATICS_CHECK_TITLE, cymaticsStudioGuide } from './cymaticsScreenGuides';
 import { makeFreqFader } from '../../../features/cymatics/freqFader';
 import { BEZEL_RES_WORD, PLATE_BEZEL_FLEX, bezelModeLabel } from '../../../features/cymatics/plateBezel';
@@ -94,9 +95,11 @@ const MULTI: { id: string; label: string; ratio: number | null }[] = [
 ];
 const SAND_AMOUNTS = [1500, 3000, 5000];
 const VIEWS: { id: PlateViewMode; label: string; short: string; blurb: string }[] = [
-  { id: 'particles', label: 'Particles', short: 'Sand', blurb: 'Sand on the plate — it walks off the moving regions and settles on the still lines.' },
+  // One name per view across the lab (owner 2026-11-15, D62 SH-36): Sand and
+  // Sand + heat, as in Change One Thing and on the key (was Particles).
+  { id: 'particles', label: 'Sand', short: 'Sand', blurb: 'Sand on the plate — it walks off the moving regions and settles on the still lines.' },
   { id: 'heat', label: 'Heat map', short: 'Heat', blurb: 'How much each point moves, on the amplitude ramp: black = still, blue = a little, red = the most. Off a resonance the whole map goes dark — the plate is barely moving.' },
-  { id: 'overlay', label: 'Particles + heat', short: 'S+H', blurb: 'Both at once: the prediction (heat) under the confirmation (sand).' },
+  { id: 'overlay', label: 'Sand + heat', short: 'Sand+heat', blurb: 'Both at once: the prediction (heat) under the confirmation (sand).' },
   { id: 'phase', label: 'Phase', short: 'Phase', blurb: 'Amber regions rise while violet regions fall — opposite sides of a nodal line move in opposite directions. Neither color is on the amplitude ramp: this view shows DIRECTION, not level. Fades between resonances.' },
   { id: 'nodes', label: 'Node lines', short: 'Nodes', blurb: 'The nodal pattern of the nearest mode — the Chladni figure that WOULD form. Fades between resonances.' },
   { id: 'plate3d', label: '3D plate', short: '3D', blurb: 'Exaggerated vertical motion, strobed to a few hertz so you can see it (the real plate moves at the drive frequency).' },
@@ -155,8 +158,10 @@ function PlateStudio() {
   const ratio = MULTI.find((m) => m.id === multi)?.ratio ?? null;
   const freqB = ratio ? freq * ratio : null;
   const fader = useMemo(() => makeFreqFader(F_MIN, F_MAX, modes, Q), [modes, Q]);
-  const res = useMemo(() => readResonance(freq, modes, Q), [freq, modes, Q]);
-  const resB = useMemo(() => (freqB ? readResonance(freqB, modes, Q) : null), [freqB, modes, Q]);
+  // RESPONSE against a FIXED reference (plateRefQ), so DAMPING lowers the peak (owner 2026-11-25, fix-first 15).
+  const refQ = useMemo(() => plateRefQ(spec.material), [spec.material]);
+  const res = useMemo(() => readResonance(freq, modes, Q, refQ), [freq, modes, Q, refQ]);
+  const resB = useMemo(() => (freqB ? readResonance(freqB, modes, Q, refQ) : null), [freqB, modes, Q, refQ]);
   const grid = useMemo(() => {
     const g = sampleField(spec, modes, freq, Q, GRID_N);
     if (!freqB) return g;
@@ -172,7 +177,15 @@ function PlateStudio() {
     for (let i = 0; i < out.length; i++) if (!Number.isNaN(out[i])) out[i] /= peak;
     return out;
   }, [spec, modes, freq, freqB, Q, res.strength, resB]);
-  const strength = Math.max(res.strength, resB?.strength ?? 0);
+  // With a SECOND TONE every readout describes the SAME tone: the one that
+  // moves the plate more (audit row 18: RESPONSE took the larger of the two
+  // while MODE and RES read tone A only, so B alone on a mode read 98 % · — ·
+  // BETWEEN). One tone: `lead` is tone A.
+  const leadIsB = !!resB && resB.strength > res.strength;
+  const lead = leadIsB && resB ? resB : res;
+  const strength = lead.strength;
+  // Whether the sand forms a figure: on either tone's mode (checker Y1).
+  const near = Math.max(res.near, resB?.near ?? 0);
 
   // Preset "land on mode k" resolves once the modes exist.
   const landed = useRef(false);
@@ -278,7 +291,9 @@ function PlateStudio() {
   const mat = MATERIALS.find((m) => m.id === spec.material)!;
   const lib = isLibraryShape(spec.shape) ? loadLibraryShape(spec.shape) : null;
   const asp = plateAspect(spec);
-  const patch = (o: Partial<PlateSpec>) => setSpec((s) => ({ ...s, ...o }));
+  // Where the driver really sits: a chip point off a solved shape moves onto the plate, as the modes do (audit row 17).
+  const drivenAt = plateDrivePoint(spec, spec.exciter);
+  const patch =(o: Partial<PlateSpec>) => setSpec((s) => ({ ...s, ...o }));
   const nudge = (pct: number) => {
     setSweeping(false);
     setFreq((f) => Math.max(F_MIN, Math.min(F_MAX, Math.round(f * (1 + pct) * 10) / 10)));
@@ -550,12 +565,12 @@ function PlateStudio() {
   // Compact words + weighted cells (plateBezel.ts, TestFlight build 32): the
   // full mode labels and APPROACHING were cut to an ellipsis on a 390 phone.
   const bezel = [
-    { k: 'DRIVE', v: formatHzPrecise(freq, true), helpKey: 'frequency', flex: PLATE_BEZEL_FLEX.drive },
-    { k: 'RESPONSE', v: `${Math.round(strength * 100)}%`, tint: levelColor(strength), helpKey: 'resonance', flex: PLATE_BEZEL_FLEX.response },
-    { k: 'MODE', v: res.dominant && res.state !== 'below' && res.state !== 'between' ? bezelModeLabel(res.dominant.label) : '—', helpKey: 'modes', flex: PLATE_BEZEL_FLEX.mode },
+    { k: 'DRIVE', v: formatHzPrecise(freq, true), helpKey: 'frequency', flex: PLATE_BEZEL_FLEX.drive, caption: 'tone fed in' },
+    { k: 'RESPONSE', v: `${Math.round(strength * 100)}%`, tint: levelColor(strength), helpKey: 'resonance', flex: PLATE_BEZEL_FLEX.response, caption: 'how much moves' },
+    { k: 'MODE', v: lead.dominant && lead.state !== 'below' && lead.state !== 'between' ? bezelModeLabel(lead.dominant.label) : '—', helpKey: 'modes', flex: PLATE_BEZEL_FLEX.mode, caption: 'which pattern' },
     // Read-only (owner rule 2026-10-10). Landing on the next mode up is the
     // FREQ key's tray button now.
-    { k: 'RES', v: BEZEL_RES_WORD[res.state], tint: RES_TINT[res.state], helpKey: 'resonance', flex: PLATE_BEZEL_FLEX.res },
+    { k: 'RES', v: BEZEL_RES_WORD[lead.state], tint: RES_TINT[lead.state], helpKey: 'resonance', flex: PLATE_BEZEL_FLEX.res, caption: 'on a mode?' },
   ];
 
   const togglePlay = () => (tone.running ? tone.stop() : void tone.start());
@@ -564,6 +579,13 @@ function PlateStudio() {
     : spec.shape === 'circle'
       ? 'SIMULATION · APPROXIMATED — Bessel disc modes, published values'
       : 'SIMULATION · APPROXIMATED — Ritz free-plate modes';
+  // The disclosure in plain words on screen (owner 2026-11-15, D62 CY-03: no
+  // "Ritz" or "Bessel" for a beginner). `badge` still rides with a saved pattern.
+  const modelNote = lib
+    ? `A simulation: this shape’s modes are calculated${lib.validated ? ' and checked' : ''}.`
+    : spec.shape === 'circle'
+      ? 'An approximate simulation of a round plate, from published values.'
+      : 'An approximate simulation of a plate with free edges.';
   // SAVE → the Pattern Gallery (Phase 4): numbers, not a picture — the full
   // state, so the figure is reproducible; the badge it carried rides along.
   // One save per press: SAVE stays disabled until the write settles, and the
@@ -598,7 +620,8 @@ function PlateStudio() {
         checkTitle={CYMATICS_CHECK_TITLE}
         title="CHLADNI PLATE STUDIO"
         subtitle="Cymatics Lab: Sound Made Visible"
-        intro="Build a plate, drive it with a tone, and watch sand find the lines where the plate stands still. Patterns snap in only near the plate’s own resonances — and which resonances those are depends on the whole plate, not on the frequency alone."
+        // The first sentence says how the studio relates to the modules (owner 2026-11-15, D62 CY-02); the rest is shorter to make room.
+        intro={`${STUDIO_RELATION.plate} Build a plate, drive it with a tone, and watch sand find the lines where the plate stands still. Patterns form only near the plate’s own resonances, and the whole plate decides where those are.`}
         exploreCaption="Sweep the frequency, or jump straight to a mode from the FREQ key. Change the plate and watch the same frequency stop being a resonance."
         headerAction={
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
@@ -612,6 +635,9 @@ function PlateStudio() {
           stage: {
             size: 'L',
             badge,
+            // The sound-off line (owner 2026-11-15: "build waves 1 thru 3", D62 SH-12): shown only while sound is off.
+            soundOffLine: 'Sound off? Turn on Silent drive in DRIVE: the figure and every readout still work.',
+            modelNote,
             onGuide: () => openLesson('display'),
             bezel,
             hideDragTag: true,
@@ -629,6 +655,7 @@ function PlateStudio() {
                   grid={grid}
                   N={GRID_N}
                   strength={strength}
+                  near={near}
                   amplitude={amplitude}
                   view={view}
                   running={driving}
@@ -650,7 +677,7 @@ function PlateStudio() {
                 </View>
               ) : (
                 <View style={[styles.noSkia, { width: w, height: h }]}>
-                  <Text style={styles.noSkiaText}>This version of the app can’t show the live plate yet; controls and readouts still work. Update the app to see it.</Text>
+                  <Text style={styles.noSkiaText}>The live plate can’t be drawn on this device. Controls and readouts still work.</Text>
                 </View>
               ),
           },
@@ -691,7 +718,7 @@ function PlateStudio() {
         {/* Resonance strength — the honest readout of how hard the plate moves */}
         <View style={styles.card}>
           <View style={styles.rowBetween}>
-            <Text style={[styles.resLabel, { color: RES_TINT[res.state] }]}>{RES_LABEL[res.state]}</Text>
+            <Text style={[styles.resLabel, { color: RES_TINT[lead.state] }]}>{RES_LABEL[lead.state]}</Text>
             <Text style={styles.resPct}>{Math.round(strength * 100)} %</Text>
           </View>
           {/* A bar whose SIZE is a level shows the ramp climbing to the level's colour (colour standard 2026-08-16). */}
@@ -699,16 +726,17 @@ function PlateStudio() {
             <LinearGradient colors={rampColors(strength)} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[styles.meterFill, { width: `${Math.max(2, Math.round(strength * 100))}%` }]} />
           </View>
           <Text style={styles.caption}>
-            {res.state === 'at' && res.dominant
-              ? `Mode ${res.dominant.label} at ${formatHz(res.dominant.hz)} · ${res.dominant.nodalLines} nodal line${res.dominant.nodalLines === 1 ? '' : 's'}. LEVEL ${Math.round(amplitude * 100)} % sets how far it moves — not which mode.`
-              : res.state === 'approaching' && res.next
-                ? `Next resonance: ${res.next.label} at ${formatHz(res.next.hz)}.`
-                : res.state === 'below'
-                  ? `First excitable resonance is at ${res.next ? formatHz(res.next.hz) : '—'} — below it the plate just moves as a whole and forms no figure.`
-                  : `Off resonance — small motion, no stable figure; the sand shivers but does not organize.${res.next ? ` Next mode up: ${res.next.label} at ${formatHz(res.next.hz)} — open FREQ and tap LAND ON to land on it.` : ''}`}
+            {lead.state === 'at' && lead.dominant
+              ? `${leadIsB && freqB ? `Tone B (${formatHz(freqB)}) is on mode` : 'Mode'} ${lead.dominant.label} at ${formatHz(lead.dominant.hz)} · ${lead.dominant.nodalLines} nodal line${lead.dominant.nodalLines === 1 ? '' : 's'}. LEVEL ${Math.round(amplitude * 100)} % sets how far it moves — not which mode.`
+              : lead.state === 'approaching' && lead.next
+                ? `Next resonance: ${lead.next.label} at ${formatHz(lead.next.hz)}.`
+                : lead.state === 'below'
+                  ? `First excitable resonance is at ${lead.next ? formatHz(lead.next.hz) : '—'} — below it the plate just moves as a whole and forms no figure.`
+                  : `Off resonance — small motion, no stable figure; the sand shivers but does not organize.${!leadIsB && res.next ? ` Next mode up: ${res.next.label} at ${formatHz(res.next.hz)} — open FREQ and tap LAND ON to land on it.` : ''}`}
           </Text>
           <View style={styles.rowBetween}>
-            <Text style={styles.readK}>Q ≈ {Math.round(Q)} · {tone.running && freqB ? `B: ${formatHz(freqB)} ${resB?.state ?? ''}` : `λ in air ${formatWavelength(wavelengthAir(freq))}`}</Text>
+            {/* The B line shows whenever a second tone drives the plate, heard or SILENT (audit row 18). */}
+            <Text style={styles.readK}>Q ≈ {Math.round(Q)} · {freqB ? `A: ${BEZEL_RES_WORD[res.state]} · B: ${formatHz(freqB)} ${resB ? BEZEL_RES_WORD[resB.state] : ''}` : `λ in air ${formatWavelength(wavelengthAir(freq))}`}</Text>
           </View>
         </View>
 
@@ -716,10 +744,13 @@ function PlateStudio() {
           The sand moves only while the plate is driven — press ▶ to play the tone, or DRIVE › SILENT to shake the plate without sound. DRIVE › SWEEP glides from mode to mode and dwells on each. 3D and CROSS-SECTION are strobed to a few hertz.
         </Text>
 
+        {/* Starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections
+            proposal): the plate's spec sheet, one tap away. Its title moved
+            from the card to the fold's header; the SIMULATION lines below stay open. */}
+        <CollapsibleSection title="WHAT THIS PLATE IS" startOpen={false}>
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>WHAT THIS PLATE IS</Text>
           <Text style={styles.body}>
-            {mat.label} · {lib ? `${lib.info.label.toLowerCase()}, ${lib.info.unitLabel} ${spec.sizeMm} mm` : spec.shape === 'circle' ? `Ø ${spec.sizeMm} mm` : spec.shape === 'rect' ? `${spec.sizeMm} × ${Math.round(spec.sizeMm * spec.aspect)} mm` : `${spec.sizeMm} × ${spec.sizeMm} mm`} · {spec.thicknessMm} mm thick · {lib ? lib.info.boundaryLabel.replace(' (solved)', '').toLowerCase() : EDGES.find((e) => e.id === spec.edge)!.label.toLowerCase()} · driven at ({spec.exciter.x.toFixed(2)}, {spec.exciter.y.toFixed(2)}){spec.support ? ' · clamped' : ''}.
+            {mat.label} · {lib ? `${lib.info.label.toLowerCase()}, ${lib.info.unitLabel} ${spec.sizeMm} mm` : spec.shape === 'circle' ? `Ø ${spec.sizeMm} mm` : spec.shape === 'rect' ? `${spec.sizeMm} × ${Math.round(spec.sizeMm * spec.aspect)} mm` : `${spec.sizeMm} × ${spec.sizeMm} mm`} · {spec.thicknessMm} mm thick · {lib ? lib.info.boundaryLabel.replace(' (solved)', '').toLowerCase() : EDGES.find((e) => e.id === spec.edge)!.label.toLowerCase()} · driven at ({drivenAt.x.toFixed(2)}, {drivenAt.y.toFixed(2)}){spec.support ? ' · clamped' : ''}.
           </Text>
           <Text style={styles.body}>
             Lowest excitable modes: {modes.filter((m) => m.drive > 0.05).slice(0, 4).map((m) => formatHz(m.hz)).join(' · ')}. Ratios to the first: {(() => {
@@ -728,6 +759,7 @@ function PlateStudio() {
             })()} — not 1 : 2 : 3 : 4. Plate modes are inharmonic.
           </Text>
         </View>
+        </CollapsibleSection>
 
         <View style={styles.chips}>
           <LabChip label="Guided experiments ›" selected={false} onPress={() => goToCymatics(navigation, 'CymaticsModule', { id: 'experiments' })} />

@@ -359,7 +359,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: WindLesson['predictions'] = {
-  sound: { prompt: 'Before you step through: where does most of a middle note’s sound leave the oboe?', options: ['The bell', 'An open hole on the body', 'The reed'], after: 'Now STEP through (or PLAY ONCE), then try the notes on the next step.' },
+  sound: { prompt: 'Before you step through: where does most of a middle note’s sound leave the oboe?', options: ['The bell', 'An open hole on the body', 'The reed'], after: 'Now go EVENT by EVENT (or PLAY ONCE), then try the notes on the next step.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from 15–20 cm to a few centimeters from the bell. What changes?', options: ['Brighter, more isolated', 'Darker, more room', 'It depends on the notes'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front. Where will a supercardioid aimed back at the oboe reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
@@ -461,7 +461,7 @@ const copy: Partial<LessonCopy> = {
     workedAim: 'Aim it at the holes on the lower joint — the lab counts it while the mic points within about {tol}° of them. Distance, height and angle are separate things to try.',
     workedClear: 'Clear of every part — the reed and the face, the hands and thumbs, the keys, the bell as the oboe pivots. Clearance comes first, before any number, and the player stops before a real mic moves.',
     blocked: {},
-    reveal: 'Near the bell tends to sound brighter and more isolated, with the lowest notes leaning forward; a foot from the holes, more balanced; farther, more room. Each zone’s LISTEN FOR line is an idea to check by ear.',
+    reveal: 'Near the bell tends to sound brighter and more isolated, with the lowest notes leaning forward; a foot from the holes, more balanced; farther, more room. Each zone’s TENDS TO HEAR line is an idea to check by ear.',
     typeNotes: {
       sdcCard: 'Ideas to try: begin facing the holes a third of the way up; then a foot away for balance, or near the bell for a bright live sound — one change at a time, the whole range each time.',
       wwMini: 'Ideas to try with a miniature: keep its strap just above the bell; change only the capsule’s angle — farther up toward the upper joint for a more even range.',
@@ -611,7 +611,7 @@ export const A09A_LESSON: WindLesson = {
   unknowns: [
     { text: 'The player’s height above the floor and the 40° hold — drawing defaults — so no HEIGHT readout is shown.', dims: ['yFloor'] },
     { text: 'The 545 mm body and Ø 57 bell are a museum oboe of about 1900 used as a modern size; the reed (45 mm out), the joint split and the key layout are drawing defaults; the tone holes sit where the semitone rule puts them (a simplified picture).', dims: [] },
-    { text: 'The hands, arms, head and the oboe’s pivot — illustrative keep-outs (a 20 mm margin round the oboe).', dims: [] },
+    { text: 'The hands, arms, head and the oboe’s pivot — illustrative keep-outs (a 20 mm margin around the oboe).', dims: [] },
     { text: '“A few inches from the bell” drawn 5–11 cm; the clip’s 3–13 cm and the miniature’s size and reach — drawing defaults to check on the real instrument.', dims: [] },
     { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],

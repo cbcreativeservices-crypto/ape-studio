@@ -123,7 +123,9 @@ describe('P16 R2 — whole-number counts and ranged values', () => {
     assert.equal(domainError({ inputs: ['lossy'] }, { lossy: 2 }, fieldsOf('loudtp')), 'LOSSY DELIVERY? must be from 0 to 1.');
     assert.equal(domainError({ inputs: ['lossy'] }, { lossy: 0.5 }, fieldsOf('loudtp')), 'LOSSY DELIVERY? must be a whole number.');
     assert.equal(domainError({ inputs: ['awg'] }, { awg: -1 }, fieldsOf('vdrop')), null, '2/0 AWG is −1');
-    assert.equal(domainError({ inputs: ['awg'] }, { awg: 41 }, fieldsOf('vdrop')), 'WIRE GAUGE (AWG) must be from -3 to 40.');
+    // Changed on purpose, lab fix round 1 (owner 2026-11-14: "Begin fixing all bugs found and do obvious (my
+    // decision is not required) fixes as you suggestted in the report."): a gauge refusal in gauge words (D53).
+    assert.equal(domainError({ inputs: ['awg'] }, { awg: 41 }, fieldsOf('vdrop')), 'WIRE GAUGE must be from 40 AWG up to 4/0. Type 1/0 as 0, 2/0 as −1, 3/0 as −2 and 4/0 as −3.');
   });
   it('fields newly closed to negatives refuse them by name', () => {
     for (const [ws, key] of [['spladd', 'delta'], ['level', 'ampRatio'], ['level', 'powRatio'], ['cable', 'awg'], ['diffuser', 'N']] as const) {

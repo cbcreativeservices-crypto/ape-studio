@@ -276,7 +276,7 @@ export const BANJO_5: GuitarSpec = {
   strings: { courses: 5, perCourse: 1, nylon: false, spreadSaddle: dd(38, 'outer string spread at the bridge'), wound: 1 },
   stringH: { saddle: dd(16, 'string height over the head at the bridge'), edge: dd(14, 'string height at the rim') },
   fifth: derived(Math.round(BANJO_L * Math.pow(2, -5 / 12) * 10) / 10, 'the fifth string from the 5th fret: the scale × 2^(−5/12)'),
-  hooks: dd(24, 'head hooks (brackets) round the pot'),
+  hooks: dd(24, 'head hooks (brackets) around the pot'),
   resonatorBack: { d: dd(330, 'resonator diameter'), depth: dd(40, 'resonator depth behind the pot') },
 };
 

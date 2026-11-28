@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { PageHero, Section, BrandLine, List, CTARow } from "@/components/content";
 import { PageAtmosphere } from "@/components/Atmosphere";
 import { KNOWLEDGE } from "@/lib/brand";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
+  path: "/curriculum",
   title: "Curriculum Development",
   description:
     "How Pro Audio Training Academy organizes professional audio into terms, topics, subjects, and programs — with prerequisites, technical review, assessment, and updates.",
-};
+  image: "/og/og-curriculum.png",
+});
 
 export default function Page() {
   return (
@@ -94,7 +97,10 @@ export default function Page() {
           Curriculum content is developed for technical accuracy and reviewed on
           its merits. Review is led by the Academy’s Curriculum
           Director, who has taught professional audio at the college level since
-          1999 and brings four decades of industry experience.
+          1999 and brings four decades of industry experience.{" "}
+          <a href="/founder" className="text-amber underline underline-offset-2 hover:text-amber-deep">
+            Read more about the founder →
+          </a>
         </p>
         <p>
           The material draws on established technical references, recognized

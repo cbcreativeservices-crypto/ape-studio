@@ -31,7 +31,7 @@ const CASES: { file: string; now: string; gone: string }[] = [
   { file: "src/screens/lab/BassLabScreen.tsx", now: "s readout shows \\u2248G\\u266F3 \\u221214\\u00", gone: "s bezel reads \\u2248G\\u26AF3 \\u221214\\u00" },
   { file: "src/screens/lab/BassLabScreen.tsx", now: "z with the tempered G\\u266F3 at 207.65 Hz", gone: "z with the tempered G\\u26AF3 at 207.65 Hz" },
   { file: "src/screens/lab/AutotuneLabScreen.tsx", now: "blurb: 'Slow correction: each ~400 ms closes most of the gap — a gentle dri", gone: "blurb: 'Correction over ~400 ms — a gentle dri" },
-  { file: "src/screens/lab/wave/modules/modWaveB.tsx", now: "<Badge text=\"STEMS = ARRIVALS: THE DIRECT SOUND, THEN THE FIRST AND SECOND REFLECTIONS · AMBER FUSES", gone: "<Badge text=\"STEMS = arrivalsAt (DIRECT + 1st/2nd-ORDER IMAGE-SOURCE REFLECTIONS) · AMBER FUSES" },
+  { file: "src/screens/lab/wave/modules/modWaveB.tsx", now: "<PlainModelNote>Stems are arrivals: the direct sound, then the first and second reflections. Amber fuses", gone: "<Badge text=\"STEMS = arrivalsAt (DIRECT + 1st/2nd-ORDER IMAGE-SOURCE REFLECTIONS) · AMBER FUSES" },
   { file: "src/screens/lab/wave/materialPhotos.ts", now: "bing lower in frequency. For this kind of absorber, bass control means more thickness and air gap, not a thinner sheet.',", gone: "bing lower in frequency. Real bass control means thickness and air gaps, not thin panels.'," },
   { file: "src/screens/lab/wave/modules/modWaveA.tsx", now: "'Ignoring it with two open mics: on one source, match their distances; on two sources, use the 3:1 rule.',", gone: "'Ignoring it when using two mics on one source (the 3:1 rule).'," },
   { file: "src/screens/lab/wave/modules/modWaveA.tsx", now: "their distances), two mics on two sources (keep each mic at least 3× farther from the other", gone: "the second mic at least 3× the source distance away — the 3:1 rule), a speaker against a" },
@@ -51,7 +51,9 @@ const CASES: { file: string; now: string; gone: string }[] = [
   { file: "src/screens/lab/cableinstall/data/rules.ts", now: "studentText: 'Keep cable out of door pinch points — go over, und", gone: "studentText: 'Never let a door pinch a cable — go over, und" },
   { file: "src/screens/lab/cableinstall/data/scenarios.ts", now: "s: ≥ 15× cable diameter; pull by the strength members, never by the glass.',", gone: "s: ≥ 15× cable diameter; never load the fiber in tension.'," },
   { file: "src/screens/lab/cableinstall/data/scenarios.ts", now: ", at this load: supports no more than 4 span units apart, max sag ½ uni", gone: ", at this load: supports every 4 span units, max sag ½ uni" },
-  { file: "src/screens/lab/cableinstall/scenes/CeilingScene.tsx", now: "or key (teaching colors, this scene only): gray / blue / orange = other tenants’ bundle · cyan + green = the previous contractor’s runs · violet = your bundle · red = sprinkler. Rings = details to inspect. These colors differ from the cable-type key.'", gone: "our key (teaching colors): gray / blue / orange = other tenants’ bundle · cyan + green = the previous contractor’s runs · violet = your bundle · red = sprinkler. Rings = details to inspect.'" },
+  // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item CI-01): the key moved into a
+  // COLOR KEY fold under the drawing, so its lead words changed; the colors and the warning stand.
+  { file: "src/screens/lab/cableinstall/scenes/CeilingScene.tsx", now: "'Teaching colors, this scene only: gray / blue / orange = other tenants’ bundle · cyan + green = the previous contractor’s runs · violet = your bundle · red = sprinkler. Rings = details to inspect. These colors differ from the cable-type key.'", gone: "our key (teaching colors): gray / blue / orange = other tenants’ bundle · cyan + green = the previous contractor’s runs · violet = your bundle · red = sprinkler. Rings = details to inspect.'" },
   { file: "src/screens/lab/cableinstall/scenes/FireScene.tsx", now: "ts before selecting cable. Do not guess: a cable not listed for an air-handling space breaks code there, and rating every run for the worst case costs more than it needs to.\"", gone: "ts before selecting cable; assuming in either direction produces a wrong installation.\"" },
   { file: "src/screens/lab/cableinstall/scenes/FireScene.tsx", now: "let = this run’s cable · green CMR = a cable already in the riser, riser-rated (riser-rated is not plenum-rated) · numbers = th", gone: "let = this run’s cable · CMR = riser-rated cable listing · numbers = th" },
   { file: "src/screens/lab/cableinstall/scenes/FloorScene.tsx", now: "end capped — reachable, kept out from underfoot, and not plugged into a", gone: "end capped — reachable, never underfoot, and never plugged into a" },
@@ -85,9 +87,11 @@ const CASES: { file: string; now: string; gone: string }[] = [
   { file: "src/screens/lab/drumtuning/modules/ch1Sound.tsx", now: "OVERTONES are the higher notes that ring above it; the lab scores them as the share of the hit far above the pitch (above three times it).", gone: "OVERTONES are the notes above it (the share of the hit above three times the pitch)." },
   { file: "src/screens/lab/drumtuning/modules/ch2Prepare.tsx", now: "so the head rises evenly instead of wrinkling on one side.\"", gone: "so the head rises evenly and never wrinkles on one side.\"" },
   { file: "src/screens/lab/drumtuning/modules/ch2Prepare.tsx", now: "ead has a working range; turn rods with a drum key and your fingers only, not pliers or a drill.</Body>", gone: "ead has a working range; drum key and fingers only.</Body>" },
-  { file: "src/screens/lab/fxLabConfigs.tsx", now: "'The peaks between the notches grow tall and narrow and ring", gone: "'The notches deepen and the pea" }, // 2026-10-31: at MIX 50% FDBK makes notches shallower; the peaks are what grow (combResponseDb)
+  // Phase 2, lab fix round (owner 2026-11-14: "Begin fixing all bugs found and do obvious ... fixes", check card row 4: balanced option lengths): the option is shorter; the physics (peaks grow, not deeper notches) is unchanged.
+  { file: "src/screens/lab/fxLabConfigs.tsx", now: "'Tall, narrow peaks ring between the notches'", gone: "'The notches deepen and the pea" }, // 2026-10-31: at MIX 50% FDBK makes notches shallower; the peaks are what grow (combResponseDb)
   { file: "src/screens/lab/fxLabConfigs.tsx", now: "rculates the delayed copy: the peaks between the notches grow taller and narrower, so the comb sounds sharper and more resonant", gone: "rculates the delayed copy, sharpening the comb: deeper notches, resonant peaks" }, // D42 r2 2026-11-01: "deeper contrast" was false at MIX 50% (notches get shallower)
-  { file: "src/screens/lab/fxLabConfigs.tsx", now: "with a very high ratio — peaks held at a ceiling',", gone: "with a very high ratio — a ceiling nothing passes'," },
+  // Phase 2, lab fix round (owner 2026-11-14: "Begin fixing all bugs found and do obvious ... fixes", check card row 4: balanced option lengths): the right answer lost its glued-on reason; the reveal keeps it.
+  { file: "src/screens/lab/fxLabConfigs.tsx", now: "'A compressor with a very high ratio',", gone: "with a very high ratio — a ceiling nothing passes'," },
   { file: "src/screens/lab/mastering/masteringEngine.ts", now: "note: 'Hot: the NIOSH recommended exposure limit is 85 dBA for 8 hours, halving the time for every 3 dB above; the US legal limit (OSHA) is 90 dBA for 8 hours, halving the time for every 5 dB above that. Everything", gone: "note: 'Hot: at 85 dBA the NIOSH recommended daily limit is 8 hours; every 3 dB above halves it. Everything" },
   { file: "src/screens/lab/mastering/masteringEngine.ts", now: "working level, under the NIOSH recommended exposure limit:", gone: "working level, under the daily exposure limit:" },
   { file: "src/screens/lab/mastering/masteringEngine.ts", now: "te: 'Unsafe for working: about three hours or less a day at this level (NIOSH),", gone: "te: 'Unsafe for working: two hours or less a day at this level," },
@@ -107,7 +111,9 @@ const CASES: { file: string; now: string; gone: string }[] = [
   { file: "src/screens/lab/micspeaker/SpeakerCoverageLabScreen.tsx", now: "rated angle (90°, 60°…) are where it is al", gone: "6 dB down the ramp, and a box’s rated angle" },
   { file: "src/screens/lab/micspeaker/SpeakerCoverageLabScreen.tsx", now: "ls, or a delay speaker — turning the level up alone rarely fixes it.',", gone: "ls, or a delay speaker — never just level.'," },
   { file: "src/screens/lab/mixing/pagesA.tsx", now: "back('✓ That is the path most DAWs and consoles share. Some let you reorder it. Say it until", gone: "back('✓ That is the path every DAW and every console shares. Say it until" },
-  { file: "src/screens/lab/mixing/pagesA.tsx", now: "<Lead>One path, most mixers, most DAWs. Audio flows through a channel in a set order — some digital desks and DAWs let you change it, so check the one you use — and every la", gone: "<Lead>One path, every mixer, every DAW. Audio flows through a channel in a fixed order — and every la" },
+  // owner 2026-11-15: "build waves 1 thru 3" (D62 adoption plan, item BM-01): page 3 opens with a
+  // plain line; the corrected claim (a SET order some desks let you change) is kept word for word.
+  { file: "src/screens/lab/mixing/pagesA.tsx", now: "Audio flows through it in a set order — some digital desks and DAWs let you change it, so check the one you use — and every la", gone: "<Lead>One path, every mixer, every DAW. Audio flows through a channel in a fixed order — and every la" },
   { file: "src/screens/lab/mixing/pagesAdvA.tsx", now: "'Separate compressors each react to their own drum, so they do not share one envelope unless you link them.',", gone: "'Three private compressors can never share one envelope.'," },
   { file: "src/screens/lab/patchbay/pagesD.tsx", now: "inputs-on-top. The rule that holds: on a well-wired half-normal pair, the INPUT jack", gone: "inputs-on-top. What travels: on a half-normal pair the INPUT jack" },
   { file: "src/screens/lab/roomdesign/modules/modMonitoring.tsx", now: "ute cables along the wall; if one must cross a walkway, use a cable ramp or tape it flat.</Caption>", gone: "ute cables along the wall, never across a walkway.</Caption>" },
@@ -137,14 +143,21 @@ test('audit R2 · D_labs: corrected wording present, wrong wording gone', () => 
 
 test('audit R2 · D_labs: developer build notes show only in dev builds, learners get plain words', () => {
   const DEV: [string, string, string][] = [
-    ['src/screens/lab/BinauralLabScreen.tsx', 'Binaural audio needs the v7 engine build', 'cannot play the binaural mix yet'],
+    // Binaural + effect labs: learner lines changed on purpose, lab fix round 1 (F7; owner 2026-11-14: "Begin
+    // fixing all bugs found and do obvious (my decision is not required) fixes as you suggestted in the
+    // report."): no "update the app"; the web says where the sound plays.
+    ['src/screens/lab/BinauralLabScreen.tsx', 'Binaural audio needs the v7 engine build', 'The binaural mix can’t play on this device.'],
     ['src/screens/lab/FmLabScreen.tsx', 'FM audio needs the v7 engine build', 'cannot play the FM voice yet'],
-    ['src/screens/lab/FxLabScreen.tsx', 'Effect AUDIO needs the v6 engine build', 'cannot play the effect audio yet'],
-    ['src/screens/lab/SignalChainLabScreen.tsx', 'Chain AUDIO needs the v6 engine build', 'cannot play the chain audio yet'],
+    ['src/screens/lab/FxLabScreen.tsx', 'Effect AUDIO needs the v6 engine build', 'The effect audio can’t play on this device.'],
+    // Learner line changed on purpose, lab fix round 1 (owner 2026-11-14: "Begin fixing all bugs found and do
+    // obvious (my decision is not required) fixes as you suggestted in the report."): no "update the app".
+    ['src/screens/lab/SignalChainLabScreen.tsx', 'Chain AUDIO needs the v6 engine build', 'The chain cannot play sound on this device.'],
     ['src/screens/lab/OscillatorLabScreen.tsx', 'This engine build predates the additive generator', 'plays the fundamental SINE only'],
     ['src/screens/lab/OscillatorLabScreen.tsx', 'Frequency and amplitude modulation are not in the current ape-dsp engine', 'have no controls in this lab'],
-    ['src/screens/lab/foundations/FoundationsCourseScreen.tsx', 'This engine build predates the stereo dual-oscillator', 'update the app to HEAR the drifting-phase demo'],
-    ['src/screens/lab/foundations/FoundationsCourseScreen.tsx', 'This engine build predates the additive generator', 'update the app to HEAR each harmonic enter the tone'],
+    // // Lab fix round 2026-11-14 (owner: "Begin fixing all bugs found and do obvious
+    // (my decision is not required) fixes"): the learner line points at the picture, never "update the app".
+    ['src/screens/lab/foundations/FoundationsCourseScreen.tsx', 'This engine build predates the stereo dual-oscillator', 'set PRESET to 180° and watch the bottom line go flat'],
+    ['src/screens/lab/foundations/FoundationsCourseScreen.tsx', 'This engine build predates the additive generator', 'watch the SUM change shape while its rate stays put'],
   ];
   for (const [file, dev, learner] of DEV) {
     const s = read(file);

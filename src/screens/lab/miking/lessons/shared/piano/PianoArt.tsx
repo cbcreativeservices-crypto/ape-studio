@@ -35,6 +35,8 @@
 import { BlurMask, DashPathEffect, FillType, Group, LinearGradient, Path, RadialGradient, Skia, vec } from '@shopify/react-native-skia';
 import type { Pt } from './pianoSpec.ts';
 import { PlayerBehind, PlayerInFront } from '../players/PlayerFigure';
+import { PianistHandsOverV2, PianistV2 } from './PianistV2';
+import type { CastMember } from '../figureV2/cast';
 import { BODY, pt, type PlayerPose } from '../players/playerPose.ts';
 import { blackKeys, FLOOR_Y, grandGeom, KEY_DIMS, KEY_TOP_Y, KEYBOARD, KEYS_Z0, keyZ, LID_DEG, lidPoint, lidUnderY, pianistAt, stickOf, uprightGeom, WHITE, type GrandGeom, type GrandId, type LidState, type Pianist } from './pianoSpec.ts';
 
@@ -1175,31 +1177,53 @@ function pianistPose(pn: Pianist, xKey: number, pedalX: number, view: 'side' | '
  *  the instrument (charter §6). `xKey`: the key fronts; `pedalX`: the pedals.
  *  The figure is the shared player (clarity pass 2026-10-05: the house
  *  figure standard and line-art head, in place of a circle head and blocks). */
-export function Pianist({ view, xKey, pedalX, dim = 0.9 }: { view: 'side' | 'top'; xKey: number; pedalX: number; dim?: number }) {
+export function Pianist({ view, xKey, pedalX, dim = 0.9, v2 = false, who, lip }: { view: 'side' | 'top'; xKey: number; pedalX: number; dim?: number; /** the new look (figure V2, set 3c: PianistV2) — a lesson opts in at its call sites */ v2?: boolean; /** (v2) the cast member at the keys (default the C11 pianist) */ who?: CastMember; /** (v2) where a lesson measures the player's lips (a singer at the piano): the mouth is drawn there */ lip?: { x: number; y: number } }) {
   const pn = pianistAt(xKey, pedalX);
   const p = pianistPaths(pn, xKey, pedalX, view);
   const pose = pianistPose(pn, xKey, pedalX, view);
   if (view === 'side') {
     return (
-      <Group opacity={dim}>
+      <Group opacity={v2 ? 1 : dim}>
+        <Group opacity={v2 ? dim : 1}>
         <Path path={p.benchLegs} color="#141418" />
         <Path path={p.benchTop}>
           <LinearGradient start={vec(pn.bench.x0, pn.bench.y - 60)} end={vec(pn.bench.x1, pn.bench.y)} colors={['#4a4c55', '#141418']} />
         </Path>
-        <PlayerBehind pose={pose} />
-        <PlayerInFront pose={pose} />
+        </Group>
+        {/* (the new figure recedes as ONE opaque layer, blended toward the stage's dark — never see-through) */}
+        {v2 ? (
+          <PianistV2 view="side" xKey={xKey} pedalX={pedalX} dim={dim} who={who} lip={lip} />
+        ) : (
+          <>
+            <PlayerBehind pose={pose} />
+            <PlayerInFront pose={pose} />
+          </>
+        )}
       </Group>
     );
   }
   return (
-    <Group opacity={dim}>
-      <Path path={p.benchTop}>
+    <Group opacity={v2 ? 1 : dim}>
+      <Path path={p.benchTop} opacity={v2 ? dim : 1}>
         <LinearGradient start={vec(pn.bench.x0, -pn.bench.hw)} end={vec(pn.bench.x1, pn.bench.hw)} colors={['#4a4c55', '#141418']} />
       </Path>
-      <PlayerBehind pose={pose} />
-      <PlayerInFront pose={pose} />
+      {v2 ? (
+        <PianistV2 view="top" xKey={xKey} pedalX={pedalX} dim={dim} who={who} />
+      ) : (
+        <>
+          <PlayerBehind pose={pose} />
+          <PlayerInFront pose={pose} />
+        </>
+      )}
     </Group>
   );
+}
+
+/** (the new look, from above) the pianist's hands and forearms drawn again over the keyboard, after the
+ *  piano's plan; nothing in the old look. */
+export function PianistHandsOver({ xKey, pedalX, dim = 0.9, v2 = false, who }: { xKey: number; pedalX: number; dim?: number; v2?: boolean; who?: CastMember }) {
+  if (!v2) return null;
+  return <PianistHandsOverV2 xKey={xKey} pedalX={pedalX} dim={dim} who={who} />;
 }
 
 /** The hammer line, dashed amber (the line the readouts measure from). */

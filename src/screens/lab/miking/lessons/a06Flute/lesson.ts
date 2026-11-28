@@ -403,7 +403,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: WindLesson['predictions'] = {
-  sound: { prompt: 'Before you step through: where does a flute’s sound leave?', options: ['Only the foot', 'The embouchure and the open holes', 'Only the lip plate'], after: 'Now STEP through (or PLAY ONCE), then try the notes on the next step.' },
+  sound: { prompt: 'Before you step through: where does a flute’s sound leave?', options: ['Only the foot', 'The embouchure and the open holes', 'Only the lip plate'], after: 'Now go EVENT by EVENT (or PLAY ONCE), then try the notes on the next step.' },
   microphone: { prompt: 'Before you move anything: where will a supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from close to behind the player’s head. What changes?', options: ['Less breath', 'More breath', 'It depends on the player'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front. Where will a supercardioid aimed back at the flute reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },
@@ -508,7 +508,7 @@ const copy: Partial<LessonCopy> = {
     workedAim: 'Aim it halfway between the lip plate and the left hand — the lab counts it while the mic points within about {tol}° of that spot — and keep the capsule angled out of the air jet.',
     workedClear: 'Clear of every part — the air jet, the head’s turn, both hands and the flute’s reach to the right. Clearance comes first, before any number, and the player stops before a real mic moves.',
     blocked: {},
-    reveal: 'Behind the head tends to bring less breath — the jet blows the other way; close in front, more detail and more air. Players vary, so “it depends on the player” is fair too. Each zone’s LISTEN FOR line is an idea to check by ear.',
+    reveal: 'Behind the head tends to bring less breath — the jet blows the other way; close in front, more detail and more air. Players vary, so “it depends on the player” is fair too. Each zone’s TENDS TO HEAR line is an idea to check by ear.',
     typeNotes: {
       sdcCard: 'Ideas to try: begin close, between the lip plate and the left hand, angled off the jet; then behind and above the head, or a meter in front in a good room — one change at a time, low and high passages each time.',
       wwMini: 'Ideas to try with a miniature: on a keyed flute only, keep its strap around the foot end; change only the capsule’s angle along the keys.',
@@ -659,7 +659,7 @@ export const A06_LESSON: WindLesson = {
   unknowns: [
     { text: 'The player’s height above the floor and the flute’s hold (10° forward, 8° down at the foot) — drawing defaults — so no HEIGHT readout is shown.', dims: ['yFloor'] },
     { text: 'The simple-system flute’s 600 mm length, its bore and its holes are drawing defaults (one maker’s design); the concert flute’s joint split, key layout and hand positions are drawing defaults; the tone holes sit where the semitone rule puts them (a simplified picture).', dims: [] },
-    { text: 'The air jet (150 mm, 15°), the hands, arms and head — illustrative; a 20 mm margin round the flute for its movement.', dims: [] },
+    { text: 'The air jet (150 mm, 15°), the hands, arms and head — illustrative; a 20 mm margin around the flute for its movement.', dims: [] },
     { text: '“A few inches” behind the head drawn 8–22 cm; the clip’s 3–11 cm, the headset’s 4–9 cm and the miniatures’ sizes and reaches — drawing defaults to check on the real instrument.', dims: [] },
     { text: 'Where each mic’s distances are measured from, and its acoustic center — the lab measures to the mic’s front and rounds to ≈ 5 mm.', dims: [] },
   ],

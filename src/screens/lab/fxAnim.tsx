@@ -50,13 +50,24 @@ import {
   type SharedValue,
 } from 'react-native-reanimated';
 import { STEREO_TEST_LR_RAD, distShape, eqResponseDb, type EqBandSpec } from '../../features/lab/fxViz';
-import { EQ_CURVE_F_MAX, EQ_CURVE_F_MIN, eqCurvePoints, eqCurveX, eqCurveY } from './fxEqCurve';
+import { EQ_CURVE_F_MAX, EQ_CURVE_F_MIN, eqBandMarkHz, eqCurvePoints, eqCurveX, eqCurveY } from './fxEqCurve';
 import { usePhaseClock } from './foundations/viz';
+import {
+  SCOPE_DIV_MS,
+  chorusDelayMs,
+  chorusLfoSlowed,
+  chorusLfoVisHz,
+  scopeCopy,
+  scopeDry,
+  scopeOut,
+  scopeWindowMs,
+} from './chorusScope';
 import { useStageTextScale } from './rack/stageAspect';
 import { WAVE_LEVEL_STOPS } from '../../features/tools/levelColor';
 import { colors, fonts } from '../../theme/tokens';
 import { fitValue } from '../../theme/legibility';
 import { ECHO_SPAN_MS, echoSpacingFrac } from '../../features/lab/sliderMaps';
+import { fmtSeconds, outSpanLabel, rebaseHitGrid, rulerStepMs, type ClickAnchor } from './fxClickTempo';
 
 // Shared lab grammar (fxViz palette): amber = processed, dim = dry/reference,
 // blue = the effect's internal copy (delayed/shifted voice).
@@ -96,7 +107,9 @@ export type DynSignal =
    *  DRUM-HIT MODEL. The compressor uses it, so its drawing and its live GR
    *  meter run the same input. Ignored in gate mode (the gate and limiter
    *  drawings keep the drum model). */
-  | { kind: 'hits'; periodMs: number; ping?: boolean }
+  /** `windowScale` (owner 2026-11-25, click tempo): the window is a fixed
+   *  number of beats — opening ÷ live BPM, 1 at the lab's own tempo. */
+  | { kind: 'hits'; periodMs: number; ping?: boolean; windowScale?: number }
   | { kind: 'steady' }
   | { kind: 'noise' };
 
@@ -116,8 +129,8 @@ export type FxAnimModel =
       feedback: number;
       /** CHORUS: the frequency of the tone the scope shows (the sine source's
        *  own pitch; 440 Hz standing in for one component of a noise source).
-       *  The copy's phase lag is then the TRUE 2π·f·τ(t) the DSP produces —
-       *  see ModFlow. Omitted (flanger) ⇒ the older fixed-carrier model. */
+       *  The copy's phase lag is then the TRUE 2π·f·τ the DSP produces — see
+       *  ModFlow / chorusScope.ts. Omitted for the flanger (a spectrum hero). */
       srcHz?: number;
       /** The source is noise: the scope's tone is one component of it. */
       srcIsNoise?: boolean;
@@ -175,14 +188,69 @@ function stageLabel(model: FxAnimModel): string {
     // "M/S WIDTH" names what the green stage does in the width lab: L/R →
     // MID + SIDE, SIDE × width, back to L/R (art grading 2026-10-16: a bare
     // "WIDTH" slab read as an unexplained object).
-    // "R: Ø · DLY" names what the phase lab's stage does: it acts on the R
-    // channel only — a polarity flip and/or a delay (art grading 2026-10-16:
-    // a bare "PHASE" slab read as an unexplained object).
-    case 'stereo': return model.flavor === 'phase' ? 'R: Ø · DLY' : 'M/S WIDTH';
+    // "FLIP · DELAY" names what the phase lab's stage does to R: a polarity
+    // flip and/or a delay (art grading 2026-10-16: a bare "PHASE" slab read
+    // as an unexplained object). In words, as its keys FLIP R and DELAY R
+    // read (owner 2026-11-15: "build waves 1 thru 3", D62 item PH-01; it was
+    // the code "R: Ø · DLY").
+    case 'stereo': return model.flavor === 'phase' ? 'FLIP · DELAY' : 'M/S WIDTH';
   }
 }
 
 // ──────────────────────────────────────────────────────── shared helpers ──
+/**
+ * THE CLICK TRAIN'S GRID (owner 2026-11-25, click tempo, D85). The delay,
+ * reverb and dynamics heroes put a hit at every multiple of the period on a
+ * clock that has run since the lab opened, so a tempo change moved hit k by
+ * k·ΔP — after a minute that is many periods, and dragging the SOURCE lane
+ * threw every hit about. Their worklets read [P, origin] from here instead:
+ * hits sit at origin + k·P, and on a tempo change the newest hit at or
+ * before now keeps its place (rebaseHitGrid) while the train re-spaces
+ * around it. P and origin change together in one write, so no frame mixes
+ * the old origin with the new period. The period is the model's (the live
+ * source), never a preset. After a tempo change the history already on the
+ * glass is redrawn at the new tempo (the drawing keeps no memory of the old).
+ *
+ * WHAT YOU SEE IS WHAT YOU HEAR (third pass, 2026-11-25). A CLICK is drawn
+ * from FxLabScreen's ONE anchor (fxClickTempo ClickAnchor): the heard clicks
+ * sit at t0 + k·P in WALL-CLOCK time, and the worklets read the wall clock
+ * (performance.now(), the same steady clock as the JS thread's) every frame
+ * — g[2] = 1. So a fresh hero (FULL SCREEN, a zoom step, OPEN DISPLAY) draws
+ * the heard train from its first frame, and a lost focus or a stalled frame
+ * never parts picture and sound: nothing is counted from this hero's own
+ * frame time. The phase clock is still read, only so each frame redraws.
+ * Other sources (a burst, a tone, noise) keep the drawing's own clock and
+ * the rebase above — g[2] = 0.
+ */
+function useHitGrid(clock: SharedValue<number>, periodMs: number, anchor?: ClickAnchor): SharedValue<number[]> {
+  const grid = useSharedValue<number[]>(anchor ? [anchor.periodMs, anchor.t0, 1] : [periodMs, 0, 0]);
+  const at0 = anchor?.t0;
+  const aP = anchor?.periodMs;
+  useEffect(() => {
+    if (at0 != null && aP != null) {
+      grid.value = [aP, at0, 1];
+      return;
+    }
+    const g = grid.value;
+    if (g[2] === 1) {
+      grid.value = [periodMs, 0, 0];
+      return;
+    }
+    if (g[0] === periodMs) return;
+    grid.value = [...rebaseHitGrid(g, periodMs, (clock.value / PI2) * 1000), 0];
+  }, [at0, aP, periodMs, grid, clock]);
+  return grid;
+}
+
+/** The drawing's "now" on the hit grid, ms: the wall clock minus the anchor
+ *  for a CLICK (g[2] = 1), else the phase clock minus the grid's origin. The
+ *  phase clock is passed in by every caller so the frame redraws. */
+function hitNowMs(clockPhase: number, g: number[]): number {
+  'worklet';
+  const c = (clockPhase / PI2) * 1000;
+  return (g[2] === 1 ? performance.now() : c) - g[1];
+}
+
 /** Worklet hash (foundations idiom) — deterministic shimmer, no RNG state. */
 function hashW(n: number): number {
   'worklet';
@@ -607,7 +675,18 @@ function EqFlow({ w, h, active, label, bands }: { w: number; h: number; active: 
       ticks.moveTo(x, 3);
       ticks.lineTo(x, sh - 3);
     }
-    return { line, area, dots, ticks };
+    // Where the band is (owner 2026-11-25, audit B17): at GAIN 0 dB the curve is
+    // flat, so a short amber centre line shows FREQ on the strip whatever the gain.
+    const markHz = eqBandMarkHz(bands);
+    const mark = Skia.Path.Make();
+    if (markHz != null) {
+      const x = eqCurveX(markHz, x0, x1);
+      for (let y = 4; y < sh - 4; y += 6) {
+        mark.moveTo(x, y);
+        mark.lineTo(x, Math.min(sh - 4, y + 3));
+      }
+    }
+    return { line, area, dots, ticks, mark };
   }, [bands, w, sh]);
   const g0 = useGlide(gains[0]);
   const g1 = useGlide(gains[1]);
@@ -668,6 +747,7 @@ function EqFlow({ w, h, active, label, bands }: { w: number; h: number; active: 
             <RoundedRect x={0} y={0} width={w} height={sh} r={6} color={BG} />
             <Path path={curve.ticks} color={FRAME} style="stroke" strokeWidth={0.8} />
             <SkLine p1={{ x: 4, y: sh / 2 }} p2={{ x: w - 4, y: sh / 2 }} color={ZERO} strokeWidth={1} />
+            <Path path={curve.mark} color={AMBER} style="stroke" strokeWidth={1.2} opacity={0.75} />
             <Path path={curve.area} color={STAGE_GREEN} opacity={0.1} />
             <Path path={curve.line} color={STAGE_GREEN} style="stroke" strokeWidth={1.6} strokeJoin="round" opacity={0.85} />
             <Path path={curve.dots} color={STAGE_GREEN} opacity={0.95} />
@@ -691,7 +771,8 @@ function EqFlow({ w, h, active, label, bands }: { w: number; h: number; active: 
  *  click is a 5 ms 1 kHz ping at its BPM; a burst is a 50 ms Hann-windowed
  *  tone every 250 ms; a tone is a steady sine; noise is steady broadband. */
 export type FxSrc =
-  | { kind: 'click'; periodMs: number }
+  /** `windowScale`: as DynSignal's — the window spans a fixed number of beats. */
+  | { kind: 'click'; periodMs: number; windowScale?: number }
   | { kind: 'burst'; hz: number }
   | { kind: 'tone'; hz: number }
   | { kind: 'noise'; color: 'pink' | 'white' };
@@ -902,6 +983,7 @@ function EchoFlow({
   pingpong,
   dampHz,
   src,
+  clickAnchor,
 }: {
   w: number;
   h: number;
@@ -913,17 +995,24 @@ function EchoFlow({
   pingpong: boolean;
   dampHz: number;
   src: FxSrc;
+  /** The heard CLICK train (FxLabScreen), wall-clock ms. */
+  clickAnchor?: ClickAnchor;
 }) {
   const stageX = w * STAGE_FRAC;
   // ONE clock in real seconds (phase/2π = s): true speed, the click's tempo.
   const clock = usePhaseClock(active, 1);
+  /** The window keeps step with the CLICK's tempo (owner 2026-11-25): OUT
+   *  spans ECHO_SPAN_MS × opening ÷ live BPM, so the hits cross at the pace
+   *  of the click you hear; 1 at the lab's own tempo (the old picture). */
+  const winScale = src.kind === 'click' ? (src.windowScale ?? 1) : 1;
   const dPx = useMemo(() => {
     const outSpan = w - stageX - 12;
     // A FIXED window (slider pass 2026-10-14): max(time × 6.5, 500) kept the
     // spacing constant for every TIME ≥ 77 ms. Echoes past the edge are not drawn.
-    return echoSpacingFrac(timeMs) * outSpan;
-  }, [w, stageX, timeMs]);
-  const msPerPx = ECHO_SPAN_MS / (w - stageX - 12);
+    // ÷ winScale: an echo sits at its true time on the tempo's window.
+    return (echoSpacingFrac(timeMs) / winScale) * outSpan;
+  }, [w, stageX, timeMs, winScale]);
+  const msPerPx = (ECHO_SPAN_MS * winScale) / (w - stageX - 12);
   // The delay time glides (the engine glides it too, tape-style ~50 ms).
   const dG = useGlide(dPx);
   const fbG = useGlide(feedback);
@@ -933,6 +1022,8 @@ function EchoFlow({
   const hG = useGlide(onePoleGain(dampHz, srcHz));
   const sk = src.kind === 'tone' ? 1 : src.kind === 'noise' ? 2 : 0;
   const periodMs = src.kind === 'click' ? Math.max(100, src.periodMs) : 1000;
+  /** [P, origin] the worklets draw from (useHitGrid: a tempo change stretches the train). */
+  const grid = useHitGrid(clock, periodMs, src.kind === 'click' ? clickAnchor : undefined);
 
   const inX0 = 6;
   const inX1 = stageX - 16;
@@ -948,7 +1039,9 @@ function EchoFlow({
 
   /** IN: the source, mono, full lane. */
   const inPath = useDerivedValue(() => {
-    const now = (clock.value / PI2) * 1000;
+    const g = grid.value;
+    const periodMs = g[0];
+    const now = hitNowMs(clock.value, g);
     const p = Skia.Path.Make();
     const cols = Math.max(2, Math.floor(inX1 - inX0));
     const cw = (inX1 - inX0) / cols;
@@ -980,20 +1073,22 @@ function EchoFlow({
     }
     p.close();
     return p;
-  }, [clock, inX0, inX1, stageX, msPerPx, sk, periodMs, yc, half]);
+  }, [clock, inX0, inX1, stageX, msPerPx, sk, grid, yc, half]);
 
-  const outArgs = [sk, srcHz, periodMs, msPerPx, stageX, outX0, outX1, yc, lc, rc, half, halfPP] as const;
+  // The time each path is drawn at is clock − origin, the period the grid's
+  // (useHitGrid), both read in the same frame.
+  const outArgs = [sk, srcHz, msPerPx, stageX, outX0, outX1, yc, lc, rc, half, halfPP] as const;
   const dryOut = useDerivedValue(
-    () => echoOutPath(0, (clock.value / PI2) * 1000, sk, srcHz, periodMs, msPerPx, stageX, outX0, outX1, ppG.value, yc, lc, rc, half, halfPP, mixG.value, fbG.value * hG.value, Math.max(1, dG.value * msPerPx)),
-    [clock, ppG, mixG, fbG, hG, dG, ...outArgs],
+    () => echoOutPath(0, hitNowMs(clock.value, grid.value), sk, srcHz, grid.value[0], msPerPx, stageX, outX0, outX1, ppG.value, yc, lc, rc, half, halfPP, mixG.value, fbG.value * hG.value, Math.max(1, dG.value * msPerPx)),
+    [clock, grid, ppG, mixG, fbG, hG, dG, ...outArgs],
   );
   const wetL = useDerivedValue(
-    () => echoOutPath(1, (clock.value / PI2) * 1000, sk, srcHz, periodMs, msPerPx, stageX, outX0, outX1, ppG.value, yc, lc, rc, half, halfPP, mixG.value, fbG.value * hG.value, Math.max(1, dG.value * msPerPx)),
-    [clock, ppG, mixG, fbG, hG, dG, ...outArgs],
+    () => echoOutPath(1, hitNowMs(clock.value, grid.value), sk, srcHz, grid.value[0], msPerPx, stageX, outX0, outX1, ppG.value, yc, lc, rc, half, halfPP, mixG.value, fbG.value * hG.value, Math.max(1, dG.value * msPerPx)),
+    [clock, grid, ppG, mixG, fbG, hG, dG, ...outArgs],
   );
   const wetR = useDerivedValue(
-    () => echoOutPath(2, (clock.value / PI2) * 1000, sk, srcHz, periodMs, msPerPx, stageX, outX0, outX1, ppG.value, yc, lc, rc, half, halfPP, mixG.value, fbG.value * hG.value, Math.max(1, dG.value * msPerPx)),
-    [clock, ppG, mixG, fbG, hG, dG, ...outArgs],
+    () => echoOutPath(2, hitNowMs(clock.value, grid.value), sk, srcHz, grid.value[0], msPerPx, stageX, outX0, outX1, ppG.value, yc, lc, rc, half, halfPP, mixG.value, fbG.value * hG.value, Math.max(1, dG.value * msPerPx)),
+    [clock, grid, ppG, mixG, fbG, hG, dG, ...outArgs],
   );
   // Level color pinned to TRUE full scale (loudness standard): a lane's edge
   // is the source's −20 dBFS peak, so full scale sits 10× further out and the
@@ -1003,24 +1098,32 @@ function EchoFlow({
   const fsSpan = laneHalf * 10;
 
   // The seconds ruler under OUT: a tick every 250 ms of age, whole seconds
-  // named — the age of what you see, measured from the stage.
+  // named — the age of what you see, measured from the stage. On a tempo's
+  // window the named step is 0.5, 1 or 2 s (rulerStepMs) and the ticks a
+  // quarter of it, so the ruler always says the real time (owner 2026-11-25).
+  const labelMs = rulerStepMs(1000, winScale);
+  const tickMs = labelMs / 4;
   const ruler = useMemo(() => {
     const p = Skia.Path.Make();
     const marks: { x: number; s: number }[] = [];
-    for (let ms = 250; ms < 10000; ms += 250) {
+    for (let ms = tickMs; ms < 40000; ms += tickMs) {
       const x = stageX + ms / msPerPx;
       if (x > outX1) break;
       if (x < outX0) continue;
-      const major = ms % 1000 === 0;
+      const major = ms % labelMs === 0;
       p.moveTo(x, bot + 2);
       p.lineTo(x, bot + (major ? 6 : 4));
       if (major && x < outX1 - 10) marks.push({ x, s: ms / 1000 });
     }
     return { p, marks };
-  }, [stageX, msPerPx, outX0, outX1, bot]);
+  }, [stageX, msPerPx, outX0, outX1, bot, tickMs, labelMs]);
 
+  // The key names what each line IS (owner 2026-11-15: "build waves 1 thru
+  // 3", D62 item DL-01): the lab opens at FDBK 0%, so each gray click comes
+  // back once in blue, and the key says that blue line is its echo. It takes
+  // the old "CLICK · 90 BPM" key's place (the tempo reads on SOURCE).
   const note =
-    sk === 0 ? `CLICK · ${Math.round(60000 / periodMs)} BPM` : sk === 1 ? 'STEADY SINE · TRY CLICK' : 'STEADY NOISE · TRY CLICK';
+    sk === 0 ? (feedback > 0 ? 'GRAY CLICK · BLUE ECHOES' : 'GRAY CLICK · BLUE ECHO') : sk === 1 ? 'STEADY SINE · TRY CLICK' : 'STEADY NOISE · TRY CLICK';
 
   return (
     <FlowScene
@@ -1246,6 +1349,17 @@ function revOutPath(
   return p;
 }
 
+/** The reverb sweep's re-trigger period. CLICK: every click — the window is
+ *  1.5 beats at every tempo (owner 2026-11-25: the picture keeps step), so the
+ *  sweep is the CLICK 60 picture at the live pace (1 s at 60 BPM, as before;
+ *  2 s at 30, 0.5 s at 120). BURST (a fixed 250 ms): every 4th, about a
+ *  second. Noise: the window. The fxLabConfigs caption says "each time a
+ *  click reaches the stage". */
+function revSweepMs(sk: number, P: number): number {
+  'worklet';
+  return sk === 2 ? REV_WIN_MS : sk === 0 ? P : P * Math.max(1, Math.round(1000 / P));
+}
+
 function ReverbFlow({
   w,
   h,
@@ -1256,6 +1370,7 @@ function ReverbFlow({
   mix,
   dampHz,
   src,
+  clickAnchor,
 }: {
   w: number;
   h: number;
@@ -1266,6 +1381,8 @@ function ReverbFlow({
   mix: number;
   dampHz: number;
   src: FxSrc;
+  /** The heard CLICK train (FxLabScreen), wall-clock ms. */
+  clickAnchor?: ClickAnchor;
 }) {
   const stageX = w * STAGE_FRAC;
   const clock = usePhaseClock(active, 1); // real seconds
@@ -1273,7 +1390,11 @@ function ReverbFlow({
   const inX1 = stageX - 16;
   const outX0 = stageX + 10;
   const outX1 = w - 6;
-  const msPerPx = REV_WIN_MS / (outX1 - outX0);
+  /** The sweep window keeps step with the CLICK's tempo (owner 2026-11-25):
+   *  REV_WIN_MS × opening ÷ live BPM = 1.5 beats; 1 at the lab's own tempo.
+   *  At 30 BPM it spans 3 s, the whole 2 s between clicks and more. */
+  const winScale = src.kind === 'click' ? (src.windowScale ?? 1) : 1;
+  const msPerPx = (REV_WIN_MS * winScale) / (outX1 - outX0);
   const top = 24;
   const base = h - 20;
   const pxPerDb = (base - top) / REV_RANGE_DB;
@@ -1286,18 +1407,23 @@ function ReverbFlow({
   const preG = useGlide(preDelayMs);
   const mixG = useGlide(mix);
 
-  // The sweep re-triggers on a click (every ~1 s of clicks), every 4th burst,
-  // or free-runs over the window for steady noise.
-  const TP = sk === 2 ? REV_WIN_MS : P * Math.max(1, Math.round(1000 / P));
-  const wetArea = useDerivedValue(() => revOutPath(0, (clock.value / PI2) * 1000, sk, P, TP, preG.value, decG.value, mixG.value, outX0, outX1, msPerPx, top, base), [clock, preG, decG, mixG, sk, P, TP, outX0, outX1, msPerPx, top, base]);
-  const wetTop = useDerivedValue(() => revOutPath(1, (clock.value / PI2) * 1000, sk, P, TP, preG.value, decG.value, mixG.value, outX0, outX1, msPerPx, top, base), [clock, preG, decG, mixG, sk, P, TP, outX0, outX1, msPerPx, top, base]);
-  const dryOut = useDerivedValue(() => revOutPath(2, (clock.value / PI2) * 1000, sk, P, TP, preG.value, decG.value, mixG.value, outX0, outX1, msPerPx, top, base), [clock, preG, decG, mixG, sk, P, TP, outX0, outX1, msPerPx, top, base]);
-  const wetOld = useDerivedValue(() => revOutPath(3, (clock.value / PI2) * 1000, sk, P, TP, preG.value, decG.value, mixG.value, outX0, outX1, msPerPx, top, base), [clock, preG, decG, mixG, sk, P, TP, outX0, outX1, msPerPx, top, base]);
-  const head = useDerivedValue(() => revOutPath(4, (clock.value / PI2) * 1000, sk, P, TP, preG.value, decG.value, mixG.value, outX0, outX1, msPerPx, top, base), [clock, preG, decG, mixG, sk, P, TP, outX0, outX1, msPerPx, top, base]);
+  /** [P, origin] the worklets draw from (useHitGrid: a tempo change stretches the train). */
+  const grid = useHitGrid(clock, P, src.kind === 'click' ? clickAnchor : undefined);
+
+  // The sweep re-triggers on a click (every ~1 s of clicks: revSweepMs), every
+  // 4th burst, or free-runs over the window for steady noise. Worked out in
+  // the worklet from the grid's period, so it always lands on a drawn click.
+  const wetArea = useDerivedValue(() => revOutPath(0, hitNowMs(clock.value, grid.value), sk, grid.value[0], revSweepMs(sk, grid.value[0]), preG.value, decG.value, mixG.value, outX0, outX1, msPerPx, top, base), [clock, grid, preG, decG, mixG, sk, outX0, outX1, msPerPx, top, base]);
+  const wetTop = useDerivedValue(() => revOutPath(1, hitNowMs(clock.value, grid.value), sk, grid.value[0], revSweepMs(sk, grid.value[0]), preG.value, decG.value, mixG.value, outX0, outX1, msPerPx, top, base), [clock, grid, preG, decG, mixG, sk, outX0, outX1, msPerPx, top, base]);
+  const dryOut = useDerivedValue(() => revOutPath(2, hitNowMs(clock.value, grid.value), sk, grid.value[0], revSweepMs(sk, grid.value[0]), preG.value, decG.value, mixG.value, outX0, outX1, msPerPx, top, base), [clock, grid, preG, decG, mixG, sk, outX0, outX1, msPerPx, top, base]);
+  const wetOld = useDerivedValue(() => revOutPath(3, hitNowMs(clock.value, grid.value), sk, grid.value[0], revSweepMs(sk, grid.value[0]), preG.value, decG.value, mixG.value, outX0, outX1, msPerPx, top, base), [clock, grid, preG, decG, mixG, sk, outX0, outX1, msPerPx, top, base]);
+  const head = useDerivedValue(() => revOutPath(4, hitNowMs(clock.value, grid.value), sk, grid.value[0], revSweepMs(sk, grid.value[0]), preG.value, decG.value, mixG.value, outX0, outX1, msPerPx, top, base), [clock, grid, preG, decG, mixG, sk, outX0, outX1, msPerPx, top, base]);
 
   /** IN: the source in the same dB view. */
   const inPath = useDerivedValue(() => {
-    const now = (clock.value / PI2) * 1000;
+    const g = grid.value;
+    const P = g[0];
+    const now = hitNowMs(clock.value, g);
     const p = Skia.Path.Make();
     const cols = Math.max(2, Math.floor(inX1 - inX0));
     const cw = (inX1 - inX0) / cols;
@@ -1319,20 +1445,25 @@ function ReverbFlow({
       } else started = false;
     }
     return p;
-  }, [clock, inX0, inX1, stageX, msPerPx, sk, P, top, base]);
+  }, [clock, inX0, inX1, stageX, msPerPx, sk, grid, top, base]);
 
   // The seconds ruler under OUT (ticks every 100 ms of age, named at 0.5 s).
+  // On a tempo's window the named step is 0.5 or 1 s (rulerStepMs, never
+  // below 0.5 s) and the ticks stay 100 ms, so the ruler always says the real
+  // seconds and the lessons' "one 100 ms tick" is a tick at every tempo.
+  const labelMs = Math.max(500, rulerStepMs(500, winScale));
+  const tickMs = 100;
   const ruler = useMemo(() => {
     const p = Skia.Path.Make();
     const marks: { x: number; s: string }[] = [];
-    for (let ms = 100; ms < 5000; ms += 100) {
+    for (let ms = tickMs; ms < 20000; ms += tickMs) {
       const x = outX0 + ms / msPerPx; // time since the trigger
       if (x > outX1) break;
       if (x < outX0) continue;
-      const major = ms % 500 === 0;
+      const major = Math.abs(ms / labelMs - Math.round(ms / labelMs)) < 1e-6;
       p.moveTo(x, base + 2);
       p.lineTo(x, base + (major ? 6 : 4));
-      if (major && x < outX1 - 12) marks.push({ x, s: ms % 1000 === 0 ? `${ms / 1000} s` : `${(ms / 1000).toFixed(1)} s` });
+      if (major && x < outX1 - 12) marks.push({ x, s: fmtSeconds(ms) });
     }
     // dB guides: the source peak (top) and every 30 dB below it.
     const g = Skia.Path.Make();
@@ -1342,9 +1473,26 @@ function ReverbFlow({
       g.lineTo(outX1, y);
     }
     return { p, marks, g };
-  }, [stageX, msPerPx, outX0, outX1, base, top, pxPerDb]);
+  }, [stageX, msPerPx, outX0, outX1, base, top, pxPerDb, tickMs, labelMs]);
 
-  const note = sk === 0 ? `CLICK · ${Math.round(60000 / P)} BPM · dB VIEW` : sk === 1 ? 'TONE BURSTS · dB VIEW' : 'STEADY NOISE · TRY CLICK';
+  // THE GAP, MARKED (owner 2026-11-15: "build waves 1 thru 3", D62 item
+  // RV-03): 0 → 60 ms of PRE-DELAY moved the wash only a few pixels, so a
+  // small bracket over OUT spans the click to the wash's start, PRE-DELAY plus
+  // the 31 ms the tank's shortest line takes (revCol), labeled GAP. It glides
+  // with the wash. The click's BPM left the key in its place (it reads on
+  // SOURCE as CLICK 60): a line in, a line out.
+  const gapY = top - 5;
+  const gapPath = useDerivedValue(() => {
+    const p = Skia.Path.Make();
+    if (sk !== 0) return p;
+    const x1 = outX0 + (preG.value + 31) / msPerPx;
+    p.moveTo(outX0, gapY + 3);
+    p.lineTo(outX0, gapY);
+    p.lineTo(x1, gapY);
+    p.lineTo(x1, gapY + 3);
+    return p;
+  }, [preG, sk, outX0, msPerPx, gapY]);
+  const note = sk === 0 ? 'CLICK · dB VIEW' : sk === 1 ? 'TONE BURSTS · dB VIEW' : 'STEADY NOISE · TRY CLICK';
 
   return (
     <FlowScene
@@ -1359,9 +1507,11 @@ function ReverbFlow({
       {ruler.marks.map((m) => (
           <GlassText key={m.s} x={m.x} y={base + 5} text={m.s} w={34} />
         ))}
+        {sk === 0 ? <GlassText x={outX0 + (preDelayMs + 31) / msPerPx + 3} y={gapY - 8} text="GAP" align="left" w={30} color={colors.textPrimary} /> : null}
         </>
       }
     >
+      <Path path={gapPath} color={colors.textPrimary} style="stroke" strokeWidth={1.2} opacity={0.85} />
       <Path path={ruler.g} color={ZERO} style="stroke" strokeWidth={0.8} opacity={0.6}>
         <DashPathEffect intervals={[2, 4]} />
       </Path>
@@ -1627,7 +1777,10 @@ function SpectrumFlow({
           <GlassText key={i} x={m.x} y={yBot + 4} text={m.t} w={28} />
         ))}
         <GlassText x={52} y={6} align="left" w={90} text={white ? 'WHITE NOISE' : 'PINK NOISE'} />
-        <GlassText x={outX0} y={6} align="left" w={90} text="SPECTRUM (dB)" />
+        {/* The flanger's OUT title names what its dips ARE (owner 2026-11-15:
+            "build waves 1 thru 3", D62 item FL-04): a line in for the line
+            out, so "notch" has a picture. The phaser keeps SPECTRUM (dB). */}
+        <GlassText x={outX0} y={6} align="left" w={mode === 'flanger' ? 112 : 90} text={mode === 'flanger' ? 'DIPS = CANCELED HERE' : 'SPECTRUM (dB)'} />
         </>
       }
     >
@@ -1652,23 +1805,40 @@ function SpectrumFlow({
   );
 }
 
-// ────────────────────────────────────────────── chorus/flanger/phaser flow ──
-// The dry wave travels in; past the stage its DOUBLED voice (blue) visibly
-// wobbles against it on the true LFO rate, and the amber sum swells/cancels —
-// the comb (or the phaser's all-pass phase φ = −2N·atan(f/fc), the exact
-// phaserResponseDb formula) made visible in time.
+// ──────────────────────────────────────────────────── chorus scope flow ──
+/* A STANDING SCOPE (owner 2026-11-23, "Yes, standing scope", after
+ * 2026-11-22: "Once a wave form has happend, it should not become some other
+ * waveform later in time...."). The maths lives in ./chorusScope.ts.
+ *
+ * The glass is a triggered oscilloscope: SCOPE_CYCLES true cycles of the
+ * source tone (3 × 440 Hz = 6.8 ms of real signal), time running left to
+ * right from the trigger at the left edge, faint divisions every 1 ms. The
+ * dry tone (gray, IN and again faint past the stage) is triggered on its own
+ * rising zero crossing and stands still. The copy (blue) is that tone τ later
+ * — the delay the engine runs at THIS instant (Effects.hpp ModEffect, chorus:
+ * τ = centerMs + depth·6 ms·sin(LFO)) — so its crests sit to the RIGHT of the
+ * dry crests (later in time). OUT (amber) is the engine's mix of the two at
+ * this instant. As the LFO moves τ, the copy slides against the still dry
+ * tone and OUT swells and thins in place. Nothing scrolls, so there is no
+ * drawn history that could change.
+ *
+ * Grading fix 2026-10-16 (Chorus 5.0 D) still holds: the lag is the TRUE
+ * φ = 2π·f·τ — for 440 Hz and 20 ms, 8.8 cycles, 0.8 of a cycle on screen;
+ * at CLASSIC depth the LFO sweeps it ±1.32 cycles (the beating you hear).
+ * At fast, deep settings the copy would slide 2π·f·(depth·6 ms)·2π·rate rad/s
+ * at peak — at 440 Hz, depth 1, 3 Hz, ~0.8 of a cycle per frame, which strobes
+ * and can seem to run backwards. The DRAWN LFO is capped so the slide stays
+ * readable (≤ 45 rad/s, chorusLfoVisHz), and the glass says LFO SLOWED. */
 function ModFlow({
   w,
   h,
   active,
   label,
-  flavor,
   rateHz,
   depth,
   center,
   mix,
   feedback,
-  stages,
   srcHz,
   srcIsNoise,
 }: {
@@ -1676,158 +1846,103 @@ function ModFlow({
   h: number;
   active: boolean;
   label: string;
-  flavor: 'chorus' | 'flanger' | 'phaser';
   rateHz: number;
   depth: number;
-  /** centerMs (chorus/flanger) or centerHz (phaser). */
+  /** The voice delay, ms. */
   center: number;
   mix: number;
   feedback: number;
-  stages: number;
-  /** CHORUS: the source tone's frequency — see `trueLag` below. */
-  srcHz?: number;
+  /** The source tone's frequency: the sine's own pitch, or 440 Hz standing
+   *  in for one component of the noise. */
+  srcHz: number;
   srcIsNoise?: boolean;
 }) {
   const stageX = w * STAGE_FRAC;
-  const carrier = usePhaseClock(active, 0.5);
-  /* CHORUS — THE TRUE PHASE LAG (grading fix 2026-10-16, Chorus 5.0 D).
-   * The copy used to sit (centerMs ÷ 40) of a drawn cycle behind the dry wave,
-   * i.e. the strip was drawn as if the source were a 25 Hz tone. At the lab's
-   * own 20 ms default that is HALF a cycle, so dry + copy cancelled and the
-   * resting picture said "chorus silences the sound". What the DSP does
-   * (Effects.hpp ModEffect, chorus: τ = centerMs + depth·6 ms·sin(LFO)) to the
-   * tone the student actually plays is a lag of φ = 2π·f·τ: for 440 Hz and
-   * 20 ms, 8.8 cycles — 0.8 of a cycle on screen — so the 50 % sum has
-   * |cos(π·f·τ)| = 0.81 of the input. As the LFO moves τ by ±3 ms (CLASSIC
-   * depth), φ sweeps ±1.32 cycles: the copy slides, the sum swells and thins
-   * (the beating you hear), and a true null is a moment the sweep passes
-   * through, not a rest. The scope is a few true cycles of that tone; its
-   * drift is slowed.
-   * SIGN: the wave runs right as sin(kc·x − pc), so the copy emitted τ
-   * earlier is sin(kc·x − pc + φ) — its crests sit φ/kc BEHIND (left of) the
-   * dry crests. */
-  const trueLag = flavor === 'chorus' && srcHz != null && srcHz > 0;
-  /* At fast, deep settings the copy slips by 2π·f·(depth·6 ms)·2π·rate rad/s
-   * at peak — at 440 Hz, depth 1, 3 Hz that is ~0.8 of a cycle per frame,
-   * which strobes and can seem to run backwards. The DRAWN LFO is capped so
-   * the slip stays readable (≤ ~45 rad/s), and the glass says SLOWED. */
-  const slipPerHz = trueLag ? PI2 * (srcHz as number) * 0.006 * Math.max(depth, 0.01) * PI2 : 0;
-  const lfoVisHz = trueLag ? Math.min(rateHz, 45 / slipPerHz) : Math.min(rateHz, 5);
-  const lfoSlowed = trueLag && lfoVisHz < rateHz - 1e-6;
-  const lfo = usePhaseClock(active, lfoVisHz); // true LFO rate (chorus: capped, see below)
+  const lfoVisHz = chorusLfoVisHz(rateHz, depth, srcHz);
+  const lfoSlowed = chorusLfoSlowed(rateHz, depth, srcHz);
+  const lfo = usePhaseClock(active, lfoVisHz); // the drawn LFO (capped, see above)
   const depthG = useGlide(depth);
   const ctrG = useGlide(center);
   const mixG = useGlide(mix);
   const fbG = useGlide(feedback);
-  const stG = useGlide(stages);
-  const kc = (PI2 * 3.0) / w;
-  const lamPx = w / 3.0;
+  /** The trigger: t = 0 at the left edge of IN. */
+  const x0 = 6;
+  const msPerPx = scopeWindowMs(srcHz) / w;
+  const A = h * 0.32;
+  const inX1 = stageX - 10;
+  const outX0 = stageX + 10;
+  const outX1 = w - 6;
 
-  const inPath = useDerivedValue(() => {
-    const pc = carrier.value;
+  // The triggered dry tone: built once per layout — it never moves.
+  const { inPath, dryOutPath } = useMemo(() => {
+    const line = (xa: number, xb: number) => {
+      const p = Skia.Path.Make();
+      const N = 52;
+      for (let i = 0; i <= N; i++) {
+        const x = xa + ((xb - xa) * i) / N;
+        const y = h / 2 - A * scopeDry((x - x0) * msPerPx, srcHz);
+        if (i === 0) p.moveTo(x, y);
+        else p.lineTo(x, y);
+      }
+      return p;
+    };
+    return { inPath: line(x0, inX1), dryOutPath: line(outX0, outX1) };
+  }, [h, A, msPerPx, srcHz, inX1, outX0, outX1]);
+
+  // The graticule: one faint division per millisecond from the trigger.
+  const grid = useMemo(() => {
     const p = Skia.Path.Make();
-    const A = h * 0.32;
-    const N = 40;
-    for (let i = 0; i <= N; i++) {
-      const x = 6 + ((stageX - 16) * i) / N;
-      const y = h / 2 - A * Math.sin(kc * x - pc);
-      if (i === 0) p.moveTo(x, y);
-      else p.lineTo(x, y);
+    const divPx = SCOPE_DIV_MS / msPerPx;
+    for (let x = x0; x <= w - 4; x += divPx) {
+      p.moveTo(x, 22);
+      p.lineTo(x, h - 18);
     }
     return p;
-  }, [carrier, stageX, h, kc]);
+  }, [msPerPx, w, h]);
 
-  // The doubled voice + the summed output share per-frame scalars.
   const copyPath = useDerivedValue(() => {
-    const pc = carrier.value;
-    const pl = lfo.value;
-    let dx = 0;
-    let dph = 0;
-    if (trueLag) {
-      dph = (PI2 * (srcHz as number) * (ctrG.value + 6 * depthG.value * Math.sin(pl))) / 1000;
-    } else if (flavor === 'chorus') {
-      dx = (ctrG.value / 40 + ((6 * depthG.value) / 40) * Math.sin(pl)) * lamPx;
-    } else if (flavor === 'flanger') {
-      dx = (ctrG.value / 8 + ((ctrG.value * 0.85 * depthG.value) / 8) * Math.sin(pl)) * lamPx;
-    } else {
-      const fc = ctrG.value * Math.pow(2, 2 * depthG.value * Math.sin(pl));
-      dph = -2 * stG.value * Math.atan(1000 / Math.max(fc, 20)); // phaserResponseDb φ
-    }
+    const tau = chorusDelayMs(ctrG.value, depthG.value, lfo.value);
     const p = Skia.Path.Make();
-    const A = h * 0.32;
     const N = 52;
     for (let i = 0; i <= N; i++) {
-      const x = stageX + 10 + ((w - 6 - (stageX + 10)) * i) / N;
-      const y = h / 2 - A * Math.sin(kc * (x - dx) - pc + dph);
+      const x = outX0 + ((outX1 - outX0) * i) / N;
+      const y = h / 2 - A * scopeCopy((x - x0) * msPerPx, srcHz, tau);
       if (i === 0) p.moveTo(x, y);
       else p.lineTo(x, y);
     }
     return p;
-  }, [carrier, lfo, depthG, ctrG, stG, stageX, w, h, kc, lamPx, trueLag, srcHz]);
+  }, [lfo, depthG, ctrG, outX0, outX1, h, A, msPerPx, srcHz]);
 
   const outPath = useDerivedValue(() => {
-    const pc = carrier.value;
-    const pl = lfo.value;
+    const tau = chorusDelayMs(ctrG.value, depthG.value, lfo.value);
     const mixV = mixG.value;
     const fbV = fbG.value;
-    let dx = 0;
-    let dph = 0;
-    if (trueLag) {
-      dph = (PI2 * (srcHz as number) * (ctrG.value + 6 * depthG.value * Math.sin(pl))) / 1000;
-    } else if (flavor === 'chorus') {
-      dx = (ctrG.value / 40 + ((6 * depthG.value) / 40) * Math.sin(pl)) * lamPx;
-    } else if (flavor === 'flanger') {
-      dx = (ctrG.value / 8 + ((ctrG.value * 0.85 * depthG.value) / 8) * Math.sin(pl)) * lamPx;
-    } else {
-      const fc = ctrG.value * Math.pow(2, 2 * depthG.value * Math.sin(pl));
-      dph = -2 * stG.value * Math.atan(1000 / Math.max(fc, 20));
-    }
     const p = Skia.Path.Make();
-    const A = h * 0.32;
-    const norm = 1 / (1 + Math.abs(fbV) * mixV);
     const N = 52;
     for (let i = 0; i <= N; i++) {
-      const x = stageX + 10 + ((w - 6 - (stageX + 10)) * i) / N;
-      const dry = Math.sin(kc * x - pc);
-      const wet = Math.sin(kc * (x - dx) - pc + dph) + fbV * Math.sin(kc * (x - 2 * dx) - pc + 2 * dph);
-      const y = h / 2 - A * norm * ((1 - mixV) * dry + mixV * wet);
+      const x = outX0 + ((outX1 - outX0) * i) / N;
+      const y = h / 2 - A * scopeOut((x - x0) * msPerPx, srcHz, tau, mixV, fbV);
       if (i === 0) p.moveTo(x, y);
       else p.lineTo(x, y);
     }
     return p;
-  }, [carrier, lfo, depthG, ctrG, mixG, fbG, stG, stageX, w, h, kc, lamPx, trueLag, srcHz]);
+  }, [lfo, depthG, ctrG, mixG, fbG, outX0, outX1, h, A, msPerPx, srcHz]);
 
-  // CHORUS: the dry voice carries on past the stage (dim), so the two voices
-  // that MAKE the chorus — you (grey) and the late copy (blue) — sit side by
-  // side with what you hear (amber, their mix).
-  const dryOutPath = useDerivedValue(() => {
-    const p = Skia.Path.Make();
-    if (!trueLag) return p;
-    const pc = carrier.value;
-    const A = h * 0.32;
-    const N = 52;
-    for (let i = 0; i <= N; i++) {
-      const x = stageX + 10 + ((w - 6 - (stageX + 10)) * i) / N;
-      const y = h / 2 - A * Math.sin(kc * x - pc);
-      if (i === 0) p.moveTo(x, y);
-      else p.lineTo(x, y);
-    }
-    return p;
-  }, [carrier, trueLag, stageX, w, h, kc]);
-
-  const note = trueLag
-    ? lfoSlowed
-      ? `${srcHz} Hz · LFO SLOWED`
-      : srcIsNoise
-        ? `${srcHz} Hz PART OF THE NOISE`
-        : `SCOPE · ${srcHz} Hz TONE`
-    : undefined;
+  const note = lfoSlowed ? `${srcHz} Hz · LFO SLOWED` : srcIsNoise ? `${srcHz} Hz PART OF THE NOISE` : `SCOPE · ${srcHz} Hz TONE`;
 
   return (
-    <FlowScene w={w} h={h} label={label} note={note} noteColor={trueLag ? DIM : undefined}>
+    <FlowScene
+      w={w}
+      h={h}
+      label={label}
+      note={note}
+      noteColor={DIM}
+      overlay={<GlassText x={w - 8} y={h - 16} align="right" size={10} w={80} text={`${SCOPE_DIV_MS} ms / DIV`} />}
+    >
+      <Path path={grid} color={FRAME} style="stroke" strokeWidth={1} opacity={0.9} />
       <Path path={inPath} color={DIM} style="stroke" strokeWidth={1.4} opacity={0.85} />
-      {trueLag ? <Path path={dryOutPath} color={DIM} style="stroke" strokeWidth={1.1} opacity={0.5} /> : null}
-      <Path path={copyPath} color={BLUE} style="stroke" strokeWidth={1.2} opacity={trueLag ? 0.8 : 0.55} />
+      <Path path={dryOutPath} color={DIM} style="stroke" strokeWidth={1.1} opacity={0.5} />
+      <Path path={copyPath} color={BLUE} style="stroke" strokeWidth={1.2} opacity={0.8} />
       <FlowGlow path={outPath} gradH={h} />
     </FlowScene>
   );
@@ -1855,6 +1970,7 @@ function DynamicsFlow({
   holdMs,
   grDb,
   signal,
+  clickAnchor,
 }: {
   w: number;
   h: number;
@@ -1871,6 +1987,8 @@ function DynamicsFlow({
   holdMs: number;
   grDb: number;
   signal?: DynSignal;
+  /** The heard CLICK train (FxLabScreen), wall-clock ms. */
+  clickAnchor?: ClickAnchor;
 }) {
   const stageX = w * STAGE_FRAC;
   // ONE clock, in real seconds: phase/2π = seconds, so the picture moves at
@@ -1888,6 +2006,13 @@ function DynamicsFlow({
   const glow = useDerivedValue(() => Math.min(grG.value / 12, 1), [grG]);
   const sigKind = signal?.kind === 'steady' ? 1 : signal?.kind === 'noise' ? 2 : 0;
   const periodMs = signal?.kind === 'hits' ? Math.max(100, signal.periodMs) : 500;
+  /** [P, origin] the worklets draw from (useHitGrid: a tempo change stretches the train). */
+  const grid = useHitGrid(clock, periodMs, signal?.kind === 'hits' ? clickAnchor : undefined);
+  /** The window keeps step with the CLICK's tempo (owner 2026-11-25): OUT
+   *  spans DYN_WINDOW_MS × opening ÷ live BPM, so the hits cross at the pace
+   *  of the click you hear and the glass holds as many of them; 1 at the lab's
+   *  own tempo (the old picture). Every shape stays at its true duration. */
+  const winScale = signal?.kind === 'hits' ? (signal.windowScale ?? 1) : 1;
   /** Hits drawn as the REAL 5 ms click (the compressor), not the drum model. */
   const ping = sigKind === 0 && signal?.kind === 'hits' && signal.ping === true && mode !== 'gate';
 
@@ -1898,7 +2023,7 @@ function DynamicsFlow({
   const inX1 = stageX - 16;
   const outX0 = stageX + 10;
   const outX1 = w - 6;
-  const msPerPx = DYN_WINDOW_MS / Math.max(1, outX1 - outX0);
+  const msPerPx = (DYN_WINDOW_MS * winScale) / Math.max(1, outX1 - outX0);
   const mid = h / 2;
   /** Half-height of the panel edge (= DYN_TOP_DB). */
   const A = h / 2 - 5;
@@ -1909,7 +2034,9 @@ function DynamicsFlow({
   const ts = useStageTextScale();
 
   const inPath = useDerivedValue(() => {
-    const now = (clock.value / PI2) * 1000;
+    const g = grid.value;
+    const periodMs = g[0];
+    const now = hitNowMs(clock.value, g);
     const p = Skia.Path.Make();
     const cols = Math.max(2, Math.floor(inX1 - inX0));
     const cw = (inX1 - inX0) / cols;
@@ -1937,10 +2064,12 @@ function DynamicsFlow({
     for (let c = cols - 1; c >= 0; c--) p.lineTo(inX0 + (c + 0.5) * cw, mid + A * amps[c]);
     p.close();
     return p;
-  }, [clock, inX0, inX1, stageX, msPerPx, mid, A, sigKind, periodMs, ping]);
+  }, [clock, inX0, inX1, stageX, msPerPx, mid, A, sigKind, grid, ping]);
 
   const outPath = useDerivedValue(() => {
-    const now = (clock.value / PI2) * 1000;
+    const g = grid.value;
+    const periodMs = g[0];
+    const now = hitNowMs(clock.value, g);
     const p = Skia.Path.Make();
     const cols = Math.max(2, Math.floor(outX1 - outX0));
     const cw = (outX1 - outX0) / cols;
@@ -2091,13 +2220,15 @@ function DynamicsFlow({
     for (let c = cols - 1; c >= 0; c--) p.lineTo(outX0 + (c + 0.5) * cw, mid + A * peaks[c]);
     p.close();
     return p;
-  }, [clock, thrG, ratG, rngG, ceilG, mkG, atkG, relG, holdG, outX0, outX1, stageX, msPerPx, mid, A, mode, sigKind, periodMs, ping]);
+  }, [clock, thrG, ratG, rngG, ceilG, mkG, atkG, relG, holdG, outX0, outX1, stageX, msPerPx, mid, A, mode, sigKind, grid, ping]);
 
   // The UNPROCESSED signal's outline behind OUT (cognitive review 2026-10-16:
   // with nothing to compare against, a squeezed hit or a gated tail did not
   // read as "something was taken away"). Same columns, no processor.
   const dryOutPath = useDerivedValue(() => {
-    const now = (clock.value / PI2) * 1000;
+    const g = grid.value;
+    const periodMs = g[0];
+    const now = hitNowMs(clock.value, g);
     const p = Skia.Path.Make();
     const cols = Math.max(2, Math.floor(outX1 - outX0));
     const cw = (outX1 - outX0) / cols;
@@ -2124,7 +2255,7 @@ function DynamicsFlow({
     for (let c = cols - 1; c >= 0; c--) p.lineTo(outX0 + (c + 0.5) * cw, mid + A * amps[c]);
     p.close();
     return p;
-  }, [clock, outX0, outX1, stageX, msPerPx, mid, A, sigKind, periodMs, ping]);
+  }, [clock, outX0, outX1, stageX, msPerPx, mid, A, sigKind, grid, ping]);
 
   // Dashed limit guides at their LINEAR height: threshold over the IN side
   // (comp/gate), ceiling over the OUT side (limiter) — dashed = a limit.
@@ -2145,7 +2276,9 @@ function DynamicsFlow({
   const grPath = useDerivedValue(() => {
     const p = Skia.Path.Make();
     if (!ping) return p;
-    const now = (clock.value / PI2) * 1000;
+    const g = grid.value;
+    const periodMs = g[0];
+    const now = hitNowMs(clock.value, g);
     const cols = Math.max(2, Math.floor(outX1 - outX0));
     const cw = (outX1 - outX0) / cols;
     const dt = cw * msPerPx;
@@ -2179,7 +2312,7 @@ function DynamicsFlow({
     p.lineTo(outX1, y0);
     p.close();
     return p;
-  }, [clock, thrG, ratG, atkG, relG, ping, outX0, outX1, stageX, msPerPx, h, periodMs]);
+  }, [clock, thrG, ratG, atkG, relG, ping, outX0, outX1, stageX, msPerPx, h, grid]);
   const grPeakDb = useMemo(
     () => (ping ? dynPingGrPeakDb(thresholdDb, ratio, Math.max(attackMs, 0.1), Math.max(releaseMs, 1), periodMs) : 0),
     [ping, thresholdDb, ratio, attackMs, releaseMs, periodMs],
@@ -2216,13 +2349,21 @@ function DynamicsFlow({
       note={note}
       noteColor={DIM}
       overlay={
-        ping ? (
-          <Text
-            {...fitValue(10 * ts)}
-            style={[flowStyles.tag, { fontSize: 10 * ts, letterSpacing: 0.5 * ts, left: (stageX + 14) * ts, top: (h - GR_TRACE_TOP - 13) * ts, width: 96 * ts, color: AMBER }]}
-          >
-            {`GR PEAK ${grPeakDb.toFixed(1)} dB`}
-          </Text>
+        ping || winScale !== 1 ? (
+          <>
+            {ping ? (
+              <Text
+                {...fitValue(10 * ts)}
+                style={[flowStyles.tag, { fontSize: 10 * ts, letterSpacing: 0.5 * ts, left: (stageX + 14) * ts, top: (h - GR_TRACE_TOP - 13) * ts, width: 96 * ts, color: AMBER }]}
+              >
+                {`GR PEAK ${grPeakDb.toFixed(1)} dB`}
+              </Text>
+            ) : null}
+            {/* The real time OUT spans, once the tempo has moved it off the
+                opening 900 ms (owner 2026-11-25: an honest time axis; the
+                strip has no ruler, so it says its span in words). */}
+            {winScale !== 1 ? <GlassText x={outX1 - 2} y={24} align="right" w={90} text={outSpanLabel(DYN_WINDOW_MS * winScale)} /> : null}
+          </>
         ) : undefined
       }
     >
@@ -2561,6 +2702,13 @@ function StereoFlow({
     return p;
   }, [carrier, widthG, panG, invG, dlyG, foldG, stageX, w, h, kc, lamPx, d0]);
 
+  // The flip + mono moment named ON the flat line (owner 2026-11-15: "build
+  // waves 1 thru 3", D62 item PH-05). Only while it is exact: identical L and
+  // R (the phase lab's input), R flipped, no delay, summed to mono. The L / R
+  // key gives it its place: with both traces flat there is nothing to tell
+  // apart. Placed so that even on two lines (a 390-wide phone) it ends above
+  // the flat line at h / 2.
+  const cancelled = flavor === 'phase' && invertR && monoFold && delayRms === 0;
   return (
     <FlowScene
       w={w}
@@ -2568,8 +2716,14 @@ function StereoFlow({
       label={label}
       note={bassOn ? 'TONE 440 Hz: NO CHANGE' : stereoIn ? 'STEREO TEST TONE · L ≠ R' : flavor === 'phase' && srcIsNoise ? 'PART OF THE NOISE · L = R' : 'SAME TONE IN L AND R'}
       noteColor={colors.textSub}
-      legend={[{ label: 'L', color: AMBER }, { label: 'R', color: BLUE }]}
-      overlay={bassOn ? <GlassText x={stageX + 14} y={h - 16} text={`BASS-MONO ${bassMonoHz} Hz`} align="left" w={96} size={10} color={STAGE_GREEN} /> : undefined}
+      legend={cancelled ? undefined : [{ label: 'L', color: AMBER }, { label: 'R', color: BLUE }]}
+      overlay={
+        bassOn ? (
+          <GlassText x={stageX + 14} y={h - 16} text={`BASS-MONO ${bassMonoHz} Hz`} align="left" w={96} size={10} color={STAGE_GREEN} />
+        ) : cancelled ? (
+          <GlassText x={(stageX + 10 + w - 6) / 2} y={h / 2 - 32} text="SILENCE: THE TWO SIDES ERASED EACH OTHER" w={w - stageX - 22} size={10} color={colors.textPrimary} />
+        ) : undefined
+      }
     >
       <Path path={inR} color={BLUE} style="stroke" strokeWidth={1.2} opacity={0.4} />
       <Path path={inL} color={flavor === 'width' ? AMBER : DIM} style="stroke" strokeWidth={1.4} opacity={flavor === 'width' ? 0.5 : 0.85} />
@@ -2585,7 +2739,7 @@ function StereoFlow({
 }
 
 // ─────────────────────────────────────────────────────────── dispatcher ──
-function FlowBody({ model, w, active, grDb }: { model: FxAnimModel; w: number; active: boolean; grDb: number }) {
+function FlowBody({ model, w, active, grDb, clickAnchor }: { model: FxAnimModel; w: number; active: boolean; grDb: number; clickAnchor?: ClickAnchor }) {
   const h = FLOW_H;
   const label = stageLabel(model);
   switch (model.kind) {
@@ -2604,6 +2758,7 @@ function FlowBody({ model, w, active, grDb }: { model: FxAnimModel; w: number; a
           pingpong={model.pingpong}
           dampHz={model.dampHz}
           src={model.src}
+          clickAnchor={clickAnchor}
         />
       );
     case 'reverb':
@@ -2618,6 +2773,7 @@ function FlowBody({ model, w, active, grDb }: { model: FxAnimModel; w: number; a
           mix={model.mix}
           dampHz={model.dampHz}
           src={model.src}
+          clickAnchor={clickAnchor}
         />
       );
     case 'mod':
@@ -2645,14 +2801,14 @@ function FlowBody({ model, w, active, grDb }: { model: FxAnimModel; w: number; a
           h={h}
           active={active}
           label={label}
-          flavor={model.flavor}
           rateHz={model.rateHz}
           depth={model.depth}
           center={model.centerMs}
           mix={model.mix}
           feedback={model.feedback}
-          stages={0}
-          srcHz={model.srcHz}
+          // The chorus (the flanger returned above): chorusToneOf always sets
+          // srcHz; 440 Hz is its own fallback.
+          srcHz={model.srcHz ?? 440}
           srcIsNoise={model.srcIsNoise}
         />
       );
@@ -2691,6 +2847,7 @@ function FlowBody({ model, w, active, grDb }: { model: FxAnimModel; w: number; a
           holdMs={model.holdMs}
           grDb={grDb}
           signal={model.signal}
+          clickAnchor={clickAnchor}
         />
       );
     case 'distortion':
@@ -2719,7 +2876,9 @@ function FlowBody({ model, w, active, grDb }: { model: FxAnimModel; w: number; a
 /** The shared animated hero. `active` gates ALL per-frame work (pass screen
  *  focus); a collapsed DISPLAY section unmounts it entirely. `grDb` is the
  *  LIVE measured gain reduction (dynamics labs) — 0 elsewhere/when stopped. */
-export function FxAnimHero({ model, active, grDb = 0 }: { model: FxAnimModel; active: boolean; grDb?: number }) {
+/** `clickAnchor` (third pass, 2026-11-25): the heard CLICK train from FxLabScreen,
+ *  in wall-clock ms, so every drawing of it keeps step with the sound. */
+export function FxAnimHero({ model, active, grDb = 0, clickAnchor }: { model: FxAnimModel; active: boolean; grDb?: number; clickAnchor?: ClickAnchor }) {
   const [w, setW] = useState(0);
   // FULL SCREEN: the measured width is the ZOOMED width; the flow is laid out
   // in glass units (width ÷ ts) and painted ×ts, so the whole picture — not
@@ -2736,7 +2895,7 @@ export function FxAnimHero({ model, active, grDb = 0 }: { model: FxAnimModel; ac
       accessible
       accessibilityLabel="Animated signal-flow model: the input wave enters the effect stage and emerges transformed by the current settings"
     >
-      {glassUnitsW >= 80 ? <FlowBody model={model} w={glassUnitsW} active={active} grDb={grDb} /> : <View style={{ height: FLOW_H * ts }} />}
+      {glassUnitsW >= 80 ? <FlowBody model={model} w={glassUnitsW} active={active} grDb={grDb} clickAnchor={clickAnchor} /> : <View style={{ height: FLOW_H * ts }} />}
     </View>
   );
 }

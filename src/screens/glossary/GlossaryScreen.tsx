@@ -37,13 +37,17 @@ import { Image as ExpoImage } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { NavIcon } from '../../components/nav/NavIcon';
+import { NavIcon, StudyGlyph } from '../../components/nav/NavIcon';
+import { useHideCircleMenu } from '../../components/nav/CircleMenu';
+import { PlaceArt } from '../../components/nav/CircleMenuPanel';
+import { MENU_BUTTON, MENU_BUTTON_LIFT, menuClearance } from '../../components/nav/circleMenuPlaces';
 import { AZIndex, azLetterOf } from '../../features/glossary/AZIndex';
 import { DeckIcon } from '../../components/DeckIcon';
 import { CoachMark } from '../../components/CoachMark';
 import { ShareIcon } from '../../components/ShareIcon';
 import { LinksToggleLabel } from './LinksToggleLabel';
 import { useGlossaryLinksPref } from '../../features/glossary/linksPref';
+import { countSearchableNames } from '../../features/glossary/searchableNames';
 import { ShareTermSheet, type NamedTerm, type ShareTermPayload } from '../../components/ShareTermSheet';
 import type { GlossaryShareTerm } from '../../features/glossary/glossaryShare';
 import { BookmarkIcon, HoldHintPressable, TermSelectIcons } from '../../features/flags/TermSelectIcons';
@@ -87,11 +91,13 @@ import {
   OFFLINE_AVAILABLE,
   alignDefinitionTier,
   corpusStats,
+  getMeta as getStoredMeta,
   idsMissingDefinitions,
   loadDefinitions as loadStoredDefinitions,
   loadTerms as loadStoredTerms,
   saveDefinitions as saveStoredDefinitions,
   saveTerms as saveStoredTerms,
+  setMeta as setStoredMeta,
 } from '../../features/glossary/offlineCorpus';
 import {
   GLOSSARY_WARN_AT_USED,
@@ -100,7 +106,7 @@ import {
   getGlossaryStatus,
   type CapMode,
 } from '../../features/glossary/glossaryCap';
-import { collapsedDefinitionLines } from '../../features/glossary/collapsedLines';
+import { collapsedDefinitionLines, glossaryCoachText } from '../../features/glossary/collapsedLines';
 import { recordRecentTerm, useRecentTerms, useRecentTermsUnreadable } from '../../features/glossary/recentTerms';
 import { useDecorativeMotion } from '../../features/settings/decorativeMotion';
 import { AckFlash, useAckTint } from '../../components/AckFlash';
@@ -136,20 +142,20 @@ import { isHazardTerm } from '../../lib/hazard';
 import { CautionBadge } from '../../components/CautionBadge';
 import { supabase } from '../../lib/supabase';
 import { ExitFullscreenIcon, FullscreenIcon } from '../../components/FullscreenIcon';
-import { MethodIcon } from '../../components/MethodIcon';
 import { CUSTOM_CYAN } from '../enrollment/EnrollmentSelection';
 import { safeSessionResult } from '../../lib/getSessionSafe';
 import { softDeadline } from '../../lib/boundedCall';
 import { V3_CURRICULUM_VERSION_ID } from '../../data/v3Curriculum';
 import { isCalcBackedTerm, calcLinkForTerm } from '../lab/calc/calcGlossaryLinks';
 import { SUPABASE_URL } from '../../lib/env';
-import { colors, fonts } from '../../theme/tokens';
+import { colors, fonts, STUDY_COLOR } from '../../theme/tokens';
 import {
   getLearningProfile,
   ACTION_LABELS,
   type GlossaryAction,
 } from '../../features/glossary/learningProfiles';
 import { getLabLesson } from '../../features/lab/guidedLessons';
+import { glossaryLabMistakes, glossaryLabMistakesClosing } from '../../features/lab/guidedLessons/glossaryHiddenLabMistakes';
 import type { StudyStackParamList } from '../../navigation/types';
 import { readingColumn, cardColumn } from '../../theme/readingColumn';
 import { safeGoBack } from '../../lib/safeGoBack';
@@ -157,7 +163,6 @@ import { relatedTermList, relatedTermsText } from '../../features/study/flashcar
 import { ResearchMoreLink } from '../../features/research/ResearchMoreLink';
 
 /** The STUDY tab's headphones (same bundled art as the nav bar). */
-const STUDY_NAV_ICON = require('../../../assets/icons/nav/nav-study.png');
 
 const BG_GLOSSARY = require('../../../assets/lab-backgrounds/glossary.webp');
 
@@ -429,37 +434,74 @@ function loadAllEntries(table: 'glossary' | 'glossary_browse_v'): Promise<Entry[
        */
       const stored = await loadStoredTerms(table).catch(() => [] as typeof EMPTY_TERMS);
       if (stored.length) {
-        // Revalidate WITHOUT blocking the reader. A changed corpus is written
-        // to the device and picked up on the next cold open; swapping 31,858
-        // rows under someone mid-scroll would be worse than a day-late term.
+        // Revalidate WITHOUT blocking the reader: the device copy opens at once.
+        // (2026-11-27, owner: the header must not stay behind Explore) When a
+        // changed corpus has been downloaded AND saved, the open Glossary switches
+        // to it straight away — header and search together — instead of waiting
+        // for the next cold start (see adoptFreshCorpus).
         void revalidateCorpus(table, stored.length);
-        return stored.map((r) => ({
-          id: r.id,
-          term: r.term,
-          termLower: r.term.toLowerCase(),
-          also_called: r.also_called,
-          aliasesLower: lowerNames(r.also_called),
-          definition: '',
-          plain_english: null,
-          achievement_id: r.achievement_id,
-        }));
+        return stored.map(corpusRowToEntry);
       }
 
-      const terms = await fetchCorpusTerms(table);
+      const [terms, shown] = await Promise.all([fetchCorpusTerms(table), readShownTotal()]);
       // Best-effort: a failed write costs a re-download next launch, nothing more.
-      void saveStoredTerms(table, terms).catch(() => {});
-      return terms.map((r) => ({
-        id: r.id,
-        term: r.term,
-        termLower: r.term.toLowerCase(),
-        also_called: r.also_called,
-        aliasesLower: lowerNames(r.also_called),
-        definition: '',
-        plain_english: null,
-        achievement_id: r.achievement_id,
-      }));
+      // The fresh copy is current by definition, so it carries today's version
+      // mark and the shown total it was downloaded for (else every new install
+      // would re-download once more, D88).
+      void saveStoredTerms(table, terms)
+        .then(() => setStoredMeta(corpusRevKey(table), CORPUS_CONTENT_REV))
+        .then(() => (shown != null ? setStoredMeta(corpusShownKey(table), String(shown)) : undefined))
+        .catch(() => {});
+      return terms.map(corpusRowToEntry);
     },
   );
+}
+
+/** One stored or downloaded corpus row as a list entry (definitions arrive later, for what is on screen). */
+function corpusRowToEntry(r: { id: string; term: string; achievement_id: string | null; also_called: readonly string[] }): Entry {
+  return {
+    id: r.id,
+    term: r.term,
+    termLower: r.term.toLowerCase(),
+    also_called: r.also_called,
+    aliasesLower: lowerNames(r.also_called),
+    definition: '',
+    plain_english: null,
+    achievement_id: r.achievement_id,
+  };
+}
+
+/**
+ * The open Glossary listens here for a fresh corpus (owner 2026-11-27: the header
+ * "reflects current count and is not static", and must not stay behind Explore).
+ */
+const freshCorpusListeners = new Set<(table: 'glossary' | 'glossary_browse_v', entries: Entry[]) => void>();
+
+/**
+ * A fresh corpus has been downloaded and SAVED: make it this run's list at once.
+ * Definitions already fetched for rows on screen are carried over by id, so
+ * nothing is read twice (and no metered read is spent again). The in-memory
+ * cache is replaced only when it still belongs to the same table.
+ */
+async function adoptFreshCorpus(
+  table: 'glossary' | 'glossary_browse_v',
+  rows: { id: string; term: string; achievement_id: string | null; also_called: readonly string[] }[],
+): Promise<void> {
+  if (ENTRIES_TABLE !== table) return;
+  const old = ENTRIES_CACHE ? await ENTRIES_CACHE.catch(() => [] as Entry[]) : [];
+  const byId = new Map(old.map((e) => [e.id, e]));
+  const fresh = rows.map((r) => {
+    const e = corpusRowToEntry(r);
+    const was = byId.get(r.id);
+    if (was) {
+      e.definition = was.definition;
+      e.plain_english = was.plain_english;
+    }
+    return e;
+  });
+  if (ENTRIES_TABLE !== table) return;
+  ENTRIES_CACHE = Promise.resolve(fresh);
+  freshCorpusListeners.forEach((fn) => fn(table, fresh));
 }
 
 /** A term whose FULL definition could not be read for a share (final round B,
@@ -592,12 +634,63 @@ const EMPTY_TERMS: { id: string; term: string; achievement_id: string | null; al
  * column. Recorded rather than pretended: this catches additions and removals,
  * which is what Discovery-style batches actually are.
  */
+/**
+ * The device copy's content version (owner GO 2026-11-26, must-do D88). The
+ * count check above cannot see a change that leaves the count alone — the
+ * 2026-11-23 duplicate merge moved 2,125 names into kept cards' `also_called`,
+ * and a phone holding an older copy would keep searching without them. A
+ * stored copy whose version differs from this one is re-downloaded ONCE, then
+ * the count check takes over again.
+ *
+ * ⛔ Raise this string whenever the server changes the corpus in a way that
+ * keeps the term count (renamed headwords, alias-only edits, achievement moves).
+ */
+const CORPUS_CONTENT_REV = '2026-11-26-also-called';
+const corpusRevKey = (table: string) => `corpus_rev:${table}`;
+
+/**
+ * The SHOWN total the device copy was last downloaded for (owner 2026-11-27: the
+ * header "reflects current count and is not static"). `academy_stats.terms` counts
+ * every searchable name, so it moves when "Also called" names are added or removed
+ * even though the card count does not. When it moves, the copy is downloaded again
+ * and the header, counted from that copy, follows. Remembering the total we last
+ * downloaded FOR (not comparing it with our own count) means a phone re-downloads
+ * at most once per change, even if its count and the server's ever disagree.
+ */
+const corpusShownKey = (table: string) => `corpus_shown_total:${table}`;
+
+/** academy_stats.terms, or null when it cannot be read (offline, RPC error). */
+async function readShownTotal(): Promise<number | null> {
+  try {
+    const { data, error } = await supabase.rpc('get_academy_stats');
+    const row = (Array.isArray(data) ? data[0] : data) as { terms?: unknown } | null;
+    const n = row?.terms;
+    return !error && typeof n === 'number' && Number.isFinite(n) ? n : null;
+  } catch {
+    return null;
+  }
+}
+
 async function revalidateCorpus(table: 'glossary' | 'glossary_browse_v', haveCount: number): Promise<void> {
   try {
-    const { data, error } = await supabase.rpc('get_glossary_term_count');
-    if (error || typeof data !== 'number' || data === haveCount) return;
+    const rev = await getStoredMeta(corpusRevKey(table)).catch(() => null);
+    const revCurrent = rev === CORPUS_CONTENT_REV;
+    const shown = await readShownTotal();
+    if (revCurrent) {
+      const { data, error } = await supabase.rpc('get_glossary_term_count');
+      const cardsChanged = !error && typeof data === 'number' && data !== haveCount;
+      const lastShown = await getStoredMeta(corpusShownKey(table)).catch(() => null);
+      const namesChanged = shown != null && String(shown) !== lastShown;
+      if (!cardsChanged && !namesChanged) return;
+    }
     const fresh = await fetchCorpusTerms(table);
     await saveStoredTerms(table, fresh);
+    // Only after the new copy is fully written: a failed download keeps the
+    // old version mark, so the next cold start tries again.
+    await setStoredMeta(corpusRevKey(table), CORPUS_CONTENT_REV);
+    if (shown != null) await setStoredMeta(corpusShownKey(table), String(shown));
+    // Saved: the open Glossary switches to it now, not at the next cold start.
+    await adoptFreshCorpus(table, fresh);
   } catch {
     // Offline, or the RPC is unavailable — keep what we have. That is the point.
   }
@@ -929,7 +1022,7 @@ type Filter = 'all' | 'topic' | 'equations' | 'favorites' | 'custom' | 'recent';
 const RETURN_TERM_KEY = 'ape:glossaryReturnTerm';
 /** The Recent views' face when the stored list could not be read (hunt 12, K2). */
 const RECENT_UNREADABLE =
-  'Your recent terms couldn’t be read on this phone. Nothing has been removed — they’ll show again once the list can be read.';
+  'Your recent terms couldn’t be read on this device. Nothing has been removed — they’ll show again once the list can be read.';
 
 /** The Custom (★) and Bookmarks views' faces when the stored list could not be
  *  read (hunt 13, K2 — the same pattern as RECENT_UNREADABLE). */
@@ -937,9 +1030,9 @@ const RECENT_UNREADABLE =
 const CUSTOM_EMPTY =
   'My Custom List is empty. Tap the three-card icon beside any term to add it. This button then shows just those terms.';
 const CUSTOM_UNREADABLE =
-  'My Custom List couldn’t be read on this phone. Nothing has been removed — it’ll show again once the list can be read.';
+  'My Custom List couldn’t be read on this device. Nothing has been removed — it’ll show again once the list can be read.';
 const BOOKMARKS_UNREADABLE =
-  'Your bookmarks couldn’t be read on this phone. Nothing has been removed — they’ll show again once the list can be read.';
+  'Your bookmarks couldn’t be read on this device. Nothing has been removed — they’ll show again once the list can be read.';
 /** The topic picker's face when its list could not be read (hunt 13, K2). */
 const TOPICS_UNREADABLE =
   'The topic list couldn’t be loaded — check your connection and open the Glossary again.';
@@ -1078,8 +1171,12 @@ function TermDetails({
   // guided-lesson registry. Client-authored + always available (NOT the
   // academy-gated DB `common_mistakes` below), so it's honest to show for free.
   const labLesson = labProfile ? getLabLesson(labProfile.lab) : null;
+  // On a glossary card the lines that only make sense inside the lab (they
+  // name its controls, presets or readouts) are hidden, and the section ends
+  // with one plain line saying where the rest are (owner 2026-11-23). The lab
+  // itself still shows every line: glossaryHiddenLabMistakes.ts.
   const labMistakesText = labLesson?.commonMistakes?.length
-    ? labLesson.commonMistakes.map((s) => `• ${s}`).join('\n')
+    ? glossaryLabMistakes(labLesson).map((s) => `• ${s}`).join('\n')
     : null;
   const mistakesText = d.common_mistakes?.length
     ? d.common_mistakes.map((s) => `• ${s}`).join('\n')
@@ -1181,10 +1278,11 @@ function TermDetails({
           above Plain English, which read as a misplaced duplicate). Free client
           content (NOT the entitlement-gated DB mistakes), so the eyebrow names
           its source lab. */}
-      {labMistakesText && labLesson ? (
+      {labMistakesText !== null && labLesson ? (
         <View style={styles.detailSection}>
           <Text style={styles.detailEyebrow}>COMMON MISTAKES · {labLesson.name.toUpperCase()} LAB</Text>
-          <Text style={styles.detailBody}>{labMistakesText}</Text>
+          {labMistakesText ? <Text style={styles.detailBody}>{labMistakesText}</Text> : null}
+          <Text style={[styles.detailBody, styles.labMistakesClosing]}>{glossaryLabMistakesClosing(labLesson.name)}</Text>
         </View>
       ) : null}
       {d.related_terms?.length && linkable ? (
@@ -1445,8 +1543,11 @@ export function GlossaryScreen({ route, navigation }: Props) {
     let alive = true;
     void (async () => {
       try {
-        const { data, error } = await supabase.rpc('get_glossary_term_count');
-        if (alive && !error && typeof data === 'number') setCachedCount(data);
+        // The DISPLAY total (academy_stats.terms, the curriculum hero's number),
+        // not get_glossary_term_count, which stays cards-only for the device-copy
+        // check (owner 2026-11-27: the count includes every searchable name).
+        const n = await readShownTotal();
+        if (alive && n != null) setCachedCount(n);
       } catch {
         /* non-fatal: the header waits for the live visible.length instead */
       }
@@ -2192,7 +2293,10 @@ ${COPY.glossaryFreeAllowance}`,
       });
       setFocusedId(id);
       recordRecent(id); // opening a term counts as "viewed"
-      coach.registerAction(); // each expand advances the "expand ×2" hint
+      // The first term a reader ever opens retires the hint for good (owner
+      // 2026-11-20): the old "expand ×2 on five visits" rule left it parked
+      // under the list long after the lesson was learned.
+      coach.retire();
       void fetchDetails(id);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -2261,7 +2365,7 @@ ${COPY.glossaryFreeAllowance}`,
   // B on screen. A still counts as read (its detail is cached, re-opening it is
   // free); it just no longer jumps in over the term the reader picked after it.
   const openSeqRef = useRef(0);
-  const registerCoach = coach.registerAction;
+  const registerCoach = coach.retire; // first open retires the hint (owner 2026-11-20)
   const openPopupRoot = useCallback(
     async (id: string) => {
       const seq = ++openSeqRef.current;
@@ -2783,6 +2887,21 @@ ${COPY.glossaryFreeAllowance}`,
     if (!OFFLINE_AVAILABLE) return;
     void corpusStats(table).then(setOfflineStats, () => {});
   }, [table]);
+
+  // A fresh corpus landed while this Glossary is open (owner 2026-11-27): show it
+  // now — the header count and the search move together, so the number shown is
+  // always one a reader can search, and it matches Explore without a restart.
+  useEffect(() => {
+    const onFresh = (t: 'glossary' | 'glossary_browse_v', list: Entry[]) => {
+      if (t !== table) return;
+      setEntries(list);
+      refreshOfflineStats();
+    };
+    freshCorpusListeners.add(onFresh);
+    return () => {
+      freshCorpusListeners.delete(onFresh);
+    };
+  }, [table, refreshOfflineStats]);
 
   // Synchronous twin of `savingOffline` (bug hunt 2026-09-30): a double tap on
   // SAVE ALL lands both taps in the same render, both read `savingOffline`
@@ -3389,6 +3508,9 @@ ${COPY.glossaryFreeAllowance}`,
     }
     return list;
   }, [entries, filter, deferredSearch, selTopicId, bookmarks, starred, recent, topics, topicIdsByName, formulaById]);
+  // Every searchable term: each card's headword AND its "Also called" names,
+  // each different name once (owner 2026-11-27). Once per corpus load.
+  const searchableTotal = useMemo(() => countSearchableNames(entries), [entries]);
   // Which results were found by one of the card's OTHER names (2026-10-29):
   // the row keeps its real term and says "matches: <that name>" under it. Only
   // cards that have other names are asked, so this costs nothing today.
@@ -3662,6 +3784,10 @@ ${COPY.glossaryFreeAllowance}`,
   // Glossary with a definition open, instead of closing it the way ✕ / the
   // back pill do. Read through a ref so the listener is not re-registered on
   // every hop.
+  // The circle menu's MENU button floats over this screen (owner 2026-11-20);
+  // while one of these in-tree overlays is up it steps aside.
+  useHideCircleMenu('glossary', !!chooser || popupTrail.length > 0 || (filter === 'topic' && topicPickerOpen));
+
   const overlayBackRef = useRef<() => boolean>(() => false);
   overlayBackRef.current = () => {
     if (chooser) {
@@ -4184,9 +4310,7 @@ ${COPY.glossaryFreeAllowance}`,
     >
       {glossaryHelp.sheet}
       <View style={styles.header}>
-        {/* HOME key (owner 2026-10-11) in place of the glossary book mark —
-            the bottom nav is hidden while the Glossary is open, so this is
-            the way back to Home. */}
+        {/* HOME key (owner 2026-10-11) in place of the glossary book mark. */}
         <Pressable
           onPress={() => (navigation as any).navigate('Home')}
           hitSlop={10}
@@ -4195,13 +4319,15 @@ ${COPY.glossaryFreeAllowance}`,
         >
           <NavIcon icon="Home" lit />
         </Pressable>
+        {/* The Glossary's mark (owner 2026-10-14) BEFORE the title, as on the
+            hubs ("🎧 LEARNING LABS"), owner 2026-11-20: the circle menu's open
+            A–Z book. Decorative. */}
+        <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+          <PlaceArt place="gloss" size={30} />
+        </View>
         {/* Shrinks to its line rather than "GL…" at the largest text sizes
             (build 36 tester); at font scale 2 it fits at full size. */}
         <Text style={styles.title} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>GLOSSARY</Text>
-        {/* The blue glossary book mark, right of the title (owner 2026-10-14). Decorative. */}
-        <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-          <MethodIcon method="glossary" size={34} />
-        </View>
         {/* BEG/ADV and full screen sit in the filter row (owner 2026-10-14); they
             come up here only while a CARD popup hides that row, so LIST is always reachable. */}
         {popupTrail.length > 0 ? (
@@ -4314,7 +4440,7 @@ ${COPY.glossaryFreeAllowance}`,
           active={filter === 'custom'}
           icon={(c) => (
             // [deck] CUSTOM STUDY [headphones] LIST (owner 2026-10-16): the deck
-            // leads; STUDY and the Study tab's headphones are in the Study blue,
+            // leads; STUDY is in the Study orange (owner 2026-11-24, "orange everywhere"),
             // tying the list to studying. Count lives in the "# Terms" readout.
             <View style={styles.chipIconWrap}>
               {/* The deck stays cyan, as on Enrollments, lit or not (owner 2026-10-14). */}
@@ -4322,9 +4448,11 @@ ${COPY.glossaryFreeAllowance}`,
                 <DeckIcon color={CUSTOM_CYAN} size={16} fill={filter === 'custom' ? `${CUSTOM_CYAN}33` : 'none'} />
               </AckFlash>
               <Text style={[styles.chipText, { color: c }]}>
-                CUSTOM <Text style={{ color: colors.blue }}>STUDY</Text>
+                CUSTOM <Text style={{ color: STUDY_COLOR }}>STUDY</Text>
               </Text>
-              <ExpoImage source={STUDY_NAV_ICON} style={{ width: 14, height: 14, marginLeft: -2 }} contentFit="contain" />
+              <View style={{ marginLeft: -2 }}>
+                <StudyGlyph size={14} />
+              </View>
               <Text style={[styles.chipText, { color: c }]}>LIST</Text>
             </View>
           )}
@@ -4357,7 +4485,9 @@ ${COPY.glossaryFreeAllowance}`,
           ref={listRef}
           data={visible}
           keyExtractor={(e) => e.id}
-          contentContainerStyle={cardView ? styles.cardList : styles.list}
+          // The last term scrolls clear of the MENU button (the root already
+          // pads the bottom inset).
+          contentContainerStyle={[cardView ? styles.cardList : styles.list, { paddingBottom: menuClearance(insets.bottom) - insets.bottom }]}
           initialNumToRender={20}
           maxToRenderPerBatch={30}
           windowSize={7}
@@ -4390,8 +4520,8 @@ ${COPY.glossaryFreeAllowance}`,
               <View style={styles.resultHeaderRow}>
                 <Text style={styles.resultCount}>
                   {filter === 'all' && !search.trim()
-                    ? // Unfiltered: the whole corpus — "N terms" (no redundant "· All").
-                      `${visible.length.toLocaleString()} term${visible.length === 1 ? '' : 's'}`
+                    ? // Unfiltered: every searchable term, "Also called" names included (owner 2026-11-27).
+                      `${searchableTotal.toLocaleString()} term${searchableTotal === 1 ? '' : 's'}`
                     : // A filter or search is active — these are RESULTS, labeled by what narrowed them.
                       `${visible.length.toLocaleString()} result${visible.length === 1 ? '' : 's'} · ${filterLabel}`}
                 </Text>
@@ -4420,8 +4550,8 @@ ${COPY.glossaryFreeAllowance}`,
                   <>
                     <Text style={styles.offlineStat}>
                       {offlineStats.definitions >= offlineStats.terms
-                        ? `Saved on this phone — all ${offlineStats.terms.toLocaleString()} terms work with no connection.`
-                        : `${offlineStats.definitions.toLocaleString()} of ${offlineStats.terms.toLocaleString()} definitions saved on this phone.`}
+                        ? `Saved on this device — all ${Math.max(searchableTotal, offlineStats.terms).toLocaleString()} terms work with no connection.`
+                        : `${offlineStats.definitions.toLocaleString()} of ${offlineStats.terms.toLocaleString()} definitions saved on this device.`}
                     </Text>
                     {offlineStats.definitions >= offlineStats.terms || (resolved && !isMember) ? null : (
                       <Pressable
@@ -4429,8 +4559,8 @@ ${COPY.glossaryFreeAllowance}`,
                         accessibilityRole="button"
                         accessibilityLabel={
                           savingOffline
-                            ? 'Stop saving the glossary to this phone'
-                            : 'Save the whole glossary to this phone for use with no signal'
+                            ? 'Stop saving the glossary to this device'
+                            : 'Save the whole glossary to this device for use with no signal'
                         }
                         style={({ pressed }) => [styles.offlineBtn, pressed && { opacity: 0.7 }]}
                       >
@@ -4444,7 +4574,7 @@ ${COPY.glossaryFreeAllowance}`,
                         ? tierUnconfirmedCopy
                         : savingOffline
                         ? 'Keep this screen open. You can carry on reading while it saves.'
-                        : 'Working a ship, on a flight, or out on a tour with no wi-fi? Save the whole glossary now and every term stays readable with no signal at all. About 4 MB. Terms you read are kept automatically either way.'}
+                        : 'Working on a ship, on a flight, or out on a tour with no wi-fi? Save the whole glossary now and every term stays readable with no signal at all. About 4 MB. Terms you read are kept automatically either way.'}
                     </Text>
                   </>
                 ) : (
@@ -4454,8 +4584,8 @@ ${COPY.glossaryFreeAllowance}`,
                       phone and read them with no connection.
                     </Text>
                     <Text style={styles.offlineHint}>
-                      Working a ship, on a flight, or out on a tour with no wi-fi — the glossary keeps
-                      working when nothing else does. Terms you have already read stay on this phone
+                      Working on a ship, on a flight, or out on a tour with no wi-fi — the glossary keeps
+                      working when nothing else does. Terms you have already read stay on this device
                       either way.
                     </Text>
                     <Pressable
@@ -4467,7 +4597,7 @@ ${COPY.glossaryFreeAllowance}`,
                         (navigation as unknown as { navigate: (r: string) => void }).navigate('Paywall');
                       }}
                       accessibilityRole="button"
-                      accessibilityLabel="See Academy membership, which lets you save the whole glossary to this phone"
+                      accessibilityLabel="See Academy membership, which lets you save the whole glossary to this device"
                       style={({ pressed }) => [styles.offlineBtn, pressed && { opacity: 0.7 }]}
                     >
                       <Text style={styles.offlineBtnText}>SEE MEMBERSHIP</Text>
@@ -4819,7 +4949,17 @@ ${COPY.glossaryFreeAllowance}`,
         // Docked under the list (toddler hunt 2026-10-14 #31d): floating, it
         // covered the rows; the root's insets.bottom padding keeps it clear of
         // Android's three-button bar.
-        <CoachMark docked text="Tap a term to expand or collapse the complete definition" bottom={8} />
+        // Owner 2026-11-20: the hint says what a tap does IN THIS VIEW (card
+        // view opens the popup; a metered list row is clamped, so a tap
+        // expands it; a member's list row already shows the whole definition,
+        // so a tap opens its learning levels), and a tap on the pill retires it.
+        // It sits above the MENU button in the corner.
+        <CoachMark
+          docked
+          text={glossaryCoachText(cardView, capped)}
+          bottom={MENU_BUTTON_LIFT + MENU_BUTTON + 8}
+          onDismiss={coach.retire}
+        />
       )}
 
       {/* Share preview pop-up (user request 2026-07-17). */}
@@ -5547,6 +5687,8 @@ const styles = StyleSheet.create({
   calcLinkSigma: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, lineHeight: 18, color: colors.purple },
   calcLinkText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12.5, letterSpacing: 0.5, color: colors.purple },
   detailBody: { fontFamily: fonts.barlowMedium, fontSize: 16, lineHeight: 25, color: colors.textSecondary },
+  /** The plain line that closes the lab's Common Mistakes on a card. */
+  labMistakesClosing: { marginTop: 8 },
   // "Suggest a correction" affordance at the foot of each detail reveal.
   researchRow: { marginTop: 14 },
   suggestRow: {

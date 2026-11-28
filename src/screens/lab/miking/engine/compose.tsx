@@ -12,7 +12,7 @@
  * and credit line tail the last part's last step. Engine-level: no family
  * page knows it is a part.
  */
-import { useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useContext, useLayoutEffect, useMemo, useState, type ReactNode } from 'react';
 import { StepHostContext, type StepHost } from './steps';
 import type { PageProps } from '../pages/pageTypes';
 
@@ -51,16 +51,26 @@ export function ComposedPage({ parts, props }: { parts: readonly PagePart[]; pro
   const all = titles.flat();
   const allKey = all.join('\u0001');
   const onSteps = host?.onSteps;
-  useEffect(() => {
+  // LAYOUT effects (fix round 2026-11-14, F9 item 2): the parts report in
+  // their layout effects, which run before this one, so after the first commit
+  // every part has spoken; `settled` then re-renders before the first paint.
+  // Until then no part is known to be the last, so the takeaway, the credit
+  // line and FINISH never flash on step 1 of a module (seen on 2.1 and 3.1).
+  useLayoutEffect(() => {
     if (allKey) onSteps?.(allKey.split('\u0001'));
   }, [onSteps, allKey]);
+  const [settled, setSettled] = useState(false);
+  useLayoutEffect(() => {
+    setSettled(true);
+  }, []);
 
   const counts = titles.map((t) => t.length);
   const { part: active, local } = locateStep(counts, host?.step ?? 0);
   const offsets = counts.map((_, i) => counts.slice(0, i).reduce((a, b) => a + b, 0));
-  // The tail belongs to the last part that shows a step.
+  // The tail belongs to the last part that shows a step (none until settled).
   let lastShown = parts.length - 1;
   while (lastShown > 0 && counts[lastShown] === 0) lastShown--;
+  if (!settled) lastShown = -1;
   const setStep = host?.setStep;
   const setLocal = useCallback((i: number, k: number) => setStep?.(offsets[k] + i), [setStep, offsets.join(',')]); // eslint-disable-line react-hooks/exhaustive-deps
 

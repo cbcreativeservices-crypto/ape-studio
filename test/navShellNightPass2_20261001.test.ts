@@ -13,7 +13,8 @@ it('LabHeader ‹ and LabEndScreen DONE share ONE leave window (‹ + DONE poppe
   assert.match(bar, /let lastLeaveAt = 0;\s*export function claimLabLeave\(\): boolean \{/);
   assert.match(bar, /const leave = \(\) => \{\s*if \(!claimLabLeave\(\)\) return;\s*safeGoBack\(navigation\);/);
   const end = read('src/screens/lab/kit/LabEndScreen.tsx');
-  assert.match(end, /import \{ LabNextButton, claimLabLeave \} from '\.\/LabNavBar';/);
+  // Owner decision 3 (quick pick, 2026-11-14): "One name per unit of progress in each lab … used everywhere" — PagedLab's end screen takes the lab's unitNoun (default module), never a fixed "page".
+  assert.match(end, /import \{ LabNextButton, claimLabLeave, useLabNoun \} from '\.\/LabNavBar';/);
   assert.match(end, /if \(!claimLabLeave\(\)\) return;\s*onDone\(\);/);
   assert.doesNotMatch(end, /doneAt/);
 });

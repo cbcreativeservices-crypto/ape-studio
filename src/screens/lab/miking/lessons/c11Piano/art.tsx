@@ -14,15 +14,20 @@
 import { Group } from '@shopify/react-native-skia';
 import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { ArtLabel, LessonArt } from '../../engine/scene/sceneTypes.ts';
-import { GrandPlan, GrandSide, HammerLine, Pianist, UprightPlan, UprightSide } from '../shared/piano/PianoArt';
+import { GrandPlan, GrandSide, HammerLine, Pianist, PianistHandsOver, UprightPlan, UprightSide } from '../shared/piano/PianoArt';
 import { FLOOR_Y, KEY_TOP_Y, KEYS_Z0, lidPoint, lidUnderY, pianistAt, type GrandGeom } from '../shared/piano/pianoSpec.ts';
 import { GB, GS, SETUP, UP, type PianoVariant } from './model.ts';
 import { PIANIST_AT } from './geometry.ts';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
+import type { CastMember } from '../shared/figureV2/cast';
+
+/** The new look (figure V2, wave 3 set 3c): the pianist is Mei of the cast. */
+export const V2 = figureV2On('sidePlayers');
 
 const setupOf = (v: VariantId) => SETUP[(v as PianoVariant) in SETUP ? (v as PianoVariant) : 'grand'];
 const geomOf = (v: VariantId): GrandGeom => (setupOf(v).kind === 'grand' && (setupOf(v) as { id: string }).id === 'S' ? GS : GB);
 
-export function PianoArt({ view, variant }: { view: ViewId; variant: VariantId }) {
+export function PianoArt({ view, variant, v2 = V2, who, lip }: { view: ViewId; variant: VariantId; /** (the study page compares the old look) */ v2?: boolean; /** (v2, a singer at the piano: E07) the cast member at the keys */ who?: CastMember; /** (v2, E07) the singer's measured lips: the mouth is drawn there */ lip?: { x: number; y: number } }) {
   const s = setupOf(variant);
   if (s.kind === 'grand') {
     const P = PIANIST_AT.grand;
@@ -30,12 +35,13 @@ export function PianoArt({ view, variant }: { view: ViewId; variant: VariantId }
       <Group>
         <GrandSide id={s.id} lid={s.lid} />
         <HammerLine view="side" y0={-120} y1={110} />
-        <Pianist view="side" xKey={P.xKey} pedalX={P.pedalX} dim={0.85} />
+        <Pianist view="side" xKey={P.xKey} pedalX={P.pedalX} dim={0.85} v2={v2} who={who} lip={lip} />
       </Group>
     ) : (
       <Group>
-        <Pianist view="top" xKey={P.xKey} pedalX={P.pedalX} dim={0.85} />
+        <Pianist view="top" xKey={P.xKey} pedalX={P.pedalX} dim={0.85} v2={v2} who={who} />
         <GrandPlan id={s.id} lid={s.lid} />
+        <PianistHandsOver xKey={P.xKey} pedalX={P.pedalX} dim={0.85} v2={v2} who={who} />
         <HammerLine view="top" />
       </Group>
     );
@@ -44,14 +50,25 @@ export function PianoArt({ view, variant }: { view: ViewId; variant: VariantId }
   return view === 'side' ? (
     <Group>
       <UprightSide panelOn={s.panel} />
-      <Pianist view="side" xKey={P.xKey} pedalX={P.pedalX} dim={0.85} />
+      <Pianist view="side" xKey={P.xKey} pedalX={P.pedalX} dim={0.85} v2={v2} who={who} lip={lip} />
     </Group>
   ) : (
     <Group>
-      <Pianist view="top" xKey={P.xKey} pedalX={P.pedalX} dim={0.85} />
+      <Pianist view="top" xKey={P.xKey} pedalX={P.pedalX} dim={0.85} v2={v2} who={who} />
       <UprightPlan />
+      <PianistHandsOver xKey={P.xKey} pedalX={P.pedalX} dim={0.85} v2={v2} who={who} />
     </Group>
   );
+}
+
+/**
+ * PIANIST from the side, its dot on the top of the head. (KeysGuitar3, review 2026-11-24 asked for the dot on her
+ * shoulder or back: tried — behind her the player's keep-out leaves no room for the text, and in front of her face
+ * the phone-width layout has no room either, so the label engine set the text above her and the leader ran down
+ * through her head and face. The dot on the crown is the only place whose leader never crosses the face; kept.)
+ */
+function pianistSideLabel(h: { head: { x: number; y: number }; headR: number }): ArtLabel {
+  return { id: 'pianist', text: 'PIANIST', u: h.head.x, v: h.head.y - h.headR - 150, align: 'center', tone: 'illustrative', at: { u: h.head.x, v: h.head.y - h.headR - 8 } };
 }
 
 export function pianoLabels(view: ViewId, variant: VariantId): ArtLabel[] {
@@ -80,7 +97,7 @@ export function pianoLabels(view: ViewId, variant: VariantId): ArtLabel[] {
         { id: 'strings', text: 'STRINGS', u: 560, v: below, align: 'center', at: { u: 560, v: 0 }, alts: [{ u: 560, v: below + 120, align: 'center' }] },
         { id: 'board', text: 'SOUNDBOARD', short: 'BOARD', u: 980, v: below + 120, align: 'center', tone: 'muted', at: { u: 980, v: 110 }, alts: [{ u: 980, v: below, align: 'center' }] },
         { id: 'desk', text: 'MUSIC DESK', short: 'DESK', u: g.desk.x0 - 150, v: g.desk.y0 - 110, align: 'center', tone: 'muted', at: { u: (g.desk.x0 + g.desk.x1) / 2, v: g.desk.y0 + 60 } },
-        { id: 'pianist', text: 'PIANIST', u: head.head.x, v: head.head.y - head.headR - 150, align: 'center', tone: 'illustrative', at: { u: head.head.x, v: head.head.y - head.headR - 8 } },
+        pianistSideLabel(head),
         { id: 'pedals', text: 'PEDALS', u: g.lyre.x - 120, v: FLOOR_Y - 120, align: 'center', tone: 'muted' },
         { id: 'cut', text: 'CURVED SIDE CUT AWAY', short: 'CUT AWAY', u: g.xTail - 40, v: g.caseBottom + 70, align: 'right', tone: 'muted' },
       ];
@@ -114,7 +131,7 @@ export function pianoLabels(view: ViewId, variant: VariantId): ArtLabel[] {
       // fix 2026-10-16: at the top it lay under the other view's inset and
       // ran a leader across the whole drawing); PIANIST above the head.
       { id: 'wall', text: 'WALL', u: u.wallX - 25, v: 230, align: 'right', tone: 'muted', at: { u: u.wallX, v: 230 }, alts: [{ u: u.wallX - 25, v: 560, align: 'right' }] },
-      { id: 'pianist', text: 'PIANIST', u: upHead.head.x, v: upHead.head.y - upHead.headR - 150, align: 'center', tone: 'illustrative', at: { u: upHead.head.x, v: upHead.head.y - upHead.headR - 8 } },
+      pianistSideLabel(upHead),
     ];
   }
   return [

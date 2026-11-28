@@ -396,7 +396,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: a mallet strikes the middle of a bar. What do the bar’s ends do?', options: ['They move up while the middle goes down', 'They move down with the middle', 'They stay still — only the middle moves'], after: 'Now STEP through the stroke (or PLAY ONCE) and watch the whole bar.' },
+  sound: { prompt: 'Before you step through: a mallet strikes the middle of a bar. What do the bar’s ends do?', options: ['They move up while the middle goes down', 'They move down with the middle', 'They stay still — only the middle moves'], after: 'Now go EVENT by EVENT through the stroke (or PLAY ONCE) and watch the whole bar.' },
   microphone: { prompt: 'Before you move anything: where will a cardioid pick up LEAST?', options: ['Straight behind it (180°)', 'At its sides (90°)', 'Off to one side of the rear'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: from one mic above the middle to the off-axis position on the audience side. What changes?', options: ['Less click, more of the keyboard and room', 'More click from one bar', 'It depends on the passage and the room'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The side fill sits off to the side of a mic looking down at the bars. Which pattern can turn a null toward it?', options: ['Only a cardioid', 'A supercardioid or hypercardioid', 'None of them'], after: 'Now turn the mic with AIM (or change PATTERN) and watch REJECTION.' },

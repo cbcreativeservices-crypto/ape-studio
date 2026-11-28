@@ -29,10 +29,17 @@ import { calcTileArt } from '../labTileArt';
 import type { CalcSectionId } from './calcTypes';
 import { safeGoBack } from '../../../lib/safeGoBack';
 import { HomeOrBackKey } from '../../../components/nav/HomeOrBackKey';
+import { ScreenCircleMenu, goHome } from '../../../components/nav/CircleMenu';
+import { PlaceArt } from '../../../components/nav/CircleMenuPanel';
+import { menuClearance } from '../../../components/nav/circleMenuPlaces';
 // Screen Guide (2026-10-31): the header ⓘ "this screen, explained". The ✓
 // VERIFIED chip stays (calculators keep AccuracyNote variant "calc").
 import { ScreenGuideHintAnchor, ScreenGuideHost, ScreenGuideKey } from '../../../features/lab/screenGuide';
 import { CALC_SCREEN_GUIDES } from './calcScreenGuides';
+import { CALC_START_JOBS, CALC_START_TITLE, calcBrowseTitle, type CalcStartJob } from './startJobs';
+
+/** Every calculator (each function = one calculator): the 166 the app quotes. */
+const CALC_TOTAL = WORKSPACES.reduce((n, w) => n + w.functions.length, 0);
 
 const BG_CALC = require('../../../../assets/lab-backgrounds/calc-lab.webp');
 
@@ -82,27 +89,40 @@ export function CalcLabScreen() {
       notify(
         tierReadFailed ? 'Membership not confirmed' : 'One moment',
         tierReadFailed
-          ? 'Couldn’t confirm your membership on this phone. Check your connection and reopen the app.'
+          ? 'Couldn’t confirm your membership on this device. Check your connection and reopen the app.'
           : 'Still checking your account. Try again in a moment.',
       );
       return;
     }
     // confirmDialog, not Alert.alert: RN-web's Alert is a no-op, so this gate
     // was a silent tap on the web preview (B-018/B-062).
+    // "with or without an account" (owner 2026-11-23: "in the calculator the
+    // guest user does get an allowance per week of use"); workflows stay
+    // Academy-only.
     confirmDialog(
       'Workflows are part of Academy membership',
-      `Calculator workflows — running a guided multi-step sequence, using templates, or building your own — are part of Academy membership. Every individual calculator stays open: a free account includes ${CALC_WEEKLY_LIMIT} calculations a week, and membership removes the limit.`,
+      `Calculator workflows — running a guided multi-step sequence, using templates, or building your own — are part of Academy membership. Every individual calculator stays open: free use includes ${CALC_WEEKLY_LIMIT} calculations a week, with or without an account, and membership removes the limit.`,
       'See membership',
       afterDialogCloses(() => (navigation as any).navigate('Paywall')),
       { cancelText: 'Not now' },
     );
   };
   const onNewWorkflow = () => gateWorkflow(() => navigation.navigate('CalcWorkflowEdit', {}));
+  // CA-04: a member runs the job's whole guided workflow; anyone else opens
+  // its first calculator (calculators are open to everyone), never an upsell.
+  // An unconfirmed tier gets the gate's honest "one moment" words.
+  const runJob = (j: CalcStartJob) => {
+    if (workflowsAllowed) navigation.navigate('CalcWorkflowRun', { id: j.templateId });
+    else if (tierUnconfirmed) gateWorkflow(() => {});
+    else navigation.navigate('CalcWorkspace', { id: j.firstWorkspaceId, fn: j.firstFnKey });
+  };
 
   // Collapsible sections (owner 2026-08-09): workflows + description. The
   // calculator categories are a container grid + popup (owner 2026-09-30).
   const [wfOpen, setWfOpen] = useState(false); // default collapsed (owner 2026-08-09)
-  const [descOpen, setDescOpen] = useState(true);
+  // Folded by default since CA-04 (owner 2026-11-15: "build waves 1 thru 3"):
+  // the start-here block above the tiles takes its room.
+  const [descOpen, setDescOpen] = useState(false);
   // The category whose calculators are showing in the centred popup.
   const [openSec, setOpenSec] = useState<CalcSectionId | null>(null);
   const openMeta = openSec ? SECTION_META.find((m) => m.id === openSec) ?? null : null;
@@ -142,15 +162,20 @@ export function CalcLabScreen() {
       <View style={styles.header}>
         {/* HOME key when opened from Home (OPEN CALCULATORS), ‹ when deeper
             (owner rule 2026-10-14). */}
-        <HomeOrBackKey onPress={() => safeGoBack(navigation)} backStyle={styles.back} />
-        {/* Lab glyph: the purple Σ that brands the Audio Calculator Lab (matches
-            the glossary's Σ) — a plain symbol before the title, not a button
-            (owner 2026-08-01). */}
-        <Text style={styles.sigma} accessibilityElementsHidden importantForAccessibility="no">
-          Σ
-        </Text>
+        {/* HOME, always (owner 2026-11-20): the house, back to Home. */}
+        <HomeOrBackKey alwaysHome onPress={() => goHome(navigation)} backStyle={styles.back} />
+        {/* Lab glyph before the title, not a button (owner 2026-08-01): since
+            2026-11-20 the circle menu's calculator (it was a purple Σ). */}
+        <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+          <PlaceArt place="calc" size={30} />
+        </View>
         <View style={{ flex: 1 }}>
-          <Text style={styles.title}>AUDIO CALCULATOR LABORATORY</Text>
+          {/* The purple Σ stays AFTER the title (owner 2026-11-20): the
+              calculator icon leads, the lab's Σ brand follows. */}
+          <Text style={styles.title}>
+            AUDIO CALCULATOR LABORATORY
+            <Text style={styles.titleSigma} accessibilityElementsHidden importantForAccessibility="no">{'  Σ'}</Text>
+          </Text>
           <Text style={styles.subtitle}>Calculate · understand · chain results between tools</Text>
         </View>
         <AccuracyNote compact variant="calc" />
@@ -169,7 +194,25 @@ export function CalcLabScreen() {
         <ScreenGuideKey title="AUDIO CALCULATOR LABORATORY" guide={CALC_SCREEN_GUIDES.home} />
       </View>
       </ScreenGuideHintAnchor>
-      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: 34 + insets.bottom }]}>
+      <ScrollView contentContainerStyle={[styles.scroll, cardColumn, wide, { paddingBottom: menuClearance(insets.bottom) + 10 }]}>
+        {/* START HERE (CA-04, owner 2026-11-15: "build waves 1 thru 3"): three
+            jobs, each a built-in workflow, before the topic tiles. */}
+        <View style={{ gap: 8 }}>
+          <Text style={[styles.sectionTitle, { color: colors.green }]}>{CALC_START_TITLE}</Text>
+          {CALC_START_JOBS.map((j) => (
+            <Pressable
+              key={j.templateId}
+              style={[styles.jobBtn, styles.wfBtnGreen]}
+              onPress={() => runJob(j)}
+              accessibilityRole="button"
+              accessibilityLabel={`${j.label}. ${j.steps}`}
+            >
+              <Text style={[styles.wfBtnText, { color: colors.green }]}>{`${j.label} ›`}</Text>
+              <Text style={styles.jobSteps}>{j.steps}</Text>
+            </Pressable>
+          ))}
+        </View>
+
         {/* CALCULATOR WORKFLOWS — moved to the TOP and collapsible (owner
             2026-08-09). templates + my workflows + new + recent. */}
         <View style={{ gap: 8 }}>
@@ -278,6 +321,7 @@ export function CalcLabScreen() {
             (owner 2026-09-30: "instead of 10 expandable bullet list points …
             2 column of 5 rows of containers"). A tap opens that category's
             calculators in a centred popup — popups, never pulldowns. */}
+        <Text style={styles.sectionTitle}>{calcBrowseTitle(CALC_TOTAL)}</Text>
         <GlassPanel style={tablet ? undefined : styles.panelPhone}>
         <View style={styles.catGrid}>
           {SECTION_META.map((sec) => {
@@ -322,6 +366,10 @@ export function CalcLabScreen() {
           </View>
         ))}
       </ScrollView>
+      {/* The circle menu's MENU button (owner 2026-11-20: Audio Tools, Calculator
+          Lab and Labs carry it too, on their landing screens only). Above the
+          content, under the category popup; it lets every other touch through. */}
+      <ScreenCircleMenu here="calc" />
       {/* The category popup is drawn IN the screen (owner 2026-09-30: it
           sat skewed off-screen). As a separate Modal it centred on the host
           window, which on the web preview is not the app's box; in-tree it
@@ -376,6 +424,7 @@ const styles = StyleSheet.create({
   back: { fontFamily: fonts.oswaldSemiBold, fontSize: 30, color: colors.textSub, marginTop: -4, paddingRight: 2 },
   sigma: { fontFamily: fonts.oswaldSemiBold, fontSize: 24, lineHeight: 28, color: colors.purple },
   title: { fontFamily: fonts.oswaldSemiBold, fontSize: 16, letterSpacing: 1.2, color: colors.textPrimary },
+  titleSigma: { fontFamily: fonts.oswaldSemiBold, fontSize: 18, color: colors.purple },
   subtitle: { fontFamily: fonts.barlowRegular, fontSize: 12.5, color: colors.textSub, marginTop: 1 },
   scroll: { padding: 16, paddingBottom: 34, gap: 12 },
   body: { fontFamily: fonts.barlowRegular, fontSize: 14, lineHeight: 20, color: colors.textSecondary },
@@ -443,6 +492,21 @@ const styles = StyleSheet.create({
   soonText: { fontFamily: fonts.barlowMedium, fontSize: 11.5, color: '#5c5d66' },
   // Calculator Workflows section (owner spec 2026-08-06).
   wfRow: { flexDirection: 'row', gap: 8 },
+  // Its own box, not wfBtn (whose flex: 1 is for the two-across rows): it
+  // sizes to its two lines on every platform (CA-04 checker fix; on web the
+  // old flex: 0 collapsed it to 26 px with the second line spilling out).
+  jobBtn: {
+    alignSelf: 'stretch',
+    minHeight: 44,
+    borderRadius: 10,
+    borderWidth: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    gap: 2,
+  },
+  jobSteps: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16, color: colors.textSub },
   wfBtn: {
     flex: 1,
     borderRadius: 10,

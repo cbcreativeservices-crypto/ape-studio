@@ -84,7 +84,8 @@ describe('#31d / #31e Glossary', () => {
   const g = src('src/screens/glossary/GlossaryScreen.tsx');
   const coach = src('src/components/CoachMark.tsx');
   it('the hint pill is docked under the list (no overlap; the root carries insets.bottom)', () => {
-    assert.match(g, /<CoachMark docked text="Tap a term to expand or collapse the complete definition"/);
+    // Owner 2026-11-20: the wording now follows the view (glossaryCoachText).
+    assert.match(g, /<CoachMark\s+docked\s+text=\{glossaryCoachText\(cardView, capped\)\}/);
     assert.match(g, /paddingTop: insets\.top, paddingBottom: insets\.bottom/);
     assert.match(coach, /docked\s*\?\s*\{ position: 'relative'/);
   });

@@ -37,7 +37,7 @@ import type { Talker } from './talkerPose.ts';
 import { heldElbowOf, heldFist } from '../../../engine/geometry/arm.ts';
 import { HELD_ARM } from './sportMics.ts';
 import type { PlayerPose } from '../players/playerPose.ts';
-import { EAR, EAR_HALF, HEAD_C, HEAD_R, VOICE_DIMS } from '../voice/voiceSpec.ts';
+import { EAR as EAR0, EAR_HALF as EAR_HALF0, HEAD_C, HEAD_R, VOICE_DIMS } from '../voice/voiceSpec.ts';
 
 type SkPath = ReturnType<typeof Skia.Path.Make>;
 const make = () => Skia.Path.Make();
@@ -442,8 +442,10 @@ export function KeepOutRegion({ shape, uv }: { shape: Shape3; uv: (p: Vec3) => {
 /** A headset on a head with its boom to the corner of the mouth, for the
  *  body-worn layout's own drawing (frame V; 'front': u = −z, v = y). The
  *  placement scene draws the boom itself (the engine's clip arm). */
-export function HeadsetOnHead({ view }: { view: 'front' | 'side' }) {
+export function HeadsetOnHead({ view, ear }: { view: 'front' | 'side'; /** (figure V2) the ear as the new head draws it (drawing only) */ ear?: { side: { x: number; y: number }; front: { u: number; v: number } } }) {
   const p = useMemo(() => {
+    const EAR = ear ? { x: ear.side.x, y: view === 'front' ? ear.front.v : ear.side.y } : EAR0;
+    const EAR_HALF = ear ? Math.abs(ear.front.u) : EAR_HALF0;
     const band = make();
     const cups = make();
     const boom = make();
@@ -461,7 +463,7 @@ export function HeadsetOnHead({ view }: { view: 'front' | 'side' }) {
       boom.quadTo(EAR.x + 60, 40, VOICE_DIMS.headsetFwd.mm, 0);
     }
     return { band, cups, boom };
-  }, [view]);
+  }, [view, ear]);
   const tip = view === 'front' ? { u: -VOICE_DIMS.headsetSide.mm, v: 0 } : { u: VOICE_DIMS.headsetFwd.mm, v: 0 };
   return (
     <Group>

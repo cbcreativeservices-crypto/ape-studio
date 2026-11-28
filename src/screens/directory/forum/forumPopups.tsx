@@ -239,7 +239,7 @@ function ReportCard({
         <Text accessibilityRole="header" style={st.title}>
           Report this post
         </Text>
-        <Text style={st.lead}>Reports are reviewed straight away. {authorName} is not told who sent it.</Text>
+        <Text style={st.lead}>Reports are reviewed right away. {authorName} is not told who sent it.</Text>
         <ChipWrap>
           {REPORT_REASONS.map((r) => (
             <Chip key={r.key} label={r.label} on={reason === r.key} onPress={() => setReason(r.key)} />

@@ -397,7 +397,7 @@ const setupTasks: SetupTask[] = [
 ];
 
 const predictions: Lesson['predictions'] = {
-  sound: { prompt: 'Before you step through: where does a footstep’s sharp contact start?', options: ['In the walker’s knee', 'Where the heel meets the floor', 'In the room’s walls'], after: 'Now STEP through (or PLAY ONCE) and watch the heel, the sole, the surface and the floor under it.' },
+  sound: { prompt: 'Before you step through: where does a footstep’s sharp contact start?', options: ['In the walker’s knee', 'Where the heel meets the floor', 'In the room’s walls'], after: 'Now go EVENT by EVENT (or PLAY ONCE) and watch the heel, the sole, the surface and the floor under it.' },
   microphone: { prompt: 'Before you move anything: where will the supercardioid pick up LEAST?', options: ['Straight behind it (180°)', 'Toward the rear, off to one side', 'At its sides (90°)'], after: 'Now sweep SOURCE ANGLE around the back and watch PICKUP.' },
   placement: { prompt: 'Predict: you move the mic from 1.8 m to 1 m from the steps. What changes?', options: ['More contact, uneven steps', 'More room', 'It depends on this floor'], after: 'Rest the mic in two zones and read what each one suggests you listen for.' },
   context: { prompt: 'The wedge is on the floor in front of the performer. Where will a supercardioid aimed at the steps reject it best?', options: ['Straight behind the mic', 'Toward the rear, off to one side', 'At the sides of the mic'], after: 'Now turn or tilt the mic with AIM (or change PATTERN) and watch REJECTION.' },

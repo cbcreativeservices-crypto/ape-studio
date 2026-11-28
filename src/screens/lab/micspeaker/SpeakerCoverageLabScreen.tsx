@@ -32,6 +32,8 @@ import { AccuracyNote } from '../../../components/AccuracyNote';
 // examples of a lab that keeps the chip (mirrors Room Design).
 import { ScreenGuideHost } from '../../../features/lab/screenGuide';
 import { SPEAKER_END_GUIDE, SPEAKER_SCREEN_GUIDES, type SpeakerSectionId } from './micSpeakerScreenGuides';
+import { goalCounts, moduleGoalDetail } from '../foundations/endRows';
+import { CheckCreditScope } from '../foundations/CheckCredit';
 import type { RootStackParamList } from '../../../navigation/types';
 import { LabChip, CollapsibleSection } from '../LabShell';
 import { markLabUnit, registerLabUnits, useLabClearedUnits, useLabCompletionUnreadable } from '../../../features/lab/labCompletion';
@@ -41,7 +43,11 @@ import { SPEAKER_COVERAGE_LAB_KEY, SPEAKER_COVERAGE_UNITS } from './units';
 import { GuidedLessonSheet, getLabLesson, DisplayGuideButton } from '../../../features/lab/guidedLessons';
 import { CheckQuestion, DragSlider, VizUnavailableCard, type CheckSpec } from '../foundations/bits';
 import { jetColor } from './viz';
-import { RackUnit } from '../rack/RackUnit';
+import { captionedRack } from '../foundations/captionedRack';
+import { SPEAKER_CAPTIONS } from '../foundations/bezelCaptions';
+
+/** The racks with first-visit bezel captions (phase 2, 2026-11-14). */
+const RackUnit = captionedRack(SPEAKER_CAPTIONS, { modelNotes: true });
 import type { DockParam, RackStage } from '../rack/rackTypes';
 import { GlassShape, useGlassSize } from '../glassShape';
 import { requireMsViz } from './skiaGate';
@@ -112,19 +118,22 @@ const TOP_CHECK: CheckSpec = {
     'Rough, comb-filtered sound — two arrivals of the same signal interfere',
     'No difference — the colors only add in the drawing',
   ],
+  why: { 0: 'Two arrivals of the same signal do not simply add. Watch the ridge where the wedges cross.', 2: 'The colors show real overlap: both speakers reach those seats, a little apart in time.' },
   correctIdx: 1,
   reveal:
     'Where both boxes cover the same seats, energy piles up AND the two arrival times interfere — boosting some frequencies, canceling others (comb filtering, the Wave lab’s Module 7). Real designs minimize or carefully control overlap.',
-  wrongHint: 'Watch the ridge where the two wedges cross — then re-read WHAT’S HAPPENING.',
+  // WHAT'S HAPPENING starts closed (owner 2026-11-21: "Build all 40"), so the hint says open it.
+  wrongHint: 'Watch the ridge where the two wedges cross — then open WHAT’S HAPPENING.',
 };
 
 const READING_CHECK: CheckSpec = {
   question: 'A seat painted BLACK on the coverage map is…',
   options: [
-    'Just far away — it will still hear fine',
-    'A dead zone — the pattern never reaches it at a workable level; it needs a fill or a delay box',
-    'Too loud — black marks the hottest spots',
+    'Just far away — it will still hear the show fine',
+    'A dead zone — the pattern never reaches it at a usable level',
+    'Too loud — black marks the very hottest spots',
   ],
+  why: { 0: 'Black is past the cool end of the color ramp. Check the legend.', 2: 'The hottest spots are red. Check which end of the ramp black sits on.' },
   correctIdx: 1,
   reveal:
     'BLACK means the pattern never reaches that seat at a workable level — a dead zone. Distance alone paints cool blues; black means the speaker’s position, aim and pattern miss that seat. The fixes are aim, fills, or a delay speaker — turning the level up alone rarely fixes it.',
@@ -135,10 +144,11 @@ const SIDE_CHECK: CheckSpec = {
   question:
     'When the rear seats have low coverage level while the front seats are at their full level, the classic fix is…',
   options: [
-    'Turn the whole system up',
+    'Turn the whole system up until the back is loud enough',
     'Raise it and tilt it down — height plus aim evens out front and back',
-    'Move the speaker closer to the front row',
+    'Move the speaker closer to the front row so it covers more',
   ],
+  why: { 0: 'Louder lifts the front rows as much as the back, so the gap stays. Try HEIGHT and TILT instead.', 2: 'Closer to the front makes the front even louder than the back. Watch the side view.' },
   correctIdx: 1,
   reveal:
     'Raising the box and aiming it so the loud CENTER of its vertical pattern reaches the DISTANT rows — while the near rows sit at the quieter EDGE of the pattern — lets extra distance and the pattern’s shape offset each other, so front and back hear similar levels. Turning the whole system up just makes the already-loud front rows louder; moving the box closer to the front makes the front-to-back imbalance worse.',
@@ -202,7 +212,9 @@ function LessonRow({ onPress }: { onPress: () => void }) {
 }
 
 const SECTIONS: { key: SpeakerSectionId; label: string; title: string; blurb: string }[] = [
-  { key: 'top', label: 'TOP VIEW', title: 'COVERAGE FROM ABOVE', blurb: 'Move the speakers, choose their dispersion, aim them — and watch who they reach. Black seats get no useful sound: add SPKR 2 or FILLS. (Stage right is the performers’ right — the left of your screen.)' },
+  // SPK-02 (owner 2026-11-15, "build waves 1 thru 3", D62): each word gets its plain
+  // meaning where modules 1 and 2 first use it (READING IT, the full list, stays last).
+  { key: 'top', label: 'TOP VIEW', title: 'COVERAGE FROM ABOVE', blurb: 'Move the speakers, choose their PATTERN (how wide they spread), aim them — and watch who they reach. Black seats (dead zones) get no useful sound: add SPKR 2 or FILLS (small speakers on the stage lip). (Stage right is the performers’ right — the left of your screen.)' },
   { key: 'side', label: 'SIDE VIEW', title: 'HEIGHT & TILT', blurb: 'Raise, tilt, and shape the room — make the wedge land on every row.' },
   { key: 'read', label: 'READING IT', title: 'READING A COVERAGE MAP', blurb: 'The heat-map colors, and the vocabulary every system tech uses.' },
 ];
@@ -291,9 +303,9 @@ export function SpeakerCoverageLabScreen() {
   useEffect(() => {
     registerLabUnits(SPEAKER_COVERAGE_LAB_KEY, SPEAKER_COVERAGE_UNITS);
   }, []);
-  useEffect(() => {
-    markLabUnit(SPEAKER_COVERAGE_LAB_KEY, SECTIONS[sectionIdx].key);
-  }, [sectionIdx]);
+  // "DONE = WORK DONE" (owner's decision 1, 2026-11-14): each of the three
+  // modules counts when its CHECK YOURSELF card is answered right
+  // (CheckCreditScope below), not when it is opened. Stored credit stays.
 
   const topDisp = DISPERSIONS[topDispIdx];
   const sideDisp = DISPERSIONS[sideDispIdx];
@@ -339,6 +351,9 @@ export function SpeakerCoverageLabScreen() {
             hDeg={topDisp.hDeg}
             frontFills={fills}
             fillSpread01={fillSpread}
+            // SPK-03 (owner 2026-11-15, "build waves 1 thru 3"): ring the box the
+            // sliders move, once there is more than one to choose from.
+            selected={!twoOn && !fills ? undefined : fillsTarget ? 'fills' : spkEditable2 ? 'spk2' : 'spk1'}
           />
         ) : (
           <VizUnavailableCard />
@@ -638,14 +653,16 @@ export function SpeakerCoverageLabScreen() {
         guideTitle={ending ? 'SPEAKER PLACEMENT & COVERAGE' : s.title}
       />
       <LabNavBar nav={nav} />
+      <CheckCreditScope key={ending ? 'end' : s.key} onComplete={() => markLabUnit(SPEAKER_COVERAGE_LAB_KEY, s.key)}>
       {ending ? (
         <LabEndScreen
           labTitle="Speaker Placement & Coverage"
-          units={SECTIONS.map((sec) => ({ id: sec.key, label: sec.title }))}
+          labId="af_speaker_coverage"
+          units={SECTIONS.map((sec) => ({ id: sec.key, label: sec.title, detail: moduleGoalDetail('check', SPEAKER_SCREEN_GUIDES[sec.key]?.intro?.learning) }))}
+          howItCounts={goalCounts()}
           cleared={banked}
           unreadable={progressUnreadable}
           mode="credit"
-          noun="section"
           onJump={(id) => openSection(Math.max(0, SECTIONS.findIndex((sec) => sec.key === id)))}
           onPracticeAgain={() => openSection(0)}
           onDone={() => safeGoBack(navigation)}
@@ -666,20 +683,22 @@ export function SpeakerCoverageLabScreen() {
             </CollapsibleSection>
           ) : null}
           {sectionIdx === 1 && lineArray ? (
-            <Text style={styles.badge}>
-              LINE ARRAY — CONCEPTUAL MODEL, NOT AN SPL PREDICTION. The summed field illustrates why several
+            <Text style={styles.modelNote}>
+              A line array, as a conceptual model, not an SPL prediction. The summed field shows why several
               hung boxes, angled apart, hold level deeper than one box; real array prediction is far more involved.
             </Text>
           ) : null}
           {sectionIdx === 1 && rearDelay ? (
-            <Text style={styles.badge}>
-              DELAY ALIGNMENT — CONCEPTUAL MODEL, NOT TRUE TIME-ALIGNMENT MATH. The two traveling
-              fronts (green lines) illustrate firing the rear speaker late so arrivals fuse. In the
-              field it is set a few milliseconds LATER still, so the ear keeps locating the sound on
-              the stage (the precedence effect). Timing here is illustrative only.
+            <Text style={styles.modelNote}>
+              Delay alignment, simplified: measured along the floor. The two traveling fronts (green
+              lines) show firing the rear speaker late so the arrivals fuse. In the
+              field it is set a few milliseconds later still, so the ear keeps locating the sound on
+              the stage (the precedence effect). The fronts are slowed down so you can watch them; both move at
+              one speed, and the aligned rear speaker waits exactly as long as the stage sound takes to reach it.
             </Text>
           ) : null}
-          <CollapsibleSection title="WHAT'S HAPPENING" onHelp={() => help(sectionIdx === 0 ? 'top_view' : 'side_view')}>
+          {/* Starts CLOSED (owner 2026-11-21: "Build all 40", collapsed-sections proposal): extra reading, one tap away. */}
+          <CollapsibleSection title="WHAT'S HAPPENING" startOpen={false} onHelp={() => help(sectionIdx === 0 ? 'top_view' : 'side_view')}>
             {/* ⛔ "FALL OFF FAST" WAS AN INVERSE-SQUARE ERROR. A 120° box loses
                 level with distance at exactly the same rate as a 60° one — what
                 differs is directivity, so it is quieter at EVERY distance,
@@ -690,9 +709,9 @@ export function SpeakerCoverageLabScreen() {
                 Narrow boxes (60°) put the same power into a smaller wedge, so they arrive louder at the
                 back — but they demand careful aim. Wide boxes (120°) spread that power over far more
                 area, so they cover close and wide at a lower level everywhere, not just at the back.
-                Where two speakers overlap, the shared zone runs hotter — about +3 dB on average as energy piles up
-                (in the real world it also combs: up to +6 dB at some frequencies, deep cuts at others). Front fills cover the gap between the mains at the
-                front — and, when the mains fly, the first rows they pass over.
+                Where two speakers overlap (cover the same seats), the shared zone runs hotter — about +3 dB on average as energy piles up
+                (in the real world it also combs: up to +6 dB at some frequencies, deep cuts at others). Front fills cover the gap between the mains (the main
+                speakers) at the front — and, when the mains fly, the first rows they pass over.
               </Text>
             ) : (
               <Text style={styles.caption}>
@@ -721,6 +740,7 @@ export function SpeakerCoverageLabScreen() {
           <LabNextButton />
         </ScrollView>
       )}
+      </CheckCreditScope>
       <GuidedLessonSheet
         visible={lessonOpen}
         lesson={getLabLesson('speaker')}
@@ -747,6 +767,7 @@ const styles = StyleSheet.create({
   trayHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.amber },
   caption: { fontFamily: fonts.barlowRegular, fontSize: 12.5, lineHeight: 17, color: colors.textSub },
   badge: { fontFamily: fonts.oswaldSemiBold, fontSize: 9, letterSpacing: 1, lineHeight: 13, color: colors.textSub },
+  modelNote: { fontFamily: fonts.barlowRegular, fontSize: 12, lineHeight: 16, color: colors.textSub },
   conceptT: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.2, color: colors.amber, marginTop: 4 },
   futureNote: {
     fontFamily: fonts.barlowMedium,

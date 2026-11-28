@@ -1,3 +1,4 @@
+// 2026-11-21 owner (tester on a tablet): learner text says "this device", never "this phone".
 /**
  * EXIT FLOW — switched ON for the final store build (owner 2026-10-24:
  * "nothing should be postponed if we can do it now").
@@ -231,7 +232,7 @@ describe('2 · cancel: submit_exit_feedback first, then the store subscription p
     c = ctl({ os: 'android' });
     assert.equal(await api.openSubscriptions('google', 'cancel'), true);
     assert.deepEqual(c.opened, ['https://play.google.com/store/account/subscriptions?package=com.cbcreativeservices.apestudio']);
-    // No verified provider: this phone's store.
+    // No verified provider: this device's store.
     c = ctl({ os: 'android' });
     await api.openSubscriptions(null, 'membership');
     assert.match(c.opened[0], /^https:\/\/play\.google\.com\/store\/account\/subscriptions/);

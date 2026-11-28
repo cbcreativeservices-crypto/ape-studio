@@ -1,3 +1,4 @@
+// 2026-11-21 owner (tester on a tablet): learner text says "this device", never "this phone".
 /**
  * GLOSSARY — hunt 12 (2026-10-04). Re-audit of hunt 11 (1c5a74c4: the mount
  * session read through safeSessionResult + the null INITIAL_SESSION skip), then
@@ -152,6 +153,6 @@ describe('glossary Recent list: unreadable is not empty (K2)', () => {
     assert.match(CODE, /termListModal\?\.kind === 'recent' && recentUnreadable\s*\?\s*RECENT_UNREADABLE/);
     // The Recent filter's empty list (a search keeps its own "no results").
     assert.match(CODE, /filter === 'recent' && recentUnreadable && !search\.trim\(\) \?/);
-    assert.match(CODE, /const RECENT_UNREADABLE =\s*'Your recent terms couldn’t be read on this phone\. Nothing has been removed/);
+    assert.match(CODE, /const RECENT_UNREADABLE =\s*'Your recent terms couldn’t be read on this device\. Nothing has been removed/);
   });
 });

@@ -13,6 +13,7 @@ import type { PageCtx } from '../kit/PagedLab';
 import { ExpandableFigure } from '../kit/ExpandableFigure';
 import { Body, Btn, Card, Eyebrow, Lead, Row } from '../tuning/components/primitives';
 import { UnderstandingCheck } from '../tuning/components/check';
+import { speechWrongFor } from './speechCheckWhy';
 import { HeadCrossSection, VocalFolds } from './speechViz';
 import { FormantChart, VowelChart } from './vowelViz';
 import { ConsonantSpectrogram } from './consonantViz';
@@ -30,7 +31,9 @@ const F = fonts.barlowMedium;
 export function SpeechCheckCard({ id, onCorrect }: { id: string; onCorrect?: () => void }) {
   const c = SPEECH_CHECKS.find((o) => o.id === id)!;
   const [shuffled] = useState(() => shuffleCheck(c));
-  return <UnderstandingCheck question={c.question} options={shuffled.options} correct={shuffled.correct} explain={c.explain} onCorrect={onCorrect} />;
+  // A reason per wrong option, keyed by its text (fix round 2026-11-14, speechCheckWhy.ts).
+  const wrong = speechWrongFor(c.id, shuffled.options, shuffled.correct);
+  return <UnderstandingCheck question={c.question} options={shuffled.options} correct={shuffled.correct} explain={c.explain} wrong={wrong} onCorrect={onCorrect} />;
 }
 
 /** A one-line "what to notice" cue under a drawing (shared with pages B). */
@@ -59,7 +62,8 @@ export function PageAnatomy({ ctx }: { ctx: PageCtx }) {
   );
   return (
     <View style={{ gap: 12 }}>
-      <Lead>Speech is air, a buzz, a set of resonating cavities and a few fast-moving parts. Tap a number to see what each one does.</Lead>
+      {/* The lab's best hook opens it (owner 2026-11-15: "build waves 1 thru 3", D62 VOX-05). */}
+      <Lead>Put a finger on your throat and say "sss", then "zzz". Feel the buzz? That buzz is your voice. This lab follows it from your lungs to the microphone. Tap a number to see what each part does.</Lead>
       <HeadCrossSection selected={sel} onSelect={pick} controls={dock} />
       <Card>
         {part ? (
@@ -178,7 +182,8 @@ export function PageVoicing({ ctx }: { ctx: PageCtx }) {
   );
   return (
     <View style={{ gap: 12 }}>
-      <Lead>Put a finger on your throat and say "sss", then "zzz". Same mouth, one difference: whether the vocal folds are buzzing.</Lead>
+      {/* Module 1 now opens on this test (D62 VOX-05), so here it is a call back, not a repeat. */}
+      <Lead>Say "sss", then "zzz" again, with a finger on your throat. Same mouth, one difference: whether the vocal folds are buzzing.</Lead>
       {toggle}
       <VocalFolds voiced={voiced} reduceMotion={ctx.reduceMotion} controls={toggle} />
       <Card>

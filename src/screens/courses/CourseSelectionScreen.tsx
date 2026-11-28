@@ -35,6 +35,7 @@ import { Canvas, Group, RoundedRect, SweepGradient, vec } from '@shopify/react-n
 import { Easing, useDerivedValue, useSharedValue, withSequence, withTiming } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { menuClearance } from '../../components/nav/circleMenuPlaces';
 import { useFocusEffect, useIsFocused, useNavigation } from '@react-navigation/native';
 import { secondBackToExit } from '../../lib/focusedBack';
 import { useBackWhileFocused } from '../../lib/useBackWhileFocused';
@@ -47,12 +48,13 @@ import { supabase } from '../../lib/supabase';
 import { safeSessionResult } from '../../lib/getSessionSafe';
 import { isRealAccount } from '../../features/commercial/realAccount';
 import { SUPABASE_URL } from '../../lib/env';
-import { BRAND_MAX_FONT_SCALE, colors, fonts } from '../../theme/tokens';
+import { BRAND_MAX_FONT_SCALE, STUDY_COLOR, colors, fonts } from '../../theme/tokens';
+import { StudyGlyph } from '../../components/nav/NavIcon';
 import { dotRowFit, cardDimsFor, fitCardToRow, isCompactHeader, type CardDims } from './cardDims';
 import { isTabletWindow } from '../../theme/tablet';
 import { confirmDialog, notify, useModalHandoff } from '../../lib/confirm';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
-import { useMemberGate, useTier, useUpsellAllowed } from '../../features/commercial/useTier';
+import { useGuestWording, useMemberGate, useTier, useUpsellAllowed } from '../../features/commercial/useTier';
 import { UpgradeSheet } from '../../features/commercial/UpgradeSheet';
 import { fetchV3Certs, fetchV3Curriculum, fetchV3Programs } from '../../data/v3Curriculum';
 import { HOME_SETUP_HIDDEN_FOR_LAUNCH, startHereAfter, useDefaultHomeGs, useHomeBundles, useHomeGs, useHomeOrder } from '../../features/home/homeCardsStore';
@@ -62,7 +64,21 @@ import { isFreeEnrollGs, setActiveMany, useEnrollment } from '../../features/enr
 import { BookIcon } from '../../components/BookIcon';
 import { markIntroSeen, useScreenIntro } from '../../features/intro/ScreenIntroOverlay';
 import { INTRO_STORAGE_PREFIX, onScreenIntrosReset } from '../../features/intro/screenIntros';
-import { fetchIntroVideoSeenOnAccount, markIntroVideoSeenOnAccount } from '../../features/profile/api';
+import {
+  accountPrivacyIntroKey,
+  guestIntroVideoOwed,
+  onGuestStart,
+  settleGuestIntroVideo,
+  settleGuestPrivacyNotice,
+  useGuestPrivacyOwed,
+} from '../../features/intro/screenIntros';
+import { rootModalHoldMs } from '../../components/DimModal';
+import {
+  fetchIntroVideoSeenOnAccount,
+  fetchPrivacyNoticeSeenOnAccount,
+  markIntroVideoSeenOnAccount,
+  markPrivacyNoticeSeenOnAccount,
+} from '../../features/profile/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Svg, { Path } from 'react-native-svg';
 import { PrePaywallPrompt } from '../../components/PrePaywallPrompt';
@@ -74,11 +90,11 @@ import { COREQ_TOPIC_GS } from '../awards/awardsData';
 import { AttractRing, AttractText } from '../../features/onboarding/AttractCue';
 import { useHomeAttract, noteHomeSeen, markExploreOpened, markAboutOpened, markEnrolled } from '../../features/onboarding/attractStore';
 import { COMMUNITY_VISIBLE } from '../../config/communityVisible';
-import { useCommunityInbox } from '../../features/directory/CommunityBadge';
+import { useAcademyMessageUnread, useCommunityInbox } from '../../features/directory/CommunityBadge';
 import { badgeA11y, badgeCount } from '../../features/directory/inboxCounts';
 
-/** The STUDY tab's headphones (same bundled art as the nav bar) for buttons that lead into Study. */
-const STUDY_NAV_ICON = require('../../../assets/icons/nav/nav-study.png');
+// Buttons that lead into Study wear the STUDY icon (StudyGlyph: stacked cards,
+// dB and a bulb, owner 2026-11-20; the headphones now mean Labs).
 
 type Card =
   | { kind: 'tools'; id: 'tools' }
@@ -539,6 +555,9 @@ const SHOWCASE_LOCAL_ART: Record<string, number> = {
   // Owner 2026-10-24: replaces course_music-production.webp (its AI-drawn piano
   // keyboard had the wrong black-key layout).
   'Music Production': require('../../../assets/home-cards/area_music-production.webp'),
+  // Owner 2026-11-24: new art for both cards (his 941x1672 originals, re-encoded only).
+  'Audio Electronics': require('../../../assets/home-cards/area_audio-electronics.jpg'),
+  'System Design & Maintenance': require('../../../assets/home-cards/area_system-design-and-maintenance.jpg'),
 };
 /** Topic-card art shipped IN the app, keyed like CARD_IMAGE (same reason as
  *  SHOWCASE_LOCAL_ART). Owner 2026-10-24: new DAW Fundamentals & Session
@@ -983,7 +1002,7 @@ function CourseCardView({
           {/* Members never see "free" marketing (owner 2026-09-29): it tells a
               free user what membership adds, and only points out to a member
               what they could have had for nothing. */}
-          <Eyebrow color={'#5bff85'} w={cd.w} text={upsell ? 'FREE TO BEGIN AND EXPLORE' : 'TRAINING LABS'} />
+          <Eyebrow color={'#5bff85'} w={cd.w} text={upsell ? 'FREE: TRAINING LABS' : 'TRAINING LABS'} />
           <View style={[styles.cardAboveRule, { backgroundColor: '#5bff85' }]} />
         </View>
         {/* Whole-card tap, but NOT announced as a button: the real button is
@@ -1046,7 +1065,7 @@ function CourseCardView({
     return (
       <View style={[styles.cardOuter, cd.outer]}>
         <View style={styles.cardAbove}>
-          <Eyebrow color={'#5bff85'} w={cd.w} text={upsell ? 'FREE · NEW TO AUDIO? (BEG LEVEL)' : 'NEW TO AUDIO? (BEG LEVEL)'} />
+          <Eyebrow color={'#5bff85'} w={cd.w} text={upsell ? 'FREE: NEW TO AUDIO? (BEG LEVEL)' : 'NEW TO AUDIO? (BEG LEVEL)'} />
           <View style={[styles.cardAboveRule, { backgroundColor: '#5bff85' }]} />
         </View>
         {/* Whole-card tap without a button role — the START HERE key inside is
@@ -1104,7 +1123,7 @@ function CourseCardView({
     return (
       <View style={[styles.cardOuter, cd.outer]}>
         <View style={styles.cardAbove}>
-          <Eyebrow color={color} w={cd.w} text="SET UP WHAT YOU STUDY" />
+          <Eyebrow color={color} w={cd.w} text={upsell ? 'FREE: SET UP WHAT YOU STUDY' : 'SET UP WHAT YOU STUDY'} />
           <View style={[styles.cardAboveRule, { backgroundColor: color }]} />
         </View>
         <Pressable onPress={onOpenEnrollments} accessible={false}>
@@ -1123,7 +1142,8 @@ function CourseCardView({
     // Calculators read like the Glossary / Tools cards (owner 2026-10-16):
     // "INCLUDED FOR EVERYONE" — members still get the plain name (no
     // free/included copy to members, owner 2026-09-29).
-    const eyebrow = calc ? (upsell ? 'INCLUDED FOR EVERYONE' : 'AUDIO CALCULATORS') : upsell ? 'FREE · CAREER DISCOVERY' : 'CAREER DISCOVERY';
+    // Owner 2026-11-22: green and purple tiles read "FREE: …" for guests and free users (members: plain names).
+    const eyebrow = calc ? (upsell ? 'FREE: AUDIO CALCULATORS' : 'AUDIO CALCULATORS') : upsell ? 'FREE: CAREER DISCOVERY' : 'CAREER DISCOVERY';
     const onPress = calc ? onOpenCalculators : onOpenCareerFinder;
     const inner = (
       <>
@@ -1283,9 +1303,9 @@ function CourseCardView({
   // Members get plain descriptions, never "free"/"included" marketing
   // (owner 2026-09-29).
   const eyebrow = isTools
-    ? upsell ? 'INCLUDED FOR EVERYONE' : 'MEASUREMENT TOOLS'
+    ? upsell ? 'FREE: MEASUREMENT TOOLS' : 'MEASUREMENT TOOLS'
     : isGlossary
-      ? upsell ? 'INCLUDED FOR EVERYONE' : 'REFERENCE'
+      ? upsell ? 'FREE: INCLUDED FOR EVERYONE' : 'REFERENCE'
       : free
         ? upsell
           ? 'FREE TOPIC' // keep the free-topic subtitle for free users (2026-07-18 fix)
@@ -1336,14 +1356,15 @@ function CourseCardView({
             // eyebrow above already says FREE TOPIC, so the button should say
             // what it DOES rather than repeat the price.
             <View style={{ width: cd.btnW }}>
-              {/* Study-tab blue + the tab's own headphones, so the button and the
-                  STUDY nav icon below read as the same place (owner 2026-10-16). */}
+              {/* The Study tab's colour + the tab's own icon, so the button and the
+                  STUDY nav icon below read as the same place (owner 2026-10-16);
+                  orange since owner 2026-11-24 (GlassButton tint "study"). */}
               <GlassButton
                 maxFontSizeMultiplier={HOME_MAX}
                 label="STUDY NOW"
                 tint="study"
                 height={50}
-                icon={<Image source={STUDY_NAV_ICON} style={{ width: 20, height: 20 }} resizeMode="contain" accessibilityIgnoresInvertColors />}
+                icon={<StudyGlyph size={22} />}
                 onPress={() => onOpenPublic(free.courseOrder, true, free.gs)}
               />
             </View>
@@ -1425,12 +1446,14 @@ function CourseCardView({
     <View style={[styles.cardOuter, cd.outer]}>
       {free ? (
         // The two free topics (owner 2026-10-23): green "Free", then the Study
-        // tab's blue headphones + "Study Topic" — replaces the in-card amber
+        // tab's own icon + "Study Topic", both orange (owner 2026-11-24) — replaces the in-card amber
         // "Study Topic" line. Members never see "Free" (owner 2026-09-29).
         <View style={styles.cardAbove}>
           <View style={styles.freeTopicRow} accessible accessibilityLabel={upsell ? 'Free. Study topic' : 'Study topic'}>
             {upsell ? <Text style={[styles.freeTopicText, styles.freeTopicFree]} maxFontSizeMultiplier={HOME_MAX} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>Free</Text> : null}
-            <Image source={STUDY_NAV_ICON} style={styles.freeTopicIcon} resizeMode="contain" accessibilityIgnoresInvertColors />
+            <View style={styles.freeTopicIcon}>
+              <StudyGlyph size={15} />
+            </View>
             <Text style={[styles.freeTopicText, styles.freeTopicStudy]} maxFontSizeMultiplier={HOME_MAX} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>Study Topic</Text>
           </View>
           <View style={[styles.cardAboveRule, { backgroundColor: eyebrowColor }]} />
@@ -1463,6 +1486,12 @@ let introVideoLaunched = false;
 // A reset of the screen intros (Settings, or a brand-new account — owner
 // 2026-10-23) owes the video again, even within this app session.
 onScreenIntrosReset(() => {
+  introVideoLaunched = false;
+});
+// Every guest sign-in owes the video again, after its privacy notice (owner
+// 2026-11-20) [MD:D72]: guestIntroVideoOwed() launches it past its device
+// flag; this releases the per-session latch.
+onGuestStart(() => {
   introVideoLaunched = false;
 });
 
@@ -1523,6 +1552,16 @@ export function CourseSelectionScreen() {
   const upsell = useUpsellAllowed();
   // New Messages (owner 2026-11-01): the PROFILE tab badge's own count.
   const inbox = useCommunityInbox();
+  const academyUnread = useAcademyMessageUnread();
+  // iPad/iPhone drawing warm-up (Sentry App Hanging, 2026-11-18) [MD:D69]:
+  // a few seconds after the main menu settles, build the graphics chip's
+  // drawing instructions off-screen so the first lab drawing does not freeze.
+  // Lazy require: the app-start graph stays the same; no-op off iOS.
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { scheduleGpuWarmup } = require('../../lib/gpuWarmup') as typeof import('../../lib/gpuWarmup');
+    return scheduleGpuWarmup();
+  }, []);
   // Members get AUDIO COMMUNITY in the Membership corner (owner 2026-11-01).
   const memberOpen = useMemberGate() === 'open';
   // A signed-in account that has not paid (owner 2026-11-02): keeps the
@@ -1593,11 +1632,108 @@ export function CourseSelectionScreen() {
       alive = false;
     };
   }, [resolved, authNonce]);
+  // ⛔ THE PRIVACY NOTICE COMES FIRST (owner 2026-11-20) [MD:D72].
+  //  • GUEST: every guest sign-in (oweGuestStart in AuthScreen), then the
+  //    video again.
+  //  • ACCOUNT: once per account — the server's mark decides
+  //    (my_privacy_notice_seen, Comp A); no answer → this phone's flag for
+  //    that account. A brand-new account sees it, then its first video; an
+  //    existing account sees it alone, once.
+  // The video waits while either is owed, then for the popup's fade.
+  const guestPrivacyOwed = useGuestPrivacyOwed();
+  const privacyWording = useGuestWording();
+  const privacyGuest = privacyWording.guest;
+  const homeFocused = useIsFocused();
+  const homeSuppressed = useOverlaysSuppressed();
+  /** 'show' = owed to the signed-in account; 'no' = not owed (or a guest);
+   *  null = still asking. */
+  const [accountPrivacy, setAccountPrivacy] = useState<{ state: 'show' | 'no' | null; uid: string | null }>({
+    state: null,
+    uid: null,
+  });
   useEffect(() => {
-    if (accountVideo !== 'free' || !introVideo.visible || introVideoLaunched) return;
-    introVideoLaunched = true;
-    (navigation as any).navigate('IntroVideo');
-  }, [accountVideo, introVideo.visible, navigation]);
+    if (!resolved) {
+      setAccountPrivacy({ state: null, uid: null });
+      return undefined;
+    }
+    let alive = true;
+    setAccountPrivacy({ state: null, uid: null });
+    void (async () => {
+      const {
+        result: { data: sess },
+        timedOut,
+      } = await safeSessionResult(supabase.auth.getSession(), 'Home/privacyNotice');
+      // An UNKNOWN session is never decided either way: nothing shows.
+      if (timedOut || !isRealAccount(sess.session) || !sess.session) {
+        if (alive) setAccountPrivacy({ state: 'no', uid: null });
+        return;
+      }
+      const uid = sess.session.user.id;
+      const onAccount = await fetchPrivacyNoticeSeenOnAccount();
+      // This phone's flag for this account. A FAILED read counts as seen (the
+      // safe side for a seen-flag: nothing shows, nothing is written).
+      let onDevice: string | null = '1';
+      try {
+        onDevice = await AsyncStorage.getItem(INTRO_STORAGE_PREFIX + accountPrivacyIntroKey(uid));
+      } catch {
+        onDevice = '1';
+      }
+      if (onAccount === true) {
+        if (onDevice == null) markIntroSeen(accountPrivacyIntroKey(uid));
+        if (alive) setAccountPrivacy({ state: 'no', uid });
+        return;
+      }
+      // Seen on this phone before the server could keep it (or a lost mark):
+      // it counts, and the account is marked — the intro video's rule.
+      if (onDevice != null) {
+        if (onAccount === false) void markPrivacyNoticeSeenOnAccount();
+        if (alive) setAccountPrivacy({ state: 'no', uid });
+        return;
+      }
+      if (alive) setAccountPrivacy({ state: 'show', uid });
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [resolved, authNonce]);
+  const accountPrivacyOwed = !privacyGuest && accountPrivacy.state !== 'no';
+  const privacyFirst = (guestPrivacyOwed && privacyGuest) || accountPrivacyOwed;
+  const answerAccountPrivacy = useCallback(() => {
+    const uid = accountPrivacy.uid;
+    setAccountPrivacy({ state: 'no', uid });
+    if (uid) markIntroSeen(accountPrivacyIntroKey(uid));
+    void markPrivacyNoticeSeenOnAccount();
+  }, [accountPrivacy.uid]);
+  /** Which popup is due now, if any. The account one only once the tier says
+   *  ACCOUNT (never while checking / unconfirmed). */
+  const privacyVariant: 'guest' | 'account' | null =
+    !homeFocused || homeSuppressed
+      ? null
+      : guestPrivacyOwed && privacyGuest
+        ? 'guest'
+        : !privacyGuest && privacyWording.account == null && accountPrivacy.state === 'show'
+          ? 'account'
+          : null;
+  // Owed to THIS guest sign-in even though the phone has seen it: the same
+  // focus / Low-Light gates as useScreenIntro, read here.
+  const guestVideo = privacyGuest && homeFocused && !homeSuppressed && guestIntroVideoOwed();
+  const videoDue = introVideo.visible || guestVideo;
+  useEffect(() => {
+    if (accountVideo !== 'free' || !videoDue || introVideoLaunched || privacyFirst) return undefined;
+    const launch = () => {
+      if (introVideoLaunched) return;
+      introVideoLaunched = true;
+      settleGuestIntroVideo();
+      (navigation as any).navigate('IntroVideo');
+    };
+    const wait = rootModalHoldMs();
+    if (wait <= 0) {
+      launch();
+      return undefined;
+    }
+    const t = setTimeout(launch, wait);
+    return () => clearTimeout(t);
+  }, [accountVideo, videoDue, navigation, privacyFirst]);
   // First-run "start here" cues (owner 2026-09-14): Explore breathes until first
   // opened; About breathes until opened OR one week after this first Home view.
   const attract = useHomeAttract();
@@ -2097,7 +2233,9 @@ export function CourseSelectionScreen() {
   }
 
   return (
-    <View style={[styles.root, { paddingTop: insets.top + 16 }]}>
+    // The dots keep the place they had above the 60-pt bottom bar: the
+    // circle menu's MENU button sits below them now (owner 2026-11-20).
+    <View style={[styles.root, { paddingTop: insets.top + 16, paddingBottom: menuClearance(insets.bottom) + 2 }]}>
       {/* Top-left About button (owner 2026-08-12): a plain text button in the
           corner → the About popup. Absolutely positioned so the centered hero
           below is undisturbed. */}
@@ -2132,6 +2270,21 @@ export function CourseSelectionScreen() {
         <Text style={styles.replayBtnText} maxFontSizeMultiplier={HOME_MAX}>Replay intro</Text>
       </Pressable>
       <AboutHomeSheet visible={aboutOpen} onClose={() => setAboutOpen(false)} />
+      {privacyVariant
+        ? (() => {
+            // Loaded on demand: the app-start graph stays inside its cap (perfStartTrim).
+            // eslint-disable-next-line @typescript-eslint/no-require-imports
+            const { PrivacyNotice } = require('../../features/intro/PrivacyNotice') as typeof import('../../features/intro/PrivacyNotice');
+            return (
+              <PrivacyNotice
+                variant={privacyVariant}
+                wanted
+                hold={aboutOpen || upgradeOpen || exploreArea != null}
+                onGotIt={privacyVariant === 'guest' ? settleGuestPrivacyNotice : answerAccountPrivacy}
+              />
+            );
+          })()
+        : null}
 
       {/* Top-right Membership button (owner 2026-08-12): opposite About →
           opens the academy Paywall. Same absolute-corner treatment.
@@ -2167,7 +2320,21 @@ export function CourseSelectionScreen() {
           Replay intro row, ONLY while a contact request or an unread message
           is waiting (the same server count as the PROFILE tab badge; an
           unknown count shows nothing). Opens the directory on REQUESTS. */}
-      {!SHOW_COMMUNITY_ON_HOME ? null : (badgeCount(inbox) ?? 0) > 0 ? (
+      {/* The academy's message (owner 2026-11-17) [MD:D68]: while it is
+          unread, New Messages opens it, for everyone (guests too). Once it is
+          read, this row goes back to the inbox / Audio Community below. */}
+      {academyUnread ? (
+        <Pressable
+          style={[styles.newMsgBtn, { top: insets.top + 36 }]}
+          onPress={() => (navigation as any).navigate('AcademyMessage')}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel="New messages. A message from the academy."
+        >
+          <View style={styles.newMsgDot} />
+          <Text style={styles.newMsgText} maxFontSizeMultiplier={HOME_MAX}>New Messages</Text>
+        </Pressable>
+      ) : !SHOW_COMMUNITY_ON_HOME ? null : (badgeCount(inbox) ?? 0) > 0 ? (
         <Pressable
           style={[styles.newMsgBtn, { top: insets.top + 36 }]}
           onPress={() => (navigation as any).navigate('AudioCommunityDirectory', { tab: 'requests' })}
@@ -2635,13 +2802,14 @@ const styles = StyleSheet.create({
   },
   // The gold key word inside a card title (owner 2026-10-14).
   cardTitleKey: { color: colors.gold },
-  // The free topics' caption above the card: green Free · blue headphones + Study Topic (owner 2026-10-23).
+  // The free topics' caption above the card: green Free · Study icon + Study Topic (owner 2026-10-23),
+  // in the Study orange since owner 2026-11-24 ("Orange everywhere").
   freeTopicRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 5 },
   // Same face as the Eyebrow caption; three short words, so one line at every width.
   freeTopicText: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.6 },
   freeTopicFree: { color: '#5bff85', marginRight: 10 },
   freeTopicIcon: { width: 15, height: 15, marginRight: 5 },
-  freeTopicStudy: { color: '#2f9bff' },
+  freeTopicStudy: { color: STUDY_COLOR },
   cardTitle: {
     fontFamily: fonts.oswaldMedium,
     fontSize: 26,

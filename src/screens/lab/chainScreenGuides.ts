@@ -45,16 +45,16 @@ export const CHAIN_SCREEN_GUIDES: Record<ChainScreenId, ScreenGuide> = {
   explore: {
     intro: {
       learning: 'Why order matters in a signal chain: each unit works on what the one before hands it, so one switch changes what every later unit does.',
-      start: 'Tap SCENARIO → ⟲ CLEAR CHAIN, set SOURCE to SINE 220 and tap ▶. Put LIMIT in through MODULES and read its GR. Then add DIST and watch that GR jump.',
+      start: 'Sound runs through these boxes left to right, like guitar pedals: each changes what the next receives. Pick SINE 220, turn on LIMIT (a loudness ceiling), tap ▶, then add DIST (distortion): GR jumps. Sound off? ▶ gives the numbers.',
     },
     seeing: [
-      'Nine units in a fixed order: EQ, COMP, GATE, DIST, MOD, DELAY, REVERB, STEREO, LIMIT. One patch lane (the stereo pair) runs from SRC to OUT.',
-      'Lit units are in and show their setting; dark ones are bypassed. In play, a lit COMP, GATE or LIMIT shows GR (dB turned down) and lights its LEDs.',
-      'Readouts: SRC, CHAIN (units in), SCENE (short name, e.g. SQUASH for HOT INTO LIMITER; else CUSTOM), OUT (LIVE or IDLE).',
+      'Ten units in a fixed order: LOW CUT, EQ, COMP, GATE, DIST, MOD, DELAY, REVERB, STEREO, LIMIT. One patch lane (the stereo pair) runs from SRC to OUT.',
+      'Lit units are in and show their setting; dark ones are bypassed and say what they are. Playing, a lit COMP, GATE or LIMIT shows GR (dB turned down).',
+      'Readouts: SRC, CHAIN (units in), SCENE (the scenario, e.g. HOT→LIMIT; else CUSTOM), OUT (LIVE, IDLE, or SILENT).',
     ],
     control: [
       'Tap ▶ in the header to play the chain, ■ to stop. With every unit bypassed you hear the source dry. SOURCE picks CLICK 90, PINK NOISE or SINE 220.',
-      'Tap a unit’s name under MODULES to put it in the chain or bypass it, live while it plays.',
+      'Tap a unit in the rack or under MODULES to put it in or bypass it, live while it plays.',
       'SCENARIO: EQ BOOST → COMP, DELAY → REVERB, GATE THE CLICK, HOT INTO LIMITER, FULL CHAIN. Each picks its own source and most light their units. ⟲ CLEAR CHAIN bypasses every unit.',
       'Long-press MODULES, SCENARIO, the display, CHAIN, SCENE or OUT to read about it; long-press a SOURCE choice for that signal’s own note.',
       'LAB NOTES below the rack hold the lesson, three quick questions, MARK AS REVIEWED and FINISH · SEE WHAT’S LEFT; ▴ HIDE DISPLAY makes room.',
@@ -81,7 +81,7 @@ export const CHAIN_SCREEN_GUIDES: Record<ChainScreenId, ScreenGuide> = {
   learn: {
     intro: {
       learning: 'The words and ideas behind a processing chain: bypass, chain order, gain staging and gain reduction, and the ordering mistakes engineers most often make.',
-      start: 'Scroll from the top and read CONTROLS, then COMMON MISTAKES. Then switch to EXPLORE and try one ordering mistake on the live rack.',
+      start: 'Scroll from the top and open CONTROLS, then COMMON MISTAKES. Then switch to EXPLORE and try one ordering mistake on the live rack.',
     },
     seeing: [
       'This is the lab’s guided lesson as one page to read. Nothing plays here.',
@@ -105,7 +105,7 @@ export const CHAIN_SCREEN_GUIDES: Record<ChainScreenId, ScreenGuide> = {
       'Why levels between stages matter: a stage running hot makes the compressor and limiter after it work harder.',
     ],
     tryThis: [
-      'Read the COMMON MISTAKES line about EQ before the compressor. Then on EXPLORE run EQ BOOST → COMP with SOURCE on SINE 220 and bypass EQ in MODULES: COMP’s GR falls by over 1 dB.',
+      'Open COMMON MISTAKES and read the line about EQ before the compressor. Then on EXPLORE run EQ BOOST → COMP with SOURCE on SINE 220 and bypass EQ in MODULES: COMP’s GR falls by over 1 dB.',
       'Read the line about running stages hot into the limiter. Then on EXPLORE run HOT INTO LIMITER with SOURCE on SINE 220: COMP reads about −8 dB, LIMIT 0.0. The compressor got there first.',
     ],
   },

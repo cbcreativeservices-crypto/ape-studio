@@ -8,12 +8,16 @@ import type { VariantId, ViewId } from '../../engine/model/types.ts';
 import type { LessonArt } from '../../engine/scene/sceneTypes.ts';
 import { hitTestOf, labelsOf, type SceneHits } from '../shared/measure/sceneHits.ts';
 import { SiteArt } from '../shared/field/SiteArt';
+import { figureV2On } from '../shared/figureV2/figureV2Config';
 import { PLAZA, PLAZA_KERB_X, STREAM_BANK_X, WOODS_BIRDS } from '../shared/field/sites.ts';
 import { F06_SITE } from './geometry.ts';
 import { F06_PAGES, F06_STEP_COUNTS } from './pages';
 
-function Site({ view, variant }: { view: ViewId; variant: VariantId }) {
-  return <SiteArt site={variant === 'plaza' ? F06_SITE.plaza : F06_SITE.woodland} view={view} />;
+/** The new look (figure V2, wave 3 set 3b): the plaza's people are the cast's. */
+export const V2 = figureV2On('sidePlayers');
+
+export function Site({ view, variant, v2 = V2 }: { view: ViewId; variant: VariantId; /** (the study page compares the old look) */ v2?: boolean }) {
+  return <SiteArt site={variant === 'plaza' ? F06_SITE.plaza : F06_SITE.woodland} view={view} v2={v2} />;
 }
 
 const W = ['woodland'] as const;

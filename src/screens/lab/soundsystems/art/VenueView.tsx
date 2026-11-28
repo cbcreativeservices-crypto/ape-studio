@@ -17,7 +17,9 @@
  * elements accept), so a screen reader — and the browser harness — can
  * place gear by name.
  */
-import { FigureAboveSvg } from '../../../../features/lab/figureAboveSvg';
+// (figure V2, wave 7 of D78: the performers are cast members, the approved top view in SVG)
+import { PersonAboveSvg } from '../../../../features/lab/figureV2Svg';
+import { castFor } from '../../miking/lessons/shared/figureV2/cast';
 import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, ClipPath, Defs, G, Line, LinearGradient, Path, Pattern, Polygon, RadialGradient, Rect, Stop, Text as SvgText } from 'react-native-svg';
@@ -1214,7 +1216,6 @@ export function VenueView(p: VenueViewProps) {
             <G key={s}>
               <Circle cx={x} cy={y} r={13} fill={colors.amber} opacity={0.08} />
               <Circle cx={x} cy={y} r={13} fill="none" stroke={colors.amber} strokeWidth={1} strokeDasharray="3 3" opacity={0.85} />
-              <Circle cx={x} cy={y} r={18} fill="transparent" onPress={() => p.onTapSlot?.(s)} accessibilityLabel={`Place at ${def.label}`} />
             </G>
           );
         })}
@@ -1232,7 +1233,7 @@ export function VenueView(p: VenueViewProps) {
                 // The house plan figure from above at the wedges' own scale
                 // (art fix 2026-10-16: was a head-and-shoulders UI glyph),
                 // facing the house.
-                <FigureAboveSvg key={s} x={q.x} y={q.y} pxPerMm={PERSON_PX_PER_MM * PEOPLE_ENLARGED} halo="#c3cde2" />
+                <PersonAboveSvg key={s} x={q.x} y={q.y} pxPerMm={PERSON_PX_PER_MM * PEOPLE_ENLARGED} halo="#c3cde2" who={castFor(`venue.${s}` as 'venue.stageC')} />
               );
             })
           : null}
@@ -1273,6 +1274,23 @@ export function VenueView(p: VenueViewProps) {
               <Circle cx={px} cy={py} r={22} fill="transparent" onPress={() => p.onTapPlaced?.(x.id)} accessibilityLabel={`${spec.name} at ${slotDef(x.slot).label}${sel ? ', selected' : ''}${spec.radiates ? (live ? ', live' : ', silent') : ''}`} />
             </G>
           );
+        })}
+
+        {/* The target rings' tap areas, drawn AFTER the placed gear so a
+            free position wins over a neighbour's 22-unit tap circle while a
+            part is in hand (lab fix round 2026-11-14, F2: capstone 2's
+            "Sub · center" sits 18 units under the Center cluster box, and
+            the box swallowed every tap meant for the sub). Only the ring
+            itself (13 units) is the target, so the box's own glyph centre,
+            18 units away, still selects the box. */}
+        {(p.targets ?? []).map((s) => {
+          if (occupied.has(s)) return null;
+          const { x, y } = xy(s);
+          const near = placed.some((q) => {
+            const o = xy(q.slot);
+            return Math.hypot(o.x - x, o.y - y) < 18 + 22;
+          });
+          return <Circle key={`hit-${s}`} cx={x} cy={y} r={near ? 14 : 18} fill="transparent" onPress={() => p.onTapSlot?.(s)} accessibilityLabel={`Place at ${slotDef(s).label}`} />;
         })}
 
         {p.overlay}

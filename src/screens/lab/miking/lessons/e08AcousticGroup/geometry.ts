@@ -22,7 +22,8 @@
 import type { DocumentedZone, MicPose, Provenance, Wedge } from '../../engine/model/types.ts';
 import { aimOf, add, planDir, sub, unit, v3 } from '../shared/ensemble/frameS.ts';
 import { seatingOf, seatsOf, soundPoint } from '../shared/ensemble/seating.ts';
-import { closeMic, guitarPoint, GUITAR_POSE, TRIO_ARC, type CloseMic } from '../shared/ensemble/bandStage.ts';
+import { closeMic, HELD_DRAWN, heldDrawnPoint, TRIO_ARC, type CloseMic } from '../shared/ensemble/bandStage.ts';
+import { fretX, geomOf } from '../shared/guitars/guitarSpec.ts';
 import { ensembleModel, mainZone, sectionPartId, stageViews, targetSurface, targetZone } from '../shared/ensemble/ensembleModel.ts';
 import type { EnsembleSetup, PlaceZone } from '../shared/ensemble/ensembleData.ts';
 import { C01_ZONES } from '../c01Guitar/geometry.ts';
@@ -66,12 +67,16 @@ const ortfRig = { id: 'ortf' as const, params: {}, place, mount };
 const abRig = { id: 'ab' as const, params: { spacing: 500 }, place, mount };
 
 /* ── the spots ── */
-/** The guitar: 22.5 cm out from the 12th fret, aimed between the upper top and the strings (C01 fret12, 15–30 cm). */
-const FRET12 = guitarPoint(AG, 'aguitar', GUITAR_POSE.aguitar.L + 60);
+/** The guitar: 22.5 cm out from the 12th fret, aimed between the upper top and the strings (C01 fret12, 15–30 cm).
+ *  (owner 2026-11-26, "Yes, move them") the drawn dreadnought's TRUE 12th fret — half its sourced 25-1/2 in scale
+ *  from the saddle, 323.85 mm (bandStage.HELD_DRAWN) — was L + 60 along the old pose, 111 mm up the drawn neck. */
+const FRET12 = heldDrawnPoint(AG, 'aguitar', fretX(HELD_DRAWN.aguitar.spec.scale.mm, 12));
 const AG_FROM = unit(add(planDir(AG.face), v3(0, -0.15, 0)));
 export const GUITAR_MIC: CloseMic = closeMic({ key: 'ag', label: 'GUITAR', src: 'ag', own: FRET12, from: AG_FROM, d: 225, typeId: 'sdcCard' });
 /** The mandolin: 35 cm out, aimed where the neck meets the body (C05B joint, 30–40 cm). */
-const MD_JOINT = guitarPoint(MD, 'mandolin', GUITAR_POSE.mandolin.L);
+// (owner 2026-11-26) where the DRAWN A-style mandolin's neck meets its body (its spec's edge, 190 mm from the saddle);
+// was the old pose's L, 45 mm up the drawn neck
+const MD_JOINT = heldDrawnPoint(MD, 'mandolin', geomOf(HELD_DRAWN.mandolin.spec).edge);
 export const MANDOLIN_MIC: CloseMic = closeMic({ key: 'mdn', label: 'MANDOLIN', src: 'mdn', own: MD_JOINT, from: unit(add(planDir(MD.face), v3(0, -0.2, 0))), d: 350, typeId: 'sdcCard' });
 /** The fiddle: 30 cm in front of where the bow meets the strings, a little above (C09a vn.close, 25–35 cm). */
 const FD_BRIDGE = soundPoint(FD);
@@ -91,6 +96,11 @@ export const E08_MODEL = ensembleModel({
   ],
   views,
   extraSurfaces: [targetSurface('t.ag', sectionPartId('duo', 'ag'), 'the guitar’s 12th fret', FRET12, AG_FROM)],
+  // (2026-11-26) the stands' booms run level 900 mm out from each mic (the ensembles' default is 700): with the guitar
+  // resting on the lap and its mic at the true 12th fret, a 700 mm boom dropped the guitar mic's stand onto the
+  // guitarist's floor wedge; at 900 it stands clear in front of it. The mic heads, their aim and distances, the
+  // wedge and every seat are unchanged.
+  mountRule: { boom: 'level', fallback: v3(0, 0, 1), length: 900 },
 });
 const surf = (id: string) => E08_MODEL.surfaces.find((s) => s.id === id)!;
 const pose = (m: CloseMic): MicPose => ({ p: m.p, ...aimOf(m.aim) });
