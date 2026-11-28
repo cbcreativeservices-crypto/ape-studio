@@ -13,12 +13,14 @@ const BUDGET_NEVER_USED = 'Never — with 0 ppm the clocks match exactly, so the
 
 /** The SMPTE timecode frame rates (non-drop and the 1000/1001 rates). A frame
  *  label HH:MM:SS:FF needs one of them (audit R2, 2026-10-23: 9000 frames at
- *  12.5 fps read TOTAL TIME 720 s beside a 00:11:32:04 table). */
-const TC_RATES = [24000 / 1001, 24, 25, 30000 / 1001, 30, 48000 / 1001, 48, 50, 60000 / 1001, 60];
+ *  12.5 fps read TOTAL TIME 720 s beside a 00:11:32:04 table). The high frame
+ *  rates of SMPTE ST 12-3 (72, 96, 100, 119.88 and 120) count too (calc audit
+ *  R2 K08, owner GO 2026-11-27). */
+const TC_RATES = [24000 / 1001, 24, 25, 30000 / 1001, 30, 48000 / 1001, 48, 50, 60000 / 1001, 60, 72, 96, 100, 120000 / 1001, 120];
 const tcRateRefusal = (fps: number): string | null =>
   TC_RATES.some((r) => Math.abs(fps - r) < 0.005)
     ? null
-    : `Timecode needs a standard frame rate — 23.976, 24, 25, 29.97, 30, 47.952, 48, 50, 59.94 or 60 fps. ${fmt(fps, 6)} fps has no HH:MM:SS:FF labels.`;
+    : `Timecode needs a standard frame rate — 23.976, 24, 25, 29.97, 30, 47.952, 48, 50, 59.94, 60, 72, 96, 100, 119.88 or 120 fps. ${fmt(fps, 6)} fps has no HH:MM:SS:FF labels.`;
 
 /** TPDF dither (the standard choice) adds twice the quantization noise power:
  *  10·log10(3) = 4.77 dB more noise (Lipshitz, Wannamaker & Vanderkooy, JAES

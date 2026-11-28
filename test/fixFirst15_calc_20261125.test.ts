@@ -234,7 +234,8 @@ describe('item 2 — the four named workflows', () => {
     assert.equal(K.waitingText(tiny[2].bindings.awg.source, true, 'gauge'), 'Step 2 answered in words — type the gauge here.');
     // The ampacity step takes no current (NEC ampacity belongs to the conductor): its note says what to compare.
     assert.deepEqual(getWorkspace('ampacity').functions.find((f: AnyObj) => f.key === 'awg').inputs, ['awg', 'insul', 'term', 'ambient', 'ccc']);
-    assert.match(w.steps[2].note, /its ALLOWABLE AMPACITY must be at least the current from step 1/);
+    // Calc audit R2 K01 (owner GO 2026-11-27): the breaker limit counts too.
+    assert.match(w.steps[2].note, /the current from step 1 must be no more than its ALLOWABLE AMPACITY and no more than its MAX OVERCURRENT DEVICE \(240\.4\)/);
   });
   it('the gauge is still never OFFERED or SENT (only the reviewed template link carries it)', () => {
     const o = getWorkspace('vdrop').functions.find((f: AnyObj) => f.key === 'gaugeFor').compute({ len: 30, current: 15, vsrc: 120, pct: 3, condTemp: 75 });

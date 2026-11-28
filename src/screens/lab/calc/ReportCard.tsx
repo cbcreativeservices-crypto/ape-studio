@@ -81,7 +81,11 @@ export const ReportCard = forwardRef<View, { report: SharedCalculatorReport }>(f
           <View style={styles.rule} />
           <Text style={styles.section} accessibilityRole="header">RESULTS</Text>
           {r.results.map((v) => (
-            <Row key={v.id} v={v} />
+            <View key={v.id}>
+              <Row v={v} />
+              {/* Which step gave it (calc audit R2 K09): two steps can share a label. */}
+              {r.reportType === 'workflow' && v.sourceStepName ? <Text style={styles.detail}>from {v.sourceStepName}</Text> : null}
+            </View>
           ))}
         </>
       ) : null}

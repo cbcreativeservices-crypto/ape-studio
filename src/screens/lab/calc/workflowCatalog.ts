@@ -186,7 +186,9 @@ export const WORKFLOW_TEMPLATES: Workflow[] = [
     // Round 2 (owner 2026-11-25): the gauge arrives as the next THICKER size
     // Table 310.16 lists (11 → 10; the step says so), and a load of 3 hours or
     // more is compared with the 80 % continuous figure (NEC 210.19 / 210.20).
-    { workspaceId: 'ampacity', fnKey: 'awg', note: 'Whether the gauge from step 2 may carry the current (NEC Table 310.16 and its limits): its ALLOWABLE AMPACITY must be at least the current from step 1; for a load that runs 3 hours or more, compare with MAX CONTINUOUS LOAD instead. If it is less, choose a thicker conductor (a lower AWG number) and check again.', carry: { awg: ans(1, 'DROP-LIMITED AWG (CHECK AMPACITY)', 'awg-table') } },
+    // Calc audit R2 K01 (owner GO 2026-11-27): the load must also fit the
+    // largest breaker 240.4 allows — 240.4(D) caps 14/12/10 AWG at 15/20/30 A.
+    { workspaceId: 'ampacity', fnKey: 'awg', note: 'Whether the gauge from step 2 may carry the current (NEC Table 310.16 and its limits): the current from step 1 must be no more than its ALLOWABLE AMPACITY and no more than its MAX OVERCURRENT DEVICE (240.4) — the breaker has to carry the load, and 240.4(D) caps it at 15 A for 14 AWG, 20 A for 12 AWG and 30 A for 10 AWG; for a load that runs 3 hours or more, compare with MAX CONTINUOUS LOAD instead. If the current is more, choose a thicker conductor (a lower AWG number) and check again.', carry: { awg: ans(1, 'DROP-LIMITED AWG (CHECK AMPACITY)', 'awg-table') } },
   ]),
   tpl('passive-crossover', 'Passive Crossover', 'First-order and second-order component values for the crossover.', [
     { workspaceId: 'crossover', fnKey: 'firstOrder', note: '6 dB/oct inductor & capacitor values.' },
@@ -217,7 +219,9 @@ export const WORKFLOW_TEMPLATES: Workflow[] = [
   // -------------------------------------------------------------------------
   tpl('hearing-dose', 'Hearing Exposure & Dose', 'SPL at the listener, the allowable time, then the daily dose.', [
     // Round 2 (owner 2026-11-25): step 2's dBA field fills from this answer.
-    { workspaceId: 'spldist', fnKey: 'point', note: 'SPL at the audience or operator distance. Enter L₁ as an A-weighted level (dBA).' },
+    // Calc audit R2 K06 (owner GO 2026-11-27): indoors the free-field level is
+    // a LOWER bound, so the allowable time it gives is too long — said here.
+    { workspaceId: 'spldist', fnKey: 'point', note: 'SPL at the audience or operator distance. Enter L₁ as an A-weighted level (dBA). Indoors this free-field figure is a LOWER bound: past the critical distance the room keeps the level up, so the real level is usually higher and the allowable time in step 2 shorter. For a real exposure decision, measure the level (dBA, slow) at that position and type it into step 2.' },
     { workspaceId: 'dose', fnKey: 'allowNiosh', note: 'Allowable exposure time (NIOSH: 85 dBA, 3 dB exchange).', carry: { lex: ans(0, 'LEVEL AT d₂') } },
     { workspaceId: 'dose', fnKey: 'doseNiosh', note: 'Daily dose from the actual exposure intervals.' },
   ]),

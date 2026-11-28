@@ -122,7 +122,9 @@ export function runCompute(fn: CalcFunction | null, values: CalcValues | null, f
 
 /** Display string for a numeric output at `sig` figures; `unitOffset` cycles
  *  through the quantity's units (0 = the output's preferred unit). */
-export function formatOutput(o: Extract<OutputVal, { value: number }>, sig: number, unitOffset: number): string {
+export function formatOutput(o: Extract<OutputVal, { value: number }>, sigSetting: number, unitOffset: number): string {
+  // An answer may ask for more figures than the setting (calcTypes `minSig`).
+  const sig = Math.max(sigSetting, o.minSig ?? 0);
   const units = outputUnits(o.quantity, o.unit);
   const startIdx = o.unit ? Math.max(0, units.findIndex((u) => u.id === o.unit)) : 0;
   const u0 = units[(startIdx + unitOffset) % units.length];

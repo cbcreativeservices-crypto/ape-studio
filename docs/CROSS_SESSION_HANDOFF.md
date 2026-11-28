@@ -728,10 +728,28 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-28 08:50 · ccode · be278fba
+changed: docs: must-do D89 — Grounding & Safety lab, first after the 1.0.1 upload; not begun (owner 2026-11-28) [MD:D89]
+affects other side: nothing now. Grounding & Safety lab (D89) starts only after the 1.0.1 upload; it reinforces Pro Audio Safety + Grounding & Electrical.
+needs: nothing [MD:D89].
+
+
+### 2026-11-28 08:48 · ccode · 40ed7a8b
+changed: Calculators: audit round 2 — K01–K12 fixed (owner GO 2026-11-27 via Comp A) + 4 owner follow-ups (2026-11-28) [MD:D52]
+affects other side: Comp A: results file Downloads/2026-11-28_FOR_COMP_A_CALC_R2_RESULTS.zip (before -> after per K-item, owner additions, checker notes). Nothing on the server.
+needs: nothing; publish waits for the owner [MD:D52].
+
+
 ### 2026-11-27 23:47 · ccode · bc5ee68e
 changed: 1.0.1: store age check (Texas SB 2420) — under-18 per Apple/Google closes the 18+ areas; unknown keeps self-confirmation; the age band never leaves the phone (owner 2026-11-27) [MD:D44]
 affects other side: Comp A: App ID needs the "Declared Age Range" capability before the build; EAS image must have Xcode 26.2+; Play Console: rate each in-app product; Privacy Policy 3.5 line approved (publish with 1.0.1). Nothing on the server.
 needs: the App ID capability checked before the test build [MD:D44].
+
+
+### 2026-11-27 22:28 · ccode · 683fa23f
+changed: web: Privacy Policy 3.4 (effective November 27, 2026; owner approved v3): ad-measurement provisions removed (never launched), privacy promise added, California and other U.S. states, Aptabase pseudonymous [MD:E1]
+affects other side: Comp A: the store listings and App Privacy / Data safety answers now quote Privacy Policy 3.4 (effective November 27, 2026): no tracking, no advertising ID, no data shared for ads. Nothing on the server.
+needs: nothing [MD:E1].
 
 
 ### 2026-11-27 22:01 · ccode · 3e4ebbe2

@@ -122,8 +122,12 @@ export type SavedRunSummary = {
   workflowName: string;
   projectName?: string;
   completedAt: string;
-  inputs: { label: string; value: string; unit: string; source: string; step: string }[];
-  results: { label: string; value: string; unit: string; step: string }[];
+  /** `carriedChanged`: a carried import the carry CHANGED (a 9 AWG answer
+   *  checked as 8 AWG) — the report keeps it in INPUTS (calc audit R2 K10). */
+  inputs: { label: string; value: string; unit: string; source: string; step: string; carriedChanged?: true }[];
+  /** `primary`: the step function's `primaryResultLabel` row — the report
+   *  headlines it (calc audit R2 K02). Absent on results saved before. */
+  results: { label: string; value: string; unit: string; step: string; primary?: true }[];
   warnings: string[];
   notes?: string;
 };

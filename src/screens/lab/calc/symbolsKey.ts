@@ -114,7 +114,7 @@ export const SYMBOL_GROUPS: SymbolGroup[] = [
     title: 'CALCULUS & LOGARITHMS',
     entries: [
       { symbol: 'log₁₀', name: 'base-10 logarithm', meaning: 'Log to base 10 — the heart of the decibel.', example: 'dB = 20·log₁₀(V₁ / V₂)', glossaryTerm: 'Common Logarithm' },
-      { symbol: 'ln', name: 'natural logarithm', meaning: 'Log to base e — used in decay and the Eyring reverb formula.', example: 'RT ∝ −ln(1 − ā)', glossaryTerm: 'Natural Logarithm' },
+      { symbol: 'ln', name: 'natural logarithm', meaning: 'Log to base e — used in decay and the Eyring reverb formula.', example: 'RT ∝ 1 / (−ln(1 − ā))', glossaryTerm: 'Natural Logarithm' },
       { symbol: 'e', name: 'Euler’s number', meaning: '≈ 2.71828 — the base of natural growth and decay.', example: 'level = e^(−t / τ)', glossaryTerm: "Euler's Formula" },
       { symbol: '∂', name: 'partial derivative', meaning: 'Rate of change of one variable with the others held fixed.' },
       { symbol: '∫', name: 'integral', meaning: 'Area under a curve — totals energy, RMS, or a convolution.' },

@@ -89,7 +89,7 @@ export function nioshEdgeWarnings(levels: readonly number[], mins: readonly numb
     ? [
         {
           label: 'ABOVE 140 dBA',
-          text: 'A level here is above 140 dBA. NIOSH’s dose counts sound only from 80 to 140 dBA, and the NIOSH recommended exposure limit also says no exposure should ever exceed 140 dB peak — a steady level above 140 dBA already peaks above that. Levels above 140 dBA are counted here by extending the same 3 dB rule, so the result is the formula’s answer, not an allowed exposure.',
+          text: 'A level here is above 140 dBA. NIOSH’s dose counts sound only from 80 to 140 dBA, and the NIOSH recommended exposure limit sets a ceiling: no exposure to continuous, varying, intermittent or impulsive noise should exceed 140 dBA. Levels above 140 dBA are counted here by extending the same 3 dB rule, so the result is the formula’s answer, not an allowed exposure.',
         },
       ]
     : [];
@@ -579,7 +579,7 @@ const WS_DOSE: Workspace = {
   warnings:
     'TEACHING calculations of published criterion formulas — NOT medical or legal advice, and ' +
     'not a compliance measurement. The criterion level and exchange rate are always displayed ' +
-    'with every result. Peak/impulse limits (e.g. 140 dB peak) are a separate constraint this ' +
+    'with every result. Peak/impulse limits (e.g. OSHA’s 140 dB peak for impulse or impact noise) are a separate constraint this ' +
     'workspace does not evaluate. Real protection depends on the jurisdiction’s rules, the ' +
     'measurement method (dosimetry position, A-weighting, slow response), and hearing ' +
     'conservation programs — talk to a qualified professional for anything real.',
@@ -991,7 +991,10 @@ const WS_MIC_GAIN: Workspace = {
         const low = underFloor(n(v.spl));
         if (low) return low;
         const micDbu = 20 * Math.log10(((n(v.sens) / 1000) * paFromSpl(n(v.spl))) / V_REF_DBU);
-        return n(v.target) - micDbu > PREAMP_MAX_GAIN_DB ? PREAMP_GAIN_TOO_HIGH : null;
+        // The SETTING the learner dials in (the gain less the headroom) is what
+        // must fit the preamp — calc audit R2 K07 (owner GO 2026-11-27): a
+        // 64.8 dB setting was refused because the gain to target was 76.8 dB.
+        return n(v.target) - micDbu - n(v.headroom) > PREAMP_MAX_GAIN_DB ? PREAMP_GAIN_TOO_HIGH : null;
       },
       compute: (v) => {
         const p = paFromSpl(n(v.spl));

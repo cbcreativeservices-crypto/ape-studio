@@ -13,6 +13,15 @@ const arr = (v: number | number[]): number[] => (typeof v === 'number' ? [v] : v
 
 const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
+/** The top of the band Note name from frequency names (owner 2026-11-27). */
+const PITCH_TOP_HZ = 20000;
+/** "MIDI 69", or "beyond MIDI 127" for a note past the MIDI range (named by
+ *  scientific pitch notation, owner decision 2026-11-27, calc audit R2 K12). */
+const midiTag = (r: number) => (r > 127 ? 'beyond MIDI 127' : `MIDI ${fmtInt(r)}`);
+/** Note frequencies in Note name from frequency are given to 5 significant
+ *  figures (owner 2026-11-28): B9 = 15804 Hz, C4 = 261.63 Hz. */
+const NOTE_HZ_SIG = 5;
+
 /** Note name + octave (MIDI 69 = A4, octave = floor(m/12) − 1). */
 function noteName(m: number): string {
   if (!Number.isFinite(m)) return '—'; // f = 0 → MIDI −Infinity; never print 'C-Infinity'
@@ -362,14 +371,21 @@ const WS_PITCH: Workspace = {
       explain:
         'Translates a frequency into a note name and tuning offset. Because pitch is logarithmic, twelve times the base-two log of the ratio to A4 gives the position in semitones, and MIDI 69 anchors A4. The gap to the nearest whole note, times 100, is how many cents sharp or flat the tone sits.',
       keySymbols: ['·', '−', '×', '/'],
-      // No note name outside MIDI 0–127 (audit R2, 2026-10-23): 452 MHz was
-      // "A24 (MIDI 309)" and 0.000452 Hz "A#-16 (MIDI -170)".
+      // No note name for 452 MHz ("A24 (MIDI 309)") or 0.000452 Hz ("A#-16
+      // (MIDI -170)"), audit R2, 2026-10-23. Owner decision 2026-11-27 (calc
+      // audit R2 K12): every tone up to 20 kHz is named — past MIDI 127 by
+      // scientific pitch notation (16 kHz = B9, beyond MIDI 127); only a tone
+      // above 20 kHz, or below MIDI 0, is refused.
       refuse: (v) => {
         const ref = n(v.ref);
+        // Six figures below 1 MHz, so 20001 Hz never reads "20000 Hz is above 20 kHz".
+        if (n(v.f) > PITCH_TOP_HZ) return `${fmt(n(v.f), n(v.f) < 1e6 ? 6 : 4)} Hz is above 20 kHz, the top of human hearing, so this tool names no note for it.`;
+        // Below the lowest named note (owner wording 2026-11-28): C-1 and the
+        // half-semitone edge under it, both from the A4 reference entered.
         const r = Math.round(69 + 12 * Math.log2(n(v.f) / ref));
-        return r >= 0 && r <= 127
+        return r >= 0
           ? null
-          : `${fmt(n(v.f))} Hz is outside the MIDI note range (MIDI 0–127: about ${fmt(ref * Math.pow(2, -69 / 12), 3)} Hz to ${fmt(ref * Math.pow(2, 58 / 12) / 1000, 3)} kHz at A4 = ${fmt(ref)} Hz), so it has no note name.`;
+          : `${fmt(n(v.f))} Hz is below the lowest note this tool names (C-1, MIDI 0, is about ${fmt(ref * Math.pow(2, -69 / 12), 3)} Hz at A4 = ${fmt(ref)} Hz; anything under about ${fmt(ref * Math.pow(2, -69.5 / 12), 3)} Hz is out of range), so it names no note for it.`;
       },
       compute: (v) => {
         const f = n(v.f);
@@ -385,7 +401,7 @@ const WS_PITCH: Workspace = {
         const below = ref * Math.pow(2, (r - 70) / 12);
         const above = ref * Math.pow(2, (r - 68) / 12);
         return [
-          { label: 'NEAREST NOTE', text: `${noteName(r)} (MIDI ${fmtInt(r)})` },
+          { label: 'NEAREST NOTE', text: `${noteName(r)} (${midiTag(r)})` },
           {
             label: 'TUNING OFFSET',
             text:
@@ -394,10 +410,11 @@ const WS_PITCH: Workspace = {
                 : `${fmt(Math.abs(cents), 3)} cents ${cents > 0 ? 'sharp' : 'flat'} of ${noteName(r)}.`,
           },
           { label: 'CENTS OFF', value: cents, quantity: 'cents', meaning: 'cents:offset' },
-          { label: `EXACT ${noteName(r)}`, value: exact, quantity: 'frequency', meaning: 'frequency:point' },
+          // Note frequencies to 5 figures (owner 2026-11-28): B9 = 15804 Hz.
+          { label: `EXACT ${noteName(r)}`, value: exact, quantity: 'frequency', meaning: 'frequency:point', minSig: NOTE_HZ_SIG },
           {
             label: 'ADJACENT NOTES',
-            text: `${noteName(r - 1)} = ${fmt(below)} Hz below · ${noteName(r + 1)} = ${fmt(above)} Hz above.`,
+            text: `${noteName(r - 1)} = ${fmt(below, NOTE_HZ_SIG)} Hz below · ${noteName(r + 1)} = ${fmt(above, NOTE_HZ_SIG)} Hz above.`,
           },
         ];
       },
@@ -409,7 +426,9 @@ const WS_PITCH: Workspace = {
         const r = Math.round(m);
         return [
           `m = 69 + 12·log₂(${fmt(f)} ÷ ${fmt(ref)}) = ${fmt(m)} — the fractional MIDI position of this frequency.`,
-          `Nearest whole note: MIDI ${fmtInt(r)} = ${noteName(r)}, whose exact frequency is ${fmt(ref * Math.pow(2, (r - 69) / 12))} Hz.`,
+          r > 127
+            ? `Nearest whole note: ${noteName(r)} (beyond MIDI 127, the top of the MIDI range; it would be number ${fmtInt(r)}), whose exact frequency is ${fmt(ref * Math.pow(2, (r - 69) / 12), NOTE_HZ_SIG)} Hz.`
+            : `Nearest whole note: MIDI ${fmtInt(r)} = ${noteName(r)}, whose exact frequency is ${fmt(ref * Math.pow(2, (r - 69) / 12), NOTE_HZ_SIG)} Hz.`,
           `The leftover (${fmt(m)} − ${fmtInt(r)}) × 100 = ${fmt((m - r) * 100, 3)} cents is how far ${cents(m, r)}.`,
         ];
       },

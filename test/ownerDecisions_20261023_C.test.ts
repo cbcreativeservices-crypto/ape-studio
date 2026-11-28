@@ -154,12 +154,16 @@ describe('7d — preamp gain needed above 75 dB: no setting, words', () => {
     assert.match(r.error!, /Move the mic closer, use a more sensitive \(hotter\) mic, or add an inline mic booster\./);
     assert.doesNotMatch(r.error!, /102|90\.7/);
   });
-  it('just past 75 dB is refused; just under still answers', () => {
-    // 2 mV/Pa: at 74 dB SPL the gain needed is ≈ 75.7 dB; at 76 dB SPL ≈ 73.7 dB.
-    refused(run('micgain', 'gain', { sens: 2, spl: 74, target: 4, headroom: 12 }), /more gain than most preamps have/);
-    const ok = run('micgain', 'gain', { sens: 2, spl: 76, target: 4, headroom: 12 });
+  it('a SETTING just past 75 dB is refused; just under still answers', () => {
+    // Calc audit R2 K07 (owner GO 2026-11-27): the limit is on the setting the
+    // learner dials in (gain to target less the 12 dB headroom), not the gain
+    // to target. 2 mV/Pa: at 62 dB SPL the setting is ≈ 75.7 dB; at 64 ≈ 73.7 dB.
+    refused(run('micgain', 'gain', { sens: 2, spl: 62, target: 4, headroom: 12 }), /more gain than most preamps have/);
+    const ok = run('micgain', 'gain', { sens: 2, spl: 64, target: 4, headroom: 12 });
     answers(ok);
-    assert.ok(out(ok, 'GAIN TO HIT TARGET (dB)')!.value! < 75);
+    assert.ok(out(ok, 'SUGGESTED GAIN LEAVING 12 dB HEADROOM')!.value! < 75);
+    // The old boundary case (gain to target 75.7 dB, setting 63.7 dB) now answers.
+    answers(run('micgain', 'gain', { sens: 2, spl: 74, target: 4, headroom: 12 }));
   });
   it('the worked example (2 mV/Pa at 94 dB SPL → ≈ 56 dB) is untouched', () => {
     const r = run('micgain', 'gain', { sens: 2, spl: 94, target: 4, headroom: 12 });

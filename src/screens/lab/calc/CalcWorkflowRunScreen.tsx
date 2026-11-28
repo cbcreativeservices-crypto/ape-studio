@@ -115,6 +115,73 @@ function sourceLabel(src: ValueSource, stepName: (i: number) => string, projectN
 }
 
 /**
+ * The saved SUMMARY of a finished run — the results view, SHARE AS TEXT and
+ * SAVE RESULT all read it. Module level (calc audit R2, 2026-11-27) so the
+ * tests run this very loop, as they run computeChain.
+ */
+function buildRunSummary(
+  workflow: Workflow,
+  run: WorkflowRun,
+  computed: StepComputed[],
+  stepName: (i: number) => string,
+  markedAt: (i: number) => ReadonlySet<number> | undefined,
+): SavedRunSummary {
+  const inputs: SavedRunSummary['inputs'] = [];
+  const results: SavedRunSummary['results'] = [];
+  const warnings = new Set<string>();
+  computed.forEach((c, i) => {
+    if (!c.resolved) return;
+    const step = `${i + 1}. ${c.resolved.fn.name}`;
+    for (const f of c.fields) {
+      const b = run.steps[i]?.inputs[f.key] ?? linkedBound(workflow, i, f);
+      const units = unitsFor(f.quantity, f.unitIds);
+      const u = units[(b?.unitIdx ?? defaultUnitIdx(f)) % units.length];
+      const raw = c.effRaw[f.key] ?? '';
+      if (raw.trim() === '') {
+        warnings.add(`Step ${i + 1} (${c.resolved.fn.name}): missing value for ${f.name}.`);
+        continue;
+      }
+      const src = b ? sourceLabel(b.source, stepName, run.projectName) : null;
+      // A carry that CHANGED the answer (9 AWG checked as 8 AWG) stays in the
+      // report's INPUTS, and its words go with it (calc audit R2 K10).
+      const snapped = c.snapNotes[f.key];
+      inputs.push({ label: f.name, value: raw, unit: u.label, source: src ?? 'Entered manually', step, ...(snapped ? { carriedChanged: true as const } : {}) });
+      if (snapped) warnings.add(`Step ${i + 1} (${c.resolved.fn.name}): ${snapped}`);
+      if (b?.source.kind === 'override') warnings.add(`${f.name} in step ${i + 1} was manually overridden.`);
+      // A stated estimate is said in the report too (round 2, 2026-11-25).
+      const est = c.estimates[f.key];
+      if (est) warnings.add(estimateReportLine(i + 1, f, b?.unitIdx ?? defaultUnitIdx(f), est));
+    }
+    const marks = markedAt(i);
+    if (c.result.computeError) warnings.add(`Step ${i + 1} (${c.resolved.fn.name}) could not compute — check its inputs.`);
+    // A refused step reports its refusal, never a figure beside it as a result.
+    if (c.result.refused) {
+      for (const o of refusalRows(c.result.outputs)) warnings.add(`Step ${i + 1} (${c.resolved.fn.name}): ${o.text}`);
+    } else {
+      // The step's headline row (calc audit R2 K02): the report leads with it.
+      const headline = c.resolved.fn.primaryResultLabel;
+      c.result.outputs.forEach((o, oi) => {
+        const primary = headline !== undefined && o.label === headline ? { primary: true as const } : {};
+        if ('value' in o) results.push({ label: estimateLabel(o.label, !!marks?.has(oi)), value: formatOutput(o, 4, 0), unit: '', step, ...primary });
+        else results.push({ label: o.label, value: o.text, unit: '', step });
+      });
+    }
+    if (c.resolved.ws.warnings) warnings.add(c.resolved.ws.warnings);
+  });
+  warnings.add('These values are planning estimates from the stated formulas — verify final results with appropriate measurement tools.');
+  return {
+    id: run.id,
+    workflowName: workflow.name,
+    projectName: run.projectName,
+    completedAt: run.completedAt ?? new Date().toISOString(),
+    inputs,
+    results,
+    warnings: [...warnings],
+    notes: run.notes?.trim() || undefined,
+  };
+}
+
+/**
  * The compute chain (the runner's `computed`): every step, in order, imports
  * resolved LIVE. `estScale` (round 2, 2026-11-25) scales every stated
  * ESTIMATE: the runner works the chain out again at other estimates to tell
@@ -644,52 +711,7 @@ export function CalcWorkflowRunScreen() {
   // ---- Summary (results view + share text) ----------------------------------
   const summary: SavedRunSummary | null = useMemo(() => {
     if (!workflow || !run || idx < n) return null;
-    const inputs: SavedRunSummary['inputs'] = [];
-    const results: SavedRunSummary['results'] = [];
-    const warnings = new Set<string>();
-    computed.forEach((c, i) => {
-      if (!c.resolved) return;
-      const step = `${i + 1}. ${c.resolved.fn.name}`;
-      for (const f of c.fields) {
-        const b = run.steps[i]?.inputs[f.key] ?? linkedBound(workflow, i, f);
-        const units = unitsFor(f.quantity, f.unitIds);
-        const u = units[(b?.unitIdx ?? defaultUnitIdx(f)) % units.length];
-        const raw = c.effRaw[f.key] ?? '';
-        if (raw.trim() === '') {
-          warnings.add(`Step ${i + 1} (${c.resolved.fn.name}): missing value for ${f.name}.`);
-          continue;
-        }
-        const src = b ? sourceLabel(b.source, stepName, run.projectName) : null;
-        inputs.push({ label: f.name, value: raw, unit: u.label, source: src ?? 'Entered manually', step });
-        if (b?.source.kind === 'override') warnings.add(`${f.name} in step ${i + 1} was manually overridden.`);
-        // A stated estimate is said in the report too (round 2, 2026-11-25).
-        const est = c.estimates[f.key];
-        if (est) warnings.add(estimateReportLine(i + 1, f, b?.unitIdx ?? defaultUnitIdx(f), est));
-      }
-      const marks = markedAt(i);
-      if (c.result.computeError) warnings.add(`Step ${i + 1} (${c.resolved.fn.name}) could not compute — check its inputs.`);
-      // A refused step reports its refusal, never a figure beside it as a result.
-      if (c.result.refused) {
-        for (const o of refusalRows(c.result.outputs)) warnings.add(`Step ${i + 1} (${c.resolved.fn.name}): ${o.text}`);
-      } else {
-        c.result.outputs.forEach((o, oi) => {
-          if ('value' in o) results.push({ label: estimateLabel(o.label, !!marks?.has(oi)), value: formatOutput(o, 4, 0), unit: '', step });
-          else results.push({ label: o.label, value: o.text, unit: '', step });
-        });
-      }
-      if (c.resolved.ws.warnings) warnings.add(c.resolved.ws.warnings);
-    });
-    warnings.add('These values are planning estimates from the stated formulas — verify final results with appropriate measurement tools.');
-    return {
-      id: run.id,
-      workflowName: workflow.name,
-      projectName: run.projectName,
-      completedAt: run.completedAt ?? new Date().toISOString(),
-      inputs,
-      results,
-      warnings: [...warnings],
-      notes: run.notes?.trim() || undefined,
-    };
+    return buildRunSummary(workflow, run, computed, stepName, markedAt);
   }, [workflow, run, idx, n, computed, stepName, estimateOf, estimateMarks]);
   /** The summary ON SCREEN now — SAVE RESULT compares against it after the write. */
   const summaryRef = useRef<SavedRunSummary | null>(null);
