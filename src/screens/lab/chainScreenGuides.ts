@@ -5,7 +5,7 @@
  * The lab is ONE LabShell screen with two tabs (no CHECK tab — its three
  * understanding questions, CHAIN_CHECKS, sit in LAB NOTES on EXPLORE), so the
  * guides are keyed by the shell's tab id:
- *   explore — the rack: the nine-unit chain display, the bezel readouts, the
+ *   explore — the rack: the ten-unit chain display, the bezel readouts, the
  *             MODULES / SCENARIO / SOURCE dock keys, the header ▶, LAB NOTES;
  *   learn   — the reading page (the guided lesson in full).
  * The what's-left page ("Where you are") is a separate modal with its own
@@ -48,7 +48,7 @@ export const CHAIN_SCREEN_GUIDES: Record<ChainScreenId, ScreenGuide> = {
       start: 'Sound runs through these boxes left to right, like guitar pedals: each changes what the next receives. Pick SINE 220, turn on LIMIT (a loudness ceiling), tap ▶, then add DIST (distortion): GR jumps. Sound off? ▶ gives the numbers.',
     },
     seeing: [
-      'Ten units in a fixed order: LOW CUT, EQ, COMP, GATE, DIST, MOD, DELAY, REVERB, STEREO, LIMIT. One patch lane (the stereo pair) runs from SRC to OUT.',
+      'Ten units in a fixed order: LOW CUT, GATE, EQ, COMP, DIST, MOD, DELAY, REVERB, STEREO, LIMIT. One patch lane (the stereo pair) runs from SRC to OUT.',
       'Lit units are in and show their setting; dark ones are bypassed and say what they are. Playing, a lit COMP, GATE or LIMIT shows GR (dB turned down).',
       'Readouts: SRC, CHAIN (units in), SCENE (the scenario, e.g. HOT→LIMIT; else CUSTOM), OUT (LIVE, IDLE, or SILENT).',
     ],
@@ -67,7 +67,7 @@ export const CHAIN_SCREEN_GUIDES: Record<ChainScreenId, ScreenGuide> = {
     ],
     teaches: [
       'Order changes the result: each stage’s output is the next stage’s input. EQ before a compressor changes what it reacts to, and the limiter goes last.',
-      'This rack runs COMP before GATE. Engineers usually gate first, so compression never lifts the noise the gate has to ignore.',
+      'This rack gates before EQ and COMP, a common starting point: a boost or make-up gain first would lift the noise the gate shuts out.',
       'A compressor’s or limiter’s GR shows what it is reacting to: a hotter signal from the stage before means more gain reduction.',
     ],
     tryThis: [

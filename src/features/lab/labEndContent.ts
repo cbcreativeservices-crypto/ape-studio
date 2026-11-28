@@ -156,7 +156,7 @@ export const LAB_END_CONTENT: Readonly<Record<string, LabEndContent>> = {
     recap: [
       'Each stage works on what the one before hands it, so switching one unit in changes what every later unit does.',
       'EQ placed before a compressor changes what the compressor reacts to.',
-      'This rack’s order is fixed, but most engineers gate before they compress, so compression never raises the noise floor.',
+      'This rack’s order is fixed: LOW CUT first, then GATE before EQ and COMP, a common starting point, so rumble and boosts do not decide when the gate opens.',
       'The limiter goes last, and GR shows how many decibels COMP, GATE and LIMIT are turning down.',
     ],
     next: { route: 'CableLab', title: 'Cable & Connector Fundamentals', why: 'what travels on each cable, and what a connector does and doesn’t tell you' },

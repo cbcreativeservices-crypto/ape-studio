@@ -5,9 +5,9 @@
  * what the next one does.
  *
  * RACK UNIT (APE_LAB_UX_PROPOSAL 2026-08-23, owner-approved): the CHAIN
- * DIAGRAM is the hero and PINS on the stage — Source → EQ → Comp → Gate →
- * Dist → Mod → Delay → Reverb → Stereo → Limiter → Out, drawn as nine
- * half-rack units on one patch lane (chainRack.tsx, art fix 2026-10-16: lit
+ * DIAGRAM is the hero and PINS on the stage — Source → Low Cut → Gate → EQ →
+ * Comp → Dist → Mod → Delay → Reverb → Stereo → Limiter → Out (the engine-11
+ * order, must-do E9), drawn as ten half-rack units on one patch lane (chainRack.tsx, art fix 2026-10-16: lit
  * = in the chain, dark = bypassed; the MODULES dock key toggles each LIVE),
  * the comp/gate/limiter units carrying their own GR LEDs and live GR number
  * (real fxGrStatus): toggle a module and WATCH the dynamics react at the
@@ -22,7 +22,9 @@
  * order is this rack's fixed order (reordering is a future lesson; the
  * order lessons live in the ⓘ Common Mistakes). GR meters are measured.
  * Audio needs the v6 engine build — below it the diagram + lessons stay live
- * with the standard honest note.
+ * with the standard honest note. The drawn order and LOW CUT's own node are
+ * the engine-11 chain (the 1.0.1 store build); this JS reaches only that
+ * binary (fingerprint runtime version).
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -69,25 +71,22 @@ const grMoved = (a: { comp: number; gate: number; limiter: number }, b: { comp: 
 const P = FX_PARAM;
 
 /** SC-03 (owner 2026-11-15, D62): each unit's `plain` words show under it while it is dark.
- *  The chain modules in this rack's fixed order (matches fx::Id routing),
+ *  The chain modules in this rack's fixed order (= the engine's processing order, FX_CHAIN_ORDER),
  *  drawn as half-rack units (chainRack.tsx, art fix 2026-10-16): each with
  *  its teaching default printed under it and its knobs set there (pointer
  *  0..1 on the unit's teaching range — log for time, ratio and frequency). */
 const lg = (v: number, lo: number, hi: number) => Math.log(v / lo) / Math.log(hi / lo);
 /** LOW CUT (owner 2026-11-22: "the gate is usually before any eq and compression. Low Cut as well (not
- *  shown currently)"; then "Low Cut now, gate at build"). A rack-only id: the engine has no separate
- *  low-cut node, so this unit IS the EQ node's last band, set to a 12 dB/octave high-pass at 80 Hz. The EQ
- *  node runs first in the engine's fixed order and its bands are filters in series (the same result in
- *  either order), so "LOW CUT, then EQ" is what the engine does. Moving GATE ahead of EQ and COMP needs
- *  the native engine and the store build: must-do E9. */
-const LOW_CUT = 100;
-const LOW_CUT_BAND = 5;
+ *  shown currently)"; then "Low Cut now, gate at build"; the build go 2026-11-27, must-do E9). Its own
+ *  engine node now (FX.lowCut, engine 11): the same 12 dB/octave high-pass at 80 Hz it was as the EQ
+ *  node's band 5 (golden_main.cpp checks the two sample for sample), and the engine runs it FIRST, then
+ *  GATE, then EQ and COMP: the order drawn here. */
 const LOW_CUT_HZ = 80;
 const MODULES: ChainUnit[] = [
-  { id: LOW_CUT, label: 'LOW CUT', plain: 'removes rumble', setting: 'below 80 Hz', knobs: [lg(LOW_CUT_HZ, 20, 500)] },
+  { id: FX.lowCut, label: 'LOW CUT', plain: 'removes rumble', setting: 'below 80 Hz', knobs: [lg(LOW_CUT_HZ, 20, 500)] },
+  { id: FX.gate, label: 'GATE', plain: 'cuts quiet parts', setting: 'opens −35 dB', knobs: [45 / 80, 70 / 80, lg(100, 10, 2000)], gr: 'gate', grMax: 70 },
   { id: FX.eq, label: 'EQ', plain: 'tone control', setting: '+9 dB @150 Hz', knobs: [lg(150, 20, 20000), (9 + 15) / 30, lg(0.7, 0.3, 10)] },
   { id: FX.comp, label: 'COMP', plain: 'evens out level', setting: '−30 dB · 4:1', knobs: [30 / 60, lg(4, 1, 20), lg(5, 0.1, 100), lg(120, 10, 2000)], gr: 'comp', grMax: 24 },
-  { id: FX.gate, label: 'GATE', plain: 'cuts quiet parts', setting: 'opens −35 dB', knobs: [45 / 80, 70 / 80, lg(100, 10, 2000)], gr: 'gate', grMax: 70 },
   { id: FX.dist, label: 'DIST', plain: 'distortion', setting: 'drive +12 dB', knobs: [12 / 40, 1] },
   { id: FX.mod, label: 'MOD', plain: 'chorus shimmer', setting: 'chorus 0.25 Hz', knobs: [lg(0.25, 0.05, 10), 0.5, 0.5] },
   { id: FX.delay, label: 'DELAY', plain: 'echo', setting: '375 ms · 40 %', knobs: [lg(375, 1, 2000), 0.4, 0.5] },
@@ -110,6 +109,8 @@ type FxOp = { fx: number; param: number; value: number };
  *  test/screenGuide_chain_20261031.test.ts §6 fails if a lab writes a param
  *  this table does not. */
 const DEFAULTS: Record<number, FxOp[]> = {
+  // The corner is written every time (engine params persist across labs), though no other lab writes it today.
+  [FX.lowCut]: [{ fx: FX.lowCut, param: P.lowCutHz, value: LOW_CUT_HZ }],
   [FX.eq]: [
     { fx: FX.eq, param: P.eqBand(0, 'type'), value: EQ_BAND_TYPES.lowShelf },
     { fx: FX.eq, param: P.eqBand(0, 'freq'), value: 150 },
@@ -182,34 +183,13 @@ const DEFAULTS: Record<number, FxOp[]> = {
   ],
 };
 
-/** LOW CUT's band on the EQ node (see LOW_CUT above). Every field is written each time, as for DEFAULTS:
- *  engine params persist across labs. */
-const LOW_CUT_OPS: FxOp[] = [
-  { fx: FX.eq, param: P.eqBand(LOW_CUT_BAND, 'type'), value: EQ_BAND_TYPES.highPass },
-  { fx: FX.eq, param: P.eqBand(LOW_CUT_BAND, 'freq'), value: LOW_CUT_HZ },
-  { fx: FX.eq, param: P.eqBand(LOW_CUT_BAND, 'q'), value: 0.707 },
-  { fx: FX.eq, param: P.eqBand(LOW_CUT_BAND, 'gain'), value: 0 },
-];
-
-/** Everything the engine's EQ node needs for the two rack units it carries (EQ = the shelf on band 0,
- *  LOW CUT = the high-pass on band 5): a unit that is out has its band switched off. */
-function eqNodeOps(en: Record<number, boolean>): FxOp[] {
-  const shelfType = P.eqBand(0, 'type');
-  const cutType = P.eqBand(LOW_CUT_BAND, 'type');
-  return [
-    ...DEFAULTS[FX.eq].filter((op) => op.param !== cutType).map((op) => (op.param === shelfType && !en[FX.eq] ? { ...op, value: EQ_BAND_TYPES.off } : op)),
-    ...LOW_CUT_OPS.map((op) => (op.param === cutType && !en[LOW_CUT] ? { ...op, value: EQ_BAND_TYPES.off } : op)),
-  ];
-}
-const eqNodeOn = (en: Record<number, boolean>) => !!(en[FX.eq] || en[LOW_CUT]);
-
 /** Scenario presets — each demonstrates a signature INTERACTION.
  *  `short` = the dock-button/bezel value (~7 mono chars). */
 /** `hot` = the patches the scenario is ABOUT (index i = the cable INTO
  *  MODULES[i]): lit on the rack so the interaction shows where it happens. */
 const SCENARIOS: { key: string; label: string; short: string; enable: number[]; sourceIdx: number; lesson: string; hot: number[] }[] = [
   {
-    key: 'bass_comp', label: 'EQ BOOST → COMP', short: 'EQ→COMP', enable: [FX.eq, FX.comp], sourceIdx: 1, hot: [2],
+    key: 'bass_comp', label: 'EQ BOOST → COMP', short: 'EQ→COMP', enable: [FX.eq, FX.comp], sourceIdx: 1, hot: [3],
     lesson: 'The +9 dB low shelf feeds the compressor MORE bass — watch its GR rise: EQ before compression changes what the compressor reacts to. On the phone speaker most of the boosted bass is filtered out at the source, before the chain, to protect the speaker, so GR stays near 0 — use headphones with the volume turned down first, or set SOURCE to SINE 220.',
   },
   {
@@ -217,19 +197,19 @@ const SCENARIOS: { key: string; label: string; short: string; enable: number[]; 
     lesson: 'Each echo excites the reverb — repeats get washed into space. Reverb→delay would echo the WASH instead: order is a creative choice.',
   },
   {
-    key: 'gate_click', label: 'GATE THE CLICK', short: 'GATE', enable: [FX.gate], sourceIdx: 0, hot: [3],
+    key: 'gate_click', label: 'GATE THE CLICK', short: 'GATE', enable: [FX.gate], sourceIdx: 0, hot: [1],
     lesson: 'The gate opens on every hit and slams shut between — watch its GR drop to zero on each click and return in the silence.',
   },
   {
     // `short` keeps the button's own words (beginner audit 2026-11-14: SCENE
     // read "SQUASH" while the button said HOT INTO LIMITER).
-    key: 'squash', label: 'HOT INTO LIMITER', short: 'HOT→LIMIT', enable: [FX.eq, FX.comp, FX.limiter], sourceIdx: 1, hot: [2, 9],
+    key: 'squash', label: 'HOT INTO LIMITER', short: 'HOT→LIMIT', enable: [FX.eq, FX.comp, FX.limiter], sourceIdx: 1, hot: [3, 9],
     lesson: 'The +9 dB boost runs hot down the chain — watch BOTH meters share the work. If the limiter barely moves, the compressor got there first: gain-staging happening in order. On the phone speaker most of the boosted bass is filtered out at the source, before the chain, to protect the speaker, so both meters stay near 0 — use headphones with the volume turned down first, or set SOURCE to SINE 220.',
   },
   {
     // All TEN units (LOW CUT joined 2026-11-22) — the name says FULL and the lesson says "the whole path
-    // lit"; it used to light only six (Bug+Hater night I2-02).
-    key: 'full', label: 'FULL CHAIN', short: 'FULL', enable: [LOW_CUT, FX.eq, FX.comp, FX.gate, FX.dist, FX.mod, FX.delay, FX.reverb, FX.stereo, FX.limiter], sourceIdx: 0, hot: [],
+    // lit"; it used to light only six (Bug+Hater night I2-02). Listed in the rack's (= the engine's) order.
+    key: 'full', label: 'FULL CHAIN', short: 'FULL', enable: [FX.lowCut, FX.gate, FX.eq, FX.comp, FX.dist, FX.mod, FX.delay, FX.reverb, FX.stereo, FX.limiter], sourceIdx: 0, hot: [],
     lesson: 'The whole path lit. Toggle modules one at a time — the difference between the sum and the parts IS the interaction.',
   },
 ];
@@ -344,13 +324,8 @@ export function SignalChainLabScreen() {
   /** Push defaults + enables for the current map (targets-first per module). */
   const pushChain = useCallback((en: Record<number, boolean>) => {
     ApeDsp.fxReset();
-    // The EQ node carries two rack units (LOW CUT and EQ): written once, on if either is in.
-    if (eqNodeOn(en)) {
-      for (const op of eqNodeOps(en)) ApeDsp.fxSet(op.fx, op.param, op.value);
-      ApeDsp.fxSet(FX.eq, 0, 1);
-    }
     for (const m of MODULES) {
-      if (m.id === LOW_CUT || m.id === FX.eq || !en[m.id]) continue;
+      if (!en[m.id]) continue;
       for (const op of DEFAULTS[m.id] ?? []) ApeDsp.fxSet(op.fx, op.param, op.value);
       ApeDsp.fxSet(m.id, 0, 1);
     }
@@ -440,12 +415,7 @@ export function SignalChainLabScreen() {
   const toggleModule = (id: number) => {
     setEnabled((prev) => {
       const next = { ...prev, [id]: !prev[id] };
-      if (running && (id === LOW_CUT || id === FX.eq)) {
-        // LOW CUT and EQ share the engine's EQ node: rewrite its bands for the new pair, on if either is in.
-        if (eqNodeOn(next)) for (const op of eqNodeOps(next)) ApeDsp.fxSet(op.fx, op.param, op.value);
-        ApeDsp.fxSet(FX.eq, 0, eqNodeOn(next) ? 1 : 0);
-        noteAudioActivity();
-      } else if (running) {
+      if (running) {
         if (next[id]) {
           for (const op of DEFAULTS[id] ?? []) ApeDsp.fxSet(op.fx, op.param, op.value);
           ApeDsp.fxSet(id, 0, 1);
@@ -533,7 +503,7 @@ export function SignalChainLabScreen() {
           ],
           render: (w, h) => (
             <View style={[styles.stageInner, { height: h }]}>
-              {/* THE CHAIN — the hero: the nine units drawn as outboard on one
+              {/* THE CHAIN — the hero: the ten units drawn as outboard on one
                   patch lane, the dynamics units' GR LEDs and numbers MEASURED
                   live (chainRack.tsx). No button is DRAWN on it (owner rule
                   2026-10-10), but a tap on a unit switches it in or out
@@ -650,10 +620,9 @@ export function SignalChainLabScreen() {
           own lab. The order is this rack’s fixed order, not a universal one; WHY order matters is in the ⓘ mistakes.
           LOW CUT comes first, where engineers usually put it: it clears rumble below 80 Hz before any later unit
           reacts to it. On the phone speaker the deep bass is already cut before the chain, so LOW CUT changes
-          little there; use headphones with the volume turned down first. One
-          honest quirk: this rack runs COMP before GATE, while on a real console you
-          would usually gate FIRST so compression never raises the noise floor — the mistakes list
-          explains. The limiter’s ceiling is set LOW (−25 dB) on purpose, so it has work to do on
+          little there; use headphones with the volume turned down first. GATE comes next, ahead of EQ
+          and COMP, a common starting point: an EQ boost or the compressor’s make-up gain before it would
+          lift the quiet noise the gate is set to shut out — the mistakes list explains. The limiter’s ceiling is set LOW (−25 dB) on purpose, so it has work to do on
           this −20 dB test source; a real output ceiling sits just under full scale (commonly
           around −1 dBTP).
         </Text>

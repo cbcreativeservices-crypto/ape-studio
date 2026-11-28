@@ -4,7 +4,8 @@
  * joined by arrows: no module or signal drawing; the glass is mostly blank
  * with the chain empty; the interaction shows only as three GR numbers").
  *
- * Ten half-rack processors (LOW CUT first, 2026-11-22) in this rack's fixed order, three to
+ * Ten half-rack processors (LOW CUT first, 2026-11-22; then GATE, ahead of EQ and COMP, since the
+ * engine-11 order of must-do E9) in this rack's fixed order, three to
  * a row, each a lit front panel with ITS controls set where the lab's
  * teaching defaults put them (the EQ's gain knob at +9 dB, the compressor's
  * threshold at −30 dB and ratio at 4:1 …), and a power/active LED. One patch

@@ -1298,6 +1298,171 @@ int main() {
       truthy("Chain: fxSet enables a node", ch.anyActive());
       ch.reset();
       truthy("Chain: reset disables everything", !ch.anyActive());
+      ch.set(fx::LowCut, 0, 1.0);
+      truthy("Chain: fxSet enables the LOW CUT node (id 9)", ch.anyActive());
+      ch.reset();
+      truthy("Chain: reset disables LOW CUT too", !ch.anyActive());
+    }
+    // 12m. CHAIN ORDER (engine 11, must-do E9): LOW CUT → GATE → EQ → COMP → …
+    //      Every vector below FAILS on the engine-10 order (EQ → COMP → GATE,
+    //      no LOW CUT node: an fx::LowCut write was ignored) and passes on the
+    //      new one. Each case also runs the OLD order by hand on standalone
+    //      nodes and checks it lands on the other side, so the vector is
+    //      proven to tell the two orders apart.
+    {
+      static_assert(fx::Eq == 0 && fx::Comp == 1 && fx::Gate == 2 && fx::Dist == 3 && fx::Mod == 4 &&
+                        fx::Delay == 5 && fx::Reverb == 6 && fx::Stereo == 7 && fx::Limiter == 8,
+                    "effect ids are a stable API: never renumber");
+      static_assert(fx::LowCut == 9 && fx::kLastId == fx::LowCut, "LOW CUT takes the next free id");
+      // Gain (dB) of a sine through `proc` (a lambda over L/R buffers), after
+      // `settleSec`; the 0.3 s window holds whole cycles at 20/30/40/80/1k Hz.
+      auto sineGainDbVia = [&](auto proc, double f, double amp, double settleSec) {
+        const size_t settle = static_cast<size_t>(fs * settleSec), meas = static_cast<size_t>(fs * 0.3);
+        const double w = 2.0 * 3.14159265358979323846 * f / fs;
+        std::vector<float> L(settle + meas), R(settle + meas);
+        for (size_t i = 0; i < L.size(); ++i) L[i] = R[i] = (float)(amp * std::sin(w * i));
+        proc(L.data(), R.data(), (uint32_t)L.size());
+        double so = 0.0;
+        for (size_t i = settle; i < L.size(); ++i) so += (double)L[i] * L[i];
+        const double si = amp * amp * 0.5 * (double)meas;
+        return 10.0 * std::log10((so + 1e-30) / (si + 1e-30));
+      };
+      // The chain's teaching gate: −35 dB threshold, −70 dB floor, 1 ms
+      // attack, 20 ms release, given hold (fast close so 0.5 s settles).
+      auto gateParams = [](auto setter, double holdMs) {
+        setter(1, -35.0); setter(6, -70.0); setter(3, 1.0); setter(4, 20.0); setter(7, holdMs);
+      };
+
+      // 12m-1. LOW CUT is EXACTLY the EQ's HighPass band: same 80 Hz corner,
+      //        same 12 dB/octave slope, sample-for-sample the same output.
+      {
+        LowCutEffect lc;
+        lc.configure(fs);
+        lc.setParam(0, 1.0);  // default corner = 80 Hz
+        near("LowCut: -3 dB at its 80 Hz corner", fxSineGainDb(lc, 80.0, 0.1), -3.01, 0.1);
+        LowCutEffect lc40; lc40.configure(fs); lc40.setParam(0, 1.0); lc40.setParam(1, 80.0);
+        LowCutEffect lc20; lc20.configure(fs); lc20.setParam(0, 1.0); lc20.setParam(1, 80.0);
+        LowCutEffect lc1k; lc1k.configure(fs); lc1k.setParam(0, 1.0); lc1k.setParam(1, 80.0);
+        const double g40 = fxSineGainDb(lc40, 40.0, 0.1), g20 = fxSineGainDb(lc20, 20.0, 0.1);
+        near("LowCut: 40 Hz (one octave under) ~-12.3 dB", g40, -12.3, 0.3);
+        near("LowCut: 12 dB/octave below the corner (40 → 20 Hz)", g40 - g20, 11.8, 0.6);
+        near("LowCut: 1 kHz passes at unity", fxSineGainDb(lc1k, 1000.0, 0.1), 0.0, 0.05);
+        LowCutEffect a; a.configure(fs); a.setParam(0, 1.0); a.setParam(1, 80.0);
+        EqEffect b; b.configure(fs); b.setEnabled(true);
+        b.setBand(5, EqEffect::HighPass, 80.0, 0.707, 0.0);
+        std::vector<float> aL(9600), aR(9600), bL(9600), bR(9600);
+        uint32_t seed = 12345u;
+        for (size_t i = 0; i < aL.size(); ++i) {
+          seed = seed * 1664525u + 1013904223u;
+          const float x = 0.2f * ((float)(seed >> 8) / 16777216.0f - 0.5f) +
+                          0.1f * (float)std::sin(2.0 * 3.14159265358979323846 * 30.0 * i / fs);
+          aL[i] = aR[i] = bL[i] = bR[i] = x;
+        }
+        a.processStereo(aL.data(), aR.data(), (uint32_t)aL.size());
+        b.processStereo(bL.data(), bR.data(), (uint32_t)bL.size());
+        truthy("LowCut node == EQ band-5 HighPass at 80 Hz, sample for sample", aL == bL && aR == bR);
+      }
+
+      // 12m-2. GATE BEFORE EQ: a −40 dB tone sits under the −35 dB gate; a
+      //        +12 dB EQ boost would lift it OVER the threshold. Gate first:
+      //        the gate sees −40 and stays closed. (Old order: EQ first, the
+      //        gate sees −28 and opens — the boost decided the gate.)
+      {
+        EffectChain ch;
+        ch.configure(fs);
+        gateParams([&](int p, double v) { ch.set(fx::Gate, p, v); }, 0.0);
+        ch.set(fx::Gate, 0, 1.0);
+        ch.set(fx::Eq, 100 + 0 * 10 + 0, (double)EqEffect::Peak);
+        ch.set(fx::Eq, 101, 1000.0); ch.set(fx::Eq, 102, 1.0); ch.set(fx::Eq, 103, 12.0);
+        ch.set(fx::Eq, 0, 1.0);
+        const double gNew = sineGainDbVia([&](float* L, float* R, uint32_t n) { ch.processStereo(L, R, n); }, 1000.0, 0.01, 0.5);
+        double grs[3]; ch.grStatus(grs);
+        check(gNew < -40.0, "Order: GATE before EQ — a boost cannot open the gate (gain < -40 dB)", gNew, -40.0, 0.0);
+        check(grs[1] > 60.0, "Order: GATE before EQ — gate GR reads its floor (> 60 dB)", grs[1], 60.0, 0.0);
+        // the engine-10 order, by hand: EQ → GATE
+        EqEffect eq; eq.configure(fs); eq.setEnabled(true); eq.setBand(0, EqEffect::Peak, 1000.0, 1.0, 12.0);
+        DynamicsEffect gt(DynamicsEffect::GateMode); gt.configure(fs); gt.setEnabled(true);
+        gateParams([&](int p, double v) { gt.setParam(p, v); }, 0.0);
+        const double gOld = sineGainDbVia([&](float* L, float* R, uint32_t n) { eq.processStereo(L, R, n); gt.processStereo(L, R, n); }, 1000.0, 0.01, 0.5);
+        check(gOld > 6.0, "Order check: EQ → GATE (engine 10) lets the boost open it (gain > +6 dB)", gOld, 6.0, 0.0);
+      }
+
+      // 12m-3. GATE BEFORE COMP: the compressor's +24 dB make-up would lift a
+      //        −45 dB tone over the gate's −35 dB threshold. Gate first: closed.
+      //        (Old order: COMP first, its make-up gain opened the gate.)
+      {
+        EffectChain ch;
+        ch.configure(fs);
+        gateParams([&](int p, double v) { ch.set(fx::Gate, p, v); }, 0.0);
+        ch.set(fx::Gate, 0, 1.0);
+        ch.set(fx::Comp, 1, -60.0); ch.set(fx::Comp, 2, 2.0); ch.set(fx::Comp, 3, 5.0);
+        ch.set(fx::Comp, 4, 100.0); ch.set(fx::Comp, 5, 24.0);
+        ch.set(fx::Comp, 0, 1.0);
+        const double amp = std::pow(10.0, -45.0 / 20.0);
+        const double gNew = sineGainDbVia([&](float* L, float* R, uint32_t n) { ch.processStereo(L, R, n); }, 1000.0, amp, 0.5);
+        check(gNew < -30.0, "Order: GATE before COMP — make-up gain cannot open the gate (gain < -30 dB)", gNew, -30.0, 0.0);
+        DynamicsEffect cp(DynamicsEffect::Compressor); cp.configure(fs); cp.setEnabled(true);
+        cp.setParam(1, -60.0); cp.setParam(2, 2.0); cp.setParam(3, 5.0); cp.setParam(4, 100.0); cp.setParam(5, 24.0);
+        DynamicsEffect gt(DynamicsEffect::GateMode); gt.configure(fs); gt.setEnabled(true);
+        gateParams([&](int p, double v) { gt.setParam(p, v); }, 0.0);
+        const double gOld = sineGainDbVia([&](float* L, float* R, uint32_t n) { cp.processStereo(L, R, n); gt.processStereo(L, R, n); }, 1000.0, amp, 0.5);
+        check(gOld > 10.0, "Order check: COMP → GATE (engine 10) — make-up opens it (gain > +10 dB)", gOld, 10.0, 0.0);
+      }
+
+      // 12m-4. LOW CUT FIRST, before the GATE: 30 Hz rumble at −25 dB would
+      //        hold a −35 dB gate open. LOW CUT first takes it down ~17 dB, so
+      //        the gate stays shut. (Engine 10 had no LOW CUT node: the write
+      //        was ignored and the rumble opened the gate.) 50 ms hold bridges
+      //        the 33 ms rumble cycle, as a real gate's hold does.
+      {
+        EffectChain ch;
+        ch.configure(fs);
+        ch.set(fx::LowCut, 1, 80.0);
+        ch.set(fx::LowCut, 0, 1.0);
+        gateParams([&](int p, double v) { ch.set(fx::Gate, p, v); }, 50.0);
+        ch.set(fx::Gate, 0, 1.0);
+        const double amp = std::pow(10.0, -25.0 / 20.0);
+        const double gNew = sineGainDbVia([&](float* L, float* R, uint32_t n) { ch.processStereo(L, R, n); }, 30.0, amp, 0.5);
+        check(gNew < -60.0, "Order: LOW CUT before GATE — rumble cannot hold the gate open (gain < -60 dB)", gNew, -60.0, 0.0);
+        DynamicsEffect gt(DynamicsEffect::GateMode); gt.configure(fs); gt.setEnabled(true);
+        gateParams([&](int p, double v) { gt.setParam(p, v); }, 50.0);
+        LowCutEffect lc; lc.configure(fs); lc.setParam(0, 1.0); lc.setParam(1, 80.0);
+        const double gOld = sineGainDbVia([&](float* L, float* R, uint32_t n) { gt.processStereo(L, R, n); lc.processStereo(L, R, n); }, 30.0, amp, 0.5);
+        check(gOld > -25.0, "Order check: GATE → LOW CUT — the rumble holds it open (gain > -25 dB)", gOld, -25.0, 0.0);
+      }
+
+      // 12m-5. LOW CUT FIRST, before the COMP: −10 dB of 30 Hz rumble would
+      //        drive a −30 dB 4:1 compressor ~15 dB; after LOW CUT it barely
+      //        touches it.
+      {
+        EffectChain ch;
+        ch.configure(fs);
+        ch.set(fx::LowCut, 0, 1.0);  // default corner 80 Hz
+        ch.set(fx::Comp, 1, -30.0); ch.set(fx::Comp, 2, 4.0); ch.set(fx::Comp, 3, 5.0);
+        ch.set(fx::Comp, 4, 100.0); ch.set(fx::Comp, 5, 0.0);
+        ch.set(fx::Comp, 0, 1.0);
+        const double amp = std::pow(10.0, -10.0 / 20.0);
+        sineGainDbVia([&](float* L, float* R, uint32_t n) { ch.processStereo(L, R, n); }, 30.0, amp, 0.5);
+        double grs[3]; ch.grStatus(grs);
+        check(grs[0] < 5.0, "Order: LOW CUT before COMP — rumble barely drives it (GR < 5 dB)", grs[0], 5.0, 0.0);
+        DynamicsEffect cp(DynamicsEffect::Compressor); cp.configure(fs); cp.setEnabled(true);
+        cp.setParam(1, -30.0); cp.setParam(2, 4.0); cp.setParam(3, 5.0); cp.setParam(4, 100.0); cp.setParam(5, 0.0);
+        LowCutEffect lc; lc.configure(fs); lc.setParam(0, 1.0);
+        sineGainDbVia([&](float* L, float* R, uint32_t n) { cp.processStereo(L, R, n); lc.processStereo(L, R, n); }, 30.0, amp, 0.5);
+        check(cp.grDb() > 10.0, "Order check: COMP → LOW CUT — the rumble drives it hard (GR > 10 dB)", cp.grDb(), 10.0, 0.0);
+      }
+
+      // 12m-6. A one-node lab sounds the same in either order: a lone EQ
+      //        through the chain matches the bare EQ node exactly.
+      {
+        EffectChain ch; ch.configure(fs);
+        ch.set(fx::Eq, 100, (double)EqEffect::Peak); ch.set(fx::Eq, 101, 1000.0); ch.set(fx::Eq, 102, 1.0); ch.set(fx::Eq, 103, 6.0);
+        ch.set(fx::Eq, 0, 1.0);
+        EqEffect eq; eq.configure(fs); eq.setEnabled(true); eq.setBand(0, EqEffect::Peak, 1000.0, 1.0, 6.0);
+        const double a = sineGainDbVia([&](float* L, float* R, uint32_t n) { ch.processStereo(L, R, n); }, 1000.0, 0.1, 0.3);
+        const double b = sineGainDbVia([&](float* L, float* R, uint32_t n) { eq.processStereo(L, R, n); }, 1000.0, 0.1, 0.3);
+        near("Order: a lone EQ through the chain == the bare EQ", a - b, 0.0, 1e-9);
+      }
     }
   }
 

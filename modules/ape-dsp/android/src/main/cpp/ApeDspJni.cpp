@@ -736,6 +736,8 @@ Java_expo_modules_apedsp_ApeDspModule_nativeGenSetStereoSpread(JNIEnv*, jobject,
   eng(h)->gen_.setStereoSpread(rad);
 }
 // ---- Effects chain (one scalar setter for the whole roster; see fx::Id) ----
+// effectId passes straight to EffectChain::set (LowCut = 9 from engine 11);
+// reset() disables every node, LowCut included.
 JNIEXPORT void JNICALL
 Java_expo_modules_apedsp_ApeDspModule_nativeFxSet(JNIEnv*, jobject, jlong h, jint effectId,
                                                   jint paramId, jdouble v) {

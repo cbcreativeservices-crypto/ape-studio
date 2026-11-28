@@ -25,7 +25,10 @@
 namespace apedsp {
 
 namespace fx {
-// Effect IDs (chain order is fixed & canonical — spec §8; IDs are stable API).
+// Effect IDs — a STABLE public API: never renumber or reuse one; a new node
+// takes the next free number. Since engine 11 (must-do E9, 2026-11-27) the ids
+// are NOT the processing order: EffectChain::processStereo runs
+// LowCut → Gate → Eq → Comp → Dist → Mod → Delay → Reverb → Stereo → Limiter.
 enum Id : int {
   Eq = 0,
   Comp = 1,
@@ -36,7 +39,10 @@ enum Id : int {
   Reverb = 6,
   Stereo = 7,  // stereo imaging + phase lab
   Limiter = 8,
+  LowCut = 9,  // engine 11: dedicated low cut (high-pass), runs FIRST
 };
+/// The highest id in use (reset() walks 0..kLastId). Bump with every new node.
+constexpr int kLastId = LowCut;
 constexpr double kPi = 3.14159265358979323846;
 // One-pole smoothing coefficient for a time constant in ms.
 inline double onePole(double ms, double fs) {
@@ -336,6 +342,51 @@ class ModEffect {
   size_t w_ = 0;
   double lfo_ = 0.0, fbL_ = 0.0, fbR_ = 0.0;
   double apX_[2][kMaxStages] = {}, apY_[2][kMaxStages] = {};
+};
+
+// ───────────────────────────────────────── Low cut (engine 11, must-do E9) ──
+// A dedicated high-pass node, first in the chain, so rumble is gone before it
+// can open the gate or drive the compressor. The filter is EXACTLY the EQ's
+// HighPass band (Biquad::highpass: 2nd-order Butterworth, 12 dB/octave), so the
+// Signal Chain Builder's LOW CUT sounds the same as when it rode on EQ band 5.
+// Params: 0 enabled · 1 freqHz (default 80).
+class LowCutEffect {
+ public:
+  void configure(double fs) {
+    fs_ = fs > 0.0 ? fs : 48000.0;
+    dirty_.store(true, std::memory_order_relaxed);
+  }
+  void setEnabled(bool on) { enabled_.store(on, std::memory_order_relaxed); }
+  bool enabled() const { return enabled_.load(std::memory_order_relaxed); }
+  void setParam(int p, double v) {
+    switch (p) {
+      case 0: setEnabled(v > 0.5); break;
+      case 1:
+        freqHz_.store(fx::clampd(v, 10.0, 1000.0), std::memory_order_relaxed);
+        dirty_.store(true, std::memory_order_relaxed);
+        break;
+      default: break;
+    }
+  }
+  void processStereo(float* L, float* R, uint32_t n) {
+    if (!enabled_.load(std::memory_order_relaxed)) return;
+    if (dirty_.exchange(false, std::memory_order_relaxed)) {
+      const Biquad bq = Biquad::highpass(freqHz_.load(std::memory_order_relaxed), fs_);
+      secL_ = bq;
+      secR_ = bq;
+    }
+    for (uint32_t i = 0; i < n; ++i) {
+      L[i] = secL_.process(L[i]);
+      R[i] = secR_.process(R[i]);
+    }
+  }
+
+ private:
+  std::atomic<bool> enabled_{false};
+  std::atomic<bool> dirty_{true};
+  std::atomic<double> freqHz_{80.0};
+  double fs_ = 48000.0;
+  Biquad secL_, secR_;
 };
 
 // ─────────────────────────── Compressor / Gate / Limiter (Labs 7/8/9) ──
@@ -722,15 +773,21 @@ class StereoEffect {
 };
 
 // ───────────────────────────────────────────────────────── The chain ──
-// Canonical order (spec §8): Source → EQ → Comp → Gate → Distortion →
-// Modulation → Delay → Reverb → Stereo → Limiter → Output. Every node is
-// bypassable; a single-effect lab enables just one; the Signal Chain Builder
+// Canonical order (engine 11, must-do E9, owner 2026-11-22: "the gate is
+// usually before any eq and compression. Low Cut as well"): Source → Low Cut →
+// Gate → EQ → Comp → Distortion → Modulation → Delay → Reverb → Stereo →
+// Limiter → Output. Low cut first, so rumble neither opens the gate nor drives
+// the compressor; the gate before EQ and compression, so an EQ boost or the
+// compressor's make-up gain never lifts the noise the gate keys on. (Engines
+// 6–10 ran EQ → Comp → Gate → …; a node's own sound is unchanged.) Every node
+// is bypassable; a single-effect lab enables just one; the Signal Chain Builder
 // enables several. anyActive() lets the output path skip everything cheaply.
 class EffectChain {
  public:
   EffectChain() : comp_(DynamicsEffect::Compressor), gate_(DynamicsEffect::GateMode),
                   limiter_(DynamicsEffect::LimiterMode) {}
   void configure(double fs) {
+    lowCut_.configure(fs);
     eq_.configure(fs);
     comp_.configure(fs);
     gate_.configure(fs);
@@ -742,15 +799,16 @@ class EffectChain {
     limiter_.configure(fs);
   }
   bool anyActive() const {
-    return eq_.enabled() || comp_.enabled() || gate_.enabled() || dist_.enabled() ||
-           mod_.enabled() || delay_.enabled() || reverb_.enabled() || stereo_.enabled() ||
-           limiter_.enabled();
+    return lowCut_.enabled() || eq_.enabled() || comp_.enabled() || gate_.enabled() ||
+           dist_.enabled() || mod_.enabled() || delay_.enabled() || reverb_.enabled() ||
+           stereo_.enabled() || limiter_.enabled();
   }
   void processStereo(float* L, float* R, uint32_t n) {
     if (!anyActive()) return;
+    lowCut_.processStereo(L, R, n);
+    gate_.processStereo(L, R, n);
     eq_.processStereo(L, R, n);
     comp_.processStereo(L, R, n);
-    gate_.processStereo(L, R, n);
     dist_.processStereo(L, R, n);
     mod_.processStereo(L, R, n);
     delay_.processStereo(L, R, n);
@@ -770,12 +828,13 @@ class EffectChain {
       case fx::Reverb: reverb_.setParam(paramId, v); break;
       case fx::Stereo: stereo_.setParam(paramId, v); break;
       case fx::Limiter: limiter_.setParam(paramId, v); break;
+      case fx::LowCut: lowCut_.setParam(paramId, v); break;
       default: break;
     }
   }
   /// Disable every node (a lab's stop path — leaves no effect armed).
   void reset() {
-    for (int id = fx::Eq; id <= fx::Limiter; ++id) set(id, 0, 0.0);
+    for (int id = fx::Eq; id <= fx::kLastId; ++id) set(id, 0, 0.0);
   }
   /// Live gain-reduction readout [compGr, gateGr, limiterGr] (dB) — honest meters.
   void grStatus(double out[3]) const {
@@ -786,6 +845,7 @@ class EffectChain {
   EqEffect& eq() { return eq_; }
 
  private:
+  LowCutEffect lowCut_;
   EqEffect eq_;
   DynamicsEffect comp_, gate_, limiter_;
   DistortionEffect dist_;

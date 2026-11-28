@@ -578,6 +578,12 @@ export const ApeDsp = {
   fxAvailable(): boolean {
     return this.engineVersion() >= 6;
   },
+  /** True when the chain has its dedicated LOW CUT node (FX.lowCut) and runs
+   *  LOW CUT → GATE → EQ → COMP → … (engine 11, must-do E9). Below 11 the
+   *  chain runs EQ → COMP → GATE → … and an FX.lowCut write does nothing. */
+  fxLowCutAvailable(): boolean {
+    return this.engineVersion() >= 11;
+  },
 
   // ---- Wave-2 expansion voices (engineVersion ≥ 7) ----
   /** True when the FM voice / binaural bus / modular voice exist in this
@@ -619,7 +625,10 @@ export const ApeDsp = {
   },
 };
 
-/** Effect node ids (must match apedsp::fx::Id — chain order is canonical). */
+/** Effect node ids (must match apedsp::fx::Id). A stable API: an id never
+ *  changes, and an id is NOT the processing order. Engine 11 runs the chain
+ *  lowCut → gate → eq → comp → dist → mod → delay → reverb → stereo → limiter
+ *  (FX_CHAIN_ORDER); engines 6–10 ran eq → comp → gate → … with no lowCut. */
 export const FX = {
   eq: 0,
   comp: 1,
@@ -630,7 +639,12 @@ export const FX = {
   reverb: 6,
   stereo: 7,
   limiter: 8,
+  lowCut: 9, // engine ≥ 11 — dedicated 12 dB/octave high-pass, FIRST in the chain
 } as const;
+
+/** The order the engine (≥ 11) runs the nodes in — mirrors
+ *  EffectChain::processStereo in Effects.hpp; keep in lockstep. */
+export const FX_CHAIN_ORDER = [FX.lowCut, FX.gate, FX.eq, FX.comp, FX.dist, FX.mod, FX.delay, FX.reverb, FX.stereo, FX.limiter] as const;
 
 /** Per-effect param ids (param 0 of EVERY effect = enabled 0/1). Mirrors the
  *  setParam routing in Effects.hpp — keep in lockstep. */
@@ -684,6 +698,8 @@ export const FX_PARAM = {
   invertR: 4,
   delayRms: 5,
   bassMonoHz: 6,
+  // Low cut (engine ≥ 11): the high-pass corner; the slope is fixed at 12 dB/octave
+  lowCutHz: 1,
 } as const;
 
 /** EQ band type values (EqEffect::BandType). */

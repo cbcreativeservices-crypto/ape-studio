@@ -339,7 +339,9 @@ describe('6. every dynamics param the engine reads is written by the chain (D41 
     return new Set([...block.slice(0, block.indexOf('],')).matchAll(/param: P\.(\w+), value:/g)].map((m) => m[1]));
   };
   it('the engine facts this rests on: what each mode reads, and that reset only disables', () => {
-    assert.match(fx, /void reset\(\) \{\s*for \(int id = fx::Eq; id <= fx::Limiter; \+\+id\) set\(id, 0, 0\.0\);\s*\}/);
+    // engine 11 (must-do E9): reset walks every id up to the newest node, LOW CUT (9)
+    assert.match(fx, /void reset\(\) \{\s*for \(int id = fx::Eq; id <= fx::kLastId; \+\+id\) set\(id, 0, 0\.0\);\s*\}/);
+    assert.match(fx, /constexpr int kLastId = LowCut;/);
     // the limiter forces its own 0.1 ms attack and reads only ceiling + release
     assert.match(fx, /fx::onePole\(mode_ == LimiterMode \? 0\.1 : attackMs_\.load\(\), fs_\)/);
     assert.match(fx, /const double over = envDb - ceiling;/);
@@ -435,12 +437,17 @@ describe('6. every dynamics param the engine reads is written by the chain (D41 
   // bands 1–5 are written OFF, and an off band's freq / q / gain are never read
   for (const b of [1, 2, 3, 4, 5]) for (const f of ['freq', 'q', 'gain']) INERT[`eq:eqBand${b}.${f}`] = /const int t = bands_\[i\]\.type\.load\(std::memory_order_relaxed\);\s*if \(t == Off\) continue;/;
 
-  it('the chain enables all nine engine nodes (FULL CHAIN), so every node is covered', () => {
+  it('the chain enables all ten engine nodes (FULL CHAIN), so every node is covered', () => {
     const full = s.match(/key: 'full',[^\n]*enable: \[([^\]]+)\]/)?.[1] ?? '';
     // Owner 2026-11-22: "the gate is usually before any eq and compression. Low Cut as well (not shown currently)";
-    // LOW CUT joined the rack as its first unit, so the rack holds ten units, not nine.
-    // LOW_CUT is a rack unit carried by the EQ node (its band 5), so the engine nodes are still these nine.
-    assert.deepEqual(full.split(',').map((x) => x.trim()), ['LOW_CUT', 'FX.eq', 'FX.comp', 'FX.gate', 'FX.dist', 'FX.mod', 'FX.delay', 'FX.reverb', 'FX.stereo', 'FX.limiter']);
+    // LOW CUT joined the rack as its first unit. Must-do E9 (the 1.0.1 build, engine 11): LOW CUT is its own
+    // engine node (FX.lowCut) and the engine runs LOW CUT → GATE → EQ → COMP → …, the order listed here.
+    assert.deepEqual(full.split(',').map((x) => x.trim()), ['FX.lowCut', 'FX.gate', 'FX.eq', 'FX.comp', 'FX.dist', 'FX.mod', 'FX.delay', 'FX.reverb', 'FX.stereo', 'FX.limiter']);
+    // every engine node id in FX is lit by FULL CHAIN
+    const api = code('modules/ape-dsp/index.ts');
+    const ids = [...(api.match(/export const FX = \{([\s\S]*?)\} as const;/)?.[1] ?? '').matchAll(/^\s*(\w+): \d+,/gm)].map((m) => `FX.${m[1]}`);
+    assert.equal(ids.length, 10);
+    assert.deepEqual([...ids].sort(), full.split(',').map((x) => x.trim()).sort());
   });
   it('every param any lab or screen writes is written by the chain too (or is inert in the chain’s settings)', () => {
     const chain = chainWrites();

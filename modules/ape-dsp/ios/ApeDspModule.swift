@@ -248,6 +248,7 @@ public class ApeDspModule: Module {
       return self.core.genStatus()
     }
     // ---- Effects chain (one scalar setter for the whole roster) ----
+    // effectId = apedsp::fx::Id, passed through unchanged (LOW CUT = 9 from engine 11).
     Function("fxSet") { (effectId: Int, paramId: Int, value: Double) -> Void in
       self.core.fxSet(Int32(effectId), param: Int32(paramId), value: value)
     }

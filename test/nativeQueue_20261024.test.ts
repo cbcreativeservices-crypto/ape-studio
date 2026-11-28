@@ -23,10 +23,13 @@ const SWIFT = 'modules/ape-dsp/ios/ApeDspModule.swift';
 const KT = 'modules/ape-dsp/android/src/main/java/expo/modules/apedsp/ApeDspModule.kt';
 const JNI = 'modules/ape-dsp/android/src/main/cpp/ApeDspJni.cpp';
 
-test('engine 10 is the one version constant', () => {
+test('engine 10 is in the one version constant (engine 11, must-do E9, builds on it)', () => {
   const hub = read('modules/ape-dsp/ios/core/EngineHub.hpp');
-  assert.match(hub, /constexpr uint32_t kEngineVersion = 10;/);
+  // 11 (2026-11-27, the 1.0.1 build): the LOW CUT node and the LOW CUT → GATE → EQ → COMP order
+  // (test/chainRackTap_20261122.test.ts). Everything engine 10 added is still gated on >= 10.
+  assert.match(hub, /constexpr uint32_t kEngineVersion = 11;/);
   assert.match(hub, /\/\/\/ 10 \(2026-10-24, store-build native queue\)/);
+  assert.match(hub, /\/\/\/ 11 \(2026-11-27, 1\.0\.1 store build, must-do E9\)/);
 });
 
 test('#10 ping-pong: mono input into ONE line, repeats cross-fed; normal mode unchanged', () => {

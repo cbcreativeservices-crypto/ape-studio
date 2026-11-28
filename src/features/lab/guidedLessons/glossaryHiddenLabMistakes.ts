@@ -82,7 +82,7 @@ export const GLOSSARY_HIDDEN_LAB_MISTAKES: Readonly<Partial<Record<LabId, readon
     '“Watching the figure is enough.” Press ▶ and listen as well: the ratio that draws a steady, closed figure is the same ratio that sounds settled as two tones.',
   ],
   chain: [
-    '“This rack’s order is the right order.” It runs COMP before GATE, but most engineers gate first. Compression lifts quiet noise, so the gate, which turns down quiet sound, becomes harder to set cleanly.',
+    '“The gate can go anywhere.” Compression lifts quiet noise closer to the sound, and an EQ boost can lift hum or bleed with it, so a gate after them is harder to set cleanly. Gating early, as this rack does, is a common starting point.',
     '“Compress after the reverb and delay.” A compressor reacting to echoes and reverb tails makes them pump, rising and falling in level. Time effects usually go after dynamics, as here, or on a parallel path.',
     '“Each stage sounds better, so the chain is fine.” Louder often just sounds better. Stack hot stages and several compressors and the sound gets squashed while LIMIT overworks. Watch GR at every stage.',
   ],

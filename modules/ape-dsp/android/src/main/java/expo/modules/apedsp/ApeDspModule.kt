@@ -489,6 +489,7 @@ class ApeDspModule : Module() {
     Function("genStatus") { genStatusMap() }
 
     // ---- Effects chain (one scalar setter for the whole roster) ----
+    // effectId = apedsp::fx::Id, passed through unchanged (LOW CUT = 9 from engine 11).
     Function("fxSet") { effectId: Int, paramId: Int, value: Double ->
       if (handle != 0L) nativeFxSet(handle, effectId, paramId, value)
     }

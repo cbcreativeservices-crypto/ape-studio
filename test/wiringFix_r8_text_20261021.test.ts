@@ -201,8 +201,9 @@ describe('S3 — signal chain', () => {
 
   it('R7-SC-03: the catalog order lists every rack unit, STEREO included', () => {
     // Owner 2026-11-22: "the gate is usually before any eq and compression. Low Cut as well (not shown currently)";
-    // LOW CUT joined the rack as its first unit, so the order now starts Generator → Low Cut → EQ and counts ten units.
-    assert.match(CAT, /Generator → Low Cut → EQ → Comp → Gate → Dist → Mod → Delay → Reverb → Stereo → Limiter → Output\./);
+    // LOW CUT joined the rack as its first unit, so the order now starts Generator → Low Cut and counts ten units.
+    // Must-do E9 (the 1.0.1 build, engine 11): GATE moved ahead of EQ and COMP, in the engine and in the words.
+    assert.match(CAT, /Generator → Low Cut → Gate → EQ → Comp → Dist → Mod → Delay → Reverb → Stereo → Limiter → Output\./);
     assert.doesNotMatch(CAT, /Gate → FX → Reverb/);
   });
 });

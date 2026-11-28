@@ -48,48 +48,75 @@ test('the words on the page match what the rack now does', () => {
 
 /**
  * LOW CUT (owner 2026-11-22: "the gate is usually before any eq and compression. Low Cut as well (not shown
- * currently)"; asked how, the owner chose "Low Cut now, gate at build"). The engine's order is compiled in
- * (modules/ape-dsp/ios/core/Effects.hpp: eq, comp, gate, ...), so the gate move waits for the store build
- * (must-do E9). LOW CUT is real today: the EQ node's band 5 as a high-pass, and the EQ node runs first.
+ * currently)"; asked how, the owner chose "Low Cut now, gate at build"). The build step, must-do E9 (the
+ * owner's go 2026-11-27, "Yes, start it"): the engine has its own LOW CUT node (fx::LowCut = 9, engine 11)
+ * and runs LOW CUT → GATE → EQ → COMP → … (modules/ape-dsp/ios/core/Effects.hpp); the rack is drawn in that
+ * order. Until then (OTA, engine 10) LOW CUT rode on the EQ node's band 5 and the engine ran EQ → COMP → GATE.
  */
 const fx = readFileSync('modules/ape-dsp/ios/core/Effects.hpp', 'utf8').replace(/\r\n/g, '\n');
+const api = readFileSync('modules/ape-dsp/index.ts', 'utf8').replace(/\r\n/g, '\n');
+const ORDER = ['lowCut', 'gate', 'eq', 'comp', 'dist', 'mod', 'delay', 'reverb', 'stereo', 'limiter'];
 
-test('LOW CUT is the first unit in the rack and says what it is', () => {
+test('LOW CUT is the first unit in the rack and says what it is; GATE is second', () => {
   const mods = screen.slice(screen.indexOf('const MODULES: ChainUnit[] = ['));
-  assert.match(mods, /^const MODULES: ChainUnit\[\] = \[\r?\n  \{ id: LOW_CUT, label: 'LOW CUT', plain: 'removes rumble', setting: 'below 80 Hz'/);
+  assert.match(mods, /^const MODULES: ChainUnit\[\] = \[\n  \{ id: FX\.lowCut, label: 'LOW CUT', plain: 'removes rumble', setting: 'below 80 Hz'[^\n]*\n  \{ id: FX\.gate, label: 'GATE'/);
 });
 
-test('LOW CUT is a real filter: the EQ node\u2019s band 5 as a high-pass at 80 Hz', () => {
-  assert.match(screen, /const LOW_CUT_BAND = 5;/);
+test('the rack is drawn in the engine’s order: LOW CUT, GATE, EQ, COMP, DIST, MOD, DELAY, REVERB, STEREO, LIMIT', () => {
+  const at = screen.indexOf('const MODULES: ChainUnit[] = [');
+  const mods = screen.slice(at, screen.indexOf('];', at));
+  const drawn = [...mods.matchAll(/\{ id: FX\.(\w+), label: '[^']+'/g)].map((m) => m[1]);
+  assert.deepEqual(drawn, ORDER);
+  // the TS mirror of the engine order
+  const order = api.match(/export const FX_CHAIN_ORDER = \[([^\]]+)\]/)?.[1] ?? '';
+  assert.deepEqual(order.split(',').map((x) => x.trim().replace(/^FX\./, '')), ORDER);
+  // and the engine itself, processStereo top to bottom
+  const chain = fx.slice(fx.indexOf('class EffectChain'));
+  const body = chain.slice(chain.indexOf('void processStereo('), chain.indexOf('/// The ONE bridge setter'));
+  const ran = [...body.matchAll(/(\w+)_\.processStereo\(L, R, n\);/g)].map((m) => m[1]);
+  assert.deepEqual(ran, ORDER);
+});
+
+test('LOW CUT is its own engine node, a 12 dB/octave high-pass at 80 Hz (no longer the EQ node’s band 5)', () => {
   assert.match(screen, /const LOW_CUT_HZ = 80;/);
-  assert.match(screen, /param: P\.eqBand\(LOW_CUT_BAND, 'type'\), value: EQ_BAND_TYPES\.highPass/);
-  assert.match(screen, /param: P\.eqBand\(LOW_CUT_BAND, 'freq'\), value: LOW_CUT_HZ/);
-  // the engine builds that band as its 12 dB/octave Butterworth high-pass
+  assert.match(screen, /\[FX\.lowCut\]: \[\{ fx: FX\.lowCut, param: P\.lowCutHz, value: LOW_CUT_HZ \}\]/);
+  assert.doesNotMatch(screen, /LOW_CUT_BAND|eqNodeOps|eqNodeOn|EQ_BAND_TYPES\.highPass/);
+  // EQ band 5 is written OFF again, like bands 1–4
+  assert.match(screen, /\{ fx: FX\.eq, param: P\.eqBand\(5, 'type'\), value: EQ_BAND_TYPES\.off \}/);
+  // the new id is 9; the existing ids are unchanged
+  assert.match(api, /limiter: 8,\n  lowCut: 9,/);
+  assert.match(api, /lowCutHz: 1,/);
+  assert.match(fx, /Limiter = 8,\n  LowCut = 9,/);
+  // the node builds the same Butterworth high-pass the EQ's HighPass band uses
+  const node = fx.slice(fx.indexOf('class LowCutEffect'), fx.indexOf('class DynamicsEffect'));
+  assert.match(node, /const Biquad bq = Biquad::highpass\(freqHz_\.load\(std::memory_order_relaxed\), fs_\);/);
+  assert.match(node, /std::atomic<double> freqHz_\{80\.0\};/);
   assert.match(fx, /case HighPass: bq = Biquad::highpass\(f, fs_\); break;/);
+  assert.match(fx, /case fx::LowCut: lowCut_\.setParam\(paramId, v\); break;/);
+  // a lab's stop path disables LOW CUT too
+  assert.match(fx, /for \(int id = fx::Eq; id <= fx::kLastId; \+\+id\) set\(id, 0, 0\.0\);/);
+  assert.match(fx, /constexpr int kLastId = LowCut;/);
 });
 
-test('the drawing is true to the engine: the EQ node (LOW CUT + EQ) runs before COMP and GATE', () => {
-  const order = fx.slice(fx.indexOf('class EffectChain'));
-  const at = (name) => order.indexOf(name + '.processStereo');
-  assert.ok(at('eq_') > 0 && at('eq_') < at('comp_') && at('comp_') < at('gate_'));
+test('every unit, LOW CUT included, is switched on its own node: no shared-node special case', () => {
+  assert.match(screen, /for \(const m of MODULES\) \{\n\s*if \(!en\[m\.id\]\) continue;/);
+  assert.match(screen, /if \(running\) \{\n\s*if \(next\[id\]\) \{/);
 });
 
-test('the EQ node is on when either unit is in, and a unit that is out has its band off', () => {
-  assert.match(screen, /const eqNodeOn = \(en: Record<number, boolean>\) => !!\(en\[FX\.eq\] \|\| en\[LOW_CUT\]\);/);
-  assert.match(screen, /op\.param === shelfType && !en\[FX\.eq\] \? \{ \.\.\.op, value: EQ_BAND_TYPES\.off \}/);
-  assert.match(screen, /op\.param === cutType && !en\[LOW_CUT\] \? \{ \.\.\.op, value: EQ_BAND_TYPES\.off \}/);
-  assert.match(screen, /ApeDsp\.fxSet\(FX\.eq, 0, eqNodeOn\(next\) \? 1 : 0\);/);
-});
-
-test('the lit patches still point at the same units (each index moved up by one)', () => {
-  assert.match(screen, /key: 'bass_comp'[^\n]*hot: \[2\]/);
+test('the lit patches still point at the same units (index = the cable INTO that unit, in the new order)', () => {
+  // LOW CUT 0, GATE 1, EQ 2, COMP 3, DIST 4, MOD 5, DELAY 6, REVERB 7, STEREO 8, LIMIT 9
+  assert.match(screen, /key: 'bass_comp'[^\n]*hot: \[3\]/);
   assert.match(screen, /key: 'delay_reverb'[^\n]*hot: \[7\]/);
-  assert.match(screen, /key: 'gate_click'[^\n]*hot: \[3\]/);
-  assert.match(screen, /key: 'squash'[^\n]*hot: \[2, 9\]/);
+  assert.match(screen, /key: 'gate_click'[^\n]*hot: \[1\]/);
+  assert.match(screen, /key: 'squash'[^\n]*hot: \[3, 9\]/);
 });
 
-test('the words say ten units with LOW CUT first, and are honest about the phone speaker', () => {
-  assert.match(guide, /Ten units in a fixed order: LOW CUT, EQ, COMP, GATE/);
+test('the words say ten units, LOW CUT then GATE, and are honest about the phone speaker', () => {
+  assert.match(guide, /Ten units in a fixed order: LOW CUT, GATE, EQ, COMP/);
+  assert.match(guide, /This rack gates before EQ and COMP, a common starting point/);
+  assert.doesNotMatch(guide, /runs COMP before GATE/);
   assert.match(screen, /On the phone speaker the deep bass is already cut before the chain, so LOW CUT changes\s+little there/);
+  assert.match(screen, /GATE comes next, ahead of EQ\s+and COMP, a common starting point/);
+  assert.doesNotMatch(screen, /runs COMP before GATE/);
   assert.doesNotMatch(screen, /chainCount\}\/9/);
 });

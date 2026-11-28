@@ -137,12 +137,14 @@ describe('S3 Meter / Signal Chain / FX / Modular — guided-lesson and catalog t
   it('MET-03: the pink tilt is tied to this FFT display', () => {
     assert.match(read('src/screens/lab/meter/modules/modMeterB.tsx'), /≈ −3 dB\/oct on this FFT display/);
   });
-  it('SC-01: Comp → Gate is this rack’s fixed order', () => {
+  it('SC-01: the catalog and the lesson state this rack’s fixed order (Low Cut → Gate → EQ → Comp since E9)', () => {
     const cat = read('src/screens/lab/labCatalog.ts');
     // Owner 2026-11-22: "the gate is usually before any eq and compression. Low Cut as well (not shown currently)";
-    // LOW CUT joined the rack as its first unit, so the order now starts Generator → Low Cut → EQ and counts ten units.
-    assert.match(cat, /blurb: 'This rack’s fixed order: Generator → Low Cut → EQ → Comp → Gate/);
-    assert.match(LAB_LESSONS.chain!.whatItIs, /ten units sit in this rack’s fixed order: SRC, then LOW CUT, EQ, COMP, GATE/);
+    // LOW CUT joined the rack as its first unit, so the order now starts Generator → Low Cut and counts ten units.
+    // Must-do E9 (the 1.0.1 build, engine 11): the engine runs GATE before EQ and COMP, and the words say so.
+    assert.match(cat, /blurb: 'This rack’s fixed order: Generator → Low Cut → Gate → EQ → Comp → Dist/);
+    assert.match(LAB_LESSONS.chain!.whatItIs, /ten units sit in this rack’s fixed order: SRC, then LOW CUT, GATE, EQ, COMP, DIST/);
+    assert.doesNotMatch(cat, /EQ → Comp → Gate/);
   });
   it('FX-01: the Equalizer blurb matches the one-band lab', () => {
     const cat = read('src/screens/lab/labCatalog.ts');

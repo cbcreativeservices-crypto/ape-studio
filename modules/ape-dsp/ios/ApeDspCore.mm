@@ -420,6 +420,8 @@ NSArray<NSNumber *> *floatArray(const std::vector<float> &v) {
 }
 
 // ---- Effects chain (Pillar B labs + Signal Chain Builder) ----
+// effectId passes straight to EffectChain::set (fx::Id, incl. LowCut = 9 from
+// engine 11); fxReset disables every node, LowCut included.
 - (void)fxSet:(int)effectId param:(int)paramId value:(double)v {
   _chain->set(effectId, paramId, v);
 }

@@ -39,7 +39,8 @@ namespace apedsp {
 /// 5 = STEREO output (2-channel; mono content L==R) + stereo dual-oscillator
 /// (hard-panned L/R for stereo lab tools like the Harmonograph); 6 = the
 /// EFFECTS-PROCESSING PATH (EffectChain: EQ/comp/gate/distortion/mod/delay/
-/// reverb/stereo/limiter between the generator and the output; fxSet/fxReset/
+/// reverb/stereo/limiter between the generator and the output — reordered and
+/// given a LOW CUT node at 11; fxSet/fxReset/
 /// fxGrStatus bridge); 7 = the WAVE-2 EXPANSION voices (GenMode::Fm carrier+
 /// modulator FM via genSet; BinauralBus — 3-source simplified binaural panner,
 /// binSet/binStart/binStop; ModularVoice — VCO→VCF→VCA teaching synth,
@@ -68,7 +69,12 @@ namespace apedsp {
 /// SILENCED by another app (onInputSilenced event, API 29+); iPad capture
 /// prefers the built-in mic's omni data source. JS gates the spread sources on
 /// >= 10.
-constexpr uint32_t kEngineVersion = 10;
+/// 11 (2026-11-27, 1.0.1 store build, must-do E9): the effect chain gains a
+/// dedicated LOW CUT node (fx::LowCut = 9, a 12 dB/octave high-pass; params
+/// 0 enabled, 1 freqHz) and runs LowCut → Gate → EQ → Comp → Dist → Mod →
+/// Delay → Reverb → Stereo → Limiter (was EQ → Comp → Gate → …). The existing
+/// ids are unchanged. JS gates the LOW CUT node on >= 11.
+constexpr uint32_t kEngineVersion = 11;
 
 struct EngineConfig {
   uint32_t fftSize = 4096;      // ≤16384 (Q5 ruling)
