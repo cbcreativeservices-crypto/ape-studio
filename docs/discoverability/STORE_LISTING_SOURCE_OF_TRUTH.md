@@ -72,9 +72,9 @@ Approved copy (theme "accuracy and trust"), relayed by Comp A 2026-11-27 17:22 P
 
 The body is the same on both stores; each keeps its own SUBSCRIPTIONS section from the live listing. Source files: `Downloads/2026-11-27_COMP_A_TO_CCODE_STORE_LISTING/APPLE_DESCRIPTION_APPROVED.txt` (3,969) and `PLAY_DESCRIPTION_APPROVED.txt` (3,996).
 
-**Facts this copy states, which the app must keep true** (tell Comp A first if any changes): glossary 14 definitions a week free, guests included, searching free (`GLOSSARY_WEEKLY_LIMIT` = 14); calculators 5 a week (`CALC_WEEKLY_LIMIT` = 5); Academy members unlimited; 35,000+ terms (`academy_stats.terms` 35,145), 166 calculations, 171 topics, 36 programs; verified instructors get a class code. Checked by ccode 2026-11-27 against the code and the live `get_academy_stats()` (35,145 · 171 · 36): all match, except the one below.
+**Facts this copy states, which the app must keep true** (tell Comp A first if any changes): glossary 14 definitions a week free, guests included, searching free (`GLOSSARY_WEEKLY_LIMIT` = 14); calculators 5 a week (`CALC_WEEKLY_LIMIT` = 5); Academy members unlimited; 35,000+ terms (`academy_stats.terms` 35,145), 166 calculations, 171 topics, 36 programs; verified instructors get a class code. Checked by ccode 2026-11-27 against the code and the live `get_academy_stats()` (35,145 · 171 · 36): all match (one line corrected, below).
 
-> ⚠ **FLAG (ccode 2026-11-27, not changed, owner/Comp A to decide):** the line "Explore 20 career fields and more than 1,800 real roles with the Career Finder" — the Career Finder has **42 career families** across **18 fields** (`src/data/careerFamilies.json`, `src/features/careerfinder/families.ts`); roles total 1,896, so "more than 1,800" is true. Nothing in the app says 20.
+> ✅ **CORRECTED (owner 2026-11-27):** Comp A's copy said "Explore 20 career fields"; the Career Finder has 42 career families across 18 fields (`src/data/careerFamilies.json`), 1,896 roles. Owner ruled: **"Explore 42 career families and more than 1,800 real roles with the Career Finder"** in both descriptions (Apple 3,971 / Play 3,998 of 4,000).
 
 ### 6a. Apple
 
@@ -110,7 +110,7 @@ LEARN BY DOING
 • Master one topic at a time; quizzes unlock as you progress
 
 PLAN YOUR CAREER
-• Explore 20 career fields and more than 1,800 real roles with the Career Finder
+• Explore 42 career families and more than 1,800 real roles with the Career Finder
 • Connect with employers in the Audio Community Directory
 
 NEW TO AUDIO? Start Here: Your First Steps in Audio walks you from your very first signal to a solid foundation.
@@ -157,7 +157,7 @@ LEARN BY DOING
 • Master one topic at a time; quizzes unlock as you progress
 
 PLAN YOUR CAREER
-• Explore 20 career fields and more than 1,800 real roles with the Career Finder
+• Explore 42 career families and more than 1,800 real roles with the Career Finder
 • Connect with employers in the Audio Community Directory
 
 NEW TO AUDIO? Start Here: Your First Steps in Audio walks you from your very first signal to a solid foundation.
