@@ -703,8 +703,8 @@ needs: nothing from A. The app.json change (expo-location "always" strings to fa
 
 ### 2026-11-12 11:05 · ccode · 12ab3e8c
 changed: docs: must-do synced (Meta paused, D60 new labs) [MD:D60]
-affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
-needs: <FILL — what you need from A, or "nothing">
+affects other side: nothing on the server. For the store forms: the 1.0.1 iPhone build declares location "while using the app" only (no "always" purpose strings).
+needs: nothing.
 
 
 ### 2026-11-11 18:00 · ccode · e71732ad
