@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-27 20:51 · ccode · 08c2da47
+changed: Instructor screen: the school data statement goes live (owner-approved 2026-11-27), checked sentence by sentence against the live server [MD:E3]
+affects other side: nothing on the server (read-only check of the instructor functions). Rides the next OTA (not published) and the next merge into forum-next-build.
+needs: nothing [MD:E3].
+
+
 ### 2026-11-27 20:13 · ccode · eebca584
 changed: 1.0.1 engine 13: play a recording (clip source) through the effect chain (D16 / A15) [MD:D16] [MD:E9]
 affects other side: nothing on the server (reuses the existing lab-audio fetch). Native (engine 13), rides 1.0.1 only. Pixel check in the test build: AAC decode, loop seam, swap while playing.
@@ -750,6 +756,12 @@ needs: nothing [MD:E1].
 changed: docs/discoverability/STORE_LISTING_SOURCE_OF_TRUTH.md §4–§6 now hold the owner-approved 2026-11-27 listing word for word (Apple subtitle / promo / keywords, Play short description, both long descriptions). Facts checked against code + live get_academy_stats() (35,145 terms · 171 topics · 36 programs; 14/wk glossary, 5/wk calculators): all match EXCEPT "20 career fields" (Career Finder = 42 career families across 18 fields, 1,896 roles), FLAGGED in §6, not rewritten.
 affects other side: Comp A + owner decide the "20 career fields" line before the owner enters it in the consoles. Nothing entered in App Store Connect / Play Console. C09 CLOSED (Comp A 2026-11-27: old harness; `mbyteps` unit present, app shows 9.216 MB/s).
 needs: owner call on "20 career fields" [MD:D71].
+
+### 2026-11-27 17:37 · ccode · 17d84686
+changed: docs: store listing — owner ruled 'Explore 42 career families' (was '20 career fields'), both descriptions [MD:D71]
+affects other side: Comp A: the approved descriptions now say "Explore 42 career families" (owner ruling); console-ready copies are Downloads/2026-11-27_APPLE_DESCRIPTION_FINAL_42_FAMILIES.txt (3,971) and _PLAY_ (3,998). The owner enters them himself.
+needs: nothing [MD:D71].
+
 
 ### 2026-11-27 15:45 · ccode · OTA 17 PUBLISHED (owner: "Publish update 17")
 changed: production OTA from 7781a6df. Android group b72a3fc0-cd8e-4468-8a0c-ced93765ddd6 (update 01a21f5d, runtime a903813a, build 23); iOS group ae267bdc-68cf-4250-ab87-b933b6bb59d2 (update 01a21f63, runtime 91355451, build 39). Gate green 25,121; eol-sync 0; fingerprints MATCH both builds; sourcemaps uploaded per platform. One item: the open Glossary adopts the fresh copy the moment it is saved (header + search follow the current count, no restart). Pixel PROVEN: launch 1 downloaded 01a21f5d, launch 2 "CheckCompleteUnavailable" (running 17). iPhone/iPad check is the owner's. Undo = republish OTA 16 (Android 2927f62d / iOS 9d3a19dd).

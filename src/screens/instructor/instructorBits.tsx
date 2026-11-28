@@ -15,7 +15,7 @@ import { BACK_HIT_SLOP } from '../../components/backHitSlop';
 import { safeGoBack } from '../../lib/safeGoBack';
 import { fitValue } from '../../theme/legibility';
 import { colors, fonts } from '../../theme/tokens';
-import { CLASS_COPY, SCHOOL_DATA_STATEMENT_DRAFT, type Recency } from '../../features/instructor/classRules';
+import { CLASS_COPY, SCHOOL_DATA_STATEMENT, type Recency } from '../../features/instructor/classRules';
 import { sampleClassOn } from '../../features/instructor/sampleClass';
 
 export const IC = {
@@ -142,16 +142,15 @@ export function NeverShown() {
   );
 }
 
-/** ⚠ The student-data statement is a DRAFT awaiting the owner's wording. It
- *  draws only on the dev sample, stamped, and never in a release build. */
-export function SchoolStatementDraft() {
-  if (!sampleClassOn()) return null;
+/** The student-data statement for schools, owner-approved 2026-11-27 and
+ *  checked against the live server (see SCHOOL_DATA_STATEMENT). Every
+ *  instructor sees it under YOUR STUDENTS. */
+export function SchoolStatement() {
   return (
-    <View style={st.draft}>
-      <Text style={st.draftStamp}>DRAFT · NOT APPROVED · SAMPLE HARNESS ONLY</Text>
-      <Text style={st.draftHead}>{SCHOOL_DATA_STATEMENT_DRAFT.head}</Text>
-      {SCHOOL_DATA_STATEMENT_DRAFT.paragraphs.map((p) => (
-        <Text key={p.slice(0, 24)} style={st.draftBody}>
+    <View style={st.statement}>
+      <Text style={st.statementHead}>{SCHOOL_DATA_STATEMENT.head}</Text>
+      {SCHOOL_DATA_STATEMENT.paragraphs.map((p) => (
+        <Text key={p.slice(0, 24)} style={st.statementBody}>
           {p}
         </Text>
       ))}
@@ -248,19 +247,17 @@ export const st = StyleSheet.create({
   },
   neverHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 11.5, letterSpacing: 1.6, color: IC.red },
   neverBody: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: IC.sub },
-  draft: {
+  statement: {
     marginTop: 16,
     padding: 14,
     borderRadius: 10,
     borderWidth: 1,
-    borderStyle: 'dashed',
-    borderColor: '#c9a6ff',
-    backgroundColor: 'rgba(201,166,255,0.05)',
+    borderColor: IC.panelEdge,
+    backgroundColor: IC.panel,
     gap: 8,
   },
-  draftStamp: { fontFamily: fonts.mono, fontSize: 11, letterSpacing: 1, color: '#c9a6ff' },
-  draftHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.5, color: IC.text },
-  draftBody: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: IC.sub },
+  statementHead: { fontFamily: fonts.oswaldSemiBold, fontSize: 12, letterSpacing: 1.5, color: IC.text },
+  statementBody: { fontFamily: fonts.barlowRegular, fontSize: 13.5, lineHeight: 19, color: IC.sub },
   sample: {
     marginTop: 12,
     fontFamily: fonts.mono,

@@ -33,7 +33,7 @@ import {
   progressFromJson,
   quizScoreText,
   recencyOf,
-  SCHOOL_DATA_STATEMENT_DRAFT,
+  SCHOOL_DATA_STATEMENT,
   studentReadouts,
   topicFaceOf,
   topicsByFace,
@@ -317,11 +317,16 @@ describe('7. the dev sample never reaches a release build', () => {
     assert.match(code('src/dev/webPreviews.tsx'), /hash === '#instructorpreview'/);
   });
 
-  it('the school data statement is a DRAFT drawn only on the sample', () => {
+  it('the school data statement: owner-approved 2026-11-27, live for every instructor, no DRAFT stamp', () => {
     const bits = code('src/screens/instructor/instructorBits.tsx');
-    assert.match(bits, /export function SchoolStatementDraft\(\) \{\s*if \(!sampleClassOn\(\)\) return null;/);
-    assert.match(bits, /DRAFT · NOT APPROVED/);
-    assert.match(SCHOOL_DATA_STATEMENT_DRAFT.head, /DRAFT/);
+    assert.match(bits, /export function SchoolStatement\(\) \{\s*return \(/);
+    assert.doesNotMatch(bits, /DRAFT · NOT APPROVED|SchoolStatementDraft/);
+    assert.equal(SCHOOL_DATA_STATEMENT.head, 'STUDENT DATA, FOR SCHOOLS');
+    assert.equal(SCHOOL_DATA_STATEMENT.paragraphs.length, 4);
+    // The owner's exactness fix (2026-11-27): private.person_label = registry name, else first name + last initial.
+    assert.match(SCHOOL_DATA_STATEMENT.paragraphs[1], /^While sharing is on, the instructor sees the student’s name as it appears on their certificates \(or their first name and last initial\), their topics/);
+    assert.match(SCHOOL_DATA_STATEMENT.paragraphs[3], /^Instructor accounts are checked by the Academy before they are approved\./);
+    assert.match(code('src/screens/instructor/InstructorStudentsScreen.tsx'), /<NeverShown \/>\s*<SchoolStatement \/>/);
   });
 });
 

@@ -34,7 +34,7 @@ import {
   NeverShown,
   ReadoutWindow,
   SampleStamp,
-  SchoolStatementDraft,
+  SchoolStatement,
   SectionHead,
   st as bits,
 } from './instructorBits';
@@ -130,7 +130,7 @@ export function InstructorStudentsScreen() {
     read !== 'loading' && read.state === 'ready' ? (
       <>
         <NeverShown />
-        <SchoolStatementDraft />
+        <SchoolStatement />
       </>
     ) : null;
 

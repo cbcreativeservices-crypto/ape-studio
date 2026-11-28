@@ -400,15 +400,23 @@ export const CLASS_COPY = {
 };
 
 /**
- * ⚠ DRAFT, NOT APPROVED (must-do E3 / plan B2): the short student-data
- * statement for schools. It needs the owner's wording sign-off. Shown ONLY in
- * the dev sample harness, stamped DRAFT, and nowhere in a release build.
+ * The student-data statement for schools (must-do E3 / plan B2). APPROVED by
+ * the owner 2026-11-27, word for word, with one exactness fix he chose the
+ * same night (the name the instructor sees). Every sentence was checked that
+ * night against the live server: instructor_share_on/off (code required, one
+ * share per student, off deletes it and is logged in
+ * private.instructor_share_events), instructor_students /
+ * instructor_student_progress (exactly the fields named here; nothing else),
+ * private.person_label (registry name, else first name + last initial, else
+ * "Academy member"), employer_decide ("Instructor accounts are always checked
+ * by a person"), and no direct read on instructor_progress_shares. Change a
+ * sentence only with the owner, and re-check it against the server.
  */
-export const SCHOOL_DATA_STATEMENT_DRAFT = {
-  head: 'STUDENT DATA, FOR SCHOOLS · DRAFT',
+export const SCHOOL_DATA_STATEMENT = {
+  head: 'STUDENT DATA, FOR SCHOOLS',
   paragraphs: [
     'A student’s progress is shared with an instructor only when the student turns sharing on and enters that instructor’s code. It is off unless they turn it on, it goes to one verified instructor at a time, and the student can turn it off at any moment. Employers never see it.',
-    'While sharing is on, the instructor sees the student’s certificate name, their topics (enrolled, studied and completed, including those completed before sharing), how far they are in each study method, quiz and final exam scores with dates, their labs, the credentials they have earned, and when they last studied.',
+    'While sharing is on, the instructor sees the student’s name as it appears on their certificates (or their first name and last initial), their topics (enrolled, studied and completed, including those completed before sharing), how far they are in each study method, quiz and final exam scores with dates, their labs, the credentials they have earned, and when they last studied.',
     'The instructor never sees the student’s answers, notes, email address or private user name. When the student stops sharing, the instructor’s view of them closes at once.',
     'Instructor accounts are checked by the Academy before they are approved. Every time a student turns sharing on or off, the Academy keeps a record of it.',
   ] as readonly string[],
