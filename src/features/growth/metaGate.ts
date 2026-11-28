@@ -2,7 +2,7 @@
  * Meta measurement, the decisions (1.0.1 plan, owner-approved 2026-11-05).
  *
  * IMPORT-FREE and fully tested: everything that decides whether the Meta SDK
- * may run, when the Apple prompt may appear and what an event may carry lives
+ * may run, when the consent question may appear and what an event may carry lives
  * here, and metaMeasurement.ts only hands it the real device. A fake device
  * drives the same engine in test/metaMeasurement_20261105.test.ts.
  *
@@ -10,9 +10,9 @@
  *  • OFF BY DEFAULT. On only with the native values in this build, a device
  *    region of US, CA or AU, on a phone, AND this person's own yes on this
  *    device (owner 2026-11-05). Anything unknown is off. Until that yes, the
- *    SDK is not started and the Apple prompt does not appear.
- *  • ONE QUESTION, asked once, inside the region gate, at the same calm moment
- *    the Apple prompt waits for. No is kept and never asked again. Closing the
+ *    SDK is not started.
+ *  • ONE QUESTION, asked once, inside the region gate, at a calm moment after
+ *    the first run. No is kept and never asked again. Closing the
  *    popup without choosing saves nothing and is not asked again this launch;
  *    a later launch may ask. Settings carries the same question.
  *  • OFF MEANS OFF AT ONCE. Neither platform's SDK can be shut down once it
@@ -35,9 +35,12 @@
  *    SDK's session tracker quiet: it cannot be stopped once started, and every
  *    event it makes is dropped while the flag is off, so it cannot count an
  *    open twice or log one after a turn-off.
- *  • After a yes, iOS asks once, at a calm moment after the first run, and only
- *    if iOS has never been asked. After a no, it never asks. "Denied" just
- *    means no IDFA, and the same events go out with limited data.
+ *  • NO APPLE TRACKING PROMPT, EVER (owner 2026-11-27, "Yes, drop it"). iOS
+ *    runs with tracking off: App Tracking Transparency is never requested,
+ *    advertiser-ID collection is off (here and in Info.plist via app.config.js),
+ *    and the advertiser-tracking flag is false (read only on iOS 14 to 16;
+ *    FBSDK 17+ on iOS 17+ takes ATT's own status, which stays "not determined",
+ *    so no IDFA). The same events go out with limited data. Android unchanged.
  *  • Nothing starts while a member gate is unsettled or a popup is up.
  *
  * No feature reads the answer: the only way out of this file is the phase, and
@@ -77,7 +80,7 @@ export function realActivateReportsOpen(platform: string): boolean {
 
 /** Meta's session rule of thumb: a return within a minute is the same open. */
 export const OPEN_GAP_MS = 60_000;
-/** How long the screen must stay quiet before either question appears: long
+/** How long the screen must stay quiet before the question appears: long
  *  enough for a welcome popup or a reminder that was about to open. */
 export const CALM_DWELL_MS = 20_000;
 export const CALM_CHECK_MS = 5_000;
@@ -85,7 +88,7 @@ export const CALM_CHECK_MS = 5_000;
 export const MAX_CALM_CHECKS = 120;
 export const START_RETRY_MS = 2_000;
 export const MAX_START_CHECKS = 150;
-/** Neither question appears on the first app open. */
+/** The question never appears on the first app open. */
 export const FIRST_ASK_SESSION = 2;
 /** Purchases held for a start still under way. */
 export const MAX_QUEUED_PURCHASES = 3;
@@ -191,14 +194,6 @@ export type FbLogger = {
   setFlushBehavior(behavior: 'auto' | 'explicit_only'): void;
 };
 
-/** expo-tracking-transparency 57. */
-export type TrackingAnswer = { granted: boolean; status: string };
-export type TrackingApi = {
-  isAvailable(): boolean;
-  getTrackingPermissionsAsync(): Promise<TrackingAnswer>;
-  requestTrackingPermissionsAsync(): Promise<TrackingAnswer>;
-};
-
 /** What the phone holds. Only 'yes' lets Meta run, and only 'unset' may be
  *  asked: 'unreadable' might be a No nobody can see. */
 export type ConsentRead = 'yes' | 'no' | 'unset' | 'unreadable';
@@ -220,7 +215,6 @@ export type MetaDevice = {
   /** Evaluating the library's logger creates its native module, so this comes
    *  only after the SDK is initialized (Android throws otherwise). */
   loadLogger(): FbLogger | null;
-  loadTracking(): TrackingApi | null;
   /** App opens on this device, this one included. Null: storage unreadable. */
   appSessions(): Promise<number | null>;
   /** This person's answer on this device. */
@@ -267,7 +261,6 @@ export function createMetaEngine(device: MetaDevice): MetaEngine {
   /** Bumped by every stop and every change of answer: work that began before
    *  one lands nowhere. */
   let startRun = 0;
-  let trackingRun = 0;
   let consentRun = 0;
 
   const turnOff = () => {
@@ -283,7 +276,6 @@ export function createMetaEngine(device: MetaDevice): MetaEngine {
   const stopNow = () => {
     queued = [];
     startRun += 1;
-    trackingRun += 1;
     if (phase === 'off' || phase === 'idle') return;
     phase = 'idle';
     try {
@@ -312,16 +304,7 @@ export function createMetaEngine(device: MetaDevice): MetaEngine {
     return allowed;
   };
 
-  /** "Ask App Not to Track": no IDFA and limited data, the app unchanged. */
-  const applyTrackingAnswer = (granted: boolean) => {
-    if (!settings || phase !== 'on') return;
-    settings.setAdvertiserIDCollectionEnabled(granted);
-    // Only iOS 16 still reads this flag: from iOS 17 FBSDK 17+ takes the
-    // answer from ATTrackingManager itself.
-    void settings.setAdvertiserTrackingEnabled(granted).catch(() => {});
-  };
-
-  /** The quiet spell both questions wait for. */
+  /** The quiet spell the question waits for. */
   const whenCalm = (wanted: () => boolean, run: () => void) => {
     let checks = 0;
     let quietSince: number | null = null;
@@ -345,27 +328,6 @@ export function createMetaEngine(device: MetaDevice): MetaEngine {
       device.after(CALM_CHECK_MS, check);
     };
     device.after(CALM_CHECK_MS, check);
-  };
-
-  const startTracking = async () => {
-    const run = trackingRun;
-    const tracking = device.loadTracking();
-    if (!tracking || !tracking.isAvailable()) return;
-    const current = await tracking.getTrackingPermissionsAsync();
-    applyTrackingAnswer(current.granted === true && current.status === 'granted');
-    // iOS itself remembers the answer: asked once, ever.
-    if (current.status !== 'undetermined') return;
-    const opens = await device.appSessions();
-    if (opens === null || opens < FIRST_ASK_SESSION) return; // the first run stays free of it
-    whenCalm(
-      () => phase === 'on' && run === trackingRun,
-      () => {
-        tracking
-          .requestTrackingPermissionsAsync()
-          .then((answer) => applyTrackingAnswer(answer.granted === true))
-          .catch(() => {});
-      },
-    );
   };
 
   const send = (note: PurchaseNote) => {
@@ -407,8 +369,13 @@ export function createMetaEngine(device: MetaDevice): MetaEngine {
         if (platform === 'ios') settings.initializeSDK();
         settings.setAutoLogAppEventsEnabled(false);
       }
-      // iOS collects nothing until the Apple answer says it may (startTracking).
       if (platform === 'android') settings?.setAdvertiserIDCollectionEnabled(true);
+      else {
+        // iOS: tracking off, and the Apple prompt is never requested (owner
+        // 2026-11-27). The flag below is read only on iOS 14 to 16.
+        settings?.setAdvertiserIDCollectionEnabled(false);
+        void settings?.setAdvertiserTrackingEnabled(false).catch(() => {});
+      }
       if (resuming) logger?.setFlushBehavior('auto');
       else logger = device.loadLogger();
       if (!logger) return turnOff();
@@ -417,7 +384,6 @@ export function createMetaEngine(device: MetaDevice): MetaEngine {
       const held = queued;
       queued = [];
       held.forEach(send);
-      if (platform === 'ios') await startTracking();
     } catch {
       // A failed start is the same as off: the app never hears about it.
       if (run === startRun && phase !== 'on') turnOff();

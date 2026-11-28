@@ -4,8 +4,8 @@
  * real account wipe run on a fake AsyncStorage.
  *
  * The rules: off for everyone until this person says yes on this device; one
- * popup, asked once, at the Apple prompt's calm moment; the Apple prompt only
- * after a yes; a Settings row that stops logging at once; a key the wipe takes;
+ * popup, asked once, at a calm moment; no Apple tracking prompt ever, and iOS
+ * runs with tracking off (owner 2026-11-27); a Settings row that stops logging at once; a key the wipe takes;
  * a failed read is off. The region gate and every older guard stay.
  */
 import assert from 'node:assert/strict';
@@ -89,7 +89,6 @@ type MetaDevice = import('../src/features/growth/metaGate.ts').MetaDevice;
 type CalmFacts = import('../src/features/growth/metaGate.ts').CalmFacts;
 type ConsentChoice = import('../src/features/growth/metaGate.ts').ConsentChoice;
 type ConsentRead = import('../src/features/growth/metaGate.ts').ConsentRead;
-type TrackingAnswer = import('../src/features/growth/metaGate.ts').TrackingAnswer;
 
 const KEY = 'ape:metaConsent';
 const walk = (dir: string, out: string[] = []): string[] => {
@@ -123,7 +122,6 @@ function phone(
     region?: string | null;
     appSessions?: number | null;
     calm?: Partial<CalmFacts>;
-    tracking?: TrackingAnswer;
     saveOk?: boolean;
     /** How the popup gets answered; left undefined it stays up, unanswered. */
     choice?: ConsentChoice;
@@ -177,14 +175,6 @@ function phone(
         setFlushBehavior: (b) => void calls.push(['flushBehavior', b]),
       };
     },
-    loadTracking: () => ({
-      isAvailable: () => true,
-      getTrackingPermissionsAsync: async () => over.tracking ?? { granted: false, status: 'undetermined' },
-      requestTrackingPermissionsAsync: async () => {
-        calls.push(['applePrompt']);
-        return { granted: true, status: 'granted' };
-      },
-    }),
     appSessions: async () => (over.appSessions === undefined ? 3 : over.appSessions),
     readConsent: async () => {
       calls.push(['readConsent']);
@@ -233,12 +223,11 @@ function phone(
 }
 
 describe('off by default', () => {
-  it('a fresh phone in a Meta region starts nothing and shows no Apple prompt', async () => {
+  it('a fresh phone in a Meta region starts nothing', async () => {
     const p = phone();
     p.engine.noteMemberGate('open');
     await p.pass(600_000);
     assert.equal(p.sdkTouched(), false);
-    assert.equal(p.count('applePrompt'), 0);
     assert.notEqual(p.engine.phase(), 'on');
   });
 
@@ -263,7 +252,7 @@ describe('off by default', () => {
 });
 
 describe('no prompt or start before a yes', () => {
-  it('the popup comes before anything from Meta, and the Apple prompt after the yes', async () => {
+  it('the popup comes before anything from Meta; after the yes iOS stays tracking-off', async () => {
     const p = phone({ choice: 'yes' });
     p.engine.noteMemberGate('open');
     await p.pass(LONG);
@@ -273,8 +262,8 @@ describe('no prompt or start before a yes', () => {
     assert.ok(names.indexOf('saveConsent') < names.indexOf('initNative'));
     assert.equal(p.engine.phase(), 'on');
     await p.pass(LONG);
-    assert.ok(names.indexOf('popup') < p.calls.map((c) => c[0]).indexOf('applePrompt'));
-    assert.equal(p.count('applePrompt'), 1);
+    assert.ok(!p.calls.some((c) => (c[0] === 'adId' || c[0] === 'ate') && c[1] === true), 'no IDFA on iOS');
+    assert.equal(p.count('popup'), 1, 'one question only: ours');
   });
 
   it('a purchase from before the yes is not sent after it', async () => {
@@ -310,7 +299,6 @@ describe('no prompt or start before a yes', () => {
     await p.pass(LONG * 2);
     assert.equal(p.count('saveConsent'), 1);
     assert.equal(p.sdkTouched(), false);
-    assert.equal(p.count('applePrompt'), 0);
   });
 
   it('never on the first app open, or when the count could not be read', async () => {
@@ -369,7 +357,7 @@ describe('no prompt or start before a yes', () => {
 });
 
 describe('No is permanent', () => {
-  it('saved, stays off, no Apple prompt, and no later launch asks', async () => {
+  it('saved, stays off, and no later launch asks', async () => {
     const first = phone({ choice: 'no' });
     first.engine.noteMemberGate('open');
     await first.pass(LONG);
@@ -377,7 +365,6 @@ describe('No is permanent', () => {
     assert.deepEqual(first.calls.find((c) => c[0] === 'saveConsent'), ['saveConsent', 'no']);
     await first.pass(600_000);
     assert.equal(first.sdkTouched(), false);
-    assert.equal(first.count('applePrompt'), 0);
 
     for (let launch = 0; launch < 3; launch += 1) {
       const next = phone({ saved: first.saved });
@@ -385,7 +372,6 @@ describe('No is permanent', () => {
       await next.pass(600_000);
       assert.equal(next.count('popup'), 0);
       assert.equal(next.sdkTouched(), false);
-      assert.equal(next.count('applePrompt'), 0);
     }
   });
 });
@@ -401,7 +387,6 @@ describe('closing the popup without a choice', () => {
     await p.pass(600_000);
     assert.equal(p.count('popup'), 1);
     assert.equal(p.sdkTouched(), false);
-    assert.equal(p.count('applePrompt'), 0);
     assert.equal(p.saved.value, 'unset');
   });
 
@@ -437,7 +422,7 @@ describe('closing the popup without a choice', () => {
 
 describe('Settings off stops events', () => {
   async function running(platform = 'ios') {
-    const p = phone({ saved: { value: 'yes' }, platform, tracking: { granted: true, status: 'granted' } });
+    const p = phone({ saved: { value: 'yes' }, platform });
     p.engine.noteMemberGate('open');
     await p.settle();
     assert.equal(p.engine.phase(), 'on');
@@ -466,13 +451,13 @@ describe('Settings off stops events', () => {
     }
   });
 
-  it('a late Apple answer cannot turn ad id collection back on', async () => {
+  it('after a switch-off nothing turns ad id collection back on', async () => {
     const p = phone({ saved: { value: 'yes' } });
     p.engine.noteMemberGate('open');
     await p.settle();
     p.engine.withdrawConsent();
     await p.pass(600_000);
-    assert.equal(p.count('applePrompt'), 0, 'the waiting prompt is called off');
+    assert.ok(!p.calls.some((c) => c[0] === 'adId' && c[1] === true));
     assert.deepEqual(p.calls.filter((c) => c[0] === 'adId').at(-1), ['adId', false]);
   });
 

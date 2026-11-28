@@ -37,7 +37,6 @@ import {
   type MemberGateState,
   type MetaDevice,
   type PurchaseNote,
-  type TrackingApi,
 } from './metaGate';
 
 /** The Region setting (Language & Region on iOS, Region on Android), which the
@@ -87,7 +86,6 @@ const device: MetaDevice = {
   activateApp: activateMetaApp,
   loadSettings: () => libDefault<FbSettings>('react-native-fbsdk-next/lib/commonjs/FBSettings'),
   loadLogger: () => libDefault<FbLogger>('react-native-fbsdk-next/lib/commonjs/FBAppEventsLogger'),
-  loadTracking: () => optionalModule<TrackingApi>('expo-tracking-transparency'),
   appSessions: appSessionCount,
   readConsent: readMetaConsent,
   saveConsent: saveMetaConsent,

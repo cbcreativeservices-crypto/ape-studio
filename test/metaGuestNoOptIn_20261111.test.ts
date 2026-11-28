@@ -66,7 +66,6 @@ function phone(saved: ConsentRead = 'unset') {
         setFlushBehavior: () => {},
       };
     },
-    loadTracking: () => null,
     appSessions: async () => 3,
     readConsent: async () => store.value,
     saveConsent: async (answer) => {

@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-27 20:13 · ccode · eebca584
+changed: 1.0.1 engine 13: play a recording (clip source) through the effect chain (D16 / A15) [MD:D16] [MD:E9]
+affects other side: nothing on the server (reuses the existing lab-audio fetch). Native (engine 13), rides 1.0.1 only. Pixel check in the test build: AAC decode, loop seam, swap while playing.
+needs: nothing [MD:D16].
+
+
 ### 2026-11-27 19:09 · ccode · 477b05da
 changed: 1.0.1 Signal Chain: LOW CUT → GATE → EQ → COMP in the engine (owner 2026-11-22 "gate at build"; go 2026-11-27) [MD:E9]
 affects other side: nothing on the server. Native change (engine 11, new effect id 9): fingerprint moves, so this rides 1.0.1 only. A dev client with engine ≤10 runs the old order while the screen draws the new one (store users are protected by the runtime version).

@@ -5,7 +5,7 @@
  * before a yes is test/metaConsent_20261105 (owner 2026-11-05).
  */
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { describe, it } from 'node:test';
@@ -27,7 +27,6 @@ import {
   type CalmFacts,
   type MemberGateState,
   type MetaDevice,
-  type TrackingAnswer,
 } from '../src/features/growth/metaGate.ts';
 import {
   isRenewalDelivery,
@@ -60,8 +59,6 @@ function phone(over: {
   region?: string | null;
   nativeValuesPresent?: boolean;
   telemetryEnabled?: boolean;
-  tracking?: TrackingAnswer | null;
-  answer?: TrackingAnswer;
   appSessions?: number | null;
   calm?: Partial<CalmFacts>;
   initOk?: boolean;
@@ -72,7 +69,6 @@ function phone(over: {
   const timers: { at: number; run: () => void }[] = [];
   let clock = 1_000_000;
   const facts = { calm: { ...CALM, ...over.calm } };
-  const trackingAnswer = over.tracking === undefined ? ({ granted: false, status: 'undetermined' } as TrackingAnswer) : over.tracking;
   const device: MetaDevice = {
     gateFacts: () => ({
       platform: over.platform ?? 'ios',
@@ -110,17 +106,6 @@ function phone(over: {
         setFlushBehavior: (b) => void calls.push(['flushBehavior', b]),
       };
     },
-    loadTracking: () =>
-      trackingAnswer === null
-        ? null
-        : {
-            isAvailable: () => true,
-            getTrackingPermissionsAsync: async () => trackingAnswer,
-            requestTrackingPermissionsAsync: async () => {
-              calls.push(['ask']);
-              return over.answer ?? { granted: true, status: 'granted' };
-            },
-          },
     appSessions: async () => (over.appSessions === undefined ? 3 : over.appSessions),
     readConsent: async () => 'yes',
     saveConsent: async () => true,
@@ -287,7 +272,7 @@ describe('nothing starts during a member gate', () => {
 
 describe('what reaches Meta', () => {
   it('iOS start order: initialize, auto logging off, then the logger, then one activate', async () => {
-    const p = phone({ tracking: { granted: false, status: 'denied' } });
+    const p = phone({});
     p.engine.noteMemberGate('open');
     await p.settle();
     const n = p.names();
@@ -305,11 +290,12 @@ describe('what reaches Meta', () => {
     assert.ok(n.indexOf('initNative') < n.indexOf('loadLogger'));
     assert.ok(!n.includes('initializeSDK'), 'on Android it only sets a flag');
     assert.deepEqual(p.calls.find((c) => c[0] === 'adId'), ['adId', true]);
-    assert.ok(!n.includes('ask'));
+    assert.ok(!p.calls.some((c) => c[0] === 'adId' && c[1] === false), 'Android collection is not turned off at start');
+    assert.ok(!p.calls.some((c) => c[0] === 'ate'), 'the iOS-only flag is never touched on Android');
   });
 
   it('a purchase carries the amount, the currency and the plan, and nothing else', async () => {
-    const p = phone({ tracking: { granted: true, status: 'granted' } });
+    const p = phone({});
     p.engine.noteMemberGate('open');
     await p.settle();
     const note = {
@@ -396,7 +382,7 @@ describe("Meta's real activate call (Option A, owner 2026-11-05)", () => {
   const real = (p: { calls: Call[] }) => p.calls.filter((c) => c[0] === 'activate').length;
 
   it('iOS: the real call reports the open, so the plain event never goes', async () => {
-    const p = phone({ tracking: { granted: false, status: 'denied' } });
+    const p = phone({});
     p.engine.noteMemberGate('open');
     await p.settle();
     assert.equal(real(p), 1);
@@ -429,7 +415,7 @@ describe("Meta's real activate call (Option A, owner 2026-11-05)", () => {
   });
 
   it('iOS, a build without the call: exactly one plain event, as before', async () => {
-    const p = phone({ activate: false, tracking: { granted: false, status: 'denied' } });
+    const p = phone({ activate: false });
     p.engine.noteMemberGate('open');
     await p.settle();
     assert.equal(p.engine.phase(), 'on');
@@ -437,7 +423,7 @@ describe("Meta's real activate call (Option A, owner 2026-11-05)", () => {
   });
 
   it('a native call that blows up is the plain event, and Meta stays up', async () => {
-    const p = phone({ activate: 'throws', tracking: { granted: false, status: 'denied' } });
+    const p = phone({ activate: 'throws' });
     p.engine.noteMemberGate('open');
     await p.settle();
     assert.equal(p.engine.phase(), 'on');
@@ -511,107 +497,51 @@ describe("Meta's real activate call (Option A, owner 2026-11-05)", () => {
   });
 });
 
-describe('the Apple prompt', () => {
-  it('asks once, on a later run, after a quiet spell on Home', async () => {
+describe('no Apple tracking prompt, ever (owner 2026-11-27)', () => {
+  const walk = (dir: string, out: string[] = []): string[] => {
+    for (const name of readdirSync(dir)) {
+      const p = join(dir, name);
+      if (statSync(p).isDirectory()) walk(p, out);
+      else if (/\.(tsx?|jsx?)$/.test(name)) out.push(p);
+    }
+    return out;
+  };
+
+  it('iOS: tracking off right after init, before the logger, and never on', async () => {
     const p = phone({});
     p.engine.noteMemberGate('open');
     await p.settle();
-    assert.ok(!p.names().includes('ask'), 'never at the start itself');
-    await p.pass(CALM_DWELL_MS - CALM_CHECK_MS);
-    assert.ok(!p.names().includes('ask'), 'not before the dwell');
-    await p.pass(CALM_DWELL_MS);
-    assert.equal(p.calls.filter((c) => c[0] === 'ask').length, 1);
+    assert.equal(p.engine.phase(), 'on');
+    const n = p.names();
+    assert.deepEqual(p.calls.find((c) => c[0] === 'adId'), ['adId', false]);
+    assert.deepEqual(p.calls.find((c) => c[0] === 'ate'), ['ate', false]);
+    assert.ok(n.indexOf('initializeSDK') < n.indexOf('adId'));
+    assert.ok(n.indexOf('adId') < n.indexOf('loadLogger'));
     await p.pass(600_000);
-    assert.equal(p.calls.filter((c) => c[0] === 'ask').length, 1);
+    assert.ok(!p.calls.some((c) => (c[0] === 'adId' || c[0] === 'ate') && c[1] !== false), 'nothing ever turns it on');
   });
 
-  it('never on the first run, or when storage could not say', async () => {
-    for (const appSessions of [0, 1, null]) {
-      const p = phone({ appSessions });
-      p.engine.noteMemberGate('open');
-      await p.settle();
-      await p.pass(600_000);
-      assert.ok(!p.names().includes('ask'), String(appSessions));
-      assert.equal(p.engine.phase(), 'on', 'the events do not wait for it');
-    }
-  });
-
-  for (const [what, calm] of [
-    ['a popup', { modalsPresented: 1 }],
-    ['a popup fading out', { modalHoldMs: 300 }],
-    ['anywhere but Home (a lab, an intro video)', { onHome: false }],
-    ['a lab preview', { labPreviewOpen: true }],
-    ['the microphone in use', { micActive: true }],
-    ['the app in the background', { appActive: false }],
-  ] as [string, Partial<CalmFacts>][]) {
-    it(`not during ${what}`, async () => {
-      assert.equal(isCalmNow('open', { ...CALM, ...calm }), false);
-      const p = phone({});
-      p.engine.noteMemberGate('open');
-      await p.settle();
-      Object.assign(p.facts.calm, calm);
-      await p.pass(600_000);
-      assert.ok(!p.names().includes('ask'));
-    });
-  }
-
-  it('a popup in the quiet spell restarts the wait', async () => {
-    const p = phone({});
-    p.engine.noteMemberGate('open');
-    await p.pass(CALM_DWELL_MS - CALM_CHECK_MS);
-    p.facts.calm.modalsPresented = 1;
-    await p.pass(CALM_CHECK_MS);
-    p.facts.calm.modalsPresented = 0;
-    await p.pass(CALM_DWELL_MS - CALM_CHECK_MS);
-    assert.ok(!p.names().includes('ask'));
-    await p.pass(CALM_DWELL_MS);
-    assert.ok(p.names().includes('ask'));
-  });
-
-  it('not during a member gate that comes back mid-wait', async () => {
+  it('iOS: the same events still go out, with tracking off', async () => {
     const p = phone({});
     p.engine.noteMemberGate('open');
     await p.settle();
-    p.engine.noteMemberGate('checking');
-    await p.pass(120_000);
-    assert.ok(!p.names().includes('ask'));
-  });
-
-  it('iOS already answered: never asks, and honours the answer', async () => {
-    for (const [status, granted] of [
-      ['denied', false],
-      ['granted', true],
-    ] as [string, boolean][]) {
-      const p = phone({ tracking: { granted, status } });
-      p.engine.noteMemberGate('open');
-      await p.pass(600_000);
-      assert.ok(!p.names().includes('ask'));
-      assert.deepEqual(p.calls.find((c) => c[0] === 'adId'), ['adId', granted]);
-      assert.deepEqual(p.calls.find((c) => c[0] === 'ate'), ['ate', granted]);
-    }
-  });
-
-  it('denied at the prompt: no ad id, and the same events keep going', async () => {
-    const p = phone({ answer: { granted: false, status: 'denied' } });
-    p.engine.noteMemberGate('open');
-    await p.settle();
-    await p.pass(CALM_DWELL_MS * 2);
-    assert.ok(p.names().includes('ask'));
-    assert.ok(!p.calls.some((c) => c[0] === 'adId' && c[1] === true));
     p.engine.notePurchase({ plan: 'annual', amount: 59.99, currency: 'USD' });
+    assert.equal(p.calls.filter((c) => c[0] === 'activate').length, 1);
     assert.equal(p.calls.filter((c) => c[0] === 'purchase').length, 1);
   });
 
-  it('allowed at the prompt turns ad id collection on', async () => {
-    const p = phone({});
+  it('Android unchanged: ad id collection on after the yes, nothing iOS-only', async () => {
+    const p = phone({ platform: 'android' });
     p.engine.noteMemberGate('open');
     await p.settle();
-    await p.pass(CALM_DWELL_MS * 2);
-    assert.deepEqual(p.calls.filter((c) => c[0] === 'adId').at(-1), ['adId', true]);
+    assert.deepEqual(p.calls.filter((c) => c[0] === 'adId'), [['adId', true]]);
+    assert.ok(!p.names().includes('ate'));
   });
 
-  it('no feature can read the answer', () => {
-    assert.ok(!/export function \w*[Tt]racking/.test(code('src/features/growth/metaMeasurement.ts')));
+  it('the device has no tracking hook, and no feature can read an answer', () => {
+    const m = code('src/features/growth/metaMeasurement.ts');
+    assert.ok(!/loadTracking|TrackingApi/.test(m + code('src/features/growth/metaGate.ts')));
+    assert.ok(!/export function \w*[Tt]racking/.test(m));
     assert.deepEqual(Object.keys(phone({}).engine).sort(), [
       'noteAppOpen',
       'noteConsentWiped',
@@ -623,13 +553,48 @@ describe('the Apple prompt', () => {
     ]);
   });
 
-  it('the wording is the approved Option A, exactly', () => {
-    const plugins = JSON.parse(read('app.json')).expo.plugins as unknown[];
-    const tt = plugins.find((p) => Array.isArray(p) && p[0] === 'expo-tracking-transparency') as [string, { userTrackingPermission: string }];
-    assert.equal(
-      tt[1].userTrackingPermission,
-      'This helps us see whether our ads brought you to the app. Your lesson progress and study data are not used for this.',
-    );
+  it('the calm moment the consent question waits for (kept from the old prompt tests)', () => {
+    assert.ok(CALM_DWELL_MS > CALM_CHECK_MS);
+    assert.equal(isCalmNow('open', CALM), true);
+    for (const calm of [
+      { modalsPresented: 1 },
+      { modalHoldMs: 300 },
+      { onHome: false },
+      { labPreviewOpen: true },
+      { micActive: true },
+      { appActive: false },
+    ] as Partial<CalmFacts>[]) {
+      assert.equal(isCalmNow('open', { ...CALM, ...calm }), false, JSON.stringify(calm));
+    }
+    assert.equal(isCalmNow('checking', CALM), false);
+  });
+
+  it('nothing in src requests tracking or loads expo-tracking-transparency', () => {
+    for (const f of walk(join(ROOT, 'src'))) {
+      const src = readFileSync(f, 'utf8');
+      assert.ok(!/requestTrackingPermissions|getTrackingPermissions|expo-tracking-transparency|ATTrackingManager/.test(src), f);
+    }
+  });
+
+  it('the package is gone, and app.json ships no tracking string', () => {
+    const pkg = JSON.parse(read('package.json'));
+    assert.ok(!('expo-tracking-transparency' in (pkg.dependencies ?? {})));
+    assert.ok(!('expo-tracking-transparency' in (pkg.devDependencies ?? {})));
+    const app = read('app.json');
+    assert.ok(!app.includes('expo-tracking-transparency'));
+    assert.ok(!app.includes('NSUserTrackingUsageDescription'));
+    assert.ok(!app.includes('userTrackingPermission'));
+  });
+
+  it("the Meta plugin writes no tracking string and FacebookAdvertiserIDCollectionEnabled = false", () => {
+    const ios = require_('react-native-fbsdk-next/plugin/build/withFacebookIOS');
+    const props = { advertiserIDCollectionEnabled: false, iosUserTrackingPermission: false };
+    const cfg = { ios: { infoPlist: {} as Record<string, unknown> } };
+    assert.deepEqual(ios.withUserTrackingPermission(cfg, props).ios.infoPlist, {});
+    assert.deepEqual(ios.setFacebookAdvertiserIDCollectionEnabled(props, {}), { FacebookAdvertiserIDCollectionEnabled: false });
+    const src = code('app.config.js');
+    assert.match(src, /advertiserIDCollectionEnabled: false/);
+    assert.match(src, /iosUserTrackingPermission: false/);
   });
 });
 

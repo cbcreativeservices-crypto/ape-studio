@@ -74,7 +74,6 @@ const LOADERS: Record<string, () => unknown> = {
   // root evaluates every native module at once, and FBAppEventsLogger throws on
   // Android until the SDK is initialized (see growth/metaMeasurement.ts).
   'expo-localization': () => require('expo-localization'),
-  'expo-tracking-transparency': () => require('expo-tracking-transparency'),
   'react-native-fbsdk-next/lib/commonjs/FBSettings': () => require('react-native-fbsdk-next/lib/commonjs/FBSettings'),
   'react-native-fbsdk-next/lib/commonjs/FBAppEventsLogger': () =>
     require('react-native-fbsdk-next/lib/commonjs/FBAppEventsLogger'),

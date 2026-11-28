@@ -191,12 +191,6 @@
           "supportsPictureInPicture": false
         }
       ],
-      [
-        "expo-tracking-transparency",
-        {
-          "userTrackingPermission": "This helps us see whether our ads brought you to the app. Your lesson progress and study data are not used for this."
-        }
-      ],
       "expo-localization",
       [
         "expo-location",

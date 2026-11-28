@@ -34,7 +34,11 @@ module.exports = ({ config }) => {
                 autoLogAppEventsEnabled: false,
                 advertiserIDCollectionEnabled: false,
                 isAutoInitEnabled: false,
-                // expo-tracking-transparency in app.json owns the wording.
+                // No Apple tracking prompt, ever (owner 2026-11-27): false
+                // writes no NSUserTrackingUsageDescription. The flag above
+                // writes FacebookAdvertiserIDCollectionEnabled = false (iOS
+                // Info.plist and the Android manifest; Android turns it on at
+                // run time after the person's yes).
                 iosUserTrackingPermission: false,
               },
             ],
