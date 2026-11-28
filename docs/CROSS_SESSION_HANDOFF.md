@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-28 09:43 · ccode · a36fc6a3
+changed: docs: must-do D90 — spring 2027 build list (real MIDI keyboard, network-device discovery, Xcode 27/scene support, effects drift fix); 1.0.1 gets the significant-change tool + sdk-57 image (owner 2026-11-28) [MD:D90]
+affects other side: <FILL — what A (backend) must re-read or adjust, or "nothing">
+needs: <FILL — what you need from A, or "nothing">
+
+
 ### 2026-11-28 08:50 · ccode · be278fba
 changed: docs: must-do D89 — Grounding & Safety lab, first after the 1.0.1 upload; not begun (owner 2026-11-28) [MD:D89]
 affects other side: nothing now. Grounding & Safety lab (D89) starts only after the 1.0.1 upload; it reinforces Pro Audio Safety + Grounding & Electrical.

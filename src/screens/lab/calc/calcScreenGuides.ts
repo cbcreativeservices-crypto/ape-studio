@@ -31,7 +31,7 @@
  */
 import { SCREEN_GUIDE_BUDGET, type ScreenGuide } from '../../../features/lab/screenGuide/types';
 import type { CalcFunction, Workspace } from './calcTypes';
-import { chainFits, type QuantityKind } from './calcUnits';
+import { aliasUnitFits, chainFits, type QuantityKind } from './calcUnits';
 import { WORKSPACES } from './registry';
 
 /** The first number YOUR ANSWER shows when every input holds its grey example
@@ -68,14 +68,14 @@ export type CalcSendTarget = 'other' | 'here' | null;
  *  (chainFits, as CalcWorkspaceScreen's INPUTS use it) run over every
  *  calculator's inputs, this calculation's own excepted. `meaning` is the
  *  answer's own tag (D41): an input takes it only when the meaning matches. */
-export function calcSendTarget(ws: Workspace, fn: CalcFunction, label: string, quantity: QuantityKind, meaning?: string): CalcSendTarget {
+export function calcSendTarget(ws: Workspace, fn: CalcFunction, label: string, quantity: QuantityKind, meaning?: string, unit?: string): CalcSendTarget {
   let here = false;
   for (const w of WORKSPACES) {
     for (const g of w.functions) {
       if (w.id === ws.id && g.key === fn.key) continue;
       for (const k of g.inputs) {
         const f = w.fields.find((x) => x.key === k);
-        if (!f || !chainFits(label, quantity, f, meaning)) continue;
+        if (!f || !chainFits(label, quantity, f, meaning) || !aliasUnitFits(unit, f)) continue;
         if (w.id !== ws.id) return 'other';
         here = true;
       }
@@ -92,12 +92,12 @@ export function calcSendTarget(ws: Workspace, fn: CalcFunction, label: string, q
 export function calcSendReach(
   ws: Workspace,
   fn: CalcFunction,
-  outputs: readonly ({ label: string } & Partial<{ value: number; quantity: QuantityKind; chainable: boolean; meaning: string }>)[],
+  outputs: readonly ({ label: string } & Partial<{ value: number; quantity: QuantityKind; chainable: boolean; meaning: string; unit: string }>)[],
 ): CalcSendTarget {
   let here = false;
   for (const o of outputs) {
     if (typeof o.value !== 'number' || !Number.isFinite(o.value) || o.chainable === false || !o.quantity) continue;
-    const t = calcSendTarget(ws, fn, o.label, o.quantity, o.meaning);
+    const t = calcSendTarget(ws, fn, o.label, o.quantity, o.meaning, o.unit);
     if (t === 'other') return 'other';
     if (t === 'here') here = true;
   }

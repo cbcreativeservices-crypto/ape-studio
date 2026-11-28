@@ -421,3 +421,59 @@ describe('follow-up 4 — the dose warning names OSHA’s impulse limit', () => 
     assert.doesNotMatch(w, /\(e\.g\. 140 dB peak\)/);
   });
 });
+
+// ── F1/F2 (owner GO 2026-11-28, relayed by Comp A after it verified K01–K12) ──
+
+describe('F1 — the FRAME RATE help lists every rate Timecode accepts', () => {
+  it('help = the TC_RATES list, the same as the refusal message', () => {
+    const fps = getWorkspace('timecode').fields.find((f: AnyObj) => f.key === 'fps');
+    assert.equal(fps.help, 'Frames per second: 23.976, 24, 25, 29.97, 30, 47.952, 48, 50, 59.94, 60, 72, 96, 100, 119.88 or 120.');
+    const list = 'Frames per second: '.length;
+    const refusal = run('timecode', 'fromFrames', { frames: 1, fps: 12.5 }).inputError as string;
+    assert.ok(refusal.includes(`${fps.help.slice(list, -1)} fps.`), 'help and refusal name the same rates');
+  });
+});
+
+const K = await import('../src/screens/lab/calc/workflowCarry.ts');
+const { WORKSPACES } = await import('../src/screens/lab/calc/registry.ts');
+describe('F2 — a plain dB SPL is never offered to the dBA-only EXPOSURE LEVEL', () => {
+  const lex = getWorkspace('dose').fields.find((f: AnyObj) => f.key === 'lex');
+  const offered = (ws: string, key: string, label: string, v: Record<string, number | number[]>) => {
+    const o = fnOf(ws, key).compute(v).find((x: AnyObj) => x.label === label);
+    assert.ok(o && 'value' in o, label);
+    return U.chainFits(o.label, o.quantity, lex, o.meaning) && U.aliasUnitFits(o.unit, lex);
+  };
+  it('lex is the only alias-only input in the lab', () => {
+    const only = (WORKSPACES as AnyObj[]).flatMap((w: AnyObj) => w.fields.filter((f: AnyObj) => U.aliasOnlyUnits(f)).map((f: AnyObj) => `${w.id}.${f.key}`));
+    assert.deepEqual(only, ['dose.lex']);
+  });
+  it('a dB SPL answer (spldist LEVEL AT d₂) is NOT offered; a dBA answer (dose Leq OVER THE INTERVALS) IS', () => {
+    assert.equal(offered('spldist', 'point', 'LEVEL AT d₂', { l1: 110, d1: 4, d2: 32 }), false);
+    assert.equal(offered('spladd', 'combine', 'COMBINED LEVEL', { levels: [90, 90] }), false);
+    assert.equal(offered('dose', 'leq', 'Leq OVER THE INTERVALS', { doseLevels: [85, 94], doseMins: [60, 60] }), true);
+  });
+  it('a saved project SPL value (no unit) is not offered to lex; still offered to a plain SPL input', () => {
+    assert.equal(U.unitFits('FOH level', 'spl', lex) && U.aliasUnitFits(undefined, lex), false);
+    const l1 = getWorkspace('spldist').fields.find((f: AnyObj) => f.key === 'l1');
+    assert.equal(U.unitFits('FOH level', 'spl', l1) && U.aliasUnitFits(undefined, l1), true);
+  });
+  it('lex still takes lex (an earlier dose step’s own EXPOSURE LEVEL); a plain SPL input does not', () => {
+    assert.equal(K.inputOfferFits('dose', lex, 'dose', lex), true);
+    const l1 = getWorkspace('spldist').fields.find((f: AnyObj) => f.key === 'l1');
+    assert.equal(K.inputOfferFits('spldist', l1, 'dose', lex), false);
+  });
+  it('every offer site applies the rule (runner ⤵ USE, project values, workspace SEND/USE, the guide’s SEND reach)', () => {
+    const run_ = read('src/screens/lab/calc/CalcWorkflowRunScreen.tsx');
+    assert.match(run_, /chainFits\(o\.label, o\.quantity, f, o\.meaning\) && aliasUnitFits\(o\.unit, f\)/);
+    assert.match(run_, /\.filter\(\(v\) => unitFits\(v\.label, v\.quantity, f\) && aliasUnitFits\(undefined, f\)\)/);
+    const ws_ = read('src/screens/lab/calc/CalcWorkspaceScreen.tsx');
+    assert.match(ws_, /chainFits\(chain\.label, chain\.quantity, f, chain\.meaning\) && aliasUnitFits\(chain\.unit, f\)/);
+    assert.match(ws_, /setChainValue\(\{ label: o\.label, quantity: o\.quantity, meaning: o\.meaning, unit: o\.unit,/);
+    assert.match(read('src/screens/lab/calc/calcScreenGuides.ts'), /!chainFits\(label, quantity, f, meaning\) \|\| !aliasUnitFits\(unit, f\)/);
+  });
+  it('the reviewed Hearing Exposure carry (step 1 LEVEL AT d₂ → step 2) is unchanged: its note asks for L₁ in dBA', () => {
+    const { computed } = finishedRun(tpl('tpl-hearing-dose'), { 0: { l1: manual('110'), d1: manual('4'), d2: manual('32') } });
+    // 110 − 20·log10(32/4) = 91.938 → carried as typed text "91.94" (fmtCarried).
+    assert.match(computed[1].effRaw.lex, /^91\.9/);
+  });
+});

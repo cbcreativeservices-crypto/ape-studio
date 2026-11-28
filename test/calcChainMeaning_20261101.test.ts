@@ -271,20 +271,20 @@ describe('every workflow template offers only physically right imports', () => {
 describe('every entry point uses the meaning rule; projects keep kind + unit', () => {
   it('workflow runner: the offer and the live import pass the answer’s meaning', () => {
     const run = src('CalcWorkflowRunScreen.tsx');
-    assert.match(run, /'value' in o && chainFits\(o\.label, o\.quantity, f, o\.meaning\) && o\.chainable !== false/);
+    assert.match(run, /'value' in o && chainFits\(o\.label, o\.quantity, f, o\.meaning\) && aliasUnitFits\(o\.unit, f\) && o\.chainable !== false/);
     // A saved run's import that no longer means the same thing reads empty.
     assert.match(src('calcUnits.ts'), /return \{ o, fits: chainFits\(o\.label, o\.quantity, f, o\.meaning\) && o\.quantity === f\.quantity \};/);
     assert.match(run, /const li = liveImport\(out, b\.source, f\);\n\s+const o = li\?\.o;\n\s+if \(o && li\?\.fits && o\.quantity === f\.quantity && Number\.isFinite\(o\.value\)\) \{/);
-    assert.match(run, /\.filter\(\(v\) => unitFits\(v\.label, v\.quantity, f\)\)/);
+    assert.match(run, /\.filter\(\(v\) => unitFits\(v\.label, v\.quantity, f\) && aliasUnitFits\(undefined, f\)\)/);
     assert.doesNotMatch(run, /chainFits\([^)]*\bv\.label/);
   });
   it('SEND →: the sent value carries its meaning, and an input checks it', () => {
     const w = src('CalcWorkspaceScreen.tsx');
-    assert.match(w, /setChainValue\(\{ label: o\.label, quantity: o\.quantity, meaning: o\.meaning, baseValue: o\.value/);
-    assert.match(w, /const canChain = chain && chainFits\(chain\.label, chain\.quantity, f, chain\.meaning\);/);
-    assert.match(w, /calcSendTarget\(ws, fn, o\.label, o\.quantity, o\.meaning\)/);
+    assert.match(w, /setChainValue\(\{ label: o\.label, quantity: o\.quantity, meaning: o\.meaning, unit: o\.unit, baseValue: o\.value/);
+    assert.match(w, /const canChain = chain && chainFits\(chain\.label, chain\.quantity, f, chain\.meaning\) && aliasUnitFits\(chain\.unit, f\);/);
+    assert.match(w, /calcSendTarget\(ws, fn, o\.label, o\.quantity, o\.meaning, o\.unit\)/);
     assert.match(src('chainStore.ts'), /meaning\?: string;/);
-    assert.match(src('calcScreenGuides.ts'), /if \(!f \|\| !chainFits\(label, quantity, f, meaning\)\) continue;/);
+    assert.match(src('calcScreenGuides.ts'), /if \(!f \|\| !chainFits\(label, quantity, f, meaning\) \|\| !aliasUnitFits\(unit, f\)\) continue;/);
   });
   it('the guide’s SEND → target follows the meaning: a voltage drop has no taker, an RT60 does', () => {
     const vd = ws('vdrop');
@@ -328,7 +328,7 @@ describe('J5a — SEND → shows only beside an answer some input takes', () => 
   };
   it('the button is gated on calcSendTarget, the guide’s own rule', () => {
     const w = src('CalcWorkspaceScreen.tsx');
-    assert.match(w, /m\.set\(o\.label, calcSendTarget\(ws, fn, o\.label, o\.quantity, o\.meaning\) !== null\)/);
+    assert.match(w, /m\.set\(o\.label, calcSendTarget\(ws, fn, o\.label, o\.quantity, o\.meaning, o\.unit\) !== null\)/);
     assert.match(w, /\{sendTakers\.get\(o\.label\) && o\.chainable !== false && Number\.isFinite\(o\.value\) && !refused \? \(/);
     // Exactly one SEND → button, and it sits behind that gate.
     assert.equal(w.split('>SEND →</Text>').length, 2);

@@ -42,7 +42,7 @@ import { useEntitlement } from '../../../features/commercial/EntitlementProvider
 import { useTier } from '../../../features/commercial/useTier';
 import { MEMBERSHIP_NOT_CONFIRMED } from '../../../features/commercial/tier';
 import { refusalRows, type CalcFunction, type FieldDef, type Workspace } from './calcTypes';
-import { chainFits, fmt, fmtCarried, liveImport, outputUnits, parseQuantity, unitFits, unitsFor } from './calcUnits';
+import { aliasUnitFits, chainFits, fmt, fmtCarried, liveImport, outputUnits, parseQuantity, unitFits, unitsFor } from './calcUnits';
 import { FieldRow, buildValues, defaultUnitIdx, formatOutput, runCompute, type ComputeResult } from './calcPanel';
 import type { BoundInput, EstimateId, Project, SavedRunSummary, ValueSource, Workflow, WorkflowRun } from './workflowModel';
 import { answeredInWords, carriedInputs, carriedValue, carrySource, dependentSteps, inputOfferFits, noteDependents, recalcNoteText, waitingText } from './workflowCarry';
@@ -958,7 +958,8 @@ export function CalcWorkflowRunScreen() {
         // thing to chain into it — they produced a silently bogus downstream result.
         // chainFits (bug pass 2): the unit must fit too — a kg/m² never fills a µF.
         // And the MEANING (D41): an absorption total never fills a panel's area.
-        if ('value' in o && chainFits(o.label, o.quantity, f, o.meaning) && o.chainable !== false && Number.isFinite(o.value)) sources.push({ fromStep: k, label: o.label, index: oi });
+        // And a dB SPL is never offered to a dBA-only input (F2, 2026-11-28).
+        if ('value' in o && chainFits(o.label, o.quantity, f, o.meaning) && aliasUnitFits(o.unit, f) && o.chainable !== false && Number.isFinite(o.value)) sources.push({ fromStep: k, label: o.label, index: oi });
                       });
                     }
                     // An earlier step's INPUT that is the same thing (fix-first
@@ -1035,7 +1036,8 @@ export function CalcWorkflowRunScreen() {
                           shows that name. */}
                       {!isImport && attachedProject && f.quantity !== 'list'
                         ? attachedProject.values
-                            .filter((v) => unitFits(v.label, v.quantity, f))
+                            // A project value keeps no unit: never into a dBA-only input (F2).
+                            .filter((v) => unitFits(v.label, v.quantity, f) && aliasUnitFits(undefined, f))
                             .slice(0, 4)
                             .map((v) => (
                               <Pressable

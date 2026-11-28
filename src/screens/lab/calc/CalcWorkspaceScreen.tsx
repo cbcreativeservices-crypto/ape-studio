@@ -20,7 +20,7 @@ import type { RootStackParamList } from '../../../navigation/types';
 import { ShareIcon } from '../../../components/ShareIcon';
 import { AccuracyNote } from '../../../components/AccuracyNote';
 import { costsACalculation, refusalRows, type CalcValues, type FieldDef, type OutputVal, type Workspace } from './calcTypes';
-import { chainFits, fmtCarried, outputUnits, unitsFor } from './calcUnits';
+import { aliasUnitFits, chainFits, fmtCarried, outputUnits, unitsFor } from './calcUnits';
 import { getWorkspace } from './registry';
 import { setChainValue, useChainValue } from './chainStore';
 import { useCalcSectionOpen } from './calcPrefs';
@@ -140,7 +140,7 @@ export function CalcWorkspaceScreen() {
     const m = new Map<string, boolean>();
     if (!ws || !fn) return m;
     for (const o of outputs) {
-      if ('value' in o && !m.has(o.label)) m.set(o.label, calcSendTarget(ws, fn, o.label, o.quantity, o.meaning) !== null);
+      if ('value' in o && !m.has(o.label)) m.set(o.label, calcSendTarget(ws, fn, o.label, o.quantity, o.meaning, o.unit) !== null);
     }
     return m;
   }, [ws, fn, outputs]);
@@ -169,7 +169,7 @@ export function CalcWorkspaceScreen() {
       next: next === at4 ? null : next,
       at5Next: at5Next === at5 ? null : at5Next,
       sendable,
-      sendTo: ws && sendable ? calcSendTarget(ws, fn, o.label, o.quantity, o.meaning) : null,
+      sendTo: ws && sendable ? calcSendTarget(ws, fn, o.label, o.quantity, o.meaning, o.unit) : null,
       steps: r.steps.length > 0,
       sendAny: ws ? calcSendReach(ws, fn, r.outputs) : null,
     };
@@ -556,7 +556,7 @@ export function CalcWorkspaceScreen() {
                           <Pressable accessibilityRole="button"
                             hitSlop={{ top: 9, bottom: 9 }}
                             style={styles.sendBtn}
-                            onPress={() => setChainValue({ label: o.label, quantity: o.quantity, meaning: o.meaning, baseValue: o.value, fromWorkspace: ws.name })}
+                            onPress={() => setChainValue({ label: o.label, quantity: o.quantity, meaning: o.meaning, unit: o.unit, baseValue: o.value, fromWorkspace: ws.name })}
                           >
                             <Text style={styles.sendText}>SEND →</Text>
                           </Pressable>
@@ -659,7 +659,8 @@ export function CalcWorkspaceScreen() {
             // Unit-aware, not kind-only (bug pass 2): a kg/m² never fills a µF,
             // a dBV never fills a dBu. Meaning-aware too (D41): a voltage drop
             // never fills a supply voltage.
-            const canChain = chain && chainFits(chain.label, chain.quantity, f, chain.meaning);
+            // …and a dB SPL never fills a dBA-only input (F2, 2026-11-28).
+            const canChain = chain && chainFits(chain.label, chain.quantity, f, chain.meaning) && aliasUnitFits(chain.unit, f);
             // Chain USE rides the shared FieldRow's footer slot. Only rendered
             // while a chain value is armed (footer stays undefined otherwise so
             // the row's memo keeps skipping re-renders).

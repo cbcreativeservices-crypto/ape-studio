@@ -713,6 +713,28 @@ export function unitFits(label: string, quantity: QuantityKind, field: Pick<Fiel
   return (a.length === 0 && b.length === 0) || shared;
 }
 /**
+ * A field whose units are ONLY alias units (the dose EXPOSURE LEVEL takes dBA
+ * and nothing else): those unit ids; else null.
+ */
+export function aliasOnlyUnits(f: Pick<FieldDef, 'quantity' | 'unitIds'>): readonly string[] | null {
+  const ids = f.unitIds ?? [];
+  if (ids.length === 0) return null;
+  const all = QUANTITIES[f.quantity];
+  return ids.every((id) => all.find((u) => u.id === id)?.alias === true) ? ids : null;
+}
+/**
+ * May a value in unit `unitId` (undefined: the kind's own plain unit, as every
+ * saved project value and most answers are) be OFFERED to `f`? An alias-only
+ * field takes only a value in its own alias unit: a plain dB SPL, saved or
+ * computed, is never offered to a dBA-only input, where it would be read as
+ * A-weighted (calc audit R2 K11 follow-up F2, owner GO 2026-11-28). Every
+ * other field: always (the kind + unit + meaning rules still apply).
+ */
+export function aliasUnitFits(unitId: string | undefined, f: Pick<FieldDef, 'quantity' | 'unitIds'>): boolean {
+  const only = aliasOnlyUnits(f);
+  return only === null || (unitId !== undefined && only.includes(unitId));
+}
+/**
  * D41 (bugs #28/#30, owner-approved 2026-11-01): kinds where the kind alone
  * says what a value means — every value of the kind is the same physical
  * thing in this lab (a tempo is a tempo, a sample rate a sample rate). Only

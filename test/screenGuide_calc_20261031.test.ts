@@ -648,10 +648,10 @@ describe('5. wiring and the accuracy-chip decision', () => {
     assert.match(W, /const o = r\.outputs\.find\(\(x\): x is Extract<OutputVal, \{ value: number \}> => 'value' in x && Number\.isFinite\(x\.value\)\);/);
     assert.match(W, /const at4 = formatOutput\(o, 4, 0\);\s*const next = formatOutput\(o, 4, 1\);/);
     assert.match(W, /const at5 = formatOutput\(o, 5, 0\);\s*const at5Next = formatOutput\(o, 5, 1\);\s*const sendable = o\.chainable !== false;/);
-    assert.match(W, /next: next === at4 \? null : next,\s*at5Next: at5Next === at5 \? null : at5Next,\s*sendable,\s*sendTo: ws && sendable \? calcSendTarget\(ws, fn, o\.label, o\.quantity, o\.meaning\) : null,\s*steps: r\.steps\.length > 0,/);
+    assert.match(W, /next: next === at4 \? null : next,\s*at5Next: at5Next === at5 \? null : at5Next,\s*sendable,\s*sendTo: ws && sendable \? calcSendTarget\(ws, fn, o\.label, o\.quantity, o\.meaning, o\.unit\) : null,\s*steps: r\.steps\.length > 0,/);
     assert.match(W, /calcWorkspaceGuide\(ws, fn, guideExample, capped\)/);
     // calcSendTarget is the screen's ⤵ USE rule: chainFits on each input.
-    assert.match(W, /const canChain = chain && chainFits\(chain\.label, chain\.quantity, f, chain\.meaning\);/);
+    assert.match(W, /const canChain = chain && chainFits\(chain\.label, chain\.quantity, f, chain\.meaning\) && aliasUnitFits\(chain\.unit, f\);/);
     // The answer itself uses the same formatter (formatOut → formatOutput), and SEND → the same chainable rule.
     assert.match(W, /return formatOutput\(o, sig, \(outUnit\[o\.label\] \?\? 0\) \+ extraIdx\);/);
     assert.match(W, /o\.chainable !== false && Number\.isFinite\(o\.value\) && !refused \? \(/);
@@ -688,7 +688,7 @@ describe('D42 · P3 polish pins', () => {
     const W = code('src/screens/lab/calc/CalcWorkspaceScreen.tsx');
     assert.match(W, /steps: r\.steps\.length > 0,\s*sendAny: ws \? calcSendReach\(ws, fn, r\.outputs\) : null,/);
     // sendTakers = calcSendTarget(...) !== null; the button also needs chainable and a finite value.
-    assert.match(W, /m\.set\(o\.label, calcSendTarget\(ws, fn, o\.label, o\.quantity, o\.meaning\) !== null\)/);
+    assert.match(W, /m\.set\(o\.label, calcSendTarget\(ws, fn, o\.label, o\.quantity, o\.meaning, o\.unit\) !== null\)/);
     assert.match(W, /\{sendTakers\.get\(o\.label\) && o\.chainable !== false && Number\.isFinite\(o\.value\) && !refused \? \(/);
     const G2 = code('src/screens/lab/calc/calcScreenGuides.ts');
     assert.match(G2, /if \(typeof o\.value !== 'number' \|\| !Number\.isFinite\(o\.value\) \|\| o\.chainable === false \|\| !o\.quantity\) continue;/);

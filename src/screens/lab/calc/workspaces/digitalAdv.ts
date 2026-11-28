@@ -17,10 +17,12 @@ const BUDGET_NEVER_USED = 'Never — with 0 ppm the clocks match exactly, so the
  *  rates of SMPTE ST 12-3 (72, 96, 100, 119.88 and 120) count too (calc audit
  *  R2 K08, owner GO 2026-11-27). */
 const TC_RATES = [24000 / 1001, 24, 25, 30000 / 1001, 30, 48000 / 1001, 48, 50, 60000 / 1001, 60, 72, 96, 100, 120000 / 1001, 120];
+/** The rates as people write them: 23.976, 24, 25, 29.97 … 119.88, 120. */
+const TC_RATE_LIST = TC_RATES.map((r) => fmt(r, 5));
 const tcRateRefusal = (fps: number): string | null =>
   TC_RATES.some((r) => Math.abs(fps - r) < 0.005)
     ? null
-    : `Timecode needs a standard frame rate — 23.976, 24, 25, 29.97, 30, 47.952, 48, 50, 59.94, 60, 72, 96, 100, 119.88 or 120 fps. ${fmt(fps, 6)} fps has no HH:MM:SS:FF labels.`;
+    : `Timecode needs a standard frame rate — ${TC_RATE_LIST.slice(0, -1).join(', ')} or ${TC_RATE_LIST[TC_RATE_LIST.length - 1]} fps. ${fmt(fps, 6)} fps has no HH:MM:SS:FF labels.`;
 
 /** TPDF dither (the standard choice) adds twice the quantization noise power:
  *  10·log10(3) = 4.77 dB more noise (Lipshitz, Wannamaker & Vanderkooy, JAES
@@ -290,7 +292,7 @@ const TIMECODE: Workspace = {
   glossary: ['Timecode', 'Frame Rate', 'Synchronization', 'Sample Rate'],
   fields: [
     { key: 'frames', name: 'FRAME COUNT', quantity: 'number', meaning: 'number:frames', nonNegative: true, integer: true, placeholder: '9000', help: 'Total number of frames.', warn: { test: (x) => x < 0, msg: 'Frame count cannot be negative.' } },
-    { key: 'fps', name: 'FRAME RATE (fps)', quantity: 'number', nonNegative: true, placeholder: '25', help: 'Frames per second: 24, 25, 29.97, or 30.', positive: true, warn: { test: (x) => x <= 0, msg: 'Frame rate must be greater than zero.' } },
+    { key: 'fps', name: 'FRAME RATE (fps)', quantity: 'number', nonNegative: true, placeholder: '25', help: `Frames per second: ${TC_RATE_LIST.slice(0, -1).join(', ')} or ${TC_RATE_LIST[TC_RATE_LIST.length - 1]}.`, positive: true, warn: { test: (x) => x <= 0, msg: 'Frame rate must be greater than zero.' } },
     { key: 'hours', name: 'HOURS', quantity: 'number', nonNegative: true, placeholder: '0', help: 'Hours component of the timecode.' },
     { key: 'mins', name: 'MINUTES', quantity: 'number', nonNegative: true, placeholder: '6', help: 'Minutes component of the timecode.' },
     { key: 'secs', name: 'SECONDS', quantity: 'number', nonNegative: true, placeholder: '0', help: 'Seconds component of the timecode.' },

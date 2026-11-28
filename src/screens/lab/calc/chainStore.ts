@@ -17,6 +17,9 @@ export type ChainValue = {
   /** What the sent answer means (OutputVal `meaning`, D41) — an input offers
    *  ⤵ USE only when its own tag takes it (calcUnits `chainFits`). */
   meaning?: string;
+  /** The answer's own display unit id when it has one (OutputVal `unit`):
+   *  a dBA Leq is 'dba', so only it is offered to a dBA-only input (F2). */
+  unit?: string;
   /** In the quantity's BASE unit. */
   baseValue: number;
   fromWorkspace: string;

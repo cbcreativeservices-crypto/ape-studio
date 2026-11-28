@@ -26,7 +26,7 @@
  * Pure (no React Native): the runner calls these; the tests import them.
  */
 import type { FieldDef, OutputVal } from './calcTypes';
-import { SAFE_UNTAGGED_KINDS, parseQuantity, unitFits, unitsFor } from './calcUnits';
+import { SAFE_UNTAGGED_KINDS, aliasOnlyUnits, aliasUnitFits, parseQuantity, unitFits, unitsFor } from './calcUnits';
 import { resolveStep } from './workflowCatalog';
 import type { StepCarry, ValueSource, Workflow, WorkflowStep } from './workflowModel';
 import { NEC_310_16_CU_AWG, awgLabel } from './workspaces/ampacity';
@@ -54,11 +54,14 @@ export function carryUnitsFit(from: Pick<FieldDef, 'name' | 'quantity'>, to: Pic
  */
 export function inputOfferFits(
   fromWs: string,
-  from: Pick<FieldDef, 'key' | 'name' | 'quantity'>,
+  from: Pick<FieldDef, 'key' | 'name' | 'quantity' | 'unitIds'>,
   toWs: string,
-  to: Pick<FieldDef, 'key' | 'name' | 'quantity'>,
+  to: Pick<FieldDef, 'key' | 'name' | 'quantity' | 'unitIds'>,
 ): boolean {
   if (to.quantity === 'list' || !carryUnitsFit(from, to)) return false;
+  // A dBA-only input takes only another input that is itself in dBA (F2).
+  const fromAlias = aliasOnlyUnits(from);
+  if (!aliasUnitFits(fromAlias?.length === 1 ? fromAlias[0] : undefined, to)) return false;
   if (fromWs === toWs && from.key === to.key) return true;
   return SAFE_UNTAGGED_KINDS.has(to.quantity);
 }

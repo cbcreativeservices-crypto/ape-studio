@@ -101,11 +101,12 @@ test('CH1 — mismatched units never fill, matching ones still do', () => {
 
 test('CH1 — every chain entry point uses chainFits', () => {
   const wsScreen = read('screens/lab/calc/CalcWorkspaceScreen.tsx');
-  assert.match(wsScreen, /const canChain = chain && chainFits\(chain\.label, chain\.quantity, f, chain\.meaning\);/);
+  assert.match(wsScreen, /const canChain = chain && chainFits\(chain\.label, chain\.quantity, f, chain\.meaning\) && aliasUnitFits\(chain\.unit, f\);/);
   const run = read('screens/lab/calc/CalcWorkflowRunScreen.tsx');
-  assert.match(run, /'value' in o && chainFits\(o\.label, o\.quantity, f, o\.meaning\) && o\.chainable !== false/);
-  // A saved project value carries no meaning tag: the kind + unit rule (D41).
-  assert.match(run, /\.filter\(\(v\) => unitFits\(v\.label, v\.quantity, f\)\)/);
+  assert.match(run, /'value' in o && chainFits\(o\.label, o\.quantity, f, o\.meaning\) && aliasUnitFits\(o\.unit, f\) && o\.chainable !== false/);
+  // A saved project value carries no meaning tag: the kind + unit rule (D41),
+  // and no unit, so never into a dBA-only input (F2, 2026-11-28).
+  assert.match(run, /\.filter\(\(v\) => unitFits\(v\.label, v\.quantity, f\) && aliasUnitFits\(undefined, f\)\)/);
   // The live import's own check moved to calcUnits.liveImport (D41 J5c).
   assert.match(read('screens/lab/calc/calcUnits.ts'), /return \{ o, fits: chainFits\(o\.label, o\.quantity, f, o\.meaning\)/);
   assert.match(run, /const li = liveImport\(out, b\.source, f\);/);
