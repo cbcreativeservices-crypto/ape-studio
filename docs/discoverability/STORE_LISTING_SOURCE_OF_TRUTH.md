@@ -47,44 +47,128 @@ This is the owner's call, not a silent edit, because it changes what appears und
 
 **Decided (owner, 2026-09-06):** the store name is the full `Pro Audio Training Academy`; the installed name stays `Pro Audio` — abbreviated on purpose rather than truncated by the OS.
 
-## 4. Apple App Store
+## 4. Apple App Store — APPROVED 2026-11-27, owner
 
-| Field | Limit | Draft | Length |
+Approved copy (theme "accuracy and trust"), relayed by Comp A 2026-11-27 17:22 PT. **Use it word for word; do not rewrite.** The owner enters it in App Store Connect himself.
+
+| Field | Limit | Approved | Length |
 |---|---|---|---|
-| Name | 30 | `Pro Audio Training Academy` | 26 |
-| Subtitle | 30 | `Audio Glossary, Labs & Tools` | 28 |
-| Keywords | 100 bytes | `engineering,acoustics,studio,recording,mixer,microphone,SPL,RTA,ear,sound,certificate,quiz,DAW` | 94 bytes |
-| Promotional text | 170 | see below | |
-
-All three lengths verified. The keyword field is a **hypothesis to test**, not a final answer: no word repeats the name, subtitle or category, there are no competitor names, no superlatives, and it stays under the conservative 100-byte reading of Apple's limit. Promotional text is not indexed for search.
-
-Promotional text draft (161):
-> A 26,000-term professional audio glossary, real measurement tools, and interactive labs — from cables and gain structure to room acoustics.
+| Name | 30 | `Pro Audio Training Academy` (unchanged) | 26 |
+| Subtitle | 30 | `Trusted Glossary & Calculators` | 30 |
+| Keywords | 100 bytes | `engineering,sound,acoustics,mixing,live,studio,recording,course,certificate,SPL,decibel,microphone` | 98 bytes |
+| Promotional text | 170 | `Accurate audio education from a college professor. 35,000+ terms and 166 calculations, free for everyone every week, so you learn it right and work safely.` | 155 |
 
 **Category:** Primary `Education`, Secondary `Reference`.
 
-**Apple's AI-generated tags** are derived from the metadata and screenshots and reviewed by a human; the developer can deselect a wrong one but cannot add one. That makes concrete nouns in the description worth more than adjectives: glossary, SPL meter, RTA, spectrogram, reverb decay time, ear training, cable installation.
+## 5. Google Play — APPROVED 2026-11-27, owner
 
-## 5. Google Play
-
-| Field | Limit | Draft | Length |
+| Field | Limit | Approved | Length |
 |---|---|---|---|
-| Title | 30 | `Pro Audio Training Academy` | 26 |
-| Short description | 80 | `Learn pro audio with a free glossary, interactive labs, tools, and quizzes.` | 75 |
-| Full description | 4000 | see §6 | |
+| Title | 30 | `Pro Audio Training Academy` (unchanged) | 26 |
+| Short description | 80 | `Accurate audio education: free glossary and calculators, labs and credentials` | 77 |
+| Full description | 4000 | see §6 | 3,996 |
 
-Play indexes the full description, and its matching is theme-based rather than exact-token, so natural prose that covers a topic thoroughly beats repetition. Five store tags, chosen from Play's fixed list, should cover education, music and audio, and reference.
+## 6. Long description — APPROVED 2026-11-27, owner
 
-## 6. Long description — rules for whoever writes it
+The body is the same on both stores; each keeps its own SUBSCRIPTIONS section from the live listing. Source files: `Downloads/2026-11-27_COMP_A_TO_CCODE_STORE_LISTING/APPLE_DESCRIPTION_APPROVED.txt` (3,969) and `PLAY_DESCRIPTION_APPROVED.txt` (3,996).
 
-Not drafted here, because it must be written once and then ratified rather than rewritten by each pass. The constraints:
+**Facts this copy states, which the app must keep true** (tell Comp A first if any changes): glossary 14 definitions a week free, guests included, searching free (`GLOSSARY_WEEKLY_LIMIT` = 14); calculators 5 a week (`CALC_WEEKLY_LIMIT` = 5); Academy members unlimited; 35,000+ terms (`academy_stats.terms` 35,145), 166 calculations, 171 topics, 36 programs; verified instructors get a class code. Checked by ccode 2026-11-27 against the code and the live `get_academy_stats()` (35,145 · 171 · 36): all match, except the one below.
 
-- **Lead with the free glossary.** It is the public entry point and the largest asset.
-- Then lessons, labs, tools, quizzes, progress, and certificates, in that order.
-- **Be exact about tiers:** what is free without an account, what a free account adds, what Academy membership unlocks, what institutional access covers.
-- **State plainly that Academy certificates are internal educational credentials** and are not licences, degrees, or accredited qualifications.
-- **Claim nothing the product cannot substantiate:** no job placement, no professional licensure, no measurement-grade accuracy. The app's own honesty notices already say the phone microphone is not a calibrated instrument; the store copy must not contradict them.
-- No keyword stuffing, no competitor names (governance R1), no "best" or "#1".
+> ⚠ **FLAG (ccode 2026-11-27, not changed, owner/Comp A to decide):** the line "Explore 20 career fields and more than 1,800 real roles with the Career Finder" — the Career Finder has **42 career families** across **18 fields** (`src/data/careerFamilies.json`, `src/features/careerfinder/families.ts`); roles total 1,896, so "more than 1,800" is true. Nothing in the app says 20.
+
+### 6a. Apple
+
+```text
+Accurate. Trusted. Free for everyone, every week.
+
+Pro Audio Training Academy is independent, college-level audio education built on one principle: accuracy keeps people safe. Look up 35,000+ audio terms and run 166 audio calculations free every week, then learn the whole craft of sound, from your first signal to professional mastery.
+
+WHY ACCURACY MATTERS
+Much of the audio information online today is fast, confident and wrong. In audio, wrong answers don't just sound bad: they blow speakers, damage hearing, overload circuits and put people in danger on stages and rigging. The Academy gives you one source you can rely on, written to a college-classroom standard and continually audited for accuracy.
+
+THE GLOSSARY AND CALCULATORS ARE FREE
+Everyone gets the glossary and calculators free every week, no account needed: 14 definitions and 5 calculations a week, and searching is always free. It is the Academy's thank-you to the audio community, so anyone can check the facts and do the math before they do the work. The weekly limit is what keeps the lights on: running the servers costs real money, and memberships pay for it.
+
+FOUNDED BY A PROFESSOR OF AUDIO
+Pro Audio Training Academy was founded by a professor of audio with 28 years of college teaching experience, a graduate of Berklee College of Music (Dual BA and MA), and a working professional with 40 years in live sound, studio recording and production. Every topic, flashcard, lab and credential is built on a disciplined, standards-based approach to teaching, training and measuring real competency, the same rigor used in the college classroom and expected on professional stages and in studios.
+
+COLLEGE-LEVEL DEPTH, WITHOUT COLLEGE TUITION
+• A 171-topic curriculum across 36 professional programs, from studio and live sound to acoustics, broadcast and electronics
+• Verifiable Academy credentials, with QR verification
+• Safety taught up front, as part of the required curriculum, not as an afterthought
+Academy credentials are educational credentials from Pro Audio Training Academy. They are not a college degree, license or accredited qualification.
+
+FOR STUDENTS AND INSTRUCTORS
+The Academy supplements the classroom; it doesn't replace it. Verified instructors get a class code, and students who choose to share their progress appear on the instructor's class screen. Schools can license seats for their students at a discount: proaudiotrainingacademy.com/institutions
+
+INDEPENDENT, AND BUILT WITH AI THE RIGHT WAY
+The Academy is independent: no corporate owner and no shareholders deciding what you may learn for free. AI was used as it should be, as a tool in an expert's hands. It let one educator build a resource on a scale that once took a large company, and every piece is directed, checked and audited by the Founder & Editor.
+
+LEARN BY DOING
+• Interactive lessons, flashcards and scenarios
+• Hands-on Learning Labs for ear training, equipment, mixing and microphone technique, plus live measurement tools
+• Master one topic at a time; quizzes unlock as you progress
+
+PLAN YOUR CAREER
+• Explore 20 career fields and more than 1,800 real roles with the Career Finder
+• Connect with employers in the Audio Community Directory
+
+NEW TO AUDIO? Start Here: Your First Steps in Audio walks you from your very first signal to a solid foundation.
+
+Start free with the weekly glossary and calculator allowance, Pro Audio Safety and DAW Fundamentals. Membership unlocks the complete Academy, with unlimited glossary and calculators.
+
+SUBSCRIPTIONS
+Academy Monthly and Academy Annual renew automatically unless cancelled at least 24 hours before the end of the current period. Manage or cancel anytime in your Apple ID settings. Academy Lifetime is a one-time purchase. Current prices are shown in the app and on the App Store before you buy.
+Terms of Use (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Privacy Policy: https://www.proaudiotrainingacademy.com/privacy
+```
+
+### 6b. Google Play
+
+```text
+Accurate. Trusted. Free for everyone, every week.
+
+Pro Audio Training Academy is independent, college-level audio education built on one principle: accuracy keeps people safe. Look up 35,000+ audio terms and run 166 audio calculations free every week, then learn the whole craft of sound, from your first signal to professional mastery.
+
+WHY ACCURACY MATTERS
+Much of the audio information online today is fast, confident and wrong. In audio, wrong answers don't just sound bad: they blow speakers, damage hearing, overload circuits and put people in danger on stages and rigging. The Academy gives you one source you can rely on, written to a college-classroom standard and continually audited for accuracy.
+
+THE GLOSSARY AND CALCULATORS ARE FREE
+Everyone gets the glossary and calculators free every week, no account needed: 14 definitions and 5 calculations a week, and searching is always free. It is the Academy's thank-you to the audio community, so anyone can check the facts and do the math before they do the work. The weekly limit is what keeps the lights on: running the servers costs real money, and memberships pay for it.
+
+FOUNDED BY A PROFESSOR OF AUDIO
+Pro Audio Training Academy was founded by a professor of audio with 28 years of college teaching experience, a graduate of Berklee College of Music (Dual BA and MA), and a working professional with 40 years in live sound, studio recording and production. Every topic, flashcard, lab and credential is built on a disciplined, standards-based approach to teaching, training and measuring real competency, the same rigor used in the college classroom and expected on professional stages and in studios.
+
+COLLEGE-LEVEL DEPTH, WITHOUT COLLEGE TUITION
+• A 171-topic curriculum across 36 professional programs, from studio and live sound to acoustics, broadcast and electronics
+• Verifiable Academy credentials, with QR verification
+• Safety taught up front, as part of the required curriculum, not as an afterthought
+Academy credentials are educational credentials from Pro Audio Training Academy. They are not a college degree, license or accredited qualification.
+
+FOR STUDENTS AND INSTRUCTORS
+The Academy supplements the classroom; it doesn't replace it. Verified instructors get a class code, and students who choose to share their progress appear on the instructor's class screen. Schools can license seats for their students at a discount: proaudiotrainingacademy.com/institutions
+
+INDEPENDENT, AND BUILT WITH AI THE RIGHT WAY
+The Academy is independent: no corporate owner and no shareholders deciding what you may learn for free. AI was used as it should be, as a tool in an expert's hands. It let one educator build a resource on a scale that once took a large company, and every piece is directed, checked and audited by the Founder & Editor.
+
+LEARN BY DOING
+• Interactive lessons, flashcards and scenarios
+• Hands-on Learning Labs for ear training, equipment, mixing and microphone technique, plus live measurement tools
+• Master one topic at a time; quizzes unlock as you progress
+
+PLAN YOUR CAREER
+• Explore 20 career fields and more than 1,800 real roles with the Career Finder
+• Connect with employers in the Audio Community Directory
+
+NEW TO AUDIO? Start Here: Your First Steps in Audio walks you from your very first signal to a solid foundation.
+
+Start free with the weekly glossary and calculator allowance, Pro Audio Safety and DAW Fundamentals. Membership unlocks the complete Academy, with unlimited glossary and calculators.
+
+SUBSCRIPTIONS
+Academy Monthly and Academy Annual renew automatically until you cancel. Cancel anytime in the Google Play Store app under Payments & subscriptions, then Subscriptions. You keep access until the end of the period you have paid for. Academy Lifetime is a one-time purchase. Current prices are shown in the app and on Google Play before you buy.
+Terms of Service: https://www.proaudiotrainingacademy.com/terms
+Privacy Policy: https://www.proaudiotrainingacademy.com/privacy
+```
 
 ## 7. Screenshot capture plan
 
