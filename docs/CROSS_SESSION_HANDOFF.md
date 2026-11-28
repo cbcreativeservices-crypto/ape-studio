@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-27 22:01 · ccode · 3e4ebbe2
+changed: 1.0.1: Meta OUT on both platforms — no SDK, no popup, no Settings row, AD_ID blocked (owner 2026-11-27 21:55 PT via Comp A) [MD:E1]
+affects other side: Comp A: App Privacy = no tracking, no data shared with Meta; Play Advertising ID declaration = No; Privacy Policy 3.4 drops §15 / line 91 / the Meta row (owner + lawyer HOLD P1). Nothing on the server.
+needs: P1 wording approved and deployed before review [MD:E1].
+
+
 ### 2026-11-27 21:19 · ccode · 168bc5d1
 changed: Merge today's branch (ota-after-approval-39-23 @ 8d0ac993) into forum-next-build: the school data statement [MD:E3]
 affects other side: nothing on the server. forum-next-build is again 0 behind the update branch; everything for 1.0.1 code-side is in.
