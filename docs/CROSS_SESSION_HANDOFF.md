@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-27 21:19 · ccode · 168bc5d1
+changed: Merge today's branch (ota-after-approval-39-23 @ 8d0ac993) into forum-next-build: the school data statement [MD:E3]
+affects other side: nothing on the server. forum-next-build is again 0 behind the update branch; everything for 1.0.1 code-side is in.
+needs: the §15 Privacy wording + Apple App Privacy answers (no tracking) before review [MD:E1].
+
+
 ### 2026-11-27 20:51 · ccode · 08c2da47
 changed: Instructor screen: the school data statement goes live (owner-approved 2026-11-27), checked sentence by sentence against the live server [MD:E3]
 affects other side: nothing on the server (read-only check of the instructor functions). Rides the next OTA (not published) and the next merge into forum-next-build.
