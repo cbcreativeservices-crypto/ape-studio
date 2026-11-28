@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-28 08:59 · ccode · 31878009
+changed: Merge today's branch (ota-after-approval-39-23 @ 851b9218) into forum-next-build: calculator audit round 2 + Privacy 3.4 web files [MD:D52]
+affects other side: nothing on the server. forum-next-build is again 0 behind the update branch (calc R2 + Privacy 3.4 files in). Comp A brief: Downloads/2026-11-28_FOR_COMP_A_1.0.1_STATUS_AND_TODO.zip.
+needs: Declared Age Range capability on the App ID + Xcode 26.2+ image before the test build [MD:D52].
+
+
 ### 2026-11-28 08:50 · ccode · be278fba
 changed: docs: must-do D89 — Grounding & Safety lab, first after the 1.0.1 upload; not begun (owner 2026-11-28) [MD:D89]
 affects other side: nothing now. Grounding & Safety lab (D89) starts only after the 1.0.1 upload; it reinforces Pro Audio Safety + Grounding & Electrical.
