@@ -32,6 +32,13 @@ tried and reverted on 2026-09-19 for exactly that reason.
 even though iOS never builds with that profile. Do not assume a change is
 "only" for one platform.
 
+## ⛔ 1.0.1 BUILD-DAY CHECKS (added 2026-11-28)
+
+1. **Declared Age Range (Texas age check, bc5ee68e):** capability ENABLED on App ID com.cbcreativeservices.apestudio by Comp A (owner confirmed 2026-11-28 09:26, saved, checked after reload). In the eas build log, confirm a NEW provisioning profile was generated and that it includes `com.apple.developer.declared-age-range`.
+2. **Xcode 26.2 or later** on the EAS iOS image (Declared Age Range API). eas.json pins no image: confirm the default for SDK 57, or pin one. OPEN.
+3. **Android:** the built APK has NO `com.google.android.gms.permission.AD_ID` and no ACCESS_ADSERVICES_* (`aapt dump permissions`); Play Age Signals 0.0.6 resolves.
+4. **Phones:** Bluetooth picture timing (effects labs), the age check (Texas sandbox teen account on iOS; FakeAgeSignalsManager or a license tester on Android), the dev-only clip test screen, the Signal Chain order.
+
 ## What the next build must carry — verified in the repo
 
 | Feature (what the user sees today) | Native half | In `package.json` | In `app.json` plugins / permissions | Status |
