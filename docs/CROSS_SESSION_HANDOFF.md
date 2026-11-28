@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-28 08:50 · ccode · be278fba
+changed: docs: must-do D89 — Grounding & Safety lab, first after the 1.0.1 upload; not begun (owner 2026-11-28) [MD:D89]
+affects other side: nothing now. Grounding & Safety lab (D89) starts only after the 1.0.1 upload; it reinforces Pro Audio Safety + Grounding & Electrical.
+needs: nothing [MD:D89].
+
+
 ### 2026-11-28 08:48 · ccode · 40ed7a8b
 changed: Calculators: audit round 2 — K01–K12 fixed (owner GO 2026-11-27 via Comp A) + 4 owner follow-ups (2026-11-28) [MD:D52]
 affects other side: Comp A: results file Downloads/2026-11-28_FOR_COMP_A_CALC_R2_RESULTS.zip (before -> after per K-item, owner additions, checker notes). Nothing on the server.
