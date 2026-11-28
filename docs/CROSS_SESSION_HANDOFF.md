@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-27 23:47 · ccode · bc5ee68e
+changed: 1.0.1: store age check (Texas SB 2420) — under-18 per Apple/Google closes the 18+ areas; unknown keeps self-confirmation; the age band never leaves the phone (owner 2026-11-27) [MD:D44]
+affects other side: Comp A: App ID needs the "Declared Age Range" capability before the build; EAS image must have Xcode 26.2+; Play Console: rate each in-app product; Privacy Policy 3.5 line approved (publish with 1.0.1). Nothing on the server.
+needs: the App ID capability checked before the test build [MD:D44].
+
+
 ### 2026-11-27 22:01 · ccode · 3e4ebbe2
 changed: 1.0.1: Meta OUT on both platforms — no SDK, no popup, no Settings row, AD_ID blocked (owner 2026-11-27 21:55 PT via Comp A) [MD:E1]
 affects other side: Comp A: App Privacy = no tracking, no data shared with Meta; Play Advertising ID declaration = No; Privacy Policy 3.4 drops §15 / line 91 / the Meta row (owner + lawyer HOLD P1). Nothing on the server.
