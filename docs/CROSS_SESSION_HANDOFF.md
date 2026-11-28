@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-27 22:28 · ccode · 683fa23f
+changed: web: Privacy Policy 3.4 (effective November 27, 2026; owner approved v3): ad-measurement provisions removed (never launched), privacy promise added, California and other U.S. states, Aptabase pseudonymous [MD:E1]
+affects other side: Comp A: the store listings and App Privacy / Data safety answers now quote Privacy Policy 3.4 (effective November 27, 2026): no tracking, no advertising ID, no data shared for ads. Nothing on the server.
+needs: nothing [MD:E1].
+
+
 ### 2026-11-27 20:51 · ccode · 08c2da47
 changed: Instructor screen: the school data statement goes live (owner-approved 2026-11-27), checked sentence by sentence against the live server [MD:E3]
 affects other side: nothing on the server (read-only check of the instructor functions). Rides the next OTA (not published) and the next merge into forum-next-build.
