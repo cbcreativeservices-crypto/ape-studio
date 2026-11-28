@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-28 08:48 · ccode · 40ed7a8b
+changed: Calculators: audit round 2 — K01–K12 fixed (owner GO 2026-11-27 via Comp A) + 4 owner follow-ups (2026-11-28) [MD:D52]
+affects other side: Comp A: results file Downloads/2026-11-28_FOR_COMP_A_CALC_R2_RESULTS.zip (before -> after per K-item, owner additions, checker notes). Nothing on the server.
+needs: nothing; publish waits for the owner [MD:D52].
+
+
 ### 2026-11-27 22:28 · ccode · 683fa23f
 changed: web: Privacy Policy 3.4 (effective November 27, 2026; owner approved v3): ad-measurement provisions removed (never launched), privacy promise added, California and other U.S. states, Aptabase pseudonymous [MD:E1]
 affects other side: Comp A: the store listings and App Privacy / Data safety answers now quote Privacy Policy 3.4 (effective November 27, 2026): no tracking, no advertising ID, no data shared for ads. Nothing on the server.
