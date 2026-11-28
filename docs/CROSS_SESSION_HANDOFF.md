@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-28 09:27 · ccode · a7ccaf2c
+changed: docs: 1.0.1 build-day checks — Declared Age Range capability enabled (Comp A, owner confirmed 2026-11-28 09:26); verify the new provisioning profile carries the entitlement; Xcode 26.2+ still open [MD:E7]
+affects other side: Comp A: blocker 1 cleared (Declared Age Range on the App ID). Still open: confirm the EAS image has Xcode 26.2+.
+needs: the Xcode 26.2+ image answer before the test build [MD:E7].
+
+
 ### 2026-11-28 08:59 · ccode · 31878009
 changed: Merge today's branch (ota-after-approval-39-23 @ 851b9218) into forum-next-build: calculator audit round 2 + Privacy 3.4 web files [MD:D52]
 affects other side: nothing on the server. forum-next-build is again 0 behind the update branch (calc R2 + Privacy 3.4 files in). Comp A brief: Downloads/2026-11-28_FOR_COMP_A_1.0.1_STATUS_AND_TODO.zip.
