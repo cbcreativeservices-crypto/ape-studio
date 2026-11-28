@@ -18,7 +18,7 @@ import { afterDialogCloses, confirmDialog, notify } from '../../../lib/confirm';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useEntitlement } from '../../../features/commercial/EntitlementProvider';
 import { useTier } from '../../../features/commercial/useTier';
-import { QUANTITIES, fmtCarried, parseQuantity, type QuantityKind } from './calcUnits';
+import { fmtCarried, parseQuantity, unitsFor, type QuantityKind } from './calcUnits';
 import { calcKeyboard } from './calcPanel';
 import type { Project } from './workflowModel';
 import { workflowLimitsFor } from './workflowModel';
@@ -54,10 +54,13 @@ const PROJECT_KINDS: { kind: QuantityKind; label: string }[] = [
 /** Editor row state — raw text in the selected display unit. */
 type DraftValue = { label: string; kindIdx: number; unitIdx: number; raw: string };
 
+/** A value's units: the PLAIN units of its kind (`unitsFor`), never an alias.
+ *  A saved value keeps no weighting, so an SPL offered a dBA chip was saved as
+ *  85 dBA and reopened as 85 dB SPL (calc audit R2 K11, owner GO 2026-11-27). */
 function toDraft(p: Project): DraftValue[] {
   return p.values.map((v) => {
     const kindIdx = Math.max(0, PROJECT_KINDS.findIndex((k) => k.kind === v.quantity));
-    const units = QUANTITIES[PROJECT_KINDS[kindIdx].kind];
+    const units = unitsFor(PROJECT_KINDS[kindIdx].kind);
     return { label: v.label, kindIdx, unitIdx: 0, raw: fmtCarried(units[0].fromBase(v.baseValue), PROJECT_KINDS[kindIdx].kind) };
   });
 }
@@ -247,7 +250,7 @@ export function CalcProjectsScreen() {
     for (const v of values) {
       const label = v.label.trim();
       const kind = PROJECT_KINDS[v.kindIdx].kind;
-      const units = QUANTITIES[kind];
+      const units = unitsFor(kind);
       // `parseQuantity`, not `parseFloat` (2026-09-17). A saved project value is
       // WORSE than a typed one: `10,000 Ω` persisted as 10 Ω under a name the
       // user chose, and CalcWorkflowRunScreen imports that `baseValue` straight
@@ -398,7 +401,7 @@ export function CalcProjectsScreen() {
             <Text style={styles.fieldLabel}>VALUES · {values.length}</Text>
             {values.map((v, i) => {
               const kind = PROJECT_KINDS[v.kindIdx];
-              const units = QUANTITIES[kind.kind];
+              const units = unitsFor(kind.kind);
               const unit = units[v.unitIdx % units.length];
               return (
                 <View key={i} style={styles.valueCard}>

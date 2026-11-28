@@ -12,6 +12,8 @@
  */
 import { BRAND, brandName, SHARE_RULE, shareFooterLines } from '../../../features/commercial/brand';
 import type { SavedRunSummary } from './workflowModel';
+import { WORKSPACES } from './registry';
+import { WORKFLOW_TEMPLATES, resolveStep } from './workflowCatalog';
 
 export type SharedReportValue = {
   id: string;
@@ -95,6 +97,23 @@ const stripStepNumber = (step: string) => step.replace(/^\s*\d+\.\s*/, '').trim(
  *  flowing between steps, not a user input — keep it out of INPUTS. */
 const isPriorStepImport = (source: string) => /\(step\s*\d+\)/i.test(source);
 
+/**
+ * The headline label (`primaryResultLabel`) of a saved step "N. <function
+ * name>", for a result saved before its rows carried `primary` (calc audit R2
+ * K02 follow-up, owner 2026-11-28): a re-shared old Long Power Run headlined
+ * TABLE 310.16 AMPACITY 30 A. The template of that name first; else every
+ * calculator of that name, when they all agree.
+ */
+function savedStepHeadline(workflowName: string, step: string | undefined): string | undefined {
+  if (!step) return undefined;
+  const name = stripStepNumber(step);
+  const t = WORKFLOW_TEMPLATES.find((w) => w.name === workflowName);
+  const r = t?.steps.map(resolveStep).find((x) => x?.fn.name === name);
+  if (r) return r.fn.primaryResultLabel;
+  const labels = new Set(WORKSPACES.flatMap((w) => w.functions).filter((f) => f.name === name).map((f) => f.primaryResultLabel));
+  return labels.size === 1 ? [...labels][0] : undefined;
+}
+
 /** Split a long note into sentence bullets so it never becomes an unreadable
  *  paragraph — without changing wording. Short notes pass through unchanged. */
 function toBullets(note: string): string[] {
@@ -132,7 +151,10 @@ export function buildReportFromSummary(s: SavedRunSummary): SharedCalculatorRepo
   const seen = new Set<string>();
   const inputs: SharedReportValue[] = [];
   s.inputs.forEach((i, idx) => {
-    if (isPriorStepImport(i.source)) return;
+    // …unless the carry CHANGED it (calc audit R2 K10, owner GO 2026-11-27):
+    // a 9 AWG answer is checked as 8 AWG, the next thicker size Table 310.16
+    // lists, so the gauge the later step used is said here.
+    if (isPriorStepImport(i.source) && i.carriedChanged !== true) return;
     // Label AND value: two steps that each take a DISTANCE with different
     // values are two inputs — keying on the label alone dropped the second
     // from the card, the shared text and the saved result. A true repeat
@@ -162,8 +184,15 @@ export function buildReportFromSummary(s: SavedRunSummary): SharedCalculatorRepo
   // numeric row — Delay Speaker Setup headlined "375" (buffers per second, a
   // side figure of the last step) with no name or unit (beginner audit
   // 2026-11-14). The card now prints the result's label with it, too.
+  // The step's own `primaryResultLabel` row comes first, as on a single
+  // calculator (calc audit R2 K02, owner GO 2026-11-27): Long Power Run
+  // headlined the raw TABLE 310.16 AMPACITY, not the ALLOWABLE AMPACITY.
   const lastStep = s.results.length ? s.results[s.results.length - 1].step : undefined;
+  // A result saved before the flag: look the step's headline label up.
+  const oldHeadline = s.results.some((r) => r.primary === true) ? undefined : savedStepHeadline(s.workflowName, lastStep);
   const primaryResult =
+    results.find((r, idx) => s.results[idx].step === lastStep && s.results[idx].primary === true && looksNumeric(r.formattedValue)) ??
+    (oldHeadline !== undefined ? results.find((r, idx) => s.results[idx].step === lastStep && s.results[idx].label === oldHeadline && looksNumeric(r.formattedValue)) : undefined) ??
     results.find((r, idx) => s.results[idx].step === lastStep && looksNumeric(r.formattedValue)) ??
     [...results].reverse().find((r) => looksNumeric(r.formattedValue));
 
@@ -296,7 +325,11 @@ export function reportToText(r: SharedCalculatorReport): string {
 
   if (r.results.length) {
     L.push(RULE, 'RESULTS');
-    for (const r2 of r.results) L.push(leaderLine(r2.label, r2.formattedValue));
+    for (const r2 of r.results) {
+      L.push(leaderLine(r2.label, r2.formattedValue));
+      // Which step gave it (calc audit R2 K09): two steps can share a label.
+      if (r.reportType === 'workflow' && r2.sourceStepName) L.push(`   from ${r2.sourceStepName}`);
+    }
   }
 
   if (r.notes.length) {

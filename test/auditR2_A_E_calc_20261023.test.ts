@@ -219,9 +219,9 @@ describe('E3 — overflow and underflow are refused in words', () => {
   for (const [ws, key, v, re] of cases) {
     it(`${ws}.${key} ${JSON.stringify(v)}`, () => refusedInWords(run(ws, key, v), re));
   }
-  it('outside the MIDI range a frequency has no note name', () => {
-    refusedInWords(run('pitch', 'freqToNote', { f: 452e6, ref: 440 }), /outside the MIDI note range/);
-    refusedInWords(run('pitch', 'freqToNote', { f: 0.000452, ref: 440 }), /outside the MIDI note range/);
+  it('above 20 kHz, or below MIDI 0, a frequency gets no note name (owner 2026-11-27, calc audit R2 K12)', () => {
+    refusedInWords(run('pitch', 'freqToNote', { f: 452e6, ref: 440 }), /is above 20 kHz, the top of human hearing, so this tool names no note for it\./);
+    refusedInWords(run('pitch', 'freqToNote', { f: 0.000452, ref: 440 }), /is below the lowest note this tool names \(C-1, MIDI 0, is about 8\.18 Hz at A4 = 440 Hz; anything under about 7\.94 Hz is out of range\)/);
     assert.equal(run('pitch', 'freqToNote', { f: 452, ref: 440 }).error, null);
   });
   it('an absurd FFT spacing, IR, sample rate, prime or room is refused in words', () => {

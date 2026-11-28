@@ -679,7 +679,20 @@ export function namedOutputUnit(o: { label: string; quantity: string; meaning?: 
   const tags = unitTags(o.label);
   if (tags.length !== 1) return null;
   if (o.quantity === 'db' && !LEVEL_REFS.has(tags[0])) return null;
+  // A level reference is the answer's unit only where the label STATES it —
+  // "(dBu)", "IN dBV" — never where it names the reference as context: the
+  // headroom "SAMPLE-PEAK HEADROOM TO 0 dBFS" (0 − peak, a difference) read
+  // "3 dBFS", a level ABOVE full scale (calc audit R2 K03, owner GO 2026-11-27).
+  if (LEVEL_REFS.has(tags[0]) && !statesUnit(o.label, tags[0])) return null;
   return tags[0];
+}
+/** Does `label` state `tag` as its answer's unit: inside parentheses
+ *  ("THRESHOLD (dBu)") or after IN ("SAME LEVEL IN dBV", "… → in dBV")? Only
+ *  the result side of an arrow counts, as in `unitTags`. */
+function statesUnit(label: string, tag: string): boolean {
+  const t = label.includes('→') ? label.slice(label.lastIndexOf('→') + 1) : label;
+  const u = tag.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&');
+  return new RegExp(`\\([^)]*(?<![A-Za-z])${u}(?![A-Za-z])[^)]*\\)|\\b[Ii][Nn]\\s+${u}(?![A-Za-z])`).test(t);
 }
 /**
  * The KIND + UNIT rule: may a value (`label`, `quantity`) fill `field` as far

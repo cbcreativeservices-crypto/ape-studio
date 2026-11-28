@@ -81,6 +81,10 @@ export type OutputVal =
       /** D41 — what this answer MEANS (see FieldDef `meaning`). It is offered
        *  as ⤵ USE only to an input whose tag takes it. */
       meaning?: string;
+      /** Shown to at least this many significant figures, whatever the
+       *  sig-fig setting (a 5-digit note frequency: B9 = 15804 Hz, never
+       *  "15800 Hz"; owner 2026-11-28, calc audit R2 K12). Display only. */
+      minSig?: number;
     }
   | {
       label: string;

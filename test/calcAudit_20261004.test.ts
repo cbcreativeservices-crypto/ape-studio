@@ -593,9 +593,10 @@ describe('A4 — single-level allowable time below the counting threshold says "
   it('at exactly 80 dBA the time is given (the threshold is inclusive)', () => {
     close(num(outs('dose', 'allowNiosh', { lex: 80 }), 'ALLOWABLE TIME (85 dBA / 3 dB / 8 h)'), 480 * Math.pow(2, 5 / 3) * 60);
   });
-  it('NIOSH’s 140 is named as the PEAK limit it is', () => {
+  it('NIOSH’s 140 is named as the 140 dBA ceiling the REL sets (98-126 §1.1.4; calc audit R2 K05, owner GO 2026-11-27)', () => {
     const t = outs('dose', 'allowNiosh', { lex: 141 }).find((x) => x.label === 'ABOVE 140 dBA')?.text ?? '';
-    assert.match(t, /140 dB peak/);
+    assert.match(t, /the NIOSH recommended exposure limit sets a ceiling: no exposure to continuous, varying, intermittent or impulsive noise should exceed 140 dBA\./);
+    assert.doesNotMatch(t, /140 dB peak/);
     assert.doesNotMatch(t, /no exposure above 140 dBA at all/);
   });
 });
