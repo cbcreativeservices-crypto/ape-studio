@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-27 18:36 · ccode · c79277a2
+changed: Merge today's app (ota-after-approval-39-23 @ 17d84686, update 17) into forum-next-build for 1.0.1 [MD:E1] [MD:E4] [MD:E5]
+affects other side: nothing on the server. forum-next-build now = today's app (update 17) + the 1.0.1 work (0 behind, 57 ahead). Work that lands on ota-after-approval-39-23 from here on needs one more merge before the build commit.
+needs: nothing [MD:E1].
+
+
 ### 2026-11-27 17:40 · ccode · store listing APPROVED copy into the source of truth
 changed: docs/discoverability/STORE_LISTING_SOURCE_OF_TRUTH.md §4–§6 now hold the owner-approved 2026-11-27 listing word for word (Apple subtitle / promo / keywords, Play short description, both long descriptions). Facts checked against code + live get_academy_stats() (35,145 terms · 171 topics · 36 programs; 14/wk glossary, 5/wk calculators): all match EXCEPT "20 career fields" (Career Finder = 42 career families across 18 fields, 1,896 roles), FLAGGED in §6, not rewritten.
 affects other side: Comp A + owner decide the "20 career fields" line before the owner enters it in the consoles. Nothing entered in App Store Connect / Play Console. C09 CLOSED (Comp A 2026-11-27: old harness; `mbyteps` unit present, app shows 9.216 MB/s).
