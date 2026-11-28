@@ -21,6 +21,8 @@ import { contactKindOf, type ContactKind } from '../employer/verifierKind.ts';
 import { sampleForumOn } from '../forum/sampleSwitch.ts';
 import { employerPageToken } from '../employer/publicPage.ts';
 import { cardOf } from './kinds.ts';
+import { adultAreasClosed } from '../age/storeAge.ts';
+import { STORE_AGE_CONTACT, STORE_AGE_PROFILE } from '../age/storeAgeMap.ts';
 import {
   sampleAllowance,
   sampleBlock,
@@ -253,7 +255,24 @@ export async function setFeaturedCredentials(ids: string[]): Promise<SaveResult>
 /** §9 attestation version — bump when the wording or the published field set changes. */
 export const DIRECTORY_POLICY_VERSION = '2026-08-31.1';
 
+/**
+ * THE STORE'S AGE SIGNAL (Texas SB 2420, owner go 2026-11-27): the directory
+ * is 18+, so a member the app store says is under 18 cannot publish, send a
+ * request, accept one or send a message, even with an 18+ confirmation
+ * already on the account. The screens say so before this; this is the
+ * backstop for every caller. Nothing is sent: the server never learns the
+ * band. Unpublishing, declining, withdrawing, blocking and reporting always
+ * stay open.
+ */
+async function storeAgeRefusal(text: string): Promise<SaveResult | null> {
+  return (await adultAreasClosed()) ? { ok: false, error: text } : null;
+}
+
 export async function publishCommunityProfile(on: boolean, adult = false): Promise<SaveResult> {
+  if (on) {
+    const refused = await storeAgeRefusal(STORE_AGE_PROFILE);
+    if (refused) return refused;
+  }
   if (sampleDirectoryOn()) return samplePublish(on, adult); // dev preview only
   try {
     const { error } = await supabase.rpc('community_profile_publish', {
@@ -647,6 +666,8 @@ export async function sendContactRequest(
   purpose: string,
   message: string,
 ): Promise<SaveResult> {
+  const refused = await storeAgeRefusal(STORE_AGE_CONTACT);
+  if (refused) return refused;
   if (sampleDirectoryOn()) return sampleContactRequest(toToken, purpose, message); // dev preview only
   try {
     const { error } = await supabase.rpc('contact_request_send', {
@@ -667,6 +688,10 @@ export async function respondToRequest(
   id: string,
   action: 'accept' | 'decline' | 'withdraw',
 ): Promise<SaveResult> {
+  if (action === 'accept') {
+    const refused = await storeAgeRefusal(STORE_AGE_CONTACT);
+    if (refused) return refused;
+  }
   if (sampleDirectoryOn()) return sampleRespond(id, action);
   try {
     const { error } = await supabase.rpc('contact_request_respond', { p_id: id, p_action: action });
@@ -729,6 +754,8 @@ export async function fetchContactAllowance(requestId?: string): Promise<Contact
  *  id, so a retry after a lost reply can never double-send. A server without
  *  it (PGRST202 / 42883) gets the original 2-argument call, unchanged. */
 export async function sendThreadMessage(requestId: string, body: string, clientMsgId?: string): Promise<SaveResult> {
+  const refused = await storeAgeRefusal(STORE_AGE_CONTACT);
+  if (refused) return refused;
   if (sampleDirectoryOn()) return sampleSend(requestId, body);
   try {
     let error: { code?: string; message: string } | null = null;

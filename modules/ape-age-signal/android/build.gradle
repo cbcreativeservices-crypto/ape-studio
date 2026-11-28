@@ -1,0 +1,28 @@
+// ape-age-signal — Android build (owner go 2026-11-27, 1.0.1). Pure Kotlin.
+// Mirrors the SDK-57 installed-module style (ape-optical): the
+// expo-module-gradle-plugin supplies Kotlin + expo-modules-core +
+// compileSdk/minSdk/targetSdk — do NOT set those here (drift risk).
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'com.cbcreativeservices.apeagesignal'
+version = '0.1.0'
+
+android {
+  namespace "expo.modules.apeagesignal"
+
+  defaultConfig {
+    versionCode 1
+    versionName "0.1.0"
+  }
+}
+
+dependencies {
+  // Google Play Age Signals API (beta). 0.0.6 = latest on Google Maven as of
+  // 2026-11-27. 0.0.4+ replaced userStatus with ageRangeSource and added the
+  // requestAgeSignalsAccess step; 0.0.6 added DEVICE_NOT_SUPPORTED.
+  // https://developer.android.com/google/play/age-signals/release-notes
+  implementation "com.google.android.play:age-signals:0.0.6"
+}

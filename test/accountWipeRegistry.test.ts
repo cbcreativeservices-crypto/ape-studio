@@ -97,7 +97,7 @@ const EXEMPT: Record<string, string> = {
  */
 function selfRegisteredResets(s: string): Set<string> {
   const out = new Set<string>();
-  if (!/import \{[^}]*\bregisterLocalStoreReset\b[^}]*\} from '[^']*storage\/localStoreRegistry'/.test(s)) return out;
+  if (!/import \{[^}]*\bregisterLocalStoreReset\b[^}]*\} from '[^']*storage\/localStoreRegistry(?:\.ts)?'/.test(s)) return out;
   for (const m of s.matchAll(/^registerLocalStoreReset\((\w+)\);/gm)) {
     if (new RegExp(`^export (?:async )?(?:function|const) ${m[1]}\\b`, 'm').test(s)) out.add(m[1]);
   }

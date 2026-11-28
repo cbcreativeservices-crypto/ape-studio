@@ -64,6 +64,8 @@ import {
   type V3Field,
 } from '../../data/v3Curriculum';
 import { confirmDialog, notify } from '../../lib/confirm';
+import { adultAreasClosed } from '../../features/age/storeAge';
+import { STORE_AGE_REGISTRY, STORE_AGE_TITLE } from '../../features/age/storeAgeMap';
 import { useInFlightLatch } from '../../lib/latch';
 import { loadShowBigPicture, saveShowBigPicture } from '../../features/profile/bigPicturePref';
 import { academyTopicsDone, myProgressSummary, topicsDoneHint } from '../../features/profile/progressWords';
@@ -725,9 +727,12 @@ export function ProfileScreen() {
    * so it simply does not move until the server has answered.
    */
   const registryLatch = useInFlightLatch();
+  /** The store's age signal is being read for a "list me" tap. */
+  const registryAgeCheck = useRef(false);
   const onRegistryToggle = useCallback(
     (v: boolean) => {
       if (registryLatch.busy()) return;
+      if (registryAgeCheck.current) return;
       // GUESTS CANNOT BE LISTED — SAY SO (TestFlight build 32, owner on the
       // Pixel). Publishing is a server write that needs an account, so for a
       // guest the chain below ran 18+ → Publish → a refused RPC → the switch
@@ -769,16 +774,32 @@ export function ProfileScreen() {
       // 2026-08-30). Asked ONCE per account — the server records the
       // attestation and refuses to create a listing without it, so a client
       // that skips this prompt still cannot publish.
-      if (isAdultConfirmed()) {
-        consent();
-        return;
-      }
-      askYesNo(
-        'Are you 18 or older?',
-        'The public Registry listing is for adults only. Everything else in the app works at any age: your studies, your certificates and QR verification.',
-        'Yes, I am 18+',
-        () => consent(true),
-      );
+      const ageSteps = () => {
+        if (isAdultConfirmed()) {
+          consent();
+          return;
+        }
+        askYesNo(
+          'Are you 18 or older?',
+          'The public Registry listing is for adults only. Everything else in the app works at any age: your studies, your certificates and QR verification.',
+          'Yes, I am 18+',
+          () => consent(true),
+        );
+      };
+      // THE STORE'S AGE SIGNAL FIRST (Texas SB 2420, owner go 2026-11-27):
+      // the app store says under 18, so no 18+ question and no listing, even
+      // with an 18+ confirmation already on the account. 'unknown' and
+      // 'adult' go on to today's steps exactly. Switching OFF (above) is
+      // always open.
+      registryAgeCheck.current = true;
+      void adultAreasClosed()
+        .then((closed) => {
+          if (closed) notify(STORE_AGE_TITLE, STORE_AGE_REGISTRY);
+          else ageSteps();
+        })
+        .finally(() => {
+          registryAgeCheck.current = false;
+        });
     },
     [setPubKey, pub, registryGuest, navigation, registryLatch],
   );

@@ -23,8 +23,12 @@ import { notify } from '../../../lib/confirm';
 import { useLatchedPress } from '../../../lib/latch';
 import { fetchPostStanding, type PostStanding } from '../../../features/forum/api';
 import { useForumFlags } from '../../../features/forum/forumFlags';
+import { adultAreasClosed, peekStoreAgeBand } from '../../../features/age/storeAge';
+import { isMinorBand } from '../../../features/age/storeAgeMap';
 import {
   RULES_NOT_SAVED,
+  STORE_AGE_STEP,
+  ageAwarePostStep,
   blockSheet,
   followUpStep,
   postStep,
@@ -127,6 +131,20 @@ export function usePostGate(opts: {
 
   const press = useLatchedPress(
     async (where: GateWhere, known: PostStanding | null | undefined, go: () => void, intent: GateIntent | null = null) => {
+      // THE STORE'S AGE SIGNAL FIRST (Texas SB 2420, owner go 2026-11-27).
+      // The app store says under 18: posting stays closed on this phone, even
+      // with an 18+ confirmation already on the account. Only a yes/no comes
+      // back here; the band itself never leaves storeAge.ts. 'unknown' and
+      // 'adult' go on exactly as before. The first ask may show Apple's or
+      // Google's own sheet, so the control reads as checking meanwhile.
+      if (peekStoreAgeBand() === null) setChecking(true);
+      const closed = await adultAreasClosed();
+      if (!mounted.current) return;
+      setChecking(false);
+      if (closed) {
+        show(STORE_AGE_STEP, null, where, null, intent);
+        return;
+      }
       // What the screen read says the member may post: straight on. The post
       // call still answers, and a refusal there opens the same popup.
       const first = known === undefined ? null : decide(known, where);
@@ -151,8 +169,11 @@ export function usePostGate(opts: {
 
   const refused = useCallback(
     (code: string | null | undefined, where: GateWhere) => {
-      const step = refusalStep(code);
-      if (!step || step.kind === 'open') return false;
+      const found = refusalStep(code);
+      if (!found || found.kind === 'open') return false;
+      // A refusal about who may post, for a member the store says is under
+      // 18, is the store-age popup (never CONFIRM 18+).
+      const step = ageAwarePostStep(isMinorBand(peekStoreAgeBand()), found);
       afterClose(() => show(step, null, where, null, null));
       return true;
     },

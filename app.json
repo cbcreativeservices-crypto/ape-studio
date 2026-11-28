@@ -121,6 +121,7 @@
     "plugins": [
       "./plugins/withAndroidNavTransitions",
       "./plugins/withAndroidCameraOptional",
+      "./plugins/withDeclaredAgeRange",
       [
         "expo-build-properties",
         {

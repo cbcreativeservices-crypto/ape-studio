@@ -60,6 +60,8 @@ import { sampleDirectoryOn, sampleGen } from '../../features/directory/sampleThr
 import { ProfileSetupFlow } from './ProfileSetupFlow';
 import { CONTACT_NEEDS_OPEN_TO_LINE, contactOffer } from '../../features/directory/rules';
 import { localStoreWipeCount } from '../../features/storage/localStoreRegistry';
+import { adultAreasClosed } from '../../features/age/storeAge';
+import { STORE_AGE_PROFILE, STORE_AGE_TITLE } from '../../features/age/storeAgeMap';
 import { confirmDialog, notify as appNotify } from '../../lib/confirm';
 import { cardColumn } from '../../theme/readingColumn';
 
@@ -443,6 +445,8 @@ export function MyProfileView() {
   // call is out the switch has not moved yet, so further taps re-ran the whole
   // 18+ → Publish chain and queued a second copy of every question.
   const publishing = useRef(false);
+  /** The store's age signal is being read for a PUBLISH tap. */
+  const ageChecking = useRef(false);
   const sendPublish = (on: boolean, adult?: boolean) => {
     if (publishing.current) return;
     publishing.current = true;
@@ -468,7 +472,7 @@ export function MyProfileView() {
       });
   };
   const onPublish = (on: boolean) => {
-    if (publishing.current) return;
+    if (publishing.current || ageChecking.current) return;
     if (!on) {
       confirmThen(
         'Unpublish your profile?',
@@ -479,6 +483,22 @@ export function MyProfileView() {
       );
       return;
     }
+    // THE STORE'S AGE SIGNAL FIRST (Texas SB 2420, owner go 2026-11-27): the
+    // app store says under 18, so there is no 18+ step and no publish, even
+    // with an 18+ confirmation already on the account. 'unknown' and 'adult'
+    // go on to today's steps exactly. Unpublishing (above) is always open.
+    ageChecking.current = true;
+    void adultAreasClosed()
+      .then((closed) => {
+        if (closed) notify(STORE_AGE_TITLE, STORE_AGE_PROFILE);
+        else publishSteps();
+      })
+      .finally(() => {
+        ageChecking.current = false;
+      });
+  };
+  /** Today's PUBLISH steps, unchanged: the gaps, then 18+ once, then consent. */
+  const publishSteps = () => {
     if (gaps.length) {
       notify('Not ready yet', `Add ${gaps.join(', ')} before publishing.`);
       return;

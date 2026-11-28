@@ -22,6 +22,7 @@ import type {
   TrustLevel,
   VerifiedKind,
 } from './types.ts';
+import { STORE_AGE_FORUM, STORE_AGE_TITLE } from '../age/storeAgeMap.ts';
 
 /* ── Limits (mirrored from forum_settings; the server wins) ──────────── */
 
@@ -1785,6 +1786,10 @@ export type BlockSheetKind =
   | 'account_restricted'
   | 'pro_lounge_members_only'
   | 'staff_only'
+  /** The app store says this member is under 18 (Texas SB 2420, 2026-11-27).
+   *  Decided on the phone, before the server is asked, and never a server
+   *  code: the band is not sent anywhere. */
+  | 'store_age'
   | 'other';
 
 /** Where a popup's one button goes. */
@@ -1817,6 +1822,19 @@ export function blockedStep(code: string | null | undefined): PostStep {
   if (code === 'rules_not_accepted') return { kind: 'rules' };
   if (code && SHEET_CODES.has(code)) return { kind: 'sheet', sheet: code as BlockSheetKind, code };
   return { kind: 'sheet', sheet: 'other', code: code ?? null };
+}
+
+/** The popup for a member the app store says is under 18. */
+export const STORE_AGE_STEP: PostStep = { kind: 'sheet', sheet: 'store_age', code: null };
+
+/**
+ * The store's age signal goes first (Texas SB 2420, owner go 2026-11-27): a
+ * teen or a child never reaches the composer, the rules popup or the CONFIRM
+ * 18+ button, even with an 18+ confirmation already on the account. Any other
+ * band ('unknown', 'adult') leaves the server's answer exactly as it was.
+ */
+export function ageAwarePostStep(closed: boolean, step: PostStep): PostStep {
+  return closed ? STORE_AGE_STEP : step;
 }
 
 /**
@@ -1912,6 +1930,12 @@ export const BLOCK_SHEETS: Record<Exclude<BlockSheetKind, 'muted' | 'other'>, Bl
   staff_only: {
     title: 'Academy topics only',
     text: 'Only the Academy can start topics here. Ask your own questions in Ask the Community.',
+    button: null,
+  },
+  // No button: nothing on the phone can change what the store says.
+  store_age: {
+    title: STORE_AGE_TITLE,
+    text: STORE_AGE_FORUM,
     button: null,
   },
 };
