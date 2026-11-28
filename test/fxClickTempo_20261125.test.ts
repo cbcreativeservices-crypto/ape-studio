@@ -408,8 +408,9 @@ describe('3. ratchets: one source of truth, the house fader, the window in beats
     assert.match(set, /const writeMs = performance\.now\(\);\s*setClickAnchor\(\(a\) => anchorAfterTempoWrite\(a, clickPeriodMs\(b\), writeMs\)\);\s*if \(running\) \{\s*ApeDsp\.genSet\(\{ clickBpm: b \}\);/);
     // a drag's many writes compare with the last WRITTEN tempo, not a stale render
     assert.match(set, /const was = writtenTempoRef\.current\[sourceIdx\] \?\? clampClickBpm\(sources\[sourceIdx\]\.gen\.clickBpm\);/);
-    // the hero gets it; no per-mount token
-    assert.match(SCREEN, /<AnimHero model=\{config\.anim!\(values, sources\[sourceIdx\]\)\} active=\{focused\} grDb=\{running \? grDb : 0\} clickAnchor=\{labClickIdx >= 0 \? clickAnchor : undefined\} \/>/);
+    // the hero gets it, as HEARD (later by the output delay, D85 (a) — test/fxOutputLatency_20261127.test.ts); no per-mount token
+    assert.match(SCREEN, /<AnimHero model=\{config\.anim!\(values, sources\[sourceIdx\]\)\} active=\{focused\} grDb=\{running \? grDb : 0\} clickAnchor=\{labClickIdx >= 0 \? heardAnchor : undefined\} \/>/);
+    assert.match(SCREEN, /const heardAnchor = useMemo\(\(\) => heardClickAnchor\(clickAnchor, outLatencyMs\), \[clickAnchor, outLatencyMs\]\);/);
     assert.doesNotMatch(SCREEN, /playToken/);
   });
   it('item 3 · re-tapping the chosen source sends nothing (a mode write would restart the click); a new CLICK re-anchors after the dip', () => {

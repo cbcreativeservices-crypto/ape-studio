@@ -357,6 +357,8 @@ type NativeApeDsp = {
   fxSet(effectId: number, paramId: number, value: number): void;
   fxReset(): void;
   fxGrStatus(): number[];
+  /** Engine ≥ 12: output latency in ms, -1 = not known now. Absent below 12. */
+  outputLatencyMs?(): number;
   // Wave-2 expansion voices (engineVersion ≥ 7):
   binStart(): Promise<BinStatus>;
   binStop(): Promise<void>;
@@ -583,6 +585,28 @@ export const ApeDsp = {
    *  chain runs EQ → COMP → GATE → … and an FX.lowCut write does nothing. */
   fxLowCutAvailable(): boolean {
     return this.engineVersion() >= 11;
+  },
+
+  // ---- Output latency (engineVersion ≥ 12, must-do D85 (a)) ----
+  /** True when this build can read the phone's audio OUTPUT DELAY. */
+  outputLatencyAvailable(): boolean {
+    return this.engineVersion() >= 12 && typeof native?.outputLatencyMs === 'function';
+  },
+  /** Milliseconds from a sample the generator renders now to the moment it is
+   *  HEARD, while the output runs: iOS AVAudioSession outputLatency +
+   *  ioBufferDuration; Android Oboe calculateLatencyMillis() (the AAudio
+   *  presentation timestamp against the frames written). Bluetooth adds about
+   *  100–300 ms. null = not known now (no output running, no timestamp yet,
+   *  an OpenSL ES stream) and ALWAYS null on a build older than engine 12, so
+   *  callers behave exactly as before there. Cheap: poll it at a few Hz. */
+  outputLatencyMs(): number | null {
+    if (!this.outputLatencyAvailable()) return null;
+    try {
+      const v = native!.outputLatencyMs!();
+      return typeof v === 'number' && Number.isFinite(v) && v >= 0 ? v : null;
+    } catch {
+      return null;
+    }
   },
 
   // ---- Wave-2 expansion voices (engineVersion ≥ 7) ----

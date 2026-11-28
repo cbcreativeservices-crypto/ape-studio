@@ -316,7 +316,7 @@ describe('5. wiring + the accuracy-chip decision', () => {
   it('the reason for the chip decision holds today: generator + effects only, a badged teaching model', () => {
     const calls = new Set([...SCREEN.matchAll(/ApeDsp\.(\w+)/g)].map((m) => m[1]));
     assert.ok(calls.size > 0);
-    for (const c of calls) assert.match(c, /^(gen|fx)[A-Z]\w*$|^(isAvailable|engineVersion|fxAvailable|stereoSpreadAvailable)$/, `ApeDsp.${c} — not a generator/effects call`);
+    for (const c of calls) assert.match(c, /^(gen|fx)[A-Z]\w*$|^(isAvailable|engineVersion|fxAvailable|stereoSpreadAvailable|outputLatencyAvailable|outputLatencyMs)$/, `ApeDsp.${c} — not a generator/effects call (the output-latency read, engine 12, D85 (a), times the picture to the heard click; it measures nothing)`);
     assert.doesNotMatch(SCREEN, /useMicrophone|getUserMedia|AudioRecorder|requestRecordingPermissions|getFrame|getMeterFrame/);
     assert.doesNotMatch(DELAY, /pollGr/); // no measured readout on this lab
     assert.match(SCREEN, /const ANIM_BADGE = 'TEACHING MODEL · DRAWN FROM THE SAME MATH AS THE AUDIO · NOT A MEASUREMENT';/);

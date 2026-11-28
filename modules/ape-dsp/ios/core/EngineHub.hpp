@@ -74,7 +74,16 @@ namespace apedsp {
 /// 0 enabled, 1 freqHz) and runs LowCut → Gate → EQ → Comp → Dist → Mod →
 /// Delay → Reverb → Stereo → Limiter (was EQ → Comp → Gate → …). The existing
 /// ids are unchanged. JS gates the LOW CUT node on >= 11.
-constexpr uint32_t kEngineVersion = 11;
+/// 12 (2026-11-27, 1.0.1 store build, must-do D85 (a)): the OUTPUT LATENCY
+/// read — outputLatencyMs(), the time from a sample the generator renders now
+/// to the moment it is heard (iOS: AVAudioSession outputLatency +
+/// ioBufferDuration while the output graph runs; Android: Oboe
+/// calculateLatencyMillis() on the running output stream, i.e. the AAudio
+/// presentation timestamp against the frames written). -1 = not known now (no
+/// output running, no timestamp yet, OpenSL ES). Bridge-only: the core is
+/// unchanged. The effect labs shift the drawn CLICK by it so the picture meets
+/// the HEARD click (Bluetooth adds 100-300 ms). JS gates it on >= 12.
+constexpr uint32_t kEngineVersion = 12;
 
 struct EngineConfig {
   uint32_t fftSize = 4096;      // ≤16384 (Q5 ruling)

@@ -39,6 +39,12 @@ public class ApeDspModule: Module {
   // C++ core — this layer only renders.
   private var outEngine: AVAudioEngine?
   private var outNode: AVAudioSourceNode?
+  /// OUTPUT LATENCY (engine 12, must-do D85 (a)): ms from a sample the output
+  /// graph renders now to the moment it is heard, or -1 = not known now (no
+  /// output graph running). Written on MAIN only (refreshOutputLatency), read
+  /// by the JS-thread Function under the lock.
+  private let outLatencyLock = NSLock()
+  private var outLatencyMsCache: Double = -1
 
   // Info snapshot (refreshed on start + route change).
   private var sampleRate: Double = 0
@@ -247,6 +253,19 @@ public class ApeDspModule: Module {
     Function("genStatus") { () -> [String: Any] in
       return self.core.genStatus()
     }
+    // OUTPUT LATENCY (engine 12, must-do D85 (a)): the effect labs shift the
+    // drawn CLICK by it so the picture meets the HEARD click. Returns the value
+    // last read on main (at generator start and on every route change) and
+    // asks main for a fresh read, so a poll is never more than one call stale
+    // and AVAudioSession is only touched on main. -1 = not known now. Same name
+    // and units on Android.
+    Function("outputLatencyMs") { () -> Double in
+      self.outLatencyLock.lock()
+      let ms = self.outLatencyMsCache
+      self.outLatencyLock.unlock()
+      DispatchQueue.main.async { [weak self] in self?.refreshOutputLatency() }
+      return ms
+    }
     // ---- Effects chain (one scalar setter for the whole roster) ----
     // effectId = apedsp::fx::Id, passed through unchanged (LOW CUT = 9 from engine 11).
     Function("fxSet") { (effectId: Int, paramId: Int, value: Double) -> Void in
@@ -347,6 +366,7 @@ public class ApeDspModule: Module {
         e.stop()
         self.outEngine = nil
         self.outNode = nil
+        self.refreshOutputLatency()  // no graph → -1
       }
     }
   }
@@ -759,6 +779,7 @@ public class ApeDspModule: Module {
     core.modStop()
     outEngine = nil
     outNode = nil
+    refreshOutputLatency()  // no graph → -1, without touching the session
     if hadOutput { sendEvent("onOutputLost", ["reason": "media-services-reset"]) }
   }
 
@@ -787,6 +808,25 @@ public class ApeDspModule: Module {
     outputRoute = outs.first?.portType.rawValue ?? "unknown"
     let isSpeaker = outputRoute == AVAudioSession.Port.builtInSpeaker.rawValue
     core.genSetHpf(isSpeaker ? speakerHpfHz : 0.0)
+    // The output latency follows the route (speaker → Bluetooth adds 100-300 ms).
+    refreshOutputLatency()
+  }
+
+  /// OUTPUT LATENCY read (engine 12, must-do D85 (a)) — MAIN queue only. While
+  /// the output graph runs: AVAudioSession.outputLatency (the route's hardware
+  /// latency, Bluetooth included) + ioBufferDuration (the one IO buffer a
+  /// rendered sample waits in before the hardware takes it). Else -1. Never
+  /// touches the session when no graph runs (a media-services reset drops it).
+  private func refreshOutputLatency() {
+    var ms = -1.0
+    if let e = outEngine, e.isRunning {
+      let s = AVAudioSession.sharedInstance()
+      let sec = s.outputLatency + s.ioBufferDuration
+      if sec.isFinite, sec >= 0 { ms = sec * 1000.0 }
+    }
+    outLatencyLock.lock()
+    outLatencyMsCache = ms
+    outLatencyLock.unlock()
   }
 
   // MARK: - Recovery watchdog (Booth 2026-07-09, Spike-0 field finding)

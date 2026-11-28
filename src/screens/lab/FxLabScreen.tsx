@@ -90,6 +90,9 @@ import {
   anchorAtStart,
   anchorAfterTempoWrite,
   GEN_RETRIGGER_DIP_MS,
+  heardClickAnchor,
+  nextOutputLatencyMs,
+  OUTPUT_LATENCY_POLL_MS,
   type ClickAnchor,
 } from './fxClickTempo';
 
@@ -583,6 +586,19 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
    *  While nothing sounds it still moves with the tempo, so the picture stays
    *  continuous. */
   const [clickAnchor, setClickAnchor] = useState<ClickAnchor>(() => anchorAtStart(clickPeriodMs(labClickBpm), performance.now()));
+  /** THE OUTPUT DELAY in use, ms (must-do D85 (a), engine 12): the anchor is
+   *  when the generator PLAYS a click; the student hears it this much later
+   *  (Bluetooth: about 100–300 ms). The drawings get the HEARD train
+   *  (heardClickAnchor). 0 until a reading arrives, and always 0 on a build
+   *  older than engine 12 (ApeDsp.outputLatencyMs() is null there), so there
+   *  the drawings get the very same anchor as before. */
+  const [outLatencyMs, setOutLatencyMs] = useState(0);
+  const readOutLatency = useCallback(() => {
+    if (labClickIdx < 0) return;
+    const read = ApeDsp.outputLatencyMs();
+    setOutLatencyMs((prev) => nextOutputLatencyMs(prev, read));
+  }, [labClickIdx]);
+  const heardAnchor = useMemo(() => heardClickAnchor(clickAnchor, outLatencyMs), [clickAnchor, outLatencyMs]);
   /** The tempo last written per source, ahead of the render (a drag sends many). */
   const writtenTempoRef = useRef<Record<number, number>>({});
   // Something else can silence this lab — backgrounding, shake-to-mute, the
@@ -693,6 +709,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
       if (labClickIdx >= 0) {
         const P = clickPeriodMs(sourcesRef.current[labClickIdx].gen.clickBpm);
         setClickAnchor(retriggered ? anchorAtStart(P, performance.now(), GEN_RETRIGGER_DIP_MS) : anchorAtStart(P, startedAt));
+        readOutLatency(); // the route as it plays now (the poll below follows a change)
       }
       noteAudioActivity();
     } catch (e) {
@@ -702,7 +719,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
       // effect — ■ lit, the faders set, the tone playing dry.
       if (gen === genRef.current || !wantRef.current) ApeDsp.fxReset();
     }
-  }, [fxReady, requestAudioOutput, config, sources, sourceIdx, values, pushAllParams]);
+  }, [fxReady, requestAudioOutput, config, sources, sourceIdx, values, pushAllParams, readOutLatency]);
 
   const stop = useCallback(() => {
     genRef.current++;
@@ -746,6 +763,15 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
     return () => clearInterval(id);
   }, [running, config.pollGr]);
 
+  // The output delay follows the route while the lab plays (headphones plugged
+  // in, Bluetooth paired mid-lesson): re-read it every OUTPUT_LATENCY_POLL_MS.
+  // An older build has no reading, so nothing polls there (D85 (a)).
+  useEffect(() => {
+    if (!running || labClickIdx < 0 || !ApeDsp.outputLatencyAvailable()) return;
+    const id = setInterval(readOutLatency, OUTPUT_LATENCY_POLL_MS);
+    return () => clearInterval(id);
+  }, [running, labClickIdx, readOutLatency]);
+
   // Param change: update state; push live when sounding.
   const setParam = (paramId: number, v: number) => {
     setValues((prev) => {
@@ -769,6 +795,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
       // The new mode restarts the click after the 10 ms dip: anchor it there.
       if (clickPresetOf(presetSources[i]) != null) {
         setClickAnchor(anchorAtStart(clickPeriodMs(sources[i].gen.clickBpm), performance.now(), GEN_RETRIGGER_DIP_MS));
+        readOutLatency();
       }
     }
   };
@@ -795,6 +822,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
     if (running) {
       ApeDsp.genSet({ clickBpm: b });
       noteAudioActivity();
+      readOutLatency();
     }
   };
 
@@ -1061,7 +1089,7 @@ export function FxLabScreen({ config }: { config: FxLabConfig }) {
               running={running}
               pollGr={config.pollGr}
               grDb={grDb}
-              anim={AnimHero ? <AnimHero model={config.anim!(values, sources[sourceIdx])} active={focused} grDb={running ? grDb : 0} clickAnchor={labClickIdx >= 0 ? clickAnchor : undefined} /> : null}
+              anim={AnimHero ? <AnimHero model={config.anim!(values, sources[sourceIdx])} active={focused} grDb={running ? grDb : 0} clickAnchor={labClickIdx >= 0 ? heardAnchor : undefined} /> : null}
               staticHero={AnimHero ? null : config.Hero(values, sources[sourceIdx])}
             />
           ),

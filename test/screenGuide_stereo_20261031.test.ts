@@ -338,7 +338,7 @@ describe('5. wiring and the accuracy-chip decision', () => {
   });
   it('the reason for the chip decision holds today: no microphone anywhere in the effect-lab screen; badges say model, not measurement', () => {
     const calls = new Set([...FX.matchAll(/ApeDsp\.(\w+)/g)].map((m) => m[1]));
-    for (const c of calls) assert.match(c, /^(gen|fx)[A-Z]\w*$|^(isAvailable|engineVersion|stereoSpreadAvailable)$/, `ApeDsp.${c} — not a generator/effects call`);
+    for (const c of calls) assert.match(c, /^(gen|fx)[A-Z]\w*$|^(isAvailable|engineVersion|stereoSpreadAvailable|outputLatencyAvailable|outputLatencyMs)$/, `ApeDsp.${c} — not a generator/effects call (the output-latency read, engine 12, D85 (a), times the picture to the heard click; it measures nothing)`);
     assert.doesNotMatch(FX, /useMicrophone|getUserMedia|AudioRecorder|requestRecordingPermissions|getMeterFrame/);
     assert.match(FX, /const ANIM_BADGE = 'TEACHING MODEL · DRAWN FROM THE SAME MATH AS THE AUDIO · NOT A MEASUREMENT';/);
     assert.match(CFG, /heroBadge: 'GONIOMETER \+ CORRELATION — 440 Hz STEREO TEST TONE \(model\)',/);

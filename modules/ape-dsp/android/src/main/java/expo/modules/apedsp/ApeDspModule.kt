@@ -101,6 +101,8 @@ class ApeDspModule : Module() {
   // capture is not running) — the "exact digital zeros" half of inputSilenced.
   private external fun nativeInputZeroSeconds(h: Long): Double
   private external fun nativeTakeOutputLost(h: Long): Boolean
+  // Engine 12 (must-do D85 (a)): the running output stream's latency, ms; -1 = not known.
+  private external fun nativeOutputLatencyMs(h: Long): Double
   // Output stream lost to an Oboe error (native queue item 1, owner 2026-10-24):
   // the native side stops the voices and raises a flag; this once-a-second check
   // turns it into the same onOutputLost event a removed device sends, so every
@@ -487,6 +489,12 @@ class ApeDspModule : Module() {
     Function("genUnlockCap") { if (handle != 0L) nativeGenUnlockCap(handle) }
     Function("genRelockCap") { if (handle != 0L) nativeGenRelockCap(handle) }
     Function("genStatus") { genStatusMap() }
+    // OUTPUT LATENCY (engine 12, must-do D85 (a)): ms from a frame rendered now
+    // to the moment it is heard — Oboe calculateLatencyMillis() on the running
+    // output stream (AAudio presentation timestamp vs frames written), read
+    // fresh on every call so it follows a route change. -1 = not known now.
+    // The effect labs shift the drawn CLICK by it. Same name and units on iOS.
+    Function("outputLatencyMs") { if (handle != 0L) nativeOutputLatencyMs(handle) else -1.0 }
 
     // ---- Effects chain (one scalar setter for the whole roster) ----
     // effectId = apedsp::fx::Id, passed through unchanged (LOW CUT = 9 from engine 11).

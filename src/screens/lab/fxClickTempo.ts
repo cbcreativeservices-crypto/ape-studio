@@ -230,3 +230,55 @@ export function lastHitMs(a: ClickAnchor, wallMs: number): number {
 export function nextHitMs(a: ClickAnchor, wallMs: number): number {
   return lastHitMs(a, wallMs) + a.periodMs;
 }
+
+/* ── THE OUTPUT DELAY: draw the click when it is HEARD (must-do D85 (a), 1.0.1
+ * store build, engine 12) ─────────────────────────────────────────────────
+ * The anchor above is the time the generator PLAYS each click (it is set and
+ * moved from the genStart / genSet calls). The student hears it later by the
+ * phone's audio output delay: a few ms to tens of ms on the speaker or wired
+ * headphones, about 100–300 ms on Bluetooth. FxLabScreen keeps the anchor in
+ * play time (every tempo write still maps through anchorAfterTempoWrite) and
+ * hands the drawings heardClickAnchor(anchor, latency): the same train, later
+ * by the measured delay, so a drawn hit reaches the stage as its click is heard.
+ * The delay comes from ApeDsp.outputLatencyMs() (null on a build older than
+ * engine 12, and whenever it is not known now), read at ▶, at a source pick or
+ * tempo write while playing, and every OUTPUT_LATENCY_POLL_MS while playing,
+ * so plugging in headphones or pairing Bluetooth mid-lesson moves the picture
+ * to the new delay within half a second. With no reading ever (an older build)
+ * the delay stays 0 and the drawings get the very same anchor object as before. */
+
+/** The most delay the picture will follow: past any real phone route (a
+ *  Bluetooth codec is about 100–300 ms), so a wild reading cannot throw the
+ *  picture half a beat off. */
+export const OUTPUT_LATENCY_MAX_MS = 500;
+/** A new reading moves the picture only when it differs from the one in use by
+ *  this much: below half a 60 Hz frame (8.3 ms) no one can see the difference,
+ *  and Android's reading wobbles by about a burst as frames are written. */
+export const OUTPUT_LATENCY_STEP_MS = 8;
+/** How often a playing lab re-reads the delay (a route change mid-session). */
+export const OUTPUT_LATENCY_POLL_MS = 500;
+
+/** A reading as a usable delay: 0 when null / not a number / not positive;
+ *  never more than OUTPUT_LATENCY_MAX_MS. */
+export function clampOutputLatencyMs(ms: number | null | undefined): number {
+  if (ms == null || !Number.isFinite(ms) || ms <= 0) return 0;
+  return Math.min(OUTPUT_LATENCY_MAX_MS, ms);
+}
+
+/** The delay in use after a reading: a reading that is not known (null, not
+ *  a number, negative) keeps the one in use; a reading within
+ *  OUTPUT_LATENCY_STEP_MS of it keeps it too (no jitter); else the clamped
+ *  reading. Starts at 0, so a build that never reads stays at 0. */
+export function nextOutputLatencyMs(prevMs: number, readMs: number | null | undefined): number {
+  if (readMs == null || !Number.isFinite(readMs) || readMs < 0) return prevMs;
+  const next = clampOutputLatencyMs(readMs);
+  return Math.abs(next - prevMs) < OUTPUT_LATENCY_STEP_MS ? prevMs : next;
+}
+
+/** The train as HEARD: the play-time anchor, later by the output delay. A
+ *  delay of 0 (or none) returns the SAME anchor object, so the drawings are
+ *  exactly as before. */
+export function heardClickAnchor(a: ClickAnchor, latencyMs: number | null | undefined): ClickAnchor {
+  const l = clampOutputLatencyMs(latencyMs);
+  return l === 0 ? a : { t0: a.t0 + l, periodMs: a.periodMs };
+}

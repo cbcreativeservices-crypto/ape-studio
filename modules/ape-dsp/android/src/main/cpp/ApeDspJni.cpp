@@ -15,6 +15,7 @@
 
 #include <atomic>
 #include <chrono>
+#include <cmath>
 #include <cstdint>
 #include <memory>
 #include <mutex>
@@ -149,6 +150,26 @@ class NativeEngine {
   /** True once after Oboe closed the output on an error (Kotlin polls it and
    *  sends onOutputLost, so the screen reads STOPPED, never a silent RUN). */
   bool takeOutputLost() { return outputLostPending_.exchange(false); }
+  /** OUTPUT LATENCY (engine 12, must-do D85 (a)): milliseconds from the next
+   *  frame written to the output stream to the moment the hardware presents
+   *  it — Oboe's calculateLatencyMillis(), which on the AAudio path compares
+   *  AAudioStream_getTimestamp(CLOCK_MONOTONIC) (a presented frame and its
+   *  time) with getFramesWritten(). Computed fresh on every call, so it follows
+   *  a route change (speaker → Bluetooth) as soon as the stream reports it.
+   *  -1 = not known now: no output stream, a stream Oboe closed, a stream not
+   *  yet started or with no timestamp yet (ErrorInvalidState just after start),
+   *  or a backend without timestamps (OpenSL ES → ErrorUnimplemented).
+   *  Bridge thread only — Oboe advises against calling it from the data
+   *  callback. try_lock: never blocks the JS thread behind an open/close. */
+  double outputLatencyMs() {
+    std::unique_lock<std::mutex> lk(outStreamMu_, std::try_to_lock);
+    if (!lk.owns_lock() || !outStream_ || outputDead_.load()) return -1.0;
+    if (outStream_->getState() != oboe::StreamState::Started) return -1.0;
+    oboe::ResultWithValue<double> r = outStream_->calculateLatencyMillis();
+    if (r.error() != oboe::Result::OK) return -1.0;
+    const double ms = r.value();
+    return std::isfinite(ms) && ms >= 0.0 ? ms : -1.0;
+  }
   bool genStart() {
     const bool ok = ensureOutput();
     if (ok) gen_.start();
@@ -675,6 +696,13 @@ Java_expo_modules_apedsp_ApeDspModule_nativeInputZeroSeconds(JNIEnv*, jobject, j
 JNIEXPORT jboolean JNICALL
 Java_expo_modules_apedsp_ApeDspModule_nativeTakeOutputLost(JNIEnv*, jobject, jlong h) {
   return eng(h)->takeOutputLost() ? JNI_TRUE : JNI_FALSE;
+}
+
+// Engine 12 (must-do D85 (a)): the running output stream's latency in ms, or -1
+// when not known now (see NativeEngine::outputLatencyMs).
+JNIEXPORT jdouble JNICALL
+Java_expo_modules_apedsp_ApeDspModule_nativeOutputLatencyMs(JNIEnv*, jobject, jlong h) {
+  return eng(h)->outputLatencyMs();
 }
 
 // ---- Generator ----

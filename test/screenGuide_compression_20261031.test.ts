@@ -315,7 +315,7 @@ describe('5. wiring + the accuracy-chip decision', () => {
   it('a CONCEPT lab: no mic, no real-world measurement — the GR is the engine’s own reduction on a built-in test source', () => {
     const fxs = code('src/screens/lab/FxLabScreen.tsx');
     const calls = new Set([...fxs.matchAll(/ApeDsp\.(\w+)/g)].map((m) => m[1]));
-    for (const c of calls) assert.match(c, /^(gen|fx)[A-Z]\w*$|^(isAvailable|engineVersion|stereoSpreadAvailable)$/, `ApeDsp.${c} — not a generator/effects call`);
+    for (const c of calls) assert.match(c, /^(gen|fx)[A-Z]\w*$|^(isAvailable|engineVersion|stereoSpreadAvailable|outputLatencyAvailable|outputLatencyMs)$/, `ApeDsp.${c} — not a generator/effects call (the output-latency read, engine 12, D85 (a), times the picture to the heard click; it measures nothing)`);
     assert.doesNotMatch(fxs, /useMicrophone|getUserMedia|AudioRecorder|requestRecordingPermissions|getFrame|getMeterFrame/);
   });
 });

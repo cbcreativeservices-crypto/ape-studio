@@ -728,6 +728,12 @@ A = Cowork (backend/DB/governance). ccode = Claude Code (the `ape-studio` client
 
 ## LOG (newest first)
 
+### 2026-11-27 19:09 · ccode · 477b05da
+changed: 1.0.1 Signal Chain: LOW CUT → GATE → EQ → COMP in the engine (owner 2026-11-22 "gate at build"; go 2026-11-27) [MD:E9]
+affects other side: nothing on the server. Native change (engine 11, new effect id 9): fingerprint moves, so this rides 1.0.1 only. A dev client with engine ≤10 runs the old order while the screen draws the new one (store users are protected by the runtime version).
+needs: nothing [MD:E9].
+
+
 ### 2026-11-27 18:36 · ccode · c79277a2
 changed: Merge today's app (ota-after-approval-39-23 @ 17d84686, update 17) into forum-next-build for 1.0.1 [MD:E1] [MD:E4] [MD:E5]
 affects other side: nothing on the server. forum-next-build now = today's app (update 17) + the 1.0.1 work (0 behind, 57 ahead). Work that lands on ota-after-approval-39-23 from here on needs one more merge before the build commit.
