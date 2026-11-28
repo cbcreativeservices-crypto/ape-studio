@@ -41,7 +41,6 @@ import { hasCrowdsourceConsent, setCrowdsourceConsent } from '../../features/too
 import { sendFeedback, setFeedbackIdentity } from '../../lib/feedback';
 import { REDEEM_GRANTED_NOT_REFRESHED, redeemAccessCode } from '../../features/commercial/accessCode';
 import { useEntitlement } from '../../features/commercial/EntitlementProvider';
-import { useTier } from '../../features/commercial/useTier';
 import { supabase } from '../../lib/supabase';
 import { softDeadline, withDeadline } from '../../lib/boundedCall';
 import { consumeIntentionalSignOut, markIntentionalSignOut } from '../../features/auth/intentionalSignOut';
@@ -86,8 +85,6 @@ import {
   shortCategory,
   type CategorySchedule,
 } from '../../features/notifications/weeklyConcept';
-import { META_CONSENT_ROW_HINT, META_CONSENT_ROW_LABEL, META_CONSENT_ROW_UNREADABLE } from '../../features/growth/metaGate';
-import { useMetaConsent } from '../../features/growth/metaConsentStore';
 import { SettingsSection } from '../../features/settings/SettingsSection';
 import { LowLightRow } from '../../features/settings/LowLightLayer';
 import { osReduceMotionOn } from '../../features/settings/a11y';
@@ -104,31 +101,6 @@ import { useGlossaryLinksPref } from '../../features/glossary/linksPref';
 import { LEGAL_ASSENT_REDEEM } from '../../features/commercial/legalCopy';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Settings'>;
-
-/** Ad measurement (owner 2026-11-05). The switch moves only from the saved
- *  answer, and it waits for the read, so a failed read is never an offer. On
- *  demand: the Meta path stays out of every static import. */
-function AdMeasurementRow() {
-  const consent = useMetaConsent();
-  const change = (on: boolean) => {
-    try {
-      const meta = require('../../features/growth/metaMeasurement') as typeof import('../../features/growth/metaMeasurement');
-      if (on) meta.askAdMeasurement();
-      else meta.stopAdMeasurement();
-    } catch {
-      // No Meta in this build: the row does not show there.
-    }
-  };
-  return (
-    <View style={styles.row}>
-      <View style={{ flex: 1, paddingRight: 10 }}>
-        <Text style={styles.rowLabel}>{META_CONSENT_ROW_LABEL}</Text>
-        <Text style={styles.rowHint}>{consent.unreadable ? META_CONSENT_ROW_UNREADABLE : META_CONSENT_ROW_HINT}</Text>
-      </View>
-      <Toggle on={consent.on} disabled={!consent.ready} label={META_CONSENT_ROW_LABEL} onChange={change} />
-    </View>
-  );
-}
 
 export function SettingsScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
@@ -165,22 +137,6 @@ export function SettingsScreen({ navigation }: Props) {
   const [apeId, setApeId] = useState('');
   // Community mic-catalog contribution consent (device-local, opt-in, default off).
   const [contribute, setContribute] = useState(false);
-  // Ad measurement for a SIGNED-IN account only (owner 2026-11-11): a guest
-  // never opts in. From useTier(), so an unknown session ('unknown', or a read
-  // that has not landed) is no guest either: it simply does not show the row yet.
-  const accountTier = useTier();
-  const adMeasurementSignedIn = accountTier === 'free' || accountTier === 'member';
-  // Inside the Meta gate only (region, phone, this build's values). Never on web.
-  const [adMeasurementRow, setAdMeasurementRow] = useState(false);
-  useEffect(() => {
-    if (Platform.OS === 'web') return;
-    try {
-      const meta = require('../../features/growth/metaMeasurement') as typeof import('../../features/growth/metaMeasurement');
-      setAdMeasurementRow(meta.adMeasurementAvailable());
-    } catch {
-      setAdMeasurementRow(false);
-    }
-  }, []);
 
   // Access / promo code redemption (owner 2026-08-21) — for users who already
   // have an account (e.g. an influencer comped after signing up free).
@@ -1138,7 +1094,7 @@ ${LOCAL_LOSS}`
               onChange={(v) => setLocalKey('micReleaseOnBackground', v)}
             />
           </View>
-          <View style={[styles.row, adMeasurementRow && styles.rowBorder]}>
+          <View style={styles.row}>
             <View style={{ flex: 1, paddingRight: 10 }}>
               <Text style={styles.rowLabel}>Contribute anonymized calibration data</Text>
               <Text style={styles.rowHint}>
@@ -1154,7 +1110,6 @@ ${LOCAL_LOSS}`
               }}
             />
           </View>
-          {adMeasurementRow && adMeasurementSignedIn ? <AdMeasurementRow /> : null}
         </SettingsSection>
 
         {/* FEEDBACK & SUPPORT — opens the mail composer, pre-filled. */}

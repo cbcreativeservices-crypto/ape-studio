@@ -29,7 +29,6 @@ import {
   isRenewalDelivery,
   planIdForSku,
   restoreFailureOf,
-  storeChargeFor,
   storeFailureOf,
   verifyFailureOf,
   type PlanId,
@@ -101,8 +100,6 @@ let handlers: PurchaseHandlers | null = null;
 /** The plan on the store's sheet right now. The error listener and buyPlan's
  *  rejection can report one failure twice; whichever comes first clears this. */
 let planInFlight: PlanId | null = null;
-/** The last store answer: the price and currency a verified purchase reports. */
-let storeProducts: unknown[] = [];
 /** Purchases already counted this app run (listener and re-check can overlap). */
 const countedPurchases = new Set<string>();
 
@@ -118,8 +115,8 @@ function trackStoreFailure(err: { code?: unknown; message?: unknown } | null | u
 }
 
 /**
- * A NEW purchase the server verified: Aptabase, then Meta. Never a renewal and
- * never a restore (restorePurchases does not come here), so a Meta purchase
+ * A NEW purchase the server verified, to Aptabase. Never a renewal and never a
+ * restore (restorePurchases does not come here), so a purchase_completed
  * event is money that just changed hands. Callers report only after the store
  * accepted finishTransaction: an unfinished transaction comes back, and that
  * delivery is the one that counts, so a purchase is never counted twice across
@@ -136,21 +133,8 @@ function reportCompleted(p: IapPurchase): void {
     if (key && countedPurchases.has(key)) return;
     if (key) countedPurchases.add(key);
     trackEvent('purchase_completed', { plan });
-    void reportToMeta(plan, sku);
   } catch {
     /* analytics must never throw into the purchase path */
-  }
-}
-
-async function reportToMeta(plan: PlanId, sku: string): Promise<void> {
-  try {
-    const known = storeChargeFor(storeProducts, sku);
-    const charge = known ?? storeChargeFor(await loadStoreProducts(), sku);
-    if (!charge) return;
-    // On demand, never a static import: the start graph is at its cap.
-    require('../growth/metaMeasurement').noteMetaPurchase({ plan, amount: charge.amount, currency: charge.currency });
-  } catch {
-    /* Meta is off or absent: the purchase is unaffected */
   }
 }
 
@@ -508,9 +492,7 @@ export async function loadStoreProducts(): Promise<unknown[]> {
       withDeadline(() => iap.fetchProducts({ skus: SUBSCRIPTION_SKUS, type: 'subs' }), 'iap/fetchSubs', 15000).catch(() => []),
       withDeadline(() => iap.fetchProducts({ skus: INAPP_SKUS, type: 'in-app' }), 'iap/fetchInApp', 15000).catch(() => []),
     ]);
-    const products = [...(subs as unknown[]), ...(inapp as unknown[])];
-    if (products.length > 0) storeProducts = products;
-    return products;
+    return [...(subs as unknown[]), ...(inapp as unknown[])];
   } catch {
     return [];
   }

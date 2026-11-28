@@ -62,23 +62,6 @@ export function isRenewalDelivery(p: { reasonIOS?: unknown; transactionReasonIOS
   return /renew/i.test(String(p.reasonIOS ?? p.transactionReasonIOS ?? ''));
 }
 
-/** The store's numeric price and ISO currency for a SKU, or null when it gave
- *  neither: a guessed amount is never reported. */
-export function storeChargeFor(products: unknown[], sku: string): { amount: number; currency: string } | null {
-  for (const raw of products) {
-    const p = (raw ?? {}) as { id?: unknown; productId?: unknown; price?: unknown; currency?: unknown };
-    if ((p.id ?? p.productId) !== sku) continue;
-    const ok =
-      typeof p.price === 'number' &&
-      Number.isFinite(p.price) &&
-      p.price > 0 &&
-      typeof p.currency === 'string' &&
-      /^[A-Z]{3}$/.test(p.currency);
-    return ok ? { amount: p.price as number, currency: p.currency as string } : null;
-  }
-  return null;
-}
-
 /** Reverse map: store SKU → our plan id. */
 export function planIdForSku(sku: string): PlanId | null {
   const hit = (Object.values(PLANS) as PlanDef[]).find((p) => p.sku === sku);

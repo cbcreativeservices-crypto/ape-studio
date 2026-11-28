@@ -53,6 +53,8 @@ describe('app.json: the Android blocked list', () => {
       'android.permission.READ_MEDIA_VISUAL_USER_SELECTED',
       'android.permission.SYSTEM_ALERT_WINDOW',
       'android.permission.WRITE_EXTERNAL_STORAGE',
+      // No advertising id, ever (owner 2026-11-27, 1.0.1): test/noMeta_101_20261127.
+      'com.google.android.gms.permission.AD_ID',
     ]);
   });
 
@@ -61,7 +63,6 @@ describe('app.json: the Android blocked list', () => {
       'android.permission.CAMERA',
       'android.permission.ACCESS_COARSE_LOCATION',
       'android.permission.ACCESS_FINE_LOCATION',
-      'com.google.android.gms.permission.AD_ID',
     ]);
     for (const p of expo.android.permissions) assert.ok(!expo.android.blockedPermissions.includes(p), p);
   });

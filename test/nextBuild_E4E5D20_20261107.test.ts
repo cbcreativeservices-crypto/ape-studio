@@ -6,7 +6,7 @@
  *     the purpose strings, foreground-only permissions).
  *  2. Fill-in and Matching end-of-round review with "Research and learn more ·
  *     View images" (features/study/studyRounds.ts + RoundReview.tsx).
- *  3. Android camera optional (already pinned in metaMeasurement_20261105;
+ *  3. Android camera optional (also pinned in noMeta_101_20261127;
  *     re-checked here as part of the set).
  *  4. Stereo Imaging MONO CHECK folds AFTER the pan (Effects.hpp, shared by
  *     Android). The arithmetic is pinned by the native golden suite,
